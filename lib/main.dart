@@ -1,0 +1,68 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Auth/login.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/bloc/transaction_tab_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/bloc/menu_bloc.dart';
+import 'Localizations/Bloc/localizations_bloc.dart';
+import 'Localizations/l10n/l10n.dart';
+import 'Localizations/l10n/translations/app_localizations.dart';
+import 'Themes/Bloc/themes_bloc.dart';
+import 'Themes/Ui/theme.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'Views/Menu/Ui/Settings/Ui/General/bloc/general_tab_bloc.dart';
+import 'Views/Menu/Ui/Settings/bloc/settings_tab_bloc.dart';
+import 'Views/Menu/Ui/Settings/features/Visibility/bloc/settings_visible_bloc.dart';
+
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+
+        /// Tabs & Others
+        BlocProvider(create: (context) => ThemeBloc()),
+        BlocProvider(create: (context) => LocalizationBloc()),
+        BlocProvider(create: (context) => MenuBloc()),
+        BlocProvider(create: (context) => JournalTabBloc()),
+        BlocProvider(create: (context) => GeneralTabBloc()),
+        BlocProvider(create: (context) => SettingsTabBloc()),
+        BlocProvider(create: (context) => SettingsVisibleBloc()),
+        /// Data Management
+
+      ],
+      child: BlocBuilder<LocalizationBloc, Locale>(
+        builder: (context, locale) {
+          return BlocBuilder<ThemeBloc, ThemeMode>(
+            builder: (context, themeMode) {
+              final theme = AppThemes(TextTheme.of(context));
+              return MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  title: 'Zaitoon Petroleum',
+                  localizationsDelegates: [
+                    AppLocalizations.delegate,
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                  ],
+                  locale: locale,
+                  supportedLocales: L10n.all,
+                  themeMode: themeMode,
+                  darkTheme: theme.dark(),
+                  theme: theme.light(),
+                  home: LoginView()
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
