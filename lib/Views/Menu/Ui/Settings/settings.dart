@@ -6,9 +6,7 @@ import '../../../../Features/Generic/rounded_tab.dart';
 import '../../../../Features/Other/responsive.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'Ui/About/about.dart';
-import 'Ui/Company/CompanyProfile/company.dart';
 import 'Ui/General/general.dart';
-import 'Ui/Users/users.dart';
 import 'bloc/settings_tab_bloc.dart';
 
 class SettingsView extends StatelessWidget {
@@ -46,12 +44,7 @@ class _Desktop extends StatelessWidget {
                 label: AppLocalizations.of(context)!.company,
                 screen: const CompanyTabsView(),
               ),
-              //if (role == 1)
-              TabDefinition(
-                value: SettingsTabName.users,
-                label: AppLocalizations.of(context)!.users,
-                screen: const UsersView(),
-              ),
+
               TabDefinition(
                 value: SettingsTabName.stock,
                 label: AppLocalizations.of(context)!.stock,

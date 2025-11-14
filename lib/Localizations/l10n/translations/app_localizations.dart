@@ -981,6 +981,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sales'**
   String get sales;
+
+  /// No description provided for @inventory.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory'**
+  String get inventory;
+
+  /// No description provided for @attendence.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance'**
+  String get attendence;
+
+  /// No description provided for @employees.
+  ///
+  /// In en, this message translates to:
+  /// **'Employees'**
+  String get employees;
+
+  /// No description provided for @hr.
+  ///
+  /// In en, this message translates to:
+  /// **'HR Manager'**
+  String get hr;
+
+  /// No description provided for @hrTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Human Resource Management'**
+  String get hrTitle;
+
+  /// No description provided for @fiscalYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Fiscal Year'**
+  String get fiscalYear;
+
+  /// No description provided for @manageFinance.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage fiscal years, currencies, and exchange rates.'**
+  String get manageFinance;
+
+  /// No description provided for @hrManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage employees, attendance, and user access.'**
+  String get hrManagement;
+
+  /// No description provided for @stakeholderManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Stakeholders & Accounts.'**
+  String get stakeholderManage;
 }
 
 class _AppLocalizationsDelegate

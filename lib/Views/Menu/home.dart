@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/login.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/hr.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/transport.dart';
 import '../../Features/Generic/generic_menu.dart';
 import '../../Features/Other/responsive.dart';
@@ -64,7 +65,12 @@ class _DesktopState extends State<_Desktop> {
         screen: const StakeholdersView(),
         icon: Icons.account_circle_outlined,
       ),
-
+      MenuDefinition(
+        value: MenuName.hr,
+        label: AppLocalizations.of(context)!.hr,
+        screen: const HrTabView(),
+        icon: Icons.group_rounded,
+      ),
       MenuDefinition(
         value: MenuName.transport,
         label: AppLocalizations.of(context)!.transport,
@@ -74,7 +80,7 @@ class _DesktopState extends State<_Desktop> {
       // if(visible.stock)
       MenuDefinition(
         value: MenuName.stock,
-        label: AppLocalizations.of(context)!.stock,
+        label: AppLocalizations.of(context)!.inventory,
         screen: const StockView(),
         icon: Icons.add_shopping_cart_sharp,
       ),

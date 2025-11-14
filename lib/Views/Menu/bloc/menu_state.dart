@@ -1,6 +1,6 @@
 part of 'menu_bloc.dart';
 
-enum MenuName {dashboard, finance,journal,transport, stakeholders,stock,settings,report, activity, analytics}
+enum MenuName {dashboard, finance,journal,transport, hr, stakeholders,stock,settings,report, activity, analytics}
 
 final class MenuState extends Equatable {
   final MenuName tabs;
@@ -8,3 +8,4 @@ final class MenuState extends Equatable {
   @override
   List<Object> get props => [tabs];
 }
+

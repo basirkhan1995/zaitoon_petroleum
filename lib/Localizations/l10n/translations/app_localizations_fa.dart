@@ -412,7 +412,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get treasury => 'خزانه';
 
   @override
-  String get exchangeRate => 'تاریخچه اسعار';
+  String get exchangeRate => 'نرخ اسعار';
 
   @override
   String get products => 'کالا ها';
@@ -452,4 +452,31 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get sales => 'فروش';
+
+  @override
+  String get inventory => 'سهام';
+
+  @override
+  String get attendence => 'حضور و غیاب';
+
+  @override
+  String get employees => 'کارمندان';
+
+  @override
+  String get hr => 'منابع بشری';
+
+  @override
+  String get hrTitle => 'مدیریت منابع بشری';
+
+  @override
+  String get fiscalYear => 'سال مالی';
+
+  @override
+  String get manageFinance => 'مدیریت سال مالی، ارزها و نرخ اسعار';
+
+  @override
+  String get hrManagement => 'مدیریت کارمندان، حضور و دسترسی کاربران.';
+
+  @override
+  String get stakeholderManage => 'مدیریت سهامداران و حسابها';
 }

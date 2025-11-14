@@ -453,4 +453,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sales => 'Sales';
+
+  @override
+  String get inventory => 'Inventory';
+
+  @override
+  String get attendence => 'Attendance';
+
+  @override
+  String get employees => 'Employees';
+
+  @override
+  String get hr => 'HR Manager';
+
+  @override
+  String get hrTitle => 'Human Resource Management';
+
+  @override
+  String get fiscalYear => 'Fiscal Year';
+
+  @override
+  String get manageFinance =>
+      'Manage fiscal years, currencies, and exchange rates.';
+
+  @override
+  String get hrManagement => 'Manage employees, attendance, and user access.';
+
+  @override
+  String get stakeholderManage => 'Manage Stakeholders & Accounts.';
 }

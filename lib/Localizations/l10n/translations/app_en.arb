@@ -159,5 +159,14 @@
   "glStatement": "GL Statement",
   "branches": "Branches",
   "shift": "Goods Shift",
-  "sales": "Sales"
+  "sales": "Sales",
+  "inventory": "Inventory",
+  "attendence": "Attendance",
+  "employees": "Employees",
+  "hr": "HR Manager",
+  "hrTitle": "Human Resource Management",
+  "fiscalYear": "Fiscal Year",
+  "manageFinance": "Manage fiscal years, currencies, and exchange rates.",
+  "hrManagement": "Manage employees, attendance, and user access.",
+  "stakeholderManage": "Manage Stakeholders & Accounts."
 }

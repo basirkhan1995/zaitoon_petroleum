@@ -146,7 +146,7 @@
   "creditors": "بستانکاران",
   "debtors": "بدهکاران",
   "treasury": "خزانه",
-  "exchangeRate": "اسعار تاریخچه",
+  "exchangeRate": "نرخ اسعار",
   "products": "کالا ها",
   "salesInvoice": "فروش بل",
   "purchaseInvoice": "خرید بل",
@@ -159,5 +159,14 @@
   "glStatement": "صورتحساب سیستم",
   "branches": "شعبات",
   "shift": "انتقال کالا",
-  "sales": "فروش"
+  "sales": "فروش",
+  "inventory": "سهام",
+  "attendence": "حضور و غیاب",
+  "employees": "کارکنان",
+  "hr": "منابع بشری",
+  "hrTitle": "مدیریت منابع بشری",
+  "fiscalYear": "سال مالی",
+  "manageFinance": "د مالي کال، اسعارو او تبادلې نرخونو تنظیم",
+  "hrManagement": "کارکوونکي، حاضري او د کاروونکو لاسرسی تنظیم کړئ.",
+  "stakeholderManage": "مدیریت سهامداران و حسابها"
 }

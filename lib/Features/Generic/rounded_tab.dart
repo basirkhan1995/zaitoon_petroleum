@@ -109,7 +109,7 @@ class GenericTab<T> extends StatelessWidget {
     this.borderRadius = 3,
     this.fontSize,
     this.padding = const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-    this.margin = const EdgeInsets.symmetric(horizontal: 2),
+    this.margin = const EdgeInsets.symmetric(horizontal: 3),
     this.tabBarPadding = const EdgeInsets.all(8),
     this.tabAlignment = MainAxisAlignment.start,
     this.tabContainerColor = const Color(0xFFF5F5F5),
