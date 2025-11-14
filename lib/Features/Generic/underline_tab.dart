@@ -37,14 +37,13 @@ class CustomUnderlineTabBar<T> extends StatelessWidget {
             onTap: () => onTabChanged(tab),
             highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
             hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: BorderRadius.circular(3),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               curve: Curves.easeInExpo,
-              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
               decoration: BoxDecoration(
-                color: isSelected? theme.primary.withValues(alpha: .1) : theme.primary.withValues(alpha: .04),
-
+                color: isSelected? theme.primary.withValues(alpha: .1) : Colors.transparent,
                 border: Border(
                   bottom: BorderSide(
                     color: isSelected ? activeClr : Colors.transparent,
@@ -66,7 +65,6 @@ class CustomUnderlineTabBar<T> extends StatelessWidget {
                   Text(
                     labelBuilder(tab),
                     style: TextStyle(
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                       fontSize: context.scaledFont(0.010),
                       color: isSelected ? activeClr : inactiveClr,
                     ),

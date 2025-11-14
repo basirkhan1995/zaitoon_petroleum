@@ -41,6 +41,7 @@ class _Desktop extends StatelessWidget {
     return BlocBuilder<GeneralTabBloc, GeneralTabState>(
       builder: (context, state) {
         return GenericMenuWithScreen(
+            isExpanded: false,
             menuWidth: 190,
             padding: EdgeInsets.symmetric(vertical: 7, horizontal: 8),
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 0),

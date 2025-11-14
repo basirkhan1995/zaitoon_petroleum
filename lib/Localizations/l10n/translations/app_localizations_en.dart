@@ -328,7 +328,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hijriShamsi => 'Hijri Shamsi';
 
   @override
-  String get gregorian => 'Gregoran';
+  String get gregorian => 'Gregorian';
 
   @override
   String get dateTypeTitle => 'System Date';
@@ -396,4 +396,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get glDebitTitle => 'GL Debit';
+
+  @override
+  String get transport => 'Transport';
+
+  @override
+  String get accountStatement => 'Account Statement';
+
+  @override
+  String get creditors => 'Creditors';
+
+  @override
+  String get debtors => 'Debtors';
+
+  @override
+  String get treasury => 'Treasury';
+
+  @override
+  String get exchangeRate => 'Exchange Rate';
+
+  @override
+  String get products => 'Products';
+
+  @override
+  String get salesInvoice => 'Sales Invoice';
+
+  @override
+  String get purchaseInvoice => 'Purchase Invoice';
+
+  @override
+  String get referenceTransaction => 'Reference Transaction';
+
+  @override
+  String get balanceSheet => 'Balance Sheet';
+
+  @override
+  String get activities => 'Activities';
+
+  @override
+  String get incomeStatement => 'Profit & Loss';
+
+  @override
+  String get glReport => 'GL Report';
+
+  @override
+  String get transactions => 'Transactions';
+
+  @override
+  String get glStatement => 'GL Statement';
+
+  @override
+  String get branches => 'Branches';
+
+  @override
+  String get shift => 'Goods Shift';
+
+  @override
+  String get sales => 'Sales';
 }

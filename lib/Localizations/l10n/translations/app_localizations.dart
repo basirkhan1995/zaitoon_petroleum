@@ -733,7 +733,7 @@ abstract class AppLocalizations {
   /// No description provided for @gregorian.
   ///
   /// In en, this message translates to:
-  /// **'Gregoran'**
+  /// **'Gregorian'**
   String get gregorian;
 
   /// No description provided for @dateTypeTitle.
@@ -867,6 +867,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'GL Debit'**
   String get glDebitTitle;
+
+  /// No description provided for @transport.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport'**
+  String get transport;
+
+  /// No description provided for @accountStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Statement'**
+  String get accountStatement;
+
+  /// No description provided for @creditors.
+  ///
+  /// In en, this message translates to:
+  /// **'Creditors'**
+  String get creditors;
+
+  /// No description provided for @debtors.
+  ///
+  /// In en, this message translates to:
+  /// **'Debtors'**
+  String get debtors;
+
+  /// No description provided for @treasury.
+  ///
+  /// In en, this message translates to:
+  /// **'Treasury'**
+  String get treasury;
+
+  /// No description provided for @exchangeRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange Rate'**
+  String get exchangeRate;
+
+  /// No description provided for @products.
+  ///
+  /// In en, this message translates to:
+  /// **'Products'**
+  String get products;
+
+  /// No description provided for @salesInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales Invoice'**
+  String get salesInvoice;
+
+  /// No description provided for @purchaseInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase Invoice'**
+  String get purchaseInvoice;
+
+  /// No description provided for @referenceTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference Transaction'**
+  String get referenceTransaction;
+
+  /// No description provided for @balanceSheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance Sheet'**
+  String get balanceSheet;
+
+  /// No description provided for @activities.
+  ///
+  /// In en, this message translates to:
+  /// **'Activities'**
+  String get activities;
+
+  /// No description provided for @incomeStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit & Loss'**
+  String get incomeStatement;
+
+  /// No description provided for @glReport.
+  ///
+  /// In en, this message translates to:
+  /// **'GL Report'**
+  String get glReport;
+
+  /// No description provided for @transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get transactions;
+
+  /// No description provided for @glStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'GL Statement'**
+  String get glStatement;
+
+  /// No description provided for @branches.
+  ///
+  /// In en, this message translates to:
+  /// **'Branches'**
+  String get branches;
+
+  /// No description provided for @shift.
+  ///
+  /// In en, this message translates to:
+  /// **'Goods Shift'**
+  String get shift;
+
+  /// No description provided for @sales.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales'**
+  String get sales;
 }
 
 class _AppLocalizationsDelegate

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/login.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/transport.dart';
 import '../../Features/Generic/generic_menu.dart';
 import '../../Features/Other/responsive.dart';
 import '../../Features/Other/utils.dart';
@@ -64,6 +65,12 @@ class _DesktopState extends State<_Desktop> {
         icon: Icons.account_circle_outlined,
       ),
 
+      MenuDefinition(
+        value: MenuName.transport,
+        label: AppLocalizations.of(context)!.transport,
+        screen: const TransportView(),
+        icon: Icons.fire_truck_rounded,
+      ),
       // if(visible.stock)
       MenuDefinition(
         value: MenuName.stock,

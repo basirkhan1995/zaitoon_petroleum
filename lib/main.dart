@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Auth/login.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/bloc/transaction_tab_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/bloc/company_settings_menu_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/bloc/stock_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/bloc/menu_bloc.dart';
 import 'Localizations/Bloc/localizations_bloc.dart';
 import 'Localizations/l10n/l10n.dart';
@@ -33,8 +35,10 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => MenuBloc()),
         BlocProvider(create: (context) => JournalTabBloc()),
         BlocProvider(create: (context) => GeneralTabBloc()),
+        BlocProvider(create: (context) => StockTabBloc()),
         BlocProvider(create: (context) => SettingsTabBloc()),
         BlocProvider(create: (context) => SettingsVisibleBloc()),
+        BlocProvider(create: (context) => CompanySettingsMenuBloc()),
         /// Data Management
 
       ],

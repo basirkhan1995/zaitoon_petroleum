@@ -395,4 +395,61 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get glDebitTitle => 'دبت';
+
+  @override
+  String get transport => 'حمل و نقل';
+
+  @override
+  String get accountStatement => 'د حساب راپور';
+
+  @override
+  String get creditors => 'بستانکاران';
+
+  @override
+  String get debtors => 'بدهکاران';
+
+  @override
+  String get treasury => 'خزانه';
+
+  @override
+  String get exchangeRate => 'اسعار تاریخچه';
+
+  @override
+  String get products => 'کالا ها';
+
+  @override
+  String get salesInvoice => 'فروش بل';
+
+  @override
+  String get purchaseInvoice => 'خرید بل';
+
+  @override
+  String get referenceTransaction => 'معامله - مراجعې ';
+
+  @override
+  String get balanceSheet => 'ترازنامه';
+
+  @override
+  String get activities => 'فعالیتونه';
+
+  @override
+  String get incomeStatement => 'د عایداتو راپور';
+
+  @override
+  String get glReport => 'صورتحساب سیستم';
+
+  @override
+  String get transactions => 'معاملات';
+
+  @override
+  String get glStatement => 'صورتحساب سیستم';
+
+  @override
+  String get branches => 'شعبات';
+
+  @override
+  String get shift => 'انتقال کالا';
+
+  @override
+  String get sales => 'فروش';
 }

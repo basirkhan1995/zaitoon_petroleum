@@ -395,4 +395,61 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get glDebitTitle => 'دبت';
+
+  @override
+  String get transport => 'حمل و نقل';
+
+  @override
+  String get accountStatement => 'صورتحساب';
+
+  @override
+  String get creditors => 'بستانکاران';
+
+  @override
+  String get debtors => 'بدهکاران';
+
+  @override
+  String get treasury => 'خزانه';
+
+  @override
+  String get exchangeRate => 'تاریخچه اسعار';
+
+  @override
+  String get products => 'کالا ها';
+
+  @override
+  String get salesInvoice => 'بل فروش';
+
+  @override
+  String get purchaseInvoice => 'بل خرید';
+
+  @override
+  String get referenceTransaction => 'معامله - مرجع';
+
+  @override
+  String get balanceSheet => 'ترازنامه';
+
+  @override
+  String get activities => 'فعالیت ها';
+
+  @override
+  String get incomeStatement => 'سود و زیان';
+
+  @override
+  String get glReport => 'صورتحساب سیستم';
+
+  @override
+  String get transactions => 'معاملات';
+
+  @override
+  String get glStatement => 'صورتحساب سیستم';
+
+  @override
+  String get branches => 'شعبات';
+
+  @override
+  String get shift => 'انتقال کالا';
+
+  @override
+  String get sales => 'فروش';
 }

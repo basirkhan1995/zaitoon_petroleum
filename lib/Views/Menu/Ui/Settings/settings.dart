@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/company_tab.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/stock_settings.dart';
 import '../../../../Features/Generic/rounded_tab.dart';
 import '../../../../Features/Other/responsive.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'Ui/About/about.dart';
-import 'Ui/Company/company.dart';
+import 'Ui/Company/CompanyProfile/company.dart';
 import 'Ui/General/general.dart';
 import 'Ui/Users/users.dart';
 import 'bloc/settings_tab_bloc.dart';
@@ -43,7 +44,7 @@ class _Desktop extends StatelessWidget {
               TabDefinition(
                 value: SettingsTabName.company,
                 label: AppLocalizations.of(context)!.company,
-                screen: const CompanyView(),
+                screen: const CompanyTabsView(),
               ),
               //if (role == 1)
               TabDefinition(
