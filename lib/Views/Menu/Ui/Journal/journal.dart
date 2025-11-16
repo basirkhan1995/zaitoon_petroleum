@@ -149,50 +149,50 @@ class _Desktop extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         spacing: 8,
                         children: [
-                          Wrap(
-                            spacing: 5,
-                            children: [
-                              const Icon(Icons.shopify_rounded, size: 20),
-                              Text(locale.stock,
-                                  style:
-                                  Theme.of(context).textTheme.titleSmall),
-                            ],
-                          ),
-
-                          // ---------- Buttons with keyboard shortcuts ----------
-                          ShortcutButton(
-                            onPressed: onSell,
-                            child: ZOutlineButton(
-                              label: Text(locale.sellTitle),
-                              toolTip: 'F1',
-                              icon: Icons.shopping_cart_outlined,
-                              iconSize: 20,
-                              width: double.infinity,
-                              onPressed: onSell,
-                            ),
-                          ),
-                          ShortcutButton(
-                            onPressed: onBuy,
-                            child: ZOutlineButton(
-                              label: Text(locale.buyTitle),
-                              toolTip: 'F2',
-                              icon: Icons.shopping_cart_outlined,
-                              iconSize: 20,
-                              width: double.infinity,
-                              onPressed: onBuy,
-                            ),
-                          ),
-                          ShortcutButton(
-                            onPressed: onReturn,
-                            child: ZOutlineButton(
-                              label: Text(locale.returnGoods),
-                              toolTip: 'F3',
-                              icon: Icons.refresh_rounded,
-                              iconSize: 18,
-                              width: double.infinity,
-                              onPressed: onReturn,
-                            ),
-                          ),
+                          // Wrap(
+                          //   spacing: 5,
+                          //   children: [
+                          //     const Icon(Icons.shopify_rounded, size: 20),
+                          //     Text(locale.stock,
+                          //         style:
+                          //         Theme.of(context).textTheme.titleSmall),
+                          //   ],
+                          // ),
+                          //
+                          // // ---------- Buttons with keyboard shortcuts ----------
+                          // ShortcutButton(
+                          //   onPressed: onSell,
+                          //   child: ZOutlineButton(
+                          //     label: Text(locale.sellTitle),
+                          //     toolTip: 'F1',
+                          //     icon: Icons.shopping_cart_outlined,
+                          //     iconSize: 20,
+                          //     width: double.infinity,
+                          //     onPressed: onSell,
+                          //   ),
+                          // ),
+                          // ShortcutButton(
+                          //   onPressed: onBuy,
+                          //   child: ZOutlineButton(
+                          //     label: Text(locale.buyTitle),
+                          //     toolTip: 'F2',
+                          //     icon: Icons.shopping_cart_outlined,
+                          //     iconSize: 20,
+                          //     width: double.infinity,
+                          //     onPressed: onBuy,
+                          //   ),
+                          // ),
+                          // ShortcutButton(
+                          //   onPressed: onReturn,
+                          //   child: ZOutlineButton(
+                          //     label: Text(locale.returnGoods),
+                          //     toolTip: 'F3',
+                          //     icon: Icons.refresh_rounded,
+                          //     iconSize: 18,
+                          //     width: double.infinity,
+                          //     onPressed: onReturn,
+                          //   ),
+                          // ),
 
                           Wrap(
                             spacing: 5,
@@ -230,12 +230,6 @@ class _Desktop extends StatelessWidget {
                           ),
                           ZOutlineButton(
                             label: Text(locale.accountTransfer),
-                            icon: Icons.swap_horiz_rounded,
-                            width: double.infinity,
-                            onPressed: () {},
-                          ),
-                          ZOutlineButton(
-                            label: Text(locale.fxTransaction),
                             icon: Icons.swap_horiz_rounded,
                             width: double.infinity,
                             onPressed: () {},

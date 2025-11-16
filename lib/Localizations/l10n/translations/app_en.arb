@@ -165,8 +165,20 @@
   "employees": "Employees",
   "hr": "HR Manager",
   "hrTitle": "Human Resource Management",
-  "fiscalYear": "Fiscal Year",
+  "fiscalYear": "EOY",
   "manageFinance": "Manage fiscal years, currencies, and exchange rates.",
   "hrManagement": "Manage employees, attendance, and user access.",
-  "stakeholderManage": "Manage Stakeholders & Accounts."
+  "stakeholderManage": "Manage Stakeholders & Accounts.",
+  "payRoll": "Payroll",
+  "noDataFound": "No data found",
+  "stakeholderInfo": "Stakeholder Information",
+  "noInternet": "No Internet Connection",
+  "url404": "URL 404 not found.",
+  "badRequest": "Bad Request! Please check your input.",
+  "unAuthorized": "Unauthorized! Please login again.",
+  "forbidden": "Access Denied! You don't have permission.",
+  "internalServerError": "Server Error! Please try again later.",
+  "serviceUnavailable": "Service Unavailable! Please try later.",
+  "serverError": "Server error:",
+  "networkError": "Network Error! Please check your connection."
 }

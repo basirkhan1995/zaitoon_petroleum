@@ -469,7 +469,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get hrTitle => 'مدیریت منابع بشری';
 
   @override
-  String get fiscalYear => 'سال مالی';
+  String get fiscalYear => 'ختم سال مالی';
 
   @override
   String get manageFinance => 'د مالي کال، اسعارو او تبادلې نرخونو تنظیم';
@@ -479,4 +479,42 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get stakeholderManage => 'مدیریت سهامداران و حسابها';
+
+  @override
+  String get payRoll => 'معاشات';
+
+  @override
+  String get noDataFound => 'هیڅ مورد ونه موندل شول';
+
+  @override
+  String get stakeholderInfo => 'سهمدار معلومات';
+
+  @override
+  String get noInternet => 'د انټرنیټ اړیکه نشته';
+
+  @override
+  String get url404 => 'آدرس پیدا نشد 404';
+
+  @override
+  String get badRequest => 'ناسمه غوښتنه! مهرباني وکړئ خپل معلومات وګورئ.';
+
+  @override
+  String get unAuthorized => 'غیرمجاز! مهرباني وکړئ بیا ننوځئ.';
+
+  @override
+  String get forbidden => 'لاسرسی رد شو! تاسو اجازه نه لرئ.';
+
+  @override
+  String get internalServerError =>
+      'د سرور تېروتنه! مهرباني وکړئ وروسته بیا هڅه وکړئ.';
+
+  @override
+  String get serviceUnavailable =>
+      'خدمت موجود نه ده! مهرباني وکړئ وروسته هڅه وکړئ.';
+
+  @override
+  String get serverError => 'سرور خطا';
+
+  @override
+  String get networkError => 'Network Error! Please check your connection.';
 }

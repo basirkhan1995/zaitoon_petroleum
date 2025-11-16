@@ -9,14 +9,14 @@ class LabeledCheckbox extends StatelessWidget {
   final EdgeInsets padding;
 
   const LabeledCheckbox({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     required this.onChanged,
     this.activeColor,
     this.textStyle,
     this.padding = const EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

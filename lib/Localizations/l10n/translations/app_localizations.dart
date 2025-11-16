@@ -1015,7 +1015,7 @@ abstract class AppLocalizations {
   /// No description provided for @fiscalYear.
   ///
   /// In en, this message translates to:
-  /// **'Fiscal Year'**
+  /// **'EOY'**
   String get fiscalYear;
 
   /// No description provided for @manageFinance.
@@ -1035,6 +1035,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage Stakeholders & Accounts.'**
   String get stakeholderManage;
+
+  /// No description provided for @payRoll.
+  ///
+  /// In en, this message translates to:
+  /// **'Payroll'**
+  String get payRoll;
+
+  /// No description provided for @noDataFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No data found'**
+  String get noDataFound;
+
+  /// No description provided for @stakeholderInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Stakeholder Information'**
+  String get stakeholderInfo;
+
+  /// No description provided for @noInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'No Internet Connection'**
+  String get noInternet;
+
+  /// No description provided for @url404.
+  ///
+  /// In en, this message translates to:
+  /// **'URL 404 not found.'**
+  String get url404;
+
+  /// No description provided for @badRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Bad Request! Please check your input.'**
+  String get badRequest;
+
+  /// No description provided for @unAuthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Unauthorized! Please login again.'**
+  String get unAuthorized;
+
+  /// No description provided for @forbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Denied! You don\'t have permission.'**
+  String get forbidden;
+
+  /// No description provided for @internalServerError.
+  ///
+  /// In en, this message translates to:
+  /// **'Server Error! Please try again later.'**
+  String get internalServerError;
+
+  /// No description provided for @serviceUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Unavailable! Please try later.'**
+  String get serviceUnavailable;
+
+  /// No description provided for @serverError.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error:'**
+  String get serverError;
+
+  /// No description provided for @networkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Network Error! Please check your connection.'**
+  String get networkError;
 }
 
 class _AppLocalizationsDelegate

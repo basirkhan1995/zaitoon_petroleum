@@ -470,7 +470,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hrTitle => 'Human Resource Management';
 
   @override
-  String get fiscalYear => 'Fiscal Year';
+  String get fiscalYear => 'EOY';
 
   @override
   String get manageFinance =>
@@ -481,4 +481,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stakeholderManage => 'Manage Stakeholders & Accounts.';
+
+  @override
+  String get payRoll => 'Payroll';
+
+  @override
+  String get noDataFound => 'No data found';
+
+  @override
+  String get stakeholderInfo => 'Stakeholder Information';
+
+  @override
+  String get noInternet => 'No Internet Connection';
+
+  @override
+  String get url404 => 'URL 404 not found.';
+
+  @override
+  String get badRequest => 'Bad Request! Please check your input.';
+
+  @override
+  String get unAuthorized => 'Unauthorized! Please login again.';
+
+  @override
+  String get forbidden => 'Access Denied! You don\'t have permission.';
+
+  @override
+  String get internalServerError => 'Server Error! Please try again later.';
+
+  @override
+  String get serviceUnavailable => 'Service Unavailable! Please try later.';
+
+  @override
+  String get serverError => 'Server error:';
+
+  @override
+  String get networkError => 'Network Error! Please check your connection.';
 }

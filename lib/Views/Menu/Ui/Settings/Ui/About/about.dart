@@ -35,7 +35,7 @@ class _DesktopState extends State<_Desktop> {
   Future<void> _loadVersion() async {
     final info = await PackageInfo.fromPlatform();
     setState(() {
-      _version = "${info.version} + ${info.buildNumber}";;
+      _version = "${info.version} + ${info.buildNumber}";
     });
   }
   @override

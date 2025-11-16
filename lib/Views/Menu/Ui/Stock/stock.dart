@@ -20,7 +20,7 @@ class StockView extends StatelessWidget {
       body: Column(
         children: [
           Cover(
-            margin: EdgeInsets.symmetric(vertical: 7),
+            margin: EdgeInsets.only(top: 5),
             color: Theme.of(context).colorScheme.surface,
             child: Column(
               children: [
@@ -33,15 +33,6 @@ class StockView extends StatelessWidget {
                   ),
                 ),
                 CustomUnderlineTabBar<StockTabsName>(
-                  // iconBuilder: (StockTabsName tab){
-                  //   switch (tab) {
-                  //     case StockTabsName.products: return Icons.inventory_2_outlined;
-                  //     case StockTabsName.purchase: return Icons.add_shopping_cart_rounded;
-                  //     case StockTabsName.sell: return Icons.add_shopping_cart_rounded;
-                  //     case StockTabsName.returnedGoods: return Icons.reset_tv_rounded;
-                  //     case StockTabsName.shift: return Icons.swap_horiz_rounded;
-                  //   }
-                  // },
                   tabs: [
                     StockTabsName.products,
                     StockTabsName.purchase,

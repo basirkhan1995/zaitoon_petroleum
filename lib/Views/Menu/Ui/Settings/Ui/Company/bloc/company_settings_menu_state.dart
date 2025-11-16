@@ -1,6 +1,6 @@
 part of 'company_settings_menu_bloc.dart';
 
-enum CompanySettingsMenuName{profile,glAccounts,branch}
+enum CompanySettingsMenuName{profile,branch}
 
 final class CompanySettingsMenuState extends Equatable {
   final CompanySettingsMenuName tabs;

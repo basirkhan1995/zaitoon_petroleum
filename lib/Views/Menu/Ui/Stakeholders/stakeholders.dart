@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/individuals.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/individuals.dart';
 import '../../../../Features/Generic/rounded_tab.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'Ui/Accounts/accounts.dart';

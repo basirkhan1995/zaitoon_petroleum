@@ -469,7 +469,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get hrTitle => 'مدیریت منابع بشری';
 
   @override
-  String get fiscalYear => 'سال مالی';
+  String get fiscalYear => 'ختم سال مالی';
 
   @override
   String get manageFinance => 'مدیریت سال مالی، ارزها و نرخ اسعار';
@@ -479,4 +479,41 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get stakeholderManage => 'مدیریت سهامداران و حسابها';
+
+  @override
+  String get payRoll => 'معاشات';
+
+  @override
+  String get noDataFound => 'هیچ مورد یافت نشد';
+
+  @override
+  String get stakeholderInfo => 'معلومات سهمدار';
+
+  @override
+  String get noInternet => 'اتصال به اینترنت برقرار نیست';
+
+  @override
+  String get url404 => 'آدرس پیدا نشد 404';
+
+  @override
+  String get badRequest => 'درخواست نامعتبر! لطفاً ورودی خود را بررسی کنید.';
+
+  @override
+  String get unAuthorized => 'غیرمجاز! لطفاً دوباره وارد شوید.';
+
+  @override
+  String get forbidden => 'دسترسی غیرمجاز! شما اجازه لازم را ندارید.';
+
+  @override
+  String get internalServerError => 'خطای سرور! لطفاً بعداً دوباره تلاش کنید.';
+
+  @override
+  String get serviceUnavailable =>
+      'سرویس در دسترس نیست! لطفاً بعداً تلاش کنید.';
+
+  @override
+  String get serverError => 'خطا سرور';
+
+  @override
+  String get networkError => 'خطای شبکه! لطفاً اتصال خود را بررسی کنید.';
 }

@@ -165,8 +165,20 @@
   "employees": "کارکنان",
   "hr": "منابع بشری",
   "hrTitle": "مدیریت منابع بشری",
-  "fiscalYear": "سال مالی",
+  "fiscalYear": "ختم سال مالی",
   "manageFinance": "د مالي کال، اسعارو او تبادلې نرخونو تنظیم",
   "hrManagement": "کارکوونکي، حاضري او د کاروونکو لاسرسی تنظیم کړئ.",
-  "stakeholderManage": "مدیریت سهامداران و حسابها"
+  "stakeholderManage": "مدیریت سهامداران و حسابها",
+  "payRoll": "معاشات",
+  "noDataFound": "هیڅ مورد ونه موندل شول",
+  "stakeholderInfo": "سهمدار معلومات",
+  "noInternet": "د انټرنیټ اړیکه نشته",
+  "url404": "آدرس پیدا نشد 404",
+  "badRequest": "ناسمه غوښتنه! مهرباني وکړئ خپل معلومات وګورئ.",
+  "unAuthorized": "غیرمجاز! مهرباني وکړئ بیا ننوځئ.",
+  "forbidden": "لاسرسی رد شو! تاسو اجازه نه لرئ.",
+  "internalServerError": "د سرور تېروتنه! مهرباني وکړئ وروسته بیا هڅه وکړئ.",
+  "serviceUnavailable": "خدمت موجود نه ده! مهرباني وکړئ وروسته هڅه وکړئ.",
+  "serverError": "سرور خطا",
+  "networkError": "Network Error! Please check your connection."
 }

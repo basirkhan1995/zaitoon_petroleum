@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branches/branches.dart';
 
 import '../../../../../../Features/Generic/generic_menu.dart';
 import '../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'CompanyProfile/company.dart';
-import 'GlAccounts/gl_accounts.dart';
+
 import 'bloc/company_settings_menu_bloc.dart';
 
 class CompanyTabsView extends StatefulWidget {
@@ -36,12 +35,7 @@ class _CompanyTabsViewState extends State<CompanyTabsView> {
         screen: const BranchesView(),
         icon: Icons.location_disabled_rounded,
       ),
-      MenuDefinition(
-        value: CompanySettingsMenuName.glAccounts,
-        label: AppLocalizations.of(context)!.glAccounts,
-        screen: const GlAccountsView(),
-        icon: Icons.location_city_rounded,
-      ),
+
     ];
 
     return BlocBuilder<CompanySettingsMenuBloc, CompanySettingsMenuState>(

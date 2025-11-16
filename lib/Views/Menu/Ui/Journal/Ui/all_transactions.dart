@@ -38,7 +38,8 @@ class _Desktop extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          NoDataWidget(),
+          NoDataWidget(
+          ),
         ],
       ),
     );

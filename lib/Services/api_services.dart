@@ -1,11 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
+import 'localization_services.dart';
+
 class ApiServices {
 
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: "https://www.zaitoonsoft.com/rapi", // Change to your API URL
+      baseUrl: "http://100.30.64.72/rapi",
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {
@@ -17,13 +19,14 @@ class ApiServices {
 
 
   Future<String> _checkConnectivity() async {
+    final locale = localizationService.loc;
     final List<ConnectivityResult> connectivityResult =
     await Connectivity().checkConnectivity();
 
     if (connectivityResult.contains(ConnectivityResult.none)) {
       throw DioException(
         requestOptions: RequestOptions(path: '/'),
-        error: 'No internet connection',
+        error: locale.noInternet,
         type: DioExceptionType.connectionError,
       );
     }
@@ -55,20 +58,21 @@ class ApiServices {
 
   // Error handling helper
   String _handleError(DioException e) {
+    final locale = localizationService.loc;
     if (e.type == DioExceptionType.connectionError) {
-      return "localizations.noInternet";
+      return locale.noInternet;
     } else if (e.response != null) {
       switch (e.response?.statusCode) {
-        case 400:return "localizations.badRequest"; // Example: "Bad Request! Please check your input."
-        case 401:return "localizations.unauthorized"; // Example: "Unauthorized! Please login again."
-        case 403:return "localizations.forbidden"; // Example: "Access Denied! You don't have permission."
-        case 404:return "localizations.url404NotFound"; // Example: "Resource Not Found!"
-        case 500:return "localizations.internalServerError"; // Example: "Server Error! Please try again later."
-        case 503:return "localizations.serviceUnavailable"; // Example: "Service Unavailable! Please try later."
-        default:return "${"localizations.serverError"}: ${e.response?.statusCode} - ${e.response?.statusMessage}";
+        case 400:return locale.badRequest;
+        case 401:return locale.unAuthorized;
+        case 403:return locale.forbidden;
+        case 404:return locale.url404;
+        case 500:return locale.internalServerError;
+        case 503:return locale.serviceUnavailable;
+        default:return "${locale.serverError}: ${e.response?.statusCode} - ${e.response?.statusMessage}";
       }
     } else {
-      return "localizations.networkError";
+      return locale.networkError;
     }
   }
 

@@ -322,7 +322,7 @@ class _CustomFilterDropdownState<T> extends State<CustomFilterDropdown<T>> {
                                 ),
                               ),
                             );
-                          }).toList(),
+                          }),
                         ],
                       ),
                     ),
