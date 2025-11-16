@@ -180,5 +180,7 @@
   "internalServerError": "د سرور تېروتنه! مهرباني وکړئ وروسته بیا هڅه وکړئ.",
   "serviceUnavailable": "خدمت موجود نه ده! مهرباني وکړئ وروسته هڅه وکړئ.",
   "serverError": "سرور خطا",
-  "networkError": "Network Error! Please check your connection."
+  "networkError": "Network Error! Please check your connection.",
+  "city": "شهر",
+  "gender": "جنسیت"
 }

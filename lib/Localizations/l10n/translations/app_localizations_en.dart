@@ -517,4 +517,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get networkError => 'Network Error! Please check your connection.';
+
+  @override
+  String get city => 'City';
+
+  @override
+  String get gender => 'Gender';
 }

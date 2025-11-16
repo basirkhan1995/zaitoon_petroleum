@@ -1107,6 +1107,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Network Error! Please check your connection.'**
   String get networkError;
+
+  /// No description provided for @city.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get city;
+
+  /// No description provided for @gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
 }
 
 class _AppLocalizationsDelegate

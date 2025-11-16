@@ -8,43 +8,42 @@ class Repositories {
   const Repositories(this.api);
 
   //Get User profile | Fetch User profile using logged in username
-  Future<List<StakeholdersModel>> getAllCompanyAccounts({int? indId}) async {
+  Future<List<StakeholdersModel>> getStakeholders({int? indId}) async {
     try {
+      // Build query parameters dynamically
+      final queryParams = indId != null ? {'perID': indId} : null;
+
+      // Fetch data from API
       final response = await api.get(
         endpoint: "/stakeholder/personal.php",
+        queryParams: queryParams,
       );
 
-      // Handle message response for invalid account/name
-      if (response.data is Map && response.data['msg'] != null) {
-        if (response.data['msg'] == 'invalid perID') {
-          return []; // Return empty list for invalid search
-        }
-        throw Exception(response.data['msg']); // Throw other messages
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
       }
 
-      // Handle empty response
-      if (response.data == null || response.data.isEmpty) {
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
         return [];
       }
 
-      // Handle list response
+      // Parse list of stakeholders safely
       if (response.data is List) {
-        final users = (response.data as List).where((item) => item != null).map<StakeholdersModel?>((accountJson) {
-          try {
-            return StakeholdersModel.fromMap(accountJson);
-          } catch (e) {
-            return null;
-          }
-        }).whereType<StakeholdersModel>().toList();
-        return users;
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => StakeholdersModel.fromMap(json))
+            .toList();
       }
 
       return [];
     } on DioException catch (e) {
-      throw "${e.message}";
+      throw "Network error: ${e.message}";
     } catch (e) {
-      throw e.toString();
+      throw "Unexpected error: $e";
     }
   }
+
 
 }

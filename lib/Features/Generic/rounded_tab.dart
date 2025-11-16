@@ -101,7 +101,7 @@ class GenericTab<T> extends StatelessWidget {
     required this.tabs,
     this.title,
     this.description,
-    this.onBack, // 👈 Add to constructor
+    this.onBack,
     this.selectedColor = Colors.blue,
     this.unselectedColor = Colors.transparent,
     this.selectedTextColor = Colors.white,
@@ -110,7 +110,7 @@ class GenericTab<T> extends StatelessWidget {
     this.fontSize,
     this.padding = const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
     this.margin = const EdgeInsets.symmetric(horizontal: 3),
-    this.tabBarPadding = const EdgeInsets.all(8),
+    this.tabBarPadding = const EdgeInsets.symmetric(horizontal: 4,vertical: 5),
     this.tabAlignment = MainAxisAlignment.start,
     this.tabContainerColor = const Color(0xFFF5F5F5),
   });
@@ -152,7 +152,7 @@ class GenericTab<T> extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
               ],
               if (description != null) ...[
                 Text(

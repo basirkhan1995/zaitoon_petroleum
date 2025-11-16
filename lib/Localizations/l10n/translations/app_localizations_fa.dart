@@ -516,4 +516,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get networkError => 'خطای شبکه! لطفاً اتصال خود را بررسی کنید.';
+
+  @override
+  String get city => 'شهر';
+
+  @override
+  String get gender => 'جنسیت';
 }

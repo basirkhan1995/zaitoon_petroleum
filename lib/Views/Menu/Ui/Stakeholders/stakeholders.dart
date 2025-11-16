@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/individuals.dart';
-import '../../../../Features/Generic/rounded_tab.dart';
+import '../../../../Features/Generic/tab_bar.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'Ui/Accounts/accounts.dart';
 import 'bloc/stk_tab_bloc.dart';
@@ -16,40 +16,43 @@ class StakeholdersView extends StatelessWidget {
         padding: const EdgeInsets.only(top: 6.0),
         child: BlocBuilder<StakeholderTabBloc, StakeholderTabState>(
           builder: (context, state) {
-
-            final tabs = <TabDefinition<StakeholderTabName>>[
-              TabDefinition(
+            final tabs = <ZTabItem<StakeholderTabName>>[
+              ZTabItem(
                 value: StakeholderTabName.entities,
                 label: AppLocalizations.of(context)!.stakeholders,
                 screen: const IndividualsView(),
               ),
-              // if (role == 0)
-              TabDefinition(
+              ZTabItem(
                 value: StakeholderTabName.accounts,
                 label: AppLocalizations.of(context)!.accounts,
                 screen: const AccountsView(),
               ),
-
             ];
 
-            final availableValues = tabs.map((tab) => tab.value).toList();
-            final selected = availableValues.contains(state.tab)
+            final available = tabs.map((t) => t.value).toList();
+            final selected = available.contains(state.tab)
                 ? state.tab
-                : availableValues.first;
+                : available.first;
 
-            return GenericTab<StakeholderTabName>(
-              borderRadius: 3,
+            return ZTabContainer<StakeholderTabName>(
               title: AppLocalizations.of(context)!.stakeholders,
-              description: AppLocalizations.of(context)!.stakeholderManage,
-              tabContainerColor: Theme.of(context).colorScheme.surface,
-              selectedValue: selected,
-              onChanged: (val) => context.read<StakeholderTabBloc>().add(StkOnChangedEvent(val)),
-              tabs: tabs,
-              selectedColor: Theme.of(context).colorScheme.primary,
-              selectedTextColor: Theme.of(context).colorScheme.surface,
-              unselectedTextColor: Theme.of(context).colorScheme.secondary,
-            );
 
+              /// Tab data
+              tabs: tabs,
+              selectedValue: selected,
+
+              /// Bloc update
+              onChanged: (val) => context
+                  .read<StakeholderTabBloc>()
+                  .add(StkOnChangedEvent(val)),
+
+              /// Colors for underline style
+              style: ZTabStyle.underline,
+              selectedColor: Theme.of(context).colorScheme.primary,
+              unselectedTextColor: Theme.of(context).colorScheme.secondary,
+              selectedTextColor: Theme.of(context).colorScheme.surface,
+              tabContainerColor: Theme.of(context).colorScheme.surface,
+            );
           },
         ),
       ),

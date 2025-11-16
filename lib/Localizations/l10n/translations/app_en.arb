@@ -180,5 +180,7 @@
   "internalServerError": "Server Error! Please try again later.",
   "serviceUnavailable": "Service Unavailable! Please try later.",
   "serverError": "Server error:",
-  "networkError": "Network Error! Please check your connection."
+  "networkError": "Network Error! Please check your connection.",
+  "city": "City",
+  "gender": "Gender"
 }

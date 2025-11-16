@@ -79,7 +79,7 @@ class _Desktop extends StatelessWidget {
                             fullName,
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
-                          Text(ind.empEmail ?? ""),
+                          Text(ind.perEnidNo ?? ""),
                         ],
                       ),
                     ),
