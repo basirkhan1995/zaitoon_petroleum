@@ -40,7 +40,7 @@ class IndividualsBloc extends Bloc<IndividualsEvent, IndividualsState> {
         final response = await _repo.editStakeholder(stk: event.newStk);
         final String result = response["msg"];
         if(result == "success"){
-          add(LoadIndividualsEvent());
+          add(LoadIndividualsEvent(indId: event.newStk.perId));
           emit(IndividualSuccessState());
         }
       }catch(e){

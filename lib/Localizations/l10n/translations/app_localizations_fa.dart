@@ -567,4 +567,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get profileOverview => 'نمای پروفایل';
+
+  @override
+  String get currencyName => 'نام اسعار';
+
+  @override
+  String get symbol => 'سمبول';
 }

@@ -3,8 +3,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Auth/login.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/bloc/currencies_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/bloc/currency_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/bloc/financial_tab_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Permissions/bloc/permissions_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/bloc/users_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/bloc/hrtab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/bloc/transaction_tab_bloc.dart';
@@ -56,11 +58,14 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => SettingsVisibleBloc()),
         BlocProvider(create: (context) => IndividualDetailTabBloc()),
         BlocProvider(create: (context) => CompanySettingsMenuBloc()),
+
         /// Data Management
         BlocProvider(create: (context) => IndividualsBloc(Repositories(ApiServices()))..add(LoadIndividualsEvent())),
         BlocProvider(create: (context) => AccountsBloc(Repositories(ApiServices()))..add(LoadAccountsEvent())),
         BlocProvider(create: (context) => UsersBloc(Repositories(ApiServices()))..add(LoadUsersEvent())),
+        BlocProvider(create: (context) => CurrenciesBloc(Repositories(ApiServices()))..add(LoadCurrenciesEvent())),
         BlocProvider(create: (context) => StakeholderByIdBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => PermissionsBloc(Repositories(ApiServices()))),
       ],
       child: BlocBuilder<LocalizationBloc, Locale>(
         builder: (context, locale) {

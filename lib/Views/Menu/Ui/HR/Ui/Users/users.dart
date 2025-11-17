@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Permissions/permissions.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/bloc/users_bloc.dart';
-
 import '../../../../../../Features/Other/cover.dart';
 import '../../../../../../Features/Widgets/no_data_widget.dart';
 import '../../../../../../Features/Widgets/outline_button.dart';
@@ -46,7 +46,7 @@ class _DesktopState extends State<_Desktop> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-
+      context.read<UsersBloc>().add(LoadUsersEvent());
     });
     super.initState();
   }
@@ -164,14 +164,14 @@ class _DesktopState extends State<_Desktop> {
                   return ListView.builder(
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {
-                      final stk = filteredList[index];
+                      final usr = filteredList[index];
 
                       // ---------- UI ----------
                       return InkWell(
                         highlightColor: color.primary.withValues(alpha: .06),
                         hoverColor: color.primary.withValues(alpha: .06),
                         onTap: () {
-
+                        Utils.goto(context, PermissionsView(user: usr));
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -189,7 +189,7 @@ class _DesktopState extends State<_Desktop> {
                                   backgroundColor: color.primary.withValues(alpha: .7),
                                   radius: 23,
                                   child: Text(
-                                    stk.usrId.toString(),
+                                    usr.usrId.toString(),
                                     style: TextStyle(
                                       color: color.surface,
                                       fontSize: 15,
@@ -206,7 +206,7 @@ class _DesktopState extends State<_Desktop> {
                                     children: [
                                       // Full Name
                                       Text(
-                                        stk.usrName??"",
+                                        usr.usrName??"",
                                         style: Theme.of(context).textTheme.titleMedium,
                                       ),
 
@@ -216,7 +216,7 @@ class _DesktopState extends State<_Desktop> {
                                           padding: const EdgeInsets.only(right: 6.0),
                                           child: Cover(
                                             color: color.surface,
-                                            child: Text(stk.usrEmail??""),
+                                            child: Text(usr.usrEmail??""),
                                           ),
                                         ),
 
@@ -225,16 +225,16 @@ class _DesktopState extends State<_Desktop> {
                                 ),
                                 SizedBox(
                                     width: 150,
-                                    child: Text(stk.usrFullName??"")),
+                                    child: Text(usr.usrFullName??"")),
                                 SizedBox(
                                     width: 100,
-                                    child: Text(stk.usrBranch.toString())),
+                                    child: Text(usr.usrBranch.toString())),
                                 SizedBox(
                                     width: 100,
-                                    child: Text(stk.usrRole??"")),
+                                    child: Text(usr.usrRole??"")),
                                 SizedBox(
                                     width: 100,
-                                    child: Text(stk.usrStatus == 1? locale.active : locale.blocked)),
+                                    child: Text(usr.usrStatus == 1? locale.active : locale.blocked)),
 
                               ],
                             ),

@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:zaitoon_petroleum/Services/api_services.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Permissions/per_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/user_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import '../Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
-
 
 class Repositories {
   final ApiServices api;
@@ -175,6 +176,99 @@ class Repositories {
         return (response.data as List)
             .whereType<Map<String, dynamic>>() // ensure map type
             .map((json) => UsersModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+
+  ///Permissions ..............................................................
+  Future<List<UserPermissionsModel>> getPermissions({required String usrName}) async {
+    try {
+      // Build query parameters dynamically
+      final queryParams = {'username': usrName};
+
+      // Fetch data from API
+      final response = await api.get(
+        endpoint: "/user/permissions.php",
+        queryParams: queryParams,
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => UserPermissionsModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+  Future<Map<String, dynamic>> updatePermissionStatus({required int uprRole, required int usrId, required String usrName, required bool uprStatus}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/user/permissions.php",
+          data: {
+            "uprRole":uprRole,
+            "uprUserID":usrId,
+            "uprStatus":uprStatus
+          }
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  ///Currencies ................................................................
+  Future<List<CurrenciesModel>> getCurrencies({required int? status}) async {
+    try {
+      // Build query parameters dynamically
+      final queryParams = {'status': status};
+
+      // Fetch data from API
+      final response = await api.get(
+        endpoint: "/finance/currency.php",
+        queryParams: queryParams,
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => CurrenciesModel.fromMap(json))
             .toList();
       }
 

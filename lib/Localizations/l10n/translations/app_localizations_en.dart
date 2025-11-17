@@ -568,4 +568,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileOverview => 'Profile Overview';
+
+  @override
+  String get currencyName => 'Currency Name';
+
+  @override
+  String get symbol => 'Symbol';
 }

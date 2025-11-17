@@ -568,4 +568,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profileOverview => 'پروفایل لندیز';
+
+  @override
+  String get currencyName => 'اسعار نوم';
+
+  @override
+  String get symbol => 'سمبول';
 }

@@ -1209,6 +1209,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile Overview'**
   String get profileOverview;
+
+  /// No description provided for @currencyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency Name'**
+  String get currencyName;
+
+  /// No description provided for @symbol.
+  ///
+  /// In en, this message translates to:
+  /// **'Symbol'**
+  String get symbol;
 }
 
 class _AppLocalizationsDelegate

@@ -197,5 +197,7 @@
   "usrId": "User ID",
   "branch": "Branch",
   "usrRole": "User Role",
-  "profileOverview": "Profile Overview"
+  "profileOverview": "Profile Overview",
+  "currencyName": "Currency Name",
+  "symbol": "Symbol"
 }

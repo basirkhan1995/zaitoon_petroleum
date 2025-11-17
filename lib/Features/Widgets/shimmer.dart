@@ -20,13 +20,13 @@ class ShimmerLoader extends StatelessWidget {
     if (!isLoading) return child;
 
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
+      baseColor: Theme.of(context).colorScheme.primary.withValues(alpha: .07),
+      highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: .04),
       child: Container(
         width: double.infinity,
         height: height,
         decoration: BoxDecoration(
-          color: Colors.grey.shade300,
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: .9),
           borderRadius: BorderRadius.circular(borderRadius),
         ),
       ),

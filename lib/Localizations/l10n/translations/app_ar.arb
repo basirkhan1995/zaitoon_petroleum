@@ -197,5 +197,7 @@
   "usrId": "شناسه کاربر",
   "branch": "شعبه",
   "usrRole": "نقش کاربر",
-  "profileOverview": "پروفایل لندیز"
+  "profileOverview": "پروفایل لندیز",
+  "currencyName": "اسعار نوم",
+  "symbol": "سمبول"
 }

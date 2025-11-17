@@ -197,5 +197,7 @@
   "usrId": "شناسه کاربر",
   "branch": "شعبه",
   "usrRole": "نقش کاربر",
-  "profileOverview": "نمای پروفایل"
+  "profileOverview": "نمای پروفایل",
+  "currencyName": "نام اسعار",
+  "symbol": "سمبول"
 }
