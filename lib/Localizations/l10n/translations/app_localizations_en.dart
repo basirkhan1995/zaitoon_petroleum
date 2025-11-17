@@ -523,4 +523,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gender => 'Gender';
+
+  @override
+  String get firstName => 'First name';
+
+  @override
+  String get lastName => 'Last name';
+
+  @override
+  String get dob => 'Date of Birth';
+
+  @override
+  String get cellNumber => 'Cell Phone';
+
+  @override
+  String get province => 'Province';
+
+  @override
+  String get country => 'Country';
+
+  @override
+  String get isMilling => 'Is your mailing address same as your address?';
+
+  @override
+  String get zipCode => 'Zip code';
+
+  @override
+  String get accountInformation => 'Accounts Information';
+
+  @override
+  String get balance => 'Balance';
+
+  @override
+  String get accNameOrNumber => 'Account Name or Number';
+
+  @override
+  String get usrId => 'User ID';
+
+  @override
+  String get branch => 'Branch';
+
+  @override
+  String get usrRole => 'User Role';
 }

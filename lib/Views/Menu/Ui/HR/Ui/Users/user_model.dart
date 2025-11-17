@@ -1,0 +1,80 @@
+// To parse this JSON data, do
+//
+//     final usersModel = usersModelFromMap(jsonString);
+
+import 'dart:convert';
+
+List<UsersModel> usersModelFromMap(String str) => List<UsersModel>.from(json.decode(str).map((x) => UsersModel.fromMap(x)));
+
+String usersModelToMap(List<UsersModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toMap())));
+
+class UsersModel {
+  final int? usrId;
+  final String? usrFullName;
+  final String? usrName;
+  final String? usrRole;
+  final int? usrStatus;
+  final int? usrBranch;
+  final String? usrEmail;
+  final String? usrToken;
+  final DateTime? usrEntryDate;
+
+  UsersModel({
+    this.usrId,
+    this.usrFullName,
+    this.usrName,
+    this.usrRole,
+    this.usrStatus,
+    this.usrBranch,
+    this.usrEmail,
+    this.usrToken,
+    this.usrEntryDate,
+  });
+
+  UsersModel copyWith({
+    int? usrId,
+    String? usrFullName,
+    String? usrName,
+    String? usrRole,
+    int? usrStatus,
+    int? usrBranch,
+    String? usrEmail,
+    String? usrToken,
+    DateTime? usrEntryDate,
+  }) =>
+      UsersModel(
+        usrId: usrId ?? this.usrId,
+        usrFullName: usrFullName ?? this.usrFullName,
+        usrName: usrName ?? this.usrName,
+        usrRole: usrRole ?? this.usrRole,
+        usrStatus: usrStatus ?? this.usrStatus,
+        usrBranch: usrBranch ?? this.usrBranch,
+        usrEmail: usrEmail ?? this.usrEmail,
+        usrToken: usrToken ?? this.usrToken,
+        usrEntryDate: usrEntryDate ?? this.usrEntryDate,
+      );
+
+  factory UsersModel.fromMap(Map<String, dynamic> json) => UsersModel(
+    usrId: json["usrID"],
+    usrFullName: json["usrFullName"],
+    usrName: json["usrName"],
+    usrRole: json["usrRole"],
+    usrStatus: json["usrStatus"],
+    usrBranch: json["usrBranch"],
+    usrEmail: json["usrEmail"],
+    usrToken: json["usrToken"],
+    usrEntryDate: json["usrEntryDate"] == null ? null : DateTime.parse(json["usrEntryDate"]),
+  );
+
+  Map<String, dynamic> toMap() => {
+    "usrID": usrId,
+    "usrFullName": usrFullName,
+    "usrName": usrName,
+    "usrRole": usrRole,
+    "usrStatus": usrStatus,
+    "usrBranch": usrBranch,
+    "usrEmail": usrEmail,
+    "usrToken": usrToken,
+    "usrEntryDate": usrEntryDate?.toIso8601String(),
+  };
+}

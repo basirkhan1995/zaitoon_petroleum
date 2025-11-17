@@ -1119,6 +1119,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gender'**
   String get gender;
+
+  /// No description provided for @firstName.
+  ///
+  /// In en, this message translates to:
+  /// **'First name'**
+  String get firstName;
+
+  /// No description provided for @lastName.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name'**
+  String get lastName;
+
+  /// No description provided for @dob.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get dob;
+
+  /// No description provided for @cellNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Cell Phone'**
+  String get cellNumber;
+
+  /// No description provided for @province.
+  ///
+  /// In en, this message translates to:
+  /// **'Province'**
+  String get province;
+
+  /// No description provided for @country.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get country;
+
+  /// No description provided for @isMilling.
+  ///
+  /// In en, this message translates to:
+  /// **'Is your mailing address same as your address?'**
+  String get isMilling;
+
+  /// No description provided for @zipCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Zip code'**
+  String get zipCode;
+
+  /// No description provided for @accountInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounts Information'**
+  String get accountInformation;
+
+  /// No description provided for @balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get balance;
+
+  /// No description provided for @accNameOrNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Name or Number'**
+  String get accNameOrNumber;
+
+  /// No description provided for @usrId.
+  ///
+  /// In en, this message translates to:
+  /// **'User ID'**
+  String get usrId;
+
+  /// No description provided for @branch.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch'**
+  String get branch;
+
+  /// No description provided for @usrRole.
+  ///
+  /// In en, this message translates to:
+  /// **'User Role'**
+  String get usrRole;
 }
 
 class _AppLocalizationsDelegate

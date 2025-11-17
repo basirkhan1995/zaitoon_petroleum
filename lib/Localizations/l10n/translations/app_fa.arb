@@ -182,5 +182,19 @@
   "serverError": "خطا سرور",
   "networkError": "خطای شبکه! لطفاً اتصال خود را بررسی کنید.",
   "city": "شهر",
-  "gender": "جنسیت"
+  "gender": "جنسیت",
+  "firstName": "نام",
+  "lastName": "نام خانوادگی",
+  "dob": "تاریخ تولد",
+  "cellNumber": "شماره تماس",
+  "province": "ولایت",
+  "country": "کشور",
+  "isMilling": " آیا آدرس پوستی و آدرس تان یکی است؟",
+  "zipCode": "کد پستی",
+  "accountInformation": "معلومات حسابها",
+  "balance": "بیلانس",
+  "accNameOrNumber": "نام حساب یا نمبر حساب",
+  "usrId": "شناسه کاربر",
+  "branch": "شعبه",
+  "usrRole": "نقش کاربر"
 }

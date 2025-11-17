@@ -14,6 +14,11 @@ final class IndividualLoadingState extends IndividualsState {
   List<Object> get props => [];
 }
 
+final class IndividualSuccessState extends IndividualsState {
+  @override
+  List<Object> get props => [];
+}
+
 final class IndividualErrorState extends IndividualsState {
   final String message;
   const IndividualErrorState(this.message);
@@ -22,7 +27,7 @@ final class IndividualErrorState extends IndividualsState {
 }
 
 final class IndividualLoadedState extends IndividualsState {
-  final List<StakeholdersModel> individuals;
+  final List<IndividualsModel> individuals;
   const IndividualLoadedState(this.individuals);
   @override
   List<Object> get props => [individuals];

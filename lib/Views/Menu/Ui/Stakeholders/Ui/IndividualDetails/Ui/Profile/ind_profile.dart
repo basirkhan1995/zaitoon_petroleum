@@ -3,11 +3,14 @@ import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/button.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Models/ind_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualDetails/profile.dart';
+import '../../../Individuals/individual_model.dart';
+
 
 class IndividualProfileView extends StatelessWidget {
-  final StakeholdersModel ind;
+  final IndividualsModel ind;
   const IndividualProfileView({super.key, required this.ind});
 
   @override
@@ -39,7 +42,7 @@ class _Tablet extends StatelessWidget {
 }
 
 class _Desktop extends StatelessWidget {
-  final StakeholdersModel ind;
+  final IndividualsModel ind;
   const _Desktop(this.ind);
 
   @override
@@ -56,7 +59,7 @@ class _Desktop extends StatelessWidget {
           Cover(
             margin: EdgeInsets.symmetric(horizontal: 8),
             padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-            color: Colors.white,
+            color: color.surface,
             child: Column(
               children: [
                 Row(
@@ -79,7 +82,7 @@ class _Desktop extends StatelessWidget {
                             fullName,
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
-                          Text(ind.perEnidNo ?? ""),
+                          Text(ind.perPhone ?? ""),
                         ],
                       ),
                     ),
@@ -87,8 +90,13 @@ class _Desktop extends StatelessWidget {
                     Row(
                       spacing: 8,
                       children: [
-                        ZButton(width: 120, label: Text(locale.update)),
-                        ZButton(width: 120, label: Text(locale.delete)),
+                        ZOutlineButton(
+                            icon: Icons.refresh,
+                            width: 100, label: Text(locale.edit)),
+                        ZOutlineButton(
+                            isActive: true,
+                            icon: Icons.delete,
+                            width: 100, label: Text(locale.delete)),
                       ],
                     ),
                   ],
@@ -96,6 +104,10 @@ class _Desktop extends StatelessWidget {
               ],
             ),
           ),
+          Expanded(child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IndividualsDetailsTabView(ind: ind),
+          ))
         ],
       ),
     );

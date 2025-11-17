@@ -182,5 +182,19 @@
   "serverError": "Server error:",
   "networkError": "Network Error! Please check your connection.",
   "city": "City",
-  "gender": "Gender"
+  "gender": "Gender",
+  "firstName": "First name",
+  "lastName": "Last name",
+  "dob": "Date of Birth",
+  "cellNumber": "Cell Phone",
+  "province": "Province",
+  "country": "Country",
+  "isMilling": "Is your mailing address same as your address?",
+  "zipCode": "Zip code",
+  "accountInformation": "Accounts Information",
+  "balance": "Balance",
+  "accNameOrNumber": "Account Name or Number",
+  "usrId": "User ID",
+  "branch": "Branch",
+  "usrRole": "User Role"
 }

@@ -182,5 +182,19 @@
   "serverError": "سرور خطا",
   "networkError": "Network Error! Please check your connection.",
   "city": "شهر",
-  "gender": "جنسیت"
+  "gender": "جنسیت",
+  "firstName": "نوم",
+  "lastName": "تخلص",
+  "dob": "تاریخ تولد",
+  "cellNumber": "اریکه شمیره",
+  "province": "ولایت",
+  "country": "هیواد",
+  "isMilling": " آیا آدرس پوستی و آدرس تان یکی است؟",
+  "zipCode": "کد پستی",
+  "accountInformation": "معلومات حسابها",
+  "balance": "بیلانس",
+  "accNameOrNumber": "نام حساب یا نمبر حساب",
+  "usrId": "شناسه کاربر",
+  "branch": "شعبه",
+  "usrRole": "نقش کاربر"
 }

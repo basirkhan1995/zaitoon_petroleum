@@ -10,3 +10,17 @@ class LoadIndividualsEvent extends IndividualsEvent{
   @override
   List<Object?> get props => [];
 }
+
+class AddIndividualEvent extends IndividualsEvent{
+  final IndividualsModel newStk;
+  const AddIndividualEvent(this.newStk);
+  @override
+  List<Object?> get props => [newStk];
+}
+
+class EditIndividualEvent extends IndividualsEvent{
+  final IndividualsModel newStk;
+  const EditIndividualEvent(this.newStk);
+  @override
+  List<Object?> get props => [newStk];
+}

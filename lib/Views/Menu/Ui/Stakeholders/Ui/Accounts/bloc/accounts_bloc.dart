@@ -1,0 +1,23 @@
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:zaitoon_petroleum/Services/repositories.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
+
+part 'accounts_event.dart';
+part 'accounts_state.dart';
+
+class AccountsBloc extends Bloc<AccountsEvent, AccountsState> {
+  final Repositories _repo;
+  AccountsBloc(this._repo) : super(AccountsInitial()) {
+
+    on<LoadAccountsEvent>((event, emit) async{
+      emit(AccountLoadingState());
+      try{
+       final acc = await _repo.getAccounts(ownerId: event.ownerId);
+       emit(AccountLoadedState(acc));
+      }catch(e){
+        emit(AccountErrorState(e.toString()));
+      }
+    });
+  }
+}

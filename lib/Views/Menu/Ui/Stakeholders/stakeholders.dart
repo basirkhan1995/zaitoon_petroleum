@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/individuals.dart';
 import '../../../../Features/Generic/tab_bar.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
-import 'Ui/Accounts/accounts.dart';
+import 'Ui/Accounts/Ui/accounts.dart';
 import 'bloc/stk_tab_bloc.dart';
 
 class StakeholdersView extends StatelessWidget {

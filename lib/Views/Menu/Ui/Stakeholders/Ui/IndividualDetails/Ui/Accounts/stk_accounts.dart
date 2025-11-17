@@ -3,26 +3,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:zaitoon_petroleum/Features/Other/utils.dart';
-import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
-import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/operations.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
-import '../../../../../../../Features/Other/cover.dart';
-import '../../../../../../../Features/Widgets/search_field.dart';
-import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
-import '../../IndividualDetails/Ui/Profile/ind_profile.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
+import '../../../../../../../../Features/Other/cover.dart';
+import '../../../../../../../../Features/Widgets/no_data_widget.dart';
+import '../../../../../../../../Features/Widgets/outline_button.dart';
+import '../../../../../../../../Features/Widgets/search_field.dart';
+import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 
-class IndividualsView extends StatelessWidget {
-  const IndividualsView({super.key});
+
+class AccountsByPerIdView extends StatelessWidget {
+  final IndividualsModel ind;
+  const AccountsByPerIdView({super.key,required this.ind});
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(
-      mobile: _Mobile(),
-      tablet: _Tablet(),
-      desktop: _Desktop(),
-    );
+    return ResponsiveLayout(mobile: _Mobile(), tablet: _Tablet(), desktop: _Desktop(ind));
   }
 }
 
@@ -45,7 +41,8 @@ class _Tablet extends StatelessWidget {
 }
 
 class _Desktop extends StatefulWidget {
-  const _Desktop();
+  final IndividualsModel ind;
+  const _Desktop(this.ind);
 
   @override
   State<_Desktop> createState() => _DesktopState();
@@ -54,7 +51,7 @@ class _DesktopState extends State<_Desktop> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-
+        context.read<AccountsBloc>().add(LoadAccountsEvent(ownerId: widget.ind.perId));
     });
     super.initState();
   }
@@ -75,7 +72,6 @@ class _DesktopState extends State<_Desktop> {
       backgroundColor: color.surface,
       body: Column(
         children: [
-
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 8),
             child: Row(
@@ -85,7 +81,7 @@ class _DesktopState extends State<_Desktop> {
                   child: ZSearchField(
                     icon: FontAwesomeIcons.magnifyingGlass,
                     controller: searchController,
-                    hint: AppLocalizations.of(context)!.search,
+                    hint: locale.accNameOrNumber,
                     onChanged: (e) {
                       setState(() {
 
@@ -98,20 +94,18 @@ class _DesktopState extends State<_Desktop> {
                     width: 120,
                     icon: Icons.refresh,
                     onPressed: (){
-                      context.read<IndividualsBloc>().add(LoadIndividualsEvent());
+                      context.read<AccountsBloc>().add(LoadAccountsEvent());
                     },
                     label: Text(locale.refresh)),
                 ZOutlineButton(
                     width: 120,
-                    icon: Icons.add,
                     isActive: true,
-
+                    icon: Icons.add,
                     onPressed: (){
-                      showDialog(context: context, builder: (context){
-                        return IndividualAddEditView();
-                      });
+
                     },
                     label: Text(locale.newKeyword)),
+
               ],
             ),
           ),
@@ -121,14 +115,14 @@ class _DesktopState extends State<_Desktop> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
             child: Row(
               children: [
-                Expanded(child: Text(locale.stakeholderInfo,style: Theme.of(context).textTheme.titleMedium)),
+                Expanded(child: Text(locale.accountInformation,style: Theme.of(context).textTheme.titleMedium)),
 
                 SizedBox(
                     width: 100,
-                    child: Text(locale.gender,style: Theme.of(context).textTheme.titleMedium)),
+                    child: Text(locale.currencyTitle,style: Theme.of(context).textTheme.titleMedium)),
                 SizedBox(
                     width: 100,
-                    child: Text(locale.nationalId,style: Theme.of(context).textTheme.titleMedium)),
+                    child: Text(locale.balance,style: Theme.of(context).textTheme.titleMedium)),
 
               ],
             ),
@@ -140,27 +134,30 @@ class _DesktopState extends State<_Desktop> {
           ),
           SizedBox(height: 10),
           Expanded(
-            child: BlocConsumer<IndividualsBloc, IndividualsState>(
+            child: BlocConsumer<AccountsBloc, AccountsState>(
               listener: (context,state){},
               builder: (context, state) {
-                if (state is IndividualLoadingState) {
+                if (state is AccountLoadingState) {
                   return Center(child: CircularProgressIndicator());
                 }
-                if (state is IndividualErrorState) {
+                if (state is AccountErrorState) {
                   return NoDataWidget(
                     message: state.message,
                     onRefresh: () {
-                      context.read<IndividualsBloc>().add(
-                        LoadIndividualsEvent(),
+                      context.read<AccountsBloc>().add(
+                        LoadAccountsEvent(),
                       );
                     },
                   );
                 }
-                if (state is IndividualLoadedState) {
+                if (state is AccountLoadedState) {
                   final query = searchController.text.toLowerCase().trim();
-                  final filteredList = state.individuals.where((item) {
-                    final name = item.perName?.toLowerCase() ?? '';
-                    return name.contains(query);
+                  final q = query.toLowerCase();
+
+                  final filteredList = state.accounts.where((item) {
+                    final name = item.accName?.toLowerCase() ?? '';
+                    final number = (item.accNumber ?? '').toString().toLowerCase();
+                    return name.contains(q) || number.contains(q);
                   }).toList();
 
                   if(filteredList.isEmpty){
@@ -173,18 +170,12 @@ class _DesktopState extends State<_Desktop> {
                     itemBuilder: (context, index) {
                       final stk = filteredList[index];
 
-                      final firstName = stk.perName?.trim() ?? "";
-                      final lastName  = stk.perLastName?.trim() ?? "";
-                      final fullName  = "$firstName $lastName".trim();
-
-                      final phone = stk.perPhone?.trim() ?? "";
-
                       // ---------- UI ----------
                       return InkWell(
                         highlightColor: color.primary.withValues(alpha: .06),
                         hoverColor: color.primary.withValues(alpha: .06),
                         onTap: () {
-                          Utils.goto(context, IndividualProfileView(ind: stk));
+                          // Utils.goto(context, IndividualProfileView(ind: stk));
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -197,18 +188,12 @@ class _DesktopState extends State<_Desktop> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(
-                                  width: 40,
-                                  child: Text(
-                                    stk.perId.toString(),
-                                  ),
-                                ),
                                 // ---------- Avatar ----------
                                 CircleAvatar(
                                   backgroundColor: color.primary.withValues(alpha: .7),
                                   radius: 23,
                                   child: Text(
-                                    fullName.getFirstLetter,
+                                    stk.accName!.getFirstLetter,
                                     style: TextStyle(
                                       color: color.surface,
                                       fontSize: 15,
@@ -225,19 +210,18 @@ class _DesktopState extends State<_Desktop> {
                                     children: [
                                       // Full Name
                                       Text(
-                                        fullName.isNotEmpty ? fullName : "—",
+                                        stk.accName??"",
                                         style: Theme.of(context).textTheme.titleMedium,
                                       ),
 
                                       const SizedBox(height: 4),
-                                          if (phone.isNotEmpty)
-                                            Padding(
-                                              padding: const EdgeInsets.only(right: 6.0),
-                                              child: Cover(
-                                                color: color.surface,
-                                                child: Text(phone),
-                                              ),
-                                            ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 6.0),
+                                        child: Cover(
+                                          color: color.surface,
+                                          child: Text(stk.accNumber.toString()),
+                                        ),
+                                      ),
 
                                     ],
                                   ),
@@ -245,10 +229,10 @@ class _DesktopState extends State<_Desktop> {
 
                                 SizedBox(
                                     width: 100,
-                                    child: Text(stk.perGender??"")),
+                                    child: Text(stk.actCurrency.toString())),
                                 SizedBox(
                                     width: 100,
-                                    child: Text(stk.perEnidNo??"")),
+                                    child: Text("2500\$")),
 
                               ],
                             ),
@@ -270,6 +254,7 @@ class _DesktopState extends State<_Desktop> {
   void onAdd() {}
 
   void onRefresh(){
-    context.read<IndividualsBloc>().add(LoadIndividualsEvent());
+    context.read<AccountsBloc>().add(LoadAccountsEvent());
   }
 }
+

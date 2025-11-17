@@ -523,4 +523,46 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get gender => 'جنسیت';
+
+  @override
+  String get firstName => 'نوم';
+
+  @override
+  String get lastName => 'تخلص';
+
+  @override
+  String get dob => 'تاریخ تولد';
+
+  @override
+  String get cellNumber => 'اریکه شمیره';
+
+  @override
+  String get province => 'ولایت';
+
+  @override
+  String get country => 'هیواد';
+
+  @override
+  String get isMilling => ' آیا آدرس پوستی و آدرس تان یکی است؟';
+
+  @override
+  String get zipCode => 'کد پستی';
+
+  @override
+  String get accountInformation => 'معلومات حسابها';
+
+  @override
+  String get balance => 'بیلانس';
+
+  @override
+  String get accNameOrNumber => 'نام حساب یا نمبر حساب';
+
+  @override
+  String get usrId => 'شناسه کاربر';
+
+  @override
+  String get branch => 'شعبه';
+
+  @override
+  String get usrRole => 'نقش کاربر';
 }
