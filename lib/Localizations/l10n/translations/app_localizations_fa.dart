@@ -564,4 +564,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get usrRole => 'نقش کاربر';
+
+  @override
+  String get profileOverview => 'نمای پروفایل';
 }

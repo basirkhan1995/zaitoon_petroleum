@@ -254,7 +254,7 @@ class _DesktopState extends State<_Desktop> {
   void onAdd() {}
 
   void onRefresh(){
-    context.read<AccountsBloc>().add(LoadAccountsEvent());
+    context.read<AccountsBloc>().add(LoadAccountsEvent(ownerId: widget.ind.perId));
   }
 }
 

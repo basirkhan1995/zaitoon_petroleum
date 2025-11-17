@@ -196,5 +196,6 @@
   "accNameOrNumber": "Account Name or Number",
   "usrId": "User ID",
   "branch": "Branch",
-  "usrRole": "User Role"
+  "usrRole": "User Role",
+  "profileOverview": "Profile Overview"
 }

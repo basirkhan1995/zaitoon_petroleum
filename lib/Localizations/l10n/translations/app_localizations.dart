@@ -1203,6 +1203,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'User Role'**
   String get usrRole;
+
+  /// No description provided for @profileOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Overview'**
+  String get profileOverview;
 }
 
 class _AppLocalizationsDelegate

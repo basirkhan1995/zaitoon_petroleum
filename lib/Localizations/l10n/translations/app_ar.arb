@@ -196,5 +196,6 @@
   "accNameOrNumber": "نام حساب یا نمبر حساب",
   "usrId": "شناسه کاربر",
   "branch": "شعبه",
-  "usrRole": "نقش کاربر"
+  "usrRole": "نقش کاربر",
+  "profileOverview": "پروفایل لندیز"
 }

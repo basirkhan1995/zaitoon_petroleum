@@ -26,7 +26,7 @@ class IndividualsDetailsTabView extends StatelessWidget {
             ZTabItem(
               value: IndividualDetailTabName.users,
               label: AppLocalizations.of(context)!.users,
-              screen: const UsersByPerIdView(),
+              screen: UsersByPerIdView(perId: ind.perId!),
             ),
           ];
 

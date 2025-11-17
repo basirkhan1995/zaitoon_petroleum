@@ -6,10 +6,9 @@ sealed class AccountsEvent extends Equatable {
 
 class LoadAccountsEvent extends AccountsEvent{
   final int? ownerId;
-  final int? accId;
-  const LoadAccountsEvent({this.ownerId, this.accId});
+  const LoadAccountsEvent({this.ownerId});
   @override
-  List<Object?> get props => [ownerId, accId];
+  List<Object?> get props => [ownerId];
 }
 
 class AddAccountEvent extends AccountsEvent{

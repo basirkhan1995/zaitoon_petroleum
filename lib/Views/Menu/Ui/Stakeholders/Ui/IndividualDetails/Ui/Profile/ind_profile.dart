@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:zaitoon_petroleum/Features/Widgets/button.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/blur_loading.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualByID/bloc/stakeholder_by_id_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualDetails/profile.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/add_edit.dart';
 import '../../../Individuals/individual_model.dart';
-
 
 class IndividualProfileView extends StatelessWidget {
   final IndividualsModel ind;
@@ -41,74 +43,117 @@ class _Tablet extends StatelessWidget {
   }
 }
 
-class _Desktop extends StatelessWidget {
+class _Desktop extends StatefulWidget {
   final IndividualsModel ind;
   const _Desktop(this.ind);
 
   @override
-  Widget build(BuildContext context) {
+  State<_Desktop> createState() => _DesktopState();
+}
 
+class _DesktopState extends State<_Desktop> {
+  IndividualsModel? individual;
+
+  @override
+  void initState() {
+    context.read<StakeholderByIdBloc>().add(LoadStakeholderByIdEvent(stkId: widget.ind.perId!));
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final locale = AppLocalizations.of(context)!;
-    String fullName = "${ind.perName} ${ind.perLastName}";
+    String fullName = "${widget.ind.perName} ${widget.ind.perLastName}";
 
     return Scaffold(
-      appBar: AppBar(titleSpacing: 0, title: Text(ind.perName ?? "")),
-      body: Column(
-        children: [
-          Cover(
-            margin: EdgeInsets.symmetric(horizontal: 8),
-            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-            color: color.surface,
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: color.primary.withValues(alpha: .8),
-                      radius: 28,
-                      child: Text(
-                        fullName.getFirstLetter,
-                        style: TextStyle(color: color.surface, fontSize: 17),
-                      ),
-                    ),
-                    SizedBox(width: 6),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+      appBar: AppBar(titleSpacing: 0, title: Text(locale.profileOverview)),
+      body: BlocBuilder<StakeholderByIdBloc, StakeholderByIdState>(
+        builder: (context, state) {
+
+          if(state is StakeholderByIdLoadedState){
+            individual = state.stk;
+          }
+          return Column(
+            children: [
+              BlurLoader(
+                isLoading: state is StakeholderByIdLoadingState,
+                child: Cover(
+                  margin: EdgeInsets.symmetric(horizontal: 8),
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  color: color.surface,
+                  child: Column(
+                    children: [
+                      Row(
                         children: [
-                          Text(
-                            fullName,
-                            style: Theme.of(context).textTheme.titleMedium,
+                          CircleAvatar(
+                            backgroundColor: color.primary.withValues(alpha: .8),
+                            radius: 28,
+                            child: Text(
+                              fullName.getFirstLetter,
+                              style: TextStyle(
+                                color: color.surface,
+                                fontSize: 17,
+                              ),
+                            ),
                           ),
-                          Text(ind.perPhone ?? ""),
+                          SizedBox(width: 6),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${individual?.perName} ${individual?.perLastName}",
+                                  style: Theme.of(context).textTheme.titleMedium,
+                                ),
+                                Row(
+                                  spacing: 5,
+                                  children: [
+                                    Cover(child: Text(individual?.perPhone ?? "")),
+                                    Cover(child: Text(individual?.perEnidNo ?? "")),
+                                    Cover(child: Text(individual?.perGender ?? "")),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          Row(
+                            spacing: 8,
+                            children: [
+                              ZOutlineButton(
+                                icon: Icons.refresh,
+                                width: 100,
+                                onPressed: (){
+                                  showDialog(context: context, builder: (context){
+                                    return IndividualAddEditView(model: individual);
+                                  });
+                                },
+                                label: Text(locale.edit),
+                              ),
+                              ZOutlineButton(
+                                isActive: true,
+                                icon: Icons.delete,
+                                width: 100,
+                                label: Text(locale.delete),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
-                    ),
-
-                    Row(
-                      spacing: 8,
-                      children: [
-                        ZOutlineButton(
-                            icon: Icons.refresh,
-                            width: 100, label: Text(locale.edit)),
-                        ZOutlineButton(
-                            isActive: true,
-                            icon: Icons.delete,
-                            width: 100, label: Text(locale.delete)),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-          Expanded(child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IndividualsDetailsTabView(ind: ind),
-          ))
-        ],
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IndividualsDetailsTabView(ind: widget.ind),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

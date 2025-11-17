@@ -72,26 +72,7 @@ class Repositories {
       throw e.toString();
     }
   }
-
-  // Future<IndividualsModel> getPersonProfileById({required String perId}) async {
-  //   try {
-  //     final queryParams = {'perID': perId};
-  //
-  //     // Fetch data from API
-  //     final response = await api.get(
-  //       endpoint: "/stakeholder/personal.php",
-  //       queryParams: queryParams,
-  //     );
-  //     final person = response.data[0];
-  //     return IndividualsModel.fromMap(person);
-  //   } on DioException catch (e) {
-  //     throw '${e.message}';
-  //   } catch (e) {
-  //     throw e.toString();
-  //   }
-  // }
-
-  Future<IndividualsModel> getPersonProfileById({required String perId}) async {
+  Future<IndividualsModel> getPersonProfileById({required int perId}) async {
     try {
       final response = await api.get(
         endpoint: "/stakeholder/personal.php",
@@ -129,9 +110,8 @@ class Repositories {
     }
   }
 
-
   ///Accounts | Stakeholder's Account ..........................................
-  Future<List<AccountsModel>> getAccounts({int? ownerId, int? accId}) async {
+  Future<List<AccountsModel>> getAccounts({int? ownerId}) async {
     try {
       // Build query parameters dynamically
       final queryParams = ownerId != null ? {'perID': ownerId} : null;
@@ -169,10 +149,10 @@ class Repositories {
   }
 
   ///Users .....................................................................
-  Future<List<UsersModel>> getUsers({String? usrName}) async {
+  Future<List<UsersModel>> getUsers({int? usrOwner}) async {
     try {
       // Build query parameters dynamically
-      final queryParams = usrName != null ? {'username': usrName} : null;
+      final queryParams = usrOwner != null ? {'perID': usrOwner} : null;
 
       // Fetch data from API
       final response = await api.get(

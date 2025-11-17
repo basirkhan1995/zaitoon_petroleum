@@ -10,11 +10,12 @@ import '../../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 
 class UsersByPerIdView extends StatelessWidget {
-  const UsersByPerIdView({super.key});
+  final int perId;
+  const UsersByPerIdView({super.key,required this.perId});
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(mobile: _Mobile(), tablet: _Tablet(), desktop: _Desktop());
+    return ResponsiveLayout(mobile: _Mobile(), tablet: _Tablet(), desktop: _Desktop(perId));
   }
 }
 
@@ -34,17 +35,19 @@ class _Tablet extends StatelessWidget {
     return const Placeholder();
   }
 }
-class _Desktop extends StatefulWidget {
-  const _Desktop();
 
+class _Desktop extends StatefulWidget {
+  final int perId;
+  const _Desktop(this.perId);
   @override
   State<_Desktop> createState() => _DesktopState();
 }
+
 class _DesktopState extends State<_Desktop> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-
+       context.read<UsersBloc>().add(LoadUsersEvent(usrOwner: widget.perId));
     });
     super.initState();
   }
@@ -254,7 +257,7 @@ class _DesktopState extends State<_Desktop> {
   void onAdd() {}
 
   void onRefresh(){
-    context.read<UsersBloc>().add(LoadUsersEvent());
+    context.read<UsersBloc>().add(LoadUsersEvent(usrOwner: widget.perId));
   }
 }
 

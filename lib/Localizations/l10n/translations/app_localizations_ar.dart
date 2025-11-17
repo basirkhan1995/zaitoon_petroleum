@@ -565,4 +565,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get usrRole => 'نقش کاربر';
+
+  @override
+  String get profileOverview => 'پروفایل لندیز';
 }

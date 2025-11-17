@@ -565,4 +565,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usrRole => 'User Role';
+
+  @override
+  String get profileOverview => 'Profile Overview';
 }
