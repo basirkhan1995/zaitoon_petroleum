@@ -19,5 +19,30 @@ class AccountsBloc extends Bloc<AccountsEvent, AccountsState> {
         emit(AccountErrorState(e.toString()));
       }
     });
+
+    on<AddAccountEvent>((event, emit) async{
+      emit(AccountLoadingState());
+      try{
+        final response = await _repo.addAccount(newAccount: event.newAccount);
+        if(response["msg"] == "success"){
+          add(LoadAccountsEvent(ownerId: event.newAccount.actSignatory));
+        }
+      }catch(e){
+        emit(AccountErrorState(e.toString()));
+      }
+    });
+
+    on<UpdateAccountEvent>((event, emit) async{
+      emit(AccountLoadingState());
+      try{
+        final response = await _repo.editAccount(newAccount: event.newAccount);
+        if(response["msg"] == "success"){
+          add(LoadAccountsEvent(ownerId: event.newAccount.actSignatory));
+        }
+      }catch(e){
+        emit(AccountErrorState(e.toString()));
+      }
+    });
+
   }
 }

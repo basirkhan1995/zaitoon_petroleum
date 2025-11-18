@@ -79,6 +79,7 @@ class _CustomFilterDropdownState<T> extends State<CustomFilterDropdown<T>> {
     super.dispose();
   }
 
+
   void _onItemTapped(T item) {
     if (widget.multiSelect) {
       setState(() {
@@ -91,15 +92,15 @@ class _CustomFilterDropdownState<T> extends State<CustomFilterDropdown<T>> {
       widget.onMultiSelectChanged?.call(_selectedItems);
       _refreshOverlay();
     } else {
+      // SINGLE SELECT MODE
       setState(() => _selectedItem = item);
       widget.onItemSelected(item);
 
-      // Refresh overlay so selected color and icon show immediately
-      _refreshOverlay();
-
-      // DO NOT remove overlay here, let user click outside
+      // Close the dropdown overlay
+      removeOverlay();
     }
   }
+
 
   void _refreshOverlay() {
     if (_isOpen) {

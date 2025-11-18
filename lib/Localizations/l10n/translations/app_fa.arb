@@ -199,5 +199,6 @@
   "usrRole": "نقش کاربر",
   "profileOverview": "نمای پروفایل",
   "currencyName": "نام اسعار",
-  "symbol": "سمبول"
+  "symbol": "سمبول",
+  "accountLimit": "حد حساب"
 }

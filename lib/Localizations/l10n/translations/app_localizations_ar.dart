@@ -574,4 +574,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get symbol => 'سمبول';
+
+  @override
+  String get accountLimit => 'حد حساب';
 }

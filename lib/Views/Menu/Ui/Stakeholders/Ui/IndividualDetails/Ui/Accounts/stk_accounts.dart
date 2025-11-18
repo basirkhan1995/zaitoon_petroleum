@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/Ui/edit_add.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
 import '../../../../../../../../Features/Other/cover.dart';
@@ -10,7 +11,6 @@ import '../../../../../../../../Features/Widgets/no_data_widget.dart';
 import '../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
-
 
 class AccountsByPerIdView extends StatelessWidget {
   final IndividualsModel ind;
@@ -68,6 +68,7 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final locale = AppLocalizations.of(context)!;
+    print(widget.ind.perId);
     return Scaffold(
       backgroundColor: color.surface,
       body: Column(
@@ -93,23 +94,21 @@ class _DesktopState extends State<_Desktop> {
                 ZOutlineButton(
                     width: 120,
                     icon: Icons.refresh,
-                    onPressed: (){
-                      context.read<AccountsBloc>().add(LoadAccountsEvent());
-                    },
+                    onPressed: onRefresh,
                     label: Text(locale.refresh)),
                 ZOutlineButton(
                     width: 120,
                     isActive: true,
                     icon: Icons.add,
                     onPressed: (){
-
+                      showDialog(context: context, builder: (context){
+                        return AccountsAddEditView(signatory: widget.ind.perId);
+                      });
                     },
                     label: Text(locale.newKeyword)),
-
               ],
             ),
           ),
-
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
@@ -168,14 +167,16 @@ class _DesktopState extends State<_Desktop> {
                   return ListView.builder(
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {
-                      final stk = filteredList[index];
+                      final acc = filteredList[index];
 
                       // ---------- UI ----------
                       return InkWell(
                         highlightColor: color.primary.withValues(alpha: .06),
                         hoverColor: color.primary.withValues(alpha: .06),
                         onTap: () {
-                          // Utils.goto(context, IndividualProfileView(ind: stk));
+                           showDialog(context: context, builder: (context){
+                             return AccountsAddEditView(model: acc);
+                           });
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -193,7 +194,7 @@ class _DesktopState extends State<_Desktop> {
                                   backgroundColor: color.primary.withValues(alpha: .7),
                                   radius: 23,
                                   child: Text(
-                                    stk.accName!.getFirstLetter,
+                                    acc.accName!.getFirstLetter,
                                     style: TextStyle(
                                       color: color.surface,
                                       fontSize: 15,
@@ -210,7 +211,7 @@ class _DesktopState extends State<_Desktop> {
                                     children: [
                                       // Full Name
                                       Text(
-                                        stk.accName??"",
+                                        acc.accName??"",
                                         style: Theme.of(context).textTheme.titleMedium,
                                       ),
 
@@ -219,7 +220,7 @@ class _DesktopState extends State<_Desktop> {
                                         padding: const EdgeInsets.only(right: 6.0),
                                         child: Cover(
                                           color: color.surface,
-                                          child: Text(stk.accNumber.toString()),
+                                          child: Text(acc.accNumber.toString()),
                                         ),
                                       ),
 
@@ -229,7 +230,7 @@ class _DesktopState extends State<_Desktop> {
 
                                 SizedBox(
                                     width: 100,
-                                    child: Text(stk.actCurrency.toString())),
+                                    child: Text(acc.actCurrency.toString())),
                                 SizedBox(
                                     width: 100,
                                     child: Text("2500\$")),
@@ -241,7 +242,6 @@ class _DesktopState extends State<_Desktop> {
                       );
                     },
                   );
-
                 }
                 return const SizedBox();
               },
@@ -251,7 +251,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-  void onAdd() {}
 
   void onRefresh(){
     context.read<AccountsBloc>().add(LoadAccountsEvent(ownerId: widget.ind.perId));

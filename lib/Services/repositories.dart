@@ -148,6 +148,32 @@ class Repositories {
       throw "$e";
     }
   }
+  Future<Map<String, dynamic>> addAccount({required AccountsModel newAccount}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/stakeholder/account.php",
+          data: newAccount.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> editAccount({required AccountsModel newAccount}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/stakeholder/account.php",
+          data: newAccount.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 
   ///Users .....................................................................
   Future<List<UsersModel>> getUsers({int? usrOwner}) async {

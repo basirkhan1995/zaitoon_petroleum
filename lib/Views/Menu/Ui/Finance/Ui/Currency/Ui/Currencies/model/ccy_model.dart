@@ -13,12 +13,16 @@ class CurrenciesModel {
   final String? ccyName;
   final String? ccySymbol;
   final String? ccyCountry;
+  final String? ccyCountryCode;
+  final String? ccyLocalName;
   final int? ccyStatus;
 
   CurrenciesModel({
     this.ccyCode,
+    this.ccyCountryCode,
     this.ccyName,
     this.ccySymbol,
+    this.ccyLocalName,
     this.ccyCountry,
     this.ccyStatus,
   });
@@ -28,9 +32,13 @@ class CurrenciesModel {
     String? ccyName,
     String? ccySymbol,
     String? ccyCountry,
+    String? ccyCountryCode,
     int? ccyStatus,
+    String? ccyLocalName,
   }) =>
       CurrenciesModel(
+        ccyLocalName: ccyLocalName ?? this.ccyLocalName,
+        ccyCountryCode: ccyCountryCode ?? this.ccyCountryCode,
         ccyCode: ccyCode ?? this.ccyCode,
         ccyName: ccyName ?? this.ccyName,
         ccySymbol: ccySymbol ?? this.ccySymbol,
@@ -44,13 +52,17 @@ class CurrenciesModel {
     ccySymbol: json["ccySymbol"],
     ccyCountry: json["ccyCountry"],
     ccyStatus: json["ccyStatus"],
+    ccyCountryCode: json["ccyCountryCode"],
+    ccyLocalName: json["ccyLocalName"],
   );
 
   Map<String, dynamic> toMap() => {
+    "ccyLocalName":ccyLocalName,
     "ccyCode": ccyCode,
     "ccyName": ccyName,
     "ccySymbol": ccySymbol,
     "ccyCountry": ccyCountry,
     "ccyStatus": ccyStatus,
+    "ccyCountryCode": ccyCountryCode
   };
 }

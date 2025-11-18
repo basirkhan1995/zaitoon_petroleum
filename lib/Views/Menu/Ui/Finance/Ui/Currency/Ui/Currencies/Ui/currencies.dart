@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/Ui/add_edit_ccy.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/bloc/currencies_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flag/flag.dart';
@@ -105,9 +106,9 @@ class _DesktopState extends State<_Desktop> {
                       width: 110,
                       label: Text(AppLocalizations.of(context)!.newKeyword),
                       onPressed: (){
-                        // showDialog(context: context, builder: (context){
-                        //   return AddCurrency();
-                        // });
+                        showDialog(context: context, builder: (context){
+                          return AddEditCurrencyView();
+                        });
                       },
                     ),
                   ],
@@ -195,9 +196,9 @@ class _DesktopState extends State<_Desktop> {
                         hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
                         highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
                         onTap: (){
-                          // showDialog(context: context, builder: (context){
-                          //   return AddCurrency(currency: ccy);
-                          // });
+                          showDialog(context: context, builder: (context){
+                            return AddEditCurrencyView(currency: ccy);
+                          });
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(
@@ -214,9 +215,9 @@ class _DesktopState extends State<_Desktop> {
                           child: Row(
                             children: [
                               SizedBox(
-                                width: 50,
+                                width: 30,
                                 child: Flag.fromString(
-                                  ccy.ccyCountry??"",
+                                  ccy.ccyCountryCode??"",
                                   height: 20,
                                   width: 30,
                                   borderRadius: 2,
@@ -224,6 +225,7 @@ class _DesktopState extends State<_Desktop> {
                                 ),
                               ),
 
+                              SizedBox(width: 20),
                               SizedBox(
                                 width: 60,
                                 child: Text(

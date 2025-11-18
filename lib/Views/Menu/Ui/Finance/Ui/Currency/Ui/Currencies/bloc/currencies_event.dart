@@ -11,10 +11,25 @@ class LoadCurrenciesEvent extends CurrenciesEvent{
   List<Object?> get props => [status];
 }
 
-class UpdateCurrenciesStatusEvent extends CurrenciesEvent{
+class UpdateCcyStatusEvent extends CurrenciesEvent{
   final int status;
   final String ccyCode;
-  const UpdateCurrenciesStatusEvent({required this.status, required this.ccyCode});
+  const UpdateCcyStatusEvent({required this.status, required this.ccyCode});
   @override
   List<Object?> get props => [status,ccyCode];
+}
+
+class AddCcyEvent extends CurrenciesEvent{
+  final CurrenciesModel ccy;
+  const AddCcyEvent({required this.ccy,});
+  @override
+  List<Object?> get props => [ccy];
+}
+
+
+class UpdateCcyEvent extends CurrenciesEvent{
+  final CurrenciesModel ccy;
+  const UpdateCcyEvent({required this.ccy});
+  @override
+  List<Object?> get props => [ccy];
 }

@@ -199,5 +199,6 @@
   "usrRole": "نقش کاربر",
   "profileOverview": "پروفایل لندیز",
   "currencyName": "اسعار نوم",
-  "symbol": "سمبول"
+  "symbol": "سمبول",
+  "accountLimit": "حد حساب"
 }

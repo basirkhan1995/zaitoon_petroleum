@@ -1221,6 +1221,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Symbol'**
   String get symbol;
+
+  /// No description provided for @accountLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Limit'**
+  String get accountLimit;
 }
 
 class _AppLocalizationsDelegate

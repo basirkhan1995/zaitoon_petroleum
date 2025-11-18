@@ -53,7 +53,7 @@ class _Desktop extends StatefulWidget {
 
 class _DesktopState extends State<_Desktop> {
   IndividualsModel? individual;
-
+  String? fullName;
   @override
   void initState() {
     context.read<StakeholderByIdBloc>().add(LoadStakeholderByIdEvent(stkId: widget.ind.perId!));
@@ -63,7 +63,7 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final locale = AppLocalizations.of(context)!;
-    String fullName = "${widget.ind.perName} ${widget.ind.perLastName}";
+
 
     return Scaffold(
       appBar: AppBar(titleSpacing: 0, title: Text(locale.profileOverview)),
@@ -72,6 +72,7 @@ class _DesktopState extends State<_Desktop> {
 
           if(state is StakeholderByIdLoadedState){
             individual = state.stk;
+            fullName = "${state.stk.perName} ${state.stk.perLastName}";
           }
           return Column(
             children: [
@@ -89,7 +90,7 @@ class _DesktopState extends State<_Desktop> {
                             backgroundColor: color.primary.withValues(alpha: .8),
                             radius: 28,
                             child: Text(
-                              fullName.getFirstLetter,
+                              fullName?.getFirstLetter??"",
                               style: TextStyle(
                                 color: color.surface,
                                 fontSize: 17,

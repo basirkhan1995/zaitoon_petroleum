@@ -21,3 +21,10 @@ final class StakeholderByIdLoadedState extends StakeholderByIdState{
   @override
   List<Object> get props => [stk];
 }
+
+final class StakeholderByIdErrorState extends StakeholderByIdState {
+  final String message;
+  const StakeholderByIdErrorState(this.message);
+  @override
+  List<Object> get props => [message];
+}

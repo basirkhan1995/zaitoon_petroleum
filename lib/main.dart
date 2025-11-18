@@ -87,7 +87,6 @@ class MyApp extends StatelessWidget {
                   themeMode: themeMode,
                   darkTheme: theme.dark(),
                   theme: theme.light(),
-                  // 🔥 Add this builder:
                   builder: (context, child) {
                     localizationService.update(AppLocalizations.of(context)!);
                     return child!;

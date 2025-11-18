@@ -6,11 +6,10 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc
 import '../../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'package:flutter/services.dart';
-
 import '../individual_model.dart';
 
 class IndividualAddEditView extends StatelessWidget {
-  final IndividualsModel? model; // null => Add mode, not null => Edit mode
+  final IndividualsModel? model;
 
   const IndividualAddEditView({super.key, this.model});
 
@@ -293,7 +292,7 @@ class _DesktopState extends State<_Desktop> {
       addZipCode: zipCode.text,
       addProvince: province.text,
       addCountry: country.text,
-      addId: widget.model!.perAddress,
+      addId: widget.model?.perAddress,
       addCity: city.text,
     );
 

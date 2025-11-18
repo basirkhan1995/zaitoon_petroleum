@@ -5,14 +5,14 @@ class BlurLoader extends StatelessWidget {
   final bool isLoading;
   final Widget child;
   final double blur;
-  final Color overlayColor;
+  final Color? overlayColor;
 
   const BlurLoader({
     super.key,
     required this.isLoading,
     required this.child,
     this.blur = 3.0,
-    this.overlayColor = const Color(0x55FFFFFF),
+    this.overlayColor,
   });
 
   @override
@@ -29,7 +29,7 @@ class BlurLoader extends StatelessWidget {
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
                 child: Container(
-                  color: overlayColor, // glass effect
+                  color: overlayColor ?? Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: .03),
                 ),
               ),
             ),

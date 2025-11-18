@@ -574,4 +574,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get symbol => 'Symbol';
+
+  @override
+  String get accountLimit => 'Account Limit';
 }
