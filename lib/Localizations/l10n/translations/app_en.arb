@@ -206,5 +206,7 @@
   "yes": "Yes",
   "ignore": "Ignore",
   "areYouSure": "Are you sure?",
-  "currencyActivationMessage": "Do you wanna activate this currency?"
+  "currencyActivationMessage": "Do you wanna activate this currency?",
+  "entities": "Entities",
+  "individuals": "Individuals"
 }

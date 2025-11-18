@@ -206,5 +206,7 @@
   "yes": "بلی",
   "ignore": "انصراف",
   "areYouSure": "مطمئین هستید؟",
-  "currencyActivationMessage": "آیا شما میخواهید این ارز فعال شود؟"
+  "currencyActivationMessage": "آیا شما میخواهید این ارز فعال شود؟",
+  "entities": "اشخاص",
+  "individuals": "اشخاص"
 }

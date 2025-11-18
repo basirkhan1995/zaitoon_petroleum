@@ -1263,6 +1263,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Do you wanna activate this currency?'**
   String get currencyActivationMessage;
+
+  /// No description provided for @entities.
+  ///
+  /// In en, this message translates to:
+  /// **'Entities'**
+  String get entities;
+
+  /// No description provided for @individuals.
+  ///
+  /// In en, this message translates to:
+  /// **'Individuals'**
+  String get individuals;
 }
 
 class _AppLocalizationsDelegate

@@ -594,4 +594,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get currencyActivationMessage => 'آیا شما میخواهید این ارز فعال شود؟';
+
+  @override
+  String get entities => 'اشخاص';
+
+  @override
+  String get individuals => 'اشخاص';
 }

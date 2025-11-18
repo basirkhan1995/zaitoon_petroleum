@@ -104,9 +104,12 @@ class ZTabContainer<T> extends StatelessWidget {
                       ),
                     if (onBack != null) const SizedBox(width: 5),
                     Expanded(
-                      child: Text(
-                        title!,
-                        style: Theme.of(context).textTheme.titleLarge,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+                        child: Text(
+                          title!,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
                       ),
                     ),
                   ],

@@ -6,9 +6,9 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencie
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
-import '../../../../../../../Features/Widgets/textfield_entitled.dart';
-import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
-import '../../../../Finance/Ui/Currency/features/currency_drop.dart';
+import '../../../../../../../../Features/Widgets/textfield_entitled.dart';
+import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../../../Finance/Ui/Currency/features/currency_drop.dart';
 
 class AccountsAddEditView extends StatelessWidget {
   final AccountsModel? model;
@@ -183,7 +183,7 @@ class _DesktopState extends State<_Desktop> {
 
     final data = AccountsModel(
       accName: accName.text,
-      actCurrency: defaultCcy,
+      actCurrency: ccyCode?.ccyCode,
       actStatus: statusValue,
       actCreditLimit: accountLimit.text,
       actSignatory: widget.signatory ?? widget.model?.actSignatory,

@@ -596,4 +596,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get currencyActivationMessage =>
       'Do you wanna activate this currency?';
+
+  @override
+  String get entities => 'Entities';
+
+  @override
+  String get individuals => 'Individuals';
 }

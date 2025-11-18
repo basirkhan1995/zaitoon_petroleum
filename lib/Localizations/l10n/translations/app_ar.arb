@@ -206,5 +206,7 @@
   "yes": "هو",
   "ignore": "انصراف",
   "areYouSure": "داد یاست؟",
-  "currencyActivationMessage": "آیا شما میخواهید این ارز فعال شود؟"
+  "currencyActivationMessage": "آیا شما میخواهید این ارز فعال شود؟",
+  "entities": "اشخاص",
+  "individuals": "اشخاص"
 }

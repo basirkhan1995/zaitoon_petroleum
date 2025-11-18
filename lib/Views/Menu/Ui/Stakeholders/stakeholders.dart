@@ -19,7 +19,7 @@ class StakeholdersView extends StatelessWidget {
             final tabs = <ZTabItem<StakeholderTabName>>[
               ZTabItem(
                 value: StakeholderTabName.entities,
-                label: AppLocalizations.of(context)!.stakeholders,
+                label: AppLocalizations.of(context)!.entities,
                 screen: const IndividualsView(),
               ),
               ZTabItem(
