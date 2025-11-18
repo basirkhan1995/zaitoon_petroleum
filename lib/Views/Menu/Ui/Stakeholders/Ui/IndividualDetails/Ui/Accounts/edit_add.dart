@@ -198,6 +198,50 @@ class _DesktopState extends State<_Desktop> {
                 ),
                 SizedBox(height: 5),
 
+                // GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
+                //   controller: accName,
+                //   title: AppLocalizations.of(context)!.accounts,
+                //   hintText: locale.accNameOrNumber,
+                //   isRequired: true,
+                //   bloc: context.read<GlAccountsBloc>(),
+                //   stateToLoading: (state) => state is GlAccountsLoadingState,
+                //   loadingBuilder: (context) => const SizedBox(
+                //     width: 16,
+                //     height: 16,
+                //     child: CircularProgressIndicator(strokeWidth: 2),
+                //   ),
+                //   fetchAllFunction: (bloc) => bloc.add(LoadGlAccountEvent("en")),
+                //   itemBuilder:
+                //       (context, account) => Padding(
+                //     padding: const EdgeInsets.all(5),
+                //     child: Column(
+                //       crossAxisAlignment:
+                //       CrossAxisAlignment.start,
+                //       children: [
+                //         Text(
+                //           "(${account.accNumber}) ${account.accName}",
+                //           style:
+                //           Theme.of(
+                //             context,
+                //           ).textTheme.bodyLarge,
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                //   itemToString: (account) => account.accName ?? "",
+                //
+                //   stateToItems: (state) {
+                //     if (state is GlAccountLoadedState) {
+                //       return state.gl;
+                //     }
+                //     return [];
+                //   },
+                //   onSelected: (value) {},
+                //   noResultsText: 'No matching accounts found',
+                //   showClearButton: true,
+                //   padding: const EdgeInsets.only(bottom: 16),
+                // ),
+                //
                 Row(
                   children: [
                     Checkbox(

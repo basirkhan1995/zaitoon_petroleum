@@ -1,7 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Permissions/per_model.dart';
+
+import '../per_model.dart';
 part 'permissions_event.dart';
 part 'permissions_state.dart';
 

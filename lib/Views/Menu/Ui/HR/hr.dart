@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/attendance.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/employees.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/users.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/bloc/hrtab_bloc.dart';
 import '../../../../Features/Generic/rounded_tab.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../Settings/Ui/Users/users.dart';
 
 class HrTabView extends StatelessWidget {
   const HrTabView({super.key});

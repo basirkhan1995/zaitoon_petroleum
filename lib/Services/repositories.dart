@@ -2,9 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Permissions/per_model.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/user_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
+import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
+import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
 
 class Repositories {
@@ -353,7 +353,6 @@ class Repositories {
             "ccyCode":ccyCode,
           }
       );
-      print(response);
       return response.data;
     } on DioException catch (e) {
       throw '${e.message}';
@@ -361,6 +360,5 @@ class Repositories {
       throw e.toString();
     }
   }
-
 
 }

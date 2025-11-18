@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Permissions/bloc/permissions_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/user_model.dart';
+import '../../../Users/model/user_model.dart';
+import 'bloc/permissions_bloc.dart';
 
 class PermissionsView extends StatelessWidget {
   final UsersModel user;

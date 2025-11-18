@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:zaitoon_petroleum/Features/Other/utils.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Permissions/permissions.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/bloc/users_bloc.dart';
-import '../../../../../../Features/Other/cover.dart';
-import '../../../../../../Features/Widgets/no_data_widget.dart';
-import '../../../../../../Features/Widgets/outline_button.dart';
-import '../../../../../../Features/Widgets/search_field.dart';
-import '../../../../../../Localizations/l10n/translations/app_localizations.dart';
+
+import '../../../../../../../Features/Other/cover.dart';
+import '../../../../../../../Features/Widgets/no_data_widget.dart';
+import '../../../../../../../Features/Widgets/outline_button.dart';
+import '../../../../../../../Features/Widgets/search_field.dart';
+import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../UserDetail/user_details.dart';
+import '../bloc/users_bloc.dart';
+
 
 class UsersView extends StatelessWidget {
   const UsersView({super.key});
@@ -169,7 +170,10 @@ class _DesktopState extends State<_Desktop> {
                         highlightColor: color.primary.withValues(alpha: .06),
                         hoverColor: color.primary.withValues(alpha: .06),
                         onTap: () {
-                        Utils.goto(context, PermissionsView(user: usr));
+                       // Utils.goto(context, PermissionsView(user: usr));
+                          showDialog(context: context, builder: (context){
+                            return UserDetailsView(usr: usr);
+                          });
                         },
                         child: Container(
                           decoration: BoxDecoration(
