@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 
-import 'outline_button.dart';
-
 class NoDataWidget extends StatelessWidget {
   final String? message;
   final VoidCallback? onRefresh;
@@ -20,14 +18,14 @@ class NoDataWidget extends StatelessWidget {
                 child:Image.asset("assets/images/noData.png")
             ),
             message == null? SizedBox() : Text(message??AppLocalizations.of(context)!.noDataFound,
-                style: Theme.of(context).textTheme.titleLarge),
-           SizedBox(height: 15),
-            ZOutlineButton(
-              width: 150,
-              icon: Icons.refresh,
-              label: Text(AppLocalizations.of(context)!.refresh),
-              onPressed: onRefresh,
-            ),
+                style: Theme.of(context).textTheme.titleMedium),
+           // SizedBox(height: 15),
+           //  ZOutlineButton(
+           //    width: 150,
+           //    icon: Icons.refresh,
+           //    label: Text(AppLocalizations.of(context)!.refresh),
+           //    onPressed: onRefresh,
+           //  ),
           ],
         ));
   }

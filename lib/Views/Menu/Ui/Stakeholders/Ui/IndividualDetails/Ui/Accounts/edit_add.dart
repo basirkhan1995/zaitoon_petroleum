@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
@@ -6,6 +7,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencie
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
+import '../../../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../Finance/Ui/Currency/features/currency_drop.dart';
@@ -97,7 +99,7 @@ class _DesktopState extends State<_Desktop> {
     final isEdit = widget.model != null;
     return ZFormDialog(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-      width: 550,
+      width: 500,
 
       title: isEdit ? locale.update : locale.newKeyword,
 
@@ -127,38 +129,79 @@ class _DesktopState extends State<_Desktop> {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: ZTextFieldEntitled(
+                        controller: accName,
+                        isRequired: true,
+                        title: locale.accountName,
+                        onSubmit: (_) => onSubmit(),
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return locale.required(locale.accountName);
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      width: 120,
+                      child: CurrencyDropdown(
+                        height: 41,
+                        disableAction: widget.model != null,
+                        title: locale.currencyTitle,
+                        isMulti: false,
+                        initiallySelectedSingle: CurrenciesModel(ccyCode: defaultCcy),
+                        onMultiChanged: (_) {},
+                        onSingleChanged: (value) {
+                          ccyCode = value;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+
                 ZTextFieldEntitled(
-                  controller: accName,
                   isRequired: true,
-                  title: locale.accountName,
                   onSubmit: (_) => onSubmit(),
+                  keyboardInputType:
+                  TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  inputFormat: [
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'[0-9.,]*'),
+                    ),
+                    SmartThousandsDecimalFormatter(),
+                  ],
+                  title: locale.accountLimit,
+                  controller: accountLimit,
                   validator: (value) {
-                    if (value.isEmpty) {
-                      return locale.required(locale.accountName);
+                    if (value == null || value.isEmpty) {
+                      return locale.required(locale.accountLimit);
                     }
+
+                    // Remove formatting (e.g. commas)
+                    final clean = value.replaceAll(
+                      RegExp(r'[^\d.]'),
+                      '',
+                    );
+                    final amount = double.tryParse(clean);
+
+                    if (amount == null || amount <= 0.0) {
+                      return "Amount greater than zero";
+                    }
+
                     return null;
                   },
                 ),
-                ZTextFieldEntitled(
-                  controller: accountLimit,
-                  title: locale.accountLimit,
-                  onSubmit: (_) => onSubmit(),
-                ),
-
                 SizedBox(height: 5),
-
-                CurrencyDropdown(
-                  isMulti: false,
-                  initiallySelectedSingle: CurrenciesModel(ccyCode: defaultCcy),
-                  onMultiChanged: (_) {},
-                  onSingleChanged: (value) {
-                    ccyCode = value;
-                  },
-                ),
 
                 Row(
                   children: [
                     Checkbox(
+                      visualDensity: VisualDensity(horizontal: -4),
                       value: status,
                       onChanged: (value) {
                         setState(() {
@@ -167,6 +210,7 @@ class _DesktopState extends State<_Desktop> {
                         });
                       },
                     ),
+                    SizedBox(width: 5),
                     Text(locale.status),
                   ],
                 ),
@@ -183,7 +227,7 @@ class _DesktopState extends State<_Desktop> {
 
     final data = AccountsModel(
       accName: accName.text,
-      actCurrency: ccyCode?.ccyCode,
+      actCurrency: ccyCode?.ccyCode ??"USD",
       actStatus: statusValue,
       actCreditLimit: accountLimit.text,
       actSignatory: widget.signatory ?? widget.model?.actSignatory,

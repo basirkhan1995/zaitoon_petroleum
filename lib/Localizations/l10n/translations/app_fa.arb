@@ -208,5 +208,7 @@
   "areYouSure": "مطمئین هستید؟",
   "currencyActivationMessage": "آیا شما میخواهید این ارز فعال شود؟",
   "entities": "اشخاص",
-  "individuals": "اشخاص"
+  "individuals": "اشخاص",
+  "male": "مرد",
+  "female": "زن"
 }

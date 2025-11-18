@@ -3,6 +3,7 @@ import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/blur_loading.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
@@ -112,7 +113,7 @@ class _DesktopState extends State<_Desktop> {
                                   children: [
                                     Cover(child: Text(individual?.perPhone ?? "")),
                                     Cover(child: Text(individual?.perEnidNo ?? "")),
-                                    Cover(child: Text(individual?.perGender ?? "")),
+                                    Cover(child: Text(Utils.genderType(gender: individual?.perGender ?? "",locale: locale))),
                                     Cover(child: Text(individual?.addCity ?? "")),
                                     Cover(child: Text(individual?.addProvince ?? "")),
                                     Cover(child: Text(individual?.addCountry ?? "")),

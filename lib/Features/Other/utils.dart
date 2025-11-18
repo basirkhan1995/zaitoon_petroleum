@@ -179,7 +179,7 @@ class Utils{
       return null;
     }
 
-    return null; // Email is valid
+    return null;
   }
 
   static String glCategories({required int category, AppLocalizations? locale}) {
@@ -193,6 +193,16 @@ class Utils{
       return locale!.expense;
     } else {
       return "not found";
+    }
+  }
+
+  static String genderType({required String gender, AppLocalizations? locale}) {
+    if (gender == "Male") {
+      return locale!.male;
+    } else if (gender == "Female") {
+      return locale!.female;
+    } else {
+      return "";
     }
   }
 

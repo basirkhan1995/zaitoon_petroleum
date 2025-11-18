@@ -600,4 +600,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get individuals => 'اشخاص';
+
+  @override
+  String get male => 'مرد';
+
+  @override
+  String get female => 'زن';
 }

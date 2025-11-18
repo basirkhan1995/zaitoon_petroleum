@@ -17,6 +17,7 @@ class CustomFilterDropdown<T> extends StatefulWidget {
   final Function(List<T>)? onMultiSelectChanged;
   final bool multiSelect;
   final bool isLoading;
+  final Widget? customTitle; // Add this line
 
   const CustomFilterDropdown({
     super.key,
@@ -35,7 +36,9 @@ class CustomFilterDropdown<T> extends StatefulWidget {
     required this.itemLabel,
     required this.onItemSelected,
     this.isLoading = false,
+    this.customTitle, // Add this line
   });
+
 
   @override
   State<CustomFilterDropdown<T>> createState() => _CustomFilterDropdownState<T>();
@@ -135,10 +138,15 @@ class _CustomFilterDropdownState<T> extends State<CustomFilterDropdown<T>> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if(widget.title.isNotEmpty)
+          // Updated title section to use customTitle if provided
+          if (widget.customTitle != null)
+            widget.customTitle!
+          else if (widget.title.isNotEmpty)
             Text(widget.title, style: Theme.of(context).textTheme.titleSmall),
-          if(widget.title.isNotEmpty)
+
+          if ((widget.customTitle != null || widget.title.isNotEmpty))
             const SizedBox(height: 5),
+
           GestureDetector(
             onTap: widget.disableAction
                 ? null
@@ -183,7 +191,7 @@ class _CustomFilterDropdownState<T> extends State<CustomFilterDropdown<T>> {
                       ? const SizedBox()
                       : Icon(
                     _isOpen ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                    color: widget.isLoading ? Colors.transparent : color.primary,
+                    color: color.primary,
                   ),
                 ],
               ),
@@ -307,6 +315,8 @@ class _CustomFilterDropdownState<T> extends State<CustomFilterDropdown<T>> {
                                         widget.leadingBuilder!(item)
                                       else
                                         const SizedBox.shrink(),
+                                      if(widget.leadingBuilder !=null)
+                                        SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
                                           widget.itemLabel(item),

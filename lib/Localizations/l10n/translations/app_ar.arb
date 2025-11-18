@@ -208,5 +208,7 @@
   "areYouSure": "داد یاست؟",
   "currencyActivationMessage": "آیا شما میخواهید این ارز فعال شود؟",
   "entities": "اشخاص",
-  "individuals": "اشخاص"
+  "individuals": "اشخاص",
+  "male": "نارینه",
+  "female": "زن"
 }

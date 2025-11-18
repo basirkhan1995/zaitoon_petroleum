@@ -1275,6 +1275,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Individuals'**
   String get individuals;
+
+  /// No description provided for @male.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get male;
+
+  /// No description provided for @female.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get female;
 }
 
 class _AppLocalizationsDelegate

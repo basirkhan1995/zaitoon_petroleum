@@ -208,5 +208,7 @@
   "areYouSure": "Are you sure?",
   "currencyActivationMessage": "Do you wanna activate this currency?",
   "entities": "Entities",
-  "individuals": "Individuals"
+  "individuals": "Individuals",
+  "male": "Male",
+  "female": "Female"
 }

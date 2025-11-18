@@ -247,7 +247,7 @@ class _DesktopState extends State<_Desktop> {
 
                                   SizedBox(
                                       width: 100,
-                                      child: Text(stk.perGender??"")),
+                                      child: Text(Utils.genderType(gender: stk.perGender??"",locale: locale))),
                                   SizedBox(
                                       width: 100,
                                       child: Text(stk.perEnidNo??"")),

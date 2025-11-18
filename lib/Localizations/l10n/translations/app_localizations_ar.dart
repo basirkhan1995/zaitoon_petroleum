@@ -601,4 +601,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get individuals => 'اشخاص';
+
+  @override
+  String get male => 'نارینه';
+
+  @override
+  String get female => 'زن';
 }
