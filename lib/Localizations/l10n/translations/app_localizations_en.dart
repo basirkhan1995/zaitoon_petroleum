@@ -470,7 +470,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hrTitle => 'Human Resource Management';
 
   @override
-  String get fiscalYear => 'EOY';
+  String get fiscalYear => 'EOY Operation';
 
   @override
   String get manageFinance =>
@@ -486,7 +486,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get payRoll => 'Payroll';
 
   @override
-  String get noDataFound => 'No data found';
+  String get noDataFound => 'No result found';
 
   @override
   String get stakeholderInfo => 'Stakeholder Information';
@@ -577,4 +577,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountLimit => 'Account Limit';
+
+  @override
+  String get asset => 'Asset';
+
+  @override
+  String get liability => 'Liability';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get ignore => 'Ignore';
+
+  @override
+  String get areYouSure => 'Are you sure?';
+
+  @override
+  String get currencyActivationMessage =>
+      'Do you wanna activate this currency?';
 }

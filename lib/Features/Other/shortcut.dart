@@ -76,11 +76,11 @@ class _ShortcutButtonState extends State<ShortcutButton> {
       duration: const Duration(milliseconds: 100),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: _isPressed ? Colors.blue.withOpacity(0.1) : Colors.transparent,
+        color: _isPressed ? Colors.blue.withValues(alpha: .1) : Colors.transparent,
         boxShadow: _isPressed
             ? [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.25),
+            color: Colors.blue.withValues(alpha: .25),
             blurRadius: 8,
           )
         ]

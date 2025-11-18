@@ -69,7 +69,7 @@ class _DesktopState extends State<_Desktop> {
         children: [
 
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 8),
             child: Row(
               spacing: 8,
               children: [
@@ -103,10 +103,8 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
           ),
-
-
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 5),
             child: Row(
               children: [
                 Expanded(child: Text(locale.userInformation,style: Theme.of(context).textTheme.titleMedium)),
@@ -127,9 +125,9 @@ class _DesktopState extends State<_Desktop> {
             ),
           ),
 
-          SizedBox(height: 5),
+          SizedBox(height: 3),
           Divider(
-            indent: 5,endIndent: 5,color: Theme.of(context).colorScheme.primary,height: 0,
+            indent: 15,endIndent: 15,color: Theme.of(context).colorScheme.primary,height: 2,
           ),
           SizedBox(height: 10),
           Expanded(
@@ -180,7 +178,7 @@ class _DesktopState extends State<_Desktop> {
                                 : Colors.transparent,
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(6.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 3),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -253,7 +251,7 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-  void onAdd() {}
+
 
   void onRefresh(){
     context.read<UsersBloc>().add(LoadUsersEvent());

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/EndOfYear/end_year.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Payables/payables.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/FxTransaction/fx_transaction.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/gl_accounts.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Payroll/payroll.dart';
 import '../../../../Features/Generic/rounded_tab.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'Ui/Currency/currency.dart';
@@ -28,25 +30,23 @@ class FinanceView extends StatelessWidget {
               TabDefinition(
                 value: FinanceTabName.glAccounts,
                 label: AppLocalizations.of(context)!.glAccounts,
-                screen: const EndOfYearView(),
+                screen: const GlAccountsView(),
               ),
+              TabDefinition(
+                value: FinanceTabName.crossCurrency,
+                label: AppLocalizations.of(context)!.fxTransaction,
+                screen: const FxTransactionView(),
+              ),
+                TabDefinition(
+                  value: FinanceTabName.payroll,
+                  label: AppLocalizations.of(context)!.payRoll,
+                  screen: const PayrollView(),
+                ),
               TabDefinition(
                 value: FinanceTabName.endOfYear,
                 label: AppLocalizations.of(context)!.fiscalYear,
                 screen: const EndOfYearView(),
               ),
-                TabDefinition(
-                  value: FinanceTabName.payroll,
-                  label: AppLocalizations.of(context)!.payRoll,
-                  screen: const PayablesView(),
-                ),
-
-              TabDefinition(
-                value: FinanceTabName.crossCurrency,
-                label: AppLocalizations.of(context)!.fxTransaction,
-                screen: const PayablesView(),
-              ),
-
             ];
 
             final availableValues = tabs.map((tab) => tab.value).toList();

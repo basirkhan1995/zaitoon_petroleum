@@ -576,4 +576,22 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get accountLimit => 'حد حساب';
+
+  @override
+  String get asset => 'دارایی';
+
+  @override
+  String get liability => 'بدهی';
+
+  @override
+  String get yes => 'بلی';
+
+  @override
+  String get ignore => 'انصراف';
+
+  @override
+  String get areYouSure => 'مطمئین هستید؟';
+
+  @override
+  String get currencyActivationMessage => 'آیا شما میخواهید این ارز فعال شود؟';
 }

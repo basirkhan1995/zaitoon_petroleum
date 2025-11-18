@@ -5,6 +5,7 @@ import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Auth/login.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/bloc/currencies_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/bloc/currency_tab_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/bloc/financial_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Permissions/bloc/permissions_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/bloc/users_bloc.dart';
@@ -64,6 +65,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => AccountsBloc(Repositories(ApiServices()))..add(LoadAccountsEvent())),
         BlocProvider(create: (context) => UsersBloc(Repositories(ApiServices()))..add(LoadUsersEvent())),
         BlocProvider(create: (context) => CurrenciesBloc(Repositories(ApiServices()))..add(LoadCurrenciesEvent())),
+        BlocProvider(create: (context) => GlAccountsBloc(Repositories(ApiServices()))..add(LoadGlAccountEvent('en'))),
         BlocProvider(create: (context) => StakeholderByIdBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => PermissionsBloc(Repositories(ApiServices()))),
       ],

@@ -108,6 +108,7 @@ class _DesktopState extends State<_Desktop> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;

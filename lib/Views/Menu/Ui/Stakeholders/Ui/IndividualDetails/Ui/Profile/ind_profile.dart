@@ -80,7 +80,7 @@ class _DesktopState extends State<_Desktop> {
                 isLoading: state is StakeholderByIdLoadingState,
                 child: Cover(
                   margin: EdgeInsets.symmetric(horizontal: 8),
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                   color: color.surface,
                   child: Column(
                     children: [
@@ -113,32 +113,39 @@ class _DesktopState extends State<_Desktop> {
                                     Cover(child: Text(individual?.perPhone ?? "")),
                                     Cover(child: Text(individual?.perEnidNo ?? "")),
                                     Cover(child: Text(individual?.perGender ?? "")),
+                                    Cover(child: Text(individual?.addCity ?? "")),
+                                    Cover(child: Text(individual?.addProvince ?? "")),
+                                    Cover(child: Text(individual?.addCountry ?? "")),
+                                    Cover(child: Text(individual?.addName ?? "")),
                                   ],
                                 ),
                               ],
                             ),
                           ),
 
-                          Row(
-                            spacing: 8,
-                            children: [
-                              ZOutlineButton(
-                                icon: Icons.refresh,
-                                width: 100,
-                                onPressed: (){
-                                  showDialog(context: context, builder: (context){
-                                    return IndividualAddEditView(model: individual);
-                                  });
-                                },
-                                label: Text(locale.edit),
-                              ),
-                              ZOutlineButton(
-                                isActive: true,
-                                icon: Icons.delete,
-                                width: 100,
-                                label: Text(locale.delete),
-                              ),
-                            ],
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Row(
+                              spacing: 8,
+                              children: [
+                                ZOutlineButton(
+                                  icon: Icons.refresh,
+                                  width: 120,
+                                  onPressed: (){
+                                    showDialog(context: context, builder: (context){
+                                      return IndividualAddEditView(model: individual);
+                                    });
+                                  },
+                                  label: Text(locale.edit),
+                                ),
+                                ZOutlineButton(
+                                  isActive: true,
+                                  icon: Icons.delete,
+                                  width: 120,
+                                  label: Text(locale.delete),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -148,7 +155,7 @@ class _DesktopState extends State<_Desktop> {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: IndividualsDetailsTabView(ind: widget.ind),
                 ),
               ),

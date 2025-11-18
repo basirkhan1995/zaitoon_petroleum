@@ -200,5 +200,11 @@
   "profileOverview": "نمای پروفایل",
   "currencyName": "نام اسعار",
   "symbol": "سمبول",
-  "accountLimit": "حد حساب"
+  "accountLimit": "حد حساب",
+  "asset": "دارایی",
+  "liability": "بدهی",
+  "yes": "بلی",
+  "ignore": "انصراف",
+  "areYouSure": "مطمئین هستید؟",
+  "currencyActivationMessage": "آیا شما میخواهید این ارز فعال شود؟"
 }

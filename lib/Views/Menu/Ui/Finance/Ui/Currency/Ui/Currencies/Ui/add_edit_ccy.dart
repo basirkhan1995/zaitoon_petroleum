@@ -34,16 +34,18 @@ class _AddEditCurrencyViewState extends State<AddEditCurrencyView> {
       ccyCode.text = widget.currency!.ccyCode ?? '';
       ccySymbol.text = widget.currency!.ccySymbol ?? '';
       ccyLocalName.text = widget.currency!.ccyLocalName ?? '';
-      ccyCountryCode.text = widget.currency!.ccyCountry ?? '';
+      country.text = widget.currency?.ccyCountry ??'';
+      ccyCountryCode.text = widget.currency!.ccyCountryCode ?? '';
       ccyName.text = widget.currency!.ccyName ?? '';
 
       // Store original values for comparison
       _originalValues = {
-        'ccyCode': widget.currency!.ccyCode ?? '',
-        'ccySymbol': widget.currency!.ccySymbol ?? '',
-        'ccyLocalName': widget.currency!.ccyLocalName ?? '',
-        'countryCode': widget.currency!.ccyCountry ?? '',
-        'ccyName': widget.currency!.ccyName ?? '',
+        'ccyCode': widget.currency?.ccyCode ?? '',
+        'ccySymbol': widget.currency?.ccySymbol ?? '',
+        'ccyLocalName': widget.currency?.ccyLocalName ?? '',
+        'ccyCountry': widget.currency?.ccyCountry ?? '',
+        'ccyCountryCode': widget.currency?.ccyCountryCode ?? '',
+        'ccyName': widget.currency?.ccyName ?? '',
       };
     }
 
@@ -57,6 +59,7 @@ class _AddEditCurrencyViewState extends State<AddEditCurrencyView> {
         'ccyCode': ccyCode.text,
         'ccySymbol': ccySymbol.text,
         'ccyLocalName': ccyLocalName.text,
+        'ccyCountry': country.text,
         'countryCode': ccyCountryCode.text,
         'ccyName': ccyName.text,
       };

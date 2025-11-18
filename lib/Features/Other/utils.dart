@@ -182,20 +182,17 @@ class Utils{
     return null; // Email is valid
   }
 
-  static Color entitiesCategory(String category) {
-    final lowerCategory = category.toLowerCase();
-    if (lowerCategory == 'customer') {
-      return Colors.green.withValues(alpha: .6);
-    } else if (lowerCategory == 'vendor') {
-      return Colors.blue.withValues(alpha: .6);
-    } else if (lowerCategory == 'bank') {
-      return Colors.purple.withValues(alpha: .6);
-    } else if (lowerCategory == 'saraf') {
-      return Colors.red.withValues(alpha: .6);
-    } else if (lowerCategory == 'owner') {
-      return Colors.orange.withValues(alpha: .6);
+  static String glCategories({required int category, AppLocalizations? locale}) {
+    if (category == 1) {
+      return locale!.asset;
+    } else if (category == 2) {
+      return locale!.liability;
+    } else if (category == 3) {
+      return locale!.income;
+    } else if (category == 4) {
+      return locale!.expense;
     } else {
-      return Colors.lightBlueAccent.withValues(alpha: .6);
+      return "not found";
     }
   }
 

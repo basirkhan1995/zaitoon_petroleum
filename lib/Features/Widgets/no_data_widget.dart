@@ -16,13 +16,14 @@ class NoDataWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-                width: 100,
+                width: 300,
                 child:Image.asset("assets/images/noData.png")
             ),
-            message == null? SizedBox() : Text(message??AppLocalizations.of(context)!.noDataFound,style: Theme.of(context).textTheme.bodyMedium),
-           SizedBox(height: 10),
+            message == null? SizedBox() : Text(message??AppLocalizations.of(context)!.noDataFound,
+                style: Theme.of(context).textTheme.titleLarge),
+           SizedBox(height: 15),
             ZOutlineButton(
-              width: 120,
+              width: 150,
               icon: Icons.refresh,
               label: Text(AppLocalizations.of(context)!.refresh),
               onPressed: onRefresh,

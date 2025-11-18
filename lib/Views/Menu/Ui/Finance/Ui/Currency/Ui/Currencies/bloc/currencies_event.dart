@@ -12,7 +12,7 @@ class LoadCurrenciesEvent extends CurrenciesEvent{
 }
 
 class UpdateCcyStatusEvent extends CurrenciesEvent{
-  final int status;
+  final bool status;
   final String ccyCode;
   const UpdateCcyStatusEvent({required this.status, required this.ccyCode});
   @override

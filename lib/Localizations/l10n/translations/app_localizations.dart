@@ -1015,7 +1015,7 @@ abstract class AppLocalizations {
   /// No description provided for @fiscalYear.
   ///
   /// In en, this message translates to:
-  /// **'EOY'**
+  /// **'EOY Operation'**
   String get fiscalYear;
 
   /// No description provided for @manageFinance.
@@ -1045,7 +1045,7 @@ abstract class AppLocalizations {
   /// No description provided for @noDataFound.
   ///
   /// In en, this message translates to:
-  /// **'No data found'**
+  /// **'No result found'**
   String get noDataFound;
 
   /// No description provided for @stakeholderInfo.
@@ -1227,6 +1227,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account Limit'**
   String get accountLimit;
+
+  /// No description provided for @asset.
+  ///
+  /// In en, this message translates to:
+  /// **'Asset'**
+  String get asset;
+
+  /// No description provided for @liability.
+  ///
+  /// In en, this message translates to:
+  /// **'Liability'**
+  String get liability;
+
+  /// No description provided for @yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yes;
+
+  /// No description provided for @ignore.
+  ///
+  /// In en, this message translates to:
+  /// **'Ignore'**
+  String get ignore;
+
+  /// No description provided for @areYouSure.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure?'**
+  String get areYouSure;
+
+  /// No description provided for @currencyActivationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you wanna activate this currency?'**
+  String get currencyActivationMessage;
 }
 
 class _AppLocalizationsDelegate

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Permissions/per_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/user_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
@@ -175,6 +176,44 @@ class Repositories {
     }
   }
 
+  /// GL Accounts | System
+  Future<List<GlAccountsModel>> getGlAccounts({String? local}) async {
+    try {
+      // Build query parameters dynamically
+      final queryParams = local != null ? {'local': local} : null;
+
+      // Fetch data from API
+      final response = await api.get(
+        endpoint: "/finance/glAccount.php",
+        queryParams: queryParams,
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => GlAccountsModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+
   ///Users .....................................................................
   Future<List<UsersModel>> getUsers({int? usrOwner}) async {
     try {
@@ -305,4 +344,23 @@ class Repositories {
       throw "$e";
     }
   }
+  Future<Map<String, dynamic>> updateCcyStatus({required bool status, required String? ccyCode}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/finance/currency.php",
+          data: {
+            "ccyStatus": status,
+            "ccyCode":ccyCode,
+          }
+      );
+      print(response);
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+
 }

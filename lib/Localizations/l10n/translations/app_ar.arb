@@ -200,5 +200,11 @@
   "profileOverview": "پروفایل لندیز",
   "currencyName": "اسعار نوم",
   "symbol": "سمبول",
-  "accountLimit": "حد حساب"
+  "accountLimit": "حد حساب",
+  "asset": "دارایی",
+  "liability": "بدهی",
+  "yes": "هو",
+  "ignore": "انصراف",
+  "areYouSure": "داد یاست؟",
+  "currencyActivationMessage": "آیا شما میخواهید این ارز فعال شود؟"
 }

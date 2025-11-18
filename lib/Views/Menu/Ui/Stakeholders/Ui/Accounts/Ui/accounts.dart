@@ -66,177 +66,180 @@ class _DesktopState extends State<_Desktop> {
     final locale = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: color.surface,
-      body: Column(
-        children: [
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 8),
-            child: Row(
-              spacing: 8,
-              children: [
-                Expanded(
-                  child: ZSearchField(
-                    icon: FontAwesomeIcons.magnifyingGlass,
-                    controller: searchController,
-                    hint: locale.accNameOrNumber,
-                    onChanged: (e) {
-                      setState(() {
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 8),
+              child: Row(
+                spacing: 8,
+                children: [
+                  Expanded(
+                    child: ZSearchField(
+                      icon: FontAwesomeIcons.magnifyingGlass,
+                      controller: searchController,
+                      hint: locale.accNameOrNumber,
+                      onChanged: (e) {
+                        setState(() {
 
-                      });
-                    },
-                    title: "",
+                        });
+                      },
+                      title: "",
+                    ),
                   ),
-                ),
-                ZOutlineButton(
-                    width: 120,
-                    icon: Icons.refresh,
-                    onPressed: (){
-                      context.read<AccountsBloc>().add(LoadAccountsEvent());
-                    },
-                    label: Text(locale.refresh)),
+                  ZOutlineButton(
+                      width: 120,
+                      icon: Icons.refresh,
+                      onPressed: (){
+                        context.read<AccountsBloc>().add(LoadAccountsEvent());
+                      },
+                      label: Text(locale.refresh)),
 
-              ],
+                ],
+              ),
             ),
-          ),
 
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
-            child: Row(
-              children: [
-                Expanded(child: Text(locale.accountInformation,style: Theme.of(context).textTheme.titleMedium)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+              child: Row(
+                children: [
+                  Expanded(child: Text(locale.accountInformation,style: Theme.of(context).textTheme.titleMedium)),
 
-                SizedBox(
-                    width: 100,
-                    child: Text(locale.currencyTitle,style: Theme.of(context).textTheme.titleMedium)),
-                SizedBox(
-                    width: 100,
-                    child: Text(locale.balance,style: Theme.of(context).textTheme.titleMedium)),
+                  SizedBox(
+                      width: 100,
+                      child: Text(locale.currencyTitle,style: Theme.of(context).textTheme.titleMedium)),
+                  SizedBox(
+                      width: 100,
+                      child: Text(locale.balance,style: Theme.of(context).textTheme.titleMedium)),
 
-              ],
+                ],
+              ),
             ),
-          ),
 
-          SizedBox(height: 5),
-          Divider(
-            indent: 5,endIndent: 5,color: Theme.of(context).colorScheme.primary,height: 0,
-          ),
-          SizedBox(height: 10),
-          Expanded(
-            child: BlocConsumer<AccountsBloc, AccountsState>(
-              listener: (context,state){},
-              builder: (context, state) {
-                if (state is AccountLoadingState) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (state is AccountErrorState) {
-                  return NoDataWidget(
-                    message: state.message,
-                    onRefresh: () {
-                      context.read<AccountsBloc>().add(
-                        LoadAccountsEvent(),
-                      );
-                    },
-                  );
-                }
-                if (state is AccountLoadedState) {
-                  final query = searchController.text.toLowerCase().trim();
-                  final q = query.toLowerCase();
-
-                  final filteredList = state.accounts.where((item) {
-                    final name = item.accName?.toLowerCase() ?? '';
-                    final number = (item.accNumber ?? '').toString().toLowerCase();
-                    return name.contains(q) || number.contains(q);
-                  }).toList();
-
-                  if(filteredList.isEmpty){
+            SizedBox(height: 5),
+            Divider(
+              indent: 5,endIndent: 5,color: Theme.of(context).colorScheme.primary,height: 0,
+            ),
+            SizedBox(height: 10),
+            Expanded(
+              child: BlocConsumer<AccountsBloc, AccountsState>(
+                listener: (context,state){},
+                builder: (context, state) {
+                  if (state is AccountLoadingState) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (state is AccountErrorState) {
                     return NoDataWidget(
-                      message: locale.noDataFound,
+                      message: state.message,
+                      onRefresh: () {
+                        context.read<AccountsBloc>().add(
+                          LoadAccountsEvent(),
+                        );
+                      },
                     );
                   }
-                  return ListView.builder(
-                    itemCount: filteredList.length,
-                    itemBuilder: (context, index) {
-                      final stk = filteredList[index];
+                  if (state is AccountLoadedState) {
+                    final query = searchController.text.toLowerCase().trim();
+                    final q = query.toLowerCase();
 
-                      // ---------- UI ----------
-                      return InkWell(
-                        highlightColor: color.primary.withValues(alpha: .06),
-                        hoverColor: color.primary.withValues(alpha: .06),
-                        onTap: () {
-                         // Utils.goto(context, IndividualProfileView(ind: stk));
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: index.isOdd
-                                ? color.primary.withValues(alpha: .06)
-                                : Colors.transparent,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // ---------- Avatar ----------
-                                CircleAvatar(
-                                  backgroundColor: color.primary.withValues(alpha: .7),
-                                  radius: 23,
-                                  child: Text(
-                                    stk.accName!.getFirstLetter,
-                                    style: TextStyle(
-                                      color: color.surface,
-                                      fontSize: 15,
+                    final filteredList = state.accounts.where((item) {
+                      final name = item.accName?.toLowerCase() ?? '';
+                      final number = (item.accNumber ?? '').toString().toLowerCase();
+                      return name.contains(q) || number.contains(q);
+                    }).toList();
+
+                    if(filteredList.isEmpty){
+                      return NoDataWidget(
+                        message: locale.noDataFound,
+                      );
+                    }
+                    return ListView.builder(
+                      itemCount: filteredList.length,
+                      itemBuilder: (context, index) {
+                        final stk = filteredList[index];
+
+                        // ---------- UI ----------
+                        return InkWell(
+                          highlightColor: color.primary.withValues(alpha: .06),
+                          hoverColor: color.primary.withValues(alpha: .06),
+                          onTap: () {
+                           // Utils.goto(context, IndividualProfileView(ind: stk));
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: index.isOdd
+                                  ? color.primary.withValues(alpha: .06)
+                                  : Colors.transparent,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // ---------- Avatar ----------
+                                  CircleAvatar(
+                                    backgroundColor: color.primary.withValues(alpha: .7),
+                                    radius: 23,
+                                    child: Text(
+                                      stk.accName!.getFirstLetter,
+                                      style: TextStyle(
+                                        color: color.surface,
+                                        fontSize: 15,
+                                      ),
                                     ),
                                   ),
-                                ),
 
-                                const SizedBox(width: 10),
+                                  const SizedBox(width: 10),
 
-                                // ---------- Name + Details ----------
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      // Full Name
-                                      Text(
-                                        stk.accName??"",
-                                        style: Theme.of(context).textTheme.titleMedium,
-                                      ),
-
-                                      const SizedBox(height: 4),
-                                        Padding(
-                                          padding: const EdgeInsets.only(right: 6.0),
-                                          child: Cover(
-                                            color: color.surface,
-                                            child: Text(stk.accNumber.toString()),
-                                          ),
+                                  // ---------- Name + Details ----------
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // Full Name
+                                        Text(
+                                          stk.accName??"",
+                                          style: Theme.of(context).textTheme.titleMedium,
                                         ),
 
-                                    ],
+                                        const SizedBox(height: 4),
+                                          Padding(
+                                            padding: const EdgeInsets.only(right: 6.0),
+                                            child: Cover(
+                                              color: color.surface,
+                                              child: Text(stk.accNumber.toString()),
+                                            ),
+                                          ),
+
+                                      ],
+                                    ),
                                   ),
-                                ),
 
-                                SizedBox(
-                                    width: 100,
-                                    child: Text(stk.actCurrency.toString())),
-                                SizedBox(
-                                    width: 100,
-                                    child: Text("2500\$")),
+                                  SizedBox(
+                                      width: 100,
+                                      child: Text(stk.actCurrency.toString())),
+                                  SizedBox(
+                                      width: 100,
+                                      child: Text("2500\$")),
 
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  );
+                        );
+                      },
+                    );
 
-                }
-                return const SizedBox();
-              },
+                  }
+                  return const SizedBox();
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

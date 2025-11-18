@@ -137,8 +137,8 @@ class _DesktopState extends State<_Desktop> {
                     child: SizedBox(
                       width: 150,
                       child: Text(
-                        "Business Name",
-                        style: Theme.of(context).textTheme.titleSmall,
+                        "Zaitoon Inc",
+                        style: Theme.of(context).textTheme.titleMedium,
                         softWrap: true,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -188,7 +188,7 @@ class _DesktopState extends State<_Desktop> {
                     children: [
                       Expanded(
                         child: Text(
-                          "usrName",
+                          "ghufran.ataie",
                           softWrap: true,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:zaitoon_petroleum/Features/Other/alert_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
@@ -57,7 +58,7 @@ class _DesktopState extends State<_Desktop> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               spacing: 8,
@@ -135,9 +136,17 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ),
                 SizedBox(
-                  width: 170,
+                  width: 220,
                   child: Text(
                     locale.currencyTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+
+                SizedBox(
+                  width: 170,
+                  child: Text(
+                    locale.ccyLocalName,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
@@ -163,7 +172,9 @@ class _DesktopState extends State<_Desktop> {
             ),
           ),
           Divider(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: .09),
+            endIndent: 10,
+            indent: 10,
+            color: Theme.of(context).colorScheme.primary,
           ),
           Expanded(
             child: BlocBuilder<CurrenciesBloc, CurrenciesState>(
@@ -235,9 +246,16 @@ class _DesktopState extends State<_Desktop> {
                               ),
 
                               SizedBox(
-                                width: 190,
+                                width: 220,
                                 child: Text(
                                   ccy.ccyName ?? "",
+                                  style: Theme.of(context).textTheme.titleMedium,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 190,
+                                child: Text(
+                                  ccy.ccyLocalName ?? "",
                                   style: Theme.of(context).textTheme.titleMedium,
                                 ),
                               ),
@@ -255,9 +273,18 @@ class _DesktopState extends State<_Desktop> {
                                 width: 70,
                                 child: Checkbox(
                                     visualDensity: VisualDensity(vertical: -4),
-                                    value: ccy.ccyStatus == 1? true : false,
+                                    value: ccy.ccyStatus == 1,
                                     onChanged: (e){
-                                     // context.read<CurrenciesBloc>().add(UpdateCcyStatusEvent(ccyId: ccy.ccyId!,ccyStatus: e == true? 1 : 0));
+                                      showDialog(context: context, builder: (context){
+                                        return ZAlertDialog(
+                                          title: locale.areYouSure,
+                                          content: locale.currencyActivationMessage,
+                                          onYes: () {
+                                            context.read<CurrenciesBloc>().add(UpdateCcyStatusEvent(ccyCode: ccy.ccyCode!,status: e ?? false));
+                                            Navigator.of(context).pop();
+                                            },
+                                        );
+                                      });
                                     }),
                               ),
                             ],

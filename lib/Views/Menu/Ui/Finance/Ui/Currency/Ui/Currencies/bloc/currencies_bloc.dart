@@ -18,7 +18,18 @@ class CurrenciesBloc extends Bloc<CurrenciesEvent, CurrenciesState> {
      }catch(e){
        emit(CurrenciesErrorState(e.toString()));
      }
+    });
 
+    on<UpdateCcyStatusEvent>((event, emit) async{
+      emit(CurrenciesLoadingState());
+      try{
+        final ccy = await _repo.updateCcyStatus(status: event.status,ccyCode: event.ccyCode);
+        if(ccy['msg'] == "success"){
+          add(LoadCurrenciesEvent());
+        }
+      }catch(e){
+        emit(CurrenciesErrorState(e.toString()));
+      }
     });
   }
 }
