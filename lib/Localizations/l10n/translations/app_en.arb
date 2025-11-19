@@ -210,5 +210,18 @@
   "entities": "Entities",
   "individuals": "Individuals",
   "male": "Male",
-  "female": "Female"
+  "female": "Female",
+  "socialMedia": "Social Profile",
+  "overview": "Overview",
+  "userLog": "User Log",
+  "permissions": "Permissions",
+  "deniedPermissionMessage": "Access Denied! You don’t have permission to view this section.",
+  "deniedPermissionTitle": "Restricted Section",
+  "userManagement": "User Management",
+  "manageUser": "Review user activities and permissions.",
+  "createdAt": "Created at",
+  "cashOperations": "Cash Operations",
+  "usersAndAuthorizations": "Users & Authorizations",
+  "incorrectPassword": "Password is incorrect.",
+  "accessDenied": "Access Denied!"
 }

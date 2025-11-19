@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/attendance.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/employees.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/bloc/hrtab_bloc.dart';
 import '../../../../Features/Generic/rounded_tab.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
-import '../Settings/Ui/Users/users.dart';
+import '../../../Auth/bloc/auth_bloc.dart';
+import 'Ui/Users/Ui/users.dart';
 
 class HrTabView extends StatelessWidget {
   const HrTabView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthBloc>().state as AuthenticatedState;
+    final login = auth.loginData;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(top: 6.0),
@@ -19,6 +23,7 @@ class HrTabView extends StatelessWidget {
           builder: (context, state) {
 
             final tabs = <TabDefinition<HrTabName>>[
+              if(login.hasPermission(14) ?? false)
               TabDefinition(
                 value: HrTabName.employees,
                 label: AppLocalizations.of(context)!.employees,
@@ -31,6 +36,7 @@ class HrTabView extends StatelessWidget {
                 screen: const AttendanceView(),
               ),
 
+              if(login.hasPermission(15) ?? false)
               TabDefinition(
                 value: HrTabName.users,
                 label: AppLocalizations.of(context)!.users,

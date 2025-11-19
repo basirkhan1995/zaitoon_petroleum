@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
+import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/all_transactions.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/authorized.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/pending.dart';
@@ -12,6 +13,8 @@ import '../../../../Features/Other/shortcut.dart';
 import '../../../../Features/Widgets/outline_button.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'package:flutter/services.dart';
+
+import '../../../Auth/bloc/auth_bloc.dart';
 class JournalView extends StatelessWidget {
   const JournalView({super.key});
 
@@ -31,6 +34,8 @@ class _Desktop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
+    final auth = context.watch<AuthBloc>().state as AuthenticatedState;
+    final login = auth.loginData;
 
     // Define the actions for each F-key
     void onSell() {
@@ -160,6 +165,7 @@ class _Desktop extends StatelessWidget {
                           ),
 
                           // ---------- Buttons with keyboard shortcuts ----------
+                          if(login.hasPermission(13) ?? false)
                           ShortcutButton(
                             onPressed: onSell,
                             child: ZOutlineButton(
@@ -171,6 +177,7 @@ class _Desktop extends StatelessWidget {
                               onPressed: onSell,
                             ),
                           ),
+                          if(login.hasPermission(12) ?? false)
                           ShortcutButton(
                             onPressed: onBuy,
                             child: ZOutlineButton(
@@ -204,30 +211,35 @@ class _Desktop extends StatelessWidget {
                             ],
                           ),
 
+                          if(login.hasPermission(19) ?? false)
                           ZOutlineButton(
                             label: Text(locale.deposit),
                             icon: Icons.arrow_circle_down_rounded,
                             width: double.infinity,
                             onPressed: () {},
                           ),
+                          if(login.hasPermission(18) ?? false)
                           ZOutlineButton(
                             label: Text(locale.withdraw),
                             icon: Icons.arrow_circle_up_rounded,
                             width: double.infinity,
                             onPressed: () {},
                           ),
+                          if(login.hasPermission(22) ?? false)
                           ZOutlineButton(
                             label: Text(locale.income),
                             icon: Icons.arrow_circle_down_rounded,
                             width: double.infinity,
                             onPressed: () {},
                           ),
+                          if(login.hasPermission(23) ?? false)
                           ZOutlineButton(
                             label: Text(locale.expense),
                             icon: Icons.arrow_circle_up_rounded,
                             width: double.infinity,
                             onPressed: () {},
                           ),
+                          if(login.hasPermission(24) ?? false)
                           ZOutlineButton(
                             label: Text(locale.accountTransfer),
                             icon: Icons.swap_horiz_rounded,
@@ -245,12 +257,14 @@ class _Desktop extends StatelessWidget {
                             ],
                           ),
 
+                          if(login.hasPermission(21) ?? false)
                           ZOutlineButton(
                             label: Text(locale.glCreditTitle),
                             width: double.infinity,
                             icon: Icons.call_to_action_outlined,
                             onPressed: () {},
                           ),
+                          if(login.hasPermission(20) ?? false)
                           ZOutlineButton(
                             label: Text(locale.glDebitTitle),
                             width: double.infinity,

@@ -128,7 +128,7 @@ class GenericTab<T> extends StatelessWidget {
           padding: tabBarPadding,
           decoration: BoxDecoration(
             color: tabContainerColor,
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(borderRadius),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,7 +152,7 @@ class GenericTab<T> extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 5),
               ],
               if (description != null) ...[
                 Text(
@@ -160,7 +160,7 @@ class GenericTab<T> extends StatelessWidget {
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall
-                      ?.copyWith(color: Colors.grey[700]),
+                      ?.copyWith(color: Theme.of(context).colorScheme.secondary),
                 ),
                 const SizedBox(height: 10),
               ],

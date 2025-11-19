@@ -210,5 +210,18 @@
   "entities": "اشخاص",
   "individuals": "اشخاص",
   "male": "مرد",
-  "female": "زن"
+  "female": "زن",
+  "socialMedia": "معلومات اجتماعی",
+  "overview": "معلومات",
+  "userLog": "فعالیت کاربر",
+  "permissions": "دسترسی ها",
+  "deniedPermissionMessage": "دسترسی غیرمجاز! شما اجازه مشاهده این بخش را ندارید.",
+  "deniedPermissionTitle": "بخش محدود شده",
+  "userManagement": "مدیریت کاربر",
+  "manageUser": "بررسی فعالیت ها و دسترسی های کاربر",
+  "createdAt": "تاریخ ایجاد",
+  "cashOperations": "عملیات نقدی",
+  "usersAndAuthorizations": "کاربران و ملاحظات",
+  "incorrectPassword": "کلمه عبور نادرست است",
+  "accessDenied": "دسترسی غیرمجاز"
 }

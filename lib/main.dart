@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
+import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/login.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/bloc/currencies_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/bloc/currency_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/bloc/financial_tab_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/UserDetail/bloc/user_details_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/bloc/users_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/bloc/hrtab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/bloc/transaction_tab_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/bloc/company_settings_menu_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualByID/bloc/stakeholder_by_id_bloc.dart';
@@ -59,6 +62,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => SettingsVisibleBloc()),
         BlocProvider(create: (context) => IndividualDetailTabBloc()),
         BlocProvider(create: (context) => CompanySettingsMenuBloc()),
+        BlocProvider(create: (context) => UserDetailsTabBloc()),
 
         /// Data Management
         BlocProvider(create: (context) => IndividualsBloc(Repositories(ApiServices()))..add(LoadIndividualsEvent())),
@@ -68,6 +72,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => GlAccountsBloc(Repositories(ApiServices()))..add(LoadGlAccountEvent('en'))),
         BlocProvider(create: (context) => StakeholderByIdBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => PermissionsBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => AuthBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => CompanyProfileBloc(Repositories(ApiServices()))..add(LoadCompanyProfileEvent())),
       ],
       child: BlocBuilder<LocalizationBloc, Locale>(
         builder: (context, locale) {

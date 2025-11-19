@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Purchase/purchase.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Returns/returns.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Sales/sales.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Shift/shift.dart';
-import '../../../../Features/Generic/underline_tab.dart';
-import '../../../../Features/Other/cover.dart';
+import '../../../../Features/Generic/tab_bar.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../Auth/bloc/auth_bloc.dart';
 import 'Ui/Products/products.dart';
 import 'bloc/stock_tab_bloc.dart';
 
@@ -16,60 +17,66 @@ class StockView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
+    final auth = context.watch<AuthBloc>().state as AuthenticatedState;
+    final login = auth.loginData;
     return Scaffold(
-      body: Column(
-        children: [
-          Cover(
-            margin: EdgeInsets.only(top: 5),
-            color: Theme.of(context).colorScheme.surface,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 8),
-                  child: Row(
-                    children: [
-                      Text(locale.stock,style: Theme.of(context).textTheme.titleLarge),
-                    ],
-                  ),
-                ),
-                CustomUnderlineTabBar<StockTabsName>(
-                  tabs: [
-                    StockTabsName.products,
-                    StockTabsName.purchase,
-                    StockTabsName.sell,
-                    StockTabsName.returnedGoods,
-                    StockTabsName.shift,
-                  ],
-                  currentTab: context.watch<StockTabBloc>().state.tabs,
-                  onTabChanged: (tab) => context.read<StockTabBloc>().add(StockOnChangeEvent(tab)),
-                  labelBuilder: (tab) {
-                    final locale = AppLocalizations.of(context)!;
-                    switch (tab) {
-                      case StockTabsName.products:return locale.products;
-                      case StockTabsName.purchase:return locale.buyTitle;
-                      case StockTabsName.sell:return locale.sales;
-                      case StockTabsName.returnedGoods:return locale.returnGoods;
-                      case StockTabsName.shift:return locale.shift;
-                    }
-                  },
-                ),
-              ],
+      body: BlocBuilder<StockTabBloc, StockTabState>(
+        builder: (context, state) {
+          final tabs = <ZTabItem<StockTabsName>>[
+            if (login.hasPermission(11) ?? false)
+              ZTabItem(
+                value: StockTabsName.products,
+                label: locale.products,
+                screen: const ProductsView(),
+              ),
+            if (login.hasPermission(12) ?? false)
+              ZTabItem(
+                value: StockTabsName.purchase,
+                label: locale.buyTitle,
+                screen: const TodayPurchasedView(),
+              ),
+            if (login.hasPermission(13) ?? false)
+              ZTabItem(
+                value: StockTabsName.sell,
+                label: locale.sales,
+                screen: const TodaySalesView(),
+              ),
+
+            ZTabItem(
+              value: StockTabsName.returnedGoods,
+              label: locale.returnGoods,
+              screen: const TodayReturnGoodsView(),
             ),
-          ),
-          Expanded(
-            child: BlocBuilder<StockTabBloc, StockTabState>(
-              builder: (context, state) {
-                switch (state.tabs) {
-                  case StockTabsName.products:return const ProductsView();
-                  case StockTabsName.purchase:return const TodayPurchasedView();
-                  case StockTabsName.sell:return const TodaySalesView();
-                  case StockTabsName.returnedGoods:return const TodayReturnGoodsView();
-                  case StockTabsName.shift:return const TodayShiftView();
-                }
-              },
+            ZTabItem(
+              value: StockTabsName.shift,
+              label: locale.shift,
+              screen: const TodayShiftView(),
             ),
-          ),
-        ],
+          ];
+
+          final available = tabs.map((t) => t.value).toList();
+          final selected = available.contains(state.tabs)
+              ? state.tabs
+              : available.first;
+          return ZTabContainer<StockTabsName>(
+            margin: EdgeInsets.only(top: 6),
+            title: AppLocalizations.of(context)!.stock,
+
+            /// Tab data
+            tabs: tabs,
+            selectedValue: selected,
+
+            /// Bloc update
+            onChanged: (val) => context.read<StockTabBloc>().add(StockOnChangeEvent(val)),
+
+            /// Colors for underline style
+            style: ZTabStyle.underline,
+            selectedColor: Theme.of(context).colorScheme.primary,
+            unselectedTextColor: Theme.of(context).colorScheme.secondary,
+            selectedTextColor: Theme.of(context).colorScheme.surface,
+            tabContainerColor: Theme.of(context).colorScheme.surface,
+          );
+        },
       ),
     );
   }

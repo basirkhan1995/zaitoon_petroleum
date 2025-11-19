@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
@@ -11,6 +12,48 @@ class Repositories {
   final ApiServices api;
   const Repositories(this.api);
 
+  ///Authentication ............................................................
+  //Login Request
+  Future<Map<String, dynamic>> login({required String username, required String password}) async {
+    try {
+      final response = await api.post(
+        endpoint: "/user/login.php",
+        data: {"usrName": username, "usrPass": password},
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+
+  ///Get Company ...............................................................
+  Future<CompanySettingsModel> getCompanyProfile() async {
+    try {
+      final response = await api.get(
+        endpoint: "/setting/companyProfile.php",
+      );
+
+      final data = response.data;
+
+      // Case 3: API returns a single object instead of list
+      if (data is Map<String, dynamic>) {
+        return CompanySettingsModel.fromMap(data);
+      }
+      // Case 4: API returns a list with first object as map
+      if (data is List && data.first is Map<String, dynamic>) {
+        return CompanySettingsModel.fromMap(data.first);
+      }
+      throw Exception("Invalid API response format");
+
+    } on DioException catch (e) {
+      throw e.message ?? "Network error";
+    } catch (e) {
+      throw e.toString();
+    }
+  }
   ///Stakeholder | Individuals .................................................
   Future<List<IndividualsModel>> getStakeholders({int? indId}) async {
     try {

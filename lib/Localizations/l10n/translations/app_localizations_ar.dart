@@ -607,4 +607,44 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get female => 'زن';
+
+  @override
+  String get socialMedia => 'معلومات اجتماعی';
+
+  @override
+  String get overview => 'معلومات';
+
+  @override
+  String get userLog => 'فعالیت کاربر';
+
+  @override
+  String get permissions => 'دسترسی ها';
+
+  @override
+  String get deniedPermissionMessage =>
+      'لاسرسی رد شو! تاسو د دې برخې د لیدو اجازه نه لرئ.';
+
+  @override
+  String get deniedPermissionTitle => 'محدود شوی برخه';
+
+  @override
+  String get userManagement => 'کاربر مدیریت';
+
+  @override
+  String get manageUser => 'بررسی فعالیت ها و دسترسی های کاربر';
+
+  @override
+  String get createdAt => 'تاریخ ایجاد';
+
+  @override
+  String get cashOperations => 'نقدی عملیات';
+
+  @override
+  String get usersAndAuthorizations => 'کاربران و ملاحظات';
+
+  @override
+  String get incorrectPassword => 'کلمه عبور نادرست است';
+
+  @override
+  String get accessDenied => 'لاسرسی رد شو';
 }

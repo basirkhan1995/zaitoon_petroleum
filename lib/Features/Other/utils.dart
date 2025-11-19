@@ -44,11 +44,11 @@ class Utils{
     final overlay = Overlay.of(context, rootOverlay: true);
 
     final color = isError ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primary;
-    final icon = isError ? Icons.error_outline : Icons.check_circle_outline;
+    final icon = isError ? Icons.error_outline_rounded : Icons.check_circle_outline_rounded;
 
     final entry = OverlayEntry(
       builder: (_) => Positioned(
-        top: 60,
+        top: 10,
         left: MediaQuery.of(context).size.width * 0.1,
         right: MediaQuery.of(context).size.width * 0.1,
         child: Material(
@@ -62,7 +62,7 @@ class Utils{
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: color,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(5),
                 boxShadow: const [
                   BoxShadow(
                     color: Colors.black26,
@@ -73,13 +73,12 @@ class Utils{
               ),
               child: Row(
                 children: [
-                  Icon(icon, color: Theme.of(context).colorScheme.surface, size: 28),
+                  Icon(icon, color: Theme.of(context).colorScheme.surface, size: 35),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
-                      spacing: 8,
                       children: [
                         if (title != null)
                           Text(

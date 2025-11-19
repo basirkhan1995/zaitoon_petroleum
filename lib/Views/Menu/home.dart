@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/login.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/hr.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/transport.dart';
 import '../../Features/Generic/generic_menu.dart';
 import '../../Features/Other/responsive.dart';
@@ -22,9 +24,10 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-        mobile: _Mobile(),
-        tablet: _Tablet(),
-        desktop: _Desktop());
+      mobile: _Mobile(),
+      tablet: _Tablet(),
+      desktop: _Desktop(),
+    );
   }
 }
 
@@ -34,7 +37,10 @@ class _Desktop extends StatefulWidget {
   @override
   State<_Desktop> createState() => _DesktopState();
 }
+
 class _DesktopState extends State<_Desktop> {
+  String comName = "";
+  String adminName = "";
   @override
   Widget build(BuildContext context) {
     final currentTab = context.watch<MenuBloc>().state.tabs;
@@ -101,105 +107,138 @@ class _DesktopState extends State<_Desktop> {
     ];
 
     return Scaffold(
-      body: GenericMenuWithScreen<MenuName>(
-          padding: EdgeInsets.symmetric(vertical: 6,horizontal: 8),
-          margin: EdgeInsets.symmetric(vertical: 5,horizontal: 5),
-          selectedValue: currentTab,
-          onChanged: (val) => context.read<MenuBloc>().add(MenuOnChangedEvent(val)),
-          items: menuItems,
-          selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha:.09),
-          selectedTextColor: Theme.of(context).colorScheme.primary.withValues(alpha: .9),
-          unselectedTextColor: Theme.of(context).colorScheme.secondary,
-          menuHeaderBuilder: (isExpanded) => Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 10,
-            children: [
-              Container(
-                padding: EdgeInsets.zero,
-                margin: EdgeInsets.symmetric(horizontal: 3),
-                width: 120,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.09)
-                    )
-                ),
-                child: Image.asset("assets/images/zaitoonLogo.png"),
-              ),
-              if(isExpanded)
-                InkWell(
-                    onTap: (){
-                      context.read<MenuBloc>().add(MenuOnChangedEvent(MenuName.settings));
-                     // context.read<SettingsTabBloc>().add(SettingsOnChangeEvent(SettingsTabName.company));
-                     // context.read<CompanySettingsMenuBloc>().add(CompanySettingsOnChangedEvent(CompanySettingsMenuName.profile));
-                    },
-                    child: SizedBox(
-                      width: 150,
-                      child: Text(
-                        "Zaitoon Inc",
-                        style: Theme.of(context).textTheme.titleMedium,
-                        softWrap: true,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
+      body: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
+        builder: (context, comState) {
+          if (comState is CompanyProfileLoadedState) {
+            comName = comState.company.comName ?? "";
+          }
+          return BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              if (state is AuthenticatedState) {
+                adminName = state.loginData.usrFullName ?? "";
+              }
+              return GenericMenuWithScreen<MenuName>(
+                padding: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                selectedValue: currentTab,
+                onChanged: (val) =>
+                    context.read<MenuBloc>().add(MenuOnChangedEvent(val)),
+                items: menuItems,
+                selectedColor: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: .09),
+                selectedTextColor: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: .9),
+                unselectedTextColor: Theme.of(context).colorScheme.secondary,
+                menuHeaderBuilder: (isExpanded) => Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 10,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.zero,
+                      margin: EdgeInsets.symmetric(horizontal: 3),
+                      width: 120,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.09),
+                        ),
                       ),
-                    )
-                ),
-
-            ],
-          ),
-          menuFooterBuilder: (isExpanded) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6.0,vertical: 4),
-            child: Column(
-              mainAxisAlignment: isExpanded? MainAxisAlignment.start : MainAxisAlignment.center,
-              crossAxisAlignment: isExpanded? CrossAxisAlignment.start : CrossAxisAlignment.center,
-
-              children: [
-                InkWell(
-                  onTap: () {
-                   // context.read<AuthBloc>().add(LogoutEvent());
-                    Utils.gotoReplacement(context, LoginView());
-                  },
-                  child: Row(
-                    spacing: 6,
-                    mainAxisAlignment: isExpanded? MainAxisAlignment.start : MainAxisAlignment.center,
-                    crossAxisAlignment: isExpanded? CrossAxisAlignment.start : CrossAxisAlignment.center,
-
-                    children: [
-                      Icon(Icons.power_settings_new_outlined),
-                      if(isExpanded)
-                        Expanded(
+                      child: Image.asset("assets/images/zaitoonLogo.png"),
+                    ),
+                    if (isExpanded)
+                      InkWell(
+                        onTap: () {
+                          context.read<MenuBloc>().add(
+                            MenuOnChangedEvent(MenuName.settings),
+                          );
+                          // context.read<SettingsTabBloc>().add(SettingsOnChangeEvent(SettingsTabName.company));
+                          // context.read<CompanySettingsMenuBloc>().add(CompanySettingsOnChangedEvent(CompanySettingsMenuName.profile));
+                        },
+                        child: SizedBox(
+                          width: 150,
                           child: Text(
-                            AppLocalizations.of(context)!.logout,
+                            comName,
+                            style: Theme.of(context).textTheme.titleMedium,
                             softWrap: true,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.center,
                           ),
+                        ),
+                      ),
+                  ],
+                ),
+                menuFooterBuilder: (isExpanded) => Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6.0,
+                    vertical: 4,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: isExpanded
+                        ? MainAxisAlignment.start
+                        : MainAxisAlignment.center,
+                    crossAxisAlignment: isExpanded
+                        ? CrossAxisAlignment.start
+                        : CrossAxisAlignment.center,
+
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          // context.read<AuthBloc>().add(LogoutEvent());
+                          Utils.gotoReplacement(context, LoginView());
+                        },
+                        child: Row(
+                          spacing: 6,
+                          mainAxisAlignment: isExpanded
+                              ? MainAxisAlignment.start
+                              : MainAxisAlignment.center,
+                          crossAxisAlignment: isExpanded
+                              ? CrossAxisAlignment.start
+                              : CrossAxisAlignment.center,
+
+                          children: [
+                            Icon(Icons.power_settings_new_outlined),
+                            if (isExpanded)
+                              Expanded(
+                                child: Text(
+                                  AppLocalizations.of(context)!.logout,
+                                  softWrap: true,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      if (isExpanded) SizedBox(height: 5),
+                      if (isExpanded)
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                adminName,
+                                softWrap: true,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                     ],
                   ),
                 ),
-                if(isExpanded)
-                  SizedBox(height: 5),
-                if(isExpanded)
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "ghufran.ataie",
-                          softWrap: true,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  )
-
-              ],
-            ),
-          )
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -213,6 +252,7 @@ class _Mobile extends StatelessWidget {
     return const Placeholder();
   }
 }
+
 class _Tablet extends StatelessWidget {
   const _Tablet();
 

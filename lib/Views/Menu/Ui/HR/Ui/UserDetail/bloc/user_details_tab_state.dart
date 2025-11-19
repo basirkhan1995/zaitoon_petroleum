@@ -1,10 +1,10 @@
 part of 'user_details_tab_bloc.dart';
 
-sealed class UserDetailsTabState extends Equatable {
-  const UserDetailsTabState();
-}
+enum UserDetailsTabNames {overview, permissions, usrLog}
 
-final class UserDetailsTabInitial extends UserDetailsTabState {
+class UserDetailsTabState extends Equatable {
+  final UserDetailsTabNames tab;
+  const UserDetailsTabState({this.tab = UserDetailsTabNames.overview});
   @override
-  List<Object> get props => [];
+  List<Object> get props => [tab];
 }

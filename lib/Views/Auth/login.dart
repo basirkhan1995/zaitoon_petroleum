@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/button.dart';
 import 'package:zaitoon_petroleum/Views/Auth/ForgotPassword/forgot_password.dart';
+import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/home.dart';
 import '../../Features/Widgets/textfield_entitled.dart';
 import '../../Localizations/l10n/translations/app_localizations.dart';
@@ -42,20 +44,16 @@ class _MobileState extends State<_Mobile> {
     _passwordController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _body(),
-            ],
-          ),
-        ),
+        child: SingleChildScrollView(child: Column(children: [_body()])),
       ),
     );
   }
+
   Widget _body() {
     final locale = AppLocalizations.of(context)!;
     return Container(
@@ -138,9 +136,12 @@ class _MobileState extends State<_Mobile> {
               label: Text(AppLocalizations.of(context)!.login),
             ),
             SizedBox(height: 15),
-            TextButton(onPressed: () {
-              Utils.goto(context, ForgotPasswordView());
-            }, child: Text(locale.forgotPassword)),
+            TextButton(
+              onPressed: () {
+                Utils.goto(context, ForgotPasswordView());
+              },
+              child: Text(locale.forgotPassword),
+            ),
           ],
         ),
       ),
@@ -183,16 +184,11 @@ class _TabletState extends State<_Tablet> {
               _zaitoonTitle(context: context),
 
               /// Spacer pushes body to center
-              Expanded(
-                child: Center(
-                  child: _body(),
-                ),
-              ),
+              Expanded(child: Center(child: _body())),
             ],
           ),
         ),
       ),
-
     );
   }
 
@@ -225,12 +221,12 @@ class _TabletState extends State<_Tablet> {
                   spacing: 5,
                   children: [
                     Text(
-                        AppLocalizations.of(context)!.zPetroleum,
-                        style: TextStyle(
-                            fontFamily: "OpenSans",
-                            fontWeight: FontWeight.bold,
-                            fontSize: 30
-                        )
+                      AppLocalizations.of(context)!.zPetroleum,
+                      style: TextStyle(
+                        fontFamily: "OpenSans",
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                      ),
                     ),
                     Text(
                       AppLocalizations.of(context)!.zaitoonSlogan,
@@ -240,7 +236,6 @@ class _TabletState extends State<_Tablet> {
                 ),
               ],
             ),
-
           ],
         ),
       ],
@@ -255,15 +250,17 @@ class _TabletState extends State<_Tablet> {
         Container(
           padding: EdgeInsets.symmetric(horizontal: 15, vertical: 30),
           decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: .5),
-                    blurRadius: 3,
-                    spreadRadius: .5
-                )
-              ]
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: .5),
+                blurRadius: 3,
+                spreadRadius: .5,
+              ),
+            ],
           ),
           width: 400,
           child: Form(
@@ -302,7 +299,9 @@ class _TabletState extends State<_Tablet> {
                       });
                     },
                     icon: Icon(
-                      isPasswordSecure ? Icons.visibility_off : Icons.visibility,
+                      isPasswordSecure
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                     ),
                   ),
                   validator: (value) {
@@ -340,9 +339,12 @@ class _TabletState extends State<_Tablet> {
                   label: Text(AppLocalizations.of(context)!.login),
                 ),
                 SizedBox(height: 15),
-                TextButton(onPressed: () {
-                  Utils.goto(context, ForgotPasswordView());
-                }, child: Text(locale.forgotPassword)),
+                TextButton(
+                  onPressed: () {
+                    Utils.goto(context, ForgotPasswordView());
+                  },
+                  child: Text(locale.forgotPassword),
+                ),
               ],
             ),
           ),
@@ -376,27 +378,32 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SizedBox.expand(
-          child: Column(
-            children: [
-              /// Header Section (Logo + Language/Theme)
-              _zaitoonTitle(context: context),
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if(state is AuthenticatedState){
+            Utils.gotoReplacement(context, HomeView());
+          }if(state is AuthErrorState){
+            Utils.showOverlayMessage(context,title: locale.accessDenied, message: state.message, isError: true);
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox.expand(
+            child: Column(
+              children: [
+                /// Header Section (Logo + Language/Theme)
+                _zaitoonTitle(context: context),
 
-              /// Spacer pushes body to center
-              Expanded(
-                child: Center(
-                  child: _body(),
-                ),
-              ),
-            ],
+                /// Spacer pushes body to center
+                Expanded(child: Center(child: _body())),
+              ],
+            ),
           ),
         ),
       ),
-
     );
   }
 
@@ -425,8 +432,8 @@ class _DesktopState extends State<_Desktop> {
                   style: TextStyle(
                     fontFamily: "OpenSans",
                     fontWeight: FontWeight.bold,
-                    fontSize: 40
-                  )
+                    fontSize: 40,
+                  ),
                 ),
                 Text(
                   AppLocalizations.of(context)!.zaitoonSlogan,
@@ -447,6 +454,7 @@ class _DesktopState extends State<_Desktop> {
 
   Widget _body() {
     final locale = AppLocalizations.of(context)!;
+    final isLoading = context.watch<AuthBloc>().state is AuthLoadingState;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -457,11 +465,13 @@ class _DesktopState extends State<_Desktop> {
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: .5),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: .5),
                 blurRadius: 3,
-                spreadRadius: .5
-              )
-            ]
+                spreadRadius: .5,
+              ),
+            ],
           ),
           width: 400,
           child: Form(
@@ -479,6 +489,7 @@ class _DesktopState extends State<_Desktop> {
                 SizedBox(height: 10),
                 ZTextFieldEntitled(
                   controller: _emailController,
+                  onSubmit: (_) => onSubmit(),
                   title: locale.emailOrUsrname,
                   validator: (value) {
                     if (value.isEmpty) {
@@ -492,6 +503,7 @@ class _DesktopState extends State<_Desktop> {
                 ZTextFieldEntitled(
                   controller: _passwordController,
                   securePassword: isPasswordSecure,
+                  onSubmit: (_) => onSubmit(),
                   title: locale.password,
                   trailing: IconButton(
                     onPressed: () {
@@ -500,7 +512,9 @@ class _DesktopState extends State<_Desktop> {
                       });
                     },
                     icon: Icon(
-                      isPasswordSecure ? Icons.visibility_off : Icons.visibility,
+                      isPasswordSecure
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                     ),
                   ),
                   validator: (value) {
@@ -530,26 +544,39 @@ class _DesktopState extends State<_Desktop> {
                 SizedBox(height: 10),
 
                 ZButton(
-                  onPressed: () {
-                    if (formKey.currentState!.validate()) {
-                      Utils.gotoReplacement(context, HomeView());
-                    }
-                  },
-                  label: Text(AppLocalizations.of(context)!.login),
+                  onPressed: onSubmit,
+                  label: isLoading? SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 4,
+                        color: Theme.of(context).colorScheme.surface,
+                      )) : Text(locale.login),
                 ),
                 SizedBox(height: 15),
-                TextButton(onPressed: () {
-                  Utils.goto(context, ForgotPasswordView());
-                }, child: Text(locale.forgotPassword)),
+                TextButton(
+                  onPressed: () {
+                    Utils.goto(context, ForgotPasswordView());
+                  },
+                  child: Text(locale.forgotPassword),
+                ),
               ],
             ),
           ),
         ),
-        SizedBox(
-          height: 450,
-          child: Image.asset('assets/images/login.png'),
-        ),
+        SizedBox(height: 450, child: Image.asset('assets/images/login.png')),
       ],
     );
+  }
+
+  void onSubmit() {
+    if (formKey.currentState!.validate()) {
+      context.read<AuthBloc>().add(
+        LoginEvent(
+          usrName: _emailController.text,
+          usrPassword: _passwordController.text,
+        ),
+      );
+    }
   }
 }

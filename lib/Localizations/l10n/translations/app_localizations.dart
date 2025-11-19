@@ -1287,6 +1287,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Female'**
   String get female;
+
+  /// No description provided for @socialMedia.
+  ///
+  /// In en, this message translates to:
+  /// **'Social Profile'**
+  String get socialMedia;
+
+  /// No description provided for @overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get overview;
+
+  /// No description provided for @userLog.
+  ///
+  /// In en, this message translates to:
+  /// **'User Log'**
+  String get userLog;
+
+  /// No description provided for @permissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Permissions'**
+  String get permissions;
+
+  /// No description provided for @deniedPermissionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Denied! You don’t have permission to view this section.'**
+  String get deniedPermissionMessage;
+
+  /// No description provided for @deniedPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restricted Section'**
+  String get deniedPermissionTitle;
+
+  /// No description provided for @userManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'User Management'**
+  String get userManagement;
+
+  /// No description provided for @manageUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Review user activities and permissions.'**
+  String get manageUser;
+
+  /// No description provided for @createdAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created at'**
+  String get createdAt;
+
+  /// No description provided for @cashOperations.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash Operations'**
+  String get cashOperations;
+
+  /// No description provided for @usersAndAuthorizations.
+  ///
+  /// In en, this message translates to:
+  /// **'Users & Authorizations'**
+  String get usersAndAuthorizations;
+
+  /// No description provided for @incorrectPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is incorrect.'**
+  String get incorrectPassword;
+
+  /// No description provided for @accessDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Denied!'**
+  String get accessDenied;
 }
 
 class _AppLocalizationsDelegate

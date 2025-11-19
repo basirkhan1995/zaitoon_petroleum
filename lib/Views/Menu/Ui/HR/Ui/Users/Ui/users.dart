@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-
 import '../../../../../../../Features/Other/cover.dart';
 import '../../../../../../../Features/Widgets/no_data_widget.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';

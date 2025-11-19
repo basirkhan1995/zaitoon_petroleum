@@ -210,5 +210,18 @@
   "entities": "اشخاص",
   "individuals": "اشخاص",
   "male": "نارینه",
-  "female": "زن"
+  "female": "زن",
+  "socialMedia": "معلومات اجتماعی",
+  "overview": "معلومات",
+  "userLog": "فعالیت کاربر",
+  "permissions": "دسترسی ها",
+  "deniedPermissionMessage": "لاسرسی رد شو! تاسو د دې برخې د لیدو اجازه نه لرئ.",
+  "deniedPermissionTitle": "محدود شوی برخه",
+  "userManagement": "کاربر مدیریت",
+  "manageUser": "بررسی فعالیت ها و دسترسی های کاربر",
+  "createdAt": "تاریخ ایجاد",
+  "cashOperations": "نقدی عملیات",
+  "usersAndAuthorizations": "کاربران و ملاحظات",
+  "incorrectPassword": "کلمه عبور نادرست است",
+  "accessDenied": "لاسرسی رد شو"
 }

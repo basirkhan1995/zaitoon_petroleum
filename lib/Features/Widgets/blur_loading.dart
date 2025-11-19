@@ -29,6 +29,7 @@ class BlurLoader extends StatelessWidget {
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
                 child: Container(
+                  height: double.infinity,
                   color: overlayColor ?? Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: .03),
                 ),
               ),

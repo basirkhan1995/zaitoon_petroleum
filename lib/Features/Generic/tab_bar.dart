@@ -68,8 +68,8 @@ class ZTabContainer<T> extends StatelessWidget {
 
     this.borderRadius = 3,
     this.padding = const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-    this.margin = const EdgeInsets.symmetric(horizontal: 3),
-    this.tabBarPadding = const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
+    this.margin = const EdgeInsets.symmetric(horizontal: 0),
+    this.tabBarPadding = const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
     this.tabAlignment = MainAxisAlignment.start,
     this.tabContainerColor = const Color(0xFFF5F5F5),
   });
@@ -84,10 +84,14 @@ class ZTabContainer<T> extends StatelessWidget {
         /// ---------------- Header + Tabs
         Container(
           width: double.infinity,
+          margin: margin,
           padding: tabBarPadding,
           decoration: BoxDecoration(
             color: tabContainerColor,
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(5),
+              topRight: Radius.circular(5)
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -21,6 +21,7 @@ class PermissionsBloc extends Bloc<PermissionsEvent, PermissionsState> {
     });
 
     on<UpdatePermissionsStatusEvent>((event, emit) async{
+      emit(PermissionsLoadingState());
       try{
         final permissions = await _repo.updatePermissionStatus(
             usrId: event.usrId, uprRole: event.uprRole,uprStatus: event.uprStatus,usrName: event.usrName);

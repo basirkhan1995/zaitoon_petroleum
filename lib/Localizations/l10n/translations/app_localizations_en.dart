@@ -608,4 +608,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get female => 'Female';
+
+  @override
+  String get socialMedia => 'Social Profile';
+
+  @override
+  String get overview => 'Overview';
+
+  @override
+  String get userLog => 'User Log';
+
+  @override
+  String get permissions => 'Permissions';
+
+  @override
+  String get deniedPermissionMessage =>
+      'Access Denied! You don’t have permission to view this section.';
+
+  @override
+  String get deniedPermissionTitle => 'Restricted Section';
+
+  @override
+  String get userManagement => 'User Management';
+
+  @override
+  String get manageUser => 'Review user activities and permissions.';
+
+  @override
+  String get createdAt => 'Created at';
+
+  @override
+  String get cashOperations => 'Cash Operations';
+
+  @override
+  String get usersAndAuthorizations => 'Users & Authorizations';
+
+  @override
+  String get incorrectPassword => 'Password is incorrect.';
+
+  @override
+  String get accessDenied => 'Access Denied!';
 }
