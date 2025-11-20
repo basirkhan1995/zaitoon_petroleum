@@ -7,6 +7,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfi
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/transport.dart';
 import '../../Features/Generic/generic_menu.dart';
 import '../../Features/Other/responsive.dart';
+import '../../Features/Other/secure_storage.dart';
 import '../../Features/Other/utils.dart';
 import '../../Localizations/l10n/translations/app_localizations.dart';
 import 'Ui/Dashboard/dashboard.dart';
@@ -106,13 +107,20 @@ class _DesktopState extends State<_Desktop> {
       ),
     ];
 
+    final isLoading = context.watch<CompanyProfileBloc>().state is CompanyProfileLoadingState;
+
     return Scaffold(
       body: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
         builder: (context, comState) {
           if (comState is CompanyProfileLoadedState) {
             comName = comState.company.comName ?? "";
           }
-          return BlocBuilder<AuthBloc, AuthState>(
+          return BlocConsumer<AuthBloc, AuthState>(
+            listener: (context,state){
+              if(state is UnAuthenticatedState){
+                Utils.gotoReplacement(context, LoginView());
+              }
+            },
             builder: (context, state) {
               if (state is AuthenticatedState) {
                 adminName = state.loginData.usrFullName ?? "";
@@ -159,7 +167,14 @@ class _DesktopState extends State<_Desktop> {
                           // context.read<SettingsTabBloc>().add(SettingsOnChangeEvent(SettingsTabName.company));
                           // context.read<CompanySettingsMenuBloc>().add(CompanySettingsOnChangedEvent(CompanySettingsMenuName.profile));
                         },
-                        child: SizedBox(
+                        child: isLoading? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).colorScheme.primary,
+                            strokeWidth: 3,
+                          ),
+                        ) :  SizedBox(
                           width: 150,
                           child: Text(
                             comName,
@@ -188,10 +203,7 @@ class _DesktopState extends State<_Desktop> {
 
                     children: [
                       InkWell(
-                        onTap: () {
-                          // context.read<AuthBloc>().add(LogoutEvent());
-                          Utils.gotoReplacement(context, LoginView());
-                        },
+                        onTap: logout,
                         child: Row(
                           spacing: 6,
                           mainAxisAlignment: isExpanded
@@ -241,6 +253,11 @@ class _DesktopState extends State<_Desktop> {
         },
       ),
     );
+  }
+  void logout() async {
+    final authBloc = context.read<AuthBloc>();
+    await SecureStorage.clearCredentials();
+    authBloc.add(OnLogoutEvent());
   }
 }
 

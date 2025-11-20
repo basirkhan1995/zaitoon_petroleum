@@ -11,6 +11,7 @@ class CompanyProfileBloc extends Bloc<CompanyProfileEvent, CompanyProfileState> 
   CompanyProfileBloc(this._repo) : super(CompanyProfileInitial()) {
 
     on<LoadCompanyProfileEvent>((event, emit) async{
+      emit(CompanyProfileLoadingState());
      try{
       final com = await _repo.getCompanyProfile();
       emit(CompanyProfileLoadedState(com));

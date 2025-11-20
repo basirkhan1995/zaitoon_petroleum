@@ -28,7 +28,6 @@ class Repositories {
     }
   }
 
-
   ///Get Company ...............................................................
   Future<CompanySettingsModel> getCompanyProfile() async {
     try {

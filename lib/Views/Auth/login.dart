@@ -6,6 +6,7 @@ import 'package:zaitoon_petroleum/Features/Widgets/button.dart';
 import 'package:zaitoon_petroleum/Views/Auth/ForgotPassword/forgot_password.dart';
 import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/home.dart';
+import '../../Features/Other/secure_storage.dart';
 import '../../Features/Widgets/textfield_entitled.dart';
 import '../../Localizations/l10n/translations/app_localizations.dart';
 import '../../Localizations/locale_selector.dart';
@@ -29,7 +30,6 @@ class _Mobile extends StatefulWidget {
   @override
   State<_Mobile> createState() => _MobileState();
 }
-
 class _MobileState extends State<_Mobile> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -155,7 +155,6 @@ class _Tablet extends StatefulWidget {
   @override
   State<_Tablet> createState() => _TabletState();
 }
-
 class _TabletState extends State<_Tablet> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -362,6 +361,14 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
+
+
+  @override
+  void initState() {
+    checkAutoLogin();
+    super.initState();
+  }
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool isPasswordSecure = true;
@@ -569,14 +576,30 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
+  Future<void> checkAutoLogin() async {
+    final credentials = await SecureStorage.getCredentials();
+    if (credentials['usrName'] != null && credentials['usrPass'] != null) {
+      setState(() {
+        _emailController.text = credentials['usrName']!;
+        _passwordController.text = credentials['usrPass']!;
+        isRememberMe = true;
+      });
+
+      // Trigger auto-login
+      onSubmit();
+    }
+  }
+
   void onSubmit() {
     if (formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
         LoginEvent(
           usrName: _emailController.text,
           usrPassword: _passwordController.text,
+          rememberMe: isRememberMe
         ),
       );
     }
   }
+
 }
