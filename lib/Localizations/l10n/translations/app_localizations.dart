@@ -1509,6 +1509,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Username already exists. Please choose another.'**
   String get usernameExists;
+
+  /// No description provided for @backTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get backTitle;
+
+  /// No description provided for @changePasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get changePasswordTitle;
+
+  /// No description provided for @newPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newPasswordTitle;
+
+  /// No description provided for @forceChangePasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For your security, please set a new password.'**
+  String get forceChangePasswordHint;
+
+  /// No description provided for @oldPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Old Password'**
+  String get oldPassword;
 }
 
 class _AppLocalizationsDelegate

@@ -247,5 +247,10 @@
   "addUserTitle": "یوزر ثبتول",
   "cashier": "خزانه دار",
   "emailExists": "ایمیل مخکې ثبت شوی دی، مهرباني وکړئ بل انتخاب کړئ.",
-  "usernameExists": "کارنومه مخکې ثبت شوی دی. مهرباني وکړئ بل انتخاب کړئ."
+  "usernameExists": "کارنومه مخکې ثبت شوی دی. مهرباني وکړئ بل انتخاب کړئ.",
+  "backTitle": "برگشت",
+  "changePasswordTitle": "تغییر رمز عبور",
+  "newPasswordTitle": "رمز عبور جدید",
+  "forceChangePasswordHint": "د خپل حساب د خوندي کولو لپاره، مهرباني وکړئ نوی پاسورډ وټاکئ.",
+  "oldPassword": "رمز عبور فعلی"
 }

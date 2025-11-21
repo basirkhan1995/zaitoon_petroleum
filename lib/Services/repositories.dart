@@ -298,7 +298,6 @@ class Repositories {
           endpoint: "/HR/users.php",
           data: newUser.toMap()
       );
-      print(response);
       return response.data;
     } on DioException catch (e) {
       throw '${e.message}';

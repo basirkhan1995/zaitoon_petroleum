@@ -315,7 +315,7 @@ class _DesktopState extends State<_Desktop> {
             usrRole: _selectedRole?.name,
             usrEmail: usrEmail.text,
             usrFcp: 0,
-            usrFev: 1,
+            usrFev: 0,
             usrOwner: usrOwnerId,
           ),
         ),

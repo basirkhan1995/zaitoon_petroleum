@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:zaitoon_petroleum/Views/PasswordSettings/change_password.dart';
 import '../../../../../../../../Features/Other/responsive.dart';
+import '../../../../../../../../Features/Widgets/outline_button.dart';
+import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 
 class PasswordView extends StatelessWidget {
   const PasswordView({super.key});
@@ -16,7 +19,38 @@ class PasswordView extends StatelessWidget {
 class _Desktop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ZOutlineButton(
+                      icon: Icons.lock_clock_rounded,
+                      backgroundHover: Theme.of(context).colorScheme.primary,
+                      height: 50,
+                      width: 250,
+                      label: Text(AppLocalizations.of(context)!.changePasswordTitle),
+                      onPressed: (){
+                        showDialog(context: context, builder: (context){
+                          return const PasswordSettingsView();
+                        });
+                      }),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
 

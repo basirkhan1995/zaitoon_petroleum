@@ -12,6 +12,7 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final Repositories _repo;
   AuthBloc(this._repo) : super(AuthInitial()) {
+
     on<LoginEvent>((event, emit) async {
       final locale = localizationService.loc;
       emit(AuthLoadingState());
@@ -23,11 +24,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
 
         if (response.containsKey("msg") && response["msg"] != null) {
-          switch (response["msg"]) {
-            case "incorrect": throw locale.incorrectCredential;
-            case "blocked": throw locale.blockedMessage;
-            case "unverified": throw locale.unverified;
-            default: throw response["msg"];
+          final String result = response["msg"];
+
+          switch (result) {
+            case "incorrect":
+              emit(AuthErrorState(locale.incorrectCredential));
+              return;
+
+            case "blocked":
+              emit(AuthErrorState(locale.blockedMessage));
+              return;
+
+            case "unverified":
+              emit(AuthErrorState(locale.unverified));
+              return;
+
+            case "fcp":
+              emit(ForceChangePasswordState());
+              return;
+
+            case "fev":
+              emit(EmailVerificationState());
+              return;
+
+            default:
+              emit(AuthErrorState(result));
+              return;
           }
         }
 
@@ -38,7 +60,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           await SecureStorage.clearCredentials();
         }
 
-        // Success: parse login
+        // Success
         final loginData = LoginData.fromMap(response);
         emit(AuthenticatedState(loginData));
 
@@ -47,9 +69,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
+
     on<OnLogoutEvent>((event, emit){
       emit(UnAuthenticatedState());
     });
-
+    on<OnResetAuthState>((event, emit){
+      emit(AuthInitial());
+    });
   }
 }

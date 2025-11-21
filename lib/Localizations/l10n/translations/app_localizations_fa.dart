@@ -723,4 +723,20 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get usernameExists =>
       'نام کاربری قبلاً ثبت شده است. لطفاً مورد دیگری انتخاب کنید.';
+
+  @override
+  String get backTitle => 'برگشت';
+
+  @override
+  String get changePasswordTitle => 'تغییر رمز عبور';
+
+  @override
+  String get newPasswordTitle => 'رمز عبور جدید';
+
+  @override
+  String get forceChangePasswordHint =>
+      'برای امنیت حساب، لطفاً گذرواژه جدیدی تنظیم کنید.';
+
+  @override
+  String get oldPassword => 'رمز عبور فعلی';
 }

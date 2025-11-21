@@ -8,6 +8,17 @@ final class AuthInitial extends AuthState {
   @override
   List<Object> get props => [];
 }
+
+final class ForceChangePasswordState extends AuthState {
+  @override
+  List<Object> get props => [];
+}
+
+final class EmailVerificationState extends AuthState {
+  @override
+  List<Object> get props => [];
+}
+
 final class AuthLoadingState extends AuthState {
   @override
   List<Object> get props => [];

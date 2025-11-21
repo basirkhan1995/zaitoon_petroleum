@@ -4,13 +4,14 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/button.dart';
 import 'package:zaitoon_petroleum/Views/Auth/ForgotPassword/forgot_password.dart';
+import 'package:zaitoon_petroleum/Views/Auth/Ui/force_change_password.dart';
 import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/home.dart';
-import '../../Features/Other/secure_storage.dart';
-import '../../Features/Widgets/textfield_entitled.dart';
-import '../../Localizations/l10n/translations/app_localizations.dart';
-import '../../Localizations/locale_selector.dart';
-import '../../Themes/Ui/theme_selector.dart';
+import '../../../Features/Other/secure_storage.dart';
+import '../../../Features/Widgets/textfield_entitled.dart';
+import '../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../Localizations/locale_selector.dart';
+import '../../../Themes/Ui/theme_selector.dart';
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
@@ -390,12 +391,14 @@ class _DesktopState extends State<_Desktop> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          if(state is AuthenticatedState){
-            Utils.gotoReplacement(context, HomeView());
-          }if(state is AuthErrorState){
-            Utils.showOverlayMessage(context,title: locale.accessDenied, message: state.message, isError: true);
+          if(state is AuthenticatedState){Utils.gotoReplacement(context, HomeView());
+          }if(state is AuthErrorState){Utils.showOverlayMessage(context,title: locale.accessDenied, message: state.message, isError: true);}
+          if(state is ForceChangePasswordState){
+            Utils.goto(context, ForceChangePasswordView(credential: _emailController.text));
+          }if(state is EmailVerificationState){
+            print("Verify your email first");
           }
-        },
+          },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: SizedBox.expand(

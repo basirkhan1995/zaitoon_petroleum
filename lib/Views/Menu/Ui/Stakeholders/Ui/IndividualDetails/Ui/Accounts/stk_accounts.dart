@@ -51,9 +51,7 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.read<AccountsBloc>().add(LoadAccountsEvent(ownerId: widget.ind.perId));
-    });
+    onRefresh();
     super.initState();
   }
 

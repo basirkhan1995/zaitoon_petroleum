@@ -724,4 +724,20 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get usernameExists =>
       'کارنومه مخکې ثبت شوی دی. مهرباني وکړئ بل انتخاب کړئ.';
+
+  @override
+  String get backTitle => 'برگشت';
+
+  @override
+  String get changePasswordTitle => 'تغییر رمز عبور';
+
+  @override
+  String get newPasswordTitle => 'رمز عبور جدید';
+
+  @override
+  String get forceChangePasswordHint =>
+      'د خپل حساب د خوندي کولو لپاره، مهرباني وکړئ نوی پاسورډ وټاکئ.';
+
+  @override
+  String get oldPassword => 'رمز عبور فعلی';
 }

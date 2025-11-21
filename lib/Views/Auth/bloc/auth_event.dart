@@ -31,3 +31,9 @@ class OnLogoutEvent extends AuthEvent{
   List<Object?> get props => [];
 }
 
+
+class OnResetAuthState extends AuthEvent{
+  @override
+  List<Object?> get props => [];
+}
+

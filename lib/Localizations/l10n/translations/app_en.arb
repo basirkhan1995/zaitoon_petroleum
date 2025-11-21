@@ -247,5 +247,10 @@
   "addUserTitle": "Add User",
   "cashier": "Cashier",
   "emailExists": "Email already exists, please choose another.",
-  "usernameExists": "Username already exists. Please choose another."
+  "usernameExists": "Username already exists. Please choose another.",
+  "backTitle": "Back",
+  "changePasswordTitle": "Change Password",
+  "newPasswordTitle": "New Password",
+  "forceChangePasswordHint": "For your security, please set a new password.",
+  "oldPassword": "Old Password"
 }

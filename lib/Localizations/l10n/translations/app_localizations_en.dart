@@ -724,4 +724,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get usernameExists =>
       'Username already exists. Please choose another.';
+
+  @override
+  String get backTitle => 'Back';
+
+  @override
+  String get changePasswordTitle => 'Change Password';
+
+  @override
+  String get newPasswordTitle => 'New Password';
+
+  @override
+  String get forceChangePasswordHint =>
+      'For your security, please set a new password.';
+
+  @override
+  String get oldPassword => 'Old Password';
 }

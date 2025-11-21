@@ -1,0 +1,221 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
+import '../../../Features/Other/responsive.dart';
+import '../../../Features/Other/utils.dart';
+import '../../../Features/Widgets/button.dart';
+import '../../../Features/Widgets/textfield_entitled.dart';
+import '../../../Localizations/l10n/translations/app_localizations.dart';
+import 'bloc/password_bloc.dart';
+
+class PasswordSettingsView extends StatelessWidget {
+  const PasswordSettingsView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ResponsiveLayout(
+        mobile: _Mobile(),
+        tablet: _Tablet(),
+        desktop: _Desktop());
+  }
+}
+
+class _Desktop extends StatefulWidget {
+
+  const _Desktop();
+
+  @override
+  State<_Desktop> createState() => _DesktopState();
+}
+class _DesktopState extends State<_Desktop> {
+
+  final formKey = GlobalKey<FormState>();
+  final newPassword = TextEditingController();
+  final confirmPassword = TextEditingController();
+  bool isSecure = true;
+  bool isError = false;
+  bool isLoading = false;
+  bool isVisible1 = true, isVisible2 = true, isVisible3 = true;
+  String error = "";
+
+  @override
+  Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
+    return BlocConsumer<PasswordBloc, PasswordState>(
+      listener: (context, state) {
+        if(state is PasswordLoadingState){
+          isLoading = true;
+          error = "";
+        }if(state is PasswordErrorState){
+          isLoading = false;
+          error = state.message;
+        }if(state is PasswordResetSuccessState){
+          isLoading = false;
+          error = "";
+          Navigator.of(context).pop();
+        }
+      },
+      builder: (context, state) {
+        return ZFormDialog(
+          width: 400,
+          isActionTrue: false,
+          padding: EdgeInsets.all(15),
+          onAction: null,
+          icon: Icons.lock_clock_sharp,
+          title: locale.changePasswordTitle,
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 5),
+                ZTextFieldEntitled(
+                  controller: newPassword,
+                  title: AppLocalizations.of(context)!.oldPassword,
+                  isRequired: true,
+                  securePassword: isVisible1,
+                  trailing: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isVisible1 = !isVisible1;
+                      });
+                    },
+                    icon: Icon(
+                      !isVisible1
+                          ? Icons.visibility
+                          : Icons.visibility_off_rounded,
+                      size: 18,
+                    ),
+                  ),
+                  validator: (value) {
+                    if(value.isEmpty){
+                      return locale.required(locale.password);
+                    }if(value.isNotEmpty){
+                      Utils.validatePassword(
+                        value: value,
+                        context: context,
+                      );
+                    }return null;
+                  },
+                ),
+                ZTextFieldEntitled(
+                  controller: newPassword,
+                  title: AppLocalizations.of(context)!.newPasswordTitle,
+                  isRequired: true,
+                  securePassword: isVisible2,
+                  trailing: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isVisible2 = !isVisible2;
+                      });
+                    },
+                    icon: Icon(
+                      !isVisible2
+                          ? Icons.visibility
+                          : Icons.visibility_off_rounded,
+                      size: 18,
+                    ),
+                  ),
+                  validator: (value) {
+                    if(value.isEmpty){
+                      return locale.required(locale.password);
+                    }if(value.isNotEmpty){
+                      Utils.validatePassword(
+                        value: value,
+                        context: context,
+                      );
+                    }return null;
+                  },
+                ),
+                ZTextFieldEntitled(
+                  controller: confirmPassword,
+                  title: AppLocalizations.of(context)!.confirmPassword,
+                  isRequired: true,
+                  securePassword: isVisible3,
+                  trailing: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isVisible3 = !isVisible3;
+                      });
+                    },
+                    icon: Icon(
+                      !isVisible3
+                          ? Icons.visibility
+                          : Icons.visibility_off_rounded,
+                      size: 18,
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return AppLocalizations.of(context)!.required(
+                        locale.confirmPassword,
+                      );
+                    } else if (newPassword.text != confirmPassword.text) {
+                      return locale.passwordNotMatch;
+                    }
+                    return null;
+                  },
+                ),
+
+                error.isEmpty
+                    ? const SizedBox()
+                    : Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      error,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15),
+                ZButton(
+                  height: 40,
+                  width: MediaQuery.sizeOf(context).width,
+                  label: isLoading? CircularProgressIndicator(color: Theme.of(context).colorScheme.surface) : Text(
+                    AppLocalizations.of(context)!.changePasswordTitle,
+                  ),
+                  onPressed: () async {
+                    if (formKey.currentState!.validate()) {
+                      // context.read<PasswordCubit>().resetPasswordEvent(
+                      //   usrName: widget.credential,
+                      //   newPassword: newPassword.text,
+                      //   usrEmail: widget.credential,
+                      // );
+                    }
+                  },
+                ),
+
+                const SizedBox(height: 15),
+              ],
+            ),
+          ),
+
+        );
+      },
+    );
+  }
+}
+
+class _Mobile extends StatelessWidget {
+
+  const _Mobile();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+class _Tablet extends StatelessWidget {
+  const _Tablet();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+

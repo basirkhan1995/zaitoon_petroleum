@@ -3,7 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Auth/login.dart';
+import 'package:zaitoon_petroleum/Views/Auth/Ui/login.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/bloc/currencies_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/bloc/currency_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
@@ -32,6 +32,7 @@ import 'Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/bloc/permissions_bloc.dart
 import 'Views/Menu/Ui/Settings/Ui/General/bloc/general_tab_bloc.dart';
 import 'Views/Menu/Ui/Settings/bloc/settings_tab_bloc.dart';
 import 'Views/Menu/Ui/Settings/features/Visibility/bloc/settings_visible_bloc.dart';
+import 'Views/PasswordSettings/bloc/password_bloc.dart';
 
 
 void main() async {
@@ -73,6 +74,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => StakeholderByIdBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => PermissionsBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => AuthBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => PasswordBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => CompanyProfileBloc(Repositories(ApiServices()))..add(LoadCompanyProfileEvent())),
       ],
       child: BlocBuilder<LocalizationBloc, Locale>(
