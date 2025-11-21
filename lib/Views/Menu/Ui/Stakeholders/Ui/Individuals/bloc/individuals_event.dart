@@ -11,6 +11,14 @@ class LoadIndividualsEvent extends IndividualsEvent{
   List<Object?> get props => [];
 }
 
+class SearchIndividualsEvent extends IndividualsEvent {
+  final String query;
+  const SearchIndividualsEvent(this.query);
+  @override
+  List<Object?> get props => [query];
+}
+
+
 class AddIndividualEvent extends IndividualsEvent{
   final IndividualsModel newStk;
   const AddIndividualEvent(this.newStk);

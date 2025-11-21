@@ -712,4 +712,15 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get addUserTitle => 'ثبت یورر';
+
+  @override
+  String get cashier => 'خزانه دار';
+
+  @override
+  String get emailExists =>
+      'ایمیل قبلاً ثبت شده است، لطفاً مورد دیگری انتخاب کنید';
+
+  @override
+  String get usernameExists =>
+      'نام کاربری قبلاً ثبت شده است. لطفاً مورد دیگری انتخاب کنید.';
 }

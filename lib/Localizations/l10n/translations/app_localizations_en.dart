@@ -714,4 +714,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addUserTitle => 'Add User';
+
+  @override
+  String get cashier => 'Cashier';
+
+  @override
+  String get emailExists => 'Email already exists, please choose another.';
+
+  @override
+  String get usernameExists =>
+      'Username already exists. Please choose another.';
 }

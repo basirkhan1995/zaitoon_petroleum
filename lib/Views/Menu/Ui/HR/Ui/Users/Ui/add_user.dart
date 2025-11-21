@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/bloc/users_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/role_dropdown.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/features/individuals_dropdown.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
+import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 
 class AddUserView extends StatelessWidget {
   const AddUserView({super.key});
@@ -50,150 +55,272 @@ class _DesktopState extends State<_Desktop> {
   final TextEditingController usrEmail = TextEditingController();
   final TextEditingController usrPas = TextEditingController();
   final TextEditingController passConfirm = TextEditingController();
+  final TextEditingController usrOwner = TextEditingController();
 
   UserRole? _selectedRole;
   bool isPasswordSecure = true;
+  int usrOwnerId = 1;
   final formKey = GlobalKey<FormState>();
-
+  String? errorMessage;
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
+    final isLoading = context.watch<UsersBloc>().state is UsersLoadingState;
+    final isIndLoading =
+        context.watch<IndividualsBloc>().state is IndividualLoadingState;
     return ZFormDialog(
       width: 600,
       icon: Icons.lock_clock_sharp,
-      onAction: () {
-        if(formKey.currentState!.validate()){
-
-        }
-      },
-      actionLabel: Text(locale.create),
+      onAction: onSubmit,
+      actionLabel: isLoading
+          ? SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 4,
+                color: Theme.of(context).colorScheme.surface,
+              ),
+            )
+          : Text(locale.create),
       title: locale.addUserTitle,
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 5,
-              children: [
-                Row(
-                  spacing: 5,
-                  children: [
-                    Expanded(
-                      flex: 4,
-                      child: ZTextFieldEntitled(
-                        isRequired: true,
-                        controller: usrName,
-                        validator: (e) {
-                          if (e.isEmpty) {
-                            return locale.required(locale.username);
-                          }if(e.isNotEmpty){
-                            return Utils.validateUsername(value: e,context: context);
-                          }
-                          return null;
-                        },
-                        title: locale.username,
+      child: BlocListener<UsersBloc, UsersState>(
+        listener: (context, state) {
+          if (state is UsersErrorState) {
+            setState(() {
+              errorMessage = state.message; // store message locally
+            });
+          }
+        },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 5,
+                children: [
+                  Row(
+                    spacing: 5,
+                    children: [
+                      Expanded(
+                        flex: 4,
+                        child: ZTextFieldEntitled(
+                          isRequired: true,
+                          controller: usrName,
+                          validator: (e) {
+                            if (e.isEmpty) {
+                              return locale.required(locale.username);
+                            }
+                            if (e.isNotEmpty) {
+                              return Utils.validateUsername(
+                                value: e,
+                                context: context,
+                              );
+                            }
+                            return null;
+                          },
+                          title: locale.username,
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: UserRoleDropdown(
+                          onRoleSelected: (UserRole role) {
+                            setState(() {
+                              _selectedRole = role;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  GenericTextfield<
+                    IndividualsModel,
+                    IndividualsBloc,
+                    IndividualsState
+                  >(
+                    showAllOnFocus: true,
+                    controller: usrOwner,
+                    title: locale.individuals,
+                    hintText: locale.userOwner,
+                    isRequired: true,
+                    bloc: context.read<IndividualsBloc>(),
+                    fetchAllFunction: (bloc) =>
+                        bloc.add(LoadIndividualsEvent()),
+                    searchFunction: (bloc, query) =>
+                        bloc.add(SearchIndividualsEvent(query)),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return locale.required(locale.individuals);
+                      }
+                      return null;
+                    },
+
+                    itemBuilder: (context, account) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 5,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "${account.perName} ${account.perLastName}",
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    Expanded(
-                      flex: 2,
-                      child: UserRoleDropdown(
-                        onRoleSelected: (UserRole role) {
-                          setState(() {
-                            _selectedRole = role;
-                          });
-                        },
-                      ),
+                    itemToString: (ind) => "${ind.perName} ${ind.perLastName}",
+                    stateToLoading: (state) => state is IndividualLoadingState,
+                    loadingBuilder: (context) => const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
                     ),
 
-                  ],
-                ),
-                StakeholdersDropdown(
+                    stateToItems: (state) {
+                      if (state is IndividualLoadedState) {
+                        return state.individuals;
+                      }
+                      return [];
+                    },
+                    onSelected: (value) {
+                      setState(() {
+                        usrOwnerId = value.perId!;
+                      });
+                    },
+                    noResultsText: isIndLoading
+                        ? "Loading..."
+                        : locale.noDataFound,
+                    showClearButton: true,
+                  ),
 
-                    isMulti: false,
-                    title: locale.userOwner,
-                    onSingleChanged: (e){},
-                    onMultiChanged: (e){}),
-                ZTextFieldEntitled(
-                  isRequired: true,
-                  controller: usrEmail,
-                  validator: (e) {
-                    if (e.isEmpty) {
-                      return locale.required(locale.email);
-                    }if(e.isNotEmpty){
-                      return Utils.validateEmail(email: e, context: context);
-                    }
-                    return null;
-                  },
-                  title: locale.email,
-                ),
-                Row(
-                  spacing: 3,
-                 children: [
-                   Expanded(
-                     child: ZTextFieldEntitled(
-                       isRequired: true,
-                       controller: usrPas,
-                       validator: (e){
-                         if(e.isEmpty){
-                           return locale.required(locale.password);
-                         }if(e.isNotEmpty){
-                          return Utils.validatePassword(value: e,context: context);
-                         }
-                         return null;
-                       },
-                       title: locale.password,
-                       trailing: IconButton(
-                         onPressed: () {
-                           setState(() {
-                             isPasswordSecure = !isPasswordSecure;
-                           });
-                         },
-                         icon: Icon(
-                           isPasswordSecure
-                               ? Icons.visibility_off
-                               : Icons.visibility,
-                         ),
-                       ),
-                     ),
-                   ),
-                   Expanded(
-                     child: ZTextFieldEntitled(
-                       isRequired: true,
-                       controller: passConfirm,
-                       validator: (e) {
-                         if (e.isEmpty) {
-                           return locale.required(locale.confirmPassword);
-                         }if(usrPas.text != passConfirm.text){
-                           return locale.passwordNotMatch;
-                         }
-                         return null;
-                       },
-                       title: locale.confirmPassword,
-                       trailing: IconButton(
-                         onPressed: () {
-                           setState(() {
-                             isPasswordSecure = !isPasswordSecure;
-                           });
-                         },
-                         icon: Icon(
-                           isPasswordSecure
-                               ? Icons.visibility_off
-                               : Icons.visibility,
-                         ),
-                       ),
-                     ),
-                   ),
-                 ],
-               ),
-                SizedBox(height: 5),
-
-              ],
+                  ZTextFieldEntitled(
+                    isRequired: true,
+                    controller: usrEmail,
+                    validator: (e) {
+                      if (e.isEmpty) {
+                        return locale.required(locale.email);
+                      }
+                      if (e.isNotEmpty) {
+                        return Utils.validateEmail(email: e, context: context);
+                      }
+                      return null;
+                    },
+                    title: locale.email,
+                  ),
+                  Row(
+                    spacing: 3,
+                    children: [
+                      Expanded(
+                        child: ZTextFieldEntitled(
+                          isRequired: true,
+                          controller: usrPas,
+                          validator: (e) {
+                            if (e.isEmpty) {
+                              return locale.required(locale.password);
+                            }
+                            if (e.isNotEmpty) {
+                              return Utils.validatePassword(
+                                value: e,
+                                context: context,
+                              );
+                            }
+                            return null;
+                          },
+                          title: locale.password,
+                          trailing: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                isPasswordSecure = !isPasswordSecure;
+                              });
+                            },
+                            icon: Icon(
+                              isPasswordSecure
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ZTextFieldEntitled(
+                          isRequired: true,
+                          controller: passConfirm,
+                          validator: (e) {
+                            if (e.isEmpty) {
+                              return locale.required(locale.confirmPassword);
+                            }
+                            if (usrPas.text != passConfirm.text) {
+                              return locale.passwordNotMatch;
+                            }
+                            return null;
+                          },
+                          title: locale.confirmPassword,
+                          trailing: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                isPasswordSecure = !isPasswordSecure;
+                              });
+                            },
+                            icon: Icon(
+                              isPasswordSecure
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (errorMessage != null && errorMessage!.isNotEmpty)
+                    Row(
+                      spacing: 5,
+                      children: [
+                        Icon(
+                          Icons.error_outline_rounded,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                        Text(
+                          errorMessage ?? "",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  void onSubmit() {
+    if (formKey.currentState!.validate()) {
+      context.read<UsersBloc>().add(
+        AddUserEvent(
+          UsersModel(
+            usrName: usrName.text.trim(),
+            usrPass: usrPas.text,
+            usrBranch: 1000,
+            usrRole: _selectedRole?.name,
+            usrEmail: usrEmail.text,
+            usrFcp: 0,
+            usrFev: 1,
+            usrOwner: usrOwnerId,
+          ),
+        ),
+      );
+    }
   }
 }

@@ -13,7 +13,6 @@ class Repositories {
   const Repositories(this.api);
 
   ///Authentication ............................................................
-  //Login Request
   Future<Map<String, dynamic>> login({required String username, required String password}) async {
     try {
       final response = await api.post(
@@ -264,7 +263,7 @@ class Repositories {
 
       // Fetch data from API
       final response = await api.get(
-        endpoint: "/user/users.php",
+        endpoint: "/HR/users.php",
         queryParams: queryParams,
       );
 
@@ -293,7 +292,20 @@ class Repositories {
       throw "$e";
     }
   }
-
+  Future<Map<String, dynamic>> addUser({required UsersModel newUser}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/HR/users.php",
+          data: newUser.toMap()
+      );
+      print(response);
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
   ///Permissions ..............................................................
   Future<List<UserPermissionsModel>> getPermissions({required String usrName}) async {
     try {

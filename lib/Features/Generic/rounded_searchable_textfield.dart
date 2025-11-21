@@ -174,10 +174,20 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
 
   Widget _buildSuggestionsList(List<T> items) {
     if (items.isEmpty) {
+      final isLoading = widget.bloc != null &&
+          widget.stateToLoading != null &&
+          widget.stateToLoading!(widget.bloc!.state);
+
       return SizedBox(
         height: 60,
         child: Center(
-          child: Text(
+          child: isLoading
+              ? const SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          )
+              : Text(
             widget.noResultsText,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).hintColor,
@@ -186,6 +196,7 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
         ),
       );
     }
+
 
     return ConstrainedBox(
       constraints: const BoxConstraints(maxHeight: 200),

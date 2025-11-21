@@ -244,5 +244,8 @@
   "usernameNoStartDigit": "Username cannot start with a number",
   "usernameInvalidChars": "Username can only contain letters, numbers.",
   "usernameNoSpaces": "Username cannot contain spaces",
-  "addUserTitle": "Add User"
+  "addUserTitle": "Add User",
+  "cashier": "Cashier",
+  "emailExists": "Email already exists, please choose another.",
+  "usernameExists": "Username already exists. Please choose another."
 }

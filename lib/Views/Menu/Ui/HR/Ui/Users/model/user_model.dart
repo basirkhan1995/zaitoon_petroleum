@@ -18,12 +18,20 @@ class UsersModel {
   final String? usrEmail;
   final String? usrToken;
   final DateTime? usrEntryDate;
+  final int? usrOwner;
+  final String? usrPass;
+  final int? usrFcp;
+  final int? usrFev;
 
   UsersModel({
     this.usrId,
     this.usrFullName,
     this.usrName,
     this.usrRole,
+    this.usrOwner,
+    this.usrFcp,
+    this.usrFev,
+    this.usrPass,
     this.usrStatus,
     this.usrBranch,
     this.usrEmail,
@@ -70,6 +78,10 @@ class UsersModel {
     "usrID": usrId,
     "usrFullName": usrFullName,
     "usrName": usrName,
+    "usrPass": usrPass,
+    "usrOwner": usrOwner,
+    "usrFCP": usrFcp ?? 1,
+    "usrFEV": usrFev ?? 0,
     "usrRole": usrRole,
     "usrStatus": usrStatus,
     "usrBranch": usrBranch,

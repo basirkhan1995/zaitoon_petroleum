@@ -8,7 +8,7 @@ part 'individuals_state.dart';
 class IndividualsBloc extends Bloc<IndividualsEvent, IndividualsState> {
   final Repositories _repo;
   IndividualsBloc(this._repo) : super(IndividualsInitial()) {
-
+    List<IndividualsModel> allIndividuals = [];
     on<LoadIndividualsEvent>((event, emit)async {
       emit(IndividualLoadingState());
       try{
@@ -48,5 +48,25 @@ class IndividualsBloc extends Bloc<IndividualsEvent, IndividualsState> {
       }
     });
 
+    on<SearchIndividualsEvent>((event,emit)async{
+      final query = event.query.toLowerCase().trim();
+
+      if (query.isEmpty) {
+        emit(IndividualLoadedState(allIndividuals));
+      } else {
+        final filtered = allIndividuals.where((i) {
+          final name = i.perName?.toLowerCase() ?? '';
+          final phone = i.perLastName?.toLowerCase() ?? '';
+          return name.contains(query) || phone.contains(query);
+        }).toList();
+
+        emit(IndividualLoadedState(filtered));
+      }
+    });
+
+
+
   }
+
+
 }

@@ -8,51 +8,37 @@ enum UserRole {
   deputy,
   admin,
   authoriser,
+  cashier,
   officer,
   customerService,
   customer;
 
   String toDatabaseValue() {
     switch (this) {
-      case UserRole.ceo:
-        return 'CEO';
-      case UserRole.manager:
-        return 'Manager';
-      case UserRole.deputy:
-        return 'Deputy';
-      case UserRole.admin:
-        return 'Admin';
-      case UserRole.authoriser:
-        return 'Authoriser';
-      case UserRole.officer:
-        return 'Officer';
-      case UserRole.customerService:
-        return 'Customer Service';
-      case UserRole.customer:
-        return 'Customer';
+      case UserRole.ceo:return 'CEO';
+      case UserRole.manager:return 'Manager';
+      case UserRole.deputy:return 'Deputy';
+      case UserRole.admin:return 'Admin';
+      case UserRole.authoriser:return 'Authoriser';
+      case UserRole.cashier: return 'Cashier';
+      case UserRole.officer: return 'Officer';
+      case UserRole.customerService: return 'Customer Service';
+      case UserRole.customer: return 'Customer';
     }
   }
 
   static UserRole fromDatabaseValue(String value) {
     switch (value) {
-      case 'CEO':
-        return UserRole.ceo;
-      case 'Manager':
-        return UserRole.manager;
-      case 'Deputy':
-        return UserRole.deputy;
-      case 'Admin':
-        return UserRole.admin;
-      case 'Authoriser':
-        return UserRole.authoriser;
-      case 'Officer':
-        return UserRole.officer;
-      case 'Customer Service':
-        return UserRole.customerService;
-      case 'Customer':
-        return UserRole.customer;
-      default:
-        return UserRole.customer;
+      case 'CEO': return UserRole.ceo;
+      case 'Manager': return UserRole.manager;
+      case 'Deputy': return UserRole.deputy;
+      case 'Admin': return UserRole.admin;
+      case 'Authoriser': return UserRole.authoriser;
+      case 'Cashier': return UserRole.cashier;
+      case 'Officer': return UserRole.officer;
+      case 'Customer Service': return UserRole.customerService;
+      case 'Customer': return UserRole.customer;
+      default: return UserRole.customer;
     }
   }
 }
@@ -62,22 +48,15 @@ class RoleTranslator {
     final localizations = AppLocalizations.of(context)!;
 
     switch (role) {
-      case UserRole.ceo:
-        return localizations.ceo;
-      case UserRole.manager:
-        return localizations.manager;
-      case UserRole.deputy:
-        return localizations.deputy;
-      case UserRole.admin:
-        return localizations.admin;
-      case UserRole.authoriser:
-        return localizations.authoriser;
-      case UserRole.officer:
-        return localizations.officer;
-      case UserRole.customerService:
-        return localizations.customerService;
-      case UserRole.customer:
-        return localizations.customer;
+      case UserRole.ceo: return localizations.ceo;
+      case UserRole.manager:return localizations.manager;
+      case UserRole.deputy:return localizations.deputy;
+      case UserRole.admin:return localizations.admin;
+      case UserRole.authoriser:return localizations.authoriser;
+      case UserRole.cashier:return localizations.cashier;
+      case UserRole.officer:return localizations.officer;
+      case UserRole.customerService:return localizations.customerService;
+      case UserRole.customer:return localizations.customer;
     }
   }
 
@@ -164,6 +143,7 @@ class _UserRoleDropdownState extends State<UserRoleDropdown> {
       UserRole.deputy => Icons.assistant_rounded,
       UserRole.admin => Icons.admin_panel_settings_rounded,
       UserRole.authoriser => Icons.verified_user_rounded,
+      UserRole.cashier => Icons.monetization_on_rounded,
       UserRole.officer => Icons.security_rounded,
       UserRole.customerService => Icons.support_agent_rounded,
       UserRole.customer => Icons.person_rounded,

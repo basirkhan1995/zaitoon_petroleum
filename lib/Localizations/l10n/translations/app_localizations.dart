@@ -1491,6 +1491,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add User'**
   String get addUserTitle;
+
+  /// No description provided for @cashier.
+  ///
+  /// In en, this message translates to:
+  /// **'Cashier'**
+  String get cashier;
+
+  /// No description provided for @emailExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Email already exists, please choose another.'**
+  String get emailExists;
+
+  /// No description provided for @usernameExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Username already exists. Please choose another.'**
+  String get usernameExists;
 }
 
 class _AppLocalizationsDelegate

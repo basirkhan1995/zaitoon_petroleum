@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:zaitoon_petroleum/Services/localization_services.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
-
 import '../model/user_model.dart';
 
 
@@ -22,6 +22,23 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
       }
     });
 
+    on<AddUserEvent>((event, emit) async{
+      final locale = localizationService.loc;
+      emit(UsersLoadingState());
+      try{
+        final response = await _repo.addUser(newUser: event.newUser);
+        final String msg = response['msg'];
+        if (msg == "success") {
+          add(LoadUsersEvent());
+        }else if(msg == "email exists"){
+          emit(UsersErrorState(locale.emailExists));
+        }else if(msg == "user exists"){
+          emit(UsersErrorState(locale.usernameExists));
+        }
+      }catch(e){
+        emit(UsersErrorState(e.toString()));
+      }
+    });
 
   }
 }

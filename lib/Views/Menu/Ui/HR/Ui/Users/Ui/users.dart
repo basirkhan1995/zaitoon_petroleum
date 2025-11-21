@@ -134,8 +134,7 @@ class _DesktopState extends State<_Desktop> {
           ),
           SizedBox(height: 10),
           Expanded(
-            child: BlocConsumer<UsersBloc, UsersState>(
-              listener: (context,state){},
+            child: BlocBuilder<UsersBloc, UsersState>(
               builder: (context, state) {
                 if (state is UsersLoadingState) {
                   return Center(child: CircularProgressIndicator());

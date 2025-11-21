@@ -713,4 +713,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get addUserTitle => 'یوزر ثبتول';
+
+  @override
+  String get cashier => 'خزانه دار';
+
+  @override
+  String get emailExists =>
+      'ایمیل مخکې ثبت شوی دی، مهرباني وکړئ بل انتخاب کړئ.';
+
+  @override
+  String get usernameExists =>
+      'کارنومه مخکې ثبت شوی دی. مهرباني وکړئ بل انتخاب کړئ.';
 }

@@ -11,3 +11,10 @@ class LoadUsersEvent extends UsersEvent{
   @override
   List<Object?> get props => [usrOwner];
 }
+
+class AddUserEvent extends UsersEvent{
+  final UsersModel newUser;
+  const AddUserEvent(this.newUser);
+  @override
+  List<Object?> get props => [newUser];
+}
