@@ -143,26 +143,52 @@ class Utils{
     );
   }
 
-  // static String? validatePassword({required String value, context}) {
-  //   final locale = AppLocalizations.of(context)!;
-  //   if (value.length < 8) {
-  //     return locale.password8Char;
-  //   }
-  //   if (!RegExp(r'[A-Z]').hasMatch(value)) {
-  //     return locale.passwordUpperCase;
-  //   }
-  //   if (!RegExp(r'[a-z]').hasMatch(value)) {
-  //     return locale.passwordLowerCase;
-  //   }
-  //   if (!RegExp(r'[0-9]').hasMatch(value)) {
-  //     return locale.passwordWithDigit;
-  //   }
-  //   if (!RegExp(r'[!@#$%^&*()_+{}\[\]:;<>,.?/~`]').hasMatch(value)) {
-  //     return locale.passwordWithSpecialChar;
-  //   }
-  //
-  //   return null; // Password is valid
-  // }
+  static String? validatePassword({required String value, context}) {
+    final locale = AppLocalizations.of(context)!;
+    if (value.length < 8) {
+      return locale.password8Char;
+    }
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return locale.passwordUpperCase;
+    }
+    if (!RegExp(r'[a-z]').hasMatch(value)) {
+      return locale.passwordLowerCase;
+    }
+    if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return locale.passwordWithDigit;
+    }
+    if (!RegExp(r'[!@#$%^&*()_+{}\[\]:;<>,.?/~`]').hasMatch(value)) {
+      return locale.passwordWithSpecialChar;
+    }
+
+    return null; // Password is valid
+  }
+
+  static String? validateUsername({required String value, context}) {
+    final locale = AppLocalizations.of(context)!;
+
+    // Minimum length
+    if (value.length < 4) {
+      return locale.usernameMinLength; // "Username must be at least 4 characters"
+    }
+
+    // Cannot start with a digit
+    if (RegExp(r'^[0-9]').hasMatch(value)) {
+      return locale.usernameNoStartDigit; // "Username cannot start with a number"
+    }
+
+    // Allowed characters: letters, digits, underscore, dot
+    if (!RegExp(r'^[a-zA-Z0-9._]+$').hasMatch(value)) {
+      return locale.usernameInvalidChars; // "Username can only contain letters, numbers, . or _"
+    }
+
+    // No spaces
+    if (value.contains(' ')) {
+      return locale.usernameNoSpaces; // "Username cannot contain spaces"
+    }
+
+    return null; // Username is valid
+  }
 
   static String? validateEmail({required String email, context}) {
     final locale = AppLocalizations.of(context)!;

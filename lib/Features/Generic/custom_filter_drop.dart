@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../Localizations/l10n/translations/app_localizations.dart';
 
-class CustomFilterDropdown<T> extends StatefulWidget {
+class ZDropdown<T> extends StatefulWidget {
   final double? radius;
   final String title;
   final List<T> items;
@@ -19,7 +19,7 @@ class CustomFilterDropdown<T> extends StatefulWidget {
   final bool isLoading;
   final Widget? customTitle; // Add this line
 
-  const CustomFilterDropdown({
+  const ZDropdown({
     super.key,
     required this.title,
     this.height,
@@ -41,10 +41,10 @@ class CustomFilterDropdown<T> extends StatefulWidget {
 
 
   @override
-  State<CustomFilterDropdown<T>> createState() => _CustomFilterDropdownState<T>();
+  State<ZDropdown<T>> createState() => _ZDropdownState<T>();
 }
 
-class _CustomFilterDropdownState<T> extends State<CustomFilterDropdown<T>> {
+class _ZDropdownState<T> extends State<ZDropdown<T>> {
   bool _isOpen = false;
   OverlayEntry? _overlayEntry;
   final GlobalKey _buttonKey = GlobalKey();

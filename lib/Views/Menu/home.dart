@@ -214,7 +214,10 @@ class _DesktopState extends State<_Desktop> {
                               : CrossAxisAlignment.center,
 
                           children: [
-                            Icon(Icons.power_settings_new_outlined),
+                            InkWell(
+                                onTap: logout,
+                                child: Icon(Icons.power_settings_new_outlined),
+                             ),
                             if (isExpanded)
                               Expanded(
                                 child: Text(

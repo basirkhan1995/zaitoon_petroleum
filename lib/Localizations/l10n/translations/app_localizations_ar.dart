@@ -647,4 +647,70 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get accessDenied => 'لاسرسی رد شو';
+
+  @override
+  String get unverified => 'شما تاکنون ایمیل آدرس خود را تایید نکردید.';
+
+  @override
+  String get blockedMessage =>
+      'یوزر شما مسدود شده است، لطفا با مدیر خود تماس بگیرید.';
+
+  @override
+  String get ceo => 'اجرایوي مدیر';
+
+  @override
+  String get deputy => 'مرستیال';
+
+  @override
+  String get authoriser => 'اجازه ورکوونکی';
+
+  @override
+  String get officer => 'افسر';
+
+  @override
+  String get customerService => 'د پیریدونکو خدمت';
+
+  @override
+  String get customer => 'پیریدونکی';
+
+  @override
+  String get selectRole => 'انتخاب صلاحیت';
+
+  @override
+  String get confirmPassword => 'تکرار رمز عبور';
+
+  @override
+  String get password8Char => 'پاسورډ باید لږ تر لږه ۸ توري ولري';
+
+  @override
+  String get passwordUpperCase => 'پاسورډ باید لږ تر لږه یوه لوړه توره ولري';
+
+  @override
+  String get passwordLowerCase => 'پاسورډ باید لږ تر لږه یوه کوچنۍ توره ولري';
+
+  @override
+  String get passwordWithDigit => 'پاسورډ باید لږ تر لږه یوه شمېره ولري';
+
+  @override
+  String get passwordWithSpecialChar =>
+      'پاسورډ باید لږ تر لږه یو ځانګړی سمبول ولري';
+
+  @override
+  String get passwordNotMatch => 'پاسورډونه سره برابر نه دي.';
+
+  @override
+  String get usernameMinLength => 'کارن نوم باید لږ تر لږه ۴ توري ولري';
+
+  @override
+  String get usernameNoStartDigit => 'کارن نوم باید د شمېرې په پیل کې نه وي';
+
+  @override
+  String get usernameInvalidChars =>
+      'کارن نوم یوازې حروف، شمېرې، نقطه یا زیر خط لرلی شي';
+
+  @override
+  String get usernameNoSpaces => 'کارن نوم باید تشه ونه لري';
+
+  @override
+  String get addUserTitle => 'یوزر ثبتول';
 }

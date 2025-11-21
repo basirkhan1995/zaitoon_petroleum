@@ -1365,6 +1365,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Access Denied!'**
   String get accessDenied;
+
+  /// No description provided for @unverified.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t verified your email yet.'**
+  String get unverified;
+
+  /// No description provided for @blockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re blocked, contact your administrator please?'**
+  String get blockedMessage;
+
+  /// No description provided for @ceo.
+  ///
+  /// In en, this message translates to:
+  /// **'CEO'**
+  String get ceo;
+
+  /// No description provided for @deputy.
+  ///
+  /// In en, this message translates to:
+  /// **'Deputy'**
+  String get deputy;
+
+  /// No description provided for @authoriser.
+  ///
+  /// In en, this message translates to:
+  /// **'Authoriser'**
+  String get authoriser;
+
+  /// No description provided for @officer.
+  ///
+  /// In en, this message translates to:
+  /// **'Officer'**
+  String get officer;
+
+  /// No description provided for @customerService.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer Service'**
+  String get customerService;
+
+  /// No description provided for @customer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get customer;
+
+  /// No description provided for @selectRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Role'**
+  String get selectRole;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter password'**
+  String get confirmPassword;
+
+  /// No description provided for @password8Char.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters'**
+  String get password8Char;
+
+  /// No description provided for @passwordUpperCase.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must include an uppercase letter'**
+  String get passwordUpperCase;
+
+  /// No description provided for @passwordLowerCase.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must include a lowercase letter'**
+  String get passwordLowerCase;
+
+  /// No description provided for @passwordWithDigit.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must include a number'**
+  String get passwordWithDigit;
+
+  /// No description provided for @passwordWithSpecialChar.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must include a special character'**
+  String get passwordWithSpecialChar;
+
+  /// No description provided for @passwordNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match.'**
+  String get passwordNotMatch;
+
+  /// No description provided for @usernameMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Username must be at least 4 characters'**
+  String get usernameMinLength;
+
+  /// No description provided for @usernameNoStartDigit.
+  ///
+  /// In en, this message translates to:
+  /// **'Username cannot start with a number'**
+  String get usernameNoStartDigit;
+
+  /// No description provided for @usernameInvalidChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Username can only contain letters, numbers.'**
+  String get usernameInvalidChars;
+
+  /// No description provided for @usernameNoSpaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Username cannot contain spaces'**
+  String get usernameNoSpaces;
+
+  /// No description provided for @addUserTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add User'**
+  String get addUserTitle;
 }
 
 class _AppLocalizationsDelegate

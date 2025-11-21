@@ -648,4 +648,70 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accessDenied => 'Access Denied!';
+
+  @override
+  String get unverified => 'You haven\'t verified your email yet.';
+
+  @override
+  String get blockedMessage =>
+      'You\'re blocked, contact your administrator please?';
+
+  @override
+  String get ceo => 'CEO';
+
+  @override
+  String get deputy => 'Deputy';
+
+  @override
+  String get authoriser => 'Authoriser';
+
+  @override
+  String get officer => 'Officer';
+
+  @override
+  String get customerService => 'Customer Service';
+
+  @override
+  String get customer => 'Customer';
+
+  @override
+  String get selectRole => 'Select Role';
+
+  @override
+  String get confirmPassword => 'Re-enter password';
+
+  @override
+  String get password8Char => 'Password must be at least 8 characters';
+
+  @override
+  String get passwordUpperCase => 'Password must include an uppercase letter';
+
+  @override
+  String get passwordLowerCase => 'Password must include a lowercase letter';
+
+  @override
+  String get passwordWithDigit => 'Password must include a number';
+
+  @override
+  String get passwordWithSpecialChar =>
+      'Password must include a special character';
+
+  @override
+  String get passwordNotMatch => 'Passwords do not match.';
+
+  @override
+  String get usernameMinLength => 'Username must be at least 4 characters';
+
+  @override
+  String get usernameNoStartDigit => 'Username cannot start with a number';
+
+  @override
+  String get usernameInvalidChars =>
+      'Username can only contain letters, numbers.';
+
+  @override
+  String get usernameNoSpaces => 'Username cannot contain spaces';
+
+  @override
+  String get addUserTitle => 'Add User';
 }

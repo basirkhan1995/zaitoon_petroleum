@@ -1,22 +1,22 @@
-import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
 import '../../../../../../../Features/Generic/custom_filter_drop.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
-import '../Ui/Currencies/bloc/currencies_bloc.dart';
+import '../bloc/individuals_bloc.dart';
+import '../individual_model.dart';
 
-class CurrencyDropdown extends StatefulWidget {
+class StakeholdersDropdown extends StatefulWidget {
   final String? title;
   final bool isMulti;
   final double height;
   final bool disableAction;
-  final ValueChanged<List<CurrenciesModel>> onMultiChanged;
-  final ValueChanged<CurrenciesModel?>? onSingleChanged;
-  final List<CurrenciesModel>? initiallySelected;
-  final CurrenciesModel? initiallySelectedSingle;
+  final ValueChanged<List<IndividualsModel>> onMultiChanged;
+  final ValueChanged<IndividualsModel?>? onSingleChanged;
+  final List<IndividualsModel>? initiallySelected;
+  final IndividualsModel? initiallySelectedSingle;
+  final String? indId; // Optional: to load specific individual
 
-  const CurrencyDropdown({
+  const StakeholdersDropdown({
     super.key,
     required this.isMulti,
     required this.onMultiChanged,
@@ -26,21 +26,23 @@ class CurrencyDropdown extends StatefulWidget {
     this.title,
     this.initiallySelected,
     this.initiallySelectedSingle,
+    this.indId,
   });
 
   @override
-  State<CurrencyDropdown> createState() => _CurrencyDropdownState();
+  State<StakeholdersDropdown> createState() => _StakeholdersDropdownState();
 }
 
-class _CurrencyDropdownState extends State<CurrencyDropdown> {
-  List<CurrenciesModel> _selectedMulti = [];
-  CurrenciesModel? _selectedSingle;
+class _StakeholdersDropdownState extends State<StakeholdersDropdown> {
+  List<IndividualsModel> _selectedMulti = [];
+  IndividualsModel? _selectedSingle;
 
   @override
   void initState() {
     super.initState();
 
-    context.read<CurrenciesBloc>().add(LoadCurrenciesEvent(status: 1));
+    // Load stakeholders when the dropdown is initialized
+    context.read<IndividualsBloc>().add(LoadIndividualsEvent());
 
     if (widget.isMulti) {
       _selectedMulti = widget.initiallySelected ?? [];
@@ -51,9 +53,9 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CurrenciesBloc, CurrenciesState>(
+    return BlocBuilder<IndividualsBloc, IndividualsState>(
       builder: (context, state) {
-        final bool isLoading = state is CurrenciesLoadingState;
+        final bool isLoading = state is IndividualLoadingState;
 
         // Build the title widget with loading indicator
         Widget buildTitle() {
@@ -62,7 +64,7 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  widget.title ?? AppLocalizations.of(context)!.currencyTitle,
+                  widget.title ?? AppLocalizations.of(context)!.stakeholders,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 const SizedBox(width: 8),
@@ -75,38 +77,39 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
             );
           } else {
             return Text(
-              widget.title ?? AppLocalizations.of(context)!.currencyTitle,
+              widget.title ?? AppLocalizations.of(context)!.stakeholders,
               style: Theme.of(context).textTheme.titleSmall,
             );
           }
         }
 
-        if (state is CurrenciesErrorState) {
+        if (state is IndividualErrorState) {
           return Text('Error: ${state.message}');
         }
 
-        return ZDropdown<CurrenciesModel>(
+        List<IndividualsModel> stakeholders = [];
+        if (state is IndividualLoadedState) {
+          stakeholders = state.individuals;
+        }
+
+        return ZDropdown<IndividualsModel>(
           disableAction: widget.disableAction,
           title: '', // We'll handle title separately
           height: widget.height,
-          leadingBuilder: (CurrenciesModel ccy) {
-            return SizedBox(
-              width: 30,
-              child: Flag.fromString(
-                ccy.ccyCountryCode ?? "",
-                height: 20,
-                width: 30,
-                borderRadius: 2,
-                fit: BoxFit.fill,
-              ),
+          leadingBuilder: (IndividualsModel stakeholder) {
+            // You can customize the leading icon based on stakeholder type
+            return Icon(
+              Icons.lock_clock,
+              size: 20,
+              color: Theme.of(context).colorScheme.primary,
             );
           },
-          items: state is CurrenciesLoadedState ? state.ccy : [],
+          items: stakeholders,
           multiSelect: widget.isMulti,
           selectedItems: widget.isMulti ? _selectedMulti : [],
           selectedItem: widget.isMulti ? null : _selectedSingle,
-          itemLabel: (item) => item.ccyCode ?? "",
-          initialValue: AppLocalizations.of(context)!.currencyTitle,
+          itemLabel: (item) => _getStakeholderDisplayName(item),
+          initialValue: AppLocalizations.of(context)!.individuals,
 
           // MULTI-SELECT HANDLER
           onMultiSelectChanged: widget.isMulti
@@ -124,27 +127,23 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
             widget.onSingleChanged?.call(item);
           },
           isLoading: isLoading,
-          itemStyle: Theme.of(context).textTheme.titleMedium,
+          itemStyle: Theme.of(context).textTheme.bodyMedium,
           // Custom title widget that includes loading indicator
           customTitle: buildTitle(),
         );
       },
     );
   }
-}
-//✔️ Single-select usage example
-// CurrencyDropdown(
-// isMulti: false,
-// onMultiChanged: (_) {},
-// onSingleChanged: (value) {
-// print("Selected currency: ${value?.ccyCode}");
-// },
-// )
 
-// CurrencyDropdown(
-// isMulti: true,
-// onMultiChanged: (values) {
-// print("Selected currencies: $values");
-// },
-// onSingleChanged: null,
-// )
+  String _getStakeholderDisplayName(IndividualsModel stakeholder) {
+    // Customize how you want to display the stakeholder name
+    // You can combine first name, last name, company name, etc.
+    if (stakeholder.perName != null && stakeholder.perLastName != null) {
+      return '${stakeholder.perName} ${stakeholder.perLastName}';
+    } else if (stakeholder.perName != null) {
+      return stakeholder.perName!;
+    } else {
+      return 'Unknown Stakeholder';
+    }
+  }
+}

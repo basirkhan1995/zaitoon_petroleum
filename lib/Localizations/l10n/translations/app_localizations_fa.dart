@@ -646,4 +646,70 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get accessDenied => 'دسترسی غیرمجاز';
+
+  @override
+  String get unverified => 'شما تاکنون ایمیل آدرس خود را تایید نکردید.';
+
+  @override
+  String get blockedMessage =>
+      'یوزر شما مسدود شده است، لطفا با مدیر خود تماس بگیرید.';
+
+  @override
+  String get ceo => 'مدیر عامل';
+
+  @override
+  String get deputy => 'معاون';
+
+  @override
+  String get authoriser => 'مجوز دهنده';
+
+  @override
+  String get officer => 'افسر';
+
+  @override
+  String get customerService => 'خدمات مشتری';
+
+  @override
+  String get customer => 'مشتری';
+
+  @override
+  String get selectRole => 'انتخاب صلاحیت';
+
+  @override
+  String get confirmPassword => 'تکرار رمز عبور';
+
+  @override
+  String get password8Char => 'گذرواژه باید حداقل ۸ کاراکتر باشد';
+
+  @override
+  String get passwordUpperCase => 'گذرواژه باید حداقل یک حرف بزرگ داشته باشد';
+
+  @override
+  String get passwordLowerCase => 'گذرواژه باید حداقل یک حرف کوچک داشته باشد';
+
+  @override
+  String get passwordWithDigit => 'گذرواژه باید حداقل یک عدد داشته باشد';
+
+  @override
+  String get passwordWithSpecialChar =>
+      'گذرواژه باید حداقل یک نویسه ویژه داشته باشد';
+
+  @override
+  String get passwordNotMatch => 'گذرواژه‌ها یکسان نیستند.';
+
+  @override
+  String get usernameMinLength => 'نام کاربری باید حداقل ۴ کاراکتر باشد';
+
+  @override
+  String get usernameNoStartDigit => 'نام کاربری نباید با عدد شروع شود';
+
+  @override
+  String get usernameInvalidChars =>
+      'نام کاربری فقط می‌تواند شامل حروف، اعداد، نقطه یا زیرخط باشد';
+
+  @override
+  String get usernameNoSpaces => 'نام کاربری نباید فاصله داشته باشد';
+
+  @override
+  String get addUserTitle => 'ثبت یورر';
 }

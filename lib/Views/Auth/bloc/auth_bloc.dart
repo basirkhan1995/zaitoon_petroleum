@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
-
 import '../../../Features/Other/secure_storage.dart';
 import '../../../Services/localization_services.dart';
 
@@ -25,9 +24,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         if (response.containsKey("msg") && response["msg"] != null) {
           switch (response["msg"]) {
-            case "incorrect user or Password": throw locale.incorrectCredential;
-            case "incorrect password": throw locale.incorrectPassword;
-
+            case "incorrect": throw locale.incorrectCredential;
+            case "blocked": throw locale.blockedMessage;
+            case "unverified": throw locale.unverified;
             default: throw response["msg"];
           }
         }
@@ -48,12 +47,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    on<OnLogoChangeEvent>((event, emit){
+    on<OnLogoutEvent>((event, emit){
       emit(UnAuthenticatedState());
     });
-
-
-
 
   }
 }
