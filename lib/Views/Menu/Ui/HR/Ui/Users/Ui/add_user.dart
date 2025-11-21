@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
-import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
+import 'package:zaitoon_petroleum/Features/Other/zform_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/bloc/users_bloc.dart';
@@ -66,10 +66,9 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     final isLoading = context.watch<UsersBloc>().state is UsersLoadingState;
-    final isIndLoading =
-        context.watch<IndividualsBloc>().state is IndividualLoadingState;
+
     return ZFormDialog(
-      width: 600,
+      width: 650,
       icon: Icons.lock_clock_sharp,
       onAction: onSubmit,
       actionLabel: isLoading
@@ -108,6 +107,8 @@ class _DesktopState extends State<_Desktop> {
                         child: ZTextFieldEntitled(
                           isRequired: true,
                           controller: usrName,
+                          hint: "e.g zaitoon",
+                          onSubmit: (_)=> onSubmit(),
                           validator: (e) {
                             if (e.isEmpty) {
                               return locale.required(locale.username);
@@ -135,28 +136,21 @@ class _DesktopState extends State<_Desktop> {
                       ),
                     ],
                   ),
-                  GenericTextfield<
-                    IndividualsModel,
-                    IndividualsBloc,
-                    IndividualsState
-                  >(
+                  GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
                     showAllOnFocus: true,
                     controller: usrOwner,
                     title: locale.individuals,
                     hintText: locale.userOwner,
                     isRequired: true,
                     bloc: context.read<IndividualsBloc>(),
-                    fetchAllFunction: (bloc) =>
-                        bloc.add(LoadIndividualsEvent()),
-                    searchFunction: (bloc, query) =>
-                        bloc.add(SearchIndividualsEvent(query)),
+                    fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
+                    searchFunction: (bloc, query) => bloc.add(SearchIndividualsEvent(query)),
                     validator: (value) {
                       if (value.isEmpty) {
                         return locale.required(locale.individuals);
                       }
                       return null;
                     },
-
                     itemBuilder: (context, account) => Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 5,
@@ -196,15 +190,15 @@ class _DesktopState extends State<_Desktop> {
                         usrOwnerId = value.perId!;
                       });
                     },
-                    noResultsText: isIndLoading
-                        ? "Loading..."
-                        : locale.noDataFound,
+                    noResultsText: locale.noDataFound,
                     showClearButton: true,
                   ),
 
                   ZTextFieldEntitled(
                     isRequired: true,
                     controller: usrEmail,
+                    hint: 'example@zaitoonsoft.com',
+                    onSubmit: (_)=> onSubmit(),
                     validator: (e) {
                       if (e.isEmpty) {
                         return locale.required(locale.email);
@@ -222,7 +216,9 @@ class _DesktopState extends State<_Desktop> {
                       Expanded(
                         child: ZTextFieldEntitled(
                           isRequired: true,
+                          securePassword: isPasswordSecure,
                           controller: usrPas,
+                          onSubmit: (_)=> onSubmit(),
                           validator: (e) {
                             if (e.isEmpty) {
                               return locale.required(locale.password);
@@ -249,11 +245,14 @@ class _DesktopState extends State<_Desktop> {
                             ),
                           ),
                         ),
+
                       ),
                       Expanded(
                         child: ZTextFieldEntitled(
                           isRequired: true,
+                          securePassword: isPasswordSecure,
                           controller: passConfirm,
+                          onSubmit: (_)=> onSubmit(),
                           validator: (e) {
                             if (e.isEmpty) {
                               return locale.required(locale.confirmPassword);

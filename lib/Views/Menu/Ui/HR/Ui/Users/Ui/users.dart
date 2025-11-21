@@ -257,7 +257,6 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-
   void onRefresh(){
     context.read<UsersBloc>().add(LoadUsersEvent());
   }

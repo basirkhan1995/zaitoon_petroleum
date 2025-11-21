@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../../../../Features/Other/utils.dart';
-import '../../../../../../../../../Features/Other/zForm_dialog.dart';
+import '../../../../../../../../../Features/Other/zform_dialog.dart';
 import '../../../../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../bloc/currencies_bloc.dart';
