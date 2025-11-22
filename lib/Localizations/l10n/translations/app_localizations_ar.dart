@@ -615,7 +615,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get overview => 'معلومات';
 
   @override
-  String get userLog => 'فعالیت کاربر';
+  String get userLog => 'فعالیت';
 
   @override
   String get permissions => 'دسترسی ها';
@@ -740,4 +740,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get oldPassword => 'رمز عبور فعلی';
+
+  @override
+  String get errorHint => 'خدمات خود را بررسی و یا تازه نمایید';
 }

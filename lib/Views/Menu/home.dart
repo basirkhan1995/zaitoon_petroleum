@@ -45,7 +45,12 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final currentTab = context.watch<MenuBloc>().state.tabs;
+    final state = context.watch<AuthBloc>().state;
 
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+   // final login = state.loginData;
     final menuItems = [
       MenuDefinition(
         value: MenuName.dashboard,
@@ -84,7 +89,6 @@ class _DesktopState extends State<_Desktop> {
         screen: const TransportView(),
         icon: Icons.fire_truck_rounded,
       ),
-      // if(visible.stock)
       MenuDefinition(
         value: MenuName.stock,
         label: AppLocalizations.of(context)!.inventory,

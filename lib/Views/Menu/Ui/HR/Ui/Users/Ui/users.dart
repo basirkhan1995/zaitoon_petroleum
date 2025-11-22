@@ -8,6 +8,7 @@ import '../../../../../../../Features/Widgets/no_data_widget.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../../../../Auth/bloc/auth_bloc.dart';
 import '../../UserDetail/user_details.dart';
 import '../bloc/users_bloc.dart';
 
@@ -64,6 +65,12 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final locale = AppLocalizations.of(context)!;
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+   // final login = state.loginData;
     return Scaffold(
       backgroundColor: color.surface,
       body: Column(

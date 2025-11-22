@@ -26,3 +26,8 @@ final class PasswordResetSuccessState extends PasswordState {
   List<Object> get props => [];
 }
 
+final class PasswordChangedSuccessState extends PasswordState {
+  @override
+  List<Object> get props => [];
+}
+

@@ -213,7 +213,7 @@
   "female": "Female",
   "socialMedia": "Social Profile",
   "overview": "Overview",
-  "userLog": "User Log",
+  "userLog": "Activity",
   "permissions": "Permissions",
   "deniedPermissionMessage": "Access Denied! You don’t have permission to view this section.",
   "deniedPermissionTitle": "Restricted Section",
@@ -252,5 +252,6 @@
   "changePasswordTitle": "Change Password",
   "newPasswordTitle": "New Password",
   "forceChangePasswordHint": "For your security, please set a new password.",
-  "oldPassword": "Old Password"
+  "oldPassword": "Old Password",
+  "errorHint": "Check your services or refresh to try again."
 }

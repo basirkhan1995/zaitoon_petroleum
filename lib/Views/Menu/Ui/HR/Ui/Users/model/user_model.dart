@@ -20,8 +20,8 @@ class UsersModel {
   final DateTime? usrEntryDate;
   final int? usrOwner;
   final String? usrPass;
-  final int? usrFcp;
-  final int? usrFev;
+  final bool? usrFcp;
+  final bool? usrFev;
 
   UsersModel({
     this.usrId,
@@ -80,8 +80,8 @@ class UsersModel {
     "usrName": usrName,
     "usrPass": usrPass,
     "usrOwner": usrOwner,
-    "usrFCP": usrFcp ?? 1,
-    "usrFEV": usrFev ?? 0,
+    "usrFCP": usrFcp,
+    "usrFEV": usrFev,
     "usrRole": usrRole,
     "usrStatus": usrStatus,
     "usrBranch": usrBranch,

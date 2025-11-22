@@ -396,7 +396,7 @@ class _DesktopState extends State<_Desktop> {
           if(state is ForceChangePasswordState){
             Utils.goto(context, ForceChangePasswordView(credential: _emailController.text));
           }if(state is EmailVerificationState){
-            print("Verify your email first");
+
           }
           },
         child: Padding(

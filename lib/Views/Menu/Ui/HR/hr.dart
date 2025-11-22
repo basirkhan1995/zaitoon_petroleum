@@ -14,8 +14,12 @@ class HrTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthBloc>().state as AuthenticatedState;
-    final login = auth.loginData;
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(top: 6.0),

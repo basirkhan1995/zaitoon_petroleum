@@ -34,8 +34,12 @@ class _Desktop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
-    final auth = context.watch<AuthBloc>().state as AuthenticatedState;
-    final login = auth.loginData;
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
 
     // Define the actions for each F-key
     void onSell() {

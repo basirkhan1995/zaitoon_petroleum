@@ -19,6 +19,7 @@ class Repositories {
         endpoint: "/user/login.php",
         data: {"usrName": username, "usrPass": password},
       );
+
       return response.data;
     } on DioException catch (e) {
       throw '${e.message}';
@@ -404,6 +405,56 @@ class Repositories {
           data: {
             "ccyStatus": status,
             "ccyCode":ccyCode,
+          }
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  ///Password Settings .........................................................
+  Future<Map<String, dynamic>> forceChangePassword({required String credential, required String newPassword}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/user/changePass.php",
+          data: {
+            "usrName": credential,
+            "usrPass": newPassword
+          }
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> changePassword({required String credential,required String oldPassword, required String newPassword}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/user/users.php",
+          data: {
+            "credential": credential,
+            "newPassword": newPassword
+          }
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> resetPassword({required String credential,required String oldPassword, required String newPassword}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/user/users.php",
+          data: {
+            "credential": credential,
+            "newPassword": newPassword
           }
       );
       return response.data;

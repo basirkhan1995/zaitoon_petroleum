@@ -1303,7 +1303,7 @@ abstract class AppLocalizations {
   /// No description provided for @userLog.
   ///
   /// In en, this message translates to:
-  /// **'User Log'**
+  /// **'Activity'**
   String get userLog;
 
   /// No description provided for @permissions.
@@ -1539,6 +1539,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Old Password'**
   String get oldPassword;
+
+  /// No description provided for @errorHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your services or refresh to try again.'**
+  String get errorHint;
 }
 
 class _AppLocalizationsDelegate

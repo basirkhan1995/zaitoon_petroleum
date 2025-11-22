@@ -213,7 +213,7 @@
   "female": "زن",
   "socialMedia": "معلومات اجتماعی",
   "overview": "معلومات",
-  "userLog": "فعالیت کاربر",
+  "userLog": "فعالیت",
   "permissions": "دسترسی ها",
   "deniedPermissionMessage": "دسترسی غیرمجاز! شما اجازه مشاهده این بخش را ندارید.",
   "deniedPermissionTitle": "بخش محدود شده",
@@ -252,5 +252,6 @@
   "changePasswordTitle": "تغییر رمز عبور",
   "newPasswordTitle": "رمز عبور جدید",
   "forceChangePasswordHint": "برای امنیت حساب، لطفاً گذرواژه جدیدی تنظیم کنید.",
-  "oldPassword": "رمز عبور فعلی"
+  "oldPassword": "رمز عبور فعلی",
+  "errorHint": "خدمات خود را بررسی و یا تازه نمایید"
 }

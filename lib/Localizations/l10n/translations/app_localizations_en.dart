@@ -616,7 +616,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get overview => 'Overview';
 
   @override
-  String get userLog => 'User Log';
+  String get userLog => 'Activity';
 
   @override
   String get permissions => 'Permissions';
@@ -740,4 +740,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get oldPassword => 'Old Password';
+
+  @override
+  String get errorHint => 'Check your services or refresh to try again.';
 }

@@ -10,13 +10,13 @@ class ChangePasswordEvent extends PasswordEvent{
   final String usrName;
   const ChangePasswordEvent({required this.oldPassword, required this.newPassword, required this.usrName});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [oldPassword,newPassword, usrName];
 }
 
 class ForceChangePasswordEvent extends PasswordEvent{
   final String newPassword;
-  final String usrName;
-  const ForceChangePasswordEvent({required this.usrName, required this.newPassword});
+  final String credential;
+  const ForceChangePasswordEvent({required this.credential, required this.newPassword});
   @override
-  List<Object?> get props => [newPassword, usrName];
+  List<Object?> get props => [newPassword, credential];
 }

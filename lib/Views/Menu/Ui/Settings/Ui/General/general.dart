@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../Features/Generic/generic_menu.dart';
 import '../../../../../../Features/Other/responsive.dart';
 import '../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../../../Auth/bloc/auth_bloc.dart';
 import 'Ui/Security/password.dart';
 import 'Ui/System/system.dart';
 import 'bloc/general_tab_bloc.dart';
@@ -22,7 +23,12 @@ class GeneralView extends StatelessWidget {
 class _Desktop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<AuthBloc>().state;
 
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+   // final login = state.loginData;
     final menuItems = [
       MenuDefinition(
         value: GeneralTabName.system,
