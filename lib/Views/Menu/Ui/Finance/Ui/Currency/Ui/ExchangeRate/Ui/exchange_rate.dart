@@ -11,12 +11,15 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfi
 import '../../../../../../../../../Features/Widgets/outline_button.dart';
 
 class ExchangeRateView extends StatelessWidget {
-  const ExchangeRateView({super.key});
+  final bool newRateButton;
+  final bool settingButton;
+  const ExchangeRateView({super.key, this.newRateButton = false, this.settingButton = false});
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-        mobile: _Mobile(), tablet: _Tablet(), desktop: _Desktop());
+        mobile: _Mobile(), tablet: _Tablet(), desktop: _Desktop(newRateButton: newRateButton, settingButton: settingButton,
+    ));
   }
 }
 
@@ -37,7 +40,9 @@ class _Tablet extends StatelessWidget {
   }
 }
 class _Desktop extends StatefulWidget {
-  const _Desktop();
+  final bool newRateButton;
+  final bool settingButton;
+  const _Desktop({required this.settingButton, required this.newRateButton});
 
   @override
   State<_Desktop> createState() => _DesktopState();
@@ -48,11 +53,12 @@ class _DesktopState extends State<_Desktop> {
   String? baseCurrency;
   @override
   void initState() {
-    context.read<ExchangeRateBloc>().add(LoadExchangeRateEvent(baseCurrency??"AFN"));
+
     myLocale = context.read<LocalizationBloc>().state.languageCode;
     final state = context.read<CompanyProfileBloc>().state;
     if(state is CompanyProfileLoadedState){
      baseCurrency = state.company.comLocalCcy;
+     context.read<ExchangeRateBloc>().add(LoadExchangeRateEvent(baseCurrency??""));
     }
     super.initState();
   }
@@ -86,7 +92,16 @@ class _DesktopState extends State<_Desktop> {
                     onPressed: (){},
                     label: Text(locale.refresh),
                     icon: Icons.refresh),
-                  SizedBox(width: 5),
+                ZOutlineButton(
+                  isActive: true,
+                  icon: Icons.add,
+                  onPressed: () {},
+                  width: 110,
+                  height: 35,
+                  label: Text(locale.settings),
+                ),
+                SizedBox(width: 5),
+                if(widget.settingButton)
                 ZOutlineButton(
                   isActive: true,
                   icon: Icons.settings,
