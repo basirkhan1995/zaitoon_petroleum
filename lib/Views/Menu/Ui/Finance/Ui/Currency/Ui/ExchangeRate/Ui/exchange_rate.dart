@@ -1,0 +1,284 @@
+import 'package:flag/flag_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
+import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
+import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
+import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/bloc/exchange_rate_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import '../../../../../../../../../Features/Widgets/outline_button.dart';
+
+class ExchangeRateView extends StatelessWidget {
+  const ExchangeRateView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ResponsiveLayout(
+        mobile: _Mobile(), tablet: _Tablet(), desktop: _Desktop());
+  }
+}
+
+class _Mobile extends StatelessWidget {
+  const _Mobile();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+class _Tablet extends StatelessWidget {
+  const _Tablet();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+class _Desktop extends StatefulWidget {
+  const _Desktop();
+
+  @override
+  State<_Desktop> createState() => _DesktopState();
+}
+
+class _DesktopState extends State<_Desktop> {
+  String? myLocale;
+  String? baseCurrency;
+  @override
+  void initState() {
+    context.read<ExchangeRateBloc>().add(LoadExchangeRateEvent(baseCurrency??"AFN"));
+    myLocale = context.read<LocalizationBloc>().state.languageCode;
+    final state = context.read<CompanyProfileBloc>().state;
+    if(state is CompanyProfileLoadedState){
+     baseCurrency = state.company.comLocalCcy;
+    }
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
+    final currentLocale = context.read<LocalizationBloc>().state.languageCode;
+    return Container(
+      width: 400,
+      margin: EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+      decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: .3))
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Text(
+                  locale.rate,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                Spacer(),
+                ZOutlineButton(
+                    width: 110,
+                    height: 35,
+                    onPressed: (){},
+                    label: Text(locale.refresh),
+                    icon: Icons.refresh),
+                  SizedBox(width: 5),
+                ZOutlineButton(
+                  isActive: true,
+                  icon: Icons.settings,
+                  onPressed: () {},
+                  width: 110,
+                  height: 35,
+                  label: Text(locale.settings),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 5),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      Text(
+                        locale.currencyTitle,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  locale.rate,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ],
+            ),
+          ),
+          Divider(
+            endIndent: 5,
+            indent: 5,
+            color: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.09),
+          ),
+          BlocBuilder<ExchangeRateBloc, ExchangeRateState>(
+            builder: (context, state) {
+              if (state is ExchangeRateErrorState) {
+                return Center(child: Text(state.message));
+              }
+              if(state is ExchangeRateLoadingState){
+                return Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+              if (state is ExchangeRateLoadedState) {
+                if (state.rates.isEmpty) {
+                  return Center(child: Text("No rate"));
+                }
+                return ListView.builder(
+                  itemCount: state.rates.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    final ccy = state.rates[index];
+                    return Material(
+                      borderRadius: BorderRadius.circular(5),
+                      child: InkWell(
+                        splashColor: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: .2),
+                        hoverColor: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: .09),
+
+                        onTap: () {},
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color: index.isOdd
+                                ? Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: .05)
+                                : Colors.transparent,
+                          ),
+                          child: Row(
+                            spacing: 8,
+                            children: [
+
+                              Expanded(
+                                child: Row(
+                                  spacing: 8,
+                                  children: [
+                                    SizedBox(
+                                      width: 30,
+                                      child: Flag.fromString(
+                                        ccy.fromCode??"",
+                                        height: 20,
+                                        width: 30,
+                                        borderRadius: 2,
+                                        fit: BoxFit.fill,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                      child: Text(
+                                        "1",
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.titleMedium,
+                                      ),
+                                    ),
+                                    Cover(
+                                      margin: EdgeInsets.symmetric(
+                                        horizontal: 0,
+                                        vertical: 3,
+                                      ),
+                                      child: SizedBox(
+                                        width: 35,
+                                        child: Text(
+                                          textAlign: TextAlign.center,
+                                          "${ccy.crFrom}",
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.titleSmall,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                      child: Text(
+                                        "=",
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.titleMedium,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                width: 140,
+                                child: Text(
+                                  ccy.crExchange.toExchangeRate(),
+                                  textAlign: currentLocale == "en"? TextAlign.right : TextAlign.left,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium,
+                                ),
+                              ),
+                              Cover(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 1,
+                                  vertical: 3,
+                                ),
+                                child: SizedBox(
+                                  width: 35,
+                                  child: Text(
+                                    ccy.crTo ?? "",
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleSmall,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 30,
+                                child: Flag.fromString(
+                                  ccy.toCode ?? "",
+                                  height: 20,
+                                  width: 30,
+                                  borderRadius: 2,
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
+              return const SizedBox();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+

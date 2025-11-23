@@ -108,3 +108,27 @@ extension AfghanShamsiDateConverter on DateTime {
   /// Get current Afghan weekday name
   String get shamsiWeekdayName => AfghanShamsiConverter.shamsiWeekdays[toAfghanShamsi.weekDay] ?? '';
 }
+
+extension CurrencyRateFormatter on Object? {
+  String toExchangeRate() {
+    double rate;
+
+    // Parse input to double
+    if (this is String) {
+      rate = double.tryParse(this as String) ?? 0.00;
+    } else if (this is num) {
+      rate = (this as num).toDouble();
+    } else {
+      return ""; // Return empty string for unsupported types
+    }
+
+    // Format with up to 8 decimal places
+    final formatted = rate.toStringAsFixed(8);
+
+    // Trim trailing zeros and optional decimal point
+    final trimmed = formatted.replaceAll(RegExp(r'(\.?0+)$'), '');
+
+    // If we removed all decimals, add .0 to indicate it's a rate
+    return trimmed.contains('.') ? trimmed : '$trimmed.0';
+  }
+}

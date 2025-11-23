@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/Ui/exchange_rate.dart';
 
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../Settings/features/Visibility/bloc/settings_visible_bloc.dart';
@@ -38,19 +39,30 @@ class _Desktop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
+
     final visibility = context.read<SettingsVisibleBloc>().state;
     return Scaffold(
-      body: Row(
-        children: [
-         Column(
-           children: [
-             if(visibility.dashboardClock)
-               const DigitalClock(),
-           ],
-         )
-        ],
+      body: SingleChildScrollView(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+           Expanded(
+             child: Column(
+               crossAxisAlignment: CrossAxisAlignment.start,
+               children: [
+                 if(visibility.dashboardClock)
+                   const DigitalClock(),
+               ],
+             ),
+           ),
+            
+           Column(
+             children: [
+               ExchangeRateView(),
+             ],
+           ) 
+          ],
+        ),
       ),
     );
   }

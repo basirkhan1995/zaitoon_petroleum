@@ -256,5 +256,6 @@
   "errorHint": "خدمات خود را بررسی و یا تازه نمایید",
   "oldPasswordIncorrect": "ستاسو پخوانی پاسورډ ناسم دی.",
   "forceChangePasswordTitle": "د پاسورډ بدلون اړین دی",
-  "forceEmailVerificationTitle": "د ایمیل تایید اړین دی"
+  "forceEmailVerificationTitle": "د ایمیل تایید اړین دی",
+  "rate": "اسعارو نرخ"
 }

@@ -28,7 +28,6 @@ class Cover extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ⛔ Hide completely when text is empty
     if (_isChildEmpty()) {
       return const SizedBox();
     }
@@ -37,6 +36,7 @@ class Cover extends StatelessWidget {
       margin: margin ?? EdgeInsets.zero,
       padding: padding ?? const EdgeInsets.symmetric(horizontal: 3, vertical: 0),
       decoration: BoxDecoration(
+        border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: .3)),
         boxShadow: [
           BoxShadow(
             color: shadowColor ??

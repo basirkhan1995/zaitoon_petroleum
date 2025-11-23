@@ -753,4 +753,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forceEmailVerificationTitle => 'Require Email Verification';
+
+  @override
+  String get rate => 'Exchange Rate';
 }

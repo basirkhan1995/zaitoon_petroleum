@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/model/rate_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
@@ -416,6 +417,43 @@ class Repositories {
     }
   }
 
+  ///Exchange Rate .............................................................
+  Future<List<ExchangeRateModel>> getExchangeRate({required String? ccyCode}) async {
+    try {
+      // Build query parameters dynamically
+      final queryParams = {'ccy': ccyCode};
+
+      // Fetch data from API
+      final response = await api.get(
+        endpoint: "/finance/exchangeRate.php",
+        queryParams: queryParams,
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => ExchangeRateModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
   ///Password Settings .........................................................
   Future<Map<String, dynamic>> forceChangePassword({required String credential, required String newPassword}) async {
     try {

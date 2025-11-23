@@ -1563,6 +1563,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Require Email Verification'**
   String get forceEmailVerificationTitle;
+
+  /// No description provided for @rate.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange Rate'**
+  String get rate;
 }
 
 class _AppLocalizationsDelegate

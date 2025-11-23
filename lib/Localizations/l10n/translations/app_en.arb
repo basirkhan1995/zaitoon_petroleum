@@ -256,5 +256,6 @@
   "errorHint": "Check your services or refresh to try again.",
   "oldPasswordIncorrect": "The old password you entered is incorrect.",
   "forceChangePasswordTitle": "Require Password Change",
-  "forceEmailVerificationTitle": "Require Email Verification"
+  "forceEmailVerificationTitle": "Require Email Verification",
+  "rate": "Exchange Rate"
 }
