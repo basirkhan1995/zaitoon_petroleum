@@ -92,6 +92,7 @@ class _DesktopState extends State<_Desktop> {
                     onPressed: (){},
                     label: Text(locale.refresh),
                     icon: Icons.refresh),
+                if(widget.newRateButton)
                 ZOutlineButton(
                   isActive: true,
                   icon: Icons.add,

@@ -58,7 +58,10 @@ class _Desktop extends StatelessWidget {
             
            Column(
              children: [
-               ExchangeRateView(),
+               ExchangeRateView(
+                 settingButton: true,
+                 newRateButton: false,
+               ),
              ],
            ) 
           ],
