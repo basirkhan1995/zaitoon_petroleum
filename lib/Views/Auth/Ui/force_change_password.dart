@@ -135,7 +135,7 @@ class _DesktopState extends State<_Desktop> {
                         if(value.isEmpty){
                           return locale.required(locale.password);
                         }if(value.isNotEmpty){
-                          Utils.validatePassword(
+                          return Utils.validatePassword(
                             value: value,
                             context: context,
                           );

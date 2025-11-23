@@ -253,5 +253,8 @@
   "newPasswordTitle": "New Password",
   "forceChangePasswordHint": "For your security, please set a new password.",
   "oldPassword": "Old Password",
-  "errorHint": "Check your services or refresh to try again."
+  "errorHint": "Check your services or refresh to try again.",
+  "oldPasswordIncorrect": "The old password you entered is incorrect.",
+  "forceChangePasswordTitle": "Require Password Change",
+  "forceEmailVerificationTitle": "Require Email Verification"
 }

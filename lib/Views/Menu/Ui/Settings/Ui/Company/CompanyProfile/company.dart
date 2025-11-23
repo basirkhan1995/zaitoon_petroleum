@@ -5,7 +5,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfi
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'dart:typed_data';
-import '../../../../../../../Features/Other/image_croper.dart';
+import '../../../../../../../Features/Other/crop.dart';
 import '../../../../../../../Features/Other/sections.dart';
 import '../../../../../../../Features/Other/utils.dart';
 import '../../../../../../../Features/Widgets/button.dart';
@@ -76,44 +76,18 @@ class _DesktopState extends State<_Desktop> {
   //   }
   // }
 
-  /// Picks an image from gallery and opens crop dialog directly
-  /// This method should be called from a StatefulWidget with proper context management
-  Future<Uint8List?> pickAndCropImage({
-    required BuildContext context,
-    String title = "Crop Image",
-    double maxWidth = 600,
-    double maxHeight = 500,
-    int maxSizeKB = 64,
-  }) async {
-    // Pick image first
+  Future<void> _pickLogoImage() async {
     final imageBytes = await Utils.pickImage();
-    if (imageBytes == null || imageBytes.isEmpty) return null;
+    if (imageBytes == null || imageBytes.isEmpty) return;
 
-    // Then show crop dialog using the same context
-    return await showCropDialog(
+    final croppedBytes = await showImageCropper(
       context: context,
       imageBytes: imageBytes,
-      title: title,
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      maxSizeKB: maxSizeKB,
-    );
-  }
-
-  Future<void> _pickLogoImage() async {
-    // Check if widget is mounted before proceeding
-    if (!mounted) return;
-
-    final croppedImage = await pickAndCropImage(
-      context: context,
-      title: "Crop Company Logo",
-      maxSizeKB: 64,
     );
 
-    // Check again if widget is still mounted before updating state
-    if (mounted && croppedImage != null) {
+    if (croppedBytes != null) {
       setState(() {
-        _companyLogo = croppedImage;
+        _companyLogo = croppedBytes;
       });
     }
   }

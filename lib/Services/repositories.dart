@@ -299,6 +299,7 @@ class Repositories {
           endpoint: "/HR/users.php",
           data: newUser.toMap()
       );
+      print(response);
       return response.data;
     } on DioException catch (e) {
       throw '${e.message}';
@@ -434,11 +435,12 @@ class Repositories {
   }
   Future<Map<String, dynamic>> changePassword({required String credential,required String oldPassword, required String newPassword}) async {
     try {
-      final response = await api.put(
-          endpoint: "/user/users.php",
+      final response = await api.post(
+          endpoint: "/user/changePass.php",
           data: {
-            "credential": credential,
-            "newPassword": newPassword
+            "usrName": credential,
+            "usrPass": oldPassword,
+            "usrNewPass": newPassword
           }
       );
       return response.data;

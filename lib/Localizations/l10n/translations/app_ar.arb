@@ -253,5 +253,8 @@
   "newPasswordTitle": "رمز عبور جدید",
   "forceChangePasswordHint": "د خپل حساب د خوندي کولو لپاره، مهرباني وکړئ نوی پاسورډ وټاکئ.",
   "oldPassword": "رمز عبور فعلی",
-  "errorHint": "خدمات خود را بررسی و یا تازه نمایید"
+  "errorHint": "خدمات خود را بررسی و یا تازه نمایید",
+  "oldPasswordIncorrect": "ستاسو پخوانی پاسورډ ناسم دی.",
+  "forceChangePasswordTitle": "د پاسورډ بدلون اړین دی",
+  "forceEmailVerificationTitle": "د ایمیل تایید اړین دی"
 }

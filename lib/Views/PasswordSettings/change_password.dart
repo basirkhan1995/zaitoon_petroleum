@@ -6,6 +6,7 @@ import '../../../Features/Other/utils.dart';
 import '../../../Features/Widgets/button.dart';
 import '../../../Features/Widgets/textfield_entitled.dart';
 import '../../../Localizations/l10n/translations/app_localizations.dart';
+import '../Auth/bloc/auth_bloc.dart';
 import 'bloc/password_bloc.dart';
 
 class PasswordSettingsView extends StatelessWidget {
@@ -30,27 +31,32 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
 
   final formKey = GlobalKey<FormState>();
+  final oldPassword = TextEditingController();
   final newPassword = TextEditingController();
   final confirmPassword = TextEditingController();
   bool isSecure = true;
   bool isError = false;
-  bool isLoading = false;
+
   bool isVisible1 = true, isVisible2 = true, isVisible3 = true;
   String error = "";
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<PasswordBloc>().state is PasswordLoadingState;
     final locale = AppLocalizations.of(context)!;
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+     final login = state.loginData;
     return BlocConsumer<PasswordBloc, PasswordState>(
       listener: (context, state) {
         if(state is PasswordLoadingState){
-          isLoading = true;
           error = "";
         }if(state is PasswordErrorState){
-          isLoading = false;
           error = state.message;
-        }if(state is PasswordResetSuccessState){
-          isLoading = false;
+        }if(state is PasswordChangedSuccessState){
           error = "";
           Navigator.of(context).pop();
         }
@@ -72,7 +78,7 @@ class _DesktopState extends State<_Desktop> {
               children: [
                 const SizedBox(height: 5),
                 ZTextFieldEntitled(
-                  controller: newPassword,
+                  controller: oldPassword,
                   title: AppLocalizations.of(context)!.oldPassword,
                   isRequired: true,
                   securePassword: isVisible1,
@@ -176,18 +182,15 @@ class _DesktopState extends State<_Desktop> {
                 ZButton(
                   height: 40,
                   width: MediaQuery.sizeOf(context).width,
-                  label: isLoading? CircularProgressIndicator(color: Theme.of(context).colorScheme.surface) : Text(
+                  label: isLoading? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 4,
+                          color: Theme.of(context).colorScheme.surface)) : Text(
                     AppLocalizations.of(context)!.changePasswordTitle,
                   ),
-                  onPressed: () async {
-                    if (formKey.currentState!.validate()) {
-                      // context.read<PasswordCubit>().resetPasswordEvent(
-                      //   usrName: widget.credential,
-                      //   newPassword: newPassword.text,
-                      //   usrEmail: widget.credential,
-                      // );
-                    }
-                  },
+                  onPressed: () => onSubmit(login.usrName),
                 ),
 
                 const SizedBox(height: 15),
@@ -198,6 +201,14 @@ class _DesktopState extends State<_Desktop> {
         );
       },
     );
+  }
+  void onSubmit(dynamic credential){
+    if(formKey.currentState!.validate()){
+      context.read<PasswordBloc>().add(ChangePasswordEvent(
+          oldPassword: oldPassword.text,
+          newPassword: newPassword.text,
+          usrName: credential));
+    }
   }
 }
 

@@ -743,4 +743,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorHint => 'Check your services or refresh to try again.';
+
+  @override
+  String get oldPasswordIncorrect =>
+      'The old password you entered is incorrect.';
+
+  @override
+  String get forceChangePasswordTitle => 'Require Password Change';
+
+  @override
+  String get forceEmailVerificationTitle => 'Require Email Verification';
 }

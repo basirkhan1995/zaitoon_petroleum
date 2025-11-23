@@ -20,3 +20,8 @@ class ForceChangePasswordEvent extends PasswordEvent{
   @override
   List<Object?> get props => [newPassword, credential];
 }
+
+class ResetPasswordEvent extends PasswordEvent{
+  @override
+  List<Object?> get props => [];
+}

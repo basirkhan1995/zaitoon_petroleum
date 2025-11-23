@@ -742,4 +742,13 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get errorHint => 'خدمات خود را بررسی و یا تازه نمایید';
+
+  @override
+  String get oldPasswordIncorrect => 'گذرواژه قبلی شما نادرست است.';
+
+  @override
+  String get forceChangePasswordTitle => 'الزام به تغییر گذرواژه';
+
+  @override
+  String get forceEmailVerificationTitle => 'الزام به تأیید ایمیل';
 }

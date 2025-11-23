@@ -46,7 +46,6 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final currentTab = context.watch<MenuBloc>().state.tabs;
     final state = context.watch<AuthBloc>().state;
-
     if (state is! AuthenticatedState) {
       return const SizedBox();
     }

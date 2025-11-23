@@ -743,4 +743,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errorHint => 'خدمات خود را بررسی و یا تازه نمایید';
+
+  @override
+  String get oldPasswordIncorrect => 'ستاسو پخوانی پاسورډ ناسم دی.';
+
+  @override
+  String get forceChangePasswordTitle => 'د پاسورډ بدلون اړین دی';
+
+  @override
+  String get forceEmailVerificationTitle => 'د ایمیل تایید اړین دی';
 }

@@ -253,5 +253,8 @@
   "newPasswordTitle": "رمز عبور جدید",
   "forceChangePasswordHint": "برای امنیت حساب، لطفاً گذرواژه جدیدی تنظیم کنید.",
   "oldPassword": "رمز عبور فعلی",
-  "errorHint": "خدمات خود را بررسی و یا تازه نمایید"
+  "errorHint": "خدمات خود را بررسی و یا تازه نمایید",
+  "oldPasswordIncorrect": "گذرواژه قبلی شما نادرست است.",
+  "forceChangePasswordTitle": "الزام به تغییر گذرواژه",
+  "forceEmailVerificationTitle": "الزام به تأیید ایمیل"
 }

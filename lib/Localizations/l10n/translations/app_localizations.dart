@@ -1545,6 +1545,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check your services or refresh to try again.'**
   String get errorHint;
+
+  /// No description provided for @oldPasswordIncorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'The old password you entered is incorrect.'**
+  String get oldPasswordIncorrect;
+
+  /// No description provided for @forceChangePasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Require Password Change'**
+  String get forceChangePasswordTitle;
+
+  /// No description provided for @forceEmailVerificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Require Email Verification'**
+  String get forceEmailVerificationTitle;
 }
 
 class _AppLocalizationsDelegate

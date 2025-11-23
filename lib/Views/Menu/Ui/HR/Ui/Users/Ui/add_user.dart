@@ -59,6 +59,8 @@ class _DesktopState extends State<_Desktop> {
 
   UserRole? _selectedRole;
   bool isPasswordSecure = true;
+  bool fcpValue = true;
+  bool fevValue = true;
   int usrOwnerId = 1;
   final formKey = GlobalKey<FormState>();
   String? errorMessage;
@@ -279,6 +281,34 @@ class _DesktopState extends State<_Desktop> {
                       ),
                     ],
                   ),
+                  Row(
+                    spacing: 5,
+                    children: [
+                      Switch.adaptive(
+                          value: fcpValue,
+                          onChanged: (value){
+                            setState(() {
+                              fcpValue = value;
+                            });
+                          }),
+                       Text(locale.forceChangePasswordTitle,style: Theme.of(context).textTheme.titleSmall),
+                    ],
+                  ),
+                  Row(
+                    spacing: 5,
+                    children: [
+                      Switch.adaptive(
+
+                          value: fevValue,
+                          onChanged: (value){
+                            setState(() {
+                              fevValue = value;
+                            });
+                          }),
+                      Text(locale.forceEmailVerificationTitle,style: Theme.of(context).textTheme.titleSmall),
+                    ],
+                  ),
+                  SizedBox(height: 10),
                   if (errorMessage != null && errorMessage!.isNotEmpty)
                     Row(
                       spacing: 5,
@@ -314,8 +344,8 @@ class _DesktopState extends State<_Desktop> {
             usrBranch: 1000,
             usrRole: _selectedRole?.name,
             usrEmail: usrEmail.text,
-            usrFcp: false,
-            usrFev: true,
+            usrFcp: fcpValue,
+            usrFev: fevValue,
             usrOwner: usrOwnerId,
           ),
         ),
