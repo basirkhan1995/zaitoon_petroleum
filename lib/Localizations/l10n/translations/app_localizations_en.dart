@@ -598,7 +598,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Do you wanna activate this currency?';
 
   @override
-  String get entities => 'Entities';
+  String get entities => 'Individuals';
 
   @override
   String get individuals => 'Individuals';
@@ -756,4 +756,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rate => 'Exchange Rate';
+
+  @override
+  String get from => 'From Currency';
+
+  @override
+  String get toCurrency => 'To Currency';
+
+  @override
+  String get amountGreaterZero => 'Amount must be greater than zero.';
+
+  @override
+  String get newExchangeRateTitle => 'New Exchange Rate';
 }

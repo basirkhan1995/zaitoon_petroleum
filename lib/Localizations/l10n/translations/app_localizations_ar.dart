@@ -755,4 +755,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get rate => 'اسعارو نرخ';
+
+  @override
+  String get from => 'له - اسعار';
+
+  @override
+  String get toCurrency => 'په - اسعار';
+
+  @override
+  String get amountGreaterZero => 'اندازه باید له صفر څخه زیاته وي';
+
+  @override
+  String get newExchangeRateTitle => 'اسعار نرخ ثبتول';
 }

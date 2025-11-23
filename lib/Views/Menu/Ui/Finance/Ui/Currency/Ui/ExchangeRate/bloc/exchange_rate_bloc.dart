@@ -20,5 +20,17 @@ class ExchangeRateBloc extends Bloc<ExchangeRateEvent, ExchangeRateState> {
       }
     });
 
+    on<AddExchangeRateEvent>((event, emit)async {
+      emit(ExchangeRateLoadingState());
+      try{
+        final rates = await _repo.addExchangeRate(newRate: event.newRate);
+        if(rates["msg"] == "success"){
+          add(LoadExchangeRateEvent(event.baseCcy??""));
+        }
+      }catch(e){
+        emit(ExchangeRateErrorState(e.toString()));
+      }
+    });
+
   }
 }

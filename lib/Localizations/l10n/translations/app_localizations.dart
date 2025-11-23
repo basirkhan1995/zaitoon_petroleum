@@ -1267,7 +1267,7 @@ abstract class AppLocalizations {
   /// No description provided for @entities.
   ///
   /// In en, this message translates to:
-  /// **'Entities'**
+  /// **'Individuals'**
   String get entities;
 
   /// No description provided for @individuals.
@@ -1569,6 +1569,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exchange Rate'**
   String get rate;
+
+  /// No description provided for @from.
+  ///
+  /// In en, this message translates to:
+  /// **'From Currency'**
+  String get from;
+
+  /// No description provided for @toCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'To Currency'**
+  String get toCurrency;
+
+  /// No description provided for @amountGreaterZero.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount must be greater than zero.'**
+  String get amountGreaterZero;
+
+  /// No description provided for @newExchangeRateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Exchange Rate'**
+  String get newExchangeRateTitle;
 }
 
 class _AppLocalizationsDelegate

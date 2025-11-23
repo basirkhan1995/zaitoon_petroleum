@@ -5,23 +5,46 @@ import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/Ui/add_rate.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/bloc/exchange_rate_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/bloc/menu_bloc.dart';
 import '../../../../../../../../../Features/Widgets/outline_button.dart';
+import '../../../../../bloc/financial_tab_bloc.dart';
+import '../../../bloc/currency_tab_bloc.dart';
 
 class ExchangeRateView extends StatelessWidget {
   final bool newRateButton;
   final bool settingButton;
-  const ExchangeRateView({super.key, this.newRateButton = false, this.settingButton = false});
+
+  const ExchangeRateView({
+    super.key,
+    this.newRateButton = false,
+    this.settingButton = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(
-        mobile: _Mobile(), tablet: _Tablet(), desktop: _Desktop(newRateButton: newRateButton, settingButton: settingButton,
-    ));
+    return BlocListener<CompanyProfileBloc, CompanyProfileState>(
+      listenWhen: (prev, curr) =>
+      curr is CompanyProfileLoadedState,
+      listener: (context, state) {
+        final profile = (state as CompanyProfileLoadedState).company;
+        context.read<ExchangeRateBloc>().add(LoadExchangeRateEvent(profile.comLocalCcy ?? ""));
+      },
+      child: ResponsiveLayout(
+        mobile: _Mobile(),
+        tablet: _Tablet(),
+        desktop: _Desktop(
+          newRateButton: newRateButton,
+          settingButton: settingButton,
+        ),
+      ),
+    );
   }
 }
+
 
 class _Mobile extends StatelessWidget {
   const _Mobile();
@@ -47,7 +70,6 @@ class _Desktop extends StatefulWidget {
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> {
   String? myLocale;
   String? baseCurrency;
@@ -55,11 +77,9 @@ class _DesktopState extends State<_Desktop> {
   void initState() {
 
     myLocale = context.read<LocalizationBloc>().state.languageCode;
-    final state = context.read<CompanyProfileBloc>().state;
-    if(state is CompanyProfileLoadedState){
-     baseCurrency = state.company.comLocalCcy;
-     context.read<ExchangeRateBloc>().add(LoadExchangeRateEvent(baseCurrency??""));
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      onRefresh();
+    });
     super.initState();
   }
   @override
@@ -67,7 +87,7 @@ class _DesktopState extends State<_Desktop> {
     final locale = AppLocalizations.of(context)!;
     final currentLocale = context.read<LocalizationBloc>().state.languageCode;
     return Container(
-      width: 400,
+      width: 380,
       margin: EdgeInsets.symmetric(vertical: 5,horizontal: 5),
       decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
@@ -89,24 +109,35 @@ class _DesktopState extends State<_Desktop> {
                 ZOutlineButton(
                     width: 110,
                     height: 35,
-                    onPressed: (){},
+                    onPressed: onRefresh,
                     label: Text(locale.refresh),
                     icon: Icons.refresh),
+                if(widget.newRateButton)
+                SizedBox(width: 5),
                 if(widget.newRateButton)
                 ZOutlineButton(
                   isActive: true,
                   icon: Icons.add,
-                  onPressed: () {},
+                  onPressed: () {
+                    showDialog(context: context, builder: (context){
+                      return AddRateView();
+                    });
+                  },
                   width: 110,
                   height: 35,
-                  label: Text(locale.settings),
+                  label: Text(locale.newKeyword),
                 ),
+                if(widget.settingButton)
                 SizedBox(width: 5),
                 if(widget.settingButton)
                 ZOutlineButton(
                   isActive: true,
                   icon: Icons.settings,
-                  onPressed: () {},
+                  onPressed: () {
+                    context.read<MenuBloc>().add(MenuOnChangedEvent(MenuName.finance));
+                    context.read<FinanceTabBloc>().add(FinanceOnChangedEvent(FinanceTabName.exchangeRate));
+                    context.read<CurrencyTabBloc>().add(CcyOnChangedEvent(CurrencyTabName.rates));
+                  },
                   width: 110,
                   height: 35,
                   label: Text(locale.settings),
@@ -295,6 +326,14 @@ class _DesktopState extends State<_Desktop> {
         ],
       ),
     );
+  }
+
+  void onRefresh(){
+    final state = context.read<CompanyProfileBloc>().state;
+    if(state is CompanyProfileLoadedState){
+      baseCurrency = state.company.comLocalCcy;
+      context.read<ExchangeRateBloc>().add(LoadExchangeRateEvent(baseCurrency??""));
+    }
   }
 }
 

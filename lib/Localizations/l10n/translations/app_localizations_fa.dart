@@ -754,4 +754,16 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get rate => 'نرخ اسعار';
+
+  @override
+  String get from => 'از - اسعار';
+
+  @override
+  String get toCurrency => 'به - اسعار';
+
+  @override
+  String get amountGreaterZero => 'مبلغ باید بیشتر از صفر باشد';
+
+  @override
+  String get newExchangeRateTitle => 'ثبت نرخ اسعار';
 }

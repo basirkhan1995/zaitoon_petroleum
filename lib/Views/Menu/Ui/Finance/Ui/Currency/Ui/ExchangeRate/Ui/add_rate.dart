@@ -1,0 +1,152 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
+import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/bloc/exchange_rate_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/model/rate_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/features/currency_drop.dart';
+import '../../../../../../../../../Features/Other/thousand_separator.dart';
+
+class AddRateView extends StatelessWidget {
+  const AddRateView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ResponsiveLayout(
+        mobile: _Mobile(),
+        tablet: _Tablet(),
+        desktop: _Desktop());
+  }
+}
+
+class _Tablet extends StatelessWidget {
+  const _Tablet();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+
+class _Mobile extends StatelessWidget {
+  const _Mobile();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+
+class _Desktop extends StatefulWidget {
+  const _Desktop();
+
+  @override
+  State<_Desktop> createState() => _DesktopState();
+}
+
+class _DesktopState extends State<_Desktop> {
+  final TextEditingController rate = TextEditingController();
+  String crFrom = "USD";
+  String crTo = "AFN";
+
+  @override
+  Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
+    final isLoading = context.watch<ExchangeRateBloc>().state is ExchangeRateLoadingState;
+    return ZFormDialog(
+        width: 400,
+        icon: Icons.currency_yen_rounded,
+        padding: EdgeInsets.all(8),
+        onAction: (){
+          context.read<ExchangeRateBloc>().add(AddExchangeRateEvent(newRate: ExchangeRateModel(
+            crFrom: crFrom,
+            crTo: crTo,
+            crExchange: rate.text
+          )));
+          Navigator.of(context).pop();
+        },
+        title: locale.newExchangeRateTitle,
+        actionLabel: isLoading? SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 4,
+              color: Theme.of(context).colorScheme.surface,
+            )) : Text(locale.create),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 12,
+          children: [
+           Row(
+             spacing: 8,
+             children: [
+               Expanded(
+                 child: CurrencyDropdown(
+                     title: locale.from,
+                     initiallySelectedSingle: CurrenciesModel(ccyCode: crFrom),
+                     isMulti: false,
+                     onSingleChanged: (e){
+                       setState(() {
+                         crFrom = e?.ccyCode??"USD";
+                       });
+                     },
+                     onMultiChanged: (e){}),
+               ),
+
+               Expanded(
+                 child: CurrencyDropdown(
+                     initiallySelectedSingle: CurrenciesModel(ccyCode: crTo),
+                     title: locale.toCurrency,
+                     isMulti: false,
+                     onSingleChanged: (e){
+                       setState(() {
+                         crTo = e?.ccyCode??"AFN";
+                       });
+                     },
+                     onMultiChanged: (e){}),
+               ),
+             ],
+           ),
+            ZTextFieldEntitled(
+                isRequired: true,
+                keyboardInputType: TextInputType.numberWithOptions(
+                    decimal: true),
+                inputFormat: [
+                  FilteringTextInputFormatter.allow(
+                    RegExp(r'[0-9.,]*'),
+                  ),
+                  SmartThousandsDecimalFormatter(),
+                ],
+
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return locale.required(locale.exchangeRate);
+                  }
+
+                  // Remove formatting (e.g. commas)
+                  final clean = value.replaceAll(
+                    RegExp(r'[^\d.]'),
+                    '',
+                  );
+                  final amount = double.tryParse(clean);
+
+                  if (amount == null || amount <= 0.0) {
+                    return locale.amountGreaterZero;
+                  }
+
+                  return null;
+                },
+                controller: rate,
+                title: locale.exchangeRate)
+          ],
+        ),
+    );
+  }
+}
+

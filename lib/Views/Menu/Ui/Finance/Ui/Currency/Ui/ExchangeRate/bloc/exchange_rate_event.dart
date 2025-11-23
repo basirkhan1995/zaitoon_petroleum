@@ -13,7 +13,8 @@ class LoadExchangeRateEvent extends ExchangeRateEvent{
 
 class AddExchangeRateEvent extends ExchangeRateEvent{
   final ExchangeRateModel newRate;
-  const AddExchangeRateEvent(this.newRate);
+  final String? baseCcy;
+  const AddExchangeRateEvent({required this.newRate, this.baseCcy});
   @override
   List<Object> get props => [newRate];
 }

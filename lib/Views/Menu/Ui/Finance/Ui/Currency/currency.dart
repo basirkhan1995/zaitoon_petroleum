@@ -28,7 +28,7 @@ class _CurrencyTabViewState extends State<CurrencyTabView> {
       MenuDefinition(
         value: CurrencyTabName.rates,
         label: AppLocalizations.of(context)!.exchangeRate,
-        screen: const ExchangeRateView(),
+        screen: const ExchangeRateView(newRateButton: true,settingButton: false,),
         icon: Icons.ssid_chart_outlined,
       ),
     ];

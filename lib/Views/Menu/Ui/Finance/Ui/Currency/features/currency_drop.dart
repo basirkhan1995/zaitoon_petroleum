@@ -123,7 +123,7 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
             setState(() => _selectedSingle = item);
             widget.onSingleChanged?.call(item);
           },
-          isLoading: isLoading,
+          isLoading: false,
           itemStyle: Theme.of(context).textTheme.titleMedium,
           // Custom title widget that includes loading indicator
           customTitle: buildTitle(),

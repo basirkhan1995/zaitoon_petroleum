@@ -300,7 +300,6 @@ class Repositories {
           endpoint: "/HR/users.php",
           data: newUser.toMap()
       );
-      print(response);
       return response.data;
     } on DioException catch (e) {
       throw '${e.message}';
@@ -452,6 +451,19 @@ class Repositories {
       throw "${e.message}";
     } catch (e) {
       throw "$e";
+    }
+  }
+  Future<Map<String, dynamic>> addExchangeRate({required ExchangeRateModel newRate}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/finance/exchangeRate.php",
+          data: newRate.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
     }
   }
   ///Password Settings .........................................................
