@@ -114,8 +114,8 @@
   "forgotPassword": "رمز عبور را فراموش کرده‌اید؟",
   "rememberMe": "مرا به خاطر بسپار",
   "settingsHint": "تنظیمات برنامه را مطابق نیاز خود سفارشی کنید",
-  "am": "صبح",
-  "pm": "بعداز ظهر",
+  "am": "ق.ظ",
+  "pm": "ب.ظ",
   "zPetroleum": "سیستم مدیریت پترولیوم زیتون",
   "hijriShamsi": "هجری شمسی",
   "gregorian": "میلادی",
@@ -261,5 +261,13 @@
   "from": "از - اسعار",
   "toCurrency": "به - اسعار",
   "amountGreaterZero": "مبلغ باید بیشتر از صفر باشد",
-  "newExchangeRateTitle": "ثبت نرخ اسعار"
+  "newExchangeRateTitle": "ثبت نرخ اسعار",
+  "drivers": "راننده ها",
+  "shipping": "حمل و نقل",
+  "vehicles": "وسایط",
+  "facebook": "فیسبوک",
+  "instagram": "انستاگرام",
+  "whatsApp": "واتساپ",
+  "amount": "مبلغ",
+  "narration": "شرح"
 }

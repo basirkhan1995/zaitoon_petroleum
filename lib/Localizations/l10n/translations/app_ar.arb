@@ -114,8 +114,8 @@
   "forgotPassword": "پټنوم دې هېر شوی؟",
   "rememberMe": "ما یاد ساته",
   "settingsHint": "د اپ تنظیمات د خپلو اړتیاوو سره برابر کړئ",
-  "am": "سهار",
-  "pm": "ماښام",
+  "am": "ق.ظ",
+  "pm": "ب.ظ",
   "zPetroleum": "د زیتون د پټرولیم مدیریت سافټویر",
   "hijriShamsi": "هجری شمسی",
   "gregorian": "میلادی",
@@ -261,5 +261,13 @@
   "from": "له - اسعار",
   "toCurrency": "په - اسعار",
   "amountGreaterZero": "اندازه باید له صفر څخه زیاته وي",
-  "newExchangeRateTitle": "اسعار نرخ ثبتول"
+  "newExchangeRateTitle": "اسعار نرخ ثبتول",
+  "drivers": "راننده ها",
+  "shipping": "لېږد",
+  "vehicles": "وسایط",
+  "facebook": "فیسبوک",
+  "instagram": "انستاگرام",
+  "whatsApp": "واتساپ",
+  "amount": "مبلغ",
+  "narration": "شرح"
 }

@@ -213,7 +213,7 @@ class _DesktopState extends State<_Desktop> {
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(
-                            vertical: 8,
+                            vertical: 5,
                             horizontal: 8,
                           ),
                           decoration: BoxDecoration(

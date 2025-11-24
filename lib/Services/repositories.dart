@@ -3,6 +3,7 @@ import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/model/rate_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
@@ -220,7 +221,7 @@ class Repositories {
   }
 
   /// GL Accounts | System
-  Future<List<GlAccountsModel>> getGlAccounts({String? local}) async {
+  Future<List<GlAccountsModel>> getAllGlAccounts({String? local}) async {
     try {
       // Build query parameters dynamically
       final queryParams = local != null ? {'local': local} : null;
@@ -229,6 +230,44 @@ class Repositories {
       final response = await api.get(
         endpoint: "/finance/glAccount.php",
         queryParams: queryParams,
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => GlAccountsModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+  Future<List<GlAccountsModel>> getGlAccounts({List<int>? categories, List<int>? excludeAccounts, String? search, String? local}) async {
+    try {
+
+      final response = await api.post(
+        endpoint: "/journal/getAccounts.php",
+        data: {
+          "locale": local,
+          "categories": categories,
+          "exclude_accounts": excludeAccounts,
+          "search": search
+        },
       );
 
       // Handle error messages from server
@@ -458,6 +497,21 @@ class Repositories {
       final response = await api.post(
           endpoint: "/finance/exchangeRate.php",
           data: newRate.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  /// Transactions | Cash Deposit | Withdraw ...................................
+  Future<Map<String, dynamic>> onChashTransaction({required TransactionsModel newTransaction}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/journal/cashWD.php",
+          data: newTransaction.toMap()
       );
       return response.data;
     } on DioException catch (e) {

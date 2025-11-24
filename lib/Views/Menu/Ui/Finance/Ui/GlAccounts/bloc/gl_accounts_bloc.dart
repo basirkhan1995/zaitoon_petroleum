@@ -10,14 +10,25 @@ class GlAccountsBloc extends Bloc<GlAccountsEvent, GlAccountsState> {
   final Repositories _repo;
   GlAccountsBloc(this._repo) : super(GlAccountsInitial()) {
 
-    on<LoadGlAccountEvent>((event, emit) async{
+    on<LoadAllGlAccountEvent>((event, emit) async{
       emit(GlAccountsLoadingState());
       try{
-       final gl = await _repo.getGlAccounts(local: event.local);
+       final gl = await _repo.getAllGlAccounts(local: event.local);
        emit(GlAccountLoadedState(gl));
       }catch(e){
         emit(GlAccountsErrorState(e.toString()));
       }
     });
+
+    on<LoadGlAccountEvent>((event, emit) async{
+      emit(GlAccountsLoadingState());
+      try{
+        final gl = await _repo.getGlAccounts(local: event.local,categories: event.categories,excludeAccounts: event.excludeAccounts,search: event.search);
+        emit(GlAccountLoadedState(gl));
+      }catch(e){
+        emit(GlAccountsErrorState(e.toString()));
+      }
+    });
+
   }
 }

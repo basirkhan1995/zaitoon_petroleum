@@ -14,6 +14,11 @@ final class ExchangeRateLoadingState extends ExchangeRateState {
   List<Object> get props => [];
 }
 
+final class ExchangeRateSuccessState extends ExchangeRateState {
+  @override
+  List<Object> get props => [];
+}
+
 final class ExchangeRateErrorState extends ExchangeRateState {
   final String message;
   const ExchangeRateErrorState(this.message);

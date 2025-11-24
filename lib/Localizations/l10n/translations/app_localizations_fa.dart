@@ -316,10 +316,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settingsHint => 'تنظیمات برنامه را مطابق نیاز خود سفارشی کنید';
 
   @override
-  String get am => 'صبح';
+  String get am => 'ق.ظ';
 
   @override
-  String get pm => 'بعداز ظهر';
+  String get pm => 'ب.ظ';
 
   @override
   String get zPetroleum => 'سیستم مدیریت پترولیوم زیتون';
@@ -766,4 +766,28 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get newExchangeRateTitle => 'ثبت نرخ اسعار';
+
+  @override
+  String get drivers => 'راننده ها';
+
+  @override
+  String get shipping => 'حمل و نقل';
+
+  @override
+  String get vehicles => 'وسایط';
+
+  @override
+  String get facebook => 'فیسبوک';
+
+  @override
+  String get instagram => 'انستاگرام';
+
+  @override
+  String get whatsApp => 'واتساپ';
+
+  @override
+  String get amount => 'مبلغ';
+
+  @override
+  String get narration => 'شرح';
 }

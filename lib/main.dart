@@ -21,6 +21,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualDetail
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/bloc/stk_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/bloc/stock_tab_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/bloc/transport_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/bloc/menu_bloc.dart';
 import 'Localizations/Bloc/localizations_bloc.dart';
 import 'Localizations/l10n/l10n.dart';
@@ -65,13 +66,14 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => IndividualDetailTabBloc()),
         BlocProvider(create: (context) => CompanySettingsMenuBloc()),
         BlocProvider(create: (context) => UserDetailsTabBloc()),
+        BlocProvider(create: (context) => TransportTabBloc()),
 
         /// Data Management
         BlocProvider(create: (context) => IndividualsBloc(Repositories(ApiServices()))..add(LoadIndividualsEvent())),
         BlocProvider(create: (context) => AccountsBloc(Repositories(ApiServices()))..add(LoadAccountsEvent())),
         BlocProvider(create: (context) => UsersBloc(Repositories(ApiServices()))..add(LoadUsersEvent())),
         BlocProvider(create: (context) => CurrenciesBloc(Repositories(ApiServices()))..add(LoadCurrenciesEvent())),
-        BlocProvider(create: (context) => GlAccountsBloc(Repositories(ApiServices()))..add(LoadGlAccountEvent('en'))),
+        BlocProvider(create: (context) => GlAccountsBloc(Repositories(ApiServices()))..add(LoadAllGlAccountEvent('en'))),
         BlocProvider(create: (context) => StakeholderByIdBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => PermissionsBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => AuthBloc(Repositories(ApiServices()))),

@@ -48,7 +48,7 @@ class _DesktopState extends State<_Desktop> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_){
       myLocale = Localizations.localeOf(context).languageCode;
-      context.read<GlAccountsBloc>().add(LoadGlAccountEvent(myLocale??"en"));
+      context.read<GlAccountsBloc>().add(LoadAllGlAccountEvent(myLocale??"en"));
     });
     super.initState();
   }
@@ -192,7 +192,7 @@ class _DesktopState extends State<_Desktop> {
   }
 
   void onRefresh(){
-    context.read<GlAccountsBloc>().add(LoadGlAccountEvent(myLocale??"en"));
+    context.read<GlAccountsBloc>().add(LoadAllGlAccountEvent(myLocale??"en"));
   }
 }
 

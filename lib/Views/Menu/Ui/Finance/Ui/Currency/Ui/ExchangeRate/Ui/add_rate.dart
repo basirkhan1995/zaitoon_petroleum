@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
@@ -12,14 +13,15 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/features/cur
 import '../../../../../../../../../Features/Other/thousand_separator.dart';
 
 class AddRateView extends StatelessWidget {
-  const AddRateView({super.key});
+  final ExchangeRateModel? rate;
+  const AddRateView({super.key,this.rate});
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
         mobile: _Mobile(),
         tablet: _Tablet(),
-        desktop: _Desktop());
+        desktop: _Desktop(rate));
   }
 }
 
@@ -44,7 +46,8 @@ class _Mobile extends StatelessWidget {
 
 
 class _Desktop extends StatefulWidget {
-  const _Desktop();
+  final ExchangeRateModel? rate;
+  const _Desktop(this.rate);
 
   @override
   State<_Desktop> createState() => _DesktopState();
@@ -52,8 +55,16 @@ class _Desktop extends StatefulWidget {
 
 class _DesktopState extends State<_Desktop> {
   final TextEditingController rate = TextEditingController();
-  String crFrom = "USD";
-  String crTo = "AFN";
+  String? crFrom;
+  String? crTo;
+
+  @override
+  void initState() {
+    crFrom = widget.rate?.crFrom ??"USD";
+    crTo = widget.rate?.crTo ?? "AFN";
+    rate.text = widget.rate?.crExchange.toExchangeRate() ??"";
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,14 +74,7 @@ class _DesktopState extends State<_Desktop> {
         width: 400,
         icon: Icons.currency_yen_rounded,
         padding: EdgeInsets.all(8),
-        onAction: (){
-          context.read<ExchangeRateBloc>().add(AddExchangeRateEvent(newRate: ExchangeRateModel(
-            crFrom: crFrom,
-            crTo: crTo,
-            crExchange: rate.text
-          )));
-          Navigator.of(context).pop();
-        },
+        onAction: onSubmit,
         title: locale.newExchangeRateTitle,
         actionLabel: isLoading? SizedBox(
             width: 20,
@@ -115,6 +119,7 @@ class _DesktopState extends State<_Desktop> {
            ),
             ZTextFieldEntitled(
                 isRequired: true,
+                onSubmit: (_)=> onSubmit(),
                 keyboardInputType: TextInputType.numberWithOptions(
                     decimal: true),
                 inputFormat: [
@@ -147,6 +152,14 @@ class _DesktopState extends State<_Desktop> {
           ],
         ),
     );
+  }
+
+  void onSubmit(){
+    context.read<ExchangeRateBloc>().add(AddExchangeRateEvent(newRate: ExchangeRateModel(
+        crFrom: crFrom,
+        crTo: crTo,
+        crExchange: rate.text
+    )));
   }
 }
 

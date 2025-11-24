@@ -174,7 +174,13 @@ class _DesktopState extends State<_Desktop> {
               context,
             ).colorScheme.primary.withValues(alpha: 0.09),
           ),
-          BlocBuilder<ExchangeRateBloc, ExchangeRateState>(
+          BlocConsumer<ExchangeRateBloc, ExchangeRateState>(
+            listener: (context,state){
+              if(state is ExchangeRateSuccessState){
+                onRefresh();
+                Navigator.of(context).pop();
+              }
+            },
             builder: (context, state) {
               if (state is ExchangeRateErrorState) {
                 return Center(child: Text(state.message));
@@ -206,7 +212,13 @@ class _DesktopState extends State<_Desktop> {
                           context,
                         ).colorScheme.primary.withValues(alpha: .09),
 
-                        onTap: () {},
+                        onTap: () {
+                          showDialog(context: context, builder: (context){
+                            return AddRateView(
+                              rate: ccy,
+                            );
+                          });
+                        },
                         child: Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: 10,

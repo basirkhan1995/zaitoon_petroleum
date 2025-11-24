@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 
 class AllTransactionsView extends StatelessWidget {
   const AllTransactionsView({super.key});
@@ -38,8 +37,7 @@ class _Desktop extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          NoDataWidget(
-          ),
+
         ],
       ),
     );

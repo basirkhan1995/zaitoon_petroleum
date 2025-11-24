@@ -316,10 +316,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsHint => 'د اپ تنظیمات د خپلو اړتیاوو سره برابر کړئ';
 
   @override
-  String get am => 'سهار';
+  String get am => 'ق.ظ';
 
   @override
-  String get pm => 'ماښام';
+  String get pm => 'ب.ظ';
 
   @override
   String get zPetroleum => 'د زیتون د پټرولیم مدیریت سافټویر';
@@ -767,4 +767,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get newExchangeRateTitle => 'اسعار نرخ ثبتول';
+
+  @override
+  String get drivers => 'راننده ها';
+
+  @override
+  String get shipping => 'لېږد';
+
+  @override
+  String get vehicles => 'وسایط';
+
+  @override
+  String get facebook => 'فیسبوک';
+
+  @override
+  String get instagram => 'انستاگرام';
+
+  @override
+  String get whatsApp => 'واتساپ';
+
+  @override
+  String get amount => 'مبلغ';
+
+  @override
+  String get narration => 'شرح';
 }

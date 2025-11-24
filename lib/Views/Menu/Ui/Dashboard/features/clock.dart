@@ -39,18 +39,14 @@ class _DigitalClockState extends State<DigitalClock> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8,horizontal: 5),
+      margin: EdgeInsets.symmetric(vertical: 5,horizontal: 5),
       padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(5),
-          boxShadow: [
-            BoxShadow(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: .5),
-                blurRadius: 3,
-                spreadRadius: .5
-            )
-          ]
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: .5)
+          )
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -261,5 +261,13 @@
   "from": "From Currency",
   "toCurrency": "To Currency",
   "amountGreaterZero": "Amount must be greater than zero.",
-  "newExchangeRateTitle": "New Exchange Rate"
+  "newExchangeRateTitle": "New Exchange Rate",
+  "drivers": "Drivers",
+  "shipping": "Shipping",
+  "vehicles": "Vehicles",
+  "facebook": "Facebook",
+  "instagram": "Instagram",
+  "whatsApp": "WhatsApp",
+  "amount": "Amount",
+  "narration": "Narration"
 }

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/Ui/exchange_rate.dart';
 
-import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../Settings/features/Visibility/bloc/settings_visible_bloc.dart';
 import 'features/clock.dart';
 

@@ -15,3 +15,8 @@ class UpdateCompanyProfileEvent extends CompanyProfileEvent{
   @override
   List<Object> get props => [company];
 }
+
+class UploadCompanyLogoEvent extends CompanyProfileEvent{
+  @override
+  List<Object> get props => [];
+}

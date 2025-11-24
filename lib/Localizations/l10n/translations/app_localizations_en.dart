@@ -768,4 +768,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newExchangeRateTitle => 'New Exchange Rate';
+
+  @override
+  String get drivers => 'Drivers';
+
+  @override
+  String get shipping => 'Shipping';
+
+  @override
+  String get vehicles => 'Vehicles';
+
+  @override
+  String get facebook => 'Facebook';
+
+  @override
+  String get instagram => 'Instagram';
+
+  @override
+  String get whatsApp => 'WhatsApp';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get narration => 'Narration';
 }
