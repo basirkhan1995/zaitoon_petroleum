@@ -792,4 +792,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get narration => 'Narration';
+
+  @override
+  String get referenceNumber => 'Reference Number';
+
+  @override
+  String get txnMaker => 'TXN Maker';
+
+  @override
+  String get txnDate => 'TXN Date';
+
+  @override
+  String get authorizer => 'Authorizer';
+
+  @override
+  String get txnType => 'TXN Type';
+
+  @override
+  String get branchName => 'Branch name';
+
+  @override
+  String get branchId => 'Code';
+
+  @override
+  String get selected => 'Selected';
+
+  @override
+  String get authorize => 'Authorize';
 }

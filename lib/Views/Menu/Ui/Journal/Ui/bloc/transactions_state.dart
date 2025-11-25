@@ -29,7 +29,9 @@ final class TransactionErrorState extends TransactionsState {
 }
 
 final class TransactionLoadedState extends TransactionsState {
+  final List<TransactionsModel> txn;
+  const TransactionLoadedState(this.txn);
   @override
-  List<Object> get props => [];
+  List<Object> get props => [txn];
 }
 

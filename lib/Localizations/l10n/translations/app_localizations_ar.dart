@@ -791,4 +791,31 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get narration => 'شرح';
+
+  @override
+  String get referenceNumber => 'مرجع شمیره';
+
+  @override
+  String get txnMaker => 'معامله جوړوونکی';
+
+  @override
+  String get txnDate => 'نیته';
+
+  @override
+  String get authorizer => 'تایید کونکی';
+
+  @override
+  String get txnType => 'نوع معامله';
+
+  @override
+  String get branchName => 'شعبه نوم';
+
+  @override
+  String get branchId => 'شعبه کد';
+
+  @override
+  String get selected => 'انتخاب شده';
+
+  @override
+  String get authorize => 'تایید';
 }

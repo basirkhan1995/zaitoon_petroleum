@@ -790,4 +790,31 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get narration => 'شرح';
+
+  @override
+  String get referenceNumber => 'شماره مرجع';
+
+  @override
+  String get txnMaker => 'سازنده معامله';
+
+  @override
+  String get txnDate => 'تاریخ';
+
+  @override
+  String get authorizer => 'تایید کننده';
+
+  @override
+  String get txnType => 'نوع معامله';
+
+  @override
+  String get branchName => 'نام شعبه';
+
+  @override
+  String get branchId => 'کد شعبه';
+
+  @override
+  String get selected => 'انتخاب شده';
+
+  @override
+  String get authorize => 'تایید';
 }

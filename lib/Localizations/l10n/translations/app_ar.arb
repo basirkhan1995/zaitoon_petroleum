@@ -269,5 +269,14 @@
   "instagram": "انستاگرام",
   "whatsApp": "واتساپ",
   "amount": "مبلغ",
-  "narration": "شرح"
+  "narration": "شرح",
+  "referenceNumber": "مرجع شمیره",
+  "txnMaker": "معامله جوړوونکی",
+  "txnDate": "نیته",
+  "authorizer": "تایید کونکی",
+  "txnType": "نوع معامله",
+  "branchName": "شعبه نوم",
+  "branchId": "شعبه کد",
+  "selected": "انتخاب شده",
+  "authorize": "تایید"
 }

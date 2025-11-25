@@ -1641,6 +1641,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Narration'**
   String get narration;
+
+  /// No description provided for @referenceNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference Number'**
+  String get referenceNumber;
+
+  /// No description provided for @txnMaker.
+  ///
+  /// In en, this message translates to:
+  /// **'TXN Maker'**
+  String get txnMaker;
+
+  /// No description provided for @txnDate.
+  ///
+  /// In en, this message translates to:
+  /// **'TXN Date'**
+  String get txnDate;
+
+  /// No description provided for @authorizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorizer'**
+  String get authorizer;
+
+  /// No description provided for @txnType.
+  ///
+  /// In en, this message translates to:
+  /// **'TXN Type'**
+  String get txnType;
+
+  /// No description provided for @branchName.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch name'**
+  String get branchName;
+
+  /// No description provided for @branchId.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get branchId;
+
+  /// No description provided for @selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get selected;
+
+  /// No description provided for @authorize.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorize'**
+  String get authorize;
 }
 
 class _AppLocalizationsDelegate

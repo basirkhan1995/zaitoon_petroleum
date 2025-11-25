@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 
-class BranchesView extends StatelessWidget {
-  const BranchesView({super.key});
+class BranchLimitsView extends StatelessWidget {
+  const BranchLimitsView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +19,7 @@ class _Mobile extends StatelessWidget {
   }
 }
 
+
 class _Tablet extends StatelessWidget {
   const _Tablet();
 
@@ -28,6 +29,7 @@ class _Tablet extends StatelessWidget {
   }
 }
 
+
 class _Desktop extends StatelessWidget {
   const _Desktop();
 
@@ -36,4 +38,3 @@ class _Desktop extends StatelessWidget {
     return const Placeholder();
   }
 }
-

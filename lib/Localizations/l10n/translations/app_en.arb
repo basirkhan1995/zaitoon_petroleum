@@ -269,5 +269,14 @@
   "instagram": "Instagram",
   "whatsApp": "WhatsApp",
   "amount": "Amount",
-  "narration": "Narration"
+  "narration": "Narration",
+  "referenceNumber": "Reference Number",
+  "txnMaker": "TXN Maker",
+  "txnDate": "TXN Date",
+  "authorizer": "Authorizer",
+  "txnType": "TXN Type",
+  "branchName": "Branch name",
+  "branchId": "Code",
+  "selected": "Selected",
+  "authorize": "Authorize"
 }

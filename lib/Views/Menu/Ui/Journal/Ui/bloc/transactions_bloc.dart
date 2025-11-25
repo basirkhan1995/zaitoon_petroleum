@@ -11,13 +11,24 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
   TransactionsBloc(this._repo) : super(TransactionsInitial()) {
 
     on<OnCashTransactionEvent>((event, emit) async{
+      emit(TransactionLoadingState());
       try{
-       final response = await _repo.onChashTransaction(newTransaction: event.transaction);
-       if(response['msg'] == "success"){
-         emit(TransactionSuccessState());
-       }
+        final response = await _repo.cashFlowTransaction(newTransaction: event.transaction);
+        if(response['msg'] == "success"){
+          emit(TransactionSuccessState());
+        }
       }catch(e){
        emit(TransactionErrorState(e.toString()));
+      }
+    });
+
+    on<LoadAllTransactionsEvent>((event, emit) async{
+      emit(TransactionLoadingState());
+      try{
+        final txn = await _repo.getTransactions(status: event.status);
+        emit(TransactionLoadedState(txn));
+      }catch(e){
+        emit(TransactionErrorState(e.toString()));
       }
     });
 

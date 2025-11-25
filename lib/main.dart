@@ -14,6 +14,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/bloc/users_bloc.dart
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/bloc/hrtab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/bloc/transaction_tab_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/bloc/brc_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/bloc/company_settings_menu_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
@@ -32,6 +33,7 @@ import 'Themes/Bloc/themes_bloc.dart';
 import 'Themes/Ui/theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/bloc/permissions_bloc.dart';
+import 'Views/Menu/Ui/Settings/Ui/Company/Branch/Branches/bloc/branch_bloc.dart';
 import 'Views/Menu/Ui/Settings/Ui/General/bloc/general_tab_bloc.dart';
 import 'Views/Menu/Ui/Settings/bloc/settings_tab_bloc.dart';
 import 'Views/Menu/Ui/Settings/features/Visibility/bloc/settings_visible_bloc.dart';
@@ -67,6 +69,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => CompanySettingsMenuBloc()),
         BlocProvider(create: (context) => UserDetailsTabBloc()),
         BlocProvider(create: (context) => TransportTabBloc()),
+        BlocProvider(create: (context) => BranchTabBloc()),
 
         /// Data Management
         BlocProvider(create: (context) => IndividualsBloc(Repositories(ApiServices()))..add(LoadIndividualsEvent())),
@@ -81,6 +84,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ExchangeRateBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => TransactionsBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => CompanyProfileBloc(Repositories(ApiServices()))..add(LoadCompanyProfileEvent())),
+        BlocProvider(create: (context) => BranchBloc(Repositories(ApiServices()))..add(LoadBranchesEvent())),
       ],
       child: BlocBuilder<LocalizationBloc, Locale>(
         builder: (context, locale) {

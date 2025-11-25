@@ -8,6 +8,8 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfi
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
+import '../Views/Menu/Ui/Settings/Ui/Company/Branch/BranchLimits/model/limit_model.dart';
+import '../Views/Menu/Ui/Settings/Ui/Company/Branch/Branches/model/branch_model.dart';
 import '../Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
 
 class Repositories {
@@ -507,7 +509,7 @@ class Repositories {
   }
 
   /// Transactions | Cash Deposit | Withdraw ...................................
-  Future<Map<String, dynamic>> onChashTransaction({required TransactionsModel newTransaction}) async {
+  Future<Map<String, dynamic>> cashFlowTransaction({required TransactionsModel newTransaction}) async {
     try {
       final response = await api.post(
           endpoint: "/journal/cashWD.php",
@@ -520,6 +522,43 @@ class Repositories {
       throw e.toString();
     }
   }
+  Future<List<TransactionsModel>> getTransactions({String? status}) async {
+    try {
+      // Build query parameters dynamically
+      final queryParams = {'status': status};
+
+      // Fetch data from API
+      final response = await api.get(
+        endpoint: "/journal/getTransactions.php",
+        queryParams: queryParams,
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => TransactionsModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+
   ///Password Settings .........................................................
   Future<Map<String, dynamic>> forceChangePassword({required String credential, required String newPassword}) async {
     try {
@@ -571,4 +610,131 @@ class Repositories {
     }
   }
 
+
+  ///Branches & Limits  .................................................
+  Future<List<BranchModel>> getBranches({int? brcId}) async {
+    try {
+      // Build query parameters dynamically
+      final queryParams = {'brcID': brcId};
+
+      // Fetch data from API
+      final response = await api.get(
+        endpoint: "/setting/branch.php",
+        queryParams: queryParams,
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => BranchModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+  Future<Map<String, dynamic>> addBranch({required BranchModel newBranch}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/setting/branch.php",
+          data: newBranch.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> updateBranch({required BranchModel newBranch}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/setting/branch.php",
+          data: newBranch.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<List<BranchModel>> getBranchLimits({int? brcCode}) async {
+    try {
+      // Build query parameters dynamically
+      final queryParams = {'code': brcCode};
+
+      // Fetch data from API
+      final response = await api.get(
+        endpoint: "/setting/branchAuthLimit.php",
+        queryParams: queryParams,
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => BranchModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+  Future<Map<String, dynamic>> addBranchLimit({required BranchLimitModel newLimit}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/setting/branchAuthLimit.php.php",
+          data: newLimit.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> updateBranchLimit({required BranchLimitModel newLimit}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/setting/branchAuthLimit.php",
+          data: newLimit.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 }
