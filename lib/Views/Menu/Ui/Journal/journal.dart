@@ -23,8 +23,8 @@ import '../../../../Features/Widgets/outline_button.dart';
 import '../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'package:flutter/services.dart';
-
 import '../../../Auth/bloc/auth_bloc.dart';
+
 class JournalView extends StatelessWidget {
   const JournalView({super.key});
 
@@ -37,6 +37,7 @@ class JournalView extends StatelessWidget {
     );
   }
 }
+
 class _Mobile extends StatelessWidget {
   const _Mobile();
 
@@ -45,6 +46,7 @@ class _Mobile extends StatelessWidget {
     return const Placeholder();
   }
 }
+
 class _Tablet extends StatelessWidget {
   const _Tablet();
 
@@ -53,34 +55,51 @@ class _Tablet extends StatelessWidget {
     return const Placeholder();
   }
 }
+
+
 class _Desktop extends StatefulWidget {
   const _Desktop();
 
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> {
-
   String? myLocale;
   String? usrName;
-  String? baseCurrency;
+
   @override
   void initState() {
-    myLocale = context.read<LocalizationBloc>().state.languageCode;
-    context.read<CompanyProfileBloc>().add(LoadCompanyProfileEvent());
-
     super.initState();
+    // Delay context access until after initState
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          myLocale = context.read<LocalizationBloc>().state.languageCode;
+        });
+      }
+    });
+  }
+
+  // Safe method to get base currency with fallback
+  String? _getBaseCurrency(BuildContext context) {
+    try {
+      final companyState = context.read<CompanyProfileBloc>().state;
+      if (companyState is CompanyProfileLoadedState) {
+        return companyState.company.comLocalCcy;
+      }
+      return "USD"; // Fallback currency
+    } catch (e) {
+      return "USD"; // Fallback if provider not available
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final baseCurrency = _getBaseCurrency(context);
     final locale = AppLocalizations.of(context)!;
     final state = context.watch<AuthBloc>().state;
-    final companyState = context.watch<CompanyProfileBloc>().state;
-    if(companyState is CompanyProfileLoadedState){
-      baseCurrency = companyState.company.comLocalCcy;
-    }
+    final trnState = context.watch<TransactionsBloc>().state;
+
 
     if (state is! AuthenticatedState) {
       return const SizedBox();
@@ -95,37 +114,57 @@ class _DesktopState extends State<_Desktop> {
       String? accCurrency;
       int? accNumber;
 
-      showDialog(context: context, builder: (context){
-        return ZFormDialog(
-          width: 600,
-            icon: trnType == "CHDP"? Icons.arrow_circle_down_rounded : Icons.arrow_circle_up_rounded,
-            title: trnType == "CHDP"? locale.deposit : locale.withdraw,
+      showDialog(
+        context: context,
+        builder: (context) {
+          return ZFormDialog(
+            width: 600,
+            icon: trnType == "CHDP"
+                ? Icons.arrow_circle_down_rounded
+                : Icons.arrow_circle_up_rounded,
+            title: trnType == "CHDP" ? locale.deposit : locale.withdraw,
             onAction: () {
-             context.read<TransactionsBloc>().add(OnCashTransactionEvent(TransactionsModel(
-               usrName: login.usrName,
-               account: accNumber,
-               accCcy: accCurrency ?? "USD",
-               trnType: trnType,
-               amount: amount.text,
-               narration: narration.text,
-             )));
+              context.read<TransactionsBloc>().add(OnCashTransactionEvent(
+                  TransactionsModel(
+                      usrName: login.usrName,
+                      account: accNumber,
+                      accCcy: accCurrency ?? "USD",
+                      trnType: trnType,
+                      amount: amount.text,
+                      narration: narration.text)));
             },
-            actionLabel: Text(locale.create),
+            actionLabel: trnState is TransactionLoadingState? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.surface,
+                  strokeWidth: 4,
+                )) : Text(locale.create),
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
+                    GenericTextfield<GlAccountsModel, GlAccountsBloc,
+                        GlAccountsState>(
                       showAllOnFocus: true,
                       controller: accountController,
                       title: locale.accounts,
                       hintText: locale.accNameOrNumber,
                       isRequired: true,
                       bloc: context.read<GlAccountsBloc>(),
-                      fetchAllFunction: (bloc) => bloc.add(LoadGlAccountEvent(local: myLocale??"en",categories: [5],excludeAccounts: [10101010])),
-                      searchFunction: (bloc, query) => bloc.add(LoadGlAccountEvent(local: myLocale??"en",categories: [5],excludeAccounts: [10101010],search: query)),
+                      fetchAllFunction: (bloc) => bloc.add(
+                          LoadGlAccountEvent(
+                              local: myLocale ?? "en",
+                              categories: [5],
+                              excludeAccounts: [10101010])),
+                      searchFunction: (bloc, query) => bloc.add(
+                          LoadGlAccountEvent(
+                              local: myLocale ?? "en",
+                              categories: [5],
+                              excludeAccounts: [10101010],
+                              search: query)),
                       validator: (value) {
                         if (value.isEmpty) {
                           return locale.required(locale.accounts);
@@ -153,13 +192,13 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ),
                       itemToString: (acc) => "${acc.accName}",
-                      stateToLoading: (state) => state is GlAccountsLoadingState,
+                      stateToLoading: (state) =>
+                      state is GlAccountsLoadingState,
                       loadingBuilder: (context) => const SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 3),
                       ),
-
                       stateToItems: (state) {
                         if (state is GlAccountLoadedState) {
                           return state.gl;
@@ -168,7 +207,7 @@ class _DesktopState extends State<_Desktop> {
                       },
                       onSelected: (value) {
                         setState(() {
-                         // usrOwnerId = value.perId!;
+                          accNumber = value.accNumber;
                         });
                       },
                       noResultsText: locale.noDataFound,
@@ -176,16 +215,15 @@ class _DesktopState extends State<_Desktop> {
                     ),
                     ZTextFieldEntitled(
                         isRequired: true,
-                       // onSubmit: (_)=> onSubmit(),
-                        keyboardInputType: TextInputType.numberWithOptions(
-                            decimal: true),
+                        // onSubmit: (_)=> onSubmit(),
+                        keyboardInputType:
+                        TextInputType.numberWithOptions(decimal: true),
                         inputFormat: [
                           FilteringTextInputFormatter.allow(
                             RegExp(r'[0-9.,]*'),
                           ),
                           SmartThousandsDecimalFormatter(),
                         ],
-
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return locale.required(locale.exchangeRate);
@@ -207,7 +245,7 @@ class _DesktopState extends State<_Desktop> {
                         controller: amount,
                         title: locale.amount),
                     ZTextFieldEntitled(
-                        // onSubmit: (_)=> onSubmit(),
+                      // onSubmit: (_)=> onSubmit(),
                         keyboardInputType: TextInputType.multiline,
                         controller: narration,
                         title: locale.narration)
@@ -215,9 +253,9 @@ class _DesktopState extends State<_Desktop> {
                 ),
               ),
             ),
-
-        );
-      });
+          );
+        },
+      );
     }
     void onCashIncome({String? trnType}) {
       final locale = AppLocalizations.of(context)!;
@@ -226,128 +264,135 @@ class _DesktopState extends State<_Desktop> {
       final TextEditingController narration = TextEditingController();
       int? accNumber;
 
-      showDialog(context: context, builder: (context){
-        return ZFormDialog(
-          width: 600,
-          title: locale.income,
-          onAction: () {
-            context.read<TransactionsBloc>().add(OnCashTransactionEvent(TransactionsModel(
-              usrName: login.usrName,
-              account: accNumber,
-              accCcy: baseCurrency,
-              trnType: trnType,
-              amount: amount.text,
-              narration: narration.text,
-            )));
-          },
-          actionLabel: Text(locale.create),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
-                    showAllOnFocus: true,
-                    controller: accountController,
-                    title: locale.accounts,
-                    hintText: locale.accNameOrNumber,
-                    isRequired: true,
-                    bloc: context.read<GlAccountsBloc>(),
-                    fetchAllFunction: (bloc) => bloc.add(LoadGlAccountEvent(local: myLocale??"en",categories: [3])),
-                    searchFunction: (bloc, query) => bloc.add(LoadGlAccountEvent(local: myLocale??"en",categories: [3],search: query)),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return locale.required(locale.accounts);
-                      }
-                      return null;
-                    },
-                    itemBuilder: (context, account) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 5,
-                        vertical: 5,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "${account.accNumber} | ${account.accName}",
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
-                    stateToLoading: (state) => state is GlAccountsLoadingState,
-                    loadingBuilder: (context) => const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 3),
-                    ),
-
-                    stateToItems: (state) {
-                      if (state is GlAccountLoadedState) {
-                        return state.gl;
-                      }
-                      return [];
-                    },
-                    onSelected: (value) {
-                      setState(() {
-                        // usrOwnerId = value.perId!;
-                      });
-                    },
-                    noResultsText: locale.noDataFound,
-                    showClearButton: true,
-                  ),
-                  ZTextFieldEntitled(
+      showDialog(
+        context: context,
+        builder: (context) {
+          return ZFormDialog(
+            width: 600,
+            title: locale.income,
+            onAction: () {
+              context.read<TransactionsBloc>().add(OnCashTransactionEvent(
+                  TransactionsModel(
+                      usrName: login.usrName,
+                      account: accNumber,
+                      accCcy: baseCurrency,
+                      trnType: trnType,
+                      amount: amount.text,
+                      narration: narration.text)));
+            },
+            actionLabel: Text(locale.create),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GenericTextfield<GlAccountsModel, GlAccountsBloc,
+                        GlAccountsState>(
+                      showAllOnFocus: true,
+                      controller: accountController,
+                      title: locale.accounts,
+                      hintText: locale.accNameOrNumber,
                       isRequired: true,
-                      // onSubmit: (_)=> onSubmit(),
-                      keyboardInputType: TextInputType.numberWithOptions(
-                          decimal: true),
-                      inputFormat: [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(r'[0-9.,]*'),
-                        ),
-                        SmartThousandsDecimalFormatter(),
-                      ],
-
+                      bloc: context.read<GlAccountsBloc>(),
+                      fetchAllFunction: (bloc) => bloc.add(LoadGlAccountEvent(
+                          local: myLocale ?? "en", categories: [3])),
+                      searchFunction: (bloc, query) => bloc.add(
+                          LoadGlAccountEvent(
+                              local: myLocale ?? "en",
+                              categories: [3],
+                              search: query)),
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return locale.required(locale.exchangeRate);
+                        if (value.isEmpty) {
+                          return locale.required(locale.accounts);
                         }
-
-                        // Remove formatting (e.g. commas)
-                        final clean = value.replaceAll(
-                          RegExp(r'[^\d.]'),
-                          '',
-                        );
-                        final amount = double.tryParse(clean);
-
-                        if (amount == null || amount <= 0.0) {
-                          return locale.amountGreaterZero;
-                        }
-
                         return null;
                       },
-                      controller: amount,
-                      title: locale.amount),
-                  ZTextFieldEntitled(
-                    // onSubmit: (_)=> onSubmit(),
-                      keyboardInputType: TextInputType.multiline,
-                      controller: narration,
-                      title: locale.narration)
-                ],
+                      itemBuilder: (context, account) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 5,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "${account.accNumber} | ${account.accName}",
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
+                      stateToLoading: (state) =>
+                      state is GlAccountsLoadingState,
+                      loadingBuilder: (context) => const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 3),
+                      ),
+                      stateToItems: (state) {
+                        if (state is GlAccountLoadedState) {
+                          return state.gl;
+                        }
+                        return [];
+                      },
+                      onSelected: (value) {
+                        setState(() {
+                          // usrOwnerId = value.perId!;
+                        });
+                      },
+                      noResultsText: locale.noDataFound,
+                      showClearButton: true,
+                    ),
+                    ZTextFieldEntitled(
+                        isRequired: true,
+                        // onSubmit: (_)=> onSubmit(),
+                        keyboardInputType:
+                        TextInputType.numberWithOptions(decimal: true),
+                        inputFormat: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[0-9.,]*'),
+                          ),
+                          SmartThousandsDecimalFormatter(),
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return locale.required(locale.exchangeRate);
+                          }
+
+                          // Remove formatting (e.g. commas)
+                          final clean = value.replaceAll(
+                            RegExp(r'[^\d.]'),
+                            '',
+                          );
+                          final amount = double.tryParse(clean);
+
+                          if (amount == null || amount <= 0.0) {
+                            return locale.amountGreaterZero;
+                          }
+
+                          return null;
+                        },
+                        controller: amount,
+                        title: locale.amount),
+                    ZTextFieldEntitled(
+                      // onSubmit: (_)=> onSubmit(),
+                        keyboardInputType: TextInputType.multiline,
+                        controller: narration,
+                        title: locale.narration)
+                  ],
+                ),
               ),
             ),
-          ),
-
-        );
-      });
+          );
+        },
+      );
     }
     void onCashExpense({String? trnType}) {
       final locale = AppLocalizations.of(context)!;
@@ -356,128 +401,135 @@ class _DesktopState extends State<_Desktop> {
       final TextEditingController narration = TextEditingController();
       int? accNumber;
 
-      showDialog(context: context, builder: (context){
-        return ZFormDialog(
-          width: 600,
-          title: locale.expense,
-          onAction: () {
-            context.read<TransactionsBloc>().add(OnCashTransactionEvent(TransactionsModel(
-              usrName: login.usrName,
-              account: accNumber,
-              accCcy: baseCurrency,
-              trnType: trnType,
-              amount: amount.text,
-              narration: narration.text,
-            )));
-          },
-          actionLabel: Text(locale.create),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
-                    showAllOnFocus: true,
-                    controller: accountController,
-                    title: locale.accounts,
-                    hintText: locale.accNameOrNumber,
-                    isRequired: true,
-                    bloc: context.read<GlAccountsBloc>(),
-                    fetchAllFunction: (bloc) => bloc.add(LoadGlAccountEvent(local: myLocale??"en",categories: [4])),
-                    searchFunction: (bloc, query) => bloc.add(LoadGlAccountEvent(local: myLocale??"en",categories: [4],search: query)),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return locale.required(locale.accounts);
-                      }
-                      return null;
-                    },
-                    itemBuilder: (context, account) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 5,
-                        vertical: 5,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "${account.accNumber} | ${account.accName}",
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
-                    stateToLoading: (state) => state is GlAccountsLoadingState,
-                    loadingBuilder: (context) => const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 3),
-                    ),
-
-                    stateToItems: (state) {
-                      if (state is GlAccountLoadedState) {
-                        return state.gl;
-                      }
-                      return [];
-                    },
-                    onSelected: (value) {
-                      setState(() {
-                        // usrOwnerId = value.perId!;
-                      });
-                    },
-                    noResultsText: locale.noDataFound,
-                    showClearButton: true,
-                  ),
-                  ZTextFieldEntitled(
+      showDialog(
+        context: context,
+        builder: (context) {
+          return ZFormDialog(
+            width: 600,
+            title: locale.expense,
+            onAction: () {
+              context.read<TransactionsBloc>().add(OnCashTransactionEvent(
+                  TransactionsModel(
+                      usrName: login.usrName,
+                      account: accNumber,
+                      accCcy: baseCurrency,
+                      trnType: trnType,
+                      amount: amount.text,
+                      narration: narration.text)));
+            },
+            actionLabel: Text(locale.create),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GenericTextfield<GlAccountsModel, GlAccountsBloc,
+                        GlAccountsState>(
+                      showAllOnFocus: true,
+                      controller: accountController,
+                      title: locale.accounts,
+                      hintText: locale.accNameOrNumber,
                       isRequired: true,
-                      // onSubmit: (_)=> onSubmit(),
-                      keyboardInputType: TextInputType.numberWithOptions(
-                          decimal: true),
-                      inputFormat: [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(r'[0-9.,]*'),
-                        ),
-                        SmartThousandsDecimalFormatter(),
-                      ],
-
+                      bloc: context.read<GlAccountsBloc>(),
+                      fetchAllFunction: (bloc) => bloc.add(LoadGlAccountEvent(
+                          local: myLocale ?? "en", categories: [4])),
+                      searchFunction: (bloc, query) => bloc.add(
+                          LoadGlAccountEvent(
+                              local: myLocale ?? "en",
+                              categories: [4],
+                              search: query)),
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return locale.required(locale.exchangeRate);
+                        if (value.isEmpty) {
+                          return locale.required(locale.accounts);
                         }
-
-                        // Remove formatting (e.g. commas)
-                        final clean = value.replaceAll(
-                          RegExp(r'[^\d.]'),
-                          '',
-                        );
-                        final amount = double.tryParse(clean);
-
-                        if (amount == null || amount <= 0.0) {
-                          return locale.amountGreaterZero;
-                        }
-
                         return null;
                       },
-                      controller: amount,
-                      title: locale.amount),
-                  ZTextFieldEntitled(
-                    // onSubmit: (_)=> onSubmit(),
-                      keyboardInputType: TextInputType.multiline,
-                      controller: narration,
-                      title: locale.narration)
-                ],
+                      itemBuilder: (context, account) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 5,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "${account.accNumber} | ${account.accName}",
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
+                      stateToLoading: (state) =>
+                      state is GlAccountsLoadingState,
+                      loadingBuilder: (context) => const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 3),
+                      ),
+                      stateToItems: (state) {
+                        if (state is GlAccountLoadedState) {
+                          return state.gl;
+                        }
+                        return [];
+                      },
+                      onSelected: (value) {
+                        setState(() {
+                          // usrOwnerId = value.perId!;
+                        });
+                      },
+                      noResultsText: locale.noDataFound,
+                      showClearButton: true,
+                    ),
+                    ZTextFieldEntitled(
+                        isRequired: true,
+                        // onSubmit: (_)=> onSubmit(),
+                        keyboardInputType:
+                        TextInputType.numberWithOptions(decimal: true),
+                        inputFormat: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[0-9.,]*'),
+                          ),
+                          SmartThousandsDecimalFormatter(),
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return locale.required(locale.exchangeRate);
+                          }
+
+                          // Remove formatting (e.g. commas)
+                          final clean = value.replaceAll(
+                            RegExp(r'[^\d.]'),
+                            '',
+                          );
+                          final amount = double.tryParse(clean);
+
+                          if (amount == null || amount <= 0.0) {
+                            return locale.amountGreaterZero;
+                          }
+
+                          return null;
+                        },
+                        controller: amount,
+                        title: locale.amount),
+                    ZTextFieldEntitled(
+                      // onSubmit: (_)=> onSubmit(),
+                        keyboardInputType: TextInputType.multiline,
+                        controller: narration,
+                        title: locale.narration)
+                  ],
+                ),
               ),
             ),
-          ),
-
-        );
-      });
+          );
+        },
+      );
     }
     void onGL({String? trnType}) {
       final locale = AppLocalizations.of(context)!;
@@ -486,128 +538,138 @@ class _DesktopState extends State<_Desktop> {
       final TextEditingController narration = TextEditingController();
       int? accNumber;
 
-      showDialog(context: context, builder: (context){
-        return ZFormDialog(
-          width: 600,
-          title: trnType == "GLCR"? locale.glCreditTitle : locale.glDebitTitle,
-          onAction: () {
-            context.read<TransactionsBloc>().add(OnCashTransactionEvent(TransactionsModel(
-              usrName: login.usrName,
-              account: accNumber,
-              accCcy: baseCurrency,
-              trnType: trnType,
-              amount: amount.text,
-              narration: narration.text,
-            )));
-          },
-          actionLabel: Text(locale.create),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
-                    showAllOnFocus: true,
-                    controller: accountController,
-                    title: locale.accounts,
-                    hintText: locale.accNameOrNumber,
-                    isRequired: true,
-                    bloc: context.read<GlAccountsBloc>(),
-                    fetchAllFunction: (bloc) => bloc.add(LoadGlAccountEvent(local: myLocale??"en",categories: [1,2,3,4], excludeAccounts: [10101010,10101011])),
-                    searchFunction: (bloc, query) => bloc.add(LoadGlAccountEvent(local: myLocale??"en",categories: [1,2,3,4], excludeAccounts: [10101010,10101011],search: query)),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return locale.required(locale.accounts);
-                      }
-                      return null;
-                    },
-                    itemBuilder: (context, account) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 5,
-                        vertical: 5,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "${account.accNumber} | ${account.accName}",
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
-                    stateToLoading: (state) => state is GlAccountsLoadingState,
-                    loadingBuilder: (context) => const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 3),
-                    ),
-
-                    stateToItems: (state) {
-                      if (state is GlAccountLoadedState) {
-                        return state.gl;
-                      }
-                      return [];
-                    },
-                    onSelected: (value) {
-                      setState(() {
-                        // usrOwnerId = value.perId!;
-                      });
-                    },
-                    noResultsText: locale.noDataFound,
-                    showClearButton: true,
-                  ),
-                  ZTextFieldEntitled(
+      showDialog(
+        context: context,
+        builder: (context) {
+          return ZFormDialog(
+            width: 600,
+            title: trnType == "GLCR" ? locale.glCreditTitle : locale.glDebitTitle,
+            onAction: () {
+              context.read<TransactionsBloc>().add(OnCashTransactionEvent(
+                  TransactionsModel(
+                      usrName: login.usrName,
+                      account: accNumber,
+                      accCcy: baseCurrency,
+                      trnType: trnType,
+                      amount: amount.text,
+                      narration: narration.text)));
+            },
+            actionLabel: Text(locale.create),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GenericTextfield<GlAccountsModel, GlAccountsBloc,
+                        GlAccountsState>(
+                      showAllOnFocus: true,
+                      controller: accountController,
+                      title: locale.accounts,
+                      hintText: locale.accNameOrNumber,
                       isRequired: true,
-                      // onSubmit: (_)=> onSubmit(),
-                      keyboardInputType: TextInputType.numberWithOptions(
-                          decimal: true),
-                      inputFormat: [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(r'[0-9.,]*'),
-                        ),
-                        SmartThousandsDecimalFormatter(),
-                      ],
-
+                      bloc: context.read<GlAccountsBloc>(),
+                      fetchAllFunction: (bloc) => bloc.add(LoadGlAccountEvent(
+                          local: myLocale ?? "en",
+                          categories: [1, 2, 3, 4],
+                          excludeAccounts: [10101010, 10101011])),
+                      searchFunction: (bloc, query) => bloc.add(
+                          LoadGlAccountEvent(
+                              local: myLocale ?? "en",
+                              categories: [1, 2, 3, 4],
+                              excludeAccounts: [10101010, 10101011],
+                              search: query)),
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return locale.required(locale.exchangeRate);
+                        if (value.isEmpty) {
+                          return locale.required(locale.accounts);
                         }
-
-                        // Remove formatting (e.g. commas)
-                        final clean = value.replaceAll(
-                          RegExp(r'[^\d.]'),
-                          '',
-                        );
-                        final amount = double.tryParse(clean);
-
-                        if (amount == null || amount <= 0.0) {
-                          return locale.amountGreaterZero;
-                        }
-
                         return null;
                       },
-                      controller: amount,
-                      title: locale.amount),
-                  ZTextFieldEntitled(
-                    // onSubmit: (_)=> onSubmit(),
-                      keyboardInputType: TextInputType.multiline,
-                      controller: narration,
-                      title: locale.narration)
-                ],
+                      itemBuilder: (context, account) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 5,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "${account.accNumber} | ${account.accName}",
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
+                      stateToLoading: (state) =>
+                      state is GlAccountsLoadingState,
+                      loadingBuilder: (context) => const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 3),
+                      ),
+                      stateToItems: (state) {
+                        if (state is GlAccountLoadedState) {
+                          return state.gl;
+                        }
+                        return [];
+                      },
+                      onSelected: (value) {
+                        setState(() {
+                          // usrOwnerId = value.perId!;
+                        });
+                      },
+                      noResultsText: locale.noDataFound,
+                      showClearButton: true,
+                    ),
+                    ZTextFieldEntitled(
+                        isRequired: true,
+                        // onSubmit: (_)=> onSubmit(),
+                        keyboardInputType:
+                        TextInputType.numberWithOptions(decimal: true),
+                        inputFormat: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[0-9.,]*'),
+                          ),
+                          SmartThousandsDecimalFormatter(),
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return locale.required(locale.exchangeRate);
+                          }
+
+                          // Remove formatting (e.g. commas)
+                          final clean = value.replaceAll(
+                            RegExp(r'[^\d.]'),
+                            '',
+                          );
+                          final amount = double.tryParse(clean);
+
+                          if (amount == null || amount <= 0.0) {
+                            return locale.amountGreaterZero;
+                          }
+
+                          return null;
+                        },
+                        controller: amount,
+                        title: locale.amount),
+                    ZTextFieldEntitled(
+                      // onSubmit: (_)=> onSubmit(),
+                        keyboardInputType: TextInputType.multiline,
+                        controller: narration,
+                        title: locale.narration)
+                  ],
+                ),
               ),
             ),
-          ),
-
-        );
-      });
+          );
+        },
+      );
     }
     void accountToAccount({String? trnType}) {
       final locale = AppLocalizations.of(context)!;
@@ -622,197 +684,222 @@ class _DesktopState extends State<_Desktop> {
       int? creditAccount;
       int? debitAccount;
 
-      showDialog(context: context, builder: (context){
-        return ZFormDialog(
-          width: 700,
-          icon: Icons.swap_horiz_rounded,
-          title: locale.accountTransfer,
-          onAction: () {},
-          actionLabel: Text(locale.create),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    spacing: 5,
-                    children: [
-                      Expanded(
-                        child: GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
-                          showAllOnFocus: true,
-                          controller: creditAccountNumber,
-                          title: locale.accounts,
-                          hintText: locale.accNameOrNumber,
-                          isRequired: true,
-                          bloc: context.read<GlAccountsBloc>(),
-                          fetchAllFunction: (bloc) => bloc.add(LoadGlAccountEvent(local: myLocale??"en",categories: [5],excludeAccounts: [10101010])),
-                          searchFunction: (bloc, query) => bloc.add(LoadGlAccountEvent(local: myLocale??"en",categories: [5],excludeAccounts: [10101010],search: query)),
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return locale.required(locale.accounts);
-                            }
-                            return null;
-                          },
-                          itemBuilder: (context, account) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 5,
-                              vertical: 5,
+      showDialog(
+        context: context,
+        builder: (context) {
+          return ZFormDialog(
+            width: 700,
+            icon: Icons.swap_horiz_rounded,
+            title: locale.accountTransfer,
+            onAction: () {},
+            actionLabel: Text(locale.create),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      spacing: 5,
+                      children: [
+                        Expanded(
+                          child: GenericTextfield<GlAccountsModel,
+                              GlAccountsBloc, GlAccountsState>(
+                            showAllOnFocus: true,
+                            controller: creditAccountNumber,
+                            title: locale.accounts,
+                            hintText: locale.accNameOrNumber,
+                            isRequired: true,
+                            bloc: context.read<GlAccountsBloc>(),
+                            fetchAllFunction: (bloc) => bloc.add(
+                                LoadGlAccountEvent(
+                                    local: myLocale ?? "en",
+                                    categories: [5],
+                                    excludeAccounts: [10101010])),
+                            searchFunction: (bloc, query) => bloc.add(
+                                LoadGlAccountEvent(
+                                    local: myLocale ?? "en",
+                                    categories: [5],
+                                    excludeAccounts: [10101010],
+                                    search: query)),
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return locale.required(locale.accounts);
+                              }
+                              return null;
+                            },
+                            itemBuilder: (context, account) => Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5,
+                                vertical: 5,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "${account.accName}",
+                                        style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "${account.accName}",
-                                      style: Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                  ],
-                                ),
-                              ],
+                            itemToString: (acc) => "${acc.accName}",
+                            stateToLoading: (state) =>
+                            state is GlAccountsLoadingState,
+                            loadingBuilder: (context) => const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 3),
                             ),
+                            stateToItems: (state) {
+                              if (state is GlAccountLoadedState) {
+                                return state.gl;
+                              }
+                              return [];
+                            },
+                            onSelected: (value) {
+                              setState(() {
+                                // usrOwnerId = value.perId!;
+                              });
+                            },
+                            noResultsText: locale.noDataFound,
+                            showClearButton: true,
                           ),
-                          itemToString: (acc) => "${acc.accName}",
-                          stateToLoading: (state) => state is GlAccountsLoadingState,
-                          loadingBuilder: (context) => const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 3),
-                          ),
-
-                          stateToItems: (state) {
-                            if (state is GlAccountLoadedState) {
-                              return state.gl;
-                            }
-                            return [];
-                          },
-                          onSelected: (value) {
-                            setState(() {
-                              // usrOwnerId = value.perId!;
-                            });
-                          },
-                          noResultsText: locale.noDataFound,
-                          showClearButton: true,
                         ),
-                      ),
-                      Expanded(
-                        child: GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
-                          showAllOnFocus: true,
-                          controller: debitAccountNumber,
-                          title: locale.accounts,
-                          hintText: locale.accNameOrNumber,
-                          isRequired: true,
-                          bloc: context.read<GlAccountsBloc>(),
-                          fetchAllFunction: (bloc) => bloc.add(LoadGlAccountEvent(local: myLocale??"en",categories: [5],excludeAccounts: [10101010])),
-                          searchFunction: (bloc, query) => bloc.add(LoadGlAccountEvent(local: myLocale??"en",categories: [5],excludeAccounts: [10101010],search: query)),
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return locale.required(locale.accounts);
-                            }
-                            return null;
-                          },
-                          itemBuilder: (context, account) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 5,
-                              vertical: 5,
+                        Expanded(
+                          child: GenericTextfield<GlAccountsModel,
+                              GlAccountsBloc, GlAccountsState>(
+                            showAllOnFocus: true,
+                            controller: debitAccountNumber,
+                            title: locale.accounts,
+                            hintText: locale.accNameOrNumber,
+                            isRequired: true,
+                            bloc: context.read<GlAccountsBloc>(),
+                            fetchAllFunction: (bloc) => bloc.add(
+                                LoadGlAccountEvent(
+                                    local: myLocale ?? "en",
+                                    categories: [5],
+                                    excludeAccounts: [10101010])),
+                            searchFunction: (bloc, query) => bloc.add(
+                                LoadGlAccountEvent(
+                                    local: myLocale ?? "en",
+                                    categories: [5],
+                                    excludeAccounts: [10101010],
+                                    search: query)),
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return locale.required(locale.accounts);
+                              }
+                              return null;
+                            },
+                            itemBuilder: (context, account) => Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5,
+                                vertical: 5,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "${account.accName}",
+                                        style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "${account.accName}",
-                                      style: Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                  ],
-                                ),
-                              ],
+                            itemToString: (acc) => "${acc.accName}",
+                            stateToLoading: (state) =>
+                            state is GlAccountsLoadingState,
+                            loadingBuilder: (context) => const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 3),
                             ),
+                            stateToItems: (state) {
+                              if (state is GlAccountLoadedState) {
+                                return state.gl;
+                              }
+                              return [];
+                            },
+                            onSelected: (value) {
+                              setState(() {
+                                // usrOwnerId = value.perId!;
+                              });
+                            },
+                            noResultsText: locale.noDataFound,
+                            showClearButton: true,
                           ),
-                          itemToString: (acc) => "${acc.accName}",
-                          stateToLoading: (state) => state is GlAccountsLoadingState,
-                          loadingBuilder: (context) => const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 3),
-                          ),
-
-                          stateToItems: (state) {
-                            if (state is GlAccountLoadedState) {
-                              return state.gl;
-                            }
-                            return [];
-                          },
-                          onSelected: (value) {
-                            setState(() {
-                              // usrOwnerId = value.perId!;
-                            });
-                          },
-                          noResultsText: locale.noDataFound,
-                          showClearButton: true,
                         ),
-                      ),
-                    ],
-                  ),
-                  ZTextFieldEntitled(
-                      isRequired: true,
-                      // onSubmit: (_)=> onSubmit(),
-                      keyboardInputType: TextInputType.numberWithOptions(
-                          decimal: true),
-                      inputFormat: [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(r'[0-9.,]*'),
-                        ),
-                        SmartThousandsDecimalFormatter(),
                       ],
+                    ),
+                    ZTextFieldEntitled(
+                        isRequired: true,
+                        // onSubmit: (_)=> onSubmit(),
+                        keyboardInputType:
+                        TextInputType.numberWithOptions(decimal: true),
+                        inputFormat: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[0-9.,]*'),
+                          ),
+                          SmartThousandsDecimalFormatter(),
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return locale.required(locale.exchangeRate);
+                          }
 
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return locale.required(locale.exchangeRate);
-                        }
+                          // Remove formatting (e.g. commas)
+                          final clean = value.replaceAll(
+                            RegExp(r'[^\d.]'),
+                            '',
+                          );
+                          final amount = double.tryParse(clean);
 
-                        // Remove formatting (e.g. commas)
-                        final clean = value.replaceAll(
-                          RegExp(r'[^\d.]'),
-                          '',
-                        );
-                        final amount = double.tryParse(clean);
+                          if (amount == null || amount <= 0.0) {
+                            return locale.amountGreaterZero;
+                          }
 
-                        if (amount == null || amount <= 0.0) {
-                          return locale.amountGreaterZero;
-                        }
-
-                        return null;
-                      },
-                      controller: amount,
-                      title: locale.amount),
-                  ZTextFieldEntitled(
-                    // onSubmit: (_)=> onSubmit(),
-                      keyboardInputType: TextInputType.multiline,
-                      controller: narration,
-                      title: locale.narration)
-                ],
+                          return null;
+                        },
+                        controller: amount,
+                        title: locale.amount),
+                    ZTextFieldEntitled(
+                      // onSubmit: (_)=> onSubmit(),
+                        keyboardInputType: TextInputType.multiline,
+                        controller: narration,
+                        title: locale.narration)
+                  ],
+                ),
               ),
             ),
-          ),
-
-        );
-      });
+          );
+        },
+      );
     }
 
     // The shortcut mapping
     final shortcuts = {
-      const SingleActivator(LogicalKeyboardKey.f1): ()=> onCashDepositWithdraw(trnType: "CHDP"),
-      const SingleActivator(LogicalKeyboardKey.f2): ()=> onCashDepositWithdraw(trnType: "CHWL"),
-      const SingleActivator(LogicalKeyboardKey.f3): ()=> onCashIncome(trnType: "INCM"),
-      const SingleActivator(LogicalKeyboardKey.f4): ()=> onCashExpense(trnType: "EXPN"),
-      const SingleActivator(LogicalKeyboardKey.f5): ()=> accountToAccount(trnType: "ATAT"),
-      const SingleActivator(LogicalKeyboardKey.f6): ()=> onGL(trnType: "GLCR"),
-      const SingleActivator(LogicalKeyboardKey.f7): ()=> onGL(trnType: "GLDR"),
+      const SingleActivator(LogicalKeyboardKey.f1): () => onCashDepositWithdraw(trnType: "CHDP"),
+      const SingleActivator(LogicalKeyboardKey.f2): () => onCashDepositWithdraw(trnType: "CHWL"),
+      const SingleActivator(LogicalKeyboardKey.f3): () => onCashIncome(trnType: "INCM"),
+      const SingleActivator(LogicalKeyboardKey.f4): () => onCashExpense(trnType: "EXPN"),
+      const SingleActivator(LogicalKeyboardKey.f5): () => accountToAccount(trnType: "ATAT"),
+      const SingleActivator(LogicalKeyboardKey.f6): () => onGL(trnType: "GLCR"),
+      const SingleActivator(LogicalKeyboardKey.f7): () => onGL(trnType: "GLDR"),
     };
 
     return Scaffold(
@@ -853,9 +940,9 @@ class _DesktopState extends State<_Desktop> {
                     onTabChanged: (tab) => context.read<JournalTabBloc>().add(JournalOnChangedEvent(tab)),
                     labelBuilder: (tab) {
                       switch (tab) {
-                        case JournalTabName.allTransactions:return locale.allTransactions;
-                        case JournalTabName.authorized:return locale.authorizedTransactions;
-                        case JournalTabName.pending:return locale.pendingTransactions;
+                        case JournalTabName.allTransactions: return locale.allTransactions;
+                        case JournalTabName.authorized: return locale.authorizedTransactions;
+                        case JournalTabName.pending: return locale.pendingTransactions;
                       }
                     },
                   ),
@@ -872,9 +959,12 @@ class _DesktopState extends State<_Desktop> {
                     child: BlocBuilder<JournalTabBloc, JournalTabState>(
                       builder: (context, state) {
                         switch (state.tab) {
-                          case JournalTabName.allTransactions:return const AllTransactionsView();
-                          case JournalTabName.authorized:return const AuthorizedTransactionsView();
-                          case JournalTabName.pending:return const PendingTransactionsView();
+                          case JournalTabName.allTransactions:
+                            return const AllTransactionsView();
+                          case JournalTabName.authorized:
+                            return const AuthorizedTransactionsView();
+                          case JournalTabName.pending:
+                            return const PendingTransactionsView();
                         }
                       },
                     ),
@@ -903,73 +993,73 @@ class _DesktopState extends State<_Desktop> {
                             children: [
                               const Icon(Icons.reset_tv_rounded, size: 20),
                               Text(locale.cashFlow,
-                                  style:
-                                  Theme.of(context).textTheme.titleSmall),
+                                  style: Theme.of(context).textTheme.titleSmall),
                             ],
                           ),
 
-                          if(login.hasPermission(19) ?? false)
-                          ZOutlineButton(
-                            toolTip: "F1",
-                            label: Text(locale.deposit),
-                            icon: Icons.arrow_circle_down_rounded,
-                            width: double.infinity,
-                            onPressed:()=> onCashDepositWithdraw(trnType: "CHDP"),
-                          ),
-                          if(login.hasPermission(18) ?? false)
-                          ZOutlineButton(
-                            toolTip: "F2",
-                            label: Text(locale.withdraw),
-                            icon: Icons.arrow_circle_up_rounded,
-                            width: double.infinity,
-                            onPressed:()=> onCashDepositWithdraw(trnType: "CHWL"),
-                          ),
-                          if(login.hasPermission(22) ?? false)
-                          ZOutlineButton(
-                            label: Text(locale.income),
-                            icon: Icons.arrow_circle_down_rounded,
-                            width: double.infinity,
-                            onPressed: () => onCashIncome(trnType: "INCM"),
-                          ),
-                          if(login.hasPermission(23) ?? false)
-                          ZOutlineButton(
-                            label: Text(locale.expense),
-                            icon: Icons.arrow_circle_up_rounded,
-                            width: double.infinity,
-                            onPressed: () => onCashExpense(trnType: "EXPN"),
-                          ),
-                          if(login.hasPermission(24) ?? false)
-                          ZOutlineButton(
-                            label: Text(locale.accountTransfer),
-                            icon: Icons.swap_horiz_rounded,
-                            width: double.infinity,
-                            onPressed: () => accountToAccount(trnType: "ATAT"),
-                          ),
+                          if (login.hasPermission(19) ?? false)
+                            ZOutlineButton(
+                              toolTip: "F1",
+                              label: Text(locale.deposit),
+                              icon: Icons.arrow_circle_down_rounded,
+                              width: double.infinity,
+                              onPressed: () =>
+                                  onCashDepositWithdraw(trnType: "CHDP"),
+                            ),
+                          if (login.hasPermission(18) ?? false)
+                            ZOutlineButton(
+                              toolTip: "F2",
+                              label: Text(locale.withdraw),
+                              icon: Icons.arrow_circle_up_rounded,
+                              width: double.infinity,
+                              onPressed: () =>
+                                  onCashDepositWithdraw(trnType: "CHWL"),
+                            ),
+                          if (login.hasPermission(22) ?? false)
+                            ZOutlineButton(
+                              label: Text(locale.income),
+                              icon: Icons.arrow_circle_down_rounded,
+                              width: double.infinity,
+                              onPressed: () => onCashIncome(trnType: "INCM"),
+                            ),
+                          if (login.hasPermission(23) ?? false)
+                            ZOutlineButton(
+                              label: Text(locale.expense),
+                              icon: Icons.arrow_circle_up_rounded,
+                              width: double.infinity,
+                              onPressed: () => onCashExpense(trnType: "EXPN"),
+                            ),
+                          if (login.hasPermission(24) ?? false)
+                            ZOutlineButton(
+                              label: Text(locale.accountTransfer),
+                              icon: Icons.swap_horiz_rounded,
+                              width: double.infinity,
+                              onPressed: () => accountToAccount(trnType: "ATAT"),
+                            ),
 
                           Wrap(
                             spacing: 5,
                             children: [
                               const Icon(Icons.computer_rounded, size: 20),
                               Text(locale.systemAction,
-                                  style:
-                                  Theme.of(context).textTheme.titleSmall),
+                                  style: Theme.of(context).textTheme.titleSmall),
                             ],
                           ),
 
-                          if(login.hasPermission(21) ?? false)
-                          ZOutlineButton(
-                            label: Text(locale.glCreditTitle),
-                            width: double.infinity,
-                            icon: Icons.call_to_action_outlined,
-                            onPressed: () => onGL(trnType: "GLCR"),
-                          ),
-                          if(login.hasPermission(20) ?? false)
-                          ZOutlineButton(
-                            label: Text(locale.glDebitTitle),
-                            width: double.infinity,
-                            icon: Icons.call_to_action_outlined,
-                            onPressed: () => onGL(trnType: "GLDR"),
-                          ),
+                          if (login.hasPermission(21) ?? false)
+                            ZOutlineButton(
+                              label: Text(locale.glCreditTitle),
+                              width: double.infinity,
+                              icon: Icons.call_to_action_outlined,
+                              onPressed: () => onGL(trnType: "GLCR"),
+                            ),
+                          if (login.hasPermission(20) ?? false)
+                            ZOutlineButton(
+                              label: Text(locale.glDebitTitle),
+                              width: double.infinity,
+                              icon: Icons.call_to_action_outlined,
+                              onPressed: () => onGL(trnType: "GLDR"),
+                            ),
                         ],
                       ),
                     ),
@@ -983,7 +1073,4 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 }
-
-
-
 

@@ -14,6 +14,8 @@ import 'Ui/Dashboard/dashboard.dart';
 import 'Ui/Finance/finance.dart';
 import 'Ui/Journal/journal.dart';
 import 'Ui/Report/report.dart';
+import 'Ui/Settings/Ui/Company/bloc/company_settings_menu_bloc.dart';
+import 'Ui/Settings/bloc/settings_tab_bloc.dart';
 import 'Ui/Settings/settings.dart';
 import 'Ui/Stakeholders/stakeholders.dart';
 import 'Ui/Stock/stock.dart';
@@ -50,6 +52,7 @@ class _DesktopState extends State<_Desktop> {
       return const SizedBox();
     }
    // final login = state.loginData;
+
     final menuItems = [
       MenuDefinition(
         value: MenuName.dashboard,
@@ -167,8 +170,8 @@ class _DesktopState extends State<_Desktop> {
                           context.read<MenuBloc>().add(
                             MenuOnChangedEvent(MenuName.settings),
                           );
-                          // context.read<SettingsTabBloc>().add(SettingsOnChangeEvent(SettingsTabName.company));
-                          // context.read<CompanySettingsMenuBloc>().add(CompanySettingsOnChangedEvent(CompanySettingsMenuName.profile));
+                          context.read<SettingsTabBloc>().add(SettingsOnChangeEvent(SettingsTabName.company));
+                          context.read<CompanySettingsMenuBloc>().add(CompanySettingsOnChangedEvent(CompanySettingsMenuName.profile));
                         },
                         child: isLoading? SizedBox(
                           width: 20,
@@ -181,7 +184,7 @@ class _DesktopState extends State<_Desktop> {
                           width: 150,
                           child: Text(
                             comName,
-                            style: Theme.of(context).textTheme.titleMedium,
+                            style: Theme.of(context).textTheme.titleSmall,
                             softWrap: true,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
