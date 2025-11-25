@@ -278,5 +278,9 @@
   "branchName": "شعبه نوم",
   "branchId": "شعبه کد",
   "selected": "انتخاب شده",
-  "authorize": "تایید"
+  "authorize": "تایید",
+  "checker": "تایید کننده",
+  "maker": "اجراء کننده",
+  "branchLimits": "حد معاملات شعبه",
+  "branchInformation": "شعبه معلومات"
 }

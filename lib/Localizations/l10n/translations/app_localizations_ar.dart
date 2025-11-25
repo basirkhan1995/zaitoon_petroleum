@@ -818,4 +818,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get authorize => 'تایید';
+
+  @override
+  String get checker => 'تایید کننده';
+
+  @override
+  String get maker => 'اجراء کننده';
+
+  @override
+  String get branchLimits => 'حد معاملات شعبه';
+
+  @override
+  String get branchInformation => 'شعبه معلومات';
 }

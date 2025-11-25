@@ -8,8 +8,8 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfi
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
-import '../Views/Menu/Ui/Settings/Ui/Company/Branch/BranchLimits/model/limit_model.dart';
-import '../Views/Menu/Ui/Settings/Ui/Company/Branch/Branches/model/branch_model.dart';
+import '../Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/model/limit_model.dart';
+import '../Views/Menu/Ui/Settings/Ui/Company/Branches/model/branch_model.dart';
 import '../Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
 
 class Repositories {
@@ -675,7 +675,7 @@ class Repositories {
     }
   }
 
-  Future<List<BranchModel>> getBranchLimits({int? brcCode}) async {
+  Future<List<BranchLimitModel>> getBranchLimits({int? brcCode}) async {
     try {
       // Build query parameters dynamically
       final queryParams = {'code': brcCode};
@@ -700,7 +700,7 @@ class Repositories {
       if (response.data is List) {
         return (response.data as List)
             .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => BranchModel.fromMap(json))
+            .map((json) => BranchLimitModel.fromMap(json))
             .toList();
       }
 
@@ -714,9 +714,10 @@ class Repositories {
   Future<Map<String, dynamic>> addBranchLimit({required BranchLimitModel newLimit}) async {
     try {
       final response = await api.post(
-          endpoint: "/setting/branchAuthLimit.php.php",
+          endpoint: "/setting/branchAuthLimit.php",
           data: newLimit.toMap()
       );
+      print(response);
       return response.data;
     } on DioException catch (e) {
       throw '${e.message}';

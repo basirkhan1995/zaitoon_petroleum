@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/BranchLimits/Ui/limits.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/Branches/Ui/add_edit_branch.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/Branches/model/branch_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/Overview/branch_overview.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/bloc/brc_tab_bloc.dart';
 import '../../../../../../../Features/Generic/tab_bar.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../Branches/model/branch_model.dart';
+import 'Ui/BranchLimits/Ui/limits.dart';
 
 class BranchTabsView extends StatelessWidget {
   final BranchModel selectedBranch;
@@ -14,20 +14,21 @@ class BranchTabsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
-        padding: const EdgeInsets.only(top: 6.0),
+        padding: const EdgeInsets.all(8),
         child: BlocBuilder<BranchTabBloc, BranchTabState>(
           builder: (context, state) {
             final tabs = <ZTabItem<BranchTabName>>[
               ZTabItem(
                 value: BranchTabName.overview,
                 label: AppLocalizations.of(context)!.overview,
-                screen: BranchAddEditView(selectedBranch: selectedBranch),
+                screen: BranchOverviewView(selectedBranch: selectedBranch),
               ),
               ZTabItem(
                 value: BranchTabName.limits,
-                label: AppLocalizations.of(context)!.accountLimit,
-                screen: const BranchLimitsView(),
+                label: AppLocalizations.of(context)!.branchLimits,
+                screen: BranchLimitsView(branch: selectedBranch),
               ),
             ];
 
@@ -37,8 +38,7 @@ class BranchTabsView extends StatelessWidget {
                 : available.first;
 
             return ZTabContainer<BranchTabName>(
-              title: AppLocalizations.of(context)!.stakeholders,
-
+              title: AppLocalizations.of(context)!.branchInformation,
               /// Tab data
               tabs: tabs,
               selectedValue: selected,

@@ -3,9 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import '../../../../../../Features/Generic/generic_menu.dart';
 import '../../../../../../Localizations/l10n/translations/app_localizations.dart';
-import 'Branch/Branches/Ui/branches.dart';
+import 'Branches/Ui/branches.dart';
 import 'CompanyProfile/company.dart';
-
 import 'bloc/company_settings_menu_bloc.dart';
 
 class CompanyTabsView extends StatefulWidget {

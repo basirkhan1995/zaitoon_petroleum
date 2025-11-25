@@ -819,4 +819,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authorize => 'Authorize';
+
+  @override
+  String get checker => 'Authorized By';
+
+  @override
+  String get maker => 'Created By';
+
+  @override
+  String get branchLimits => 'Branch Limit';
+
+  @override
+  String get branchInformation => 'Branch Information';
 }

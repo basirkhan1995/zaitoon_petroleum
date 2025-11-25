@@ -65,7 +65,7 @@ class _DesktopState extends State<_Desktop> {
             child: Row(
               children: [
                 SizedBox(
-                    width: 90,
+                    width: 140,
                     child: Text(locale.txnDate,style: textTheme.titleMedium)),
                 SizedBox(width: 20),
                 Expanded(child: Text(locale.referenceNumber,style: textTheme.titleMedium)),
@@ -75,11 +75,11 @@ class _DesktopState extends State<_Desktop> {
                 SizedBox(width: 20),
                 SizedBox(
                     width: 110,
-                    child: Text(locale.authoriser,style: textTheme.titleMedium)),
-                SizedBox(width: 20),
+                    child: Text(locale.maker,style: textTheme.titleMedium)),
                 SizedBox(
                     width: 110,
-                    child: Text(locale.txnMaker,style: textTheme.titleMedium)),
+                    child: Text(locale.checker,style: textTheme.titleMedium)),
+                SizedBox(width: 20),
 
               ],
             ),
@@ -135,8 +135,8 @@ class _DesktopState extends State<_Desktop> {
                               child: Row(
                                 children: [
                                   SizedBox(
-                                      width: 90,
-                                      child: Text(txn.trnEntryDate!.toDateString)),
+                                      width: 140,
+                                      child: Text(txn.trnEntryDate!.toFullDateTime)),
                                   SizedBox(width: 20),
                                   Expanded(
                                       child: Text(txn.trnReference.toString())),
@@ -147,11 +147,11 @@ class _DesktopState extends State<_Desktop> {
                                   SizedBox(width: 20),
                                   SizedBox(
                                       width: 110,
-                                      child: Text(txn.checker??"")),
-                                  SizedBox(width: 20),
+                                      child: Text(txn.maker??"")),
                                   SizedBox(
                                       width: 110,
-                                      child: Text(txn.maker??"")),
+                                      child: Text(txn.checker??"")),
+                                  SizedBox(width: 20),
                                 ],
                               ),
                             ),

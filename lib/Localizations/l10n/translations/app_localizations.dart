@@ -1695,6 +1695,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Authorize'**
   String get authorize;
+
+  /// No description provided for @checker.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorized By'**
+  String get checker;
+
+  /// No description provided for @maker.
+  ///
+  /// In en, this message translates to:
+  /// **'Created By'**
+  String get maker;
+
+  /// No description provided for @branchLimits.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch Limit'**
+  String get branchLimits;
+
+  /// No description provided for @branchInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch Information'**
+  String get branchInformation;
 }
 
 class _AppLocalizationsDelegate

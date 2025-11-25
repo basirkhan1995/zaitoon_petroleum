@@ -278,5 +278,9 @@
   "branchName": "Branch name",
   "branchId": "Code",
   "selected": "Selected",
-  "authorize": "Authorize"
+  "authorize": "Authorize",
+  "checker": "Authorized By",
+  "maker": "Created By",
+  "branchLimits": "Branch Limit",
+  "branchInformation": "Branch Information"
 }

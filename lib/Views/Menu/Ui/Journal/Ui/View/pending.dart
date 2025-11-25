@@ -118,12 +118,12 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ),
 
-                SizedBox(width: 90, child: Text(locale.txnDate, style: textTheme.titleMedium)),
+                SizedBox(width: 140, child: Text(locale.txnDate, style: textTheme.titleMedium)),
                 const SizedBox(width: 20),
                 Expanded(child: Text(locale.referenceNumber, style: textTheme.titleMedium)),
                 SizedBox(width: 110, child: Text(locale.txnType, style: textTheme.titleMedium)),
                 const SizedBox(width: 20),
-                SizedBox(width: 110, child: Text(locale.txnMaker, style: textTheme.titleMedium)),
+                SizedBox(width: 110, child: Text(locale.maker, style: textTheme.titleMedium)),
               ],
             ),
           ),
@@ -199,8 +199,8 @@ class _DesktopState extends State<_Desktop> {
                               ),
 
                               SizedBox(
-                                width: 90,
-                                child: Text(txn.trnEntryDate!.toDateString),
+                                width: 140,
+                                child: Text(txn.trnEntryDate!.toFullDateTime),
                               ),
                               const SizedBox(width: 20),
 
