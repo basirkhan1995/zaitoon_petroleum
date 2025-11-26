@@ -67,7 +67,7 @@
   "website": "ویب سایت",
   "email": "ایمیل آدرس",
   "update": "بروزرسانی",
-  "cancel": "لغو",
+  "cancel": "انصراف",
   "edit": "تغییر آوردن",
   "newKeyword": "نوی",
   "active": "فعال",
@@ -284,5 +284,11 @@
   "branchLimits": "حد معاملات شعبه",
   "branchInformation": "شعبه معلومات",
   "currentBalance": "اوسنی موجودی",
-  "availableBalance": "د لاسرسي وړ موجودی "
+  "availableBalance": "د لاسرسي وړ موجودی ",
+  "txnDetails": "جزئیات معامله",
+  "transactionRef": "ریفرنس شمیره",
+  "transactionDate": "معامله نیته",
+  "recipient": "ترلاسه کوونکی",
+  "details": "جزئیات",
+  "authorizeDeniedMessage": "تاسو د دې راکړې ورکړې د تایید اجازه نه لرئ."
 }

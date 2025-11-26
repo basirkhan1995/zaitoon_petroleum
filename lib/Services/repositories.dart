@@ -3,6 +3,7 @@ import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/model/rate_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/txn_ref_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
@@ -544,7 +545,7 @@ class Repositories {
   }
 
   /// Transactions | Cash Deposit | Withdraw ...................................
-  Future<Map<String, dynamic>> cashFlowTransaction({required TransactionsModel newTransaction}) async {
+  Future<Map<String, dynamic>> cashFlowOperations({required TransactionsModel newTransaction}) async {
     try {
       final response = await api.post(
           endpoint: "/journal/cashWD.php",
@@ -557,7 +558,7 @@ class Repositories {
       throw e.toString();
     }
   }
-  Future<List<TransactionsModel>> getTransactions({String? status}) async {
+  Future<List<TransactionsModel>> getTransactionsByStatus({String? status}) async {
     try {
       // Build query parameters dynamically
       final queryParams = {'status': status};
@@ -591,6 +592,64 @@ class Repositories {
       throw "${e.message}";
     } catch (e) {
       throw "$e";
+    }
+  }
+  Future<TxnByReferenceModel> getTxnByReference({required String reference}) async {
+    try {
+      final queryParams = {'ref': reference};
+      final response = await api.get(
+          endpoint: '/journal/getSingleTransaction.php',
+          queryParams: queryParams
+      );
+
+      final data = response.data;
+
+      // Case 3: API returns a single object instead of list
+      if (data is Map<String, dynamic>) {
+        return TxnByReferenceModel.fromMap(data);
+      }
+      // Case 4: API returns a list with first object as map
+      if (data is List && data.first is Map<String, dynamic>) {
+        return TxnByReferenceModel.fromMap(data.first);
+      }
+      throw Exception("Invalid API response format");
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> authorizeTxn({required String reference, required String? usrName}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/journal/transactionActivity.php",
+          data: {
+            "reference": reference,
+            "username":usrName,
+          }
+      );
+      print(response);
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> deleteTxn({required String reference, required String? usrName}) async {
+    try {
+      final response = await api.delete(
+          endpoint: "/journal/transactionActivity.php",
+          data: {
+            "reference": reference,
+            "username":usrName,
+          }
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
     }
   }
 

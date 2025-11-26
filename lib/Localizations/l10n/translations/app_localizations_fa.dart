@@ -175,7 +175,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get update => 'بروزرسانی';
 
   @override
-  String get cancel => 'لغو';
+  String get cancel => 'انصراف';
 
   @override
   String get edit => 'تغییر آوردن';
@@ -835,4 +835,22 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get availableBalance => 'موجودی قابل برداشت';
+
+  @override
+  String get txnDetails => 'جزئیات معامله';
+
+  @override
+  String get transactionRef => 'ریفرنس نمبر';
+
+  @override
+  String get transactionDate => 'تاریخ معامله';
+
+  @override
+  String get recipient => 'گیرنده';
+
+  @override
+  String get details => 'جزئیات';
+
+  @override
+  String get authorizeDeniedMessage => 'شما مجاز به تأیید این تراکنش نیستید.';
 }

@@ -284,5 +284,11 @@
   "branchLimits": "Branch Limit",
   "branchInformation": "Branch Information",
   "currentBalance": "Current Balance",
-  "availableBalance": "Available Balance"
+  "availableBalance": "Available Balance",
+  "txnDetails": "Transaction Details",
+  "transactionRef": "Transaction Ref",
+  "transactionDate": "Transaction Date",
+  "recipient": "Recipient",
+  "details": "Details",
+  "authorizeDeniedMessage": "You are not allowed to authorize this transaction."
 }

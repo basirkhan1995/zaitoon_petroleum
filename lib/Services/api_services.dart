@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'localization_services.dart';
-
 class ApiServices {
 
   final Dio _dio = Dio(
@@ -16,8 +15,8 @@ class ApiServices {
     ),
   );
 
-
   Future<String> _checkConnectivity() async {
+
     final locale = localizationService.loc;
     final List<ConnectivityResult> connectivityResult =
     await Connectivity().checkConnectivity();

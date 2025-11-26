@@ -175,7 +175,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get update => 'بروزرسانی';
 
   @override
-  String get cancel => 'لغو';
+  String get cancel => 'انصراف';
 
   @override
   String get edit => 'تغییر آوردن';
@@ -836,4 +836,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get availableBalance => 'د لاسرسي وړ موجودی ';
+
+  @override
+  String get txnDetails => 'جزئیات معامله';
+
+  @override
+  String get transactionRef => 'ریفرنس شمیره';
+
+  @override
+  String get transactionDate => 'معامله نیته';
+
+  @override
+  String get recipient => 'ترلاسه کوونکی';
+
+  @override
+  String get details => 'جزئیات';
+
+  @override
+  String get authorizeDeniedMessage =>
+      'تاسو د دې راکړې ورکړې د تایید اجازه نه لرئ.';
 }

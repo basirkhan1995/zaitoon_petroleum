@@ -8,9 +8,11 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/bloc/users_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/role_dropdown.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branches/model/branch_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
 import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
+import '../features/branch_dropdown.dart';
 
 class AddUserView extends StatelessWidget {
   const AddUserView({super.key});
@@ -62,8 +64,13 @@ class _DesktopState extends State<_Desktop> {
   bool fcpValue = true;
   bool fevValue = true;
   int usrOwnerId = 1;
+  BranchModel? selectedBranch;
+
   final formKey = GlobalKey<FormState>();
   String? errorMessage;
+
+
+
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
@@ -138,62 +145,81 @@ class _DesktopState extends State<_Desktop> {
                       ),
                     ],
                   ),
-                  GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
-                    showAllOnFocus: true,
-                    controller: usrOwner,
-                    title: locale.individuals,
-                    hintText: locale.userOwner,
-                    isRequired: true,
-                    bloc: context.read<IndividualsBloc>(),
-                    fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
-                    searchFunction: (bloc, query) => bloc.add(SearchIndividualsEvent(query)),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return locale.required(locale.individuals);
-                      }
-                      return null;
-                    },
-                    itemBuilder: (context, account) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 5,
-                        vertical: 5,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "${account.perName} ${account.perLastName}",
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
+                  Row(
+                    spacing: 8,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
+                          showAllOnFocus: true,
+                          controller: usrOwner,
+                          title: locale.individuals,
+                          hintText: locale.userOwner,
+                          isRequired: true,
+                          bloc: context.read<IndividualsBloc>(),
+                          fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
+                          searchFunction: (bloc, query) => bloc.add(SearchIndividualsEvent(query)),
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return locale.required(locale.individuals);
+                            }
+                            return null;
+                          },
+                          itemBuilder: (context, account) => Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 5,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "${account.perName} ${account.perLastName}",
+                                      style: Theme.of(context).textTheme.bodyLarge,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
-                    ),
-                    itemToString: (ind) => "${ind.perName} ${ind.perLastName}",
-                    stateToLoading: (state) => state is IndividualLoadingState,
-                    loadingBuilder: (context) => const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
+                          itemToString: (ind) => "${ind.perName} ${ind.perLastName}",
+                          stateToLoading: (state) => state is IndividualLoadingState,
+                          loadingBuilder: (context) => const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
 
-                    stateToItems: (state) {
-                      if (state is IndividualLoadedState) {
-                        return state.individuals;
-                      }
-                      return [];
-                    },
-                    onSelected: (value) {
-                      setState(() {
-                        usrOwnerId = value.perId!;
-                      });
-                    },
-                    noResultsText: locale.noDataFound,
-                    showClearButton: true,
+                          stateToItems: (state) {
+                            if (state is IndividualLoadedState) {
+                              return state.individuals;
+                            }
+                            return [];
+                          },
+                          onSelected: (value) {
+                            setState(() {
+                              usrOwnerId = value.perId!;
+                            });
+                          },
+                          noResultsText: locale.noDataFound,
+                          showClearButton: true,
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: BranchDropdown(
+                          title: locale.branch,
+                          onBranchSelected: (branch) {
+                            selectedBranch = branch;
+                          },
+                        ),
+                      ),
+
+
+                    ],
                   ),
 
                   ZTextFieldEntitled(
@@ -341,7 +367,7 @@ class _DesktopState extends State<_Desktop> {
           UsersModel(
             usrName: usrName.text.trim(),
             usrPass: usrPas.text,
-            usrBranch: 1000,
+            usrBranch: selectedBranch?.brcId ?? 1000,
             usrRole: _selectedRole?.name,
             usrEmail: usrEmail.text,
             usrFcp: fcpValue,

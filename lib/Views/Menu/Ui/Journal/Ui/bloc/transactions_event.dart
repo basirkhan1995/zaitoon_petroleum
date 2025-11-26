@@ -33,8 +33,11 @@ class LoadPendingTransactionsEvent extends TransactionsEvent {
 }
 
 class AuthorizeTxnEvent extends TransactionsEvent {
+  final String reference;
+  final String usrName;
+  const AuthorizeTxnEvent({required this.reference,required this.usrName});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [reference, usrName];
 }
 
 class ReverseTxnEvent extends TransactionsEvent {

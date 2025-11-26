@@ -837,4 +837,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get availableBalance => 'Available Balance';
+
+  @override
+  String get txnDetails => 'Transaction Details';
+
+  @override
+  String get transactionRef => 'Transaction Ref';
+
+  @override
+  String get transactionDate => 'Transaction Date';
+
+  @override
+  String get recipient => 'Recipient';
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get authorizeDeniedMessage =>
+      'You are not allowed to authorize this transaction.';
 }

@@ -14,6 +14,7 @@ class ZFormDialog extends StatefulWidget {
   final double? width;
   final double? height;
   final Widget? expandedAction;
+  final AlignmentGeometry? alignment;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final Widget? expandedHeader;
@@ -22,6 +23,7 @@ class ZFormDialog extends StatefulWidget {
     required this.onAction,
     this.actionLabel,
     this.child,
+    this.alignment,
     this.isButtonEnabled = true,
     this.expandedAction,
     this.isActionTrue = true,
@@ -46,6 +48,7 @@ class _ZFormDialogState extends State<ZFormDialog> {
           return Padding(
             padding: const EdgeInsets.all(15.0),
             child: AlertDialog(
+              alignment: widget.alignment ?? AlignmentGeometry.center,
               contentPadding: EdgeInsets.zero,
               insetPadding: EdgeInsets.zero,
               titlePadding: EdgeInsets.zero,

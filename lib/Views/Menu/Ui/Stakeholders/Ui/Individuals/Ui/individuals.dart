@@ -53,13 +53,6 @@ class _Desktop extends StatefulWidget {
   State<_Desktop> createState() => _DesktopState();
 }
 class _DesktopState extends State<_Desktop> {
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-
-    });
-    super.initState();
-  }
 
   final TextEditingController searchController = TextEditingController();
 
@@ -68,10 +61,6 @@ class _DesktopState extends State<_Desktop> {
     searchController.dispose();
     super.dispose();
   }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {

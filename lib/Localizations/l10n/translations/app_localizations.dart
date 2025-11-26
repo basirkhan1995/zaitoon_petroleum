@@ -1731,6 +1731,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Available Balance'**
   String get availableBalance;
+
+  /// No description provided for @txnDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Details'**
+  String get txnDetails;
+
+  /// No description provided for @transactionRef.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Ref'**
+  String get transactionRef;
+
+  /// No description provided for @transactionDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Date'**
+  String get transactionDate;
+
+  /// No description provided for @recipient.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient'**
+  String get recipient;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @authorizeDeniedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not allowed to authorize this transaction.'**
+  String get authorizeDeniedMessage;
 }
 
 class _AppLocalizationsDelegate

@@ -67,7 +67,7 @@
   "website": "ویب سایت",
   "email": "ایمیل آدرس",
   "update": "بروزرسانی",
-  "cancel": "لغو",
+  "cancel": "انصراف",
   "edit": "تغییر آوردن",
   "newKeyword": "جدید",
   "active": "فعال",
@@ -284,5 +284,11 @@
   "branchLimits": "حد معاملات شعبه",
   "branchInformation": "معلومات شعبه",
   "currentBalance": "موجودی فعلی",
-  "availableBalance": "موجودی قابل برداشت"
+  "availableBalance": "موجودی قابل برداشت",
+  "txnDetails": "جزئیات معامله",
+  "transactionRef": "ریفرنس نمبر",
+  "transactionDate": "تاریخ معامله",
+  "recipient": "گیرنده",
+  "details": "جزئیات",
+  "authorizeDeniedMessage": "شما مجاز به تأیید این تراکنش نیستید."
 }

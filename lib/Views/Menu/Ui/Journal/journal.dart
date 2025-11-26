@@ -266,7 +266,7 @@ class _DesktopState extends State<_Desktop> {
                                           SizedBox(
                                               width: 160,
                                               child: Text(locale.accountLimit,style: textTheme.titleSmall)),
-                                          Text(accountLimit??""),
+                                          Text(accountLimit?.toAmount()??""),
                                         ],
                                       ),
                                       Row(
