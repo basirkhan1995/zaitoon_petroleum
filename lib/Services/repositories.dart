@@ -628,7 +628,6 @@ class Repositories {
             "username":usrName,
           }
       );
-      print(response);
       return response.data;
     } on DioException catch (e) {
       throw '${e.message}';
