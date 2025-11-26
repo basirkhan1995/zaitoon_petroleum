@@ -830,4 +830,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get branchInformation => 'شعبه معلومات';
+
+  @override
+  String get currentBalance => 'اوسنی موجودی';
+
+  @override
+  String get availableBalance => 'د لاسرسي وړ موجودی ';
 }

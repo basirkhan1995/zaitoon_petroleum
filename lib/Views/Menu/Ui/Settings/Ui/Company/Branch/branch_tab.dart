@@ -38,7 +38,9 @@ class BranchTabsView extends StatelessWidget {
                 : available.first;
 
             return ZTabContainer<BranchTabName>(
-              title: AppLocalizations.of(context)!.branchInformation,
+              icon: Icons.location_city_rounded,
+              title: "${selectedBranch.brcName} (${selectedBranch.brcId})",
+              closeButton: true,
               /// Tab data
               tabs: tabs,
               selectedValue: selected,

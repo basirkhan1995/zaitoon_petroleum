@@ -831,4 +831,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get branchInformation => 'Branch Information';
+
+  @override
+  String get currentBalance => 'Current Balance';
+
+  @override
+  String get availableBalance => 'Available Balance';
 }

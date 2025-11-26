@@ -6,6 +6,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_m
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
 import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/model/limit_model.dart';
@@ -185,6 +186,40 @@ class Repositories {
         return (response.data as List)
             .whereType<Map<String, dynamic>>() // ensure map type
             .map((json) => AccountsModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+  Future<List<StakeholdersAccountsModel>> getStakeholdersAccounts() async {
+    try {
+      // Build query parameters dynamically
+
+      // Fetch data from API
+      final response = await api.get(
+        endpoint: "/journal/accountDetails.php",
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => StakeholdersAccountsModel.fromMap(json))
             .toList();
       }
 
@@ -711,13 +746,12 @@ class Repositories {
       throw "$e";
     }
   }
-  Future<Map<String, dynamic>> addBranchLimit({required BranchLimitModel newLimit}) async {
+  Future<Map<String, dynamic>> addEditBranchLimit({required BranchLimitModel newLimit}) async {
     try {
       final response = await api.post(
           endpoint: "/setting/branchAuthLimit.php",
           data: newLimit.toMap()
       );
-      print(response);
       return response.data;
     } on DioException catch (e) {
       throw '${e.message}';
@@ -725,17 +759,5 @@ class Repositories {
       throw e.toString();
     }
   }
-  Future<Map<String, dynamic>> updateBranchLimit({required BranchLimitModel newLimit}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/setting/branchAuthLimit.php",
-          data: newLimit.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
+
 }

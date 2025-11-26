@@ -1719,6 +1719,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Branch Information'**
   String get branchInformation;
+
+  /// No description provided for @currentBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Balance'**
+  String get currentBalance;
+
+  /// No description provided for @availableBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Balance'**
+  String get availableBalance;
 }
 
 class _AppLocalizationsDelegate

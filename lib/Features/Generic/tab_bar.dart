@@ -30,8 +30,10 @@ class ZTabContainer<T> extends StatelessWidget {
   final T selectedValue;
   final ValueChanged<T> onChanged;
   final List<ZTabItem<T>> tabs;
+  final bool closeButton;
 
   final String? title;
+  final IconData? icon;
   final String? description;
   final VoidCallback? onBack;
 
@@ -51,12 +53,14 @@ class ZTabContainer<T> extends StatelessWidget {
 
   const ZTabContainer({
     super.key,
+    this.closeButton = false,
     required this.selectedValue,
     required this.onChanged,
     required this.tabs,
 
     this.title,
     this.description,
+    this.icon,
     this.onBack,
 
     this.style = ZTabStyle.rounded,
@@ -97,30 +101,45 @@ class ZTabContainer<T> extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               /// ---------------- Title + Back
-              if (title != null) ...[
-                Row(
-                  children: [
-                    if (onBack != null)
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-                        onPressed: onBack,
-                        padding: EdgeInsets.zero,
-                      ),
-                    if (onBack != null) const SizedBox(width: 5),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
-                        child: Text(
-                          title!,
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-              ],
+              Row(
+                children: [
+                  // LEFT SIDE — takes remaining space
+                  Expanded(
+                    child: Row(
+                      children: [
+                        if (onBack != null)
+                          IconButton(
+                            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+                            onPressed: onBack,
+                            padding: EdgeInsets.zero,
+                          ),
 
+                        if (onBack != null) const SizedBox(width: 5),
+
+                        if (title != null)
+                          Row(
+                            children: [
+                              if (icon != null) Icon(icon),
+                              if (icon != null) const SizedBox(width: 5),
+                              Text(
+                                title!,
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
+
+                  // RIGHT SIDE — close icon
+                  if(closeButton)
+                  InkWell(
+                      onTap: ()=> Navigator.of(context).pop(),
+                      child: Icon(Icons.close)),
+                ],
+              ),
+              if (title != null)
+              SizedBox(height: 15),
               /// ---------------- Optional Description
               if (description != null) ...[
                 Text(

@@ -282,5 +282,7 @@
   "checker": "تایید کننده",
   "maker": "اجراء کننده",
   "branchLimits": "حد معاملات شعبه",
-  "branchInformation": "شعبه معلومات"
+  "branchInformation": "شعبه معلومات",
+  "currentBalance": "اوسنی موجودی",
+  "availableBalance": "د لاسرسي وړ موجودی "
 }

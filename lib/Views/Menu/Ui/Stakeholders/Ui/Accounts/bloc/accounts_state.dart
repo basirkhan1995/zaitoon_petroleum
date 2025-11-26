@@ -32,3 +32,10 @@ final class AccountLoadedState extends AccountsState {
   @override
   List<Object> get props => [accounts];
 }
+
+final class StkAccountLoadedState extends AccountsState {
+  final List<StakeholdersAccountsModel> accounts;
+  const StkAccountLoadedState(this.accounts);
+  @override
+  List<Object> get props => [accounts];
+}

@@ -5,7 +5,6 @@ import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/branch_details.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/branch_tab.dart';
 import '../../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../../../Features/Widgets/search_field.dart';
 import '../bloc/branch_bloc.dart';
@@ -187,7 +186,6 @@ class _DesktopState extends State<_Desktop> {
                                     width: 70,
                                     child: Text(brc.brcId.toString(),style: textTheme.bodyMedium)),
                                Expanded(child: Text(brc.brcName??"",style: textTheme.bodyMedium)),
-
                                 SizedBox(
                                     width: 150,
                                     child: Text(brc.addCity??"",style: textTheme.bodyMedium)),

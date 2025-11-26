@@ -282,5 +282,7 @@
   "checker": "Authorized By",
   "maker": "Created By",
   "branchLimits": "Branch Limit",
-  "branchInformation": "Branch Information"
+  "branchInformation": "Branch Information",
+  "currentBalance": "Current Balance",
+  "availableBalance": "Available Balance"
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/branch_tab.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branches/model/branch_model.dart';
 
@@ -33,7 +32,6 @@ class _Tablet extends StatelessWidget {
   }
 }
 
-
 class _Desktop extends StatelessWidget {
   final BranchModel branch;
   const _Desktop(this.branch);
@@ -41,32 +39,36 @@ class _Desktop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StatefulBuilder(
-      builder: (context,state) {
+      builder: (context, state) {
         return Padding(
           padding: const EdgeInsets.all(15.0),
           child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
             contentPadding: EdgeInsets.zero,
-            insetPadding: EdgeInsets.zero,
+            insetPadding: const EdgeInsets.all(10),
+            clipBehavior: Clip.antiAlias,
             titlePadding: EdgeInsets.zero,
             actionsPadding: EdgeInsets.zero,
-              content: Container(
-                margin: EdgeInsets.zero,
-                padding: EdgeInsets.zero,
-                width: MediaQuery.sizeOf(context).width * .4,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Column(
-                  children: [
-                    Expanded(child: BranchTabsView(selectedBranch: branch))
-                  ],
-                ),
+            content: Container(
+              margin: EdgeInsets.zero,
+              padding: EdgeInsets.zero,
+              width: MediaQuery.sizeOf(context).width * .4,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(5),
               ),
-
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(child: BranchTabsView(selectedBranch: branch))
+                ],
+              ),
+            ),
           ),
         );
-      }
+      },
     );
   }
 }

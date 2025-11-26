@@ -42,7 +42,7 @@ class _ZFormDialogState extends State<ZFormDialog> {
   @override
   Widget build(BuildContext context) {
     return StatefulBuilder(
-        builder: (context,state) {
+        builder: (context,setState) {
           return Padding(
             padding: const EdgeInsets.all(15.0),
             child: AlertDialog(
@@ -89,14 +89,15 @@ class _ZFormDialogState extends State<ZFormDialog> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
-            children: [
-              widget.expandedAction?? Text("")
-            ],
-          ),
-
-          Row(
             spacing: 8,
             children: [
+              ZOutlineButton(
+                label: Text(locale.cancel),
+                backgroundHover: Theme.of(context).colorScheme.error,
+                onPressed: () => Navigator.of(context).pop(),
+                height: 35,
+                width: 100,
+              ),
               ZButton(
                   isEnabled: widget.isButtonEnabled,
                   height: 35,
@@ -104,12 +105,11 @@ class _ZFormDialogState extends State<ZFormDialog> {
                   label: widget.actionLabel ?? Text(""),
                   onPressed: widget.onAction
               ),
-              ZOutlineButton(
-                label: Text(locale.cancel),
-                onPressed: () => Navigator.of(context).pop(),
-                height: 35,
-                width: 100,
-              ),
+            ],
+          ),
+          Row(
+            children: [
+              widget.expandedAction?? Text("")
             ],
           ),
 

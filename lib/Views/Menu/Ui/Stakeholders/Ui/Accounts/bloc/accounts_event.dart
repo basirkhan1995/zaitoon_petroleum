@@ -11,6 +11,12 @@ class LoadAccountsEvent extends AccountsEvent{
   List<Object?> get props => [ownerId];
 }
 
+class LoadStkAccountsEvent extends AccountsEvent{
+  const LoadStkAccountsEvent();
+  @override
+  List<Object?> get props => [];
+}
+
 class AddAccountEvent extends AccountsEvent{
   final AccountsModel newAccount;
   const AddAccountEvent(this.newAccount);

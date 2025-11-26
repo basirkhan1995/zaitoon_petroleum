@@ -22,5 +22,31 @@ class BranchBloc extends Bloc<BranchEvent, BranchState> {
       }
     });
 
+    on<AddBranchEvent>((event, emit) async{
+      emit(BranchLoadingState());
+      try{
+        final brc = await _repo.addBranch(newBranch: event.newBranch);
+        if(brc['msg'] == "success"){
+          emit(BranchSuccessState());
+          add(LoadBranchesEvent());
+        }
+      }catch(e){
+        emit(BranchErrorState(e.toString()));
+      }
+    });
+
+    on<EditBranchEvent>((event, emit) async{
+      emit(BranchLoadingState());
+      try{
+        final brc = await _repo.updateBranch(newBranch: event.newBranch);
+        if(brc['msg'] == "success"){
+          emit(BranchSuccessState());
+          add(LoadBranchesEvent());
+        }
+      }catch(e){
+        emit(BranchErrorState(e.toString()));
+      }
+    });
+
   }
 }

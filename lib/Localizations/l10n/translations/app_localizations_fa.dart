@@ -829,4 +829,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get branchInformation => 'معلومات شعبه';
+
+  @override
+  String get currentBalance => 'موجودی فعلی';
+
+  @override
+  String get availableBalance => 'موجودی قابل برداشت';
 }

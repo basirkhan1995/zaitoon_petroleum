@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
 
 part 'accounts_event.dart';
 part 'accounts_state.dart';
@@ -19,7 +20,15 @@ class AccountsBloc extends Bloc<AccountsEvent, AccountsState> {
         emit(AccountErrorState(e.toString()));
       }
     });
-
+    on<LoadStkAccountsEvent>((event, emit) async{
+      emit(AccountLoadingState());
+      try{
+        final acc = await _repo.getStakeholdersAccounts();
+        emit(StkAccountLoadedState(acc));
+      }catch(e){
+        emit(AccountErrorState(e.toString()));
+      }
+    });
     on<AddAccountEvent>((event, emit) async{
       emit(AccountLoadingState());
       try{
@@ -31,7 +40,6 @@ class AccountsBloc extends Bloc<AccountsEvent, AccountsState> {
         emit(AccountErrorState(e.toString()));
       }
     });
-
     on<UpdateAccountEvent>((event, emit) async{
       emit(AccountLoadingState());
       try{

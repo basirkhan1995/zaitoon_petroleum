@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/zform_dialog.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:flutter/services.dart';
 import '../../../../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
@@ -120,7 +119,7 @@ class _DesktopState extends State<_Desktop> {
       title: isEdit ? locale.update : locale.newKeyword,
 
       actionLabel:
-      (context.watch<IndividualsBloc>().state is IndividualLoadingState)
+      (context.watch<BranchBloc>().state is BranchLoadingState)
           ? SizedBox(
         width: 20,
         height: 20,
@@ -135,9 +134,9 @@ class _DesktopState extends State<_Desktop> {
 
       child: Form(
         key: formKey,
-        child: BlocConsumer<IndividualsBloc, IndividualsState>(
+        child: BlocConsumer<BranchBloc, BranchState>(
           listener: (context, state) {
-            if (state is IndividualSuccessState) {
+            if (state is BranchSuccessState) {
               Navigator.of(context).pop();
             }
           },
@@ -145,40 +144,43 @@ class _DesktopState extends State<_Desktop> {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                ZTextFieldEntitled(
+                  controller: branchName,
+                  isRequired: true,
+                  title: locale.branchName,
+                  onSubmit: (_) => onSubmit(),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return locale.required(locale.branchName);
+                    }
+                    return null;
+                  },
+                ),
+
                 Row(
                   spacing: 5,
                   children: [
+
                     Expanded(
+                      flex: 3,
                       child: ZTextFieldEntitled(
-                        controller: branchName,
-                        isRequired: true,
-                        title: locale.branchName,
+                        controller: phone,
+                        title: locale.mobile1,
+                        inputFormat: [FilteringTextInputFormatter.digitsOnly],
                         onSubmit: (_) => onSubmit(),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return locale.required(locale.branchName);
-                          }
-                          return null;
-                        },
                       ),
                     ),
                     Expanded(
+                      flex: 2,
                       child: ZTextFieldEntitled(
-                        controller: branchCode,
-                        isRequired: true,
-                        title: locale.branchId,
+                        controller: zipCode,
+                        title: locale.zipCode,
+                        inputFormat: [FilteringTextInputFormatter.digitsOnly],
                         onSubmit: (_) => onSubmit(),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return locale.required(locale.branchId);
-                          }
-                          return null;
-                        },
                       ),
                     ),
                   ],
                 ),
-
                 Row(
                   spacing: 5,
                   children: [
@@ -196,26 +198,10 @@ class _DesktopState extends State<_Desktop> {
                         onSubmit: (_) => onSubmit(),
                       ),
                     ),
-                  ],
-                ),
-
-                Row(
-                  spacing: 5,
-                  children: [
                     Expanded(
-                      flex: 5,
                       child: ZTextFieldEntitled(
                         controller: country,
                         title: locale.country,
-                        onSubmit: (_) => onSubmit(),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: ZTextFieldEntitled(
-                        controller: zipCode,
-                        title: locale.zipCode,
-                        inputFormat: [FilteringTextInputFormatter.digitsOnly],
                         onSubmit: (_) => onSubmit(),
                       ),
                     ),
@@ -231,8 +217,10 @@ class _DesktopState extends State<_Desktop> {
                 ),
 
                 Row(
+                  spacing: 8,
                   children: [
                     Checkbox(
+                      visualDensity: VisualDensity(horizontal: -4,vertical: -4),
                       value: isMailingAddress,
                       onChanged: (value) {
                         setState(() {
@@ -244,6 +232,7 @@ class _DesktopState extends State<_Desktop> {
                     Text(locale.isMilling),
                   ],
                 ),
+                SizedBox(height: 10)
               ],
             );
           },
@@ -259,6 +248,7 @@ class _DesktopState extends State<_Desktop> {
       brcId: widget.model?.brcId,
       brcName: branchName.text,
       addName: address.text,
+      brcPhone: phone.text,
       addMailing: mailingValue,
       addZipCode: zipCode.text,
       addProvince: province.text,

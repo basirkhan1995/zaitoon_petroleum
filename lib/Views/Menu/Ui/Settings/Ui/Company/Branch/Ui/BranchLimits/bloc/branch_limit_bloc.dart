@@ -23,7 +23,7 @@ class BranchLimitBloc extends Bloc<BranchLimitEvent, BranchLimitState> {
     on<AddBranchLimitEvent>((event, emit) async{
       emit(BranchLimitLoadingState());
       try{
-        final response = await _repo.addBranchLimit(newLimit: event.newLimit);
+        final response = await _repo.addEditBranchLimit(newLimit: event.newLimit);
         if(response['msg'] == "added"){
           emit(BranchLimitSuccessState());
         }
@@ -35,7 +35,7 @@ class BranchLimitBloc extends Bloc<BranchLimitEvent, BranchLimitState> {
     on<EditBranchLimitEvent>((event, emit) async{
       emit(BranchLimitLoadingState());
       try{
-        final response = await _repo.addBranchLimit(newLimit: event.newLimit);
+        final response = await _repo.addEditBranchLimit(newLimit: event.newLimit);
         if(response['msg'] == "updated"){
           emit(BranchLimitSuccessState());
         }
