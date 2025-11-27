@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../../../Features/Widgets/outline_button.dart';
+import '../../../../../../Features/Widgets/search_field.dart';
 
 class AuthorizedTransactionsView extends StatelessWidget {
   const AuthorizedTransactionsView({super.key});
@@ -50,7 +54,13 @@ class _DesktopState extends State<_Desktop> {
     });
     super.initState();
   }
+  final TextEditingController searchController = TextEditingController();
 
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
@@ -59,6 +69,35 @@ class _DesktopState extends State<_Desktop> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8),
+            child: Row(
+              spacing: 8,
+              children: [
+                Expanded(
+                  child: ZSearchField(
+                    icon: FontAwesomeIcons.magnifyingGlass,
+                    controller: searchController,
+                    hint: AppLocalizations.of(context)!.search,
+                    onChanged: (e) {
+                      setState(() {
+
+                      });
+                    },
+                    title: "",
+                  ),
+                ),
+                ZOutlineButton(
+                    toolTip: "F5",
+                    width: 120,
+                    icon: Icons.refresh,
+                    onPressed: (){
+                      context.read<TransactionsBloc>().add(LoadAuthorizedTransactionsEvent('auth'));
+                    },
+                    label: Text(locale.refresh)),
+              ],
+            ),
+          ),
           SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -107,7 +146,12 @@ class _DesktopState extends State<_Desktop> {
                   );
                 }
                 if(state is TransactionLoadedState){
-                  if(state.txn.isEmpty){
+                  final query = searchController.text.toLowerCase().trim();
+                  final filteredList = state.txn.where((item) {
+                    final name = item.trnReference?.toLowerCase() ?? '';
+                    return name.contains(query);
+                  }).toList();
+                  if(filteredList.isEmpty){
                     return NoDataWidget(
                       message: locale.noDataFound,
                       onRefresh: (){
@@ -119,9 +163,9 @@ class _DesktopState extends State<_Desktop> {
                   }
                   return ListView.builder(
                       shrinkWrap: true,
-                      itemCount: state.txn.length,
+                      itemCount: filteredList.length,
                       itemBuilder: (context,index){
-                        final txn = state.txn[index];
+                        final txn = filteredList[index];
                         return InkWell(
                           onTap: (){},
                           hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),

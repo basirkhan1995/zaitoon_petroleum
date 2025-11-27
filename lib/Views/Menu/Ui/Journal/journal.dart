@@ -99,7 +99,6 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final baseCurrency = _getBaseCurrency(context);
     final locale = AppLocalizations.of(context)!;
-    final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final state = context.watch<AuthBloc>().state;
 
@@ -1164,11 +1163,7 @@ class _DesktopState extends State<_Desktop> {
 
     return Scaffold(
       body: BlocListener<TransactionsBloc, TransactionsState>(
-        listener: (context, state) {
-          if (state is TransactionSuccessState) {
-            Navigator.of(context).pop();
-          }
-        },
+        listener: (context, state) {},
         child: GlobalShortcuts(
           shortcuts: shortcuts,
           child: Column(
@@ -1283,8 +1278,7 @@ class _DesktopState extends State<_Desktop> {
                                 label: Text(locale.withdraw),
                                 icon: Icons.arrow_circle_up_rounded,
                                 width: double.infinity,
-                                onPressed: () =>
-                                    onCashDepositWithdraw(trnType: "CHWL"),
+                                onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
                               ),
                             if (login.hasPermission(22) ?? false)
                               ZOutlineButton(

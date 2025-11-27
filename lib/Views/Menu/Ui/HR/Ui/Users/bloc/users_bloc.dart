@@ -29,6 +29,7 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
         final response = await _repo.addUser(newUser: event.newUser);
         final String msg = response['msg'];
         if (msg == "success") {
+          emit(UserSuccessState());
           add(LoadUsersEvent());
         }else if(msg == "email exists"){
           emit(UsersErrorState(locale.emailExists));

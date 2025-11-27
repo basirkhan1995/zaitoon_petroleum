@@ -78,6 +78,10 @@ class _DesktopState extends State<_Desktop> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
         listener: (context, state) {
+          // if(state is TransactionSuccessState){
+          //   Navigator.of(context).pop();
+          //   context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('pending'));
+          // }
           if (state is TxnReferenceLoadedState) {
             showDialog(
               context: context,
@@ -133,7 +137,7 @@ class _DesktopState extends State<_Desktop> {
 
               if (!_selectionMode) const SizedBox(height: 10),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8),
                 child: Row(
                   spacing: 8,
                   children: [
@@ -155,7 +159,7 @@ class _DesktopState extends State<_Desktop> {
                         width: 120,
                         icon: Icons.refresh,
                         onPressed: (){
-                          context.read<TransactionsBloc>().add(LoadPendingTransactionsEvent('pending'));
+                          context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('pending'));
                         },
                         label: Text(locale.refresh)),
                   ],
@@ -226,7 +230,7 @@ class _DesktopState extends State<_Desktop> {
                     }
                     if(state is TransactionSuccessState){
                       Navigator.of(context).pop();
-                      context.read<TransactionsBloc>().add(LoadPendingTransactionsEvent('pending'));
+                      context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('pending'));
                     }
                   },
                   builder: (context, state) {
