@@ -304,5 +304,21 @@
   "reverseInvalidMessage": "You're not allowed to revese this transaction.",
   "reversePendingMessage": "Pending transaction is not allowed to reverse.",
   "reverseAlreadyMessage": "This transaction has already reversed once.",
-  "authorizeInvalidMessage": "You're not allowed to authorize this transaction."
+  "authorizeInvalidMessage": "You're not allowed to authorize this transaction.",
+  "apply": "Apply",
+  "selectKeyword": "Select",
+  "clear": "Clear",
+  "today": "Today",
+  "selectYear": "Select Year",
+  "selectDate": "Select date",
+  "printers": "Printers",
+  "portrait": "Portrait",
+  "landscape": "Landscape",
+  "orientation": "Orientation",
+  "print": "Print",
+  "paper": "Paper",
+  "fromDate": "From date",
+  "toDate": "To date",
+  "debitTitle": "Debit",
+  "creditTitle": "Credit"
 }

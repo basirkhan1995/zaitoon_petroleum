@@ -304,5 +304,21 @@
   "reverseInvalidMessage": "شما اجازه برگشتاندن این معامله را ندارید",
   "reversePendingMessage": "معاملات انتظاری برگشتانده نمیشود.",
   "reverseAlreadyMessage": "این معامله از قبل یکبار برگشتانده شده است.",
-  "authorizeInvalidMessage": "شما اجازه تایید این معامله را ندارید."
+  "authorizeInvalidMessage": "شما اجازه تایید این معامله را ندارید.",
+  "apply": "درخواست",
+  "selectKeyword": "انتخاب",
+  "clear": "حذف کردن",
+  "today": "امروز",
+  "selectYear": "انتخاب سال",
+  "selectDate": "انتخاب تاریخ",
+  "printers": "دستگاه چاپ",
+  "portrait": "عمودی",
+  "landscape": "افقی",
+  "orientation": "صفحه",
+  "print": "چاپ",
+  "paper": "کاغذ",
+  "fromDate": "از تاریخ",
+  "toDate": "به تاریخ",
+  "debitTitle": "دبت",
+  "creditTitle": "کریدت"
 }

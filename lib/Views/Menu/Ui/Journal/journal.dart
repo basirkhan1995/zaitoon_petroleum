@@ -573,11 +573,7 @@ class _DesktopState extends State<_Desktop> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        GenericTextfield<
-                          GlAccountsModel,
-                          GlAccountsBloc,
-                          GlAccountsState
-                        >(
+                        GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
                           showAllOnFocus: true,
                           controller: accountController,
                           title: locale.accounts,
@@ -649,6 +645,7 @@ class _DesktopState extends State<_Desktop> {
                           noResultsText: locale.noDataFound,
                           showClearButton: true,
                         ),
+
                         ZTextFieldEntitled(
                           isRequired: true,
                           // onSubmit: (_)=> onSubmit(),

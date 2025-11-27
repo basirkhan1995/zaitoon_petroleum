@@ -902,4 +902,52 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get authorizeInvalidMessage => 'شما اجازه تایید این معامله را ندارید.';
+
+  @override
+  String get apply => 'درخواست';
+
+  @override
+  String get selectKeyword => 'تاکل';
+
+  @override
+  String get clear => 'حذف کردن';
+
+  @override
+  String get today => 'نن';
+
+  @override
+  String get selectYear => 'کال تاکل';
+
+  @override
+  String get selectDate => 'تاریخ تاکل';
+
+  @override
+  String get printers => 'چاپ دستگاه';
+
+  @override
+  String get portrait => 'عمودی';
+
+  @override
+  String get landscape => 'افقی';
+
+  @override
+  String get orientation => 'صفحه';
+
+  @override
+  String get print => 'چاپ';
+
+  @override
+  String get paper => 'کاغذ';
+
+  @override
+  String get fromDate => 'له نیته';
+
+  @override
+  String get toDate => 'په نیته';
+
+  @override
+  String get debitTitle => 'دبت';
+
+  @override
+  String get creditTitle => 'کریدت';
 }

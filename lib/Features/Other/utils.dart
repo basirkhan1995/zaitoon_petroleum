@@ -192,6 +192,30 @@ class Utils{
     return null; // Username is valid
   }
 
+  static zBackButton(context){
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pop();
+      },
+      child: Container(
+        padding: EdgeInsets.all(8),
+        margin: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(50),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withValues(alpha: .6),
+              blurRadius: 0,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: Icon(Icons.arrow_back_ios_rounded, size: 13),
+      ),
+    );
+  }
+
   static String? validateEmail({required String email, context}) {
     final locale = AppLocalizations.of(context)!;
     if (email.isNotEmpty) {

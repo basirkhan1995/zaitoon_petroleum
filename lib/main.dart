@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:zaitoon_petroleum/Features/PrintSettings/bloc/Language/print_language_cubit.dart';
+import 'package:zaitoon_petroleum/Features/PrintSettings/bloc/PageSize/paper_size_cubit.dart';
+import 'package:zaitoon_petroleum/Features/PrintSettings/bloc/Printer/printer_cubit.dart';
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
@@ -15,6 +18,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/bloc/hrtab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/bloc/transaction_tab_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/bloc/acc_statement_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/bloc/branch_limit_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/bloc/brc_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
@@ -27,6 +31,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/bloc/stk_tab_bloc.d
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/bloc/stock_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/bloc/transport_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/bloc/menu_bloc.dart';
+import 'Features/PrintSettings/bloc/PageOrientation/page_orientation_cubit.dart';
 import 'Localizations/Bloc/localizations_bloc.dart';
 import 'Localizations/l10n/l10n.dart';
 import 'Localizations/l10n/translations/app_localizations.dart';
@@ -54,7 +59,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
 
-        /// Tabs & Others
+        /// Tabs & Others ......................................................
         BlocProvider(create: (context) => ThemeBloc()),
         BlocProvider(create: (context) => LocalizationBloc()),
         BlocProvider(create: (context) => MenuBloc()),
@@ -73,7 +78,14 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => TransportTabBloc()),
         BlocProvider(create: (context) => BranchTabBloc()),
 
-        /// Data Management
+        ///Services ............................................................
+        BlocProvider(create: (context) => PrintLanguageCubit()),
+        BlocProvider(create: (context) => PageOrientationCubit()),
+        BlocProvider(create: (context) => PaperSizeCubit()),
+        BlocProvider(create: (context) => PrinterCubit()),
+
+
+        /// Data Management ....................................................
         BlocProvider(create: (context) => IndividualsBloc(Repositories(ApiServices()))..add(LoadIndividualsEvent())),
         BlocProvider(create: (context) => AccountsBloc(Repositories(ApiServices()))..add(LoadAccountsEvent())),
         BlocProvider(create: (context) => UsersBloc(Repositories(ApiServices()))..add(LoadUsersEvent())),
@@ -89,6 +101,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => BranchBloc(Repositories(ApiServices()))..add(LoadBranchesEvent())),
         BlocProvider(create: (context) => BranchLimitBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => TxnReferenceBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => AccStatementBloc(Repositories(ApiServices()))),
       ],
       child: BlocBuilder<LocalizationBloc, Locale>(
         builder: (context, locale) {

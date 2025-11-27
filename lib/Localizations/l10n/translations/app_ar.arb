@@ -304,5 +304,21 @@
   "reverseInvalidMessage": "شما اجازه برگشتاندن این معامله را ندارید",
   "reversePendingMessage": "معاملات انتظاری برگشتانده نمیشود.",
   "reverseAlreadyMessage": "این معامله از قبل یکبار برگشتانده شده است.",
-  "authorizeInvalidMessage": "شما اجازه تایید این معامله را ندارید."
+  "authorizeInvalidMessage": "شما اجازه تایید این معامله را ندارید.",
+  "apply": "درخواست",
+  "selectKeyword": "تاکل",
+  "clear": "حذف کردن",
+  "today": "نن",
+  "selectYear": "کال تاکل",
+  "selectDate": "تاریخ تاکل",
+  "printers": "چاپ دستگاه",
+  "portrait": "عمودی",
+  "landscape": "افقی",
+  "orientation": "صفحه",
+  "print": "چاپ",
+  "paper": "کاغذ",
+  "fromDate": "له نیته",
+  "toDate": "په نیته",
+  "debitTitle": "دبت",
+  "creditTitle": "کریدت"
 }

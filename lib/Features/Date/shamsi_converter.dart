@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shamsi_date/shamsi_date.dart';
+import 'package:intl/intl.dart';
 
 class AfghanShamsiConverter {
 
@@ -97,6 +98,58 @@ class AfghanShamsiConverter {
   }
 }
 
+extension DateTimeExtensions on dynamic {
+  DateTime? get _dateTime {
+    if (this is DateTime) return this as DateTime;
+    if (this is String) return DateTime.tryParse(this as String);
+    return null;
+  }
+
+  static String _twoDigits(int n) => n.toString().padLeft(2, "0");
+
+  /// Formats the date as YYYY-MM-DD
+  String toFormattedDate() {
+    final date = _dateTime;
+    return date != null
+        ? "${date.year}-${_twoDigits(date.month)}-${_twoDigits(date.day)}"
+        : "";
+  }
+}
+
+extension DateTimeFormatExtensions on DateTime {
+  /// Returns date in 'yyyy-MM-dd' format (e.g., 2025-10-31)
+  String get toDateString => DateFormat('yyyy-MM-dd').format(this);
+
+  /// Returns time in 'HH:mm:ss' format (e.g., 22:29:00)
+  String get toTimeString => DateFormat('HH:mm:ss').format(this);
+
+  /// Returns full date-time in 'yyyy-MM-dd HH:mm:ss' format
+  String get toFullDateTime => DateFormat('yyyy-MM-dd HH:mm:ss').format(this);
+
+  /// Returns localized readable format (e.g., Friday, Oct 31, 2025 – 10:29 PM)
+  String get toReadable => DateFormat('EEEE, MMM d, yyyy – h:mm a').format(this);
+}
+
+extension AfghanShamsiDateConverter on DateTime {
+  /// Convert to Afghan Shamsi (Jalali) date
+  Jalali get toAfghanShamsi => AfghanShamsiConverter.toJalali(this);
+
+  /// Format as compact Afghan date with Persian numbers (e.g., "۱۴۰۲/۵/۱۵")
+  String get shamsiDateString => AfghanShamsiConverter.formatCompact(toAfghanShamsi);
+
+  /// Full Afghan date format with Persian numbers (e.g., "دوشنبه، ۱۵ حمل ۱۴۰۲")
+  String get shamsiFullDate => AfghanShamsiConverter.formatFull(toAfghanShamsi);
+
+  /// Format with leading zeros and Persian numbers (e.g., "۱۴۰۲/۰۵/۱۵")
+  String get shamsiDateFormatted => AfghanShamsiConverter.formatWithLeadingZeros(toAfghanShamsi);
+
+  /// Get current Afghan month name
+  String get shamsiMonthName => AfghanShamsiConverter.shamsiMonths[toAfghanShamsi.month] ?? '';
+
+  /// Get current Afghan weekday name
+  String get shamsiWeekdayName => AfghanShamsiConverter.shamsiWeekdays[toAfghanShamsi.weekDay] ?? '';
+}
+
 extension JalaliToGregorian on Jalali {
   /// Convert Jalali date to Gregorian DateTime
   DateTime toGregorian() {
@@ -125,26 +178,6 @@ extension JalaliToGregorian on Jalali {
     final dateTime = toDateTime();
     return MaterialLocalizations.of(context).formatShortDate(dateTime);
   }
-}
-
-extension AfghanShamsiDateConverter on DateTime {
-  /// Convert to Afghan Shamsi (Jalali) date
-  Jalali get toAfghanShamsi => AfghanShamsiConverter.toJalali(this);
-
-  /// Format as compact Afghan date with Persian numbers (e.g., "۱۴۰۲/۵/۱۵")
-  String get shamsiDateString => AfghanShamsiConverter.formatCompact(toAfghanShamsi);
-
-  /// Full Afghan date format with Persian numbers (e.g., "دوشنبه، ۱۵ حمل ۱۴۰۲")
-  String get shamsiFullDate => AfghanShamsiConverter.formatFull(toAfghanShamsi);
-
-  /// Format with leading zeros and Persian numbers (e.g., "۱۴۰۲/۰۵/۱۵")
-  String get shamsiDateFormatted => AfghanShamsiConverter.formatWithLeadingZeros(toAfghanShamsi);
-
-  /// Get current Afghan month name
-  String get shamsiMonthName => AfghanShamsiConverter.shamsiMonths[toAfghanShamsi.month] ?? '';
-
-  /// Get current Afghan weekday name
-  String get shamsiWeekdayName => AfghanShamsiConverter.shamsiWeekdays[toAfghanShamsi.weekDay] ?? '';
 }
 
 extension StringToAfghanShamsi on String {

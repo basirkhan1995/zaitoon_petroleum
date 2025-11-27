@@ -5,6 +5,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeR
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/txn_ref_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/model/stmt_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
@@ -841,6 +842,36 @@ class Repositories {
       return response.data;
     } on DioException catch (e) {
       throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  ///Reports ...................................................................
+  Future<AccountStatementModel> getAccountStatement({required int account, required String fromDate, required String toDate,}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/reports/accountStatement.php",
+          data: {
+            "account": account,
+            "fromDate": fromDate,
+            "toDate": toDate
+          }
+      );
+      // Handle message response
+      if (response.data is Map && response.data['msg'] != null) {
+        throw response.data['msg'];
+      }
+
+      // Handle empty response
+      if (response.data == null || response.data.isEmpty) {
+        throw "No data received";
+      }
+      // Parse the response
+      return AccountStatementModel.fromMap(response.data);
+
+    } on DioException catch (e) {
+      throw "${e.message}";
     } catch (e) {
       throw e.toString();
     }

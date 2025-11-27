@@ -900,4 +900,52 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get authorizeInvalidMessage => 'شما اجازه تایید این معامله را ندارید.';
+
+  @override
+  String get apply => 'درخواست';
+
+  @override
+  String get selectKeyword => 'انتخاب';
+
+  @override
+  String get clear => 'حذف کردن';
+
+  @override
+  String get today => 'امروز';
+
+  @override
+  String get selectYear => 'انتخاب سال';
+
+  @override
+  String get selectDate => 'انتخاب تاریخ';
+
+  @override
+  String get printers => 'دستگاه چاپ';
+
+  @override
+  String get portrait => 'عمودی';
+
+  @override
+  String get landscape => 'افقی';
+
+  @override
+  String get orientation => 'صفحه';
+
+  @override
+  String get print => 'چاپ';
+
+  @override
+  String get paper => 'کاغذ';
+
+  @override
+  String get fromDate => 'از تاریخ';
+
+  @override
+  String get toDate => 'به تاریخ';
+
+  @override
+  String get debitTitle => 'دبت';
+
+  @override
+  String get creditTitle => 'کریدت';
 }

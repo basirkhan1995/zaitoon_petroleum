@@ -1,0 +1,440 @@
+import 'package:flutter/material.dart';
+import '../../Localizations/l10n/translations/app_localizations.dart';
+import '../Widgets/button.dart';
+import '../Widgets/outline_button.dart';
+
+class GregorianDatePicker extends StatefulWidget {
+  final ValueChanged<DateTime> onDateSelected;
+  final DateTime? initialDate;
+  final int minYear;
+  final int maxYear;
+
+  const GregorianDatePicker({
+    super.key,
+    required this.onDateSelected,
+    this.initialDate,
+    this.minYear = 1900,
+    this.maxYear = 2100,
+  });
+
+  @override
+  _GregorianDatePickerState createState() => _GregorianDatePickerState();
+}
+
+class _GregorianDatePickerState extends State<GregorianDatePicker> {
+  late DateTime _selectedDate;
+  late DateTime _currentMonth;
+  late DateTime _today;
+  final List<String> _weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  bool _showYearSelector = false;
+  late int _selectedYear;
+  DateTime? _pendingSelection;
+
+  late ScrollController _yearScrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _today = DateTime.now();
+    _selectedDate = widget.initialDate ?? _today;
+    _currentMonth = DateTime(_selectedDate.year, _selectedDate.month, 1);
+    _selectedYear = _selectedDate.year;
+
+    _yearScrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _yearScrollController.dispose();
+    super.dispose();
+  }
+
+  String _formatSelectedDate(DateTime date) {
+    final weekday = _getWeekdayName(date.weekday);
+    final month = _getMonthName(date.month);
+    final year = date.year.toString();
+    final day = date.day.toString().padLeft(2, '0');
+    return '$weekday, $month $day $year';
+  }
+
+  String _getWeekdayName(int weekday) {
+    const weekdays = {
+      1: 'Sunday',
+      2: 'Monday',
+      3: 'Tuesday',
+      4: 'Wednesday',
+      5: 'Thursday',
+      6: 'Friday',
+      7: 'Saturday',
+    };
+    return weekdays[weekday] ?? '';
+  }
+
+  bool _isSameDate(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
+  void _onDateTapped(DateTime date) {
+    setState(() {
+      _pendingSelection = date;
+    });
+  }
+
+  void _confirmSelection() {
+    if (_pendingSelection != null) {
+      setState(() {
+        _selectedDate = _pendingSelection!;
+        _selectedYear = _pendingSelection!.year;
+      });
+      widget.onDateSelected(_pendingSelection!);
+      Navigator.of(context).pop();
+    }
+  }
+
+  void _selectToday() {
+    setState(() {
+      _pendingSelection = _today;
+      _selectedDate = _today;
+      _currentMonth = DateTime(_today.year, _today.month, 1);
+      _selectedYear = _today.year;
+    });
+  }
+
+  void _navigateMonth(int offset) {
+    setState(() {
+      _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + offset, 1);
+    });
+  }
+
+  void _changeYear(int year) {
+    setState(() {
+      _selectedYear = year;
+      _currentMonth = DateTime(year, _currentMonth.month, 1);
+      _showYearSelector = false;
+    });
+  }
+
+  void _scrollToSelectedYear() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final index = _selectedYear - widget.minYear;
+      final row = index ~/ 3; // because crossAxisCount = 3
+      const rowHeight = 25.0; // approximate height per row
+      final offset = (row * rowHeight) - 60; // center-ish
+      if (_yearScrollController.hasClients) {
+        _yearScrollController.animateTo(
+          offset.clamp(0.0, _yearScrollController.position.maxScrollExtent),
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+    final monthLength = _getMonthLength(_currentMonth.month, _currentMonth.year);
+    final firstWeekdayOfMonth = _currentMonth.weekday;
+
+    final showYearPanel = _showYearSelector;
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        width: showYearPanel ? 550 : 370, // expand only width
+        height: 520, // fixed height so it never grows
+        padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
+        decoration: BoxDecoration(
+          color: color.surface,
+          borderRadius: BorderRadius.circular(5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: .1),
+              blurRadius: 10,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: Row(
+          spacing: 10,
+          children: [
+            // LEFT: Year selector (slides in by width expansion)
+            if (showYearPanel) ...[
+              SizedBox(
+                width: 180,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          locale.selectYear,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: color.primary.withValues(alpha: .7),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: GridView.builder(
+                        controller: _yearScrollController,
+                        padding: const EdgeInsets.all(8),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          childAspectRatio: 2,
+                          mainAxisSpacing: 4,
+                          crossAxisSpacing: 4,
+                        ),
+                        itemCount: widget.maxYear - widget.minYear + 1,
+                        itemBuilder: (context, index) {
+                          final year = widget.minYear + index;
+                          final isSelected = year == _selectedYear;
+                          return InkWell(
+                            onTap: () => _changeYear(year),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: isSelected ? color.primary : color.surface,
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  year.toString(),
+                                  style: TextStyle(
+                                    color: isSelected ? color.surface : color.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              VerticalDivider(width: 1, color: color.outlineVariant),
+            ],
+
+            // RIGHT: Calendar content
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.max, // allow Expanded children
+                children: [
+                  // Selected date display (header 1) — prevent overflow
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _formatSelectedDate(_pendingSelection ?? _selectedDate),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: color.primary.withValues(alpha: .7),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Month/year nav (header 2) — prevent overflow
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              setState(() => _showYearSelector = !_showYearSelector);
+                              if (_showYearSelector) _scrollToSelectedYear();
+                            },
+                            child: Text(
+                              '${_getMonthName(_currentMonth.month)} | ${_currentMonth.year}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: color.primary.withValues(alpha: .9),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.chevron_left, color: color.secondary),
+                          onPressed: () => _navigateMonth(-1),
+                          tooltip: 'Previous month',
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.chevron_right, color: color.secondary),
+                          onPressed: () => _navigateMonth(1),
+                          tooltip: 'Next month',
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Middle area takes the remaining height; grid scrolls if needed
+                  Expanded(
+                    child: Column(
+                      children: [
+                        // Weekdays row
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: _weekdays.map((day) {
+                            return Expanded(
+                              child: Center(
+                                child: Text(
+                                  day,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: color.primary.withValues(alpha: .7),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 6),
+
+                        // Calendar grid fills remainder and is scrollable if tight
+                        Expanded(
+                          child: GridView.builder(
+                            physics: const ClampingScrollPhysics(),
+                            padding: EdgeInsets.zero,
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 7,
+                              childAspectRatio: 1,
+                            ),
+                            itemCount: 42,
+                            itemBuilder: (context, index) {
+                              final dayOffset = index - (firstWeekdayOfMonth % 7);
+                              final isCurrentMonthDay = dayOffset >= 0 && dayOffset < monthLength;
+                              final day = isCurrentMonthDay ? dayOffset + 1 : null;
+                              final date = isCurrentMonthDay
+                                  ? DateTime(_currentMonth.year, _currentMonth.month, day!)
+                                  : null;
+
+                              final isSelected = date != null && _pendingSelection != null
+                                  ? _isSameDate(date, _pendingSelection!)
+                                  : date != null && _isSameDate(date, _selectedDate);
+                              final isToday = date != null && _isSameDate(date, _today);
+
+                              return InkWell(
+                                onTap: date != null ? () => _onDateTapped(date) : null,
+                                child: Container(
+                                  margin: const EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? color.primary
+                                        : isToday
+                                        ? color.primary.withValues(alpha: .2)
+                                        : null,
+                                    shape: BoxShape.circle,
+                                    border: isToday ? Border.all(color: color.primary, width: 1) : null,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      day != null ? day.toString() : '',
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? color.surface
+                                            : isToday
+                                            ? color.primary
+                                            : isCurrentMonthDay
+                                            ? color.secondary
+                                            : color.surface.withValues(alpha: .0),
+                                        fontWeight: isSelected || isToday ? FontWeight.bold : FontWeight.normal,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Footer (fixed), stays visible
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ZOutlineButton(
+                          height: 40,
+                          onPressed: _selectToday,
+                          label: Text(locale.today),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: ZButton(
+                          height: 40,
+                          onPressed: _pendingSelection != null ? _confirmSelection : null,
+                          label: Text(locale.selectKeyword),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  int _getMonthLength(int month, int year) {
+    if (month == 2) {
+      return _isLeapYear(year) ? 29 : 28;
+    } else if ([4, 6, 9, 11].contains(month)) {
+      return 30;
+    } else {
+      return 31;
+    }
+  }
+
+  bool _isLeapYear(int year) {
+    return (year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0);
+  }
+
+  String _getMonthName(int month) {
+    const monthNames = {
+      1: 'January',
+      2: 'February',
+      3: 'March',
+      4: 'April',
+      5: 'May',
+      6: 'June',
+      7: 'July',
+      8: 'August',
+      9: 'September',
+      10: 'October',
+      11: 'November',
+      12: 'December',
+    };
+    return monthNames[month] ?? '';
+  }
+}

@@ -906,4 +906,52 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get authorizeInvalidMessage =>
       'You\'re not allowed to authorize this transaction.';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get selectKeyword => 'Select';
+
+  @override
+  String get clear => 'Clear';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get selectYear => 'Select Year';
+
+  @override
+  String get selectDate => 'Select date';
+
+  @override
+  String get printers => 'Printers';
+
+  @override
+  String get portrait => 'Portrait';
+
+  @override
+  String get landscape => 'Landscape';
+
+  @override
+  String get orientation => 'Orientation';
+
+  @override
+  String get print => 'Print';
+
+  @override
+  String get paper => 'Paper';
+
+  @override
+  String get fromDate => 'From date';
+
+  @override
+  String get toDate => 'To date';
+
+  @override
+  String get debitTitle => 'Debit';
+
+  @override
+  String get creditTitle => 'Credit';
 }

@@ -1851,6 +1851,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You\'re not allowed to authorize this transaction.'**
   String get authorizeInvalidMessage;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
+  /// No description provided for @selectKeyword.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get selectKeyword;
+
+  /// No description provided for @clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clear;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @selectYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Year'**
+  String get selectYear;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get selectDate;
+
+  /// No description provided for @printers.
+  ///
+  /// In en, this message translates to:
+  /// **'Printers'**
+  String get printers;
+
+  /// No description provided for @portrait.
+  ///
+  /// In en, this message translates to:
+  /// **'Portrait'**
+  String get portrait;
+
+  /// No description provided for @landscape.
+  ///
+  /// In en, this message translates to:
+  /// **'Landscape'**
+  String get landscape;
+
+  /// No description provided for @orientation.
+  ///
+  /// In en, this message translates to:
+  /// **'Orientation'**
+  String get orientation;
+
+  /// No description provided for @print.
+  ///
+  /// In en, this message translates to:
+  /// **'Print'**
+  String get print;
+
+  /// No description provided for @paper.
+  ///
+  /// In en, this message translates to:
+  /// **'Paper'**
+  String get paper;
+
+  /// No description provided for @fromDate.
+  ///
+  /// In en, this message translates to:
+  /// **'From date'**
+  String get fromDate;
+
+  /// No description provided for @toDate.
+  ///
+  /// In en, this message translates to:
+  /// **'To date'**
+  String get toDate;
+
+  /// No description provided for @debitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Debit'**
+  String get debitTitle;
+
+  /// No description provided for @creditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit'**
+  String get creditTitle;
 }
 
 class _AppLocalizationsDelegate

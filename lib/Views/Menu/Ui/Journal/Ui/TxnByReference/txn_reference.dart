@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
@@ -141,6 +142,7 @@ class _DesktopState extends State<_Desktop> {
                             ),
                             SizedBox(height: 8),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   locale.details,
@@ -149,6 +151,10 @@ class _DesktopState extends State<_Desktop> {
                                     fontSize: 15
                                   ),
                                 ),
+
+                                InkWell(
+                                    onTap: (){},
+                                    child: Icon(Icons.print,size: 20,color: color.primary,))
                               ],
                             ),
                             Divider(thickness: 2,color: color.primary),
