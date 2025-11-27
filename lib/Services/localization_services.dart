@@ -7,5 +7,4 @@ class LocalizationService {
     loc = value;
   }
 }
-
 final localizationService = LocalizationService();
