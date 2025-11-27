@@ -853,4 +853,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get authorizeDeniedMessage => 'شما مجاز به تأیید این تراکنش نیستید.';
+
+  @override
+  String get reversed => 'برگشتی';
+
+  @override
+  String get txnReprint => 'چاپ معاملات';
 }

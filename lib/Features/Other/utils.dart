@@ -13,9 +13,11 @@ class Utils{
       case 1:return AppLocalizations.of(context)!.admin;
       case 2:return AppLocalizations.of(context)!.manager;
       case 3:return AppLocalizations.of(context)!.viewer;
-      default: return "Not found";
+      default: return "";
     }
   }
+
+
 
   static Future<void> launchWhatsApp({required String phoneNumber, String? message}) async {
     final encodedMessage = Uri.encodeComponent(message ?? '');
@@ -245,4 +247,27 @@ class Utils{
       return Colors.lightBlueAccent.withValues(alpha: .6);
     }
   }
+
+  static String getTxnName({required String txn, required BuildContext context}) {
+    switch (txn) {
+      case "Authorized":return AppLocalizations.of(context)!.authorizedTransactions;
+      case "Pending":return AppLocalizations.of(context)!.pendingTransactions;
+      case "Reversed":return AppLocalizations.of(context)!.reversed;
+      default: return "";
+    }
+  }
+
+  static String getTxnCode({required String txn, required BuildContext context}) {
+    switch (txn) {
+      case "CHDP":return AppLocalizations.of(context)!.deposit;
+      case "CHWL":return AppLocalizations.of(context)!.withdraw;
+      case "XPNS":return AppLocalizations.of(context)!.expense;
+      case "INCM":return AppLocalizations.of(context)!.income;
+      case "GLCR":return AppLocalizations.of(context)!.glCreditTitle;
+      case "GLDR":return AppLocalizations.of(context)!.glDebitTitle;
+      case "ATAT":return AppLocalizations.of(context)!.accountTransfer;
+      default: return "NOT FOUND";
+    }
+  }
+
 }

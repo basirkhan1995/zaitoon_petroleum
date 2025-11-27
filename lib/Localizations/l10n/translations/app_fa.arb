@@ -290,5 +290,7 @@
   "transactionDate": "تاریخ معامله",
   "recipient": "گیرنده",
   "details": "جزئیات",
-  "authorizeDeniedMessage": "شما مجاز به تأیید این تراکنش نیستید."
+  "authorizeDeniedMessage": "شما مجاز به تأیید این تراکنش نیستید.",
+  "reversed": "برگشتی",
+  "txnReprint": "چاپ معاملات"
 }

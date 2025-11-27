@@ -1,12 +1,9 @@
-// To parse this JSON data, do
-//
-//     final transactionsModel = transactionsModelFromMap(jsonString);
 
 import 'dart:convert';
 
-List<TransactionsModel> transactionsModelFromMap(String str) => List<TransactionsModel>.from(json.decode(str).map((x) => TransactionsModel.fromMap(x)));
+TransactionsModel transactionsModel2FromMap(String str) => TransactionsModel.fromMap(json.decode(str));
 
-String transactionsModelToMap(List<TransactionsModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toMap())));
+String transactionsModel2ToMap(TransactionsModel data) => json.encode(data.toMap());
 
 class TransactionsModel {
   final String? trnReference;
@@ -15,6 +12,7 @@ class TransactionsModel {
   final String? maker;
   final String? checker;
   final int? trnStatus;
+  final String? trnStateText;
   final DateTime? trnEntryDate;
 
   final String? usrName;
@@ -30,6 +28,7 @@ class TransactionsModel {
     this.maker,
     this.checker,
     this.trnStatus,
+    this.trnStateText,
     this.trnEntryDate,
 
     this.usrName,
@@ -46,6 +45,7 @@ class TransactionsModel {
     String? maker,
     String? checker,
     int? trnStatus,
+    String? trnStateText,
     DateTime? trnEntryDate,
   }) =>
       TransactionsModel(
@@ -55,6 +55,7 @@ class TransactionsModel {
         maker: maker ?? this.maker,
         checker: checker ?? this.checker,
         trnStatus: trnStatus ?? this.trnStatus,
+        trnStateText: trnStateText ?? this.trnStateText,
         trnEntryDate: trnEntryDate ?? this.trnEntryDate,
       );
 
@@ -65,6 +66,7 @@ class TransactionsModel {
     maker: json["maker"],
     checker: json["checker"],
     trnStatus: json["trnStatus"],
+    trnStateText: json["trnStateText"],
     trnEntryDate: json["trnEntryDate"] == null ? null : DateTime.parse(json["trnEntryDate"]),
   );
 
@@ -77,6 +79,3 @@ class TransactionsModel {
     "narration": narration,
   };
 }
-
-
-

@@ -290,5 +290,7 @@
   "transactionDate": "معامله نیته",
   "recipient": "ترلاسه کوونکی",
   "details": "جزئیات",
-  "authorizeDeniedMessage": "تاسو د دې راکړې ورکړې د تایید اجازه نه لرئ."
+  "authorizeDeniedMessage": "تاسو د دې راکړې ورکړې د تایید اجازه نه لرئ.",
+  "reversed": "راګرځول شوې",
+  "txnReprint": "چاپ معاملات"
 }

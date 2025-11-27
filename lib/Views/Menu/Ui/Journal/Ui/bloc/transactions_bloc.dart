@@ -23,6 +23,18 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
       }
     });
 
+    on<UpdatePendingTransactionEvent>((event, emit) async{
+      emit(TransactionLoadingState());
+      try{
+        final response = await _repo.updateTxn(newTxn: event.transaction);
+        if(response['msg'] == "success"){
+          emit(TransactionSuccessState());
+        }
+      }catch(e){
+        emit(TransactionErrorState(e.toString()));
+      }
+    });
+
     on<LoadAllTransactionsEvent>((event, emit) async{
       emit(TransactionLoadingState());
       try{

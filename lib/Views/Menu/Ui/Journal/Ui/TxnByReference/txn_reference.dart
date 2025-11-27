@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
@@ -6,7 +7,9 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
 
+import '../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
 
@@ -49,6 +52,7 @@ class _Desktop extends StatefulWidget {
 
 class _DesktopState extends State<_Desktop> {
   final TextEditingController narration = TextEditingController();
+  final TextEditingController amount = TextEditingController();
   String? reference;
   @override
   void dispose() {
@@ -61,8 +65,7 @@ class _DesktopState extends State<_Desktop> {
     final locale = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
-    final isLoading =
-        context.watch<TransactionsBloc>().state is TransactionLoadingState;
+    final isLoading = context.watch<TransactionsBloc>().state is TransactionLoadingState;
     final auth = context.watch<AuthBloc>().state;
     if (auth is! AuthenticatedState) {
       return const SizedBox();
@@ -72,6 +75,21 @@ class _DesktopState extends State<_Desktop> {
       width: 450,
       icon: Icons.add_chart_rounded,
        alignment: AlignmentGeometry.centerRight,
+      expandedAction: Row(
+        children: [
+          IconButton(
+              onPressed: (){
+                context.read<TransactionsBloc>().add(UpdatePendingTransactionEvent(TransactionsModel(
+                  usrName: login.usrName,
+                  accCcy: "USD",
+                  narration: "",
+                  amount: "",
+                  trnReference: "",
+                )));
+              },
+              icon: Icon(Icons.delete))
+        ],
+      ),
       onAction: () {
         context.read<TransactionsBloc>().add(
           AuthorizeTxnEvent(
@@ -100,6 +118,7 @@ class _DesktopState extends State<_Desktop> {
                 if (state is TxnReferenceLoadedState) {
                   narration.text = state.transaction.narration ?? "";
                   reference = state.transaction.trnReference ?? "";
+                  amount.text = state.transaction.amount?.toAmount()??"";
                   return Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -200,6 +219,39 @@ class _DesktopState extends State<_Desktop> {
                               ],
                             ),
                             SizedBox(height: 20),
+                            ZTextFieldEntitled(
+                              isRequired: true,
+                              // onSubmit: (_)=> onSubmit(),
+                              keyboardInputType: TextInputType.numberWithOptions(
+                                decimal: true,
+                              ),
+                              inputFormat: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9.,]*'),
+                                ),
+                                SmartThousandsDecimalFormatter(),
+                              ],
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return locale.required(locale.exchangeRate);
+                                }
+
+                                // Remove formatting (e.g. commas)
+                                final clean = value.replaceAll(
+                                  RegExp(r'[^\d.]'),
+                                  '',
+                                );
+                                final amount = double.tryParse(clean);
+
+                                if (amount == null || amount <= 0.0) {
+                                  return locale.amountGreaterZero;
+                                }
+
+                                return null;
+                              },
+                              controller: amount,
+                              title: locale.amount,
+                            ),
                             ZTextFieldEntitled(
                               // onSubmit: (_)=> onSubmit(),
                               keyboardInputType: TextInputType.multiline,

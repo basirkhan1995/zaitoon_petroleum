@@ -652,6 +652,19 @@ class Repositories {
       throw e.toString();
     }
   }
+  Future<Map<String, dynamic>> updateTxn({required TransactionsModel newTxn}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/journal/cashWD.php",
+          data: newTxn.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 
   ///Password Settings .........................................................
   Future<Map<String, dynamic>> forceChangePassword({required String credential, required String newPassword}) async {

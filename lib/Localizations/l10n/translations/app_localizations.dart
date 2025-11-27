@@ -1767,6 +1767,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You are not allowed to authorize this transaction.'**
   String get authorizeDeniedMessage;
+
+  /// No description provided for @reversed.
+  ///
+  /// In en, this message translates to:
+  /// **'Reversed'**
+  String get reversed;
+
+  /// No description provided for @txnReprint.
+  ///
+  /// In en, this message translates to:
+  /// **'TXN Reprint'**
+  String get txnReprint;
 }
 
 class _AppLocalizationsDelegate

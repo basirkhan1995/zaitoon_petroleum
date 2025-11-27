@@ -290,5 +290,7 @@
   "transactionDate": "Transaction Date",
   "recipient": "Recipient",
   "details": "Details",
-  "authorizeDeniedMessage": "You are not allowed to authorize this transaction."
+  "authorizeDeniedMessage": "You are not allowed to authorize this transaction.",
+  "reversed": "Reversed",
+  "txnReprint": "TXN Reprint"
 }

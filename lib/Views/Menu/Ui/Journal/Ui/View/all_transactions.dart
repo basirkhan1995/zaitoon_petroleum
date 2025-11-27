@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
@@ -148,7 +149,7 @@ class _DesktopState extends State<_Desktop> {
 
                                  SizedBox(
                                      width: 110,
-                                     child: Text(txn.trnType??"")),
+                                     child: Text(Utils.getTxnCode(txn: txn.trnType??"", context: context))),
                                  SizedBox(width: 20),
                                  SizedBox(
                                      width: 110,
@@ -160,7 +161,7 @@ class _DesktopState extends State<_Desktop> {
                                  SizedBox(width: 20),
                                  SizedBox(
                                      width: 90,
-                                     child: Text(txn.trnStatus == 1? locale.authorizedTransactions : locale.pendingTransactions)),
+                                     child: Text(Utils.getTxnName(txn: txn.trnStateText??"", context: context))),
                                ],
                              ),
                            ),

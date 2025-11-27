@@ -7,6 +7,7 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../../Features/Other/utils.dart';
 import '../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
 
@@ -187,7 +188,7 @@ class _DesktopState extends State<_Desktop> {
 
                                   SizedBox(
                                       width: 110,
-                                      child: Text(txn.trnType??"")),
+                                      child: Text(Utils.getTxnCode(txn: txn.trnType??"", context: context))),
                                   SizedBox(width: 20),
                                   SizedBox(
                                       width: 110,

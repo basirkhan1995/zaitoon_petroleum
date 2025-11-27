@@ -856,4 +856,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get authorizeDeniedMessage =>
       'You are not allowed to authorize this transaction.';
+
+  @override
+  String get reversed => 'Reversed';
+
+  @override
+  String get txnReprint => 'TXN Reprint';
 }

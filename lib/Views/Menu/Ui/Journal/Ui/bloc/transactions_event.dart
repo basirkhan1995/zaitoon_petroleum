@@ -11,6 +11,13 @@ class OnCashTransactionEvent extends TransactionsEvent{
   List<Object?> get props => [transaction];
 }
 
+class UpdatePendingTransactionEvent extends TransactionsEvent{
+  final TransactionsModel transaction;
+  const UpdatePendingTransactionEvent(this.transaction);
+  @override
+  List<Object?> get props => [transaction];
+}
+
 class LoadAllTransactionsEvent extends TransactionsEvent {
   final String status;
   const LoadAllTransactionsEvent(this.status);

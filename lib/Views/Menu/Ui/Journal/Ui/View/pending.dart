@@ -332,9 +332,8 @@ class _DesktopState extends State<_Desktop> {
                                   ),
 
                                   SizedBox(
-                                    width: 110,
-                                    child: Text(txn.trnType ?? ""),
-                                  ),
+                                      width: 110,
+                                      child: Text(Utils.getTxnCode(txn: txn.trnType??"", context: context))),
 
                                   const SizedBox(width: 20),
                                   SizedBox(

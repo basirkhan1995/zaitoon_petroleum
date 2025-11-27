@@ -855,4 +855,10 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get authorizeDeniedMessage =>
       'تاسو د دې راکړې ورکړې د تایید اجازه نه لرئ.';
+
+  @override
+  String get reversed => 'راګرځول شوې';
+
+  @override
+  String get txnReprint => 'چاپ معاملات';
 }

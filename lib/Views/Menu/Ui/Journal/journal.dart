@@ -6,6 +6,7 @@ import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/View/all_transactions.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/View/authorized.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/View/pending.dart';
@@ -234,60 +235,62 @@ class _DesktopState extends State<_Desktop> {
                               showClearButton: true,
                             ),
                             if(accName !=null && accName!.isNotEmpty)
-                            Cover(
-                              color: Theme.of(context).colorScheme.surface,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
-                                  width: double.infinity,
-                                  child: Column(
-                                    spacing: 5,
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                              child: Row(
+                                children: [
+                                  Text(locale.details,style: Theme.of(context).textTheme.titleMedium)
+                                ],
+                              ),
+                            ),
+                            if(accName !=null && accName!.isNotEmpty)
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+                              width: double.infinity,
+                              child: Row(
+                                spacing: 5,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                              width: 160,
-                                              child: Text(locale.accountNumber,style: textTheme.titleSmall)),
-                                          Text(accNumber.toString()),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                              width: 160,
-                                              child: Text(locale.accountName,style: textTheme.titleSmall)),
-                                          Text(accName??""),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                              width: 160,
-                                              child: Text(locale.accountLimit,style: textTheme.titleSmall)),
-                                          Text(accountLimit?.toAmount()??""),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                              width: 160,
-                                              child: Text(locale.currentBalance,style: textTheme.titleSmall)),
-                                          Text("${currentBalance?.toAmount()}$ccySymbol"),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                              width: 160,
-                                              child: Text(locale.availableBalance,style: textTheme.titleSmall)),
-                                          Text("${availableBalance?.toAmount()}$ccySymbol"),
-                                        ],
-                                      ),
-
-                                                                ],
+                                      SizedBox(
+                                          width: 170,
+                                          child: Text(locale.accountNumber,style: textTheme.titleSmall)),
+                                      SizedBox(
+                                          width: 170,
+                                          child: Text(locale.accountName,style: textTheme.titleSmall)),
+                                      SizedBox(
+                                          width: 170,
+                                          child: Text(locale.accountLimit,style: textTheme.titleSmall)),
+                                      SizedBox(
+                                          width: 170,
+                                          child: Text(locale.status,style: textTheme.titleSmall)),
+                                      SizedBox(
+                                          width: 170,
+                                          child: Text(locale.currentBalance,style: textTheme.titleSmall)),
+                                      SizedBox(
+                                          width: 170,
+                                          child: Text(locale.availableBalance,style: textTheme.titleSmall)),
+                                    ],
                                   ),
-                                )),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(accNumber.toString()),
+                                      Text(accName??""),
+                                      Text(accountLimit?.toAmount()??""),
+                                      Text(status == 1? locale.active : locale.blocked),
+                                      Text("${currentBalance?.toAmount()}$ccySymbol"),
+                                      Text("${availableBalance?.toAmount()}$ccySymbol"),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
                             ZTextFieldEntitled(
                               isRequired: true,
                               // onSubmit: (_)=> onSubmit(),
@@ -890,10 +893,10 @@ class _DesktopState extends State<_Desktop> {
       final TextEditingController amount = TextEditingController();
       final TextEditingController narration = TextEditingController();
 
-      String? creditAccCurrency;
-      String? debitAccCurrency;
-      int? creditAccount;
-      int? debitAccount;
+      // String? creditAccCurrency;
+      // String? debitAccCurrency;
+      // int? creditAccount;
+      // int? debitAccount;
 
       showDialog(
         context: context,
@@ -1150,6 +1153,7 @@ class _DesktopState extends State<_Desktop> {
       );
     }
 
+
     // The shortcut mapping
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): () => onCashDepositWithdraw(trnType: "CHDP"),
@@ -1305,6 +1309,14 @@ class _DesktopState extends State<_Desktop> {
                                 onPressed: () =>
                                     accountToAccount(trnType: "ATAT"),
                               ),
+
+                            ZOutlineButton(
+                              toolTip: "F5",
+                              label: Text(locale.txnReprint),
+                              icon: Icons.print_rounded,
+                              width: double.infinity,
+                              onPressed: () => accountToAccount(trnType: "ATAT"),
+                            ),
 
                             SizedBox(height: 5),
                             Wrap(
