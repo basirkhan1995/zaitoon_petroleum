@@ -71,6 +71,7 @@ class TransactionsModel {
   );
 
   Map<String, dynamic> toMap() => {
+    "reference":trnReference,
     "trnType": trnType,
     "usrName": usrName,
     "account": account,

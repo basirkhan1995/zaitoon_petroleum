@@ -68,8 +68,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
             emit(TransactionErrorState(locale.editFailedMessage));
             break;
 
-          default:
-            emit(TransactionErrorState(msg));
+          default: emit(TransactionErrorState(msg));
         }
       }catch(e){
         emit(TransactionErrorState(e.toString()));

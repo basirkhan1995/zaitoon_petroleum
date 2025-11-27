@@ -669,10 +669,11 @@ class Repositories {
   }
   Future<Map<String, dynamic>> updateTxn({required TransactionsModel newTxn}) async {
     try {
-      final response = await api.post(
+      final response = await api.put(
           endpoint: "/journal/cashWD.php",
           data: newTxn.toMap()
       );
+      print(response.data);
       return response.data;
     } on DioException catch (e) {
       throw '${e.message}';
@@ -731,7 +732,6 @@ class Repositories {
       throw e.toString();
     }
   }
-
 
   ///Branches & Limits  .................................................
   Future<List<BranchModel>> getBranches({int? brcId}) async {
@@ -796,7 +796,6 @@ class Repositories {
       throw e.toString();
     }
   }
-
   Future<List<BranchLimitModel>> getBranchLimits({int? brcCode}) async {
     try {
       // Build query parameters dynamically

@@ -10,20 +10,20 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/t
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
-
 import '../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
 import 'model/txn_ref_model.dart';
 
 class TxnReferenceView extends StatelessWidget {
-  const TxnReferenceView({super.key});
+  final String? txnView;
+  const TxnReferenceView({super.key,this.txnView});
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobile: _Mobile(),
       tablet: _Tablet(),
-      desktop: _Desktop(),
+      desktop: _Desktop(txnView),
     );
   }
 }
@@ -36,7 +36,6 @@ class _Tablet extends StatelessWidget {
     return const Placeholder();
   }
 }
-
 class _Mobile extends StatelessWidget {
   const _Mobile();
 
@@ -47,12 +46,12 @@ class _Mobile extends StatelessWidget {
 }
 
 class _Desktop extends StatefulWidget {
-  const _Desktop();
+  final String? txnView;
+  const _Desktop(this.txnView);
 
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> {
   final TextEditingController narration = TextEditingController();
   final TextEditingController amount = TextEditingController();
@@ -84,7 +83,7 @@ class _DesktopState extends State<_Desktop> {
       width: 500,
       isActionTrue: false,
       icon: Icons.add_chart_rounded,
-       alignment: AlignmentGeometry.centerRight,
+       alignment: AlignmentGeometry.center,
       onAction: null,
       actionLabel: isLoading
           ? SizedBox(
@@ -115,11 +114,21 @@ class _DesktopState extends State<_Desktop> {
                       Container(
                         padding: EdgeInsets.symmetric(
                           horizontal: 12,
-                          vertical: 5,
                         ),
                         width: double.infinity,
                         child: Column(
                           children: [
+                            Row(
+                              children: [
+                                Text(
+                                  Utils.getTxnCode(txn: loadedTxn?.trnType??"", context: context),
+                                  style: textTheme.titleMedium?.copyWith(
+                                      fontSize: 25,
+                                      color: color.secondary
+                                  ),
+                                ),
+                              ],
+                            ),
                             Row(
                               children: [
                                 Text(
@@ -137,85 +146,64 @@ class _DesktopState extends State<_Desktop> {
                                   locale.details,
                                   style: textTheme.titleMedium?.copyWith(
                                     color: color.primary,
+                                    fontSize: 18
                                   ),
                                 ),
                               ],
                             ),
-                            SizedBox(height: 8),
+                            Divider(thickness: 2,color: color.primary),
                             Row(
-
                               children: [
                                 SizedBox(
                                   width: 170,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment: CrossAxisAlignment.start,
-                                    spacing: 8,
+                                    spacing: 5,
                                     children: [
-                                      Text(locale.transactionRef),
-                                      Text(locale.accountNumber),
-                                      Text(locale.accountName),
-                                      Text(locale.amount),
-                                      Text(locale.currencyTitle),
-                                      Text(locale.branch),
-                                      Text(locale.txnType),
-                                      Text(locale.status),
-                                      Text(locale.maker),
-                                      Text(locale.transactionDate),
+                                      Text(locale.transactionRef,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
+                                      Text(locale.transactionDate,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
+                                      Text(locale.accountNumber,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
+                                      Text(locale.accountName,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
+                                      Text(locale.amount,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
+                                      Text(locale.branch,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
+                                      Text(locale.status,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
+                                      Text(locale.maker,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
                                     ],
                                   ),
                                 ),
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  spacing: 8,
+                                  spacing: 5,
                                   children: [
                                     Text(
-                                      state.transaction.trnReference ?? "",
-                                      style: textTheme.titleSmall,
+                                      state.transaction.trnReference ?? "",style: textTheme.titleMedium?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.account.toString(),
-                                      style: textTheme.titleSmall,
+                                      state.transaction.trnEntryDate!.toFullDateTime,style: textTheme.titleMedium?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.accName.toString(),
-                                      style: textTheme.titleSmall,
+                                      state.transaction.account.toString() ,style: textTheme.titleMedium?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.amount?.toAmount() ??
-                                          "",
-                                      style: textTheme.titleSmall,
+                                      state.transaction.accName.toString(),style: textTheme.titleMedium?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.currency ?? "",
-                                      style: textTheme.titleSmall,
+                                      "${state.transaction.amount?.toAmount()} ${state.transaction.currency}",style: textTheme.titleMedium?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.branch.toString(),
-                                      style: textTheme.titleSmall,
-                                    ),
-                                    Text(
-                                      Utils.getTxnCode(txn: state.transaction.trnType ?? "", context: context),
-                                      style: textTheme.titleSmall,
+                                      state.transaction.branch.toString(),style: textTheme.titleMedium?.copyWith(color: color.secondary)
                                     ),
                                     Text(
                                       state.transaction.trnStatus == 0
                                           ? locale.pendingTransactions
-                                          : locale.authorizedTransactions,
-                                      style: textTheme.titleSmall,
+                                          : locale.authorizedTransactions,style: textTheme.titleMedium?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.maker ?? "",
-                                      style: textTheme.titleSmall,
+                                      state.transaction.maker ?? "",style: textTheme.titleMedium?.copyWith(color: color.secondary)
                                     ),
-                                    Text(
-                                      state
-                                          .transaction
-                                          .trnEntryDate!
-                                          .toFullDateTime,
-                                      style: textTheme.titleSmall,
-                                    ),
+
                                   ],
                                 ),
                               ],

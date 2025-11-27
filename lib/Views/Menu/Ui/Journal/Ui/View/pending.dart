@@ -176,8 +176,7 @@ class _DesktopState extends State<_Desktop> {
                               return const SizedBox();
                             }
 
-                            final allSelected =
-                                _selectedRefs.length == state.txn.length;
+                            final allSelected = _selectedRefs.length == state.txn.length;
 
                             return Checkbox(
                               value: allSelected && _selectionMode,
