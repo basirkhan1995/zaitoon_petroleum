@@ -52,6 +52,11 @@ extension NumberFormatting on String {
   }
 }
 
+extension AmountCleaner on String {
+  String get cleanAmount => replaceAll(RegExp(r'[^\d.]'), '');
+}
+
+
 extension DateTimeExtensions on dynamic {
   /// Returns a DateTime object if input is String, otherwise returns the DateTime as-is
   DateTime? get _dateTime {

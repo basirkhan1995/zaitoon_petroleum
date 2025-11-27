@@ -78,10 +78,6 @@ class _DesktopState extends State<_Desktop> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
         listener: (context, state) {
-          // if(state is TransactionSuccessState){
-          //   Navigator.of(context).pop();
-          //   context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('pending'));
-          // }
           if (state is TxnReferenceLoadedState) {
             showDialog(
               context: context,
@@ -229,8 +225,10 @@ class _DesktopState extends State<_Desktop> {
                       Utils.showOverlayMessage(context,title: locale.accessDenied, message: state.message, isError: true);
                     }
                     if(state is TransactionSuccessState){
-                      Navigator.of(context).pop();
-                      context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('pending'));
+                      WidgetsBinding.instance.addPostFrameCallback((_){
+                        Navigator.of(context).pop();
+                        context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('pending'));
+                      });
                     }
                   },
                   builder: (context, state) {
@@ -245,7 +243,7 @@ class _DesktopState extends State<_Desktop> {
                       );
                     }
 
-                    if (state is TransactionLoadingState) {
+                    if (state is TxnLoadingState) {
                       return const Center(child: CircularProgressIndicator());
                     }
 
@@ -285,7 +283,7 @@ class _DesktopState extends State<_Desktop> {
                             onLongPress: () {
                               _toggleSelection(
                                 txn,
-                              ); // long press to start selecting
+                              );
                             },
                             hoverColor: Theme.of(
                               context,

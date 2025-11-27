@@ -1779,6 +1779,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'TXN Reprint'**
   String get txnReprint;
+
+  /// No description provided for @overLimitMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Insuffiecent account balance.'**
+  String get overLimitMessage;
+
+  /// No description provided for @deleteAuthorizedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This transaction is auhtorized and cannot be deleted.'**
+  String get deleteAuthorizedMessage;
+
+  /// No description provided for @deleteInvalidMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re not allowed to delete this transaction.'**
+  String get deleteInvalidMessage;
+
+  /// No description provided for @editInvalidMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re not allowed to update this transaction.'**
+  String get editInvalidMessage;
+
+  /// No description provided for @editInvalidAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorized & reversed transactions are not edited.'**
+  String get editInvalidAction;
+
+  /// No description provided for @editFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction updated failed, try again later'**
+  String get editFailedMessage;
+
+  /// No description provided for @actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actions;
+
+  /// No description provided for @reverseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reverse'**
+  String get reverseTitle;
+
+  /// No description provided for @reverseInvalidMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re not allowed to revese this transaction.'**
+  String get reverseInvalidMessage;
+
+  /// No description provided for @reversePendingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending transaction is not allowed to reverse.'**
+  String get reversePendingMessage;
+
+  /// No description provided for @reverseAlreadyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This transaction has already reversed once.'**
+  String get reverseAlreadyMessage;
+
+  /// No description provided for @authorizeInvalidMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re not allowed to authorize this transaction.'**
+  String get authorizeInvalidMessage;
 }
 
 class _AppLocalizationsDelegate

@@ -141,15 +141,15 @@ class _DesktopState extends State<_Desktop> {
                           TransactionsModel(
                             usrName: login.usrName,
                             account: accNumber,
-                            accCcy: accCurrency ?? "USD",
+                            accCcy: accCurrency ?? "",
                             trnType: trnType,
-                            amount: amount.text,
+                            amount: amount.text.cleanAmount,
                             narration: narration.text,
                           ),
                         ),
                       );
                     },
-                    actionLabel: trState is TransactionLoadingState
+                    actionLabel: trState is TxnLoadingState
                         ? SizedBox(
                             width: 20,
                             height: 20,
@@ -255,6 +255,7 @@ class _DesktopState extends State<_Desktop> {
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment: CrossAxisAlignment.start,
+                                    spacing: 5,
                                     children: [
                                       SizedBox(
                                           width: 170,
@@ -279,6 +280,7 @@ class _DesktopState extends State<_Desktop> {
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment: CrossAxisAlignment.start,
+                                    spacing: 5,
                                     children: [
                                       Text(accNumber.toString()),
                                       Text(accName??""),
@@ -374,13 +376,13 @@ class _DesktopState extends State<_Desktop> {
                         account: accNumber,
                         accCcy: baseCurrency,
                         trnType: trnType,
-                        amount: amount.text,
+                        amount: amount.text.cleanAmount,
                         narration: narration.text,
                       ),
                     ),
                   );
                 },
-                actionLabel: trState is TransactionLoadingState
+                actionLabel: trState is TxnLoadingState
                     ? SizedBox(
                         width: 20,
                         height: 20,
@@ -549,13 +551,13 @@ class _DesktopState extends State<_Desktop> {
                         account: accNumber,
                         accCcy: baseCurrency ?? "",
                         trnType: trnType ?? "",
-                        amount: amount.text,
+                        amount: amount.text.cleanAmount,
                         narration: narration.text,
                       ),
                     ),
                   );
                 },
-                actionLabel: trState is TransactionLoadingState
+                actionLabel: trState is TxnLoadingState
                     ? SizedBox(
                         width: 20,
                         height: 20,
@@ -729,13 +731,13 @@ class _DesktopState extends State<_Desktop> {
                         account: accNumber,
                         accCcy: baseCurrency,
                         trnType: trnType,
-                        amount: amount.text,
+                        amount: amount.text.cleanAmount,
                         narration: narration.text,
                       ),
                     ),
                   );
                 },
-                actionLabel: trState is TransactionLoadingState
+                actionLabel: trState is TxnLoadingState
                     ? SizedBox(
                         width: 20,
                         height: 20,
@@ -909,7 +911,7 @@ class _DesktopState extends State<_Desktop> {
                 icon: Icons.swap_horiz_rounded,
                 title: locale.accountTransfer,
                 onAction: null,
-                actionLabel: trState is TransactionLoadingState
+                actionLabel: trState is TxnLoadingState
                     ? SizedBox(
                         width: 20,
                         height: 20,
@@ -1152,7 +1154,6 @@ class _DesktopState extends State<_Desktop> {
         },
       );
     }
-
 
     // The shortcut mapping
     final shortcuts = {

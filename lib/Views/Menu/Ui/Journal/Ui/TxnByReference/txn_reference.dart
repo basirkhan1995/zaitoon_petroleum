@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +14,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_mod
 import '../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
+import 'model/txn_ref_model.dart';
 
 class TxnReferenceView extends StatelessWidget {
   const TxnReferenceView({super.key});
@@ -53,6 +56,8 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   final TextEditingController narration = TextEditingController();
   final TextEditingController amount = TextEditingController();
+  TxnByReferenceModel? loadedTxn;
+
   String? reference;
   @override
   void dispose() {
@@ -65,39 +70,22 @@ class _DesktopState extends State<_Desktop> {
     final locale = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
-    final isLoading = context.watch<TransactionsBloc>().state is TransactionLoadingState;
+    final isLoading = context.watch<TransactionsBloc>().state is TxnLoadingState;
+    final isDeleteLoading = context.watch<TransactionsBloc>().state is TxnDeleteLoadingState;
+    final isUpdateLoading = context.watch<TransactionsBloc>().state is TxnUpdateLoadingState;
+    final isAuthorizeLoading = context.watch<TransactionsBloc>().state is TxnAuthorizeLoadingState;
+    final isReverseLoading = context.watch<TransactionsBloc>().state is TxnReverseLoadingState;
     final auth = context.watch<AuthBloc>().state;
     if (auth is! AuthenticatedState) {
       return const SizedBox();
     }
     final login = auth.loginData;
     return ZFormDialog(
-      width: 450,
+      width: 500,
+      isActionTrue: false,
       icon: Icons.add_chart_rounded,
        alignment: AlignmentGeometry.centerRight,
-      expandedAction: Row(
-        children: [
-          IconButton(
-              onPressed: (){
-                context.read<TransactionsBloc>().add(UpdatePendingTransactionEvent(TransactionsModel(
-                  usrName: login.usrName,
-                  accCcy: "USD",
-                  narration: "",
-                  amount: "",
-                  trnReference: "",
-                )));
-              },
-              icon: Icon(Icons.delete))
-        ],
-      ),
-      onAction: () {
-        context.read<TransactionsBloc>().add(
-          AuthorizeTxnEvent(
-            reference: reference ?? "",
-            usrName: login.usrName ?? "",
-          ),
-        );
-      },
+      onAction: null,
       actionLabel: isLoading
           ? SizedBox(
               width: 20,
@@ -109,27 +97,40 @@ class _DesktopState extends State<_Desktop> {
             )
           : Text(locale.authorize),
       title: locale.txnDetails,
-      child: Column(
-        children: [
-          Expanded(
-            child: BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
               listener: (context, state) {},
               builder: (context, state) {
                 if (state is TxnReferenceLoadedState) {
+                  loadedTxn = state.transaction;
                   narration.text = state.transaction.narration ?? "";
                   reference = state.transaction.trnReference ?? "";
-                  amount.text = state.transaction.amount?.toAmount()??"";
+                  amount.text = state.transaction.amount?.toAmount() ?? "";
                   return Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 11,
-                          vertical: 8,
+                          horizontal: 12,
+                          vertical: 5,
                         ),
                         width: double.infinity,
                         child: Column(
                           children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "${loadedTxn?.amount?.toAmount()} ${loadedTxn?.currency}",
+                                  style: textTheme.titleMedium?.copyWith(
+                                    fontSize: 25
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 8),
                             Row(
                               children: [
                                 Text(
@@ -142,26 +143,27 @@ class _DesktopState extends State<_Desktop> {
                             ),
                             SizedBox(height: 8),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
                               children: [
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  spacing: 8,
-                                  children: [
-                                    Text(locale.transactionRef),
-
-                                    Text(locale.accountNumber),
-                                    Text(locale.accountName),
-                                    Text(locale.amount),
-                                    Text(locale.currencyTitle),
-                                    Text(locale.branch),
-                                    Text(locale.txnType),
-                                    Text(locale.status),
-                                    Text(locale.maker),
-                                    Text(locale.transactionDate),
-                                  ],
+                                SizedBox(
+                                  width: 170,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    spacing: 8,
+                                    children: [
+                                      Text(locale.transactionRef),
+                                      Text(locale.accountNumber),
+                                      Text(locale.accountName),
+                                      Text(locale.amount),
+                                      Text(locale.currencyTitle),
+                                      Text(locale.branch),
+                                      Text(locale.txnType),
+                                      Text(locale.status),
+                                      Text(locale.maker),
+                                      Text(locale.transactionDate),
+                                    ],
+                                  ),
                                 ),
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
@@ -194,7 +196,7 @@ class _DesktopState extends State<_Desktop> {
                                       style: textTheme.titleSmall,
                                     ),
                                     Text(
-                                      state.transaction.trnType ?? "",
+                                      Utils.getTxnCode(txn: state.transaction.trnType ?? "", context: context),
                                       style: textTheme.titleSmall,
                                     ),
                                     Text(
@@ -235,41 +237,147 @@ class _DesktopState extends State<_Desktop> {
                                 if (value == null || value.isEmpty) {
                                   return locale.required(locale.exchangeRate);
                                 }
-
+        
                                 // Remove formatting (e.g. commas)
                                 final clean = value.replaceAll(
                                   RegExp(r'[^\d.]'),
                                   '',
                                 );
                                 final amount = double.tryParse(clean);
-
+        
                                 if (amount == null || amount <= 0.0) {
                                   return locale.amountGreaterZero;
                                 }
-
+        
                                 return null;
                               },
                               controller: amount,
                               title: locale.amount,
                             ),
                             ZTextFieldEntitled(
-                              // onSubmit: (_)=> onSubmit(),
                               keyboardInputType: TextInputType.multiline,
                               controller: narration,
-                              readOnly: true,
                               title: locale.narration,
                             ),
                           ],
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: Row(
+                          children: [
+                           Text(locale.actions,style: Theme.of(context).textTheme.titleMedium)
+                          ],
+                        ),
+                      ),
+                      Divider(indent: 12,endIndent: 12,color: color.primary,thickness: 2,),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 5),
+                        child: Row(
+                          spacing: 8,
+                          children: [
+                            Expanded(
+                              child: ZOutlineButton(
+                                  onPressed: (){
+                                    context.read<TransactionsBloc>().add(
+                                      AuthorizeTxnEvent(
+                                        reference: reference ?? "",
+                                        usrName: login.usrName ?? "",
+                                      ),
+                                    );
+                                    },
+                                  icon: isAuthorizeLoading? null : Icons.check_box_outlined,
+                                  isActive: true,
+                                  label: isAuthorizeLoading
+                                      ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 3,
+                                      color: Theme.of(context).colorScheme.surface,
+                                    ),
+                                  )
+                                      : Text(locale.authorize)),
+                            ),
+                            Expanded(
+                              child: ZOutlineButton(
+                                  onPressed: (){
+                                    context.read<TransactionsBloc>().add(
+                                      ReverseTxnEvent(
+                                        reference: reference ?? "",
+                                        usrName: login.usrName ?? "",
+                                      ),
+                                    );
+                                  },
+                                  icon: isReverseLoading? null : Icons.screen_rotation_alt_rounded,
+                                  backgroundHover: Colors.orange,
+                                  label: isReverseLoading
+                                      ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 3,
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                                  )
+                                      : Text(locale.reverseTitle)),
+                            ),
+                            Expanded(
+                              child: ZOutlineButton(
+                                  backgroundHover: Colors.green,
+                                  icon: isUpdateLoading? null : Icons.refresh,
+                                  onPressed: (){
+                                    context.read<TransactionsBloc>().add(UpdatePendingTransactionEvent(TransactionsModel(
+                                      trnReference: loadedTxn?.trnReference??"",
+                                      usrName: login.usrName,
+                                      accCcy: loadedTxn?.currency??"",
+                                      narration: narration.text,
+                                      amount: amount.text.cleanAmount,
+                                    )));
+                                  },
+                                  label: isUpdateLoading
+                                      ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 3,
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                                  )
+                                      : Text(locale.update)),
+                            ),
+                            Expanded(
+                              child: ZOutlineButton(
+                                  icon: isDeleteLoading? null : Icons.delete_outline_rounded,
+                                  backgroundHover: Theme.of(context).colorScheme.error,
+                                  onPressed: (){
+                                    context.read<TransactionsBloc>().add(DeletePendingTxnEvent(reference: loadedTxn?.trnReference??"",usrName: login.usrName??""));
+                                  },
+                                  label: isDeleteLoading
+                                      ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 3,
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                                  )
+                                      : Text(locale.delete)),
+                            )
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10)
                     ],
                   );
                 }
                 return const SizedBox();
               },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

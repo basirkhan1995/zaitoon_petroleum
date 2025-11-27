@@ -862,4 +862,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get txnReprint => 'TXN Reprint';
+
+  @override
+  String get overLimitMessage => 'Insuffiecent account balance.';
+
+  @override
+  String get deleteAuthorizedMessage =>
+      'This transaction is auhtorized and cannot be deleted.';
+
+  @override
+  String get deleteInvalidMessage =>
+      'You\'re not allowed to delete this transaction.';
+
+  @override
+  String get editInvalidMessage =>
+      'You\'re not allowed to update this transaction.';
+
+  @override
+  String get editInvalidAction =>
+      'Authorized & reversed transactions are not edited.';
+
+  @override
+  String get editFailedMessage => 'Transaction updated failed, try again later';
+
+  @override
+  String get actions => 'Actions';
+
+  @override
+  String get reverseTitle => 'Reverse';
+
+  @override
+  String get reverseInvalidMessage =>
+      'You\'re not allowed to revese this transaction.';
+
+  @override
+  String get reversePendingMessage =>
+      'Pending transaction is not allowed to reverse.';
+
+  @override
+  String get reverseAlreadyMessage =>
+      'This transaction has already reversed once.';
+
+  @override
+  String get authorizeInvalidMessage =>
+      'You\'re not allowed to authorize this transaction.';
 }

@@ -15,11 +15,35 @@ final class TransactionSuccessState extends TransactionsState {
 }
 
 
-final class TransactionLoadingState extends TransactionsState {
+final class TxnLoadingState extends TransactionsState {
   @override
   List<Object> get props => [];
 }
 
+final class TxnCashLoadingState extends TransactionsState {
+  @override
+  List<Object> get props => [];
+}
+
+final class TxnUpdateLoadingState extends TransactionsState {
+  @override
+  List<Object> get props => [];
+}
+
+final class TxnDeleteLoadingState extends TransactionsState {
+  @override
+  List<Object> get props => [];
+}
+
+final class TxnAuthorizeLoadingState extends TransactionsState {
+  @override
+  List<Object> get props => [];
+}
+
+final class TxnReverseLoadingState extends TransactionsState {
+  @override
+  List<Object> get props => [];
+}
 
 final class TransactionErrorState extends TransactionsState {
   final String message;

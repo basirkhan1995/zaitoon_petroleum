@@ -151,7 +151,12 @@ class _ZFormDialogState extends State<ZFormDialog> {
                     ],
                   ),
                 ),
-                widget.expandedHeader ?? SizedBox()
+                InkWell(
+                    onTap: ()=> Navigator.of(context).pop(),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: widget.expandedHeader ?? Icon(Icons.close,size: 23,),
+                    ))
               ],
             ),
           ),

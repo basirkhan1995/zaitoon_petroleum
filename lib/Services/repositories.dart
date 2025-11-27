@@ -628,7 +628,22 @@ class Repositories {
             "username":usrName,
           }
       );
-      print(response);
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> reverseTxn({required String reference, required String? usrName}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/journal/transactionActivity.php",
+          data: {
+            "reference": reference,
+            "username":usrName,
+          }
+      );
       return response.data;
     } on DioException catch (e) {
       throw '${e.message}';

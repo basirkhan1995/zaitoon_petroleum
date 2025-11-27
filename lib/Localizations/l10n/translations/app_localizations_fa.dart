@@ -859,4 +859,45 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get txnReprint => 'چاپ معاملات';
+
+  @override
+  String get overLimitMessage => 'موجودی کافی نمیباشد';
+
+  @override
+  String get deleteAuthorizedMessage =>
+      'این معامله تایید شده میباشد، و قابل حذف شدن ندارد';
+
+  @override
+  String get deleteInvalidMessage => 'شما اجازه حذف این معامله را ندارید.';
+
+  @override
+  String get editInvalidMessage => 'شما اجازه تغییر در این معامله را ندارید.';
+
+  @override
+  String get editInvalidAction =>
+      'معاملات تایید شده و برگشتی قابل تغییر نمیباشد';
+
+  @override
+  String get editFailedMessage =>
+      'بروزرسانی معامله انجام نشد، لطفا بعدآ کوشش نماید';
+
+  @override
+  String get actions => 'عملیات';
+
+  @override
+  String get reverseTitle => 'برگشتاندن';
+
+  @override
+  String get reverseInvalidMessage =>
+      'شما اجازه برگشتاندن این معامله را ندارید';
+
+  @override
+  String get reversePendingMessage => 'معاملات انتظاری برگشتانده نمیشود.';
+
+  @override
+  String get reverseAlreadyMessage =>
+      'این معامله از قبل یکبار برگشتانده شده است.';
+
+  @override
+  String get authorizeInvalidMessage => 'شما اجازه تایید این معامله را ندارید.';
 }

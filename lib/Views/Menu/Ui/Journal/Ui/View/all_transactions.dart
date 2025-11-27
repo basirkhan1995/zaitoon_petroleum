@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
@@ -6,6 +7,11 @@ import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../../../Features/Widgets/outline_button.dart';
+import '../../../../../../Features/Widgets/search_field.dart';
+import '../TxnByReference/bloc/txn_reference_bloc.dart';
+import '../TxnByReference/txn_reference.dart';
 
 class AllTransactionsView extends StatelessWidget {
   const AllTransactionsView({super.key});
@@ -51,15 +57,69 @@ class _DesktopState extends State<_Desktop> {
     });
     super.initState();
   }
+  final TextEditingController searchController = TextEditingController();
 
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Column(
+      body: BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
+      listener: (context, state) {
+        if (state is TxnReferenceLoadedState) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return TxnReferenceView();
+            },
+          );
+        }
+      },
+  builder: (context, state) {
+    if (state is TxnReferenceLoadingState) {
+      return Center(child: CircularProgressIndicator());
+    }
+    return Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8.0,
+              vertical: 8,
+            ),
+            child: Row(
+              spacing: 8,
+              children: [
+                Expanded(
+                  child: ZSearchField(
+                    icon: FontAwesomeIcons.magnifyingGlass,
+                    controller: searchController,
+                    hint: AppLocalizations.of(context)!.search,
+                    onChanged: (e) {
+                      setState(() {});
+                    },
+                    title: "",
+                  ),
+                ),
+                ZOutlineButton(
+                  toolTip: "F5",
+                  width: 120,
+                  icon: Icons.refresh,
+                  onPressed: () {
+                    context.read<TransactionsBloc>().add(
+                      LoadAuthorizedTransactionsEvent('all'),
+                    );
+                  },
+                  label: Text(locale.refresh),
+                ),
+              ],
+            ),
+          ),
           SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -94,7 +154,14 @@ class _DesktopState extends State<_Desktop> {
           ),
           Expanded(
             child: BlocConsumer<TransactionsBloc, TransactionsState>(
-              listener: (context, state) {},
+              listener: (context, state) {
+                if(state is TransactionSuccessState){
+                  WidgetsBinding.instance.addPostFrameCallback((_){
+                    Navigator.of(context).pop();
+                    context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('all'));
+                  });
+                }
+              },
               builder: (context, state) {
                 if(state is TransactionErrorState){
                   return NoDataWidget(
@@ -106,12 +173,20 @@ class _DesktopState extends State<_Desktop> {
                     },
                   );
                 }
-                if(state is TransactionLoadingState){
+                if(state is TxnLoadingState){
                  return Center(
                    child: CircularProgressIndicator(),
                  );
                 }
                 if(state is TransactionLoadedState){
+                  final query = searchController.text.toLowerCase().trim();
+                  final filteredList = state.txn.where((item) {
+                    final name = item.trnReference?.toLowerCase() ?? '';
+                    final status = item.trnStateText?.toLowerCase() ?? '';
+                    final trnName = item.trnType?.toLowerCase() ?? '';
+                    final usrName = item.usrName?.toLowerCase() ?? '';
+                    return name.contains(query) || status.contains(query) || usrName.contains(query) || trnName.contains(query);
+                  }).toList();
                   if(state.txn.isEmpty){
                     return NoDataWidget(
                       message: locale.noDataFound,
@@ -124,12 +199,16 @@ class _DesktopState extends State<_Desktop> {
                   }
                  return ListView.builder(
                      shrinkWrap: true,
-                     itemCount: state.txn.length,
+                     itemCount: filteredList.length,
                      itemBuilder: (context,index){
-                       final txn = state.txn[index];
+                       final txn = filteredList[index];
                      return Material(
                        child: InkWell(
-                         onTap: (){},
+                         onTap: (){
+                           context.read<TxnReferenceBloc>().add(
+                             FetchTxnByReferenceEvent(txn.trnReference??""),
+                           );
+                         },
                          hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
                          highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
                          child: Container(
@@ -175,7 +254,9 @@ class _DesktopState extends State<_Desktop> {
             ),
           ),
         ],
-      ),
+      );
+  },
+),
     );
   }
 }
