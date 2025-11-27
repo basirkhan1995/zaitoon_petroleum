@@ -55,18 +55,15 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
         final msg = response['msg'];
         print("Update: $msg");
         switch (msg) {
-          case "deleted":
+          case "success":
             emit(TransactionSuccessState());
             break;
-
           case "invalid user":
             emit(TransactionErrorState(locale.editInvalidMessage));
             break;
-
           case "invalid action":
             emit(TransactionErrorState(locale.editInvalidAction));
             break;
-
           case "failed":
             emit(TransactionErrorState(locale.editFailedMessage));
             break;
