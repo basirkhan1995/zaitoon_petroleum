@@ -127,7 +127,7 @@
   "exhangeRateHint": "نمایش نرخ اسعار در داشبورد",
   "buyTitle": "خرید",
   "sellTitle": "فروش",
-  "pendingTransactions": "درانتظار",
+  "pendingTransactions": "تایید ناشده",
   "authorizedTransactions": "تاییده شده",
   "allTransactions": "همه معاملات",
   "deposit": "پرداخت",

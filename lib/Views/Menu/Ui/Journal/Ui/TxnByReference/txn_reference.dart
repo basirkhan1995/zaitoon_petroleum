@@ -146,7 +146,7 @@ class _DesktopState extends State<_Desktop> {
                                   locale.details,
                                   style: textTheme.titleMedium?.copyWith(
                                     color: color.primary,
-                                    fontSize: 18
+                                    fontSize: 15
                                   ),
                                 ),
                               ],
@@ -161,14 +161,14 @@ class _DesktopState extends State<_Desktop> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     spacing: 5,
                                     children: [
-                                      Text(locale.transactionRef,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
-                                      Text(locale.transactionDate,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
-                                      Text(locale.accountNumber,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
-                                      Text(locale.accountName,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
-                                      Text(locale.amount,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
-                                      Text(locale.branch,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
-                                      Text(locale.status,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
-                                      Text(locale.maker,style: textTheme.titleMedium?.copyWith(color: color.secondary)),
+                                      Text("${locale.transactionRef}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
+                                      Text("${locale.transactionDate}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
+                                      Text("${locale.accountNumber}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
+                                      Text("${locale.accountName}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
+                                      Text("${locale.amount}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
+                                      Text("${locale.branch}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
+                                      Text("${locale.status}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
+                                      Text("${locale.maker}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
                                     ],
                                   ),
                                 ),
@@ -178,30 +178,30 @@ class _DesktopState extends State<_Desktop> {
                                   spacing: 5,
                                   children: [
                                     Text(
-                                      state.transaction.trnReference ?? "",style: textTheme.titleMedium?.copyWith(color: color.secondary)
+                                      state.transaction.trnReference ?? "",style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.trnEntryDate!.toFullDateTime,style: textTheme.titleMedium?.copyWith(color: color.secondary)
+                                      state.transaction.trnEntryDate!.toFullDateTime,style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.account.toString() ,style: textTheme.titleMedium?.copyWith(color: color.secondary)
+                                      state.transaction.account.toString() ,style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.accName.toString(),style: textTheme.titleMedium?.copyWith(color: color.secondary)
+                                      state.transaction.accName.toString(),style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      "${state.transaction.amount?.toAmount()} ${state.transaction.currency}",style: textTheme.titleMedium?.copyWith(color: color.secondary)
+                                      "${state.transaction.amount?.toAmount()} ${state.transaction.currency}",style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.branch.toString(),style: textTheme.titleMedium?.copyWith(color: color.secondary)
+                                      state.transaction.branch.toString(),style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
                                       state.transaction.trnStatus == 0
                                           ? locale.pendingTransactions
-                                          : locale.authorizedTransactions,style: textTheme.titleMedium?.copyWith(color: color.secondary)
+                                          : locale.authorizedTransactions,style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.maker ?? "",style: textTheme.titleMedium?.copyWith(color: color.secondary)
+                                      state.transaction.maker ?? "",style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
 
                                   ],
@@ -264,6 +264,7 @@ class _DesktopState extends State<_Desktop> {
                         child: Row(
                           spacing: 8,
                           children: [
+                            if(loadedTxn?.trnStatus == 0 && login.usrName != loadedTxn?.maker)
                             Expanded(
                               child: ZOutlineButton(
                                   onPressed: (){
@@ -288,6 +289,7 @@ class _DesktopState extends State<_Desktop> {
                                   )
                                       : Text(locale.authorize)),
                             ),
+                            if(loadedTxn?.trnStatus == 1 && loadedTxn?.maker == login.usrName)
                             Expanded(
                               child: ZOutlineButton(
                                   onPressed: (){
@@ -312,6 +314,7 @@ class _DesktopState extends State<_Desktop> {
                                   )
                                       : Text(locale.reverseTitle)),
                             ),
+                            if(loadedTxn?.trnStatus == 0 && loadedTxn?.maker == login.usrName)
                             Expanded(
                               child: ZOutlineButton(
                                   backgroundHover: Colors.green,
@@ -336,6 +339,7 @@ class _DesktopState extends State<_Desktop> {
                                   )
                                       : Text(locale.update)),
                             ),
+                            if(loadedTxn?.trnStatus == 0 && loadedTxn?.maker == login.usrName)
                             Expanded(
                               child: ZOutlineButton(
                                   icon: isDeleteLoading? null : Icons.delete_outline_rounded,

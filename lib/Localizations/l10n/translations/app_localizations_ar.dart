@@ -355,7 +355,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get sellTitle => 'واستول';
 
   @override
-  String get pendingTransactions => 'درانتظار';
+  String get pendingTransactions => 'تایید ناشده';
 
   @override
   String get authorizedTransactions => 'تاییده شده';

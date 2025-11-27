@@ -355,7 +355,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get sellTitle => 'فروش';
 
   @override
-  String get pendingTransactions => 'درانتظار';
+  String get pendingTransactions => 'تایید ناشده';
 
   @override
   String get authorizedTransactions => 'تاییده شده';

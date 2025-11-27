@@ -127,7 +127,7 @@
   "exhangeRateHint": "- په ډشبورډ کې د اسعارو نرخ ښودنه",
   "buyTitle": "اخیستل",
   "sellTitle": "واستول",
-  "pendingTransactions": "درانتظار",
+  "pendingTransactions": "تایید ناشده",
   "authorizedTransactions": "تاییده شده",
   "allTransactions": "همه معاملات",
   "deposit": "سپارل",
