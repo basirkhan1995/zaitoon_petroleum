@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:zaitoon_petroleum/Features/PrintSettings/bloc/Language/print_language_cubit.dart';
 import 'package:zaitoon_petroleum/Features/PrintSettings/bloc/PageSize/paper_size_cubit.dart';
 import 'package:zaitoon_petroleum/Features/PrintSettings/bloc/Printer/printer_cubit.dart';
+import 'package:zaitoon_petroleum/Features/PrintSettings/print_services.dart';
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
@@ -48,6 +49,7 @@ import 'Views/PasswordSettings/bloc/password_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await PrintServices.initializeFonts();
   runApp(const MyApp());
 }
 
