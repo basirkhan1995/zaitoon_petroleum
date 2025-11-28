@@ -16,7 +16,7 @@ class AccStatementBloc extends Bloc<AccStatementEvent, AccStatementState> {
         final stmt = await _repo.getAccountStatement(
             account: event.accountNumber,
             fromDate: event.fromDate, toDate: event.toDate);
-        emit(AccStatementLoadedState(accStatementDetails: stmt, record: stmt.records ?? []));
+        emit(AccStatementLoadedState(accStatementDetails: stmt));
       }catch(e){
         emit(AccStatementErrorState(e.toString()));
       }

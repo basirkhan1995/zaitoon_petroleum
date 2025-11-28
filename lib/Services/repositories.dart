@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
@@ -848,7 +850,12 @@ class Repositories {
   }
 
   ///Reports ...................................................................
-  Future<AccountStatementModel> getAccountStatement({required int account, required String fromDate, required String toDate,}) async {
+  // In your API service method
+  Future<AccountStatementModel> getAccountStatement({
+    required int account,
+    required String fromDate,
+    required String toDate,
+  }) async {
     try {
       final response = await api.post(
           endpoint: "/reports/accountStatement.php",
@@ -858,6 +865,7 @@ class Repositories {
             "toDate": toDate
           }
       );
+
       // Handle message response
       if (response.data is Map && response.data['msg'] != null) {
         throw response.data['msg'];
@@ -867,8 +875,12 @@ class Repositories {
       if (response.data == null || response.data.isEmpty) {
         throw "No data received";
       }
-      // Parse the response
-      return AccountStatementModel.fromMap(response.data);
+
+      // Convert response to string and back to ensure proper typing
+      final jsonString = json.encode(response.data);
+      final decodedData = json.decode(jsonString) as dynamic;
+
+      return AccountStatementModel.fromApiResponse(decodedData);
 
     } on DioException catch (e) {
       throw "${e.message}";

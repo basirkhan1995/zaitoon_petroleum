@@ -16,10 +16,9 @@ final class AccStatementLoadingState extends AccStatementState{
 
 final class AccStatementLoadedState extends AccStatementState{
   final AccountStatementModel accStatementDetails;
-  final List<Record> record;
-  const AccStatementLoadedState({required this.accStatementDetails,required this.record});
+  const AccStatementLoadedState({required this.accStatementDetails});
   @override
-  List<Object> get props => [accStatementDetails,record];
+  List<Object> get props => [accStatementDetails];
 }
 
 final class AccStatementErrorState extends AccStatementState{

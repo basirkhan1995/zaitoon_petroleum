@@ -84,17 +84,17 @@ class _DesktopState extends State<_Desktop> {
       width: 500,
       isActionTrue: false,
       icon: Icons.add_chart_rounded,
-       alignment: AlignmentGeometry.center,
+      alignment: AlignmentGeometry.center,
       onAction: null,
       actionLabel: isLoading
           ? SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 3,
-                color: Theme.of(context).colorScheme.surface,
-              ),
-            )
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(
+          strokeWidth: 3,
+          color: Theme.of(context).colorScheme.surface,
+        ),
+      )
           : Text(locale.authorize),
       title: locale.txnDetails,
       child: SingleChildScrollView(
@@ -109,6 +109,15 @@ class _DesktopState extends State<_Desktop> {
                   narration.text = state.transaction.narration ?? "";
                   reference = state.transaction.trnReference ?? "";
                   amount.text = state.transaction.amount?.toAmount() ?? "";
+
+                  // Check if any buttons should be shown
+                  final bool showAuthorizeButton = loadedTxn?.trnStatus == 0 && login.usrName != loadedTxn?.maker;
+                  final bool showReverseButton = loadedTxn?.trnStatus == 1 && loadedTxn?.maker == login.usrName;
+                  final bool showUpdateButton = loadedTxn?.trnStatus == 0 && loadedTxn?.maker == login.usrName;
+                  final bool showDeleteButton = loadedTxn?.trnStatus == 0 && loadedTxn?.maker == login.usrName;
+
+                  final bool showAnyButton = showAuthorizeButton || showReverseButton || showUpdateButton || showDeleteButton;
+
                   return Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -135,7 +144,7 @@ class _DesktopState extends State<_Desktop> {
                                 Text(
                                   "${loadedTxn?.amount?.toAmount()} ${loadedTxn?.currency}",
                                   style: textTheme.titleMedium?.copyWith(
-                                    fontSize: 25
+                                      fontSize: 25
                                   ),
                                 ),
                               ],
@@ -147,8 +156,8 @@ class _DesktopState extends State<_Desktop> {
                                 Text(
                                   locale.details,
                                   style: textTheme.titleMedium?.copyWith(
-                                    color: color.primary,
-                                    fontSize: 15
+                                      color: color.primary,
+                                      fontSize: 15
                                   ),
                                 ),
 
@@ -184,30 +193,30 @@ class _DesktopState extends State<_Desktop> {
                                   spacing: 5,
                                   children: [
                                     Text(
-                                      state.transaction.trnReference ?? "",style: textTheme.titleSmall?.copyWith(color: color.secondary)
+                                        state.transaction.trnReference ?? "",style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.trnEntryDate!.toFullDateTime,style: textTheme.titleSmall?.copyWith(color: color.secondary)
+                                        state.transaction.trnEntryDate!.toFullDateTime,style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.account.toString() ,style: textTheme.titleSmall?.copyWith(color: color.secondary)
+                                        state.transaction.account.toString() ,style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.accName.toString(),style: textTheme.titleSmall?.copyWith(color: color.secondary)
+                                        state.transaction.accName.toString(),style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      "${state.transaction.amount?.toAmount()} ${state.transaction.currency}",style: textTheme.titleSmall?.copyWith(color: color.secondary)
+                                        "${state.transaction.amount?.toAmount()} ${state.transaction.currency}",style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.branch.toString(),style: textTheme.titleSmall?.copyWith(color: color.secondary)
+                                        state.transaction.branch.toString(),style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.trnStatus == 0
-                                          ? locale.pendingTransactions
-                                          : locale.authorizedTransactions,style: textTheme.titleSmall?.copyWith(color: color.secondary)
+                                        state.transaction.trnStatus == 0
+                                            ? locale.pendingTransactions
+                                            : locale.authorizedTransactions,style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                      state.transaction.maker ?? "",style: textTheme.titleSmall?.copyWith(color: color.secondary)
+                                        state.transaction.maker ?? "",style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
 
                                   ],
@@ -231,18 +240,18 @@ class _DesktopState extends State<_Desktop> {
                                 if (value == null || value.isEmpty) {
                                   return locale.required(locale.exchangeRate);
                                 }
-        
+
                                 // Remove formatting (e.g. commas)
                                 final clean = value.replaceAll(
                                   RegExp(r'[^\d.]'),
                                   '',
                                 );
                                 final amount = double.tryParse(clean);
-        
+
                                 if (amount == null || amount <= 0.0) {
                                   return locale.amountGreaterZero;
                                 }
-        
+
                                 return null;
                               },
                               controller: amount,
@@ -256,118 +265,127 @@ class _DesktopState extends State<_Desktop> {
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                        child: Row(
+
+                      // Only show actions section if any buttons are visible
+                      if (showAnyButton)
+                        Column(
                           children: [
-                           Text(locale.actions,style: Theme.of(context).textTheme.titleMedium)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                              child: Row(
+                                children: [
+                                  Text(locale.actions,style: Theme.of(context).textTheme.titleMedium)
+                                ],
+                              ),
+                            ),
+                            Divider(indent: 12,endIndent: 12,color: color.primary,thickness: 2,),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 5),
+                              child: Row(
+                                spacing: 8,
+                                children: [
+                                  if(showAuthorizeButton)
+                                    Expanded(
+                                      child: ZOutlineButton(
+                                          onPressed: (){
+                                            context.read<TransactionsBloc>().add(
+                                              AuthorizeTxnEvent(
+                                                reference: reference ?? "",
+                                                usrName: login.usrName ?? "",
+                                              ),
+                                            );
+                                          },
+                                          icon: isAuthorizeLoading? null : Icons.check_box_outlined,
+                                          isActive: true,
+                                          label: isAuthorizeLoading
+                                              ? SizedBox(
+                                            width: 20,
+                                            height: 20,
+
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 3,
+                                              color: Theme.of(context).colorScheme.surface,
+                                            ),
+                                          )
+                                              : Text(locale.authorize)),
+                                    ),
+                                  if(showReverseButton)
+                                    Expanded(
+                                      child: ZOutlineButton(
+                                          onPressed: (){
+                                            context.read<TransactionsBloc>().add(
+                                              ReverseTxnEvent(
+                                                reference: reference ?? "",
+                                                usrName: login.usrName ?? "",
+                                              ),
+                                            );
+                                          },
+                                          icon: isReverseLoading? null : Icons.screen_rotation_alt_rounded,
+                                          backgroundHover: Colors.orange,
+                                          label: isReverseLoading
+                                              ? SizedBox(
+                                            width: 20,
+                                            height: 20,
+
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 3,
+                                              color: Theme.of(context).colorScheme.primary,
+                                            ),
+                                          )
+                                              : Text(locale.reverseTitle)),
+                                    ),
+                                  if(showUpdateButton)
+                                    Expanded(
+                                      child: ZOutlineButton(
+                                          backgroundHover: Colors.green,
+                                          icon: isUpdateLoading? null : Icons.refresh,
+                                          onPressed: (){
+                                            context.read<TransactionsBloc>().add(UpdatePendingTransactionEvent(TransactionsModel(
+                                              trnReference: loadedTxn?.trnReference??"",
+                                              usrName: login.usrName,
+                                              accCcy: loadedTxn?.currency??"",
+                                              narration: narration.text,
+                                              amount: amount.text.cleanAmount,
+                                            )));
+                                          },
+                                          label: isUpdateLoading
+                                              ? SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 3,
+                                              color: Theme.of(context).colorScheme.primary,
+                                            ),
+                                          )
+                                              : Text(locale.update)),
+                                    ),
+                                  if(showDeleteButton)
+                                    Expanded(
+                                      child: ZOutlineButton(
+                                          icon: isDeleteLoading? null : Icons.delete_outline_rounded,
+                                          backgroundHover: Theme.of(context).colorScheme.error,
+                                          onPressed: (){
+                                            context.read<TransactionsBloc>().add(DeletePendingTxnEvent(reference: loadedTxn?.trnReference??"",usrName: login.usrName??""));
+                                          },
+                                          label: isDeleteLoading
+                                              ? SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 3,
+                                              color: Theme.of(context).colorScheme.primary,
+                                            ),
+                                          )
+                                              : Text(locale.delete)),
+                                    )
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 10),
                           ],
                         ),
-                      ),
-                      Divider(indent: 12,endIndent: 12,color: color.primary,thickness: 2,),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 5),
-                        child: Row(
-                          spacing: 8,
-                          children: [
-                            if(loadedTxn?.trnStatus == 0 && login.usrName != loadedTxn?.maker)
-                            Expanded(
-                              child: ZOutlineButton(
-                                  onPressed: (){
-                                    context.read<TransactionsBloc>().add(
-                                      AuthorizeTxnEvent(
-                                        reference: reference ?? "",
-                                        usrName: login.usrName ?? "",
-                                      ),
-                                    );
-                                    },
-                                  icon: isAuthorizeLoading? null : Icons.check_box_outlined,
-                                  isActive: true,
-                                  label: isAuthorizeLoading
-                                      ? SizedBox(
-                                    width: 20,
-                                    height: 20,
-
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 3,
-                                      color: Theme.of(context).colorScheme.surface,
-                                    ),
-                                  )
-                                      : Text(locale.authorize)),
-                            ),
-                            if(loadedTxn?.trnStatus == 1 && loadedTxn?.maker == login.usrName)
-                            Expanded(
-                              child: ZOutlineButton(
-                                  onPressed: (){
-                                    context.read<TransactionsBloc>().add(
-                                      ReverseTxnEvent(
-                                        reference: reference ?? "",
-                                        usrName: login.usrName ?? "",
-                                      ),
-                                    );
-                                  },
-                                  icon: isReverseLoading? null : Icons.screen_rotation_alt_rounded,
-                                  backgroundHover: Colors.orange,
-                                  label: isReverseLoading
-                                      ? SizedBox(
-                                    width: 20,
-                                    height: 20,
-
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 3,
-                                      color: Theme.of(context).colorScheme.primary,
-                                    ),
-                                  )
-                                      : Text(locale.reverseTitle)),
-                            ),
-                            if(loadedTxn?.trnStatus == 0 && loadedTxn?.maker == login.usrName)
-                            Expanded(
-                              child: ZOutlineButton(
-                                  backgroundHover: Colors.green,
-                                  icon: isUpdateLoading? null : Icons.refresh,
-                                  onPressed: (){
-                                    context.read<TransactionsBloc>().add(UpdatePendingTransactionEvent(TransactionsModel(
-                                      trnReference: loadedTxn?.trnReference??"",
-                                      usrName: login.usrName,
-                                      accCcy: loadedTxn?.currency??"",
-                                      narration: narration.text,
-                                      amount: amount.text.cleanAmount,
-                                    )));
-                                  },
-                                  label: isUpdateLoading
-                                      ? SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 3,
-                                      color: Theme.of(context).colorScheme.primary,
-                                    ),
-                                  )
-                                      : Text(locale.update)),
-                            ),
-                            if(loadedTxn?.trnStatus == 0 && loadedTxn?.maker == login.usrName)
-                            Expanded(
-                              child: ZOutlineButton(
-                                  icon: isDeleteLoading? null : Icons.delete_outline_rounded,
-                                  backgroundHover: Theme.of(context).colorScheme.error,
-                                  onPressed: (){
-                                    context.read<TransactionsBloc>().add(DeletePendingTxnEvent(reference: loadedTxn?.trnReference??"",usrName: login.usrName??""));
-                                  },
-                                  label: isDeleteLoading
-                                      ? SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 3,
-                                      color: Theme.of(context).colorScheme.primary,
-                                    ),
-                                  )
-                                      : Text(locale.delete)),
-                            )
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 10)
+                      if (!showAnyButton)
+                        SizedBox(height: 10),
                     ],
                   );
                 }

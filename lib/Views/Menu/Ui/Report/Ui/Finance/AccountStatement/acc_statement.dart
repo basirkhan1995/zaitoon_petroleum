@@ -14,6 +14,8 @@ import '../../../../../../../Features/Other/utils.dart';
 import '../../../../../../../Features/PrintSettings/report_model.dart';
 import '../../../../Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
 import '../../../../Finance/Ui/GlAccounts/model/gl_model.dart';
+import '../../../../Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
+import '../../../../Journal/Ui/TxnByReference/txn_reference.dart';
 import 'bloc/acc_statement_bloc.dart';
 import 'model/stmt_model.dart';
 import 'package:shamsi_date/shamsi_date.dart';
@@ -61,13 +63,9 @@ class _DesktopState extends State<_Desktop> {
   int? accNumber;
   String? myLocale;
 
-  String fromDate = DateTime.now()
-      .subtract(Duration(days: 7))
-      .toFormattedDate();
+  String fromDate = DateTime.now().subtract(Duration(days: 7)).toFormattedDate();
   String toDate = DateTime.now().toFormattedDate();
-  Jalali shamsiFromDate = DateTime.now()
-      .subtract(Duration(days: 7))
-      .toAfghanShamsi;
+  Jalali shamsiFromDate = DateTime.now().subtract(Duration(days: 7)).toAfghanShamsi;
   Jalali shamsiToDate = DateTime.now().toAfghanShamsi;
 
   List<AccountStatementModel> records = [];
@@ -87,7 +85,22 @@ class _DesktopState extends State<_Desktop> {
     final locale = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Column(
+      body: BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
+  listener: (context, state) {
+    if (state is TxnReferenceLoadedState) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return TxnReferenceView();
+        },
+      );
+    }
+  },
+  builder: (context, state) {
+    if (state is TxnReferenceLoadingState) {
+      return Center(child: CircularProgressIndicator());
+    }
+    return Column(
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
@@ -224,53 +237,47 @@ class _DesktopState extends State<_Desktop> {
                   width: 100,
                   child: Text(
                     locale.txnDate,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ),
 
                 SizedBox(
-                  width: 170,
+                  width: 190,
                   child: Text(
                     locale.referenceNumber,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ),
 
                 Expanded(
                   child: Text(
                     locale.narration,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ),
-                SizedBox(
-                  width: 110,
-                  child: Text(
-                    locale.txnType,
-                    textAlign: myLocale == "en"
-                        ? TextAlign.left
-                        : TextAlign.right,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
+
                 SizedBox(
                   width: 100,
                   child: Text(
+                    textAlign: myLocale == "en"? TextAlign.right : TextAlign.left,
                     locale.debitTitle,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ),
                 SizedBox(
                   width: 100,
                   child: Text(
+                    textAlign: myLocale == "en"? TextAlign.right : TextAlign.left,
                     locale.creditTitle,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ),
                 SizedBox(
                   width: 150,
                   child: Text(
+                    textAlign: myLocale == "en"? TextAlign.right : TextAlign.left,
                     locale.balance,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ),
               ],
@@ -285,35 +292,40 @@ class _DesktopState extends State<_Desktop> {
             child: BlocBuilder<AccStatementBloc, AccStatementState>(
               builder: (context, state) {
                 if (state is AccStatementLoadingState) {
-                  return CircularProgressIndicator();
+                  return Center(child: CircularProgressIndicator());
                 }
                 if (state is AccStatementErrorState) {
-                  return Text(state.message);
+                  return Center(child: Text(state.message));
                 }
                 if (state is AccStatementLoadedState) {
+                  final records = state.accStatementDetails.records;
+                  if (records == null || records.isEmpty) {
+                    return Center(child: Text("No transactions found"));
+                  }
+
                   return ListView.builder(
-                    itemCount: state.record.length,
+                    itemCount: records.length,
                     itemBuilder: (context, index) {
-                      final stmt = state.record[index];
+                      final stmt = records[index];
 
                       return InkWell(
-                        hoverColor: Theme.of(
-                          context,
-                        ).colorScheme.primary.withValues(alpha: .09),
-                        highlightColor: Theme.of(
-                          context,
-                        ).colorScheme.primary.withValues(alpha: .09),
-                        onTap: () {},
+                        hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+                        highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+                        onTap: () {
+                          context.read<TxnReferenceBloc>().add(
+                            FetchTxnByReferenceEvent(stmt.trnReference??""),
+                          );
+                        },
                         child: Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: 15,
-                            vertical: 8,
+                            vertical: 5,
                           ),
                           decoration: BoxDecoration(
                             color: index.isOdd
                                 ? Theme.of(
-                                    context,
-                                  ).colorScheme.primary.withValues(alpha: 0.05)
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.05)
                                 : Colors.transparent,
                           ),
                           child: Row(
@@ -321,37 +333,38 @@ class _DesktopState extends State<_Desktop> {
                               SizedBox(
                                 width: 100,
                                 child: Text(
-                                  stmt.trnEntryDate.toFormattedDate(),
+                                  stmt.trnEntryDate?.toFormattedDate() ?? "",
                                   style: Theme.of(
                                     context,
                                   ).textTheme.titleMedium,
                                 ),
                               ),
                               SizedBox(
-                                width: 160,
+                                width: 190,
                                 child: Text(stmt.trnReference ?? ""),
                               ),
                               Expanded(child: Text(stmt.trdNarration ?? "")),
-
                               SizedBox(
-                                width: 110,
+                                width: 100,
                                 child: Text(
-                                  stmt.debit?.toAmount() ?? "",
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                              ),
-
-                              SizedBox(
-                                width: 110,
-                                child: Text(
-                                  stmt.credit?.toAmount() ?? "",
-                                  style: Theme.of(context).textTheme.titleSmall,
+                                  textAlign: myLocale == "en"? TextAlign.right : TextAlign.left,
+                                  "${stmt.debit?.toAmount()}",
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               ),
                               SizedBox(
-                                width: 145,
+                                width: 100,
                                 child: Text(
-                                  stmt.total?.toAmount() ?? "",
+                                  textAlign: myLocale == "en"? TextAlign.right : TextAlign.left,
+                                  "${stmt.credit?.toAmount()}",
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 150,
+                                child: Text(
+                                  textAlign: myLocale == "en"? TextAlign.right : TextAlign.left,
+                                     "${stmt.total?.toAmount()} ${state.accStatementDetails.actCurrency}",
                                   style: Theme.of(context).textTheme.titleSmall,
                                 ),
                               ),
@@ -362,12 +375,14 @@ class _DesktopState extends State<_Desktop> {
                     },
                   );
                 }
-                return const SizedBox();
+                return Center(child: Text("Select an account and date range to view statement"));
               },
             ),
           ),
         ],
-      ),
+      );
+  },
+),
     );
   }
 
