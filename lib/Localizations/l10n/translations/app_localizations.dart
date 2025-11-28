@@ -1947,6 +1947,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Credit'**
   String get creditTitle;
+
+  /// No description provided for @copies.
+  ///
+  /// In en, this message translates to:
+  /// **'Copies'**
+  String get copies;
+
+  /// No description provided for @pages.
+  ///
+  /// In en, this message translates to:
+  /// **'Pages'**
+  String get pages;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @eg.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g, 1,3,5 or 1-3 or 1,3-5,7'**
+  String get eg;
+
+  /// No description provided for @accountStatementMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an account and date range to view statement.'**
+  String get accountStatementMessage;
 }
 
 class _AppLocalizationsDelegate

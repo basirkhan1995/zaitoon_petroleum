@@ -75,6 +75,7 @@ abstract class PrintServices {
     double? fontSize,
     pw.FontWeight? fontWeight,
     bool? tightBounds,
+    PdfColor? color,
     pw.TextAlign? textAlign,
     pw.FontStyle? font,
   }) {
@@ -82,7 +83,7 @@ abstract class PrintServices {
       tightBounds: tightBounds ?? false,
       text,
       textAlign: textAlign,
-      style: _textStyle(text: text, fontSize: fontSize, fontWeight: fontWeight,font: font),
+      style: _textStyle(text: text,color: color, fontSize: fontSize, fontWeight: fontWeight,font: font),
       textDirection: _textDirection(text: text),
     );
   }
@@ -126,10 +127,12 @@ abstract class PrintServices {
   static pw.TextStyle _textStyle({
     required String text,
     double? fontSize,
+    PdfColor? color,
     pw.FontWeight? fontWeight,
     pw.FontStyle? font,
   }) {
     return pw.TextStyle(
+        color: color,
         font: _isPersian(text) ? _persianFont : _englishFont,
         fontWeight: fontWeight,
         fontSize: fontSize,
@@ -171,6 +174,7 @@ abstract class PrintServices {
     required String label,
     required String value,
     double? fontSize,
+    PdfColor? color,
     double distance = 100,
     bool isEmphasized = false,
   }) {
@@ -183,14 +187,15 @@ abstract class PrintServices {
           pw.SizedBox(
             width: distance,
             child: buildTextWidget(
+                color: color,
                 text: label,
                 fontWeight: pw.FontWeight.normal,
-                fontSize: fontSize ?? 9
+                fontSize: fontSize ?? 8
             ),
           ),
           buildTextWidget(
             text:value,
-            fontSize: fontSize ?? 9,
+            fontSize: fontSize ?? 8,
             fontWeight: pw.FontWeight.normal,
             textAlign: pw.TextAlign.right,
           ),
@@ -217,6 +222,7 @@ abstract class PrintServices {
     required String value,
     double? width,
     double? space,
+    PdfColor? color,
     String? ccySymbol,
     pw.TextAlign? align,
     bool isEmphasized = false,
@@ -230,6 +236,7 @@ abstract class PrintServices {
           pw.SizedBox(
             width: width ?? 100,
             child: buildTextWidget(
+                color: color,
                 text: label,
                 fontWeight: pw.FontWeight.normal,
                 fontSize: 9
@@ -248,7 +255,7 @@ abstract class PrintServices {
               ),
               if(ccySymbol !=null)
               pw.SizedBox(width: 3),
-              buildTextWidget(text: ccySymbol??"",tightBounds: true)
+              buildTextWidget(text: ccySymbol??"",tightBounds: true,fontSize: 8)
             ]
           )
         ],
@@ -262,6 +269,41 @@ abstract class PrintServices {
 
   String getTranslation({required String locale, required String language}) {
     const translation = {
+      'statementAccount' : {
+        'en':"Statement of Account",
+        'fa':"صورت حساب",
+        "ar":"صورت حساب"
+      },
+      'address' : {
+        'en':"Address",
+        'fa':"آدرس",
+        "ar":"پته"
+      },
+      'accountSummary': {
+        'en': 'Account Summary',
+        'fa': 'خلاصه صورت حساب',
+        'ar': 'حساب لنډیز',
+      },
+      'signatory' : {
+        'en':"Signatory",
+        'fa':"دارنده حساب",
+        "ar":"دارنده حساب"
+      },
+      'currentBalance' : {
+        'en':"Current Balance",
+        'fa':"مانده فعلی",
+        "ar":"فعلی مانده"
+      },
+      'email' : {
+        'en':"Email",
+        'fa':"ایمیل آدرس",
+        "ar":"ایمیل آدرس"
+      },
+      'availableBalance' : {
+        'en':"Available Balance",
+        'fa':"مانده قابل برداشت",
+        "ar":"قابل برداشت مانده"
+      },
       'incomeStatement' : {
         'en':"Profit & Loss",
         'fa':"سود و زیان",
@@ -477,12 +519,6 @@ abstract class PrintServices {
         'en': 'Total',
         'fa': 'جمع کل',
         'ar': 'ټول قیمت',
-      },
-
-      'accountSummary': {
-        'en': 'Account Summary',
-        'fa': 'خلاصه صورت حساب',
-        'ar': 'حساب لنډیز',
       },
 
       'debitAccount':{

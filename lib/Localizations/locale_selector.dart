@@ -88,7 +88,7 @@ class _LanguageSelectorState extends State<LanguageSelector> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text(widget.title,style: Theme.of(context).textTheme.titleSmall),
+                    Text(widget.title,style: TextStyle(fontSize: 13)),
                   ],
                 ),
               ): SizedBox(),
@@ -98,7 +98,7 @@ class _LanguageSelectorState extends State<LanguageSelector> {
                 decoration: BoxDecoration(
                   color: color.surface,
                   borderRadius: BorderRadius.circular(3),
-                  border: Border.all(color: color.primary.withValues(alpha: .2)),
+                  border: Border.all(color: color.outline.withValues(alpha: .3)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
@@ -116,7 +116,8 @@ class _LanguageSelectorState extends State<LanguageSelector> {
                     ),
                     Icon(
                       _isOpen ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: Theme.of(context).colorScheme.outline,
+                      size: 20,
                     ),
                   ],
                 ),

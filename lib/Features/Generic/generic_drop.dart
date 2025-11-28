@@ -78,7 +78,9 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(widget.title, style: Theme.of(context).textTheme.titleSmall),
+          Text(widget.title, style:TextStyle(
+              color: color.onSurface,fontSize: 13
+          )),
           if (widget.title.isNotEmpty) const SizedBox(height: 5),
           GestureDetector(
             onTap: widget.disableAction
@@ -101,7 +103,7 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
               decoration: BoxDecoration(
                 color: color.surface,
                 borderRadius: BorderRadius.circular(widget.radius ?? 4),
-                border: Border.all(color: color.primary.withValues(alpha: .3)),
+                border: Border.all(color: color.outline.withValues(alpha: .3)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -131,7 +133,8 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
                               : Icons.keyboard_arrow_down_rounded,
                           color: widget.isLoading
                               ? Colors.transparent
-                              : color.primary,
+                              : color.outline,
+                    size: 20,
                         ),
                 ],
               ),
@@ -164,13 +167,13 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(
                     widget.radius ?? 4,
-                  ), // FIX HERE
+                  ),
                   child: Container(
                     width: renderBox.size.width,
                     decoration: BoxDecoration(
                       color: color.surface,
                       border: Border.all(
-                        color: color.primary.withValues(alpha: .3),
+                        color: color.outline.withValues(alpha: .3),
                         width: 1,
                       ),
                     ),

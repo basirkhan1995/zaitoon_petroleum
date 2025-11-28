@@ -902,7 +902,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get authorizeInvalidMessage => 'شما اجازه تایید این معامله را ندارید.';
 
   @override
-  String get apply => 'درخواست';
+  String get apply => 'اعمال';
 
   @override
   String get selectKeyword => 'انتخاب';
@@ -948,4 +948,20 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get creditTitle => 'کریدت';
+
+  @override
+  String get copies => 'تعداد کاپی';
+
+  @override
+  String get pages => 'صفحات';
+
+  @override
+  String get all => 'همه';
+
+  @override
+  String get eg => 'e.g, 1,3,5 or 1-3 or 1,3-5,7';
+
+  @override
+  String get accountStatementMessage =>
+      'برای نمایش صورتحساب، لطفا یک حساب و تاریخ را انتخاب نمایید';
 }

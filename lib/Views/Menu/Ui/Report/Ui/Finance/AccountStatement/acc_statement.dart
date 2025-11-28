@@ -8,6 +8,7 @@ import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import '../../../../../../../Features/Date/gregorian_date_picker.dart';
 import '../../../../../../../Features/Date/shamsi_date_picker.dart';
 import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
@@ -77,7 +78,7 @@ class _DesktopState extends State<_Desktop> {
   Jalali shamsiToDate = DateTime.now().toAfghanShamsi;
 
   List<AccountStatementModel> records = [];
-  final accountStatementModel = AccountStatementModel();
+  AccountStatementModel? accountStatementModel;
   final company = ReportModel();
 
   @override
@@ -93,7 +94,19 @@ class _DesktopState extends State<_Desktop> {
     final locale = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
+      body: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
+      builder: (context, state) {
+        if(state is CompanyProfileLoadedState){
+          company.comName = state.company.comName??"";
+          company.comAddress = state.company.addName??"";
+          company.compPhone = state.company.comPhone??"";
+          company.comEmail = state.company.comEmail??"";
+          company.startDate = fromDate;
+          company.endDate = toDate;
+          company.statementDate = DateTime.now().toFullDateTime;
+
+        }
+    return BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
         listener: (context, state) {
           if (state is TxnReferenceLoadedState) {
             showDialog(
@@ -134,68 +147,69 @@ class _DesktopState extends State<_Desktop> {
                             icon: FontAwesomeIcons.filePdf,
                             label: Text("PDF"),
                             onPressed: (){
-                              showDialog(
-                                context: context,
-                                builder:
-                                    (_) => PrintPreviewDialog<AccountStatementModel>(
-                                  data: accountStatementModel,
-                                  company: company,
-                                  buildPreview: ({
-                                    required data,
-                                    required language,
-                                    required orientation,
-                                    required pageFormat,
-                                  }) {
-                                    return AccountStatementPrintSettings().printPreview(
-                                        company: company,
-                                        language: language,
-                                        orientation:
-                                        orientation,
-                                        pageFormat:
-                                        pageFormat,
-                                        info: accountStatementModel
-                                    );
-                                  },
-                                  onPrint: ({
-                                    required data,
-                                    required language,
-                                    required orientation,
-                                    required pageFormat,
-                                    required selectedPrinter,
-                                  }) {
-                                    return AccountStatementPrintSettings()
-                                        .printDocument(
-                                      statement: records,
-                                      company: company,
-                                      language: language,
-                                      orientation:
-                                      orientation,
-                                      pageFormat:
-                                      pageFormat,
-                                      selectedPrinter:
-                                      selectedPrinter,
-                                      info: accountStatementModel,
-                                    );
-                                  },
-                                  onSave: ({
-                                    required data,
-                                    required language,
-                                    required orientation,
-                                    required pageFormat,
-                                  }) {
-                                    return AccountStatementPrintSettings().createDocument(
-                                      statement: records,
-                                      company: company,
-                                      language: language,
-                                      orientation:
-                                      orientation,
-                                      pageFormat:
-                                      pageFormat,
-                                      info: accountStatementModel,
-                                    );
-                                  },
-                                ),
-                              );
+                             if(formKey.currentState!.validate()){
+                               showDialog(
+                                 context: context,
+                                 builder:
+                                     (_) => PrintPreviewDialog<AccountStatementModel>(
+                                   data: accountStatementModel!,
+                                   company: company,
+                                   buildPreview: ({
+                                     required data,
+                                     required language,
+                                     required orientation,
+                                     required pageFormat,
+                                   }) {
+                                     return AccountStatementPrintSettings().printPreview(
+                                         company: company,
+                                         language: language,
+                                         orientation: orientation,
+                                         pageFormat: pageFormat,
+                                         info: accountStatementModel!
+                                     );
+                                   },
+                                   onPrint: ({
+                                     required data,
+                                     required language,
+                                     required orientation,
+                                     required pageFormat,
+                                     required selectedPrinter,
+                                     required copies,
+                                     required pages, // This will now work
+                                   }) {
+                                     return AccountStatementPrintSettings()
+                                         .printDocument(
+                                       statement: records,
+                                       company: company,
+                                       language: language,
+                                       orientation: orientation,
+                                       pageFormat: pageFormat,
+                                       selectedPrinter: selectedPrinter,
+                                       info: accountStatementModel!,
+                                       copies: copies,
+                                       pages: pages, // Pass pages to your print method
+                                     );
+                                   },
+                                   onSave: ({
+                                     required data,
+                                     required language,
+                                     required orientation,
+                                     required pageFormat,
+                                   }) {
+                                     return AccountStatementPrintSettings().createDocument(
+                                       statement: records,
+                                       company: company,
+                                       language: language,
+                                       orientation: orientation,
+                                       pageFormat: pageFormat,
+                                       info: accountStatementModel!,
+                                     );
+                                   },
+                                 ),
+                               );
+                             }else{
+                               Utils.showOverlayMessage(context, message: locale.accountStatementMessage, isError: true);
+                             }
                             },
                           ),
                           SizedBox(width: 8),
@@ -205,13 +219,7 @@ class _DesktopState extends State<_Desktop> {
                             width: 100,
                             onPressed: () {
                               if (formKey.currentState!.validate()) {
-                                context.read<AccStatementBloc>().add(
-                                  LoadAccountStatementEvent(
-                                    accountNumber: accNumber!,
-                                    fromDate: fromDate,
-                                    toDate: toDate,
-                                  ),
-                                );
+                              onSubmit();
                               }
                             },
                             label: Text(locale.apply),
@@ -388,6 +396,7 @@ class _DesktopState extends State<_Desktop> {
                       }
                       if (state is AccStatementLoadedState) {
                         final records = state.accStatementDetails.records;
+                        accountStatementModel = state.accStatementDetails;
                         if (records == null || records.isEmpty) {
                           return Center(child: Text("No transactions found"));
                         }
@@ -499,9 +508,9 @@ class _DesktopState extends State<_Desktop> {
                       }
                       return Center(
                         child: NoDataWidget(
-                          title: "Account Statement",
+                          title: locale.accountStatement,
                           message:
-                              "Select an account and date range to view statement",
+                              locale.accountStatementMessage,
                           enableAction: false,
                         ),
                       );
@@ -512,7 +521,9 @@ class _DesktopState extends State<_Desktop> {
             ),
           );
         },
-      ),
+      );
+  },
+),
     );
   }
 
@@ -642,6 +653,7 @@ class _DesktopState extends State<_Desktop> {
                                 setState(() {
                                   toDate = value.toFormattedDate();
                                   // accountStatementModel.endDate = toDate;
+                                  onSubmit();
                                 });
                               },
                             );
@@ -660,6 +672,7 @@ class _DesktopState extends State<_Desktop> {
                                 setState(() {
                                   toDate = value.toGregorianString();
                                 });
+                                onSubmit();
                               },
                             );
                           },
@@ -681,6 +694,15 @@ class _DesktopState extends State<_Desktop> {
             ),
           ),
         ],
+      ),
+    );
+  }
+  void onSubmit(){
+    context.read<AccStatementBloc>().add(
+      LoadAccountStatementEvent(
+        accountNumber: accNumber!,
+        fromDate: fromDate,
+        toDate: toDate,
       ),
     );
   }

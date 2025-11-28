@@ -305,7 +305,7 @@
   "reversePendingMessage": "معاملات انتظاری برگشتانده نمیشود.",
   "reverseAlreadyMessage": "این معامله از قبل یکبار برگشتانده شده است.",
   "authorizeInvalidMessage": "شما اجازه تایید این معامله را ندارید.",
-  "apply": "درخواست",
+  "apply": "اعمال",
   "selectKeyword": "انتخاب",
   "clear": "حذف کردن",
   "today": "امروز",
@@ -320,5 +320,10 @@
   "fromDate": "از تاریخ",
   "toDate": "به تاریخ",
   "debitTitle": "دبت",
-  "creditTitle": "کریدت"
+  "creditTitle": "کریدت",
+  "copies": "تعداد کاپی",
+  "pages": "صفحات",
+  "all": "همه",
+  "eg": "e.g, 1,3,5 or 1-3 or 1,3-5,7",
+  "accountStatementMessage": "برای نمایش صورتحساب، لطفا یک حساب و تاریخ را انتخاب نمایید"
 }

@@ -954,4 +954,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get creditTitle => 'Credit';
+
+  @override
+  String get copies => 'Copies';
+
+  @override
+  String get pages => 'Pages';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get eg => 'e.g, 1,3,5 or 1-3 or 1,3-5,7';
+
+  @override
+  String get accountStatementMessage =>
+      'Select an account and date range to view statement.';
 }

@@ -92,7 +92,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
                         children: [
                           Text(
                             widget.title,
-                            style: Theme.of(context).textTheme.titleSmall,
+                            style: TextStyle(fontSize: 13),
                           ),
                         ],
                       ),
@@ -105,7 +105,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
                   color: color.surface,
                   borderRadius: BorderRadius.circular(3),
                   border: Border.all(
-                    color: color.primary.withValues(alpha: .2),
+                    color: color.outline.withValues(alpha: .3),
                   ),
                 ),
                 child: Row(
@@ -138,7 +138,8 @@ class _ThemeSelectorState extends State<ThemeSelector> {
                       _isOpen
                           ? Icons.keyboard_arrow_up_rounded
                           : Icons.keyboard_arrow_down_rounded,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: Theme.of(context).colorScheme.outline,
+                      size: 20,
                     ),
                   ],
                 ),

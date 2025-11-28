@@ -46,6 +46,8 @@ class AccountStatementPrintSettings extends PrintServices {
     required ReportModel company,
     required Printer selectedPrinter,
     required pw.PdfPageFormat pageFormat,
+    required int copies,
+    required String pages, // Add this parameter
   }) async {
     try {
       final document = await generateStatement(
@@ -55,12 +57,21 @@ class AccountStatementPrintSettings extends PrintServices {
         orientation: orientation,
         pageFormat: pageFormat,
       );
-      await Printing.directPrintPdf(
-        printer: selectedPrinter,
-        onLayout: (pw.PdfPageFormat format) async {
-          return document.save();
-        },
-      );
+
+      // Use copies parameter for multiple print jobs
+      for (int i = 0; i < copies; i++) {
+        await Printing.directPrintPdf(
+          printer: selectedPrinter,
+          onLayout: (pw.PdfPageFormat format) async {
+            return document.save();
+          },
+        );
+
+        // Optional: Add a small delay between copies if needed
+        if (i < copies - 1) {
+          await Future.delayed(Duration(milliseconds: 100));
+        }
+      }
     } catch (e) {
       throw e.toString();
     }
@@ -109,7 +120,7 @@ class AccountStatementPrintSettings extends PrintServices {
         orientation: orientation,
         build: (context) => [
           horizontalDivider(),
-          statementHeaderWidget(language: language, report: stmtInfo, statement: stmtInfo),
+          statementHeaderWidget(language: language, reportInfo: report, statement: stmtInfo),
           pw.SizedBox(height: 5),
           items(items: stmtInfo, language: language),
         ],
@@ -145,6 +156,7 @@ class AccountStatementPrintSettings extends PrintServices {
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   buildTextWidget(text: report.comName ?? "", fontSize: 25,tightBounds: true),
+                  pw.SizedBox(height: 3),
                   buildTextWidget(text: report.statementDate ?? "", fontSize: 10),
                 ],
               ),
@@ -158,6 +170,7 @@ class AccountStatementPrintSettings extends PrintServices {
               ),
           ],
         ),
+        pw.SizedBox(height: 5)
       ],
     );
   }
@@ -174,19 +187,20 @@ class AccountStatementPrintSettings extends PrintServices {
           mainAxisAlignment: pw.MainAxisAlignment.start,
           children: [
             pw.Container(
-              height: 23, // Adjust as needed
+              height: 20, // Adjust as needed
               child: pw.Image(logoImage),
             ),
             verticalDivider(height: 15, width: 0.6),
             buildTextWidget(
               text: getTranslation(locale: 'producedBy', language: language),
               fontWeight: pw.FontWeight.normal,
-              fontSize: 9,
+              fontSize: 8,
             ),
           ],
         ),
+        pw.SizedBox(height: 3),
         horizontalDivider(),
-        pw.SizedBox(height: 5),
+        pw.SizedBox(height: 3),
         pw.Row(
           children: [
             buildTextWidget(text: report.comAddress ?? "", fontSize: 9),
@@ -217,7 +231,9 @@ class AccountStatementPrintSettings extends PrintServices {
 
   pw.Widget totalSummary({
     required String language,
+    required ReportModel reportInfo,
     required AccountStatementModel info,
+
   }) {
     double parseAmount(String amountStr) {
       try {
@@ -227,20 +243,22 @@ class AccountStatementPrintSettings extends PrintServices {
       }
     }
 
-    // Calculate totals
-    double totalCredit = 0;
-    double totalDebit = 0;
-    String openingBalance = '0.0';
-    String finalBalance = '0.0';
+      // Calculate totals
+      double totalCredit = 0;
+      double totalDebit = 0;
+      String openingBalance = '0.0';
+      String availableBalance = '0.0';
+      String currentBalance = '0.0';
 
 
       // Get opening balance from first record
       openingBalance = info.records?.first.total?.toAmount() ?? '0.0';
 
       for (var item in info.records ?? []) {
-        totalCredit += parseAmount(item.credit.toAmount());
-        totalDebit += parseAmount(item.debit.toAmount());
-        finalBalance = info.avilBalance??"";
+        totalCredit += parseAmount(item.credit);
+        totalDebit += parseAmount(item.debit);
+        availableBalance = info.avilBalance??"";
+        currentBalance = info.curBalance??"";
       }
 
 
@@ -254,37 +272,72 @@ class AccountStatementPrintSettings extends PrintServices {
             mainAxisAlignment: pw.MainAxisAlignment.start,
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
+              buildSummary(
+                distance: 120,
+                label: getTranslation(
+                  locale: 'accountSummary',
+                  language: language,
+                ),
+                fontSize: 11,
+                value: "",
+                isEmphasized: true,
+              ),
+              pw.SizedBox(height: 1),
+              pw.Row(
+                  children: [
+                    buildTextWidget(
+                        color: pw.PdfColors.grey800,
+                        text: "${reportInfo.startDate} to ${reportInfo.endDate}",fontSize: 8)
+                  ]
+              ),
+              pw.SizedBox(height: 1),
+              horizontalDivider(width: 190),
+              pw.SizedBox(height: 1),
+
               buildTotalSummary(
+                color: pw.PdfColors.grey800,
                 label: getTranslation(
                   locale: 'openingBalance',
                   language: language,
                 ),
-                value: openingBalance,
-                ccySymbol: info.ccySymbol,
+                value: openingBalance.toAmount(),
               ),
-              horizontalDivider(width: 170),
+              pw.SizedBox(height: 1),
               buildTotalSummary(
+                color: pw.PdfColors.grey800,
                 label: getTranslation(locale: 'totalDebit', language: language),
-                ccySymbol: info.ccySymbol,
-                value: totalDebit.toExchangeRate(),
+                value: totalDebit.toStringAsFixed(2),
               ),
-              horizontalDivider(width: 170),
+              pw.SizedBox(height: 1),
               buildTotalSummary(
+                color: pw.PdfColors.grey800,
                 label: getTranslation(
                   locale: 'totalCredit',
                   language: language,
                 ),
-                ccySymbol: info.ccySymbol,
-                value: totalCredit.toExchangeRate(),
+                value: totalCredit.toStringAsFixed(2),
               ),
-              horizontalDivider(width: 170),
+
+              pw.SizedBox(height: 1),
+              horizontalDivider(width: 190),
+              pw.SizedBox(height: 1),
               buildTotalSummary(
                 label: getTranslation(
-                  locale: 'closingBalance',
+                  locale: 'currentBalance',
                   language: language,
                 ),
-                ccySymbol: info.ccySymbol,
-                value: "${finalBalance}",
+                ccySymbol: info.actCurrency,
+                value: currentBalance.toAmount(),
+                isEmphasized: true,
+              ),
+              pw.SizedBox(height: 1),
+              buildTotalSummary(
+                label: getTranslation(
+                  locale: 'availableBalance',
+                  language: language,
+                ),
+                ccySymbol: info.actCurrency,
+                value: availableBalance.toAmount(),
                 isEmphasized: true,
               ),
             ],
@@ -296,6 +349,7 @@ class AccountStatementPrintSettings extends PrintServices {
 
   pw.Widget statementDescription({
     required String language,
+    required ReportModel reportInfo,
     required AccountStatementModel statement,
   }) {
     return pw.Container(
@@ -309,6 +363,20 @@ class AccountStatementPrintSettings extends PrintServices {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               buildSummary(
+                distance: 130,
+                label: getTranslation(
+                  locale: 'statementAccount',
+                  language: language,
+                ),
+                value: "",
+                fontSize: 12,
+                isEmphasized: true,
+              ),
+              pw.SizedBox(height: 1),
+              horizontalDivider(width: 200),
+              pw.SizedBox(height: 1),
+              buildSummary(
+                color: pw.PdfColors.grey800,
                 distance: 75,
                 label: getTranslation(
                   locale: 'accountName',
@@ -316,30 +384,51 @@ class AccountStatementPrintSettings extends PrintServices {
                 ),
                 value: statement.accName??"",
               ),
-              horizontalDivider(width: 200),
+              pw.SizedBox(height: 1),
               buildSummary(
                 distance: 75,
+                color: pw.PdfColors.grey800,
                 label: getTranslation(
                   locale: 'accountNumber',
                   language: language,
                 ),
                 value: statement.accNumber.toString(),
               ),
-              horizontalDivider(width: 200),
+
+              pw.SizedBox(height: 1),
               buildSummary(
+                color: pw.PdfColors.grey800,
+                distance: 75,
+                label: getTranslation(locale: 'signatory', language: language),
+                value: "${statement.signatory}",
+              ),
+              pw.SizedBox(height: 1),
+              buildSummary(
+                color: pw.PdfColors.grey800,
                 distance: 75,
                 label: getTranslation(locale: 'currency', language: language),
                 value: "${statement.actCurrency}",
               ),
-              horizontalDivider(width: 200),
+              pw.SizedBox(height: 1),
               buildSummary(
+                color: pw.PdfColors.grey800,
                 distance: 75,
-                label: getTranslation(
-                  locale: 'statementPeriod',
-                  language: language,
-                ),
-                value: " - ",
-                isEmphasized: true,
+                label: getTranslation(locale: 'mobile', language: language),
+                value: "${statement.perPhone}",
+              ),
+              pw.SizedBox(height: 1),
+              buildSummary(
+                color: pw.PdfColors.grey800,
+                distance: 75,
+                label: getTranslation(locale: 'email', language: language),
+                value: statement.perEmail??"",
+              ),
+              pw.SizedBox(height: 1),
+              buildSummary(
+                color: pw.PdfColors.grey800,
+                distance: 75,
+                label: getTranslation(locale: 'address', language: language),
+                value: "${statement.address}",
               ),
             ],
           ),
@@ -351,15 +440,16 @@ class AccountStatementPrintSettings extends PrintServices {
   statementHeaderWidget({
     required String language,
     required AccountStatementModel statement,
-    required AccountStatementModel report,
+    required ReportModel reportInfo,
+
   }) {
     return pw.Container(
       padding: pw.EdgeInsets.symmetric(vertical: 5),
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
-          statementDescription(language: language, statement: report),
-          totalSummary(language: language, info: statement),
+          statementDescription(language: language, statement: statement,reportInfo: reportInfo),
+          totalSummary(language: language, info: statement,reportInfo: reportInfo),
         ],
       ),
     );
@@ -369,9 +459,8 @@ class AccountStatementPrintSettings extends PrintServices {
     required AccountStatementModel items,
     required String language,
   }) {
-    const dealWidth = 40.0;
     const dateWidth = 55.0;
-    const trnWidth = 65.0;
+    const trnWidth = 110.0;
     const amountWidth = 45.0;
     const balanceWidth = 55.0;
 
@@ -383,7 +472,7 @@ class AccountStatementPrintSettings extends PrintServices {
           padding: const pw.EdgeInsets.symmetric(vertical: 4),
           decoration: pw.BoxDecoration(
             border: pw.Border(
-              bottom: pw.BorderSide(width: 1.5, color: hexToPdfColor('')),
+              bottom: pw.BorderSide(width: 1, color: pw.PdfColors.grey300),
             ),
           ),
           child: pw.Row(
@@ -403,7 +492,7 @@ class AccountStatementPrintSettings extends PrintServices {
                 child: buildTextWidget(
                   textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
                   text: getTranslation(locale: "reference", language: language),
-                  fontSize: 9,
+                  fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
@@ -412,25 +501,17 @@ class AccountStatementPrintSettings extends PrintServices {
                   textAlign:
                   language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
                   text: getTranslation(locale: "narration", language: language),
-                  fontSize: 9,
+                  fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),),
-              pw.SizedBox(
-                width: dealWidth,
-                child: buildTextWidget(
-                  textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
-                  text: getTranslation(locale: "deal", language: language),
-                  fontSize: 9,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
+
               pw.SizedBox(
                 width: amountWidth,
                 child: buildTextWidget(
                   textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
                   text: getTranslation(locale: "debit", language: language),
-                  fontSize: 9,
+                  fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
@@ -439,7 +520,7 @@ class AccountStatementPrintSettings extends PrintServices {
                 child: buildTextWidget(
                   textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
                   text: getTranslation(locale: "credit", language: language),
-                  fontSize: 9,
+                  fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
@@ -448,7 +529,7 @@ class AccountStatementPrintSettings extends PrintServices {
                 child: buildTextWidget(
                   text:
                   getTranslation(locale: "balance", language: language),
-                  fontSize: 9,
+                  fontSize: 8,
                   textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -458,7 +539,7 @@ class AccountStatementPrintSettings extends PrintServices {
         ),
 
         // Data Rows
-        for (var i = 0; i < (items.records!.length); i++)
+        for (var i = 0; i < (items.records?.length ?? 0); i++)
           pw.Container(
             width: double.infinity,
             padding: const pw.EdgeInsets.symmetric(vertical: 2),
