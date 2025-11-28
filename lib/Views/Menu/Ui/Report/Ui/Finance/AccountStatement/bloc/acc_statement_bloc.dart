@@ -10,6 +10,7 @@ part 'acc_statement_state.dart';
 class AccStatementBloc extends Bloc<AccStatementEvent, AccStatementState> {
   final Repositories _repo;
   AccStatementBloc(this._repo) : super(AccStatementInitial()) {
+
     on<LoadAccountStatementEvent>((event, emit) async{
       emit(AccStatementLoadingState());
       try{
@@ -20,6 +21,9 @@ class AccStatementBloc extends Bloc<AccStatementEvent, AccStatementState> {
       }catch(e){
         emit(AccStatementErrorState(e.toString()));
       }
+    });
+    on<ResetAccStmtEvent>((event,emit){
+      emit(AccStatementInitial());
     });
   }
 }

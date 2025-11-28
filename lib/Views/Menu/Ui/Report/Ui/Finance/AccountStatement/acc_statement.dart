@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
@@ -11,11 +12,13 @@ import '../../../../../../../Features/Date/gregorian_date_picker.dart';
 import '../../../../../../../Features/Date/shamsi_date_picker.dart';
 import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../../../../Features/Other/utils.dart';
+import '../../../../../../../Features/PrintSettings/print_preview.dart';
 import '../../../../../../../Features/PrintSettings/report_model.dart';
 import '../../../../Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
 import '../../../../Finance/Ui/GlAccounts/model/gl_model.dart';
 import '../../../../Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import '../../../../Journal/Ui/TxnByReference/txn_reference.dart';
+import 'PDF/pdf.dart';
 import 'bloc/acc_statement_bloc.dart';
 import 'model/stmt_model.dart';
 import 'package:shamsi_date/shamsi_date.dart';
@@ -62,10 +65,15 @@ class _DesktopState extends State<_Desktop> {
   final accountController = TextEditingController();
   int? accNumber;
   String? myLocale;
+  final formKey = GlobalKey<FormState>();
 
-  String fromDate = DateTime.now().subtract(Duration(days: 7)).toFormattedDate();
+  String fromDate = DateTime.now()
+      .subtract(Duration(days: 7))
+      .toFormattedDate();
   String toDate = DateTime.now().toFormattedDate();
-  Jalali shamsiFromDate = DateTime.now().subtract(Duration(days: 7)).toAfghanShamsi;
+  Jalali shamsiFromDate = DateTime.now()
+      .subtract(Duration(days: 7))
+      .toAfghanShamsi;
   Jalali shamsiToDate = DateTime.now().toAfghanShamsi;
 
   List<AccountStatementModel> records = [];
@@ -76,7 +84,7 @@ class _DesktopState extends State<_Desktop> {
   void initState() {
     myLocale = context.read<LocalizationBloc>().state.languageCode;
     WidgetsBinding.instance.addPostFrameCallback((_) {});
-    //context.read<AccStatementBloc>().add(ResetAccountStatementEvent());
+    context.read<AccStatementBloc>().add(ResetAccStmtEvent());
     super.initState();
   }
 
@@ -86,303 +94,425 @@ class _DesktopState extends State<_Desktop> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
-  listener: (context, state) {
-    if (state is TxnReferenceLoadedState) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return TxnReferenceView();
+        listener: (context, state) {
+          if (state is TxnReferenceLoadedState) {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return TxnReferenceView();
+              },
+            );
+          }
         },
-      );
-    }
-  },
-  builder: (context, state) {
-    if (state is TxnReferenceLoadingState) {
-      return Center(child: CircularProgressIndicator());
-    }
-    return Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        builder: (context, state) {
+          return Form(
+            key: formKey,
+            child: Column(
               children: [
-                Row(
-                  spacing: 8,
-                  children: [
-                    Utils.zBackButton(context),
-                    Text(
-                      locale.accountStatement,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    ZOutlineButton(
-                      width: 100,
-                      icon: FontAwesomeIcons.filePdf,
-                      label: Text("PDF"),
-                      onPressed: () {},
-                    ),
-                    SizedBox(width: 8),
-                    ZOutlineButton(
-                      isActive: true,
-                      icon: Icons.call_to_action_outlined,
-                      width: 100,
-                      onPressed: () {
-                        context.read<AccStatementBloc>().add(LoadAccountStatementEvent(
-                            accountNumber: accNumber!, fromDate: fromDate, toDate: toDate));
-                      },
-                      label: Text(locale.apply),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              spacing: 8,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 500,
-                  child:
-                      GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
-                        showAllOnFocus: true,
-                        controller: accountController,
-                        title: locale.accounts,
-                        hintText: locale.accNameOrNumber,
-                        isRequired: true,
-                        bloc: context.read<GlAccountsBloc>(),
-                        fetchAllFunction: (bloc) => bloc.add(
-                          LoadGlAccountEvent(
-                            local: myLocale ?? "en",
-                            categories: [5],
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 5,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        spacing: 8,
+                        children: [
+                          Utils.zBackButton(context),
+                          Text(
+                            locale.accountStatement,
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
-                        ),
-                        searchFunction: (bloc, query) => bloc.add(
-                          LoadGlAccountEvent(
-                            local: myLocale ?? "en",
-                            categories: [5],
-                            search: query,
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return locale.required(locale.accounts);
-                          }
-                          return null;
-                        },
-                        itemBuilder: (context, account) => Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 5,
-                            vertical: 5,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "${account.accNumber} | ${account.accName}",
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodyLarge,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        itemToString: (acc) =>
-                            "${acc.accNumber} | ${acc.accName}",
-                        stateToLoading: (state) =>
-                            state is GlAccountsLoadingState,
-                        loadingBuilder: (context) => const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 3),
-                        ),
-                        stateToItems: (state) {
-                          if (state is GlAccountLoadedState) {
-                            return state.gl;
-                          }
-                          return [];
-                        },
-                        onSelected: (value) {
-                          setState(() {
-                            accNumber = value.accNumber;
-                          });
-                        },
-                        noResultsText: locale.noDataFound,
-                        showClearButton: true,
+                        ],
                       ),
+                      Row(
+                        children: [
+                          ZOutlineButton(
+                            width: 100,
+                            icon: FontAwesomeIcons.filePdf,
+                            label: Text("PDF"),
+                            onPressed: (){
+                              showDialog(
+                                context: context,
+                                builder:
+                                    (_) => PrintPreviewDialog<AccountStatementModel>(
+                                  data: accountStatementModel,
+                                  company: company,
+                                  buildPreview: ({
+                                    required data,
+                                    required language,
+                                    required orientation,
+                                    required pageFormat,
+                                  }) {
+                                    return AccountStatementPrintSettings().printPreview(
+                                        company: company,
+                                        language: language,
+                                        orientation:
+                                        orientation,
+                                        pageFormat:
+                                        pageFormat,
+                                        info: accountStatementModel
+                                    );
+                                  },
+                                  onPrint: ({
+                                    required data,
+                                    required language,
+                                    required orientation,
+                                    required pageFormat,
+                                    required selectedPrinter,
+                                  }) {
+                                    return AccountStatementPrintSettings()
+                                        .printDocument(
+                                      statement: records,
+                                      company: company,
+                                      language: language,
+                                      orientation:
+                                      orientation,
+                                      pageFormat:
+                                      pageFormat,
+                                      selectedPrinter:
+                                      selectedPrinter,
+                                      info: accountStatementModel,
+                                    );
+                                  },
+                                  onSave: ({
+                                    required data,
+                                    required language,
+                                    required orientation,
+                                    required pageFormat,
+                                  }) {
+                                    return AccountStatementPrintSettings().createDocument(
+                                      statement: records,
+                                      company: company,
+                                      language: language,
+                                      orientation:
+                                      orientation,
+                                      pageFormat:
+                                      pageFormat,
+                                      info: accountStatementModel,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                          SizedBox(width: 8),
+                          ZOutlineButton(
+                            isActive: true,
+                            icon: Icons.call_to_action_outlined,
+                            width: 100,
+                            onPressed: () {
+                              if (formKey.currentState!.validate()) {
+                                context.read<AccStatementBloc>().add(
+                                  LoadAccountStatementEvent(
+                                    accountNumber: accNumber!,
+                                    fromDate: fromDate,
+                                    toDate: toDate,
+                                  ),
+                                );
+                              }
+                            },
+                            label: Text(locale.apply),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                fromDateWidget(),
-                toDateWidget(),
-              ],
-            ),
-          ),
-          SizedBox(height: 15),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 100,
-                  child: Text(
-                    locale.txnDate,
-                    style: Theme.of(context).textTheme.titleSmall,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    spacing: 8,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 500,
+                        child:
+                            GenericTextfield<
+                              GlAccountsModel,
+                              GlAccountsBloc,
+                              GlAccountsState
+                            >(
+                              showAllOnFocus: true,
+                              controller: accountController,
+                              title: locale.accounts,
+                              hintText: locale.accNameOrNumber,
+                              isRequired: true,
+                              bloc: context.read<GlAccountsBloc>(),
+                              fetchAllFunction: (bloc) => bloc.add(
+                                LoadGlAccountEvent(
+                                  local: myLocale ?? "en",
+                                  categories: [5],
+                                ),
+                              ),
+                              searchFunction: (bloc, query) => bloc.add(
+                                LoadGlAccountEvent(
+                                  local: myLocale ?? "en",
+                                  categories: [5],
+                                  search: query,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return locale.required(locale.accounts);
+                                }
+                                return null;
+                              },
+                              itemBuilder: (context, account) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 5,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "${account.accNumber} | ${account.accName}",
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyLarge,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              itemToString: (acc) =>
+                                  "${acc.accNumber} | ${acc.accName}",
+                              stateToLoading: (state) =>
+                                  state is GlAccountsLoadingState,
+                              loadingBuilder: (context) => const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                ),
+                              ),
+                              stateToItems: (state) {
+                                if (state is GlAccountLoadedState) {
+                                  return state.gl;
+                                }
+                                return [];
+                              },
+                              onSelected: (value) {
+                                setState(() {
+                                  accNumber = value.accNumber;
+                                });
+                              },
+                              noResultsText: locale.noDataFound,
+                              showClearButton: true,
+                            ),
+                      ),
+                      fromDateWidget(),
+                      toDateWidget(),
+                    ],
                   ),
                 ),
 
-                SizedBox(
-                  width: 190,
-                  child: Text(
-                    locale.referenceNumber,
-                    style: Theme.of(context).textTheme.titleSmall,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 100,
+                        child: Text(
+                          locale.txnDate,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 190,
+                        child: Text(
+                          locale.referenceNumber,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          locale.narration,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 100,
+                        child: Text(
+                          textAlign: myLocale == "en"
+                              ? TextAlign.right
+                              : TextAlign.left,
+                          locale.debitTitle,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 100,
+                        child: Text(
+                          textAlign: myLocale == "en"
+                              ? TextAlign.right
+                              : TextAlign.left,
+                          locale.creditTitle,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 130,
+                        child: Text(
+                          textAlign: myLocale == "en"
+                              ? TextAlign.right
+                              : TextAlign.left,
+                          locale.balance,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-
+                Divider(
+                  endIndent: 10,
+                  indent: 10,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 Expanded(
-                  child: Text(
-                    locale.narration,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ),
+                  child: BlocBuilder<AccStatementBloc, AccStatementState>(
+                    builder: (context, state) {
+                      if (state is AccStatementLoadingState) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      if (state is AccStatementErrorState) {
+                        return Center(child: Text(state.message));
+                      }
+                      if (state is AccStatementLoadedState) {
+                        final records = state.accStatementDetails.records;
+                        if (records == null || records.isEmpty) {
+                          return Center(child: Text("No transactions found"));
+                        }
 
-                SizedBox(
-                  width: 100,
-                  child: Text(
-                    textAlign: myLocale == "en"? TextAlign.right : TextAlign.left,
-                    locale.debitTitle,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ),
-                SizedBox(
-                  width: 100,
-                  child: Text(
-                    textAlign: myLocale == "en"? TextAlign.right : TextAlign.left,
-                    locale.creditTitle,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ),
-                SizedBox(
-                  width: 150,
-                  child: Text(
-                    textAlign: myLocale == "en"? TextAlign.right : TextAlign.left,
-                    locale.balance,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Divider(
-            endIndent: 10,
-            indent: 10,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          Expanded(
-            child: BlocBuilder<AccStatementBloc, AccStatementState>(
-              builder: (context, state) {
-                if (state is AccStatementLoadingState) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (state is AccStatementErrorState) {
-                  return Center(child: Text(state.message));
-                }
-                if (state is AccStatementLoadedState) {
-                  final records = state.accStatementDetails.records;
-                  if (records == null || records.isEmpty) {
-                    return Center(child: Text("No transactions found"));
-                  }
-
-                  return ListView.builder(
-                    itemCount: records.length,
-                    itemBuilder: (context, index) {
-                      final stmt = records[index];
-
-                      return InkWell(
-                        hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
-                        highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
-                        onTap: () {
-                          context.read<TxnReferenceBloc>().add(
-                            FetchTxnByReferenceEvent(stmt.trnReference??""),
-                          );
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 15,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: index.isOdd
-                                ? Theme.of(
-                              context,
-                            ).colorScheme.primary.withValues(alpha: 0.05)
-                                : Colors.transparent,
-                          ),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 100,
-                                child: Text(
-                                  stmt.trnEntryDate?.toFormattedDate() ?? "",
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium,
+                        return ListView.builder(
+                          itemCount: records.length,
+                          itemBuilder: (context, index) {
+                            final stmt = records[index];
+                            Color bg =
+                                stmt.trdNarration == "Opening Balance" ||
+                                    stmt.trdNarration == "Closing Balance"
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.secondary;
+                            bool isOp =
+                                stmt.trdNarration == "Opening Balance" ||
+                                stmt.trdNarration == "Closing Balance";
+                            return InkWell(
+                              hoverColor: Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.05),
+                              highlightColor: Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.05),
+                              onTap: isOp
+                                  ? null
+                                  : () {
+                                      context.read<TxnReferenceBloc>().add(
+                                        FetchTxnByReferenceEvent(
+                                          stmt.trnReference ?? "",
+                                        ),
+                                      );
+                                    },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: index.isOdd
+                                      ? Theme.of(context).colorScheme.primary
+                                            .withValues(alpha: 0.05)
+                                      : Colors.transparent,
+                                ),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 100,
+                                      child: Text(
+                                        stmt.trnEntryDate?.toFormattedDate() ??
+                                            "",
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.titleSmall,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 190,
+                                      child: Text(stmt.trnReference ?? ""),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        stmt.trdNarration ?? "",
+                                        style: TextStyle(color: bg),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 100,
+                                      child: Text(
+                                        textAlign: myLocale == "en"
+                                            ? TextAlign.right
+                                            : TextAlign.left,
+                                        "${stmt.debit?.toAmount()}",
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 100,
+                                      child: Text(
+                                        textAlign: myLocale == "en"
+                                            ? TextAlign.right
+                                            : TextAlign.left,
+                                        "${stmt.credit?.toAmount()}",
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 130,
+                                      child: Text(
+                                        textAlign: myLocale == "en"
+                                            ? TextAlign.right
+                                            : TextAlign.left,
+                                        "${stmt.total?.toAmount()}",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall
+                                            ?.copyWith(color: bg),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              SizedBox(
-                                width: 190,
-                                child: Text(stmt.trnReference ?? ""),
-                              ),
-                              Expanded(child: Text(stmt.trdNarration ?? "")),
-                              SizedBox(
-                                width: 100,
-                                child: Text(
-                                  textAlign: myLocale == "en"? TextAlign.right : TextAlign.left,
-                                  "${stmt.debit?.toAmount()}",
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 100,
-                                child: Text(
-                                  textAlign: myLocale == "en"? TextAlign.right : TextAlign.left,
-                                  "${stmt.credit?.toAmount()}",
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 150,
-                                child: Text(
-                                  textAlign: myLocale == "en"? TextAlign.right : TextAlign.left,
-                                     "${stmt.total?.toAmount()} ${state.accStatementDetails.actCurrency}",
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                              ),
-                            ],
-                          ),
+                            );
+                          },
+                        );
+                      }
+                      return Center(
+                        child: NoDataWidget(
+                          title: "Account Statement",
+                          message:
+                              "Select an account and date range to view statement",
+                          enableAction: false,
                         ),
                       );
                     },
-                  );
-                }
-                return Center(child: Text("Select an account and date range to view statement"));
-              },
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      );
-  },
-),
+          );
+        },
+      ),
     );
   }
 

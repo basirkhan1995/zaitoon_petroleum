@@ -4,9 +4,11 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'outline_button.dart';
 
 class NoDataWidget extends StatelessWidget {
+  final String? title;
   final String? message;
   final VoidCallback? onRefresh;
-  const NoDataWidget({super.key,this.message,this.onRefresh});
+  final bool enableAction;
+  const NoDataWidget({super.key,this.title, this.message,this.onRefresh,this.enableAction = true});
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +21,12 @@ class NoDataWidget extends StatelessWidget {
                 width: 300,
                 child:Image.asset("assets/images/noData.png")
             ),
+            if(title !=null && title!.isNotEmpty)
+            Text(title??"", style: Theme.of(context).textTheme.titleMedium),
             message == null? SizedBox() : Text(message??AppLocalizations.of(context)!.noDataFound,
-                style: Theme.of(context).textTheme.titleMedium),
-            Text(AppLocalizations.of(context)!.errorHint,
-                style: Theme.of(context).textTheme.bodySmall),
-           SizedBox(height: 15),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.secondary.withValues(alpha: .7))),
+            SizedBox(height: 15),
+            if(enableAction)
             ZOutlineButton(
               width: 100,
               icon: Icons.refresh,

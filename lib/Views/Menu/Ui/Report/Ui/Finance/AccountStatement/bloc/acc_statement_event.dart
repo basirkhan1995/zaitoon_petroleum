@@ -13,3 +13,9 @@ class LoadAccountStatementEvent extends AccStatementEvent{
   @override
   List<Object?> get props => [accountNumber, fromDate, toDate];
 }
+
+class ResetAccStmtEvent extends AccStatementEvent{
+  @override
+
+  List<Object?> get props => [];
+}
