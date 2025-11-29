@@ -468,19 +468,20 @@ class _DesktopState extends State<_Desktop> {
                                         textAlign: myLocale == "en"
                                             ? TextAlign.right
                                             : TextAlign.left,
-                                        "${stmt.status} ${stmt.debit?.toAmount()}",
+                                        "${stmt.debit?.toAmount()}",
                                         style: Theme.of(
                                           context,
                                         ).textTheme.bodyMedium,
                                       ),
                                     ),
+
                                     SizedBox(
                                       width: 100,
                                       child: Text(
                                         textAlign: myLocale == "en"
                                             ? TextAlign.right
                                             : TextAlign.left,
-                                        "${stmt.status} ${stmt.credit?.toAmount()}",
+                                        "${stmt.credit?.toAmount()}",
                                         style: Theme.of(
                                           context,
                                         ).textTheme.bodyMedium,
@@ -499,6 +500,7 @@ class _DesktopState extends State<_Desktop> {
                                             ?.copyWith(color: bg),
                                       ),
                                     ),
+                                    Text(stmt.status??"",style: TextStyle(color: Theme.of(context).colorScheme.error),),
                                   ],
                                 ),
                               ),

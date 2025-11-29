@@ -59,22 +59,22 @@ flutter:
   fonts:
     - family: NotoSans
       fonts:
-        - asset: assets/fonts/NotoSans/NotoSans-Regular.ttf
-        - asset: assets/fonts/NotoSans/NotoSans-Bold.ttf
-        - asset: assets/fonts/NotoSans/NotoSans-Medium.ttf
-        - asset: assets/fonts/NotoSans/NotoSans-Light.ttf
-        - asset: assets/fonts/NotoSans/NotoSans-Italic.ttf
+        - asset: assets/fonts/NotoSans/NotoSans-regular.ttf
+        - asset: assets/fonts/NotoSans/NotoSans-bold.ttf
+        - asset: assets/fonts/NotoSans/NotoSans-medium.ttf
+        - asset: assets/fonts/NotoSans/NotoSans-light.ttf
+        - asset: assets/fonts/NotoSans/NotoSans-italic.ttf
 
     - family: OpenSans
       fonts:
-        - asset: assets/fonts/OpenSans/OpenSans-Regular.ttf
-        - asset: assets/fonts/OpenSans/OpenSans-Bold.ttf
-        - asset: assets/fonts/OpenSans/OpenSans-Medium.ttf
-        - asset: assets/fonts/OpenSans/OpenSans-Light.ttf
+        - asset: assets/fonts/OpenSans/OpenSans-regular.ttf
+        - asset: assets/fonts/OpenSans/OpenSans-bold.ttf
+        - asset: assets/fonts/OpenSans/OpenSans-medium.ttf
+        - asset: assets/fonts/OpenSans/OpenSans-light.ttf
 
     - family: NotoNaskh
       fonts:
-        - asset: assets/fonts/NotoNaskh/NotoNaskhArabic-Regular.ttf
-        - asset: assets/fonts/NotoNaskh/NotoNaskhArabic-Bold.ttf
-        - asset: assets/fonts/NotoNaskh/NotoNaskhArabic-SemiBold.ttf
-        - asset: assets/fonts/NotoNaskh/NotoNaskhArabic-Medium.ttf
+        - asset: assets/fonts/NotoNaskh/NotoNaskhArabic-regular.ttf
+        - asset: assets/fonts/NotoNaskh/NotoNaskhArabic-bold.ttf
+        - asset: assets/fonts/NotoNaskh/NotoNaskhArabic-semiBold.ttf
+        - asset: assets/fonts/NotoNaskh/NotoNaskhArabic-medium.ttf
