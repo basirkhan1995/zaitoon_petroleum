@@ -41,5 +41,19 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
       }
     });
 
+    on<UpdateUserEvent>((event, emit) async{
+      emit(UsersLoadingState());
+      try{
+        final response = await _repo.editUser(newUser: event.newUser);
+        final String msg = response['msg'];
+        if (msg == "success") {
+          emit(UserSuccessState());
+          add(LoadUsersEvent());
+        }
+      }catch(e){
+        emit(UsersErrorState(e.toString()));
+      }
+    });
+
   }
 }

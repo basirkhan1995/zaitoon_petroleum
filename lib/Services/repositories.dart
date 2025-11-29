@@ -386,6 +386,19 @@ class Repositories {
       throw e.toString();
     }
   }
+  Future<Map<String, dynamic>> editUser({required UsersModel newUser}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/HR/users.php",
+          data: newUser.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
   ///Permissions ..............................................................
   Future<List<UserPermissionsModel>> getPermissions({required String usrName}) async {
     try {

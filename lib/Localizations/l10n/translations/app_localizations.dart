@@ -169,7 +169,7 @@ abstract class AppLocalizations {
   /// No description provided for @zaitoonTitle.
   ///
   /// In en, this message translates to:
-  /// **'Zaitoon Software Inc.'**
+  /// **'Zaitoon System'**
   String get zaitoonTitle;
 
   /// No description provided for @initialStock.
@@ -721,7 +721,7 @@ abstract class AppLocalizations {
   /// No description provided for @zPetroleum.
   ///
   /// In en, this message translates to:
-  /// **'Zaitoon Petroleum Software'**
+  /// **'Zaitoon System'**
   String get zPetroleum;
 
   /// No description provided for @hijriShamsi.

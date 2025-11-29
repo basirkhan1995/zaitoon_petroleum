@@ -18,3 +18,10 @@ class AddUserEvent extends UsersEvent{
   @override
   List<Object?> get props => [newUser];
 }
+
+class UpdateUserEvent extends UsersEvent{
+  final UsersModel newUser;
+  const UpdateUserEvent(this.newUser);
+  @override
+  List<Object?> get props => [newUser];
+}

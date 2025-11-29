@@ -46,7 +46,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zaitoonSlogan => 'Empowering Ideas. Building Trust';
 
   @override
-  String get zaitoonTitle => 'Zaitoon Software Inc.';
+  String get zaitoonTitle => 'Zaitoon System';
 
   @override
   String get initialStock => 'Initial Stock';
@@ -322,7 +322,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pm => 'PM';
 
   @override
-  String get zPetroleum => 'Zaitoon Petroleum Software';
+  String get zPetroleum => 'Zaitoon System';
 
   @override
   String get hijriShamsi => 'Hijri Shamsi';
