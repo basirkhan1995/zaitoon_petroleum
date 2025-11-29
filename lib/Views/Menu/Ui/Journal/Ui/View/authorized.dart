@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
-import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../../../Features/Other/utils.dart';
 import '../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
@@ -94,7 +92,7 @@ class _DesktopState extends State<_Desktop> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
+                  horizontal: 10.0,
                   vertical: 8,
                 ),
                 child: Row(
@@ -127,40 +125,40 @@ class _DesktopState extends State<_Desktop> {
               ),
               SizedBox(height: 10),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Row(
                   children: [
                     SizedBox(
                       width: 140,
-                      child: Text(locale.txnDate, style: textTheme.titleMedium),
+                      child: Text(locale.txnDate, style: textTheme.titleSmall),
                     ),
                     SizedBox(width: 20),
                     Expanded(
                       child: Text(
                         locale.referenceNumber,
-                        style: textTheme.titleMedium,
+                        style: textTheme.titleSmall,
                       ),
                     ),
                     SizedBox(
                       width: 110,
-                      child: Text(locale.txnType, style: textTheme.titleMedium),
+                      child: Text(locale.txnType, style: textTheme.titleSmall),
                     ),
                     SizedBox(width: 20),
                     SizedBox(
                       width: 110,
-                      child: Text(locale.maker, style: textTheme.titleMedium),
+                      child: Text(locale.maker, style: textTheme.titleSmall),
                     ),
                     SizedBox(
                       width: 110,
-                      child: Text(locale.checker, style: textTheme.titleMedium),
+                      child: Text(locale.checker, style: textTheme.titleSmall),
                     ),
                     SizedBox(width: 20),
                   ],
                 ),
               ),
               Divider(
-                indent: 8,
-                endIndent: 8,
+                indent: 10,
+                endIndent: 10,
                 color: Theme.of(context).colorScheme.primary,
               ),
               Expanded(

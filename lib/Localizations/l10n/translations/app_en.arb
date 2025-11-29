@@ -132,7 +132,7 @@
   "allTransactions": "All Transactions",
   "deposit": "Deposit",
   "withdraw": "Withdraw",
-  "accountTransfer": "Account Transfer",
+  "accountTransfer": "Fund Transfer",
   "fxTransaction": "FX Transaction",
   "expense": "Expenses",
   "returnGoods": "Return Goods",

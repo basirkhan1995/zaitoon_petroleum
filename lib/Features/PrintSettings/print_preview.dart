@@ -197,7 +197,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
     return Container(
       margin: const EdgeInsets.all(8),
       padding: const EdgeInsets.all(12),
-      width: 230,
+      width: 250,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(5),
@@ -254,14 +254,6 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
             ],
           ),
           SizedBox(height: 5),
-          Row(
-            children: [
-              Expanded( // Wrap with Expanded to ensure proper layout
-                child: _buildPagesField(context),
-              ),
-            ],
-          ),
-          const SizedBox(height: 1),
           PrinterDropdown(
             onPrinterSelected: (value) => context.read<PrinterCubit>().setPrinter(value),
           ),

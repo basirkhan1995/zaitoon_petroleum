@@ -47,6 +47,42 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
        emit(TransactionErrorState(e.toString()));
       }
     });
+    on<OnACTATTransactionEvent>((event, emit) async{
+      final locale = localizationService.loc;
+      emit(TxnLoadingState());
+      try{
+        final response = await _repo.fundTransfer(newTransaction: event.transaction);
+        final msg = response['msg'];
+        print("Cash: $msg");
+        switch (msg) {
+          case "success":
+            emit(TransactionSuccessState());
+            break;
+
+          case "currency unmatch":
+            emit(TransactionErrorState("Currency not match, same currency only allowed"));
+            break;
+
+          case "no limit":
+            emit(TransactionErrorState(locale.accountLimit));
+            break;
+
+          case "failed":
+            emit(TransactionErrorState("Operation failed"));
+            break;
+
+          case "blocked":
+            emit(TransactionErrorState(locale.blockedMessage));
+            break;
+
+          default:
+            emit(TransactionErrorState(msg));
+        }
+
+      }catch(e){
+        emit(TransactionErrorState(e.toString()));
+      }
+    });
     on<UpdatePendingTransactionEvent>((event, emit) async{
       final locale = localizationService.loc;
       emit(TxnUpdateLoadingState());

@@ -21,6 +21,12 @@ class TransactionsModel {
   final int? account;
   final String? amount;
 
+  ///Account to Account
+  final int? fromAccount;
+  final int? toAccount;
+  final String? fromAccCy;
+  final String? toAccCcy;
+
   TransactionsModel({
     this.trnReference,
     this.trnType,
@@ -35,7 +41,12 @@ class TransactionsModel {
     this.narration,
     this.amount,
     this.account,
-    this.accCcy
+    this.accCcy,
+
+    this.fromAccount,
+    this.toAccount,
+    this.fromAccCy,
+    this.toAccCcy
   });
 
   TransactionsModel copyWith({
@@ -78,5 +89,10 @@ class TransactionsModel {
     "accCcy": accCcy,
     "amount": amount,
     "narration": narration,
+
+    "fromAccount": fromAccount,
+    "fromAccCcy": fromAccCy,
+    "toAccount": toAccount,
+    "toAccCcy": toAccCcy,
   };
 }

@@ -168,7 +168,7 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
               decoration: BoxDecoration(
                 color: color.surface,
                 borderRadius: BorderRadius.circular(widget.radius ?? 4),
-                border: Border.all(color: color.primary.withAlpha(80)),
+                border: Border.all(color: color.outline.withValues(alpha: .3)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -190,8 +190,9 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
                   widget.disableAction
                       ? const SizedBox()
                       : Icon(
+                     size: 20,
                     _isOpen ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                    color: color.primary,
+                    color: color.outline.withValues(alpha: .9),
                   ),
                 ],
               ),
@@ -227,7 +228,7 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
                   decoration: BoxDecoration(
                     color: color.surface,
                     border: Border.all(
-                      color: color.primary.withAlpha(80),
+                      color: color.outline.withValues(alpha: .3),
                       width: 1,
                     ),
 

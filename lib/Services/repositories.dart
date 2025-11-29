@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
@@ -548,19 +547,6 @@ class Repositories {
   }
 
   /// Transactions | Cash Deposit | Withdraw ...................................
-  Future<Map<String, dynamic>> cashFlowOperations({required TransactionsModel newTransaction}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/journal/cashWD.php",
-          data: newTransaction.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
   Future<List<TransactionsModel>> getTransactionsByStatus({String? status}) async {
     try {
       // Build query parameters dynamically
@@ -616,6 +602,33 @@ class Repositories {
         return TxnByReferenceModel.fromMap(data.first);
       }
       throw Exception("Invalid API response format");
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<Map<String, dynamic>> cashFlowOperations({required TransactionsModel newTransaction}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/journal/cashWD.php",
+          data: newTransaction.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> fundTransfer({required TransactionsModel newTransaction}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/journal/fundTransfer.php",
+          data: newTransaction.toMap()
+      );
+      return response.data;
     } on DioException catch (e) {
       throw '${e.message}';
     } catch (e) {
@@ -851,11 +864,7 @@ class Repositories {
 
   ///Reports ...................................................................
   // In your API service method
-  Future<AccountStatementModel> getAccountStatement({
-    required int account,
-    required String fromDate,
-    required String toDate,
-  }) async {
+  Future<AccountStatementModel> getAccountStatement({required int account, required String fromDate, required String toDate,}) async {
     try {
       final response = await api.post(
           endpoint: "/reports/accountStatement.php",

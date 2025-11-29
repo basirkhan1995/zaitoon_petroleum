@@ -371,7 +371,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get withdraw => 'Withdraw';
 
   @override
-  String get accountTransfer => 'Account Transfer';
+  String get accountTransfer => 'Fund Transfer';
 
   @override
   String get fxTransaction => 'FX Transaction';

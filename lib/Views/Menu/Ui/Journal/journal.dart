@@ -6,7 +6,6 @@ import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/View/all_transactions.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/View/authorized.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/View/pending.dart';
@@ -27,6 +26,7 @@ import 'package:flutter/services.dart';
 import '../../../Auth/bloc/auth_bloc.dart';
 import '../Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import '../Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
+
 
 class JournalView extends StatelessWidget {
   const JournalView({super.key});
@@ -101,7 +101,9 @@ class _DesktopState extends State<_Desktop> {
     final baseCurrency = _getBaseCurrency(context);
     final locale = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
+    final color = Theme.of(context).colorScheme;
     final state = context.watch<AuthBloc>().state;
+    TextStyle? myStyle = textTheme.titleSmall?.copyWith(color: color.outline.withValues(alpha: .7));
 
     if (state is! AuthenticatedState) {
       return const SizedBox();
@@ -131,9 +133,7 @@ class _DesktopState extends State<_Desktop> {
                 builder: (context, setState) {
                   return ZFormDialog(
                     width: 600,
-                    icon: trnType == "CHDP"
-                        ? Icons.arrow_circle_down_rounded
-                        : Icons.arrow_circle_up_rounded,
+                    icon: trnType == "CHDP" ? Icons.arrow_circle_down_rounded : Icons.arrow_circle_up_rounded,
                     title: trnType == "CHDP" ? locale.deposit : locale.withdraw,
                     onAction: () {
                       context.read<TransactionsBloc>().add(
@@ -885,266 +885,429 @@ class _DesktopState extends State<_Desktop> {
       );
     }
     void accountToAccount({String? trnType}) {
-      final locale = AppLocalizations.of(context)!;
+    final locale = AppLocalizations.of(context)!;
 
-      final creditAccountNumber = TextEditingController();
-      final debitAccountNumber = TextEditingController();
+      /// Debit .......................................
+      final creditAccountCtrl = TextEditingController();
+      String? creditAccCurrency;
+      String? creditCurrentBalance;
+      String? creditAvailableBalance;
+      int? creditAccNumber;
+      String? creditAccName;
+      String? creditAccountLimit;
+      String? creditCcySymbol;
+      int? creditStatus;
+
+      /// Credit .....................................
+      final debitAccountCtrl = TextEditingController();
+      String? debitAccCurrency;
+      String? debitCurrentBalance ;
+      String? debitAvailableBalance;
+      int? debitAccNumber;
+      String? debitAccName;
+      String? debitAccountLimit;
+      String? debitCcySymbol;
+      int? debitStatus;
+
       final TextEditingController amount = TextEditingController();
       final TextEditingController narration = TextEditingController();
-
-      // String? creditAccCurrency;
-      // String? debitAccCurrency;
-      // int? creditAccount;
-      // int? debitAccount;
 
       showDialog(
         context: context,
         builder: (context) {
           return BlocBuilder<TransactionsBloc, TransactionsState>(
             builder: (context, trState) {
-              return ZFormDialog(
-
-                width: 700,
-                icon: Icons.swap_horiz_rounded,
-                title: locale.accountTransfer,
-                onAction: null,
-                actionLabel: trState is TxnLoadingState
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          color: Theme.of(context).colorScheme.surface,
-                        ),
-                      )
-                    : Text(locale.create),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          spacing: 5,
+              return StatefulBuilder(
+                builder: (context,setState) {
+                  return ZFormDialog(
+                    width: 800,
+                    icon: Icons.swap_horiz_rounded,
+                    title: locale.accountTransfer,
+                    onAction: (){
+                      context.read<TransactionsBloc>().add(OnACTATTransactionEvent(TransactionsModel(
+                        usrName: login.usrName,
+                        fromAccount: debitAccNumber,
+                        fromAccCy: debitAccCurrency,
+                        toAccount: creditAccNumber,
+                        toAccCcy: creditAccCurrency,
+                        amount: amount.text.cleanAmount,
+                        narration: narration.text,
+                      )));
+                    },
+                    actionLabel: trState is TxnLoadingState
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              color: Theme.of(context).colorScheme.surface,
+                            ),
+                          )
+                        : Text(locale.create),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Expanded(
-                              child:
-                                  GenericTextfield<
-                                    GlAccountsModel,
-                                    GlAccountsBloc,
-                                    GlAccountsState
-                                  >(
-                                    showAllOnFocus: true,
-                                    controller: creditAccountNumber,
-                                    title: locale.accounts,
-                                    hintText: locale.accNameOrNumber,
-                                    isRequired: true,
-                                    bloc: context.read<GlAccountsBloc>(),
-                                    fetchAllFunction: (bloc) => bloc.add(
-                                      LoadGlAccountEvent(
-                                        local: myLocale ?? "en",
-                                        categories: [5],
-                                        excludeAccounts: [10101010],
-                                      ),
-                                    ),
-                                    searchFunction: (bloc, query) => bloc.add(
-                                      LoadGlAccountEvent(
-                                        local: myLocale ?? "en",
-                                        categories: [5],
-                                        excludeAccounts: [10101010],
-                                        search: query,
-                                      ),
-                                    ),
-                                    validator: (value) {
-                                      if (value.isEmpty) {
-                                        return locale.required(locale.accounts);
-                                      }
-                                      return null;
-                                    },
-                                    itemBuilder: (context, account) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 5,
-                                        vertical: 5,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                            Row(
+                              spacing: 8,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                               ///Debit Section
+                               Expanded(
+                                 child: Column(
+                                   children: [
+                                     GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
+                                       showAllOnFocus: true,
+                                       controller: debitAccountCtrl,
+                                       title: locale.accounts,
+                                       hintText: locale.accNameOrNumber,
+                                       isRequired: true,
+                                       bloc: context.read<AccountsBloc>(),
+                                       fetchAllFunction: (bloc) => bloc.add(
+                                         LoadStkAccountsEvent(),
+                                       ),
+                                       searchFunction: (bloc, query) => bloc.add(
+                                         LoadStkAccountsEvent(),
+                                       ),
+                                       validator: (value) {
+                                         if (value.isEmpty) {
+                                           return locale.required(locale.accounts);
+                                         }
+                                         return null;
+                                       },
+                                       itemBuilder: (context, account) => Padding(
+                                         padding: const EdgeInsets.symmetric(
+                                           horizontal: 5,
+                                           vertical: 5,
+                                         ),
+                                         child: Column(
+                                           crossAxisAlignment: CrossAxisAlignment.start,
+                                           children: [
+                                             Row(
+                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                               children: [
+                                                 Text(
+                                                   "${account.accnumber} | ${account.accName}",
+                                                   style: Theme.of(context).textTheme.bodyMedium,
+                                                 ),
+                                               ],
+                                             ),
+                                           ],
+                                         ),
+                                       ),
+                                       itemToString: (acc) =>
+                                       "${acc.accnumber} | ${acc.accName}",
+                                       stateToLoading: (state) =>
+                                       state is AccountLoadingState,
+                                       loadingBuilder: (context) => const SizedBox(
+                                         width: 16,
+                                         height: 16,
+                                         child: CircularProgressIndicator(strokeWidth: 3),
+                                       ),
+                                       stateToItems: (state) {
+                                         if (state is StkAccountLoadedState) {
+                                           return state.accounts;
+                                         }
+                                         return [];
+                                       },
+                                       onSelected: (value) {
+                                         setState(() {
+                                           debitAccNumber = value.accnumber;
+                                           debitCcySymbol = value.ccySymbol;
+                                           debitAccCurrency = value.actCurrency;
+                                           debitAccName = value.accName ?? "";
+                                           debitAvailableBalance = value.avilBalance;
+                                           debitCurrentBalance = value.curBalance;
+                                           debitAccountLimit = value.actCreditLimit;
+                                           debitStatus = value.actStatus ?? 0;
+                                         });
+                                       },
+                                       noResultsText: locale.noDataFound,
+                                       showClearButton: true,
+                                     ),
+                                     if(debitAccName !=null && debitAccName!.isNotEmpty)
+                                     Cover(
+                                         color: color.surface,
+                                         child: Column(
+                                       children: [
+                                         if(debitAccName !=null && debitAccName!.isNotEmpty)
+                                           Padding(
+                                             padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 3),
+                                             child: Row(
+                                               children: [
+                                                 Text(locale.details,style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                   color: Theme.of(context).colorScheme.primary
+                                                 ))
+                                               ],
+                                             ),
+                                           ),
+                                         if(debitAccName !=null && debitAccName!.isNotEmpty)
+                                           Container(
+                                             padding: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+                                             width: double.infinity,
+                                             child: Row(
+                                               spacing: 5,
+                                               mainAxisAlignment: MainAxisAlignment.start,
+                                               crossAxisAlignment: CrossAxisAlignment.start,
+                                               children: [
+                                                 Column(
+                                                   mainAxisAlignment: MainAxisAlignment.start,
+                                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                                   spacing: 5,
+                                                   children: [
+                                                     SizedBox(
+                                                         width: 170,
+                                                         child: Text(locale.accountNumber,style: myStyle)),
+                                                     SizedBox(
+                                                         width: 170,
+                                                         child: Text(locale.accountName,style: myStyle)),
+                                                     SizedBox(
+                                                         width: 170,
+                                                         child: Text(locale.currencyTitle,style: myStyle)),
+                                                     SizedBox(
+                                                         width: 170,
+                                                         child: Text(locale.accountLimit,style: myStyle)),
+                                                     SizedBox(
+                                                         width: 170,
+                                                         child: Text(locale.status,style: myStyle)),
+                                                     SizedBox(
+                                                         width: 170,
+                                                         child: Text(locale.currentBalance,style: myStyle)),
+                                                     SizedBox(
+                                                         width: 170,
+                                                         child: Text(locale.availableBalance,style: myStyle)),
+                                                   ],
+                                                 ),
+                                                 Column(
+                                                   mainAxisAlignment: MainAxisAlignment.start,
+                                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                                   spacing: 5,
+                                                   children: [
+                                                     Text(debitAccNumber.toString()),
+                                                     Text(debitAccName??""),
+                                                     Text(debitAccCurrency??""),
+                                                     Text(debitAccountLimit?.toAmount()??""),
+                                                     Text(debitStatus == 1? locale.active : locale.blocked),
+                                                     Text("${debitCurrentBalance?.toAmount()}$debitCcySymbol"),
+                                                     Text("${debitAvailableBalance?.toAmount()}$debitCcySymbol"),
+                                                   ],
+                                                 ),
+                                               ],
+                                             ),
+                                           ),
+                                       ],
+                                     ))
+                                   ],
+                                 ),
+                               ),
+
+                               ///Credit Section
+                               Expanded(
+                                  child: Column(
+                                    children: [
+                                      GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
+                                        showAllOnFocus: true,
+                                        controller: creditAccountCtrl,
+                                        title: locale.accounts,
+                                        hintText: locale.accNameOrNumber,
+                                        isRequired: true,
+                                        bloc: context.read<AccountsBloc>(),
+                                        fetchAllFunction: (bloc) => bloc.add(
+                                          LoadStkAccountsEvent(),
+                                        ),
+                                        searchFunction: (bloc, query) => bloc.add(
+                                          LoadStkAccountsEvent(),
+                                        ),
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return locale.required(locale.accounts);
+                                          }
+                                          return null;
+                                        },
+                                        itemBuilder: (context, account) => Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 5,
+                                            vertical: 5,
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                "${account.accName}",
-                                                style: Theme.of(
-                                                  context,
-                                                ).textTheme.bodyLarge,
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    "${account.accnumber} | ${account.accName}",
+                                                    style: Theme.of(context).textTheme.bodyLarge,
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
-                                        ],
+                                        ),
+                                        itemToString: (acc) =>
+                                        "${acc.accnumber} | ${acc.accName}",
+                                        stateToLoading: (state) =>
+                                        state is AccountLoadingState,
+                                        loadingBuilder: (context) => const SizedBox(
+                                          width: 16,
+                                          height: 16,
+                                          child: CircularProgressIndicator(strokeWidth: 3),
+                                        ),
+                                        stateToItems: (state) {
+                                          if (state is StkAccountLoadedState) {
+                                            return state.accounts;
+                                          }
+                                          return [];
+                                        },
+                                        onSelected: (value) {
+                                          setState(() {
+                                            creditAccNumber = value.accnumber;
+                                            creditCcySymbol = value.ccySymbol;
+                                            creditAccCurrency = value.actCurrency;
+                                            creditAccName = value.accName ?? "";
+                                            creditAvailableBalance = value.avilBalance;
+                                            creditCurrentBalance = value.curBalance;
+                                            creditAccountLimit = value.actCreditLimit;
+                                            creditStatus = value.actStatus ?? 0;
+                                          });
+                                        },
+                                        noResultsText: locale.noDataFound,
+                                        showClearButton: true,
                                       ),
-                                    ),
-                                    itemToString: (acc) => "${acc.accName}",
-                                    stateToLoading: (state) =>
-                                        state is GlAccountsLoadingState,
-                                    loadingBuilder: (context) => const SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 3,
-                                      ),
-                                    ),
-                                    stateToItems: (state) {
-                                      if (state is GlAccountLoadedState) {
-                                        return state.gl;
-                                      }
-                                      return [];
-                                    },
-                                    onSelected: (value) {
-                                      setState(() {
-                                        // usrOwnerId = value.perId!;
-                                      });
-                                    },
-                                    noResultsText: locale.noDataFound,
-                                    showClearButton: true,
-                                  ),
-                            ),
-                            Expanded(
-                              child:
-                                  GenericTextfield<
-                                    GlAccountsModel,
-                                    GlAccountsBloc,
-                                    GlAccountsState
-                                  >(
-                                    showAllOnFocus: true,
-                                    controller: debitAccountNumber,
-                                    title: locale.accounts,
-                                    hintText: locale.accNameOrNumber,
-                                    isRequired: true,
-                                    bloc: context.read<GlAccountsBloc>(),
-                                    fetchAllFunction: (bloc) => bloc.add(
-                                      LoadGlAccountEvent(
-                                        local: myLocale ?? "en",
-                                        categories: [5],
-                                        excludeAccounts: [10101010],
-                                      ),
-                                    ),
-                                    searchFunction: (bloc, query) => bloc.add(
-                                      LoadGlAccountEvent(
-                                        local: myLocale ?? "en",
-                                        categories: [5],
-                                        excludeAccounts: [10101010],
-                                        search: query,
-                                      ),
-                                    ),
-                                    validator: (value) {
-                                      if (value.isEmpty) {
-                                        return locale.required(locale.accounts);
-                                      }
-                                      return null;
-                                    },
-                                    itemBuilder: (context, account) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 5,
-                                        vertical: 5,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                "${account.accName}",
-                                                style: Theme.of(
-                                                  context,
-                                                ).textTheme.bodyLarge,
+                                      if(creditAccName !=null && creditAccName!.isNotEmpty)
+                                      Cover(
+                                        color: Theme.of(context).colorScheme.surface,
+                                        child: Column(
+                                          children: [
+                                            if(creditAccName !=null && creditAccName!.isNotEmpty)
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 3),
+                                                child: Row(
+                                                  children: [
+                                                    Text(locale.details,style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                      color: Theme.of(context).colorScheme.primary
+                                                    ))
+                                                  ],
+                                                ),
                                               ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    itemToString: (acc) => "${acc.accName}",
-                                    stateToLoading: (state) =>
-                                        state is GlAccountsLoadingState,
-                                    loadingBuilder: (context) => const SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 3,
-                                      ),
-                                    ),
-                                    stateToItems: (state) {
-                                      if (state is GlAccountLoadedState) {
-                                        return state.gl;
-                                      }
-                                      return [];
-                                    },
-                                    onSelected: (value) {
-                                      setState(() {
-                                        // usrOwnerId = value.perId!;
-                                      });
-                                    },
-                                    noResultsText: locale.noDataFound,
-                                    showClearButton: true,
+                                            if(creditAccName !=null && creditAccName!.isNotEmpty)
+                                              Container(
+                                                padding: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+                                                width: double.infinity,
+                                                child: Row(
+                                                  spacing: 5,
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Column(
+                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      spacing: 5,
+                                                      children: [
+                                                        SizedBox(
+                                                            width: 170,
+                                                            child: Text(locale.accountNumber,style: myStyle)),
+                                                        SizedBox(
+                                                            width: 170,
+                                                            child: Text(locale.accountName,style: myStyle)),
+                                                        SizedBox(
+                                                            width: 170,
+                                                            child: Text(locale.currencyTitle,style: myStyle)),
+                                                        SizedBox(
+                                                            width: 170,
+                                                            child: Text(locale.accountLimit,style: myStyle)),
+                                                        SizedBox(
+                                                            width: 170,
+                                                            child: Text(locale.status,style: myStyle)),
+                                                        SizedBox(
+                                                            width: 170,
+                                                            child: Text(locale.currentBalance,style: myStyle)),
+                                                        SizedBox(
+                                                            width: 170,
+                                                            child: Text(locale.availableBalance,style: myStyle)),
+                                                      ],
+                                                    ),
+                                                    Column(
+                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      spacing: 5,
+                                                      children: [
+                                                        Text(creditAccNumber.toString()),
+                                                        Text(creditAccName??""),
+                                                        Text(creditAccCurrency??""),
+                                                        Text(creditAccountLimit?.toAmount()??""),
+                                                        Text(creditStatus == 1? locale.active : locale.blocked),
+                                                        Text("${creditCurrentBalance?.toAmount()}$creditCcySymbol"),
+                                                        Text("${creditAvailableBalance?.toAmount()}$creditCcySymbol"),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
                                   ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        ZTextFieldEntitled(
-                          isRequired: true,
-                          // onSubmit: (_)=> onSubmit(),
-                          keyboardInputType: TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                          inputFormat: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'[0-9.,]*'),
+                            SizedBox(height: 5),
+                            ZTextFieldEntitled(
+                              isRequired: true,
+                              // onSubmit: (_)=> onSubmit(),
+                              keyboardInputType: TextInputType.numberWithOptions(
+                                decimal: true,
+                              ),
+                              inputFormat: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9.,]*'),
+                                ),
+                                SmartThousandsDecimalFormatter(),
+                              ],
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return locale.required(locale.exchangeRate);
+                                }
+
+                                // Remove formatting (e.g. commas)
+                                final clean = value.replaceAll(
+                                  RegExp(r'[^\d.]'),
+                                  '',
+                                );
+                                final amount = double.tryParse(clean);
+
+                                if (amount == null || amount <= 0.0) {
+                                  return locale.amountGreaterZero;
+                                }
+
+                                return null;
+                              },
+                              controller: amount,
+                              title: locale.amount,
                             ),
-                            SmartThousandsDecimalFormatter(),
+                            ZTextFieldEntitled(
+                              // onSubmit: (_)=> onSubmit(),
+                              keyboardInputType: TextInputType.multiline,
+                              controller: narration,
+                              title: locale.narration,
+                            ),
+                            if(trState is TransactionErrorState)
+                              SizedBox(height: 10),
+                            Row(
+                              children: [
+                                trState is TransactionErrorState? Text(trState.message,style: textTheme.titleSmall?.copyWith(color: color.error)) : SizedBox()
+                              ],
+                            )
                           ],
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return locale.required(locale.exchangeRate);
-                            }
-
-                            // Remove formatting (e.g. commas)
-                            final clean = value.replaceAll(
-                              RegExp(r'[^\d.]'),
-                              '',
-                            );
-                            final amount = double.tryParse(clean);
-
-                            if (amount == null || amount <= 0.0) {
-                              return locale.amountGreaterZero;
-                            }
-
-                            return null;
-                          },
-                          controller: amount,
-                          title: locale.amount,
                         ),
-                        ZTextFieldEntitled(
-                          // onSubmit: (_)=> onSubmit(),
-                          keyboardInputType: TextInputType.multiline,
-                          controller: narration,
-                          title: locale.narration,
-                        ),
-                        if(trState is TransactionErrorState)
-                          SizedBox(height: 10),
-                        Row(
-                          children: [
-                            trState is TransactionErrorState? Text(trState.message) : SizedBox()
-                          ],
-                        )
-                      ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                }
               );
             },
           );
@@ -1304,18 +1467,8 @@ class _DesktopState extends State<_Desktop> {
                                 label: Text(locale.accountTransfer),
                                 icon: Icons.swap_horiz_rounded,
                                 width: double.infinity,
-                                onPressed: () =>
-                                    accountToAccount(trnType: "ATAT"),
+                                onPressed: () => accountToAccount(trnType: "ATAT"),
                               ),
-
-                            ZOutlineButton(
-                              toolTip: "F5",
-                              label: Text(locale.txnReprint),
-                              icon: Icons.print_rounded,
-                              width: double.infinity,
-                              onPressed: () => accountToAccount(trnType: "ATAT"),
-                            ),
-
                             SizedBox(height: 5),
                             Wrap(
                               spacing: 5,

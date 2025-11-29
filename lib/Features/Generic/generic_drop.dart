@@ -8,6 +8,7 @@ class CustomDropdown<T> extends StatefulWidget {
   final String? initialValue;
   final bool disableAction;
   final TextStyle? itemStyle;
+  final double? contentFontSize;
   final T? selectedItem;
   final Widget Function(T)? leadingBuilder;
   final String Function(T) itemLabel;
@@ -18,6 +19,7 @@ class CustomDropdown<T> extends StatefulWidget {
     super.key,
     required this.title,
     this.height,
+    this.contentFontSize,
     this.itemStyle,
     this.radius,
     this.leadingBuilder,
@@ -186,7 +188,7 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
                             final isSelected = item == _selectedItem;
                             return Material(
                               color: isSelected
-                                  ? color.primary.withValues(alpha: .05)
+                                  ? color.primary.withValues(alpha: .09)
                                   : Colors.transparent,
                               child: InkWell(
                                 onTap: () {
@@ -195,10 +197,10 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
                                   removeOverlay();
                                 },
                                 hoverColor: color.primary.withValues(
-                                  alpha: .05,
+                                  alpha: .09,
                                 ),
                                 highlightColor: color.primary.withValues(
-                                  alpha: .05,
+                                  alpha: .09,
                                 ),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(

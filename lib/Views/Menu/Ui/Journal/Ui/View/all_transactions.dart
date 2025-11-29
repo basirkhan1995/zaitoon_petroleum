@@ -89,7 +89,7 @@ class _DesktopState extends State<_Desktop> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(
-              horizontal: 8.0,
+              horizontal: 10.0,
               vertical: 8,
             ),
             child: Row(
@@ -122,35 +122,35 @@ class _DesktopState extends State<_Desktop> {
           ),
           SizedBox(height: 10),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
               children: [
                 SizedBox(
                     width: 140,
-                    child: Text(locale.txnDate,style: textTheme.titleMedium)),
+                    child: Text(locale.txnDate,style: textTheme.titleSmall)),
                 SizedBox(width: 20),
-               Expanded(child: Text(locale.referenceNumber,style: textTheme.titleMedium)),
+               Expanded(child: Text(locale.referenceNumber,style: textTheme.titleSmall)),
                 SizedBox(
                     width: 110,
-                    child: Text(locale.txnType,style: textTheme.titleMedium)),
-                SizedBox(width: 20),
-                SizedBox(
-                    width: 110,
-                    child: Text(locale.createdBy,style: textTheme.titleMedium)),
+                    child: Text(locale.txnType,style: textTheme.titleSmall)),
                 SizedBox(width: 20),
                 SizedBox(
                     width: 110,
-                    child: Text(locale.checker,style: textTheme.titleMedium)),
+                    child: Text(locale.createdBy,style: textTheme.titleSmall)),
+                SizedBox(width: 20),
+                SizedBox(
+                    width: 110,
+                    child: Text(locale.checker,style: textTheme.titleSmall)),
                 SizedBox(width: 20),
                 SizedBox(
                     width: 90,
-                    child: Text(locale.status,style: textTheme.titleMedium)),
+                    child: Text(locale.status,style: textTheme.titleSmall)),
 
               ],
             ),
           ),
           Divider(
-           indent: 8,endIndent: 8, color: Theme.of(context).colorScheme.primary,
+           indent: 10,endIndent: 10, color: Theme.of(context).colorScheme.primary,
           ),
           Expanded(
             child: BlocConsumer<TransactionsBloc, TransactionsState>(

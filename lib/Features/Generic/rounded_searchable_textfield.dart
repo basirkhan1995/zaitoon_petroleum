@@ -190,7 +190,7 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
               : Text(
             widget.noResultsText,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).hintColor,
+              color: Theme.of(context).colorScheme.outline.withValues(alpha: .7),
             ),
           ),
         ),
@@ -262,8 +262,8 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: widget.loadingBuilder?.call(context) ??
                 const SizedBox(
-                  width: 16,
-                  height: 16,
+                  width: 20,
+                  height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
           ),
@@ -309,7 +309,7 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
                     Text(
                         widget.title,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.secondary.withValues(alpha: .8),
+                          color: Theme.of(context).colorScheme.outline.withValues(alpha: .7),
                         )),
                     if (widget.isRequired)
                       Padding(

@@ -40,10 +40,12 @@ class _PrinterDropdownState extends State<PrinterDropdown> {
   @override
   Widget build(BuildContext context) {
     return CustomDropdown<Printer>(
+      itemStyle: TextStyle(fontSize: 12),
       title: AppLocalizations.of(context)!.printers,
       isLoading: _isLoading,
       initialValue: _selectedPrinter?.name ?? "No printers available",
       items: _printers,
+
       itemLabel: (printer) => printer.name,
       onItemSelected: (printer) {
         setState(() {

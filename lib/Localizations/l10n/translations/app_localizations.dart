@@ -817,7 +817,7 @@ abstract class AppLocalizations {
   /// No description provided for @accountTransfer.
   ///
   /// In en, this message translates to:
-  /// **'Account Transfer'**
+  /// **'Fund Transfer'**
   String get accountTransfer;
 
   /// No description provided for @fxTransaction.

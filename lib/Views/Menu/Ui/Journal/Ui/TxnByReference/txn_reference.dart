@@ -101,6 +101,7 @@ class _DesktopState extends State<_Desktop> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+
             BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
               listener: (context, state) {},
               builder: (context, state) {
@@ -297,21 +298,19 @@ class _DesktopState extends State<_Desktop> {
                                           },
                                           icon: isAuthorizeLoading? null : Icons.check_box_outlined,
                                           isActive: true,
-                                          label: isAuthorizeLoading
-                                              ? SizedBox(
+                                          label: isAuthorizeLoading ? SizedBox(
                                             width: 20,
                                             height: 20,
-
                                             child: CircularProgressIndicator(
                                               strokeWidth: 3,
                                               color: Theme.of(context).colorScheme.surface,
                                             ),
-                                          )
-                                              : Text(locale.authorize)),
+                                          ) : Text(locale.authorize)),
                                     ),
                                   if(showReverseButton)
                                     Expanded(
                                       child: ZOutlineButton(
+                                          isActive: true,
                                           onPressed: (){
                                             context.read<TransactionsBloc>().add(
                                               ReverseTxnEvent(
@@ -322,11 +321,11 @@ class _DesktopState extends State<_Desktop> {
                                           },
                                           icon: isReverseLoading? null : Icons.screen_rotation_alt_rounded,
                                           backgroundHover: Colors.orange,
+
                                           label: isReverseLoading
                                               ? SizedBox(
                                             width: 20,
                                             height: 20,
-
                                             child: CircularProgressIndicator(
                                               strokeWidth: 3,
                                               color: Theme.of(context).colorScheme.primary,
@@ -334,10 +333,11 @@ class _DesktopState extends State<_Desktop> {
                                           )
                                               : Text(locale.reverseTitle)),
                                     ),
-                                  if(showUpdateButton)
+                                    if(showUpdateButton)
                                     Expanded(
                                       child: ZOutlineButton(
                                           backgroundHover: Colors.green,
+                                          isActive: true,
                                           icon: isUpdateLoading? null : Icons.refresh,
                                           onPressed: (){
                                             context.read<TransactionsBloc>().add(UpdatePendingTransactionEvent(TransactionsModel(
@@ -359,10 +359,11 @@ class _DesktopState extends State<_Desktop> {
                                           )
                                               : Text(locale.update)),
                                     ),
-                                  if(showDeleteButton)
+                                    if(showDeleteButton)
                                     Expanded(
                                       child: ZOutlineButton(
                                           icon: isDeleteLoading? null : Icons.delete_outline_rounded,
+                                          isActive: true,
                                           backgroundHover: Theme.of(context).colorScheme.error,
                                           onPressed: (){
                                             context.read<TransactionsBloc>().add(DeletePendingTxnEvent(reference: loadedTxn?.trnReference??"",usrName: login.usrName??""));
