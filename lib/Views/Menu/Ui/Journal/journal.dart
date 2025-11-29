@@ -103,8 +103,9 @@ class _DesktopState extends State<_Desktop> {
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
     final state = context.watch<AuthBloc>().state;
-    TextStyle? myStyle = textTheme.titleSmall?.copyWith(color: color.outline.withValues(alpha: .7));
-
+    TextStyle? headerStyle = textTheme.titleMedium?.copyWith(color: color.primary);
+    TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.outline.withValues(alpha: .7));
+    TextStyle? bodyStyle = textTheme.titleSmall;
     if (state is! AuthenticatedState) {
       return const SizedBox();
     }
@@ -235,64 +236,75 @@ class _DesktopState extends State<_Desktop> {
                               showClearButton: true,
                             ),
                             if(accName !=null && accName!.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                              child: Row(
+                            Cover(
+                              color: color.surface,
+                              padding: EdgeInsets.symmetric(horizontal: 5,vertical: 8),
+                              child: Column(
                                 children: [
-                                  Text(locale.details,style: Theme.of(context).textTheme.titleMedium)
+                                  if(accName !=null && accName!.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                                      child: Row(
+                                        children: [
+                                          Text(locale.details,style: headerStyle)
+                                        ],
+                                      ),
+                                    ),
+                                  if(accName !=null && accName!.isNotEmpty)
+                                    Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+                                      width: double.infinity,
+                                      child: Row(
+                                        spacing: 5,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Column(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            spacing: 5,
+                                            children: [
+                                              SizedBox(
+                                                  width: 170,
+                                                  child: Text("${locale.accountNumber}:",style: titleStyle)),
+                                              SizedBox(
+                                                  width: 170,
+                                                  child: Text("${locale.accountName}:",style: titleStyle)),
+                                              SizedBox(
+                                                  width: 170,
+                                                  child: Text("${locale.accountLimit}:",style: titleStyle)),
+                                              SizedBox(
+                                                  width: 170,
+                                                  child: Text("${locale.status}:",style: titleStyle)),
+                                              SizedBox(
+                                                  width: 170,
+                                                  child: Text("${locale.currentBalance}:",style: titleStyle)),
+                                              SizedBox(
+                                                  width: 170,
+                                                  child: Text("${locale.availableBalance}:",style: titleStyle)),
+                                            ],
+                                          ),
+                                          Column(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            spacing: 5,
+                                            children: [
+                                              Text(accNumber.toString(),style: bodyStyle),
+                                              Text(accName??""),
+                                              Text("${accountLimit?.toAmount()} $ccySymbol",style: bodyStyle),
+                                              Text(status == 1? locale.active : locale.blocked,style: bodyStyle),
+                                              Text("${currentBalance?.toAmount()}$ccySymbol",style: bodyStyle),
+                                              Text("${availableBalance?.toAmount()}$ccySymbol",style: bodyStyle),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                 ],
                               ),
                             ),
                             if(accName !=null && accName!.isNotEmpty)
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
-                              width: double.infinity,
-                              child: Row(
-                                spacing: 5,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    spacing: 5,
-                                    children: [
-                                      SizedBox(
-                                          width: 170,
-                                          child: Text(locale.accountNumber,style: textTheme.titleSmall)),
-                                      SizedBox(
-                                          width: 170,
-                                          child: Text(locale.accountName,style: textTheme.titleSmall)),
-                                      SizedBox(
-                                          width: 170,
-                                          child: Text(locale.accountLimit,style: textTheme.titleSmall)),
-                                      SizedBox(
-                                          width: 170,
-                                          child: Text(locale.status,style: textTheme.titleSmall)),
-                                      SizedBox(
-                                          width: 170,
-                                          child: Text(locale.currentBalance,style: textTheme.titleSmall)),
-                                      SizedBox(
-                                          width: 170,
-                                          child: Text(locale.availableBalance,style: textTheme.titleSmall)),
-                                    ],
-                                  ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    spacing: 5,
-                                    children: [
-                                      Text(accNumber.toString()),
-                                      Text(accName??""),
-                                      Text(accountLimit?.toAmount()??""),
-                                      Text(status == 1? locale.active : locale.blocked),
-                                      Text("${currentBalance?.toAmount()}$ccySymbol"),
-                                      Text("${availableBalance?.toAmount()}$ccySymbol"),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
+                            SizedBox(height: 5),
                             ZTextFieldEntitled(
                               isRequired: true,
                               // onSubmit: (_)=> onSubmit(),
@@ -1060,25 +1072,25 @@ class _DesktopState extends State<_Desktop> {
                                                    children: [
                                                      SizedBox(
                                                          width: 170,
-                                                         child: Text(locale.accountNumber,style: myStyle)),
+                                                         child: Text(locale.accountNumber,style: titleStyle)),
                                                      SizedBox(
                                                          width: 170,
-                                                         child: Text(locale.accountName,style: myStyle)),
+                                                         child: Text(locale.accountName,style: titleStyle)),
                                                      SizedBox(
                                                          width: 170,
-                                                         child: Text(locale.currencyTitle,style: myStyle)),
+                                                         child: Text(locale.currencyTitle,style: titleStyle)),
                                                      SizedBox(
                                                          width: 170,
-                                                         child: Text(locale.accountLimit,style: myStyle)),
+                                                         child: Text(locale.accountLimit,style: titleStyle)),
                                                      SizedBox(
                                                          width: 170,
-                                                         child: Text(locale.status,style: myStyle)),
+                                                         child: Text(locale.status,style: titleStyle)),
                                                      SizedBox(
                                                          width: 170,
-                                                         child: Text(locale.currentBalance,style: myStyle)),
+                                                         child: Text(locale.currentBalance,style: titleStyle)),
                                                      SizedBox(
                                                          width: 170,
-                                                         child: Text(locale.availableBalance,style: myStyle)),
+                                                         child: Text(locale.availableBalance,style: titleStyle)),
                                                    ],
                                                  ),
                                                  Column(
@@ -1209,25 +1221,25 @@ class _DesktopState extends State<_Desktop> {
                                                       children: [
                                                         SizedBox(
                                                             width: 170,
-                                                            child: Text(locale.accountNumber,style: myStyle)),
+                                                            child: Text(locale.accountNumber,style: titleStyle)),
                                                         SizedBox(
                                                             width: 170,
-                                                            child: Text(locale.accountName,style: myStyle)),
+                                                            child: Text(locale.accountName,style: titleStyle)),
                                                         SizedBox(
                                                             width: 170,
-                                                            child: Text(locale.currencyTitle,style: myStyle)),
+                                                            child: Text(locale.currencyTitle,style: titleStyle)),
                                                         SizedBox(
                                                             width: 170,
-                                                            child: Text(locale.accountLimit,style: myStyle)),
+                                                            child: Text(locale.accountLimit,style: titleStyle)),
                                                         SizedBox(
                                                             width: 170,
-                                                            child: Text(locale.status,style: myStyle)),
+                                                            child: Text(locale.status,style: titleStyle)),
                                                         SizedBox(
                                                             width: 170,
-                                                            child: Text(locale.currentBalance,style: myStyle)),
+                                                            child: Text(locale.currentBalance,style: titleStyle)),
                                                         SizedBox(
                                                             width: 170,
-                                                            child: Text(locale.availableBalance,style: myStyle)),
+                                                            child: Text(locale.availableBalance,style: titleStyle)),
                                                       ],
                                                     ),
                                                     Column(

@@ -36,7 +36,7 @@ class Cover extends StatelessWidget {
       margin: margin ?? EdgeInsets.zero,
       padding: padding ?? const EdgeInsets.symmetric(horizontal: 3, vertical: 0),
       decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: .3)),
+        border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
         boxShadow: [
           BoxShadow(
             color: shadowColor ??

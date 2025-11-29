@@ -468,7 +468,7 @@ class _DesktopState extends State<_Desktop> {
                                         textAlign: myLocale == "en"
                                             ? TextAlign.right
                                             : TextAlign.left,
-                                        "${stmt.debit?.toAmount()}",
+                                        "${stmt.status} ${stmt.debit?.toAmount()}",
                                         style: Theme.of(
                                           context,
                                         ).textTheme.bodyMedium,
@@ -480,7 +480,7 @@ class _DesktopState extends State<_Desktop> {
                                         textAlign: myLocale == "en"
                                             ? TextAlign.right
                                             : TextAlign.left,
-                                        "${stmt.credit?.toAmount()}",
+                                        "${stmt.status} ${stmt.credit?.toAmount()}",
                                         style: Theme.of(
                                           context,
                                         ).textTheme.bodyMedium,

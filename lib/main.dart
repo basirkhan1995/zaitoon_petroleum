@@ -86,7 +86,6 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => PaperSizeCubit()),
         BlocProvider(create: (context) => PrinterCubit()),
 
-
         /// Data Management ....................................................
         BlocProvider(create: (context) => IndividualsBloc(Repositories(ApiServices()))..add(LoadIndividualsEvent())),
         BlocProvider(create: (context) => AccountsBloc(Repositories(ApiServices()))..add(LoadAccountsEvent())),
@@ -105,6 +104,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => TxnReferenceBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => AccStatementBloc(Repositories(ApiServices()))),
       ],
+
       child: BlocBuilder<LocalizationBloc, Locale>(
         builder: (context, locale) {
           return BlocBuilder<ThemeBloc, ThemeMode>(

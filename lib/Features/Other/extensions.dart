@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
-import '../Date/shamsi_converter.dart';
-import 'package:shamsi_date/shamsi_date.dart';
 
 // Font Scaler based on screen size
 extension FontScaler on BuildContext {

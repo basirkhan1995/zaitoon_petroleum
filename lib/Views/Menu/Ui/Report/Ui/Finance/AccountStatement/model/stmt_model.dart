@@ -12,11 +12,13 @@ class AccountStatementModel {
   final String? curBalance;
   final String? avilBalance;
   final int? actStatus;
+  final String? trnStatus;
   final List<Record>? records;
 
   AccountStatementModel({
     this.accNumber,
     this.accName,
+    this.trnStatus,
     this.signatory,
     this.perPhone,
     this.perEmail,
@@ -79,9 +81,7 @@ class AccountStatementModel {
       curBalance: data["curBalance"] as String?,
       avilBalance: data["avilBalance"] as String?,
       actStatus: data["actStatus"] as int?,
-      records: data["records"] == null
-          ? []
-          : List<Record>.from((data["records"] as List).map((x) => Record.fromMap(x))),
+      records: data["records"] == null ? [] : List<Record>.from((data["records"] as List).map((x) => Record.fromMap(x))),
     );
   }
 
@@ -135,7 +135,7 @@ class Record {
   final String? debit;
   final String? credit;
   final String? total;
-  final Status? status;
+  final String? status;
 
   Record({
     this.sortOrder,
@@ -156,9 +156,8 @@ class Record {
     String? debit,
     String? credit,
     String? total,
-    Status? status,
-  }) =>
-      Record(
+    String? status,
+    }) => Record(
         sortOrder: sortOrder ?? this.sortOrder,
         trnEntryDate: trnEntryDate ?? this.trnEntryDate,
         trnReference: trnReference ?? this.trnReference,
@@ -181,15 +180,10 @@ class Record {
       debit: data["debit"] as String?,
       credit: data["credit"] as String?,
       total: data["total"] as String?,
-      status: _parseStatus(data["status"]),
+      status: data["status"] as String?,
     );
   }
 
-  static Status? _parseStatus(dynamic status) {
-    if (status == null) return null;
-    final statusStr = status.toString();
-    return statusValues.map[statusStr];
-  }
 
   Map<String, dynamic> toMap() => {
     "sort_order": sortOrder,
@@ -199,28 +193,6 @@ class Record {
     "debit": debit,
     "credit": credit,
     "total": total,
-    "status": statusValues.reverse[status],
+    "status": status,
   };
-}
-
-enum Status {
-  authorized,
-  unAuthorized
-}
-
-final statusValues = EnumValues({
-  "": Status.authorized,
-  "*": Status.unAuthorized
-});
-
-class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
-  }
 }
