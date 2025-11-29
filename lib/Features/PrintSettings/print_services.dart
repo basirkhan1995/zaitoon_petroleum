@@ -28,7 +28,7 @@ abstract class PrintServices {
 
   static Future<void> _loadPersianFont() async {
     final ByteData persianFontData = await rootBundle.load(
-      'assets/fonts/NotoNaskh/NotoNaskhArabic-Regular.ttf',
+      'assets/fonts/NotoNaskh/NotoNaskhArabic-regular.ttf',
     );
     final Uint8List persianBytes = persianFontData.buffer.asUint8List();
     _persianFont = pw.Font.ttf(persianBytes.buffer.asByteData());
@@ -68,7 +68,6 @@ abstract class PrintServices {
     }
   }
 
-
   // Common widgets
   pw.Widget buildTextWidget({
     required String text,
@@ -87,8 +86,6 @@ abstract class PrintServices {
       textDirection: _textDirection(text: text),
     );
   }
-
-
 
 
   Future<pw.ImageProvider?> getImage() async {

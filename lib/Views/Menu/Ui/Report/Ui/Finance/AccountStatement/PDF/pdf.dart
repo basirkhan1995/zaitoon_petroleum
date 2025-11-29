@@ -1,12 +1,13 @@
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart' as pw;
 import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import '../../../../../../../../Features/PrintSettings/print_services.dart';
 import '../../../../../../../../Features/PrintSettings/report_model.dart';
 import '../model/stmt_model.dart';
-import 'package:printing/printing.dart';
+
 
 class AccountStatementPrintSettings extends PrintServices {
   final pdf = pw.Document();
@@ -105,9 +106,7 @@ class AccountStatementPrintSettings extends PrintServices {
     final prebuiltHeader = await header(report: report);
 
     // Load your image asset
-    final ByteData imageData = await rootBundle.load(
-      'assets/images/zaitoonLogo.png',
-    );
+    final ByteData imageData = await rootBundle.load('assets/images/zaitoonLogo.png');
     final Uint8List imageBytes = imageData.buffer.asUint8List();
     final pw.MemoryImage logoImage = pw.MemoryImage(imageBytes);
 
@@ -133,8 +132,6 @@ class AccountStatementPrintSettings extends PrintServices {
         ),
       ),
     );
-
-
     return document;
   }
 
@@ -187,7 +184,7 @@ class AccountStatementPrintSettings extends PrintServices {
           mainAxisAlignment: pw.MainAxisAlignment.start,
           children: [
             pw.Container(
-              height: 20, // Adjust as needed
+              height: 20,
               child: pw.Image(logoImage),
             ),
             verticalDivider(height: 15, width: 0.6),
