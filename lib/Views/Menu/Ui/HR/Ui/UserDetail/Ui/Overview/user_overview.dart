@@ -145,13 +145,13 @@ class _DesktopState extends State<_Desktop> {
     required ThemeData color,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
       decoration: BoxDecoration(
         color: color.colorScheme.surface,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: color.colorScheme.primary.withValues(alpha: .4),
+          color: color.colorScheme.outline.withValues(alpha: .4),
         ),
       ),
       child: Column(
@@ -265,18 +265,15 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget _editView({
-    required AppLocalizations locale,
-    required bool isLoading,
-  }) {
+  Widget _editView({required AppLocalizations locale, required bool isLoading,}) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: .4),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: .4),
         ),
       ),
       child: Form(

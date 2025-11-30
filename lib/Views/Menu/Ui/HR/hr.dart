@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/attendance.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/employees.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/Ui/employees.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/bloc/hrtab_bloc.dart';
 import '../../../../Features/Generic/rounded_tab.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/Ui/add_user.dart';
-import '../../../../../../../Features/Other/cover.dart';
 import '../../../../../../../Features/Widgets/no_data_widget.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
@@ -225,14 +224,11 @@ class _DesktopState extends State<_Desktop> {
                                         style: Theme.of(context).textTheme.titleMedium,
                                       ),
 
-                                      const SizedBox(height: 4),
+                                      const SizedBox(height: 0),
 
                                         Padding(
                                           padding: const EdgeInsets.only(right: 6.0),
-                                          child: Cover(
-                                            color: color.surface,
-                                            child: Text(usr.usrEmail??""),
-                                          ),
+                                          child: Text(usr.usrEmail??""),
                                         ),
 
                                     ],
