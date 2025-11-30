@@ -1977,6 +1977,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select an account and date range to view statement.'**
   String get accountStatementMessage;
+
+  /// No description provided for @department.
+  ///
+  /// In en, this message translates to:
+  /// **'Department'**
+  String get department;
+
+  /// No description provided for @executiveManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Executive management'**
+  String get executiveManagement;
+
+  /// No description provided for @operation.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation'**
+  String get operation;
+
+  /// No description provided for @legal.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal'**
+  String get legal;
+
+  /// No description provided for @marketing.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketing'**
+  String get marketing;
+
+  /// No description provided for @it.
+  ///
+  /// In en, this message translates to:
+  /// **'Information Technology (IT)'**
+  String get it;
+
+  /// No description provided for @procurement.
+  ///
+  /// In en, this message translates to:
+  /// **'Procurement'**
+  String get procurement;
+
+  /// No description provided for @audit.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit'**
+  String get audit;
+
+  /// No description provided for @monthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get monthly;
+
+  /// No description provided for @hourly.
+  ///
+  /// In en, this message translates to:
+  /// **'Hourly'**
+  String get hourly;
+
+  /// No description provided for @daily.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get daily;
+
+  /// No description provided for @salaryBase.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary base'**
+  String get salaryBase;
+
+  /// No description provided for @weekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get weekly;
+
+  /// No description provided for @paymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get paymentMethod;
+
+  /// No description provided for @salary.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary'**
+  String get salary;
+
+  /// No description provided for @employeeRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee Registration'**
+  String get employeeRegistration;
+
+  /// No description provided for @taxInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'TIN number'**
+  String get taxInfo;
+
+  /// No description provided for @jobTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Job title'**
+  String get jobTitle;
+
+  /// No description provided for @startDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date'**
+  String get startDate;
+
+  /// No description provided for @employeeName.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee name'**
+  String get employeeName;
+
+  /// No description provided for @noData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data'**
+  String get noData;
+
+  /// No description provided for @employed.
+  ///
+  /// In en, this message translates to:
+  /// **'Employed'**
+  String get employed;
+
+  /// No description provided for @terminated.
+  ///
+  /// In en, this message translates to:
+  /// **'Terminated'**
+  String get terminated;
+
+  /// No description provided for @inactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get inactive;
 }
 
 class _AppLocalizationsDelegate

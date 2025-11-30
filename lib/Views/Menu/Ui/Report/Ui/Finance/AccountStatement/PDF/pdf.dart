@@ -586,7 +586,15 @@ class AccountStatementPrintSettings extends PrintServices {
                     ),
                   ),
                 ),
-
+                pw.SizedBox(
+                  width: 10,
+                  child: buildTextWidget(
+                    textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
+                    text: items.records![i].status??"",
+                    color: pw.PdfColors.red,
+                    fontSize: 8,
+                  ),
+                ),
                 pw.SizedBox(
                   width: amountWidth,
                   child: buildTextWidget(

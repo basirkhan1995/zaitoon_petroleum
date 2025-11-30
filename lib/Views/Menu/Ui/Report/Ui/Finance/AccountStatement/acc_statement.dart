@@ -238,11 +238,7 @@ class _DesktopState extends State<_Desktop> {
                       SizedBox(
                         width: 500,
                         child:
-                            GenericTextfield<
-                              GlAccountsModel,
-                              GlAccountsBloc,
-                              GlAccountsState
-                            >(
+                            GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
                               showAllOnFocus: true,
                               controller: accountController,
                               title: locale.accounts,
@@ -462,6 +458,7 @@ class _DesktopState extends State<_Desktop> {
                                         style: TextStyle(color: bg),
                                       ),
                                     ),
+                                    Text(stmt.status??"",style: TextStyle(color: Theme.of(context).colorScheme.error),),
                                     SizedBox(
                                       width: 100,
                                       child: Text(
@@ -500,7 +497,6 @@ class _DesktopState extends State<_Desktop> {
                                             ?.copyWith(color: bg),
                                       ),
                                     ),
-                                    Text(stmt.status??"",style: TextStyle(color: Theme.of(context).colorScheme.error),),
                                   ],
                                 ),
                               ),

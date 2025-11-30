@@ -11,6 +11,7 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
   EmployeeBloc(this._repo) : super(EmployeeInitial()) {
 
     on<LoadEmployeeEvent>((event, emit)async {
+      emit(EmployeeLoadingState());
      try{
       final emp = await _repo.getEmployees(empId: event.empId);
       emit(EmployeeLoadedState(emp));
@@ -19,9 +20,11 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
      }
     });
     on<AddEmployeeEvent>((event, emit) async{
+      emit(EmployeeLoadingState());
        try{
         final response = await _repo.addEmployee(newEmployee: event.newEmployee);
         final msg = response['msg'];
+        print(msg);
         if(msg == "success"){
           emit(EmployeeSuccessState());
           add(LoadEmployeeEvent());

@@ -7,7 +7,7 @@ enum UserRole {
   manager,
   deputy,
   admin,
-  authoriser,
+  authorizer,
   cashier,
   officer,
   customerService,
@@ -19,7 +19,7 @@ enum UserRole {
       case UserRole.manager:return 'Manager';
       case UserRole.deputy:return 'Deputy';
       case UserRole.admin:return 'Admin';
-      case UserRole.authoriser:return 'Authoriser';
+      case UserRole.authorizer:return 'Authoriser';
       case UserRole.cashier: return 'Cashier';
       case UserRole.officer: return 'Officer';
       case UserRole.customerService: return 'Customer Service';
@@ -33,7 +33,7 @@ enum UserRole {
       case 'Manager': return UserRole.manager;
       case 'Deputy': return UserRole.deputy;
       case 'Admin': return UserRole.admin;
-      case 'Authoriser': return UserRole.authoriser;
+      case 'Authoriser': return UserRole.authorizer;
       case 'Cashier': return UserRole.cashier;
       case 'Officer': return UserRole.officer;
       case 'Customer Service': return UserRole.customerService;
@@ -52,7 +52,7 @@ class RoleTranslator {
       case UserRole.manager:return localizations.manager;
       case UserRole.deputy:return localizations.deputy;
       case UserRole.admin:return localizations.admin;
-      case UserRole.authoriser:return localizations.authoriser;
+      case UserRole.authorizer:return localizations.authoriser;
       case UserRole.cashier:return localizations.cashier;
       case UserRole.officer:return localizations.officer;
       case UserRole.customerService:return localizations.customerService;
@@ -142,7 +142,7 @@ class _UserRoleDropdownState extends State<UserRoleDropdown> {
       UserRole.manager => Icons.manage_accounts_rounded,
       UserRole.deputy => Icons.assistant_rounded,
       UserRole.admin => Icons.admin_panel_settings_rounded,
-      UserRole.authoriser => Icons.verified_user_rounded,
+      UserRole.authorizer => Icons.verified_user_rounded,
       UserRole.cashier => Icons.monetization_on_rounded,
       UserRole.officer => Icons.security_rounded,
       UserRole.customerService => Icons.support_agent_rounded,

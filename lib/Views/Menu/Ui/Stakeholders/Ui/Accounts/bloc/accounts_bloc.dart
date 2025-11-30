@@ -20,6 +20,7 @@ class AccountsBloc extends Bloc<AccountsEvent, AccountsState> {
         emit(AccountErrorState(e.toString()));
       }
     });
+
     on<LoadStkAccountsEvent>((event, emit) async{
       emit(AccountLoadingState());
       try{

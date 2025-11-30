@@ -440,7 +440,7 @@ class Repositories {
   }
   Future<Map<String, dynamic>> addEmployee({required EmployeeModel newEmployee}) async {
     try {
-      final response = await api.put(
+      final response = await api.post(
           endpoint: "/HR/employees.php",
           data: newEmployee.toMap()
       );

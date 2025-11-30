@@ -970,4 +970,76 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get accountStatementMessage =>
       'Select an account and date range to view statement.';
+
+  @override
+  String get department => 'Department';
+
+  @override
+  String get executiveManagement => 'Executive management';
+
+  @override
+  String get operation => 'Operation';
+
+  @override
+  String get legal => 'Legal';
+
+  @override
+  String get marketing => 'Marketing';
+
+  @override
+  String get it => 'Information Technology (IT)';
+
+  @override
+  String get procurement => 'Procurement';
+
+  @override
+  String get audit => 'Audit';
+
+  @override
+  String get monthly => 'Monthly';
+
+  @override
+  String get hourly => 'Hourly';
+
+  @override
+  String get daily => 'Daily';
+
+  @override
+  String get salaryBase => 'Salary base';
+
+  @override
+  String get weekly => 'Weekly';
+
+  @override
+  String get paymentMethod => 'Payment method';
+
+  @override
+  String get salary => 'Salary';
+
+  @override
+  String get employeeRegistration => 'Employee Registration';
+
+  @override
+  String get taxInfo => 'TIN number';
+
+  @override
+  String get jobTitle => 'Job title';
+
+  @override
+  String get startDate => 'Start date';
+
+  @override
+  String get employeeName => 'Employee name';
+
+  @override
+  String get noData => 'No data';
+
+  @override
+  String get employed => 'Employed';
+
+  @override
+  String get terminated => 'Terminated';
+
+  @override
+  String get inactive => 'Inactive';
 }

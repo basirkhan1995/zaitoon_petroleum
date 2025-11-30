@@ -110,19 +110,19 @@ class _DesktopState extends State<_Desktop> {
             child: Row(
               children: [
                 Expanded(
-                    child: Text("Employee Name",style: titleStyle)),
+                    child: Text(locale.employeeName,style: titleStyle)),
                 SizedBox(
                     width: 170,
-                    child: Text("Job Title",style: titleStyle)),
+                    child: Text(locale.jobTitle,style: titleStyle)),
                 SizedBox(
                     width: 170,
-                    child: Text("Department",style: titleStyle)),
+                    child: Text(locale.department,style: titleStyle)),
                 SizedBox(
                     width: 100,
-                    child: Text("Salary",style: titleStyle)),
+                    child: Text(locale.salary,style: titleStyle)),
                 SizedBox(
                     width: 100,
-                    child: Text("Start date",style: titleStyle)),
+                    child: Text(locale.startDate,style: titleStyle)),
                 SizedBox(
                     width: 100,
                     child: Text(locale.status,style: titleStyle)),
@@ -139,7 +139,7 @@ class _DesktopState extends State<_Desktop> {
               },
               builder: (context, state) {
                 if(state is EmployeeLoadingState){
-                  return CircularProgressIndicator();
+                  return Center(child: CircularProgressIndicator());
                 }
                 if(state is EmployeeErrorState){
                   return NoDataWidget(
@@ -156,7 +156,7 @@ class _DesktopState extends State<_Desktop> {
 
                   if(filteredList.isEmpty){
                     return NoDataWidget(
-                      title: "No data",
+                      title: locale.noData,
                       message: locale.noDataFound,
                     );
                   }
@@ -205,7 +205,7 @@ class _DesktopState extends State<_Desktop> {
                                       child: Text(emp.empHireDate.toFormattedDate())),
                                   SizedBox(
                                       width: 100,
-                                      child: Text(emp.empStatus == 1? "Employed" : "Left")),
+                                      child: Text(emp.empStatus == 1? locale.active : locale.inactive)),
 
                                 ],
                               ),

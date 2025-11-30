@@ -451,7 +451,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get shift => 'انتقال کالا';
 
   @override
-  String get sales => 'فروش';
+  String get sales => 'فروشات';
 
   @override
   String get inventory => 'سهام';
@@ -964,4 +964,76 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get accountStatementMessage =>
       'برای نمایش صورتحساب، لطفا یک حساب و تاریخ را انتخاب نمایید';
+
+  @override
+  String get department => 'دیپارتمنت';
+
+  @override
+  String get executiveManagement => 'مدیریت اجرایی';
+
+  @override
+  String get operation => 'عملیات';
+
+  @override
+  String get legal => 'حقوقی';
+
+  @override
+  String get marketing => 'بازاریابی';
+
+  @override
+  String get it => 'فناوری اطلاعات';
+
+  @override
+  String get procurement => 'تدارکات';
+
+  @override
+  String get audit => 'تفتیش';
+
+  @override
+  String get monthly => 'ماهانه';
+
+  @override
+  String get hourly => 'ساعتی';
+
+  @override
+  String get daily => 'روزانه';
+
+  @override
+  String get salaryBase => 'پایه حقوق';
+
+  @override
+  String get weekly => 'هفتوار';
+
+  @override
+  String get paymentMethod => 'روش پرداخت';
+
+  @override
+  String get salary => 'معاش';
+
+  @override
+  String get employeeRegistration => 'ثبت کارمند';
+
+  @override
+  String get taxInfo => 'د مالیې معلومات';
+
+  @override
+  String get jobTitle => 'عنوان شغلی';
+
+  @override
+  String get startDate => 'تاریخ شروع';
+
+  @override
+  String get employeeName => 'نام کارمند';
+
+  @override
+  String get noData => 'بدون اطلاعات';
+
+  @override
+  String get employed => 'کارمند فعال';
+
+  @override
+  String get terminated => 'منفک';
+
+  @override
+  String get inactive => 'کارمند منفک';
 }
