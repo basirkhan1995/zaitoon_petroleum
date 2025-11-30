@@ -83,7 +83,7 @@ class _DesktopState extends State<_Desktop> {
     final updatedUser = UsersModel(
       usrName: usrName.text,
       usrEmail: email.text,
-      usrPass: usrPass.text.isEmpty ? widget.user.usrPass : usrPass.text,
+      usrPass: usrPass.text,
       usrRole: usrRole ?? widget.user.usrRole,
       usrBranch: branchCode ?? widget.user.usrBranch,
       usrFcp: usrFcp,
@@ -357,11 +357,10 @@ class _DesktopState extends State<_Desktop> {
                     isRequired: false,
                     validator: (value) {
                       if (value != null && value.isNotEmpty) {
-                        return Utils.validatePassword(value: value);
+                        return Utils.validatePassword(value: value,context: context);
                       }
                       return null;
                     },
-
                     title: locale.newPasswordTitle,
                   ),
                 ),

@@ -49,6 +49,8 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
         if (msg == "success") {
           emit(UserSuccessState());
           add(LoadUsersEvent());
+        }else{
+          emit(UsersErrorState(msg));
         }
       }catch(e){
         emit(UsersErrorState(e.toString()));
