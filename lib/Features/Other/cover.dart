@@ -39,15 +39,13 @@ class Cover extends StatelessWidget {
         border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
         boxShadow: [
           BoxShadow(
-            color: shadowColor ??
-                Theme.of(context).colorScheme.surfaceContainer,
+            color: shadowColor ?? Theme.of(context).colorScheme.surface,
             blurRadius: 0,
             spreadRadius: 1,
           ),
         ],
         borderRadius: BorderRadius.circular(radius ?? 3),
-        color: color ??
-            Theme.of(context).colorScheme.primary.withValues(alpha: .05),
+        color: color ?? Theme.of(context).colorScheme.surface,
       ),
       child: child,
     );

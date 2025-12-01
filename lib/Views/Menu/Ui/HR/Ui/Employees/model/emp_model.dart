@@ -25,6 +25,7 @@ class EmployeeModel {
   final String? empEndDate;
   final int? perId;
   final String? perName;
+  final String? empImage;
   final String? perLastName;
   final String? perGender;
   final String? perDoB;
@@ -45,6 +46,7 @@ class EmployeeModel {
     this.empPmntMethod,
     this.empSalary,
     this.empTaxInfo,
+    this.empImage,
     this.empFingerprint,
     this.empStatus,
     this.empEndDate,
@@ -130,6 +132,7 @@ class EmployeeModel {
     perLastName: json["perLastName"],
     perGender: json["perGender"],
     perDoB: json["perDoB"],
+    empImage: json["perPhoto"],
     perEnidNo: json["perENIDNo"],
     perAddress: json["perAddress"],
     perPhone: json["perPhone"],

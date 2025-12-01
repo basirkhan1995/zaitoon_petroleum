@@ -99,7 +99,7 @@ class IndividualsModel {
     addZipCode: json["addZipCode"],
     addMailing: json["addMailing"],
     imageProfile: json["perPhoto"],
-    perEmail: json["perEmail"]
+    perEmail: json["email"]
   );
 
   Map<String, dynamic> toMap() => {
@@ -116,7 +116,7 @@ class IndividualsModel {
     "add_province": addProvince,
     "add_country": addCountry,
     "zip_code": addZipCode,
-    "perEmail":perEmail,
+    "email":perEmail,
     "is_mailing": addMailing,
   };
 }

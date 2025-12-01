@@ -8,6 +8,7 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/Ui/add_edit_employee.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/bloc/employee_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../../../Features/Other/image_helper.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
 
@@ -177,16 +178,9 @@ class _DesktopState extends State<_Desktop> {
                               padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 5),
                               child: Row(
                                 children: [
-                                  CircleAvatar(
-                                    backgroundColor: color.primary.withValues(alpha: .7),
-                                    radius: 23,
-                                    child: Text(
-                                      fullName.getFirstLetter,
-                                      style: TextStyle(
-                                        color: color.surface,
-                                        fontSize: 15,
-                                      ),
-                                    ),
+                                  ImageHelper.stakeholderProfile(
+                                    imageName: emp.empImage,
+                                    size: 50,
                                   ),
                                   SizedBox(width: 8),
                                   Expanded(

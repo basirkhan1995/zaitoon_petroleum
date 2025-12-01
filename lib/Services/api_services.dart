@@ -167,11 +167,17 @@ class ApiServices {
   }) async {
     try {
       await _checkConnectivity();
-      return await _request(
-        "POST",
-        endpoint,
+      return await _dio.request(
+        "http://$ip/rapi$endpoint",
         data: data,
+        options: Options(
+          method: "POST",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        ),
       );
+
     } on DioException catch (e) {
       throw _handleError(e);
     }

@@ -9,6 +9,7 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualByID/bloc/stakeholder_by_id_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualDetails/profile.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/add_edit.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import '../../../../../../../../Features/Other/image_helper.dart';
 import '../../../Individuals/individual_model.dart';
 
@@ -65,12 +66,13 @@ class _DesktopState extends State<_Desktop> {
     final color = Theme.of(context).colorScheme;
     final locale = AppLocalizations.of(context)!;
 
-
     return Scaffold(
       appBar: AppBar(titleSpacing: 0, title: Text(locale.profileOverview)),
       body: BlocBuilder<StakeholderByIdBloc, StakeholderByIdState>(
         builder: (context, state) {
-
+          if(state is IndividualSuccessImageState){
+           context.read<StakeholderByIdBloc>().add(LoadStakeholderByIdEvent(stkId: individual!.perId!));
+          }
           if(state is StakeholderByIdLoadedState){
             individual = state.stk;
             fullName = "${state.stk.perName} ${state.stk.perLastName}";
@@ -80,7 +82,7 @@ class _DesktopState extends State<_Desktop> {
               BlurLoader(
                 isLoading: state is StakeholderByIdLoadingState,
                 child: Cover(
-                  margin: EdgeInsets.symmetric(horizontal: 8),
+                  margin: EdgeInsets.symmetric(horizontal: 5),
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                   color: color.surface,
                   child: Column(
@@ -90,8 +92,9 @@ class _DesktopState extends State<_Desktop> {
                           ImageHelper.stakeholderProfile(
                               shapeStyle: ShapeStyle.roundedRectangle,
                               imageName:  individual?.imageProfile,
-                              borderRadius: 8,
-                              size: 100),
+                              border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
+                              borderRadius: 10,
+                              size: 115),
                           SizedBox(width: 6),
                           Expanded(
                             child: Column(
@@ -100,12 +103,13 @@ class _DesktopState extends State<_Desktop> {
                               children: [
                                 Text(
                                   "${individual?.perName} ${individual?.perLastName}",
-                                  style: Theme.of(context).textTheme.titleMedium,
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 18),
                                 ),
+                                Cover(child: Text(individual?.perPhone ?? "")),
+                                SizedBox(height: 5),
                                 Row(
                                   spacing: 5,
                                   children: [
-                                    Cover(child: Text(individual?.perPhone ?? "")),
                                     Cover(child: Text(individual?.perEnidNo ?? "")),
                                     Cover(child: Text(Utils.genderType(gender: individual?.perGender ?? "",locale: locale))),
                                     Cover(child: Text(individual?.addCity ?? "")),
@@ -114,18 +118,11 @@ class _DesktopState extends State<_Desktop> {
                                     Cover(child: Text(individual?.addName ?? "")),
                                   ],
                                 ),
-                              ],
-                            ),
-                          ),
-
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Row(
-                              spacing: 8,
-                              children: [
+                                SizedBox(height: 5),
                                 ZOutlineButton(
                                   icon: Icons.refresh,
-                                  width: 120,
+                                  width: 100,
+                                  height: 35,
                                   onPressed: (){
                                     showDialog(context: context, builder: (context){
                                       return IndividualAddEditView(model: individual);
@@ -133,15 +130,11 @@ class _DesktopState extends State<_Desktop> {
                                   },
                                   label: Text(locale.edit),
                                 ),
-                                ZOutlineButton(
-                                  isActive: true,
-                                  icon: Icons.delete,
-                                  width: 120,
-                                  label: Text(locale.delete),
-                                ),
                               ],
                             ),
                           ),
+
+
                         ],
                       ),
                     ],

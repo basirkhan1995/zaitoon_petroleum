@@ -179,7 +179,7 @@ class Repositories {
         "image": MultipartFile.fromBytes(
           image,
           filename: fileName,            // IMPORTANT!
-          contentType: MediaType("image", "jpeg"), // IMPORTANT!
+          contentType: MediaType("image", "jpeg"),
         ),
       });
 

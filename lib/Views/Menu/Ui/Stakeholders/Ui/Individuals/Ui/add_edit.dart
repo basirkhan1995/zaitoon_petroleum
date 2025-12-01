@@ -68,11 +68,12 @@ class _DesktopState extends State<_Desktop> {
   final TextEditingController country = TextEditingController();
   final TextEditingController nationalId = TextEditingController();
   final TextEditingController zipCode = TextEditingController();
+  Uint8List? selectedImageBytes;
 
   String gender = "Male";
   int mailingValue = 1;
   bool isMailingAddress = true;
-
+  String? imageName;
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -83,6 +84,7 @@ class _DesktopState extends State<_Desktop> {
     if (widget.model != null) {
       final m = widget.model!;
       firstName.text = m.perName ?? "";
+      imageName = m.imageProfile??"";
       lastName.text = m.perLastName ?? "";
       phone.text = m.perPhone ?? "";
       nationalId.text = m.perEnidNo ?? "";
@@ -92,6 +94,7 @@ class _DesktopState extends State<_Desktop> {
       zipCode.text = m.addZipCode?.toString() ?? "";
       address.text = m.addName ?? "";
       gender = m.perGender ?? "Male";
+      email.text = m.perEmail ?? "";
       mailingValue = m.addMailing ?? 1;
       isMailingAddress = mailingValue == 1;
     }
@@ -108,6 +111,7 @@ class _DesktopState extends State<_Desktop> {
     firstName.dispose();
     lastName.dispose();
     phone.dispose();
+    email.dispose();
     super.dispose();
   }
 
@@ -151,17 +155,21 @@ class _DesktopState extends State<_Desktop> {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                if (isEdit)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ImageHelper.stakeholderProfile(
-                        size: 100,
-                        shapeStyle: ShapeStyle.roundedRectangle,
-                        imageName: widget.model?.imageProfile),
 
-                     IconButton(
-                         onPressed: ()=> pickAndUploadImage(widget.model!.perId!),
-                         icon: Icon(Icons.camera_alt)),
+                    GestureDetector(
+                      onTap: ()=> pickAndShowImage(widget.model!.perId!,context),
+                      child: ImageHelper.stakeholderProfile(
+                        imageName: imageName,
+                        localImageBytes: selectedImageBytes,
+                        size: 100,
+                        showCameraIcon: true,
+                      ),
+                    )
+
                   ],
                 ),
                 SizedBox(height: 10),
@@ -301,22 +309,18 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  void pickAndUploadImage(int perId) async {
-    // Pick image
-    Uint8List? imageBytes = await Utils.pickImage();
+  void pickAndShowImage(int perId, BuildContext context) async {
+    final bloc = context.read<IndividualsBloc>();
+    final imageBytes = await Utils.pickImage();
 
     if (imageBytes != null && imageBytes.isNotEmpty) {
+      setState(() {
+        selectedImageBytes = imageBytes; // Show immediately
+      });
 
-      // Trigger Bloc event
-      context.read<IndividualsBloc>().add(
-        UploadIndProfileImageEvent(
-          perId: perId,
-          image: imageBytes,
-        ),
+      bloc.add(
+        UploadIndProfileImageEvent(perId: perId, image: imageBytes),
       );
-    } else {
-      // User cancelled or empty file
-      print("No image selected or image is empty");
     }
   }
 
@@ -333,6 +337,7 @@ class _DesktopState extends State<_Desktop> {
       perEnidNo: nationalId.text,
       perGender: gender,
       perDoB: DateTime.now(),
+      perEmail: email.text,
       addName: address.text,
       addMailing: mailingValue,
       addZipCode: zipCode.text,

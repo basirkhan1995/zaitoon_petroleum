@@ -19,6 +19,11 @@ final class IndividualSuccessState extends IndividualsState {
   List<Object> get props => [];
 }
 
+final class IndividualSuccessImageState extends IndividualsState {
+  @override
+  List<Object> get props => [];
+}
+
 final class IndividualErrorState extends IndividualsState {
   final String message;
   const IndividualErrorState(this.message);

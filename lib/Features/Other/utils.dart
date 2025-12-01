@@ -35,7 +35,7 @@ class Utils{
     } else if (result != null && result.files.single.path != null) {
       return await File(
         result.files.single.path!,
-      ).readAsBytes(); // Return the bytes from the file path
+      ).readAsBytes();
     }
     return null;
   }

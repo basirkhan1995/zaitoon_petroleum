@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
@@ -21,7 +20,6 @@ class IndividualsBloc extends Bloc<IndividualsEvent, IndividualsState> {
          emit(IndividualErrorState(e.toString()));
        }
     });
-
     on<AddIndividualEvent>((event, emit)async {
       emit(IndividualLoadingState());
       try{
@@ -35,7 +33,6 @@ class IndividualsBloc extends Bloc<IndividualsEvent, IndividualsState> {
         emit(IndividualErrorState(e.toString()));
       }
     });
-
     on<EditIndividualEvent>((event, emit)async {
       emit(IndividualLoadingState());
       try{
@@ -49,7 +46,6 @@ class IndividualsBloc extends Bloc<IndividualsEvent, IndividualsState> {
         emit(IndividualErrorState(e.toString()));
       }
     });
-
     on<SearchIndividualsEvent>((event,emit)async{
       final query = event.query.toLowerCase().trim();
 
@@ -68,11 +64,11 @@ class IndividualsBloc extends Bloc<IndividualsEvent, IndividualsState> {
 
     on<UploadIndProfileImageEvent>((event,emit)async{
       try{
+
        final res = await _repo.uploadPersonalPhoto(perID: event.perId, image: event.image);
        final msg = res['msg'];
-       print(msg);
        if(msg == "success"){
-         print("Uploaded successfully");
+         emit(IndividualSuccessState());
        }else{
          emit(IndividualErrorState(msg));
        }
