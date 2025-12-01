@@ -10,7 +10,7 @@ class ImageHelper {
     required String? imageName,
     double size = 40, // diameter of the circular avatar
     BoxFit fit = BoxFit.cover,
-    Color placeholderColor = Colors.grey, // color for placeholder
+    Color placeholderColor = const Color.fromRGBO(128, 128, 128, 0.3), // grey with opacity
     IconData placeholderIcon = Icons.person, // icon for placeholder
     Color errorColor = Colors.red, // color for error widget
     IconData errorIcon = Icons.error, // icon for error widget
@@ -21,7 +21,7 @@ class ImageHelper {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: placeholderColor,
+        color: placeholderColor, // now supports opacity
       ),
       child: Icon(placeholderIcon, size: size * 0.5, color: Colors.white),
     );
