@@ -68,11 +68,14 @@ class _DesktopState extends State<_Desktop> {
 
     return Scaffold(
       appBar: AppBar(titleSpacing: 0, title: Text(locale.profileOverview)),
-      body: BlocBuilder<StakeholderByIdBloc, StakeholderByIdState>(
+      body: BlocListener<IndividualsBloc, IndividualsState>(
+      listener: (context, state) {
+        if(state is IndividualSuccessImageState || state is IndividualSuccessState){
+          context.read<StakeholderByIdBloc>().add(LoadStakeholderByIdEvent(stkId: individual!.perId!));
+        }
+      },
+      child: BlocBuilder<StakeholderByIdBloc, StakeholderByIdState>(
         builder: (context, state) {
-          if(state is IndividualSuccessImageState){
-           context.read<StakeholderByIdBloc>().add(LoadStakeholderByIdEvent(stkId: individual!.perId!));
-          }
           if(state is StakeholderByIdLoadedState){
             individual = state.stk;
             fullName = "${state.stk.perName} ${state.stk.perLastName}";
@@ -82,7 +85,8 @@ class _DesktopState extends State<_Desktop> {
               BlurLoader(
                 isLoading: state is StakeholderByIdLoadingState,
                 child: Cover(
-                  margin: EdgeInsets.symmetric(horizontal: 5),
+                  radius: 5,
+                  margin: EdgeInsets.symmetric(horizontal: 8,vertical: 0),
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                   color: color.surface,
                   child: Column(
@@ -93,7 +97,7 @@ class _DesktopState extends State<_Desktop> {
                               shapeStyle: ShapeStyle.roundedRectangle,
                               imageName:  individual?.imageProfile,
                               border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
-                              borderRadius: 10,
+                              borderRadius: 5,
                               size: 115),
                           SizedBox(width: 6),
                           Expanded(
@@ -133,8 +137,6 @@ class _DesktopState extends State<_Desktop> {
                               ],
                             ),
                           ),
-
-
                         ],
                       ),
                     ],
@@ -151,6 +153,7 @@ class _DesktopState extends State<_Desktop> {
           );
         },
       ),
+     ),
     );
   }
 }

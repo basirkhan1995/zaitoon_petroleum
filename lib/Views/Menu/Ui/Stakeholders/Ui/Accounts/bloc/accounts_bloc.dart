@@ -20,7 +20,6 @@ class AccountsBloc extends Bloc<AccountsEvent, AccountsState> {
         emit(AccountErrorState(e.toString()));
       }
     });
-
     on<LoadStkAccountsEvent>((event, emit) async{
       emit(AccountLoadingState());
       try{
@@ -35,6 +34,7 @@ class AccountsBloc extends Bloc<AccountsEvent, AccountsState> {
       try{
         final response = await _repo.addAccount(newAccount: event.newAccount);
         if(response["msg"] == "success"){
+          emit(AccountSuccessState());
           add(LoadAccountsEvent(ownerId: event.newAccount.actSignatory));
         }
       }catch(e){
@@ -46,6 +46,7 @@ class AccountsBloc extends Bloc<AccountsEvent, AccountsState> {
       try{
         final response = await _repo.editAccount(newAccount: event.newAccount);
         if(response["msg"] == "success"){
+          emit(AccountSuccessState());
           add(LoadAccountsEvent(ownerId: event.newAccount.actSignatory));
         }
       }catch(e){

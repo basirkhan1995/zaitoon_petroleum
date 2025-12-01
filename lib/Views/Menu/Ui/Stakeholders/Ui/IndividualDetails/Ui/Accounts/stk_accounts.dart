@@ -51,7 +51,7 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   @override
   void initState() {
-    onRefresh();
+    context.read<AccountsBloc>().add(LoadAccountsEvent(ownerId: widget.ind.perId));
     super.initState();
   }
 
@@ -132,7 +132,11 @@ class _DesktopState extends State<_Desktop> {
           SizedBox(height: 10),
           Expanded(
             child: BlocConsumer<AccountsBloc, AccountsState>(
-              listener: (context,state){},
+              listener: (context,state){
+               if(state is AccountSuccessState){
+                 Navigator.of(context).pop();
+               }
+              },
               builder: (context, state) {
                 if (state is AccountLoadingState) {
                   return Center(child: CircularProgressIndicator());
@@ -192,7 +196,7 @@ class _DesktopState extends State<_Desktop> {
                                   backgroundColor: Utils.currencyColors(acc.actCurrency??""),
                                   radius: 23,
                                   child: Text(
-                                    acc.accName!.getFirstLetter,
+                                    acc.accName?.getFirstLetter??"",
                                     style: TextStyle(
                                       color: color.surface,
                                       fontSize: 15,
@@ -231,7 +235,7 @@ class _DesktopState extends State<_Desktop> {
                                     child: Text(acc.actCurrency.toString())),
                                 SizedBox(
                                     width: 100,
-                                    child: Text("2500\$")),
+                                    child: Text("")),
 
                               ],
                             ),
@@ -251,7 +255,9 @@ class _DesktopState extends State<_Desktop> {
   }
 
   void onRefresh(){
-    context.read<AccountsBloc>().add(LoadAccountsEvent(ownerId: widget.ind.perId));
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      context.read<AccountsBloc>().add(LoadAccountsEvent(ownerId: widget.ind.perId));
+    });
   }
 }
 

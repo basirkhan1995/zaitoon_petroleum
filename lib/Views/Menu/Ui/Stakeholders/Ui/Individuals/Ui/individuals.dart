@@ -63,6 +63,13 @@ class _DesktopState extends State<_Desktop> {
   }
 
   @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      onRefresh();
+    });
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final locale = AppLocalizations.of(context)!;
@@ -137,7 +144,11 @@ class _DesktopState extends State<_Desktop> {
             SizedBox(height: 10),
             Expanded(
               child: BlocConsumer<IndividualsBloc, IndividualsState>(
-                listener: (context,state){},
+                listener: (context,state){
+                  if(state is IndividualSuccessState || state is IndividualSuccessImageState){
+                    onRefresh();
+                  }
+                },
                 builder: (context, state) {
                   if (state is IndividualLoadingState) {
                     return Center(child: CircularProgressIndicator());
