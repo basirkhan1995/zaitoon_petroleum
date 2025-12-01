@@ -260,34 +260,41 @@ class _DesktopState extends State<_Desktop> {
                 ],
               ),
               SizedBox(height: 10),
-              ZTextFieldEntitled(controller: jobTitle, title: locale.jobTitle),
-              ZTextFieldEntitled(
-                isRequired: true,
-                // onSubmit: (_)=> onSubmit(),
-                keyboardInputType: TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                inputFormat: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
-                  SmartThousandsDecimalFormatter(),
+              Row(
+                spacing: 5,
+                children: [
+                  Expanded(child: ZTextFieldEntitled(controller: jobTitle, title: locale.jobTitle)),
+                  Expanded(
+                    child: ZTextFieldEntitled(
+                      isRequired: true,
+                      // onSubmit: (_)=> onSubmit(),
+                      keyboardInputType: TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      inputFormat: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
+                        SmartThousandsDecimalFormatter(),
+                      ],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return locale.required(locale.salary);
+                        }
+
+                        // Remove formatting (e.g. commas)
+                        final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
+                        final amount = double.tryParse(clean);
+
+                        if (amount == null || amount <= 0.0) {
+                          return locale.amountGreaterZero;
+                        }
+
+                        return null;
+                      },
+                      controller: empSalary,
+                      title: locale.salary,
+                    ),
+                  ),
                 ],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return locale.required(locale.salary);
-                  }
-
-                  // Remove formatting (e.g. commas)
-                  final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
-                  final amount = double.tryParse(clean);
-
-                  if (amount == null || amount <= 0.0) {
-                    return locale.amountGreaterZero;
-                  }
-
-                  return null;
-                },
-                controller: empSalary,
-                title: locale.salary,
               ),
               ZTextFieldEntitled(controller: empTaxInfo, title: locale.taxInfo),
               ZTextFieldEntitled(

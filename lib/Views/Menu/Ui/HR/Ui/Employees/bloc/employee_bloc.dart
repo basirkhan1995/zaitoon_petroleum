@@ -24,7 +24,6 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
        try{
         final response = await _repo.addEmployee(newEmployee: event.newEmployee);
         final msg = response['msg'];
-        print(msg);
         if(msg == "success"){
           emit(EmployeeSuccessState());
           add(LoadEmployeeEvent());
