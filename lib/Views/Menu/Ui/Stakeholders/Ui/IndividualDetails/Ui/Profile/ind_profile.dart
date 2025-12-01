@@ -10,6 +10,7 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualByID/bloc/stakeholder_by_id_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualDetails/profile.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/add_edit.dart';
+import '../../../../../../../../Features/Other/image_helper.dart';
 import '../../../Individuals/individual_model.dart';
 
 class IndividualProfileView extends StatelessWidget {
@@ -87,17 +88,7 @@ class _DesktopState extends State<_Desktop> {
                     children: [
                       Row(
                         children: [
-                          CircleAvatar(
-                            backgroundColor: color.primary.withValues(alpha: .8),
-                            radius: 28,
-                            child: Text(
-                              fullName?.getFirstLetter??"",
-                              style: TextStyle(
-                                color: color.surface,
-                                fontSize: 17,
-                              ),
-                            ),
-                          ),
+                          ImageHelper.stakeholderProfile(imageName:  individual?.imageProfile,size: 50),
                           SizedBox(width: 6),
                           Expanded(
                             child: Column(

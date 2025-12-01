@@ -22,7 +22,9 @@ class IndividualsModel {
   final String? addCity;
   final String? addProvince;
   final String? addCountry;
+  final String? perEmail;
   final String? addZipCode;
+  final String? imageProfile;
   final int? addMailing;
 
   IndividualsModel({
@@ -33,7 +35,9 @@ class IndividualsModel {
     this.perDoB,
     this.perEnidNo,
     this.perAddress,
+    this.perEmail,
     this.perPhone,
+    this.imageProfile,
     this.addId,
     this.addName,
     this.addCity,
@@ -94,6 +98,8 @@ class IndividualsModel {
     addCountry: json["addCountry"],
     addZipCode: json["addZipCode"],
     addMailing: json["addMailing"],
+    imageProfile: json["perPhoto"],
+    perEmail: json["perEmail"]
   );
 
   Map<String, dynamic> toMap() => {
@@ -110,6 +116,7 @@ class IndividualsModel {
     "add_province": addProvince,
     "add_country": addCountry,
     "zip_code": addZipCode,
+    "perEmail":perEmail,
     "is_mailing": addMailing,
   };
 }

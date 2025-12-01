@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
+import 'package:zaitoon_petroleum/Features/Other/image_helper.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/shortcut.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
@@ -195,17 +196,7 @@ class _DesktopState extends State<_Desktop> {
                                 children: [
 
                                   // ---------- Avatar ----------
-                                  CircleAvatar(
-                                    backgroundColor: color.primary.withValues(alpha: .7),
-                                    radius: 23,
-                                    child: Text(
-                                      fullName.getFirstLetter,
-                                      style: TextStyle(
-                                        color: color.surface,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
+                                  ImageHelper.stakeholderProfile(imageName: state.individuals[index].imageProfile,size: 50),
 
                                   const SizedBox(width: 10),
 
