@@ -349,5 +349,10 @@
   "noData": "No data",
   "employed": "Employed",
   "terminated": "Terminated",
-  "inactive": "Inactive"
+  "inactive": "Inactive",
+  "sameAccountMessage": "You cannot transfer between the same account.",
+  "operationFailedMessage": "Unable to process your request at this time.",
+  "sameCurrencyNotAllowed": "Currency mismatch detected. Please choose accounts with identical currency.",
+  "sameCurrencyOnlyAllowed": "Currency mismatch detected. Please choose accounts with identical currency.",
+  "accountLimitMessage": "Account limit exceeded or insufficient balance."
 }

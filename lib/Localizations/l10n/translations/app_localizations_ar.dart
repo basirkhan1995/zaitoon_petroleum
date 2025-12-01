@@ -1038,4 +1038,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get inactive => 'دنده پرېښې';
+
+  @override
+  String get sameAccountMessage =>
+      'د یو حساب نه بل حساب ته انتقال نشي کېدای. مهرباني وکړئ بل حساب وټاکئ';
+
+  @override
+  String get operationFailedMessage =>
+      'عملیات ناکام شو. مهرباني وکړئ بیا هڅه وکړئ.';
+
+  @override
+  String get sameCurrencyNotAllowed =>
+      'د سرچینې او منزل حسابونه باید په یوه اسعارو وي.';
+
+  @override
+  String get sameCurrencyOnlyAllowed =>
+      'د سرچینې او منزل حسابونه باید په یوه اسعارو وي.';
+
+  @override
+  String get accountLimitMessage => 'د حساب حد زیات شوی یا کافي موجودي نشته';
 }

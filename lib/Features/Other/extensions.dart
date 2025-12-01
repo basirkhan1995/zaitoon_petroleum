@@ -32,17 +32,22 @@ extension GetFirstLetterExtension on String {
 }
 
 //Amount Formats
-extension NumberFormatting on String {
-  /// Converts string with commas to double
+extension NumberFormatting on Object {
+  /// Converts string or number to double
   double toDoubleAmount() {
-    final clean = replaceAll(',', '').replaceAll(' ', '');
-    return double.tryParse(clean) ?? 0;
+    if (this is num) return (this as num).toDouble();
+    if (this is String) {
+      final clean = (this as String).replaceAll(',', '').replaceAll(' ', '');
+      return double.tryParse(clean) ?? 0;
+    }
+    return 0;
   }
 
-  /// Formats number with commas
-  String toAmount({int fractionDigits = 0}) {
-    final numValue = double.tryParse(replaceAll(',', '').replaceAll(' ', '')) ?? 0;
-    return numValue.toStringAsFixed(fractionDigits).replaceAllMapped(
+  /// Formats number with commas and 2 decimals by default
+  String toAmount({int fractionDigits = 2}) {
+    final numValue = toDoubleAmount();
+    final fixed = numValue.toStringAsFixed(fractionDigits);
+    return fixed.replaceAllMapped(
       RegExp(r'\B(?=(\d{3})+(?!\d))'),
           (match) => ',',
     );

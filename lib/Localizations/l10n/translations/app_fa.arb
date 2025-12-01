@@ -349,5 +349,10 @@
   "noData": "بدون اطلاعات",
   "employed": "کارمند فعال",
   "terminated": "منفک",
-  "inactive": "کارمند منفک"
+  "inactive": "کارمند منفک",
+  "sameAccountMessage": "انتقال بین یک حساب امکان‌پذیر نیست. لطفاً حساب دیگری انتخاب کنید.",
+  "operationFailedMessage": "عملیات ناموفق بود. لطفاً دوباره تلاش کنید.",
+  "sameCurrencyNotAllowed": "حساب مبدأ و مقصد باید دارای ارز یکسان باشند.",
+  "sameCurrencyOnlyAllowed": "حساب مبدأ و مقصد باید دارای ارز یکسان باشند.",
+  "accountLimitMessage": "سقف اعتبار حساب بیش از حد مجاز است یا موجودی کافی نیست"
 }

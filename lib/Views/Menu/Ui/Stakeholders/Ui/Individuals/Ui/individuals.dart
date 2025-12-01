@@ -9,7 +9,6 @@ import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/add_edit.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
-import '../../../../../../../Features/Other/cover.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../IndividualDetails/Ui/Profile/ind_profile.dart';
@@ -124,14 +123,19 @@ class _DesktopState extends State<_Desktop> {
               padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 5),
               child: Row(
                 children: [
-                  Expanded(child: Text(locale.stakeholderInfo,style: Theme.of(context).textTheme.titleMedium)),
-
+                  Expanded(child: Text(locale.stakeholderInfo,style: Theme.of(context).textTheme.titleSmall)),
                   SizedBox(
-                      width: 100,
-                      child: Text(locale.gender,style: Theme.of(context).textTheme.titleMedium)),
+                      width: 250,
+                      child: Text(locale.email,style: Theme.of(context).textTheme.titleSmall)),
                   SizedBox(
-                      width: 100,
-                      child: Text(locale.nationalId,style: Theme.of(context).textTheme.titleMedium)),
+                      width: 110,
+                      child: Text(locale.mobile1,style: Theme.of(context).textTheme.titleSmall)),
+                  SizedBox(
+                      width: 75,
+                      child: Text(locale.gender,style: Theme.of(context).textTheme.titleSmall)),
+                  SizedBox(
+                      width: 85,
+                      child: Text(locale.nationalId,style: Theme.of(context).textTheme.titleSmall)),
 
                 ],
               ),
@@ -184,9 +188,6 @@ class _DesktopState extends State<_Desktop> {
                         final lastName  = stk.perLastName?.trim() ?? "";
                         final fullName  = "$firstName $lastName".trim();
 
-                        final phone = stk.perPhone?.trim() ?? "";
-
-                        // ---------- UI ----------
                         return InkWell(
                           highlightColor: color.primary.withValues(alpha: .06),
                           hoverColor: color.primary.withValues(alpha: .06),
@@ -196,50 +197,47 @@ class _DesktopState extends State<_Desktop> {
                           child: Container(
                             decoration: BoxDecoration(
                               color: index.isOdd
-                                  ? color.primary.withValues(alpha: .06)
+                                  ? color.primary.withValues(alpha: .04)
                                   : Colors.transparent,
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 3),
+                              padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 5),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
 
-                                  // ---------- Avatar ----------
-                                  ImageHelper.stakeholderProfile(imageName: state.individuals[index].imageProfile,size: 50),
-
-                                  const SizedBox(width: 10),
-
-                                  // ---------- Name + Details ----------
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        // Full Name
-                                        Text(
-                                          fullName.isNotEmpty ? fullName : "—",
-                                          style: Theme.of(context).textTheme.titleMedium,
-                                        ),
 
-                                        const SizedBox(height: 4),
-                                            if (phone.isNotEmpty)
-                                              Padding(
-                                                padding: const EdgeInsets.only(right: 6.0),
-                                                child: Cover(
-                                                  color: color.surface,
-                                                  child: Text(phone),
-                                                ),
-                                              ),
-
+                                        Row(
+                                          spacing: 8,
+                                          children: [
+                                            ImageHelper.stakeholderProfile(
+                                                imageName: state.individuals[index].imageProfile,size: 45),
+                                            Text(
+                                              fullName.isNotEmpty ? fullName : "—",
+                                              style: Theme.of(context).textTheme.titleMedium,
+                                            ),
+                                          ],
+                                        )
                                       ],
                                     ),
                                   ),
 
                                   SizedBox(
-                                      width: 100,
+                                      width: 250,
+                                      child: Text(stk.perEmail??"")),
+                                  SizedBox(
+                                      width: 110,
+                                      child: Text(stk.perPhone??"")),
+                                  SizedBox(
+                                      width: 75,
                                       child: Text(Utils.genderType(gender: stk.perGender??"",locale: locale))),
                                   SizedBox(
-                                      width: 100,
+                                      width: 85,
                                       child: Text(stk.perEnidNo??"")),
 
                                 ],

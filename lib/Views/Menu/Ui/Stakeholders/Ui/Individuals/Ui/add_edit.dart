@@ -159,13 +159,14 @@ class _DesktopState extends State<_Desktop> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-
                     GestureDetector(
                       onTap: ()=> pickAndShowImage(widget.model!.perId!,context),
                       child: ImageHelper.stakeholderProfile(
                         imageName: imageName,
                         localImageBytes: selectedImageBytes,
-                        size: 100,
+                        size: 110,
+                        border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
+                        shapeStyle: ShapeStyle.roundedRectangle,
                         showCameraIcon: true,
                       ),
                     )

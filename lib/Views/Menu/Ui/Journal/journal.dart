@@ -173,12 +173,8 @@ class _DesktopState extends State<_Desktop> {
                               hintText: locale.accNameOrNumber,
                               isRequired: true,
                               bloc: context.read<AccountsBloc>(),
-                              fetchAllFunction: (bloc) => bloc.add(
-                                LoadStkAccountsEvent(),
-                              ),
-                              searchFunction: (bloc, query) => bloc.add(
-                                LoadStkAccountsEvent(),
-                              ),
+                              fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
+                              searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
                               validator: (value) {
                                 if (value.isEmpty) {
                                   return locale.required(locale.accounts);
@@ -272,6 +268,9 @@ class _DesktopState extends State<_Desktop> {
                                                   child: Text("${locale.accountName}:",style: titleStyle)),
                                               SizedBox(
                                                   width: 170,
+                                                  child: Text("${locale.currencyTitle}:",style: titleStyle)),
+                                              SizedBox(
+                                                  width: 170,
                                                   child: Text("${locale.accountLimit}:",style: titleStyle)),
                                               SizedBox(
                                                   width: 170,
@@ -291,10 +290,11 @@ class _DesktopState extends State<_Desktop> {
                                             children: [
                                               Text(accNumber.toString(),style: bodyStyle),
                                               Text(accName??""),
-                                              Text("${accountLimit?.toAmount()} $ccySymbol",style: bodyStyle),
+                                              Text(accCurrency??""),
+                                              Text("$ccySymbol${accountLimit?.toAmount()}",style: bodyStyle),
                                               Text(status == 1? locale.active : locale.blocked,style: bodyStyle),
-                                              Text("${currentBalance?.toAmount()}$ccySymbol",style: bodyStyle),
-                                              Text("${availableBalance?.toAmount()}$ccySymbol",style: bodyStyle),
+                                              Text("$ccySymbol${currentBalance?.toAmount()}",style: bodyStyle),
+                                              Text("$ccySymbol${availableBalance?.toAmount()}",style: bodyStyle),
                                             ],
                                           ),
                                         ],

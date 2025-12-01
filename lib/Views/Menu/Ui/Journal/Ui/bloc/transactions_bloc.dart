@@ -25,14 +25,13 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
       try{
         final response = await _repo.cashFlowOperations(newTransaction: event.transaction);
         final msg = response['msg'];
-        print("Cash: $msg");
         switch (msg) {
           case "success":
             emit(TransactionSuccessState());
             break;
 
           case "over limit":
-            emit(TransactionErrorState(locale.overLimitMessage));
+            emit(TransactionErrorState(locale.accountLimitMessage));
             break;
 
           case "blocked":
@@ -53,22 +52,25 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
       try{
         final response = await _repo.fundTransfer(newTransaction: event.transaction);
         final msg = response['msg'];
-        print("Cash: $msg");
         switch (msg) {
           case "success":
             emit(TransactionSuccessState());
             break;
 
           case "currency unmatch":
-            emit(TransactionErrorState("Currency not match, same currency only allowed"));
+            emit(TransactionErrorState(locale.sameCurrencyOnlyAllowed));
             break;
 
           case "no limit":
-            emit(TransactionErrorState(locale.accountLimit));
+            emit(TransactionErrorState(locale.accountLimitMessage));
+            break;
+
+          case "same account":
+            emit(TransactionErrorState(locale.sameAccountMessage));
             break;
 
           case "failed":
-            emit(TransactionErrorState("Operation failed"));
+            emit(TransactionErrorState(locale.operationFailedMessage));
             break;
 
           case "blocked":
@@ -89,7 +91,6 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
       try{
         final response = await _repo.updateTxn(newTxn: event.transaction);
         final msg = response['msg'];
-        print("Update: $msg");
         switch (msg) {
           case "success":
             emit(TransactionSuccessState());
@@ -116,7 +117,6 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
       try{
         final response = await _repo.deleteTxn(usrName: event.usrName,reference: event.reference);
         final msg = response['msg'];
-        print("Delete: $msg");
         switch (msg) {
           case "deleted":
             emit(TransactionSuccessState());
@@ -144,7 +144,6 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
         final response = await _repo.authorizeTxn(reference: event.reference,usrName: event.usrName);
 
         final msg = response['msg'];
-        print("Authorize: $msg");
         switch (msg) {
           case "authorized":
             emit(TransactionSuccessState());
@@ -168,7 +167,6 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
         final response = await _repo.reverseTxn(reference: event.reference,usrName: event.usrName);
 
         final msg = response['msg'];
-        print("Reverse: $msg");
         switch (msg) {
           case "success":
             emit(TransactionSuccessState());

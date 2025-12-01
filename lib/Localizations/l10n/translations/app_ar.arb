@@ -349,5 +349,10 @@
   "noData": "هیڅ معلومات نشته",
   "employed": "فعال کارمند",
   "terminated": "منفک",
-  "inactive": "دنده پرېښې"
+  "inactive": "دنده پرېښې",
+  "sameAccountMessage": "د یو حساب نه بل حساب ته انتقال نشي کېدای. مهرباني وکړئ بل حساب وټاکئ",
+  "operationFailedMessage": "عملیات ناکام شو. مهرباني وکړئ بیا هڅه وکړئ.",
+  "sameCurrencyNotAllowed": "د سرچینې او منزل حسابونه باید په یوه اسعارو وي.",
+  "sameCurrencyOnlyAllowed": "د سرچینې او منزل حسابونه باید په یوه اسعارو وي.",
+  "accountLimitMessage": "د حساب حد زیات شوی یا کافي موجودي نشته"
 }

@@ -1036,4 +1036,24 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get inactive => 'کارمند منفک';
+
+  @override
+  String get sameAccountMessage =>
+      'انتقال بین یک حساب امکان‌پذیر نیست. لطفاً حساب دیگری انتخاب کنید.';
+
+  @override
+  String get operationFailedMessage =>
+      'عملیات ناموفق بود. لطفاً دوباره تلاش کنید.';
+
+  @override
+  String get sameCurrencyNotAllowed =>
+      'حساب مبدأ و مقصد باید دارای ارز یکسان باشند.';
+
+  @override
+  String get sameCurrencyOnlyAllowed =>
+      'حساب مبدأ و مقصد باید دارای ارز یکسان باشند.';
+
+  @override
+  String get accountLimitMessage =>
+      'سقف اعتبار حساب بیش از حد مجاز است یا موجودی کافی نیست';
 }

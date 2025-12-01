@@ -112,7 +112,7 @@ class _DesktopState extends State<_Desktop> {
                   icon: Icons.refresh,
                   onPressed: () {
                     context.read<TransactionsBloc>().add(
-                      LoadAuthorizedTransactionsEvent('all'),
+                      LoadAllTransactionsEvent('all'),
                     );
                   },
                   label: Text(locale.refresh),

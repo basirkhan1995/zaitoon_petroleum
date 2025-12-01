@@ -6,6 +6,7 @@ import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/bloc/fetch_atat_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/txn_reference.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
@@ -273,9 +274,14 @@ class _DesktopState extends State<_Desktop> {
 
                           return InkWell(
                             onTap: () {
-                              context.read<TxnReferenceBloc>().add(
-                                FetchTxnByReferenceEvent(txn.trnReference??""),
-                              );
+                              if(txn.trnType == "ATAT"){
+                                context.read<FetchAtatBloc>().add(FetchAccToAccEvent(txn.trnReference??""));
+                              }else{
+                                context.read<TxnReferenceBloc>().add(
+                                  FetchTxnByReferenceEvent(txn.trnReference??""),
+                                );
+                              }
+
                               if (_selectionMode) _toggleSelection(txn);
                             },
                             onLongPress: () {

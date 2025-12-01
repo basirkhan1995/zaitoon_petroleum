@@ -2121,6 +2121,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Inactive'**
   String get inactive;
+
+  /// No description provided for @sameAccountMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot transfer between the same account.'**
+  String get sameAccountMessage;
+
+  /// No description provided for @operationFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to process your request at this time.'**
+  String get operationFailedMessage;
+
+  /// No description provided for @sameCurrencyNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency mismatch detected. Please choose accounts with identical currency.'**
+  String get sameCurrencyNotAllowed;
+
+  /// No description provided for @sameCurrencyOnlyAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency mismatch detected. Please choose accounts with identical currency.'**
+  String get sameCurrencyOnlyAllowed;
+
+  /// No description provided for @accountLimitMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Account limit exceeded or insufficient balance.'**
+  String get accountLimitMessage;
 }
 
 class _AppLocalizationsDelegate

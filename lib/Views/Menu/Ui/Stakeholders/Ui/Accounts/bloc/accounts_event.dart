@@ -12,9 +12,10 @@ class LoadAccountsEvent extends AccountsEvent{
 }
 
 class LoadStkAccountsEvent extends AccountsEvent{
-  const LoadStkAccountsEvent();
+  final String? search;
+  const LoadStkAccountsEvent({this.search});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [search];
 }
 
 class AddAccountEvent extends AccountsEvent{

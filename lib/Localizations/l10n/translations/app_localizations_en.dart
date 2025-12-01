@@ -1042,4 +1042,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inactive => 'Inactive';
+
+  @override
+  String get sameAccountMessage =>
+      'You cannot transfer between the same account.';
+
+  @override
+  String get operationFailedMessage =>
+      'Unable to process your request at this time.';
+
+  @override
+  String get sameCurrencyNotAllowed =>
+      'Currency mismatch detected. Please choose accounts with identical currency.';
+
+  @override
+  String get sameCurrencyOnlyAllowed =>
+      'Currency mismatch detected. Please choose accounts with identical currency.';
+
+  @override
+  String get accountLimitMessage =>
+      'Account limit exceeded or insufficient balance.';
 }

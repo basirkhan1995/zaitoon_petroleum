@@ -7,6 +7,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencie
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/model/rate_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/model/emp_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/model/fetch_atat_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/txn_ref_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/model/stmt_model.dart';
@@ -259,13 +260,15 @@ class Repositories {
       throw "$e";
     }
   }
-  Future<List<StakeholdersAccountsModel>> getStakeholdersAccounts() async {
+  Future<List<StakeholdersAccountsModel>> getStakeholdersAccounts({String? search}) async {
     try {
-      // Build query parameters dynamically
 
       // Fetch data from API
-      final response = await api.get(
+      final response = await api.post(
         endpoint: "/journal/accountDetails.php",
+        data: {
+          "searchValue": search
+        }
       );
 
       // Handle error messages from server
@@ -732,6 +735,32 @@ class Repositories {
       throw e.toString();
     }
   }
+  Future<FetchAtatModel> getATATByReference({required String reference}) async {
+    try {
+      final queryParams = {'ref': reference};
+      final response = await api.get(
+        endpoint: '/journal/fundTransfer.php',
+        queryParams: queryParams,
+      );
+
+      final data = response.data;
+
+      if (data is Map<String, dynamic>) {
+        return FetchAtatModel.fromMap(data);
+      }
+
+      // Optional: handle case where API accidentally wraps in a list
+      if (data is List && data.isNotEmpty && data.first is Map<String, dynamic>) {
+        return FetchAtatModel.fromMap(data.first);
+      }
+
+      throw Exception("Invalid API response format: $data");
+    } on DioException catch (e) {
+      throw e.message ?? 'Unknown Dio error';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 
   Future<Map<String, dynamic>> cashFlowOperations({required TransactionsModel newTransaction}) async {
     try {
@@ -813,7 +842,6 @@ class Repositories {
           endpoint: "/journal/cashWD.php",
           data: newTxn.toMap()
       );
-      print(response.data);
       return response.data;
     } on DioException catch (e) {
       throw '${e.message}';

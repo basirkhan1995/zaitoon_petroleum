@@ -23,7 +23,7 @@ class AccountsBloc extends Bloc<AccountsEvent, AccountsState> {
     on<LoadStkAccountsEvent>((event, emit) async{
       emit(AccountLoadingState());
       try{
-        final acc = await _repo.getStakeholdersAccounts();
+        final acc = await _repo.getStakeholdersAccounts(search: event.search);
         emit(StkAccountLoadedState(acc));
       }catch(e){
         emit(AccountErrorState(e.toString()));
