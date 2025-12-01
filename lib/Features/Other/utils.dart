@@ -30,7 +30,6 @@ class Utils{
 
   static Future<Uint8List?> pickImage() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.image);
-
     if (result != null && result.files.single.bytes != null) {
       return result.files.single.bytes; // Return the bytes if available
     } else if (result != null && result.files.single.path != null) {

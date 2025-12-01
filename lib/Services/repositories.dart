@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
+import 'package:http/http.dart' hide MultipartFile;
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/model/rate_model.dart';
@@ -158,6 +160,63 @@ class Repositories {
 
     } on DioException catch (e) {
       throw e.message ?? "Network error";
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+
+  Future<Map<String, dynamic>> uploadPersonalPhoto({
+    required int perID,
+    required Uint8List image,
+  }) async {
+    try {
+      // Create a valid filename like Postman does
+      final String fileName = "photo_${DateTime.now().millisecondsSinceEpoch}.jpg";
+
+      FormData formData = FormData.fromMap({
+        "perID": perID.toString(),
+        "image": MultipartFile.fromBytes(
+          image,
+          filename: fileName,            // IMPORTANT!
+          contentType: MediaType("image", "jpeg"), // IMPORTANT!
+        ),
+      });
+
+      final response = await api.uploadFile(
+        endpoint: "/stakeholder/uploadPersonalPhoto.php",
+        data: formData,
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+
+  Future<Map<String, dynamic>> uploadPersonalPhoto2({
+    required int perID,
+    required Uint8List image,
+  }) async {
+    try {
+      FormData formData = FormData.fromMap({
+        "perID": perID,
+        "image": MultipartFile.fromBytes(
+          image,
+        ),
+      });
+
+      // Add headers if needed
+      final response = await api.uploadFile(
+        endpoint: "/stakeholder/uploadPersonalPhoto.php",
+        data: formData,
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
     } catch (e) {
       throw e.toString();
     }

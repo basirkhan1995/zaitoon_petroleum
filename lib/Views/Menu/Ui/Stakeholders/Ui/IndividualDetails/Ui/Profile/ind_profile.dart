@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
-import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
@@ -88,7 +87,11 @@ class _DesktopState extends State<_Desktop> {
                     children: [
                       Row(
                         children: [
-                          ImageHelper.stakeholderProfile(imageName:  individual?.imageProfile,size: 50),
+                          ImageHelper.stakeholderProfile(
+                              shapeStyle: ShapeStyle.roundedRectangle,
+                              imageName:  individual?.imageProfile,
+                              borderRadius: 8,
+                              size: 100),
                           SizedBox(width: 6),
                           Expanded(
                             child: Column(

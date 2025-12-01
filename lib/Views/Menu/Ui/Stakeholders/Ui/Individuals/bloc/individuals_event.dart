@@ -32,3 +32,11 @@ class EditIndividualEvent extends IndividualsEvent{
   @override
   List<Object?> get props => [newStk];
 }
+
+class UploadIndProfileImageEvent extends IndividualsEvent{
+  final int perId;
+  final Uint8List image;
+  const UploadIndProfileImageEvent({required this.perId,required this.image});
+  @override
+  List<Object?> get props => [perId, image];
+}

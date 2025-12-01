@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/image_helper.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Other/zform_dialog.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import '../../../../../../../Features/Widgets/textfield_entitled.dart';
@@ -61,6 +63,7 @@ class _DesktopState extends State<_Desktop> {
   final TextEditingController phone = TextEditingController();
   final TextEditingController province = TextEditingController();
   final TextEditingController city = TextEditingController();
+  final TextEditingController email = TextEditingController();
   final TextEditingController address = TextEditingController();
   final TextEditingController country = TextEditingController();
   final TextEditingController nationalId = TextEditingController();
@@ -149,6 +152,20 @@ class _DesktopState extends State<_Desktop> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ImageHelper.stakeholderProfile(
+                        size: 100,
+                        shapeStyle: ShapeStyle.roundedRectangle,
+                        imageName: widget.model?.imageProfile),
+
+                     IconButton(
+                         onPressed: ()=> pickAndUploadImage(widget.model!.perId!),
+                         icon: Icon(Icons.camera_alt)),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Row(
                   spacing: 5,
                   children: [
                     Expanded(
@@ -182,6 +199,13 @@ class _DesktopState extends State<_Desktop> {
                   ],
                 ),
 
+                ZTextFieldEntitled(
+                  controller: email,
+                  validator: (value)=> Utils.validateEmail(email: value,context: context),
+                  title: locale.email,
+                  onSubmit: (_) => onSubmit(),
+                ),
+
                 Row(
                   spacing: 5,
                   children: [
@@ -202,6 +226,13 @@ class _DesktopState extends State<_Desktop> {
                       ),
                     ),
                   ],
+                ),
+
+
+                ZTextFieldEntitled(
+                  controller: address,
+                  title: locale.address,
+                  onSubmit: (_) => onSubmit(),
                 ),
 
                 Row(
@@ -247,13 +278,6 @@ class _DesktopState extends State<_Desktop> {
                   ],
                 ),
 
-                ZTextFieldEntitled(
-                  controller: address,
-                  keyboardInputType: TextInputType.multiline,
-                  maxLength: 100,
-                  title: locale.address,
-                  onSubmit: (_) => onSubmit(),
-                ),
 
                 Row(
                   children: [
@@ -276,6 +300,27 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
+
+  void pickAndUploadImage(int perId) async {
+    // Pick image
+    Uint8List? imageBytes = await Utils.pickImage();
+
+    if (imageBytes != null && imageBytes.isNotEmpty) {
+
+      // Trigger Bloc event
+      context.read<IndividualsBloc>().add(
+        UploadIndProfileImageEvent(
+          perId: perId,
+          image: imageBytes,
+        ),
+      );
+    } else {
+      // User cancelled or empty file
+      print("No image selected or image is empty");
+    }
+  }
+
+
 
   void onSubmit() {
     if (!formKey.currentState!.validate()) return;
