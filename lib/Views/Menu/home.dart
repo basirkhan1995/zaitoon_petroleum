@@ -4,6 +4,7 @@ import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/Ui/login.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/hr.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/individuals.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/transport.dart';
 import '../../Features/Generic/generic_menu.dart';
 import '../../Features/Other/responsive.dart';
@@ -76,7 +77,7 @@ class _DesktopState extends State<_Desktop> {
       MenuDefinition(
         value: MenuName.stakeholders,
         label: AppLocalizations.of(context)!.stakeholders,
-        screen: const StakeholdersView(),
+        screen: const IndividualsView(),
         icon: Icons.account_circle_outlined,
       ),
       MenuDefinition(

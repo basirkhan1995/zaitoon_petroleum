@@ -53,6 +53,5 @@ class AccountsBloc extends Bloc<AccountsEvent, AccountsState> {
         emit(AccountErrorState(e.toString()));
       }
     });
-
   }
 }

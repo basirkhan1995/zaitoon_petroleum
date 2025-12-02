@@ -67,7 +67,7 @@ class _DesktopState extends State<_Desktop> {
     final locale = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(titleSpacing: 0, title: Text(locale.profileOverview)),
+     // appBar: AppBar(titleSpacing: 0, title: Text(locale.profileOverview)),
       body: BlocListener<IndividualsBloc, IndividualsState>(
       listener: (context, state) {
         if(state is IndividualSuccessImageState || state is IndividualSuccessState){
@@ -82,15 +82,28 @@ class _DesktopState extends State<_Desktop> {
           }
           return Column(
             children: [
+              SizedBox(height: 5),
               BlurLoader(
                 isLoading: state is StakeholderByIdLoadingState,
                 child: Cover(
                   radius: 5,
-                  margin: EdgeInsets.symmetric(horizontal: 8,vertical: 0),
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                  margin: EdgeInsets.symmetric(horizontal: 8),
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
                   color: color.surface,
                   child: Column(
                     children: [
+                      Row(
+                        spacing: 5,
+                        children: [
+                          BackButton(
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStatePropertyAll(color.outline.withValues(alpha: .1))
+                            ),
+                          ),
+                          Text(locale.profileOverview,style: Theme.of(context).textTheme.titleMedium)
+                        ],
+                      ),
+                      SizedBox(height: 5),
                       Row(
                         children: [
                           ImageHelper.stakeholderProfile(
@@ -134,6 +147,7 @@ class _DesktopState extends State<_Desktop> {
                                   },
                                   label: Text(locale.edit),
                                 ),
+                                SizedBox(height: 5),
                               ],
                             ),
                           ),

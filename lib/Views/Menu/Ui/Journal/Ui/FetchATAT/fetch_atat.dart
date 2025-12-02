@@ -75,7 +75,7 @@ class _DesktopState extends State<_Desktop> {
     final login = auth.loginData;
 
     return ZFormDialog(
-      width: MediaQuery.of(context).size.width * .6,
+      width: MediaQuery.of(context).size.width * .5,
       isActionTrue: false,
       onAction: null,
       icon: Icons.home_repair_service_outlined,

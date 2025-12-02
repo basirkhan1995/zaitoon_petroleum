@@ -180,12 +180,7 @@ class _DesktopState extends State<_Desktop> {
       body: BlocConsumer<CompanyProfileBloc, CompanyProfileState>(
           listener: (context, state) {
             if (state is CompanyProfileErrorState) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Error: ${state.message}"),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              Utils.showOverlayMessage(context, message: state.message, isError: true);
             }
 
             if (state is CompanyProfileLoadedState) {
@@ -197,13 +192,7 @@ class _DesktopState extends State<_Desktop> {
                 setState(() {
                   isUpdateMode = false;
                 });
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text("Profile updated successfully!"),
-                    backgroundColor: Colors.green,
-                  ),
-                );
+                Utils.showOverlayMessage(context, message: "Successfully updated", isError: false);
               }
             }
           },

@@ -206,7 +206,6 @@ class _DesktopState extends State<_Desktop> {
 
                                 const SizedBox(width: 10),
 
-                                // ---------- Name + Details ----------
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
