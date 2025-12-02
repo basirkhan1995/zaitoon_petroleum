@@ -1,3 +1,6 @@
+// To parse this JSON data, do
+//
+//     final fetchAtatModel = fetchAtatModelFromMap(jsonString);
 
 import 'dart:convert';
 
@@ -9,9 +12,12 @@ class FetchAtatModel {
   final String? trnReference;
   final String? trnType;
   final int? trnStatus;
-  final String? usrName;
-  final DateTime? trnEntryDate;
+  final String? maker;
+  final String? checker;
+  final String? trdNarration;
+  final int? trdBranch;
   final String? trnStateText;
+  final DateTime? trnEntryDate;
   final String? type;
   final List<Records>? debit;
   final List<Records>? credit;
@@ -20,9 +26,12 @@ class FetchAtatModel {
     this.trnReference,
     this.trnType,
     this.trnStatus,
-    this.usrName,
-    this.trnEntryDate,
+    this.maker,
+    this.checker,
+    this.trdNarration,
+    this.trdBranch,
     this.trnStateText,
+    this.trnEntryDate,
     this.type,
     this.debit,
     this.credit,
@@ -32,9 +41,12 @@ class FetchAtatModel {
     String? trnReference,
     String? trnType,
     int? trnStatus,
-    String? usrName,
-    DateTime? trnEntryDate,
+    String? maker,
+    String? checker,
+    String? trdNarration,
+    int? trdBranch,
     String? trnStateText,
+    DateTime? trnEntryDate,
     String? type,
     List<Records>? debit,
     List<Records>? credit,
@@ -43,9 +55,12 @@ class FetchAtatModel {
         trnReference: trnReference ?? this.trnReference,
         trnType: trnType ?? this.trnType,
         trnStatus: trnStatus ?? this.trnStatus,
-        usrName: usrName ?? this.usrName,
-        trnEntryDate: trnEntryDate ?? this.trnEntryDate,
+        maker: maker ?? this.maker,
+        checker: checker ?? this.checker,
+        trdNarration: trdNarration ?? this.trdNarration,
+        trdBranch: trdBranch ?? this.trdBranch,
         trnStateText: trnStateText ?? this.trnStateText,
+        trnEntryDate: trnEntryDate ?? this.trnEntryDate,
         type: type ?? this.type,
         debit: debit ?? this.debit,
         credit: credit ?? this.credit,
@@ -55,9 +70,12 @@ class FetchAtatModel {
     trnReference: json["trnReference"],
     trnType: json["trnType"],
     trnStatus: json["trnStatus"],
-    usrName: json["usrName"],
-    trnEntryDate: json["trnEntryDate"] == null ? null : DateTime.parse(json["trnEntryDate"]),
+    maker: json["maker"],
+    checker: json["checker"],
+    trdNarration: json["trdNarration"],
+    trdBranch: json["trdBranch"],
     trnStateText: json["trnStateText"],
+    trnEntryDate: json["trnEntryDate"] == null ? null : DateTime.parse(json["trnEntryDate"]),
     type: json["type"],
     debit: json["debit"] == null ? [] : List<Records>.from(json["debit"]!.map((x) => Records.fromMap(x))),
     credit: json["credit"] == null ? [] : List<Records>.from(json["credit"]!.map((x) => Records.fromMap(x))),
@@ -67,9 +85,12 @@ class FetchAtatModel {
     "trnReference": trnReference,
     "trnType": trnType,
     "trnStatus": trnStatus,
-    "usrName": usrName,
-    "trnEntryDate": trnEntryDate?.toIso8601String(),
+    "maker": maker,
+    "checker": checker,
+    "trdNarration": trdNarration,
+    "trdBranch": trdBranch,
     "trnStateText": trnStateText,
+    "trnEntryDate": trnEntryDate?.toIso8601String(),
     "type": type,
     "debit": debit == null ? [] : List<dynamic>.from(debit!.map((x) => x.toMap())),
     "credit": credit == null ? [] : List<dynamic>.from(credit!.map((x) => x.toMap())),
@@ -77,72 +98,48 @@ class FetchAtatModel {
 }
 
 class Records {
-  final int? trdId;
-  final String? trdReference;
-  final String? trdCcy;
-  final int? trdBranch;
   final int? trdAccount;
-  final String? trdDrCr;
+  final String? accName;
+  final String? trdCcy;
   final String? trdAmount;
-  final String? trdNarration;
-  final DateTime? trdEntryDate;
+  final String? trdDrCr;
 
   Records({
-    this.trdId,
-    this.trdReference,
-    this.trdCcy,
-    this.trdBranch,
     this.trdAccount,
-    this.trdDrCr,
+    this.accName,
+    this.trdCcy,
     this.trdAmount,
-    this.trdNarration,
-    this.trdEntryDate,
+    this.trdDrCr,
   });
 
   Records copyWith({
-    int? trdId,
-    String? trdReference,
-    String? trdCcy,
-    int? trdBranch,
     int? trdAccount,
-    String? trdDrCr,
+    String? accName,
+    String? trdCcy,
     String? trdAmount,
-    String? trdNarration,
-    DateTime? trdEntryDate,
+    String? trdDrCr,
   }) =>
       Records(
-        trdId: trdId ?? this.trdId,
-        trdReference: trdReference ?? this.trdReference,
-        trdCcy: trdCcy ?? this.trdCcy,
-        trdBranch: trdBranch ?? this.trdBranch,
         trdAccount: trdAccount ?? this.trdAccount,
-        trdDrCr: trdDrCr ?? this.trdDrCr,
+        accName: accName ?? this.accName,
+        trdCcy: trdCcy ?? this.trdCcy,
         trdAmount: trdAmount ?? this.trdAmount,
-        trdNarration: trdNarration ?? this.trdNarration,
-        trdEntryDate: trdEntryDate ?? this.trdEntryDate,
+        trdDrCr: trdDrCr ?? this.trdDrCr,
       );
 
   factory Records.fromMap(Map<String, dynamic> json) => Records(
-    trdId: json["trdID"],
-    trdReference: json["trdReference"],
-    trdCcy: json["trdCcy"],
-    trdBranch: json["trdBranch"],
     trdAccount: json["trdAccount"],
-    trdDrCr: json["trdDrCr"],
+    accName: json["accName"],
+    trdCcy: json["trdCcy"],
     trdAmount: json["trdAmount"],
-    trdNarration: json["trdNarration"],
-    trdEntryDate: json["trdEntryDate"] == null ? null : DateTime.parse(json["trdEntryDate"]),
+    trdDrCr: json["trdDrCr"],
   );
 
   Map<String, dynamic> toMap() => {
-    "trdID": trdId,
-    "trdReference": trdReference,
-    "trdCcy": trdCcy,
-    "trdBranch": trdBranch,
     "trdAccount": trdAccount,
-    "trdDrCr": trdDrCr,
+    "accName": accName,
+    "trdCcy": trdCcy,
     "trdAmount": trdAmount,
-    "trdNarration": trdNarration,
-    "trdEntryDate": trdEntryDate?.toIso8601String(),
+    "trdDrCr": trdDrCr,
   };
 }

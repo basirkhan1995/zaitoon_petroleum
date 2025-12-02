@@ -794,7 +794,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get narration => 'Narration';
 
   @override
-  String get referenceNumber => 'Reference Number';
+  String get referenceNumber => 'Reference';
 
   @override
   String get txnMaker => 'TXN Maker';
@@ -1062,4 +1062,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get accountLimitMessage =>
       'Account limit exceeded or insufficient balance.';
+
+  @override
+  String get date => 'Date';
 }

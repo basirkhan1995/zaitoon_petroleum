@@ -72,8 +72,9 @@ class _DesktopState extends State<_Desktop> {
     final color = Theme.of(context).colorScheme;
     final isLoading = context.watch<TransactionsBloc>().state is TxnLoadingState;
     final isDeleteLoading = context.watch<TransactionsBloc>().state is TxnDeleteLoadingState;
-    final isUpdateLoading = context.watch<TransactionsBloc>().state is TxnUpdateLoadingState;
     final isAuthorizeLoading = context.watch<TransactionsBloc>().state is TxnAuthorizeLoadingState;
+    final isUpdateLoading = context.watch<TransactionsBloc>().state is TxnUpdateLoadingState;
+
     final isReverseLoading = context.watch<TransactionsBloc>().state is TxnReverseLoadingState;
     final auth = context.watch<AuthBloc>().state;
     if (auth is! AuthenticatedState) {

@@ -14,8 +14,6 @@ class FetchAtatBloc extends Bloc<FetchAtatEvent, FetchAtatState> {
       emit(FetchATATLoadingState());
       try{
        final atat = await _repo.getATATByReference(reference: event.ref);
-       print(atat.credit);
-       print(atat.debit);
        emit(FetchATATLoadedState(atat));
       }catch(e){
         emit(FetchATATErrorState(e.toString()));

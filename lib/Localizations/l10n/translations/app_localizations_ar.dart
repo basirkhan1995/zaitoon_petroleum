@@ -1057,4 +1057,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get accountLimitMessage => 'د حساب حد زیات شوی یا کافي موجودي نشته';
+
+  @override
+  String get date => 'تاریخ';
 }

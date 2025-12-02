@@ -354,5 +354,6 @@
   "operationFailedMessage": "عملیات ناموفق بود. لطفاً دوباره تلاش کنید.",
   "sameCurrencyNotAllowed": "حساب مبدأ و مقصد باید دارای ارز یکسان باشند.",
   "sameCurrencyOnlyAllowed": "حساب مبدأ و مقصد باید دارای ارز یکسان باشند.",
-  "accountLimitMessage": "سقف اعتبار حساب بیش از حد مجاز است یا موجودی کافی نیست"
+  "accountLimitMessage": "سقف اعتبار حساب بیش از حد مجاز است یا موجودی کافی نیست",
+  "date": "تاریخ"
 }

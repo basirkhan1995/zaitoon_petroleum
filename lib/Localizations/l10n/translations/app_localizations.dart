@@ -1645,7 +1645,7 @@ abstract class AppLocalizations {
   /// No description provided for @referenceNumber.
   ///
   /// In en, this message translates to:
-  /// **'Reference Number'**
+  /// **'Reference'**
   String get referenceNumber;
 
   /// No description provided for @txnMaker.
@@ -2151,6 +2151,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account limit exceeded or insufficient balance.'**
   String get accountLimitMessage;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
 }
 
 class _AppLocalizationsDelegate

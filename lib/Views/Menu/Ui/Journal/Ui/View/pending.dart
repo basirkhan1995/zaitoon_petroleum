@@ -7,6 +7,7 @@ import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/bloc/fetch_atat_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/fetch_atat.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/txn_reference.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
@@ -62,6 +63,7 @@ class _DesktopState extends State<_Desktop> {
     });
     super.initState();
   }
+
   final TextEditingController searchController = TextEditingController();
 
   @override
@@ -69,6 +71,7 @@ class _DesktopState extends State<_Desktop> {
     searchController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
@@ -76,285 +79,346 @@ class _DesktopState extends State<_Desktop> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
+      body: BlocConsumer<FetchAtatBloc, FetchAtatState>(
         listener: (context, state) {
-          if (state is TxnReferenceLoadedState) {
+          if (state is FetchATATLoadedState) {
             showDialog(
               context: context,
               builder: (context) {
-                return TxnReferenceView();
+                return FetchAtatView();
               },
             );
           }
         },
         builder: (context, state) {
-          if (state is TxnReferenceLoadingState) {
+          if (state is FetchATATLoadingState) {
             return Center(child: CircularProgressIndicator());
           }
-          return Column(
-            children: [
-              if (_selectionMode)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    spacing: 8,
-                    children: [
-                      ZOutlineButton(
-                        width: 150,
-                        icon: Icons.check_box_rounded,
-                        label: Text(
-                          "${locale.authorize} (${_selectedRefs.length})",
-                        ),
-                      ),
-                      ZOutlineButton(
-                        isActive: true,
-                        backgroundHover: Theme.of(context).colorScheme.error,
-                        width: 120,
-                        icon: Icons.delete_outline_rounded,
-                        label: Text(
-                          "${locale.delete} (${_selectedRefs.length})",
-                        ),
-                      ),
-                      ZOutlineButton(
-                        width: 100,
-                        onPressed: () {
-                          setState(() {
-                            _selectionMode = false;
-                            _selectedRefs.clear();
-                          });
-                        },
-                        isActive: true,
-                        label: Text(locale.cancel),
-                      ),
-                    ],
-                  ),
-                ),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 8),
-                child: Row(
-                  spacing: 8,
-                  children: [
-                    Expanded(
-                      child: ZSearchField(
-                        icon: FontAwesomeIcons.magnifyingGlass,
-                        controller: searchController,
-                        hint: AppLocalizations.of(context)!.search,
-                        onChanged: (e) {
-                          setState(() {
-
-                          });
-                        },
-                        title: "",
-                      ),
-                    ),
-                    ZOutlineButton(
-                        toolTip: "F5",
-                        width: 120,
-                        icon: Icons.refresh,
-                        onPressed: (){
-                          context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('pending'));
-                        },
-                        label: Text(locale.refresh)),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-              // HEADER
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  children: [
-                    // SELECT-ALL CHECKBOX
-                    if (_selectionMode)
-                      SizedBox(
-                        width: 40,
-                        child: BlocBuilder<TransactionsBloc, TransactionsState>(
-                          builder: (context, state) {
-                            if (state is! TransactionLoadedState) {
-                              return const SizedBox();
-                            }
-
-                            final allSelected = _selectedRefs.length == state.txn.length;
-
-                            return Checkbox(
-                              value: allSelected && _selectionMode,
-                              onChanged: (v) => _toggleSelectAll(state.txn),
-                            );
-                          },
-                        ),
-                      ),
-
-                    SizedBox(
-                      width: 140,
-                      child: Text(locale.txnDate, style: textTheme.titleSmall),
-                    ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Text(
-                        locale.referenceNumber,
-                        style: textTheme.titleSmall,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 110,
-                      child: Text(locale.txnType, style: textTheme.titleSmall),
-                    ),
-                    const SizedBox(width: 20),
-                    SizedBox(
-                      width: 110,
-                      child: Text(locale.maker, style: textTheme.titleSmall),
-                    ),
-                  ],
-                ),
-              ),
-
-              Divider(
-                indent: 8,
-                endIndent: 8,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-
-              // BODY
-              Expanded(
-                child: BlocConsumer<TransactionsBloc, TransactionsState>(
-                  listener: (context,state){
-                    if(state is TransactionErrorState){
-                      Utils.showOverlayMessage(context,title: locale.accessDenied, message: state.message, isError: true);
-                    }
-                    if(state is TransactionSuccessState){
-                      WidgetsBinding.instance.addPostFrameCallback((_){
-                        Navigator.of(context).pop();
-                        context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('pending'));
-                      });
-                    }
+          return BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
+            listener: (context, state) {
+              if (state is TxnReferenceLoadedState) {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return TxnReferenceView();
                   },
-                  builder: (context, state) {
-                    if (state is TransactionErrorState) {
-                      return NoDataWidget(
-                        message: state.message,
-                        onRefresh: () {
-                          context.read<TransactionsBloc>().add(
-                            LoadAllTransactionsEvent('pending'),
-                          );
-                        },
-                      );
-                    }
+                );
+              }
+            },
+            builder: (context, state) {
+              if (state is TxnReferenceLoadingState) {
+                return Center(child: CircularProgressIndicator());
+              }
+              return Column(
+                children: [
+                  if (_selectionMode)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        spacing: 8,
+                        children: [
+                          ZOutlineButton(
+                            width: 150,
+                            icon: Icons.check_box_rounded,
+                            label: Text(
+                              "${locale.authorize} (${_selectedRefs.length})",
+                            ),
+                          ),
+                          ZOutlineButton(
+                            isActive: true,
+                            backgroundHover: Theme.of(
+                              context,
+                            ).colorScheme.error,
+                            width: 120,
+                            icon: Icons.delete_outline_rounded,
+                            label: Text(
+                              "${locale.delete} (${_selectedRefs.length})",
+                            ),
+                          ),
+                          ZOutlineButton(
+                            width: 100,
+                            onPressed: () {
+                              setState(() {
+                                _selectionMode = false;
+                                _selectedRefs.clear();
+                              });
+                            },
+                            isActive: true,
+                            label: Text(locale.cancel),
+                          ),
+                        ],
+                      ),
+                    ),
 
-                    if (state is TxnLoadingState) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    if (state is TransactionLoadedState) {
-                      final query = searchController.text.toLowerCase().trim();
-                      final filteredList = state.txn.where((item) {
-                        final name = item.trnReference?.toLowerCase() ?? '';
-                        return name.contains(query);
-                      }).toList();
-
-                      if (filteredList.isEmpty) {
-                        return NoDataWidget(
-                          message: locale.noDataFound,
-                          onRefresh: () {
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        Expanded(
+                          child: ZSearchField(
+                            icon: FontAwesomeIcons.magnifyingGlass,
+                            controller: searchController,
+                            hint: AppLocalizations.of(context)!.search,
+                            onChanged: (e) {
+                              setState(() {});
+                            },
+                            title: "",
+                          ),
+                        ),
+                        ZOutlineButton(
+                          toolTip: "F5",
+                          width: 120,
+                          icon: Icons.refresh,
+                          onPressed: () {
                             context.read<TransactionsBloc>().add(
                               LoadAllTransactionsEvent('pending'),
                             );
                           },
-                        );
-                      }
+                          label: Text(locale.refresh),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  // HEADER
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      children: [
+                        // SELECT-ALL CHECKBOX
+                        if (_selectionMode)
+                          SizedBox(
+                            width: 40,
+                            child:
+                                BlocBuilder<
+                                  TransactionsBloc,
+                                  TransactionsState
+                                >(
+                                  builder: (context, state) {
+                                    if (state is! TransactionLoadedState) {
+                                      return const SizedBox();
+                                    }
 
-                      return ListView.builder(
-                        itemCount: filteredList.length,
-                        itemBuilder: (context, index) {
-                          final txn = filteredList[index];
-                          final isSelected = _selectedRefs.contains(
-                            txn.trnReference,
+                                    final allSelected =
+                                        _selectedRefs.length ==
+                                        state.txn.length;
+
+                                    return Checkbox(
+                                      value: allSelected && _selectionMode,
+                                      onChanged: (v) =>
+                                          _toggleSelectAll(state.txn),
+                                    );
+                                  },
+                                ),
+                          ),
+
+                        SizedBox(
+                          width: 140,
+                          child: Text(
+                            locale.txnDate,
+                            style: textTheme.titleSmall,
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: Text(
+                            locale.referenceNumber,
+                            style: textTheme.titleSmall,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 110,
+                          child: Text(
+                            locale.txnType,
+                            style: textTheme.titleSmall,
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        SizedBox(
+                          width: 110,
+                          child: Text(
+                            locale.maker,
+                            style: textTheme.titleSmall,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Divider(
+                    indent: 8,
+                    endIndent: 8,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+
+                  // BODY
+                  Expanded(
+                    child: BlocConsumer<TransactionsBloc, TransactionsState>(
+                      listener: (context, state) {
+                        if (state is TransactionErrorState) {
+                          Utils.showOverlayMessage(
+                            context,
+                            title: locale.accessDenied,
+                            message: state.message,
+                            isError: true,
                           );
-
-                          return InkWell(
-                            onTap: () {
-                              if(txn.trnType == "ATAT"){
-                                context.read<FetchAtatBloc>().add(FetchAccToAccEvent(txn.trnReference??""));
-                              }else{
-                                context.read<TxnReferenceBloc>().add(
-                                  FetchTxnByReferenceEvent(txn.trnReference??""),
-                                );
-                              }
-
-                              if (_selectionMode) _toggleSelection(txn);
-                            },
-                            onLongPress: () {
-                              _toggleSelection(
-                                txn,
+                        }
+                        if (state is TransactionSuccessState) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            Navigator.of(context).pop();
+                            context.read<TransactionsBloc>().add(
+                              LoadAllTransactionsEvent('pending'),
+                            );
+                          });
+                        }
+                      },
+                      builder: (context, state) {
+                        if (state is TransactionErrorState) {
+                          return NoDataWidget(
+                            message: state.message,
+                            onRefresh: () {
+                              context.read<TransactionsBloc>().add(
+                                LoadAllTransactionsEvent('pending'),
                               );
                             },
-                            hoverColor: Theme.of(
-                              context,
-                            ).primaryColor.withValues(alpha: .05),
-                            child: Container(
-                              color: isSelected
-                                  ? Theme.of(
-                                      context,
-                                    ).colorScheme.primary.withValues(alpha: .15)
-                                  : index.isOdd
-                                  ? Theme.of(
-                                      context,
-                                    ).colorScheme.primary.withValues(alpha: .06)
-                                  : Colors.transparent,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10.0,
-                                vertical: 8,
-                              ),
-                              child: Row(
-                                children: [
-                                  if (_selectionMode)
-                                    // CHECKBOX
-                                    SizedBox(
-                                      width: 40,
-                                      child: Checkbox(
-                                        visualDensity: VisualDensity(
-                                          vertical: -4,
-                                        ),
-                                        value: isSelected,
-                                        onChanged: (v) => _toggleSelection(txn),
-                                      ),
-                                    ),
-
-                                  SizedBox(
-                                    width: 140,
-                                    child: Text(
-                                      txn.trnEntryDate!.toFullDateTime,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 20),
-
-                                  Expanded(
-                                    child: Text(txn.trnReference.toString()),
-                                  ),
-
-                                  SizedBox(
-                                      width: 110,
-                                      child: Text(Utils.getTxnCode(txn: txn.trnType??"", context: context))),
-
-                                  const SizedBox(width: 20),
-                                  SizedBox(
-                                    width: 110,
-                                    child: Text(txn.maker ?? ""),
-                                  ),
-                                ],
-                              ),
-                            ),
                           );
-                        },
-                      );
-                    }
+                        }
 
-                    return const SizedBox();
-                  },
-                ),
-              ),
-            ],
+                        if (state is TxnLoadingState) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        if (state is TransactionLoadedState) {
+                          final query = searchController.text
+                              .toLowerCase()
+                              .trim();
+                          final filteredList = state.txn.where((item) {
+                            final name = item.trnReference?.toLowerCase() ?? '';
+                            return name.contains(query);
+                          }).toList();
+
+                          if (filteredList.isEmpty) {
+                            return NoDataWidget(
+                              message: locale.noDataFound,
+                              onRefresh: () {
+                                context.read<TransactionsBloc>().add(
+                                  LoadAllTransactionsEvent('pending'),
+                                );
+                              },
+                            );
+                          }
+
+                          return ListView.builder(
+                            itemCount: filteredList.length,
+                            itemBuilder: (context, index) {
+                              final txn = filteredList[index];
+                              final isSelected = _selectedRefs.contains(
+                                txn.trnReference,
+                              );
+
+                              return InkWell(
+                                onTap: () {
+                                  if (txn.trnType == "ATAT") {
+                                    context.read<FetchAtatBloc>().add(
+                                      FetchAccToAccEvent(
+                                        txn.trnReference ?? "",
+                                      ),
+                                    );
+                                  } else {
+                                    context.read<TxnReferenceBloc>().add(
+                                      FetchTxnByReferenceEvent(
+                                        txn.trnReference ?? "",
+                                      ),
+                                    );
+                                  }
+
+                                  if (_selectionMode) _toggleSelection(txn);
+                                },
+                                onLongPress: () {
+                                  _toggleSelection(txn);
+                                },
+                                hoverColor: Theme.of(
+                                  context,
+                                ).primaryColor.withValues(alpha: .05),
+                                child: Container(
+                                  color: isSelected
+                                      ? Theme.of(context).colorScheme.primary
+                                            .withValues(alpha: .15)
+                                      : index.isOdd
+                                      ? Theme.of(context).colorScheme.primary
+                                            .withValues(alpha: .06)
+                                      : Colors.transparent,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0,
+                                    vertical: 8,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      if (_selectionMode)
+                                        // CHECKBOX
+                                        SizedBox(
+                                          width: 40,
+                                          child: Checkbox(
+                                            visualDensity: VisualDensity(
+                                              vertical: -4,
+                                            ),
+                                            value: isSelected,
+                                            onChanged: (v) =>
+                                                _toggleSelection(txn),
+                                          ),
+                                        ),
+
+                                      SizedBox(
+                                        width: 140,
+                                        child: Text(
+                                          txn.trnEntryDate!.toFullDateTime,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 20),
+
+                                      Expanded(
+                                        child: Text(
+                                          txn.trnReference.toString(),
+                                        ),
+                                      ),
+
+                                      SizedBox(
+                                        width: 110,
+                                        child: Text(
+                                          Utils.getTxnCode(
+                                            txn: txn.trnType ?? "",
+                                            context: context,
+                                          ),
+                                        ),
+                                      ),
+
+                                      const SizedBox(width: 20),
+                                      SizedBox(
+                                        width: 110,
+                                        child: Text(txn.maker ?? ""),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        }
+
+                        return const SizedBox();
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
           );
         },
       ),

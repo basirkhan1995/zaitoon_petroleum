@@ -1056,4 +1056,7 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get accountLimitMessage =>
       'سقف اعتبار حساب بیش از حد مجاز است یا موجودی کافی نیست';
+
+  @override
+  String get date => 'تاریخ';
 }
