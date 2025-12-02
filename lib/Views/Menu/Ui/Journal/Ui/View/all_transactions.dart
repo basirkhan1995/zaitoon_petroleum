@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
 import '../FetchATAT/bloc/fetch_atat_bloc.dart';
+import '../FetchATAT/fetch_atat.dart';
 import '../TxnByReference/bloc/txn_reference_bloc.dart';
 import '../TxnByReference/txn_reference.dart';
 
@@ -71,7 +72,22 @@ class _DesktopState extends State<_Desktop> {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
+      body: BlocConsumer<FetchAtatBloc, FetchAtatState>(
+  listener: (context, state) {
+    if (state is FetchATATLoadedState) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return FetchAtatView();
+        },
+      );
+    }
+  },
+  builder: (context, state) {
+    if (state is FetchATATLoadingState) {
+      return Center(child: CircularProgressIndicator());
+    }
+    return BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
       listener: (context, state) {
         if (state is TxnReferenceLoadedState) {
           showDialog(
@@ -266,6 +282,8 @@ class _DesktopState extends State<_Desktop> {
           ),
         ],
       );
+  },
+);
   },
 ),
     );

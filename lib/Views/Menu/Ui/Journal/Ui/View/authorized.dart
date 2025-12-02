@@ -87,6 +87,9 @@ class _DesktopState extends State<_Desktop> {
     }
   },
   builder: (context, state) {
+    if (state is FetchATATLoadingState) {
+      return Center(child: CircularProgressIndicator());
+    }
     return BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
         listener: (context, state) {
           if (state is TxnReferenceLoadedState) {
