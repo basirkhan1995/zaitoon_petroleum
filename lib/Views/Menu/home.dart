@@ -18,7 +18,6 @@ import 'Ui/Report/report.dart';
 import 'Ui/Settings/Ui/Company/bloc/company_settings_menu_bloc.dart';
 import 'Ui/Settings/bloc/settings_tab_bloc.dart';
 import 'Ui/Settings/settings.dart';
-import 'Ui/Stakeholders/stakeholders.dart';
 import 'Ui/Stock/stock.dart';
 import 'bloc/menu_bloc.dart';
 

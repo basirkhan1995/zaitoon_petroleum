@@ -57,17 +57,10 @@ class _DesktopState extends State<_Desktop> {
     final tr = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
-    TextStyle? titleStyle = textTheme.titleSmall?.copyWith(
-      color: color.outline,
-    );
-    TextStyle? bodyStyle = textTheme.bodyMedium?.copyWith(
-      color: color.onSurface,
-      fontWeight: FontWeight.bold,
-    );
-    final isDeleteLoading =
-        context.watch<TransactionsBloc>().state is TxnDeleteLoadingState;
-    final isAuthorizeLoading =
-        context.watch<TransactionsBloc>().state is TxnAuthorizeLoadingState;
+    TextStyle? titleStyle = textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold);
+    TextStyle? bodyStyle = textTheme.bodyMedium?.copyWith();
+    final isDeleteLoading = context.watch<TransactionsBloc>().state is TxnDeleteLoadingState;
+    final isAuthorizeLoading = context.watch<TransactionsBloc>().state is TxnAuthorizeLoadingState;
     final auth = context.watch<AuthBloc>().state;
     if (auth is! AuthenticatedState) {
       return const SizedBox();
@@ -75,7 +68,7 @@ class _DesktopState extends State<_Desktop> {
     final login = auth.loginData;
 
     return ZFormDialog(
-      width: MediaQuery.of(context).size.width * .5,
+      width: MediaQuery.of(context).size.width * .7,
       isActionTrue: false,
       onAction: null,
       icon: Icons.home_repair_service_outlined,
@@ -202,180 +195,191 @@ class _DesktopState extends State<_Desktop> {
                 ),
               ),
               Divider(color: color.outline.withValues(alpha: .3),thickness: 1, endIndent: 8, indent: 8),
-              SizedBox(height: 5),
+
               Expanded(
                 child: Row(
                   children: [
                     Expanded(
-                      child: BlocConsumer<FetchAtatBloc, FetchAtatState>(
-                        listener: (context, state) {},
-                        builder: (context, state) {
-                          if (state is FetchATATLoadedState) {
-                            return ListView.builder(
-                              itemCount: state.atat.debit?.length,
-                              itemBuilder: (context, index) {
-                                final dr = state.atat.debit?[index];
-                                return Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 5),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    border: Border.all(color: color.outline.withValues(alpha: .3))
+                      child: Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 8,vertical: 2),
+                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                            child: Row(
+                              spacing: 5,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    tr.accountName,
+                                    style: titleStyle,
                                   ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      children: [
-                                        //Title
-                                        SizedBox(
-                                          width: 120,
-                                          child: Column(
-                                            spacing: 5,
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "${tr.accountName}:",
-                                                style: titleStyle,
-                                              ),
-                                              Text(
-                                                "${tr.accountNumber}:",
-                                                style: titleStyle,
-                                              ),
-                                              Text(
-                                                "${tr.amount}:",
-                                                style: titleStyle,
-                                              ),
-                                              Text(
-                                                "${tr.currencyTitle}:",
-                                                style: titleStyle,
-                                              ),
-                                            ],
-                                          ),
+                                ),
+                                SizedBox(
+                                  width: 100,
+                                  child: Text(
+                                    tr.accountNumber,
+                                    style: titleStyle,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 120,
+                                  child: Text(
+                                    tr.amount,
+                                    style: titleStyle,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: BlocConsumer<FetchAtatBloc, FetchAtatState>(
+                              listener: (context, state) {},
+                              builder: (context, state) {
+                                if (state is FetchATATLoadedState) {
+                                  return ListView.builder(
+                                    itemCount: state.atat.debit?.length,
+                                    itemBuilder: (context, index) {
+                                      final dr = state.atat.debit?[index];
+                                      return Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 8,vertical: 2),
+                                        padding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                                        decoration: BoxDecoration(
+                                            color: index.isOdd? color.primary.withValues(alpha: .05) : Colors.transparent,
+                                            borderRadius: BorderRadius.circular(2),
+                                            border: Border.all(color: color.outline.withValues(alpha: .3))
                                         ),
-
-                                        //Body
-                                        Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           spacing: 5,
                                           children: [
-                                            Text(
-                                              dr?.accName ?? "",
-                                              style: bodyStyle,
+                                            Expanded(
+                                              child: Text(
+                                                dr?.accName ?? "",
+                                                style: bodyStyle,
+                                              ),
                                             ),
-                                            Text(
-                                              dr?.trdAccount.toString() ?? "",
-                                              style: bodyStyle,
+                                            SizedBox(
+                                              width: 100,
+                                              child: Text(
+                                                dr?.trdAccount.toString() ?? "",
+                                                style: bodyStyle,
+                                              ),
                                             ),
-                                            Text(
-                                              "${dr?.trdAmount?.toAmount()} ${dr?.trdCcy}",
-                                              style: bodyStyle,
-                                            ),
-                                            Text(
-                                              dr?.trdCcy ?? "",
-                                              style: bodyStyle,
+                                            SizedBox(
+                                              width: 120,
+                                              child: Text(
+                                                "${dr?.trdAmount?.toAmount()} ${dr?.trdCcy}",
+                                                style: bodyStyle,
+                                              ),
                                             ),
                                           ],
                                         ),
-
-                                      ],
-                                    ),
-                                  ),
-                                );
+                                      );
+                                    },
+                                  );
+                                }
+                                return const SizedBox();
                               },
-                            );
-                          }
-                          return const SizedBox();
-                        },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Expanded(
-                      child: BlocConsumer<FetchAtatBloc, FetchAtatState>(
-                        listener: (context, state) {},
-                        builder: (context, state) {
-                          if (state is FetchATATLoadedState) {
-                            return ListView.builder(
-                              itemCount: state.atat.credit?.length,
-                              itemBuilder: (context, index) {
-                                final cr = state.atat.credit?[index];
-                                return Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 5),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
-                                      border: Border.all(color: color.outline.withValues(alpha: .3))
+                      child: Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 8,vertical: 2),
+                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                            child: Row(
+                              spacing: 5,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    tr.accountName,
+                                    style: titleStyle,
                                   ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      children: [
-                                        //Title
-                                        SizedBox(
-                                          width: 120,
-                                          child: Column(
-                                            spacing: 5,
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "${tr.accountName}:",
-                                                style: titleStyle,
-                                              ),
-                                              Text(
-                                                "${tr.accountNumber}:",
-                                                style: titleStyle,
-                                              ),
-                                              Text(
-                                                "${tr.amount}:",
-                                                style: titleStyle,
-                                              ),
-                                              Text(
-                                                "${tr.currencyTitle}:",
-                                                style: titleStyle,
-                                              ),
-                                            ],
-                                          ),
+                                ),
+                                SizedBox(
+                                  width: 100,
+                                  child: Text(
+                                    tr.accountNumber,
+                                    style: titleStyle,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 120,
+                                  child: Text(
+                                    tr.amount,
+                                    style: titleStyle,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: BlocConsumer<FetchAtatBloc, FetchAtatState>(
+                              listener: (context, state) {},
+                              builder: (context, state) {
+                                if (state is FetchATATLoadedState) {
+                                  return ListView.builder(
+                                    itemCount: state.atat.credit?.length,
+                                    itemBuilder: (context, index) {
+                                      final cr = state.atat.credit?[index];
+                                      return Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 8,vertical: 2),
+                                        padding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                                        decoration: BoxDecoration(
+                                            color: index.isOdd? color.primary.withValues(alpha: .05) : Colors.transparent,
+                                            borderRadius: BorderRadius.circular(2),
+                                            border: Border.all(color: color.outline.withValues(alpha: .3))
                                         ),
-
-                                        //Body
-                                        Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           spacing: 5,
                                           children: [
-                                            Text(
-                                              cr?.accName ?? "",
-                                              style: bodyStyle,
+                                            Expanded(
+                                              child: Text(
+                                                cr?.accName ?? "",
+                                                style: bodyStyle,
+                                              ),
                                             ),
-                                            Text(
-                                              cr?.trdAccount.toString() ?? "",
-                                              style: bodyStyle,
+                                            SizedBox(
+                                              width: 100,
+                                              child: Text(
+                                                cr?.trdAccount.toString() ?? "",
+                                                style: bodyStyle,
+                                              ),
                                             ),
-                                            Text(
-                                              "${cr?.trdAmount?.toAmount()} ${cr?.trdCcy}",
-                                              style: bodyStyle,
-                                            ),
-                                            Text(
-                                              cr?.trdCcy ?? "",
-                                              style: bodyStyle,
+                                            SizedBox(
+                                              width: 120,
+                                              child: Text(
+                                                "${cr?.trdAmount?.toAmount()} ${cr?.trdCcy}",
+                                                style: bodyStyle,
+                                              ),
                                             ),
                                           ],
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                );
+                                      );
+                                    },
+                                  );
+                                }
+                                return const SizedBox();
                               },
-                            );
-                          }
-                          return const SizedBox();
-                        },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-
-              // Only show actions section if any buttons are visible
               if (showAnyButton)
                 Column(
                   children: [
