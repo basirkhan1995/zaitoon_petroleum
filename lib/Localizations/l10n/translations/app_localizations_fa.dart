@@ -1059,4 +1059,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get date => 'تاریخ';
+
+  @override
+  String get authorizedTransaction => 'تایید شده';
 }

@@ -195,10 +195,7 @@ class _DesktopState extends State<_Desktop> {
                           SizedBox(
                             width: 40,
                             child:
-                                BlocBuilder<
-                                  TransactionsBloc,
-                                  TransactionsState
-                                >(
+                                BlocBuilder<TransactionsBloc, TransactionsState>(
                                   builder: (context, state) {
                                     if (state is! TransactionLoadedState) {
                                       return const SizedBox();

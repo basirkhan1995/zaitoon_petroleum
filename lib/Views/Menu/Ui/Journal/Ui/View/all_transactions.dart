@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
+import '../FetchATAT/bloc/fetch_atat_bloc.dart';
 import '../TxnByReference/bloc/txn_reference_bloc.dart';
 import '../TxnByReference/txn_reference.dart';
 
@@ -205,9 +206,19 @@ class _DesktopState extends State<_Desktop> {
                      return Material(
                        child: InkWell(
                          onTap: (){
-                           context.read<TxnReferenceBloc>().add(
-                             FetchTxnByReferenceEvent(txn.trnReference??""),
-                           );
+                           if (txn.trnType == "ATAT") {
+                             context.read<FetchAtatBloc>().add(
+                               FetchAccToAccEvent(
+                                 txn.trnReference ?? "",
+                               ),
+                             );
+                           } else {
+                             context.read<TxnReferenceBloc>().add(
+                               FetchTxnByReferenceEvent(
+                                 txn.trnReference ?? "",
+                               ),
+                             );
+                           }
                          },
                          hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
                          highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),

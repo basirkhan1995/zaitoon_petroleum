@@ -355,5 +355,6 @@
   "sameCurrencyNotAllowed": "Currency mismatch detected. Please choose accounts with identical currency.",
   "sameCurrencyOnlyAllowed": "Currency mismatch detected. Please choose accounts with identical currency.",
   "accountLimitMessage": "Account limit exceeded or insufficient balance.",
-  "date": "Date"
+  "date": "Date",
+  "authorizedTransaction": "Authorized"
 }

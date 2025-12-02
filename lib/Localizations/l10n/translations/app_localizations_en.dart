@@ -1065,4 +1065,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get date => 'Date';
+
+  @override
+  String get authorizedTransaction => 'Authorized';
 }

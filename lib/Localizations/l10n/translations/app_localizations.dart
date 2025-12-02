@@ -2157,6 +2157,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Date'**
   String get date;
+
+  /// No description provided for @authorizedTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorized'**
+  String get authorizedTransaction;
 }
 
 class _AppLocalizationsDelegate
