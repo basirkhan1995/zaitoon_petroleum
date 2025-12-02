@@ -5,6 +5,7 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Other/zform_dialog.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
+import '../../../../../../../Features/Other/crop.dart';
 import '../../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'package:flutter/services.dart';
@@ -159,13 +160,27 @@ class _DesktopState extends State<_Desktop> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    // GestureDetector(
+                    //   onTap: ()=> pickAndShowImage(widget.model!.perId!,context),
+                    //   child: ImageHelper.stakeholderProfile(
+                    //     imageName: imageName,
+                    //     localImageBytes: selectedImageBytes,
+                    //     size: 110,
+                    //     border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
+                    //     shapeStyle: ShapeStyle.roundedRectangle,
+                    //     showCameraIcon: true,
+                    //   ),
+                    // )
+
                     GestureDetector(
-                      onTap: ()=> pickAndShowImage(widget.model!.perId!,context),
+                      onTap: () => pickAndCropImage(widget.model!.perId!),
                       child: ImageHelper.stakeholderProfile(
                         imageName: imageName,
                         localImageBytes: selectedImageBytes,
                         size: 110,
-                        border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
+                        border: Border.all(
+                            color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)
+                        ),
                         shapeStyle: ShapeStyle.roundedRectangle,
                         showCameraIcon: true,
                       ),
@@ -310,20 +325,52 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  void pickAndShowImage(int perId, BuildContext context) async {
+  void pickAndCropImage(int perId) async {
+    // Capture bloc and navigator BEFORE any async gap
     final bloc = context.read<IndividualsBloc>();
+
+    // Pick image
     final imageBytes = await Utils.pickImage();
+    if (imageBytes == null || imageBytes.isEmpty) return;
 
-    if (imageBytes != null && imageBytes.isNotEmpty) {
-      setState(() {
-        selectedImageBytes = imageBytes; // Show immediately
-      });
+    try {
+      // Show cropper in a safe way
+      Uint8List? croppedBytes;
+      if (mounted) {
+        croppedBytes = await showImageCropper(
+          context: context, // OK because mounted check
+          imageBytes: imageBytes,
+        );
+      }
 
-      bloc.add(
-        UploadIndProfileImageEvent(perId: perId, image: imageBytes),
-      );
+      if (!mounted || croppedBytes == null || croppedBytes.isEmpty) return;
+
+      // Update UI immediately
+      setState(() => selectedImageBytes = croppedBytes);
+
+      // Upload to bloc
+      bloc.add(UploadIndProfileImageEvent(perId: perId, image: croppedBytes));
+    } catch (e) {
+      debugPrint("Image crop failed: $e");
     }
   }
+
+
+
+  // void pickAndShowImage(int perId, BuildContext context) async {
+  //   final bloc = context.read<IndividualsBloc>();
+  //   final imageBytes = await Utils.pickImage();
+  //
+  //   if (imageBytes != null && imageBytes.isNotEmpty) {
+  //     setState(() {
+  //       selectedImageBytes = imageBytes; // Show immediately
+  //     });
+  //
+  //     bloc.add(
+  //       UploadIndProfileImageEvent(perId: perId, image: imageBytes),
+  //     );
+  //   }
+  // }
 
 
 

@@ -1068,4 +1068,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get saveChanges => 'ثبت کردن';
+
+  @override
+  String get bulkTransfer => 'انتقال گروهی';
+
+  @override
+  String get crop => 'قطع کردن';
 }

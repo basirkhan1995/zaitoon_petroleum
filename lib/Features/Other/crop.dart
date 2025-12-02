@@ -1,17 +1,21 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
+import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 
 Future<Uint8List?> showImageCropper({
   required BuildContext context,
   required Uint8List imageBytes,
-}) async {
-  return await showDialog(
+}) {
+  return showDialog(
     context: context,
     barrierDismissible: false,
     builder: (_) => Dialog(
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: SizedBox(
-        width: 750,
+        width: 700,
         height: 600,
         child: CustomCropper(imageBytes: imageBytes),
       ),
@@ -21,6 +25,7 @@ Future<Uint8List?> showImageCropper({
 
 class CustomCropper extends StatefulWidget {
   final Uint8List imageBytes;
+
   const CustomCropper({super.key, required this.imageBytes});
 
   @override
@@ -29,15 +34,18 @@ class CustomCropper extends StatefulWidget {
 
 class _CustomCropperState extends State<CustomCropper> {
   ui.Image? decoded;
-  Rect crop = Rect.fromLTWH(150, 150, 250, 250);
 
-  bool dragging = false;
-  bool resizing = false;
-  late Offset dragStart;
-  late Rect cropStart;
-  late ResizeHandle activeHandle;
+  /// Crop box rectangle in UI coordinates
+  Rect cropRect = const Rect.fromLTWH(180, 120, 300, 300);
 
-  static const double handleSize = 14;
+  /// Image displayed size and offset
+  double displayedWidth = 0;
+  double displayedHeight = 0;
+  double offsetX = 0;
+  double offsetY = 0;
+
+  ResizeHandle? activeHandle;
+  Offset? dragStart;
 
   @override
   void initState() {
@@ -46,8 +54,8 @@ class _CustomCropperState extends State<CustomCropper> {
   }
 
   Future<void> _decode() async {
-    final img = await decodeImageFromList(widget.imageBytes);
-    setState(() => decoded = img);
+    final image = await decodeImageFromList(widget.imageBytes);
+    setState(() => decoded = image);
   }
 
   @override
@@ -59,179 +67,281 @@ class _CustomCropperState extends State<CustomCropper> {
     return Column(
       children: [
         Expanded(
-          child: GestureDetector(
-            onPanStart: _onPanStart,
-            onPanUpdate: _onPanUpdate,
-            onPanEnd: (_) => { dragging = false, resizing = false },
-            child: Stack(
-              children: [
-                Center(child: RawImage(image: decoded)),
-                Positioned(
-                  left: crop.left,
-                  top: crop.top,
-                  child: Container(
-                    width: crop.width,
-                    height: crop.height,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blueAccent, width: 2),
-                      color: Colors.blue.withValues(alpha: .1),
-                    ),
-                  ),
-                ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              _calculateDisplayedSize(constraints);
 
-                /// Corner Resize Handles
-                ..._buildHandles(),
-              ],
-            ),
+              return GestureDetector(
+                onPanStart: _onPanStart,
+                onPanUpdate: _onPanUpdate,
+                onPanEnd: (_) => activeHandle = null,
+                child: Stack(
+                  children: [
+                    /// IMAGE
+                    Positioned(
+                      left: offsetX,
+                      top: offsetY,
+                      width: displayedWidth,
+                      height: displayedHeight,
+                      child: RawImage(
+                        image: decoded!,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+
+                    /// SHADED OVERLAY
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: CustomPaint(
+                          painter: _DarkenPainter(cropRect),
+                        ),
+                      ),
+                    ),
+
+                    /// CROP BOX
+                    Positioned(
+                      left: cropRect.left,
+                      top: cropRect.top,
+                      width: cropRect.width,
+                      height: cropRect.height,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
+                        ),
+                      ),
+                    ),
+
+                    /// Resize handles
+                    ..._buildResizeHandles(),
+                  ],
+                ),
+              );
+            },
           ),
         ),
 
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, null),
-              child: const Text("Cancel"),
-            ),
-            const SizedBox(width: 10),
-            ElevatedButton(
-              onPressed: () async {
-                final result = await _crop();
-                if (mounted) Navigator.pop(context, result);
-              },
-              child: const Text("Crop"),
-            ),
-            const SizedBox(width: 20),
-          ],
-        ),
+        /// BUTTONS
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ZOutlineButton(
+                width: 110,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                label: Text(AppLocalizations.of(context)!.cancel),
+              ),
+              const SizedBox(width: 12),
+              ZOutlineButton(
+                width: 110,
+                isActive: true,
+                icon: Icons.crop,
+                onPressed: () async {
+                  // Capture NavigatorState safely
+                  final navigator = Navigator.of(context);
+
+                  // Crop & compress image
+                  final bytes = await _cropAndCompressImage(maxBytes: 64 * 1024);
+
+                  // Only pop if widget is still mounted
+                  if (!mounted) return;
+                  navigator.pop(bytes);
+                },
+                label:   Text(AppLocalizations.of(context)!.crop),
+              ),
+            ],
+          ),
+        )
+
       ],
     );
   }
 
-  // ─────────────────────────────────────────────
-  // CROP LOGIC
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------------------
+  //  CROP + COMPRESS LOGIC
+  // ---------------------------------------------------------
 
-  Future<Uint8List> _crop() async {
+  Future<Uint8List> _cropAndCompressImage({int maxBytes = 64 * 1024}) async {
+    // Map cropRect to image pixels
+    final scaleX = decoded!.width / displayedWidth;
+    final scaleY = decoded!.height / displayedHeight;
+
+    final rect = Rect.fromLTWH(
+      (cropRect.left - offsetX) * scaleX,
+      (cropRect.top - offsetY) * scaleY,
+      cropRect.width * scaleX,
+      cropRect.height * scaleY,
+    );
+
+    Uint8List result = await _drawImageRect(decoded!, rect);
+
+    // Compress if > maxBytes
+    int width = rect.width.toInt();
+    int height = rect.height.toInt();
+
+    while (result.lengthInBytes > maxBytes && width > 50 && height > 50) {
+      width = (width * 0.8).toInt();
+      height = (height * 0.8).toInt();
+
+      final resized = await _drawImageRect(decoded!, rect, targetWidth: width, targetHeight: height);
+      result = resized;
+    }
+
+    return result;
+  }
+
+  Future<Uint8List> _drawImageRect(
+      ui.Image image,
+      Rect srcRect, {
+        int? targetWidth,
+        int? targetHeight,
+      }) async {
+    final w = targetWidth ?? srcRect.width.toInt();
+    final h = targetHeight ?? srcRect.height.toInt();
+
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
 
     canvas.drawImageRect(
-      decoded!,
-      crop,
-      Rect.fromLTWH(0, 0, crop.width, crop.height),
+      image,
+      srcRect,
+      Rect.fromLTWH(0, 0, w.toDouble(), h.toDouble()),
       Paint(),
     );
 
     final picture = recorder.endRecording();
-    final img = await picture.toImage(
-      crop.width.toInt(),
-      crop.height.toInt(),
-    );
-
+    final img = await picture.toImage(w, h);
     final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
     return byteData!.buffer.asUint8List();
   }
 
-  // ─────────────────────────────────────────────
-  // HANDLE BUILDER
-  // ─────────────────────────────────────────────
-  List<Widget> _buildHandles() {
-    return ResizeHandle.values.map((handle) {
-      final pos = _getHandlePosition(handle);
-      return Positioned(
-        left: pos.dx - handleSize / 2,
-        top: pos.dy - handleSize / 2,
-        child: MouseRegion(
-          cursor: SystemMouseCursors.resizeUpLeftDownRight,
-          child: GestureDetector(
-            onPanStart: (details) {
-              resizing = true;
-              activeHandle = handle;
-              dragStart = details.localPosition;
-              cropStart = crop;
-            },
-            onPanUpdate: _handleResize,
-            child: Container(
-              width: handleSize,
-              height: handleSize,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.blueAccent),
-              ),
-            ),
-          ),
-        ),
-      );
-    }).toList();
-  }
-
-  Offset _getHandlePosition(ResizeHandle handle) {
-    switch (handle) {
-      case ResizeHandle.topLeft:
-        return Offset(crop.left, crop.top);
-      case ResizeHandle.topRight:
-        return Offset(crop.right, crop.top);
-      case ResizeHandle.bottomLeft:
-        return Offset(crop.left, crop.bottom);
-      case ResizeHandle.bottomRight:
-        return Offset(crop.right, crop.bottom);
-    }
-  }
-
-  // ─────────────────────────────────────────────
-  // DRAG & RESIZE LOGIC
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------------------
+  //  DRAG + RESIZE HANDLING
+  // ---------------------------------------------------------
 
   void _onPanStart(DragStartDetails d) {
     dragStart = d.localPosition;
-
-    if (crop.contains(d.localPosition)) {
-      dragging = true;
-      cropStart = crop;
-    }
+    activeHandle = _hitTestResizeHandle(d.localPosition);
   }
 
   void _onPanUpdate(DragUpdateDetails d) {
-    if (dragging && !resizing) {
-      final delta = d.localPosition - dragStart;
-      setState(() {
-        crop = cropStart.shift(delta);
-      });
-    }
-  }
-
-  void _handleResize(DragUpdateDetails d) {
-    final delta = d.localPosition - dragStart;
-
-    double left = cropStart.left;
-    double top = cropStart.top;
-    double right = cropStart.right;
-    double bottom = cropStart.bottom;
-
-    switch (activeHandle) {
-      case ResizeHandle.topLeft:
-        left += delta.dx;
-        top += delta.dy;
-        break;
-      case ResizeHandle.topRight:
-        right += delta.dx;
-        top += delta.dy;
-        break;
-      case ResizeHandle.bottomLeft:
-        left += delta.dx;
-        bottom += delta.dy;
-        break;
-      case ResizeHandle.bottomRight:
-        right += delta.dx;
-        bottom += delta.dy;
-        break;
-    }
+    final delta = d.localPosition - dragStart!;
+    dragStart = d.localPosition;
 
     setState(() {
-      crop = Rect.fromLTRB(left, top, right, bottom);
+      if (activeHandle == null) {
+        cropRect = cropRect.shift(delta);
+      } else {
+        _resizeCrop(activeHandle!, delta);
+      }
     });
   }
+
+  void _resizeCrop(ResizeHandle handle, Offset delta) {
+    var rect = cropRect;
+
+    switch (handle) {
+      case ResizeHandle.topLeft:
+        rect = Rect.fromLTRB(rect.left + delta.dx, rect.top + delta.dy, rect.right, rect.bottom);
+        break;
+      case ResizeHandle.topRight:
+        rect = Rect.fromLTRB(rect.left, rect.top + delta.dy, rect.right + delta.dx, rect.bottom);
+        break;
+      case ResizeHandle.bottomLeft:
+        rect = Rect.fromLTRB(rect.left + delta.dx, rect.top, rect.right, rect.bottom + delta.dy);
+        break;
+      case ResizeHandle.bottomRight:
+        rect = Rect.fromLTRB(rect.left, rect.top, rect.right + delta.dx, rect.bottom + delta.dy);
+        break;
+    }
+
+    cropRect = rect;
+  }
+
+  ResizeHandle? _hitTestResizeHandle(Offset p) {
+    const size = 18.0;
+    if (Rect.fromCircle(center: cropRect.topLeft, radius: size).contains(p)) return ResizeHandle.topLeft;
+    if (Rect.fromCircle(center: cropRect.topRight, radius: size).contains(p)) return ResizeHandle.topRight;
+    if (Rect.fromCircle(center: cropRect.bottomLeft, radius: size).contains(p)) return ResizeHandle.bottomLeft;
+    if (Rect.fromCircle(center: cropRect.bottomRight, radius: size).contains(p)) return ResizeHandle.bottomRight;
+    return null;
+  }
+
+  List<Widget> _buildResizeHandles() {
+   // const size = 16.0;
+    return [
+      _handleWidget(cropRect.topLeft),
+      _handleWidget(cropRect.topRight),
+      _handleWidget(cropRect.bottomLeft),
+      _handleWidget(cropRect.bottomRight),
+    ];
+  }
+
+  Widget _handleWidget(Offset pos) {
+    const size = 16.0;
+    return Positioned(
+      left: pos.dx - size / 2,
+      top: pos.dy - size / 2,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.resizeUpLeftDownRight,
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
+            shape: BoxShape.circle,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------
+  //  IMAGE SIZE CALCULATION
+  // ---------------------------------------------------------
+
+  void _calculateDisplayedSize(BoxConstraints c) {
+    final imgW = decoded!.width.toDouble();
+    final imgH = decoded!.height.toDouble();
+    final areaW = c.maxWidth;
+    final areaH = c.maxHeight;
+
+    final imgAspect = imgW / imgH;
+    final areaAspect = areaW / areaH;
+
+    if (imgAspect > areaAspect) {
+      displayedWidth = areaW;
+      displayedHeight = displayedWidth / imgAspect;
+    } else {
+      displayedHeight = areaH;
+      displayedWidth = displayedHeight * imgAspect;
+    }
+
+    offsetX = (areaW - displayedWidth) / 2;
+    offsetY = (areaH - displayedHeight) / 2;
+  }
+}
+
+/// DARK OVERLAY EXCEPT CROP REGION
+class _DarkenPainter extends CustomPainter {
+  final Rect cropRect;
+
+  _DarkenPainter(this.cropRect);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = Colors.black.withValues(alpha: .55);
+    final full = Path()..addRect(Offset.zero & size);
+    final cut = Path()..addRect(cropRect);
+
+    canvas.drawPath(Path.combine(PathOperation.difference, full, cut), paint);
+  }
+
+  @override
+  bool shouldRepaint(_) => true;
 }
 
 enum ResizeHandle { topLeft, topRight, bottomLeft, bottomRight }

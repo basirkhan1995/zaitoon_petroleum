@@ -1074,4 +1074,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveChanges => 'Save changes';
+
+  @override
+  String get bulkTransfer => 'Bulk Transfer';
+
+  @override
+  String get crop => 'Crop';
 }

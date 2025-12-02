@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
@@ -20,7 +22,7 @@ import 'Ui/Settings/bloc/settings_tab_bloc.dart';
 import 'Ui/Settings/settings.dart';
 import 'Ui/Stock/stock.dart';
 import 'bloc/menu_bloc.dart';
-
+import 'dart:typed_data';
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
@@ -44,6 +46,7 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   String comName = "";
   String adminName = "";
+  Uint8List _companyLogo = Uint8List(0);
   @override
   Widget build(BuildContext context) {
     final currentTab = context.watch<MenuBloc>().state.tabs;
@@ -120,6 +123,14 @@ class _DesktopState extends State<_Desktop> {
         builder: (context, comState) {
           if (comState is CompanyProfileLoadedState) {
             comName = comState.company.comName ?? "";
+            final base64Logo = comState.company.comLogo;
+            if (base64Logo != null && base64Logo.isNotEmpty) {
+              try {
+                _companyLogo = base64Decode(base64Logo);
+              } catch (e) {
+                _companyLogo = Uint8List(0);
+              }
+            }
           }
           return BlocConsumer<AuthBloc, AuthState>(
             listener: (context,state){
@@ -151,18 +162,21 @@ class _DesktopState extends State<_Desktop> {
                   spacing: 10,
                   children: [
                     Container(
-                      padding: EdgeInsets.zero,
-                      margin: EdgeInsets.symmetric(horizontal: 3),
+                      padding: EdgeInsets.all(3),
+                      margin: EdgeInsets.all(5),
                       width: 120,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                         border: Border.all(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.09),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withValues(alpha: .09),
                         ),
                       ),
-                      child: Image.asset("assets/images/zaitoonLogo.png"),
+                      child: (_companyLogo.isEmpty)
+                          ? Image.asset("assets/images/zaitoonLogo.png")
+                          : Image.memory(_companyLogo),
                     ),
                     if (isExpanded)
                       InkWell(

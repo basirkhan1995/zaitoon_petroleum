@@ -358,5 +358,7 @@
   "date": "Date",
   "authorizedTransaction": "Authorized",
   "comLicense": "License No.",
-  "saveChanges": "Save changes"
+  "saveChanges": "Save changes",
+  "bulkTransfer": "Bulk Transfer",
+  "crop": "Crop"
 }

@@ -17,6 +17,8 @@ class UpdateCompanyProfileEvent extends CompanyProfileEvent{
 }
 
 class UploadCompanyLogoEvent extends CompanyProfileEvent{
+  final Uint8List image;
+  const UploadCompanyLogoEvent(this.image);
   @override
-  List<Object> get props => [];
+  List<Object> get props => [image];
 }

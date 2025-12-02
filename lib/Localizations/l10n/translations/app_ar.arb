@@ -358,5 +358,7 @@
   "date": "تاریخ",
   "authorizedTransaction": "تایید شده",
   "comLicense": "جواز شمیره",
-  "saveChanges": "تبتول"
+  "saveChanges": "تبتول",
+  "bulkTransfer": "ډله ییز انتقال",
+  "crop": "قطع کردن"
 }

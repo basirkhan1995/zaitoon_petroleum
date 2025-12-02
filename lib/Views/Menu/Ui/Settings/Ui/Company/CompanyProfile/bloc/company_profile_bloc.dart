@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
-
+import 'dart:typed_data';
 part 'company_profile_event.dart';
 part 'company_profile_state.dart';
 
@@ -19,7 +19,6 @@ class CompanyProfileBloc extends Bloc<CompanyProfileEvent, CompanyProfileState> 
        emit(CompanyProfileErrorState(e.toString()));
      }
     });
-
     on<UpdateCompanyProfileEvent>((event, emit) async{
       emit(CompanyProfileLoadingState());
       try{
@@ -35,6 +34,14 @@ class CompanyProfileBloc extends Bloc<CompanyProfileEvent, CompanyProfileState> 
         emit(CompanyProfileErrorState(e.toString()));
       }
     });
-
+    on<UploadCompanyLogoEvent>((event,emit)async{
+      emit(CompanyProfileLoadingState());
+      try{
+        await _repo.uploadCompanyProfile(image: event.image);
+        add(LoadCompanyProfileEvent());
+      }catch(e){
+        emit(CompanyProfileErrorState(e.toString()));
+      }
+    });
   }
 }

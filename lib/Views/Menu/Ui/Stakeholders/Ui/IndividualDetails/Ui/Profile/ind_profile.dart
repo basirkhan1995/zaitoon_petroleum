@@ -67,7 +67,6 @@ class _DesktopState extends State<_Desktop> {
     final locale = AppLocalizations.of(context)!;
 
     return Scaffold(
-     // appBar: AppBar(titleSpacing: 0, title: Text(locale.profileOverview)),
       body: BlocListener<IndividualsBloc, IndividualsState>(
       listener: (context, state) {
         if(state is IndividualSuccessImageState || state is IndividualSuccessState){

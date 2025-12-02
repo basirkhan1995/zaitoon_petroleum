@@ -72,31 +72,28 @@ class _DesktopState extends State<_Desktop> {
   Uint8List _companyLogo = Uint8List(0);
   int? comId;
 
-  // Future<void> _pickLogoImage() async {
-  //   final imageBytes = await Utils.pickImage();
-  //   if (imageBytes != null && imageBytes.isNotEmpty) {
-  //     setState(() {
-  //       _companyLogo = imageBytes;
-  //     });
-  //   }
-  // }
-
   Future<void> _pickLogoImage() async {
+    final bloc = context.read<CompanyProfileBloc>();  // SAFELY STORE BEFORE AWAIT
+
     final imageBytes = await Utils.pickImage();
     if (imageBytes == null || imageBytes.isEmpty) return;
 
-    final croppedBytes = await showImageCropper(
-      context: context,
-      imageBytes: imageBytes,
-    );
+    try {
+      if (!mounted) return;
+      final croppedBytes = await showImageCropper(
+        context: context,
+        imageBytes: imageBytes,
+      );
 
-    if (croppedBytes != null) {
-      setState(() {
-        _companyLogo = croppedBytes;
-      });
+      if (!mounted || croppedBytes == null || croppedBytes.isEmpty) return;
+
+      setState(() => _companyLogo = croppedBytes);
+      bloc.add(UploadCompanyLogoEvent(croppedBytes));
+    } catch (e) {
+      debugPrint('Image crop failed: $e');
     }
-  }
 
+  }
 
   @override
   void initState() {
@@ -155,7 +152,7 @@ class _DesktopState extends State<_Desktop> {
         comWebsite: website.text,
         comEmail: email.text,
         comDetails: comDetails.text,
-        comId: comId,
+        comId: 1,
         addCity: city.text,
         addName: address.text,
         addProvince: province.text,
@@ -170,6 +167,10 @@ class _DesktopState extends State<_Desktop> {
         comAddress: loadedCompany?.comAddress,
       ),
     ));
+  }
+
+  void changeImage(){
+
   }
 
   @override

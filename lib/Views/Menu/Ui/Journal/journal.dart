@@ -26,6 +26,7 @@ import 'package:flutter/services.dart';
 import '../../../Auth/bloc/auth_bloc.dart';
 import '../Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import '../Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
+import 'Ui/FundTransfer/BulkTransfer/Ui/bulk_transfer.dart';
 
 
 class JournalView extends StatelessWidget {
@@ -1326,7 +1327,7 @@ class _DesktopState extends State<_Desktop> {
       );
     }
 
-    // The shortcut mapping
+
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): () => onCashDepositWithdraw(trnType: "CHDP"),
       const SingleActivator(LogicalKeyboardKey.f2): () => onCashDepositWithdraw(trnType: "CHWL"),
@@ -1479,6 +1480,16 @@ class _DesktopState extends State<_Desktop> {
                                 icon: Icons.swap_horiz_rounded,
                                 width: double.infinity,
                                 onPressed: () => accountToAccount(trnType: "ATAT"),
+                              ),
+                            if (login.hasPermission(24) ?? false)
+                              ZOutlineButton(
+                                toolTip: "F5",
+                                label: Text(locale.bulkTransfer),
+                                icon: Icons.swap_horiz_rounded,
+                                width: double.infinity,
+                                onPressed: () {
+                                  showTransferDialog(context);
+                                },
                               ),
                             SizedBox(height: 5),
                             Wrap(

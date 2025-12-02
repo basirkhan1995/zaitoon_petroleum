@@ -1069,4 +1069,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get saveChanges => 'تبتول';
+
+  @override
+  String get bulkTransfer => 'ډله ییز انتقال';
+
+  @override
+  String get crop => 'قطع کردن';
 }

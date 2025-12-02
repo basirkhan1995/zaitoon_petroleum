@@ -2175,6 +2175,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save changes'**
   String get saveChanges;
+
+  /// No description provided for @bulkTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk Transfer'**
+  String get bulkTransfer;
+
+  /// No description provided for @crop.
+  ///
+  /// In en, this message translates to:
+  /// **'Crop'**
+  String get crop;
 }
 
 class _AppLocalizationsDelegate

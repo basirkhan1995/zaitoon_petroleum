@@ -358,5 +358,7 @@
   "date": "تاریخ",
   "authorizedTransaction": "تایید شده",
   "comLicense": "نمبر جواز",
-  "saveChanges": "ثبت کردن"
+  "saveChanges": "ثبت کردن",
+  "bulkTransfer": "انتقال گروهی",
+  "crop": "قطع کردن"
 }
