@@ -75,7 +75,7 @@ class _DesktopState extends State<_Desktop> {
     final login = auth.loginData;
 
     return ZFormDialog(
-      width: MediaQuery.of(context).size.width * .7,
+      width: MediaQuery.of(context).size.width * .6,
       isActionTrue: false,
       onAction: null,
       icon: Icons.home_repair_service_outlined,
@@ -110,16 +110,20 @@ class _DesktopState extends State<_Desktop> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       tr.details,
                       style: textTheme.titleMedium?.copyWith(
                         color: color.primary,
+                        fontSize: 18
                       ),
                     ),
+                    Icon(Icons.print)
                   ],
                 ),
               ),
+              Divider(color: color.outline.withValues(alpha: .3),thickness: 1, endIndent: 8, indent: 8),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -135,6 +139,8 @@ class _DesktopState extends State<_Desktop> {
                           Text(tr.status, style: titleStyle),
                           Text(tr.branch, style: titleStyle),
                           Text(tr.maker, style: titleStyle),
+                          if(loadedAtat?.checker !=null && loadedAtat!.checker!.isNotEmpty)
+                          Text(tr.checker, style: titleStyle),
                           Text(tr.narration, style: titleStyle),
                           Text(tr.date, style: titleStyle),
                         ],
@@ -149,6 +155,8 @@ class _DesktopState extends State<_Desktop> {
                         Text(loadedAtat?.trnStatus == 1? tr.authorizedTransaction : tr.pendingTransactions, style: bodyStyle),
                         Text(loadedAtat?.trdBranch.toString() ?? "", style: bodyStyle),
                         Text(loadedAtat?.maker ?? "", style: bodyStyle),
+                        if(loadedAtat?.checker !=null && loadedAtat!.checker!.isNotEmpty)
+                        Text(loadedAtat?.checker ?? "", style: bodyStyle),
                         Text(loadedAtat?.trdNarration ?? "", style: bodyStyle),
                         Text(loadedAtat!.trnEntryDate!.toFullDateTime,style: bodyStyle,
                         ),
@@ -163,25 +171,38 @@ class _DesktopState extends State<_Desktop> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        tr.debitTitle,
-                        style: textTheme.titleMedium?.copyWith(
-                          color: color.primary,
-                        ),
+                      child: Row(
+                        spacing: 5,
+                        children: [
+                          Icon(Icons.arrow_circle_up_rounded,color: Colors.red),
+                          Text(
+                            tr.debitTitle,
+                            style: textTheme.titleMedium?.copyWith(
+                              color: color.outline,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Expanded(
-                      child: Text(
-                        tr.creditTitle,
-                        style: textTheme.titleMedium?.copyWith(
-                          color: color.primary,
-                        ),
+                      child: Row(
+                        spacing: 5,
+                        children: [
+                          Icon(Icons.arrow_circle_down_rounded,color: Colors.green),
+                          Text(
+                            tr.creditTitle,
+                            style: textTheme.titleMedium?.copyWith(
+                              color: color.outline,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-              Divider(color: color.primary, endIndent: 8, indent: 8),
+              Divider(color: color.outline.withValues(alpha: .3),thickness: 1, endIndent: 8, indent: 8),
+              SizedBox(height: 5),
               Expanded(
                 child: Row(
                   children: [
@@ -194,67 +215,71 @@ class _DesktopState extends State<_Desktop> {
                               itemCount: state.atat.debit?.length,
                               itemBuilder: (context, index) {
                                 final dr = state.atat.debit?[index];
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    children: [
-                                      //Title
-                                      SizedBox(
-                                        width: 120,
-                                        child: Column(
+                                return Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 5),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(color: color.outline.withValues(alpha: .3))
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        //Title
+                                        SizedBox(
+                                          width: 120,
+                                          child: Column(
+                                            spacing: 5,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "${tr.accountName}:",
+                                                style: titleStyle,
+                                              ),
+                                              Text(
+                                                "${tr.accountNumber}:",
+                                                style: titleStyle,
+                                              ),
+                                              Text(
+                                                "${tr.amount}:",
+                                                style: titleStyle,
+                                              ),
+                                              Text(
+                                                "${tr.currencyTitle}:",
+                                                style: titleStyle,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        //Body
+                                        Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           spacing: 5,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              "${tr.accountName}:",
-                                              style: titleStyle,
+                                              dr?.accName ?? "",
+                                              style: bodyStyle,
                                             ),
                                             Text(
-                                              "${tr.accountNumber}:",
-                                              style: titleStyle,
+                                              dr?.trdAccount.toString() ?? "",
+                                              style: bodyStyle,
                                             ),
                                             Text(
-                                              "${tr.amount}:",
-                                              style: titleStyle,
+                                              "${dr?.trdAmount?.toAmount()} ${dr?.trdCcy}",
+                                              style: bodyStyle,
                                             ),
                                             Text(
-                                              "${tr.currencyTitle}:",
-                                              style: titleStyle,
+                                              dr?.trdCcy ?? "",
+                                              style: bodyStyle,
                                             ),
                                           ],
                                         ),
-                                      ),
 
-                                      //Body
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        spacing: 5,
-                                        children: [
-                                          Text(
-                                            dr?.accName ?? "",
-                                            style: bodyStyle,
-                                          ),
-                                          Text(
-                                            dr?.trdAccount.toString() ?? "",
-                                            style: bodyStyle,
-                                          ),
-                                          Text(
-                                            "${dr?.trdAmount?.toAmount()} ${dr?.trdCcy}",
-                                            style: bodyStyle,
-                                          ),
-                                          Text(
-                                            dr?.trdCcy ?? "",
-                                            style: bodyStyle,
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 );
                               },
@@ -273,67 +298,70 @@ class _DesktopState extends State<_Desktop> {
                               itemCount: state.atat.credit?.length,
                               itemBuilder: (context, index) {
                                 final cr = state.atat.credit?[index];
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    children: [
-                                      //Title
-                                      SizedBox(
-                                        width: 120,
-                                        child: Column(
+                                return Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 5),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      border: Border.all(color: color.outline.withValues(alpha: .3))
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        //Title
+                                        SizedBox(
+                                          width: 120,
+                                          child: Column(
+                                            spacing: 5,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "${tr.accountName}:",
+                                                style: titleStyle,
+                                              ),
+                                              Text(
+                                                "${tr.accountNumber}:",
+                                                style: titleStyle,
+                                              ),
+                                              Text(
+                                                "${tr.amount}:",
+                                                style: titleStyle,
+                                              ),
+                                              Text(
+                                                "${tr.currencyTitle}:",
+                                                style: titleStyle,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        //Body
+                                        Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           spacing: 5,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              "${tr.accountName}:",
-                                              style: titleStyle,
+                                              cr?.accName ?? "",
+                                              style: bodyStyle,
                                             ),
                                             Text(
-                                              "${tr.accountNumber}:",
-                                              style: titleStyle,
+                                              cr?.trdAccount.toString() ?? "",
+                                              style: bodyStyle,
                                             ),
                                             Text(
-                                              "${tr.amount}:",
-                                              style: titleStyle,
+                                              "${cr?.trdAmount?.toAmount()} ${cr?.trdCcy}",
+                                              style: bodyStyle,
                                             ),
                                             Text(
-                                              "${tr.currencyTitle}:",
-                                              style: titleStyle,
+                                              cr?.trdCcy ?? "",
+                                              style: bodyStyle,
                                             ),
                                           ],
                                         ),
-                                      ),
-
-                                      //Body
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        spacing: 5,
-                                        children: [
-                                          Text(
-                                            cr?.accName ?? "",
-                                            style: bodyStyle,
-                                          ),
-                                          Text(
-                                            cr?.trdAccount.toString() ?? "",
-                                            style: bodyStyle,
-                                          ),
-                                          Text(
-                                            "${cr?.trdAmount?.toAmount()} ${cr?.trdCcy}",
-                                            style: bodyStyle,
-                                          ),
-                                          Text(
-                                            cr?.trdCcy ?? "",
-                                            style: bodyStyle,
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 );
                               },

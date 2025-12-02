@@ -62,6 +62,11 @@ class _DesktopState extends State<_Desktop> {
   final TextEditingController comFb = TextEditingController();
   final TextEditingController comInsta = TextEditingController();
   final TextEditingController comWhatsApp = TextEditingController();
+  final TextEditingController comZipCode = TextEditingController();
+  final TextEditingController country = TextEditingController();
+  final TextEditingController comLicense = TextEditingController();
+
+  CompanySettingsModel? loadedCompany;
 
   bool isUpdateMode = false;
   Uint8List _companyLogo = Uint8List(0);
@@ -116,7 +121,13 @@ class _DesktopState extends State<_Desktop> {
     comWhatsApp.text = state.company.comWhatsapp ??"";
     comInsta.text = state.company.comInsta ?? "";
     comFb.text = state.company.comFb ?? "";
-
+    comLicense.text = state.company.comLicenseNo??"";
+    comDetails.text = state.company.comSlogan??"";
+    comZipCode.text = state.company.addZipCode??"";
+    city.text = state.company.addCity??"";
+    province.text = state.company.addProvince??"";
+    country.text = state.company.addCountry??"";
+    loadedCompany = state.company;
     final base64Logo = state.company.comLogo;
     if (base64Logo != null && base64Logo.isNotEmpty) {
       try {
@@ -128,7 +139,6 @@ class _DesktopState extends State<_Desktop> {
   }
 
   void _cancelUpdate() {
-    // Reset to original values
     final state = context.read<CompanyProfileBloc>().state;
     if (state is CompanyProfileLoadedState) {
       _updateControllers(state);
@@ -139,8 +149,6 @@ class _DesktopState extends State<_Desktop> {
   }
 
   void _updateCompanyProfile() {
-    final logoBase64 = _companyLogo.isNotEmpty ? base64Encode(_companyLogo) : null;
-
     context.read<CompanyProfileBloc>().add(UpdateCompanyProfileEvent(
       CompanySettingsModel(
         comName: businessName.text,
@@ -148,7 +156,18 @@ class _DesktopState extends State<_Desktop> {
         comEmail: email.text,
         comDetails: comDetails.text,
         comId: comId,
-        comLogo: logoBase64,
+        addCity: city.text,
+        addName: address.text,
+        addProvince: province.text,
+        comFb: comFb.text,
+        comInsta: comInsta.text,
+        comPhone: phone.text,
+        comSlogan: comDetails.text,
+        comWhatsapp: comWhatsApp.text,
+        addCountry: country.text,
+        addZipCode: comZipCode.text,
+        comLicenseNo: comLicense.text,
+        comAddress: loadedCompany?.comAddress,
       ),
     ));
   }
@@ -189,41 +208,26 @@ class _DesktopState extends State<_Desktop> {
             }
           },
         builder: (context, state) {
-          // Show loading indicator
           if (state is CompanyProfileLoadingState) {
             return Center(
               child: CircularProgressIndicator(),
             );
           }
 
-          // Show error state
           if (state is CompanyProfileErrorState) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  SizedBox(height: 16),
-                  Text(
-                    "Something went wrong",
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
                   SizedBox(height: 8),
                   Text(state.message),
-                  SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () {
-                      // context.read<AuthBloc>().add(CheckAuthStatusEvent());
-                    },
-                    child: Text("Retry"),
-                  ),
                 ],
               ),
             );
           }
 
-          // Show the main form when authenticated
           if (state is CompanyProfileLoadedState) {
+            loadedCompany = state.company;
             return SingleChildScrollView(
               padding: EdgeInsets.all(16),
               child: Column(
@@ -295,10 +299,12 @@ class _DesktopState extends State<_Desktop> {
                         ],
                       ),
                       Row(
+                        spacing: 8,
                         children: [
                           if (!isUpdateMode)
                             ZOutlineButton(
                               width: 110,
+                              icon: Icons.edit,
                               label: Text(locale.edit),
                               onPressed: () {
                                 setState(() {
@@ -309,14 +315,15 @@ class _DesktopState extends State<_Desktop> {
                           if (isUpdateMode)
                             ZOutlineButton(
                               width: 110,
+                              icon: Icons.clear,
                               backgroundHover: Theme.of(context).colorScheme.error,
                               label: Text(locale.cancel),
                               onPressed: _cancelUpdate,
                             ),
                           if (isUpdateMode)
                             ZButton(
-                              width: 110,
-                              label: Text(locale.update),
+                              width: 120,
+                              label: Text(locale.saveChanges),
                               onPressed: _updateCompanyProfile,
                             ),
                         ],
@@ -325,18 +332,84 @@ class _DesktopState extends State<_Desktop> {
                   ),
 
                   SizedBox(height: 5),
-                  Divider(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: .1),
-                  ),
+                  Divider(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
                   SizedBox(height: 5),
 
-                  // Company Info Form
+                  SectionFormLayout(
+                    title: AppLocalizations.of(context)!.address,
+                    subtitle: locale.addressHint,
+                    trailing: SizedBox(),
+                    formFields: [
+                      ZTextFieldEntitled(
+                        readOnly: !isUpdateMode,
+                        controller: address,
+                        title: locale.address,
+                        validator: (value){
+                          if(value.isEmpty){
+                            return locale.required(locale.address);
+                          }
+                          return null;
+                        },
+                      ),
+                      Row(
+                        spacing: 5,
+                        children: [
+                          Expanded(
+                            child: ZTextFieldEntitled(
+                              readOnly: !isUpdateMode,
+                              controller: city,
+                              title: locale.city,
+                            ),
+                          ),
+
+                          Expanded(
+                            child: ZTextFieldEntitled(
+                              readOnly: !isUpdateMode,
+                              controller: province,
+                              title: locale.province,
+                            ),
+                          ),
+                          Expanded(
+                            child: ZTextFieldEntitled(
+                              readOnly: !isUpdateMode,
+                              controller: country,
+                              title: locale.country,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        spacing: 5,
+                        children: [
+                          Expanded(
+                            child: ZTextFieldEntitled(
+                              readOnly: !isUpdateMode,
+                              controller: phone,
+                              title: locale.mobile1,
+                            ),
+                          ),
+                          Expanded(
+                            child: ZTextFieldEntitled(
+                              readOnly: !isUpdateMode,
+                              controller: comWhatsApp,
+                              title: locale.whatsApp,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                    ],
+                  ),
+                  SizedBox(height: 5),
+                  Divider(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
+                  SizedBox(height: 5),
                   SectionFormLayout(
                     title: AppLocalizations.of(context)!.socialMedia,
                     subtitle: AppLocalizations.of(context)!.profileHint,
                     trailing: SizedBox(),
                     formFields: [
                       Row(
+                        spacing: 5,
                         children: [
                           Expanded(
                             child: ZTextFieldEntitled(
@@ -345,7 +418,7 @@ class _DesktopState extends State<_Desktop> {
                               title: AppLocalizations.of(context)!.website,
                             ),
                           ),
-                          SizedBox(width: 8),
+
                           Expanded(
                             child: ZTextFieldEntitled(
                               readOnly: !isUpdateMode,
@@ -356,15 +429,8 @@ class _DesktopState extends State<_Desktop> {
                         ],
                       ),
                       Row(
+                        spacing: 5,
                         children: [
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              readOnly: !isUpdateMode,
-                              controller: comWhatsApp,
-                              title: AppLocalizations.of(context)!.whatsApp,
-                            ),
-                          ),
-                          SizedBox(width: 8),
                           Expanded(
                             child: ZTextFieldEntitled(
                               readOnly: !isUpdateMode,
@@ -372,7 +438,7 @@ class _DesktopState extends State<_Desktop> {
                               title: AppLocalizations.of(context)!.facebook,
                             ),
                           ),
-                          SizedBox(width: 8),
+
                           Expanded(
                             child: ZTextFieldEntitled(
                               readOnly: !isUpdateMode,
@@ -384,62 +450,31 @@ class _DesktopState extends State<_Desktop> {
                       ),
                     ],
                   ),
-                  SectionFormLayout(
-                    title: AppLocalizations.of(context)!.address,
-                    subtitle: locale.addressHint,
-                    trailing: SizedBox(),
-                    formFields: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              readOnly: !isUpdateMode,
-                              controller: city,
-                              title: locale.city,
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              readOnly: !isUpdateMode,
-                              controller: province,
-                              title: locale.province,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              readOnly: !isUpdateMode,
-                              controller: phone,
-                              title: locale.mobile1,
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              readOnly: !isUpdateMode,
-                              controller: phone2,
-                              title: locale.mobile1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      ZTextFieldEntitled(
-                        readOnly: !isUpdateMode,
-                        controller: address,
-                        keyboardInputType: TextInputType.multiline,
-                        title: locale.address,
-                      ),
-                    ],
-                  ),
+                  SizedBox(height: 5),
+                  Divider(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
+                  SizedBox(height: 5),
                   SectionFormLayout(
                     title: AppLocalizations.of(context)!.comDetails,
                     subtitle: locale.addressHint,
                     trailing: SizedBox(),
                     formFields: [
+                      Row(
+                        spacing: 5,
+                        children: [
+                          Expanded(
+                            child: ZTextFieldEntitled(
+                              controller: comLicense,
+                              title: locale.comLicense,
+                            ),
+                          ),
+                          Expanded(
+                            child: ZTextFieldEntitled(
+                              controller: comZipCode,
+                              title: locale.zipCode,
+                            ),
+                          ),
+                        ],
+                      ),
                       ZTextFieldEntitled(
                         readOnly: !isUpdateMode,
                         controller: comDetails,
@@ -453,10 +488,7 @@ class _DesktopState extends State<_Desktop> {
             );
           }
 
-          // Fallback - should not reach here normally
-          return Center(
-            child: Text("Unexpected state"),
-          );
+          return const SizedBox();
         },
       ),
     );

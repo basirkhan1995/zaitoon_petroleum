@@ -178,7 +178,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cancel => 'انصراف';
 
   @override
-  String get edit => 'تغییر آوردن';
+  String get edit => 'ویرایش';
 
   @override
   String get newKeyword => 'نوی';
@@ -1063,4 +1063,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get authorizedTransaction => 'تایید شده';
+
+  @override
+  String get comLicense => 'جواز شمیره';
+
+  @override
+  String get saveChanges => 'تبتول';
 }

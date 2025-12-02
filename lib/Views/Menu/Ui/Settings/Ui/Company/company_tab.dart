@@ -42,7 +42,7 @@ class _CompanyTabsViewState extends State<CompanyTabsView> {
             isExpanded: false,
             menuWidth: context.scaledFont(0.13),
             padding: EdgeInsets.symmetric(vertical: 7, horizontal: 8),
-            margin: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+            margin: EdgeInsets.zero,
             selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha:.09),
             selectedTextColor: Theme.of(context).colorScheme.primary,
             unselectedTextColor: Theme.of(context).colorScheme.secondary,

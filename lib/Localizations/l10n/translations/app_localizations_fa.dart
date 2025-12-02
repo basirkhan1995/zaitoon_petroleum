@@ -178,7 +178,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get cancel => 'انصراف';
 
   @override
-  String get edit => 'تغییر آوردن';
+  String get edit => 'ویرایش';
 
   @override
   String get newKeyword => 'جدید';
@@ -1062,4 +1062,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get authorizedTransaction => 'تایید شده';
+
+  @override
+  String get comLicense => 'نمبر جواز';
+
+  @override
+  String get saveChanges => 'ثبت کردن';
 }

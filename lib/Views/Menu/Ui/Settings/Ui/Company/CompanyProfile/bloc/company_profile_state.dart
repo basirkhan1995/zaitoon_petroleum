@@ -14,6 +14,11 @@ final class CompanyProfileLoadingState extends CompanyProfileState{
   List<Object> get props => [];
 }
 
+final class CompanyProfileSuccessState extends CompanyProfileState{
+  @override
+  List<Object> get props => [];
+}
+
 final class CompanyProfileErrorState extends CompanyProfileState{
   final String message;
   const CompanyProfileErrorState(this.message);

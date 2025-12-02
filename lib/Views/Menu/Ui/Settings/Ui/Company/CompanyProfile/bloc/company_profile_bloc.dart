@@ -20,5 +20,21 @@ class CompanyProfileBloc extends Bloc<CompanyProfileEvent, CompanyProfileState> 
      }
     });
 
+    on<UpdateCompanyProfileEvent>((event, emit) async{
+      emit(CompanyProfileLoadingState());
+      try{
+        final res = await _repo.editCompanyProfile(newData: event.company);
+        final msg = res['msg'];
+        if(msg == "success"){
+          emit(CompanyProfileSuccessState());
+          add(LoadCompanyProfileEvent());
+        }else{
+          emit(CompanyProfileErrorState(msg));
+        }
+      }catch(e){
+        emit(CompanyProfileErrorState(e.toString()));
+      }
+    });
+
   }
 }

@@ -2163,6 +2163,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Authorized'**
   String get authorizedTransaction;
+
+  /// No description provided for @comLicense.
+  ///
+  /// In en, this message translates to:
+  /// **'License No.'**
+  String get comLicense;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get saveChanges;
 }
 
 class _AppLocalizationsDelegate

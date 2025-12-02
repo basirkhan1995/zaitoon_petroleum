@@ -116,7 +116,7 @@ class _DesktopState extends State<_Desktop> {
                     width: 170,
                     child: Text(locale.jobTitle,style: titleStyle)),
                 SizedBox(
-                    width: 170,
+                    width: 180,
                     child: Text(locale.department,style: titleStyle)),
                 SizedBox(
                     width: 100,
@@ -125,7 +125,7 @@ class _DesktopState extends State<_Desktop> {
                     width: 100,
                     child: Text(locale.startDate,style: titleStyle)),
                 SizedBox(
-                    width: 100,
+                    width: 80,
                     child: Text(locale.status,style: titleStyle)),
               ],
             ),
@@ -169,7 +169,11 @@ class _DesktopState extends State<_Desktop> {
                         return InkWell(
                           hoverColor: color.primary.withValues(alpha: .05),
                           highlightColor: color.primary.withValues(alpha: .05),
-                          onTap: (){},
+                          onTap: (){
+                            showDialog(context: context, builder: (context){
+                              return AddEditEmployeeView(model: emp);
+                            });
+                          },
                           child: Container(
                             decoration: BoxDecoration(
                               color: index.isOdd? color.primary.withValues(alpha: .05) : Colors.transparent
@@ -184,12 +188,12 @@ class _DesktopState extends State<_Desktop> {
                                   ),
                                   SizedBox(width: 8),
                                   Expanded(
-                                      child: Text(fullName,style: titleStyle)),
+                                      child: Text(fullName,style: titleStyle?.copyWith(fontWeight: FontWeight.bold))),
                                   SizedBox(
                                       width: 170,
                                       child: Text(emp.empPosition??"")),
                                   SizedBox(
-                                      width: 170,
+                                      width: 180,
                                       child: Text(emp.empDepartment??"")),
                                   SizedBox(
                                       width: 100,
@@ -198,7 +202,7 @@ class _DesktopState extends State<_Desktop> {
                                       width: 100,
                                       child: Text(emp.empHireDate.toFormattedDate())),
                                   SizedBox(
-                                      width: 100,
+                                      width: 80,
                                       child: Text(emp.empStatus == 1? locale.active : locale.inactive)),
 
                                 ],

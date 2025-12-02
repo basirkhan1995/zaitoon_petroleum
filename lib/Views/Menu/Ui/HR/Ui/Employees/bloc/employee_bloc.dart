@@ -34,6 +34,20 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
          emit(EmployeeErrorState(e.toString()));
        }
     });
-
+    on<UpdateEmployeeEvent>((event, emit) async{
+      emit(EmployeeLoadingState());
+      try{
+        final response = await _repo.updateEmployee(newEmployee: event.newEmployee);
+        final msg = response['msg'];
+        if(msg == "success"){
+          emit(EmployeeSuccessState());
+          add(LoadEmployeeEvent());
+        }else{
+          emit(EmployeeErrorState(msg));
+        }
+      }catch(e){
+        emit(EmployeeErrorState(e.toString()));
+      }
+    });
   }
 }

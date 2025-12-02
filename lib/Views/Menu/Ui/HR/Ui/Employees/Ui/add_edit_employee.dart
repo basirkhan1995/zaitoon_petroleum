@@ -21,19 +21,21 @@ import '../../../../../../../Features/Other/thousand_separator.dart';
 
 
 class AddEditEmployeeView extends StatelessWidget {
-  const AddEditEmployeeView({super.key});
+  final EmployeeModel? model;
+  const AddEditEmployeeView({super.key, this.model});
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobile: _Mobile(),
-      desktop: _Desktop(),
+      desktop: _Desktop(model: model),
       tablet: _Tablet(),
     );
   }
 }
 
 class _Tablet extends StatelessWidget {
+
   const _Tablet();
 
   @override
@@ -52,7 +54,8 @@ class _Mobile extends StatelessWidget {
 }
 
 class _Desktop extends StatefulWidget {
-  const _Desktop();
+  final EmployeeModel? model;
+  const _Desktop({this.model});
 
   @override
   State<_Desktop> createState() => _DesktopState();
@@ -66,15 +69,32 @@ class _DesktopState extends State<_Desktop> {
   final empTaxInfo = TextEditingController();
   final jobTitle = TextEditingController();
 
-  int perId = 1;
+  int? perId;
   int? accNumber;
   String? salaryCalBase;
   String? paymentBase;
   String? department;
-
   DateTime? startDate;
 
+
+
   final formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    if(widget.model != null){
+      department = widget.model?.empDepartment ?? "";
+      paymentBase = widget.model?.empPmntMethod ?? "";
+      salaryCalBase = widget.model?.empSalCalcBase ?? "";
+      accNumber = widget.model?.empSalAccount;
+      empSalary.text = widget.model?.empSalary?.toAmount() ?? "";
+      empEmail.text = widget.model?.empEmail ?? "";
+      empTaxInfo.text = widget.model?.empTaxInfo ?? "";
+      perId = widget.model!.perId!;
+      jobTitle.text = widget.model?.empPosition??"";
+    }
+    super.initState();
+  }
   @override
   void dispose() {
     super.dispose();
@@ -93,220 +113,241 @@ class _DesktopState extends State<_Desktop> {
           child: CircularProgressIndicator(
             color: Theme.of(context).colorScheme.surface,
             strokeWidth: 2,
-          )) : Text(locale.create),
+          )) : widget.model == null ? Text(locale.create) : Text(locale.update),
       icon: Icons.perm_contact_calendar_rounded,
-      onAction: () {
-        context.read<EmployeeBloc>().add(AddEmployeeEvent(EmployeeModel(
-          empPersonal: perId,
-          empSalAccount: accNumber,
-          empEmail: empEmail.text,
-          empHireDate: DateTime.now(),
-          empDepartment: department,
-          empPosition: jobTitle.text,
-          empSalCalcBase: salaryCalBase,
-          empPmntMethod: paymentBase,
-          empSalary: empSalary.text.cleanAmount,
-          empTaxInfo: empTaxInfo.text,
-        )));
-      },
-      title: AppLocalizations.of(context)!.employeeRegistration,
+      onAction: onSubmit,
+      title: widget.model == null ? locale.employeeRegistration : locale.update,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 0,
-            children: [
-              GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
-                showAllOnFocus: true,
-                controller: individualCtrl,
-                title: locale.individuals,
-                hintText: locale.individuals,
-                isRequired: true,
-                bloc: context.read<IndividualsBloc>(),
-                fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
-                searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return locale.required(locale.individuals);
-                  }
-                  return null;
-                },
-                itemBuilder: (context, account) => Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 5,
-                    vertical: 5,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "${account.perName} ${account.perLastName}",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                itemToString: (acc) => "${acc.perName} ${acc.perLastName}",
-                stateToLoading: (state) => state is IndividualLoadingState,
-                loadingBuilder: (context) => const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-                stateToItems: (state) {
-                  if (state is IndividualLoadedState) {
-                    return state.individuals;
-                  }
-                  return [];
-                },
-                onSelected: (value) {
-                  setState(() {
-                    perId = value.perId!;
-                    indAccountCtrl.clear();
-                    context.read<AccountsBloc>().add(LoadAccountsEvent(ownerId: perId));
-                  });
-                },
-                noResultsText: locale.noDataFound,
-                showClearButton: true,
-              ),
-              GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
-                showAllOnFocus: true,
-                controller: indAccountCtrl,
-                title: locale.accounts,
-                hintText: locale.accNameOrNumber,
-                isRequired: true,
-                bloc: context.read<AccountsBloc>(),
-                fetchAllFunction: (bloc) => bloc.add(LoadAccountsEvent(ownerId: perId)),
-                searchFunction: (bloc, query) => bloc.add(LoadAccountsEvent(ownerId: perId)),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return locale.required(locale.accounts);
-                  }
-                  return null;
-                },
-                itemBuilder: (context, account) => Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 5,
-                    vertical: 5,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "${account.accNumber} | ${account.accName}",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
-                stateToLoading: (state) => state is AccountLoadingState,
-                loadingBuilder: (context) => const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-                stateToItems: (state) {
-                  if (state is AccountLoadedState) {
-                    return state.accounts;
-                  }
-                  return [];
-                },
-                onSelected: (value) {
-                  setState(() {
-                    accNumber = value.accNumber ?? 1;
-                  });
-                },
-                noResultsText: locale.noDataFound,
-                showClearButton: true,
-              ),
-              SizedBox(height: 10),
-              DepartmentDropdown(
-                onDepartmentSelected: (e) {
-                  setState(() {
-                    department = e.name;
-                  });
-                },
-              ),
-              SizedBox(height: 10),
-              Row(
-                spacing: 8,
-                children: [
-                  Expanded(
-                    child: SalaryCalcBaseDropdown(
-                      onSelected: (e) {
-                        salaryCalBase = e.name;
-                      },
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 0,
+              children: [
+                if(widget.model == null)
+                GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
+                  showAllOnFocus: true,
+                  controller: individualCtrl,
+                  title: locale.individuals,
+                  hintText: locale.individuals,
+                  isRequired: true,
+                  bloc: context.read<IndividualsBloc>(),
+                  fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
+                  searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return locale.required(locale.individuals);
+                    }
+                    return null;
+                  },
+                  itemBuilder: (context, account) => Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 5,
                     ),
-                  ),
-                  Expanded(
-                    child: PaymentMethodDropdown(
-                      onSelected: (e) {
-                        paymentBase = e.name;
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
-              Row(
-                spacing: 5,
-                children: [
-                  Expanded(child: ZTextFieldEntitled(controller: jobTitle, title: locale.jobTitle)),
-                  Expanded(
-                    child: ZTextFieldEntitled(
-                      isRequired: true,
-                      // onSubmit: (_)=> onSubmit(),
-                      keyboardInputType: TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      inputFormat: [
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
-                        SmartThousandsDecimalFormatter(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "${account.perName} ${account.perLastName}",
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ],
+                        ),
                       ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return locale.required(locale.salary);
-                        }
-
-                        // Remove formatting (e.g. commas)
-                        final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
-                        final amount = double.tryParse(clean);
-
-                        if (amount == null || amount <= 0.0) {
-                          return locale.amountGreaterZero;
-                        }
-
-                        return null;
-                      },
-                      controller: empSalary,
-                      title: locale.salary,
                     ),
                   ),
-                ],
-              ),
-              ZTextFieldEntitled(controller: empTaxInfo, title: locale.taxInfo),
-              ZTextFieldEntitled(
-                controller: empEmail,
-                validator: (value) =>
-                    Utils.validateEmail(email: value, context: context),
-                title: locale.email,
-              ),
-            ],
+                  itemToString: (acc) => "${acc.perName} ${acc.perLastName}",
+                  stateToLoading: (state) => state is IndividualLoadingState,
+                  loadingBuilder: (context) => const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  stateToItems: (state) {
+                    if (state is IndividualLoadedState) {
+                      return state.individuals;
+                    }
+                    return [];
+                  },
+                  onSelected: (value) {
+                    setState(() {
+                      perId = value.perId!;
+                      indAccountCtrl.clear();
+                      context.read<AccountsBloc>().add(LoadAccountsEvent(ownerId: perId));
+                    });
+                  },
+                  noResultsText: locale.noDataFound,
+                  showClearButton: true,
+                ),
+                if(widget.model == null)
+                GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
+                  showAllOnFocus: true,
+                  controller: indAccountCtrl,
+                  title: locale.accounts,
+                  hintText: locale.accNameOrNumber,
+                  isRequired: true,
+                  bloc: context.read<AccountsBloc>(),
+                  fetchAllFunction: (bloc) => bloc.add(LoadAccountsEvent(ownerId: perId)),
+                  searchFunction: (bloc, query) => bloc.add(LoadAccountsEvent(ownerId: perId)),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return locale.required(locale.accounts);
+                    }
+                    return null;
+                  },
+                  itemBuilder: (context, account) => Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 5,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "${account.accNumber} | ${account.accName}",
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
+                  stateToLoading: (state) => state is AccountLoadingState,
+                  loadingBuilder: (context) => const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  stateToItems: (state) {
+                    if (state is AccountLoadedState) {
+                      return state.accounts;
+                    }
+                    return [];
+                  },
+                  onSelected: (value) {
+                    setState(() {
+                      accNumber = value.accNumber ?? 1;
+                    });
+                  },
+                  noResultsText: locale.noDataFound,
+                  showClearButton: true,
+                ),
+                SizedBox(height: 10),
+                DepartmentDropdown(
+                  onDepartmentSelected: (e) {
+                    setState(() {
+                      department = e.name;
+                    });
+                  },
+                ),
+                SizedBox(height: 10),
+                Row(
+                  spacing: 8,
+                  children: [
+                    Expanded(
+                      child: SalaryCalcBaseDropdown(
+                        onSelected: (e) {
+                          salaryCalBase = e.name;
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: PaymentMethodDropdown(
+                        onSelected: (e) {
+                          paymentBase = e.name;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Row(
+                  spacing: 5,
+                  children: [
+                    Expanded(child: ZTextFieldEntitled(controller: jobTitle, title: locale.jobTitle)),
+                    Expanded(
+                      child: ZTextFieldEntitled(
+                        isRequired: true,
+                        // onSubmit: (_)=> onSubmit(),
+                        keyboardInputType: TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        inputFormat: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
+                          SmartThousandsDecimalFormatter(),
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return locale.required(locale.salary);
+                          }
+
+                          // Remove formatting (e.g. commas)
+                          final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
+                          final amount = double.tryParse(clean);
+
+                          if (amount == null || amount <= 0.0) {
+                            return locale.amountGreaterZero;
+                          }
+
+                          return null;
+                        },
+                        controller: empSalary,
+                        title: locale.salary,
+                      ),
+                    ),
+                  ],
+                ),
+                ZTextFieldEntitled(controller: empTaxInfo, title: locale.taxInfo),
+                ZTextFieldEntitled(
+                  controller: empEmail,
+                  validator: (value) =>
+                      Utils.validateEmail(email: value, context: context),
+                  title: locale.email,
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  void onSubmit(){
+    if (!formKey.currentState!.validate()) return;
+
+    final data = EmployeeModel(
+      empId: widget.model?.empId,
+      empPersonal: perId,
+      empSalAccount: accNumber,
+      empEmail: empEmail.text,
+      empHireDate: DateTime.now(),
+      empDepartment: department,
+      empPosition: jobTitle.text,
+      empSalCalcBase: salaryCalBase,
+      empPmntMethod: paymentBase,
+      empStatus: 1,
+      empFingerprint: "FP-23452",
+      empEndDate: "12-2-2025",
+      empSalary: empSalary.text.cleanAmount,
+      empTaxInfo: empTaxInfo.text,
+    );
+
+    final bloc = context.read<EmployeeBloc>();
+    if (widget.model == null) {
+      bloc.add(AddEmployeeEvent(data));
+    } else {
+      bloc.add(UpdateEmployeeEvent(data));
+    }
+
   }
 }

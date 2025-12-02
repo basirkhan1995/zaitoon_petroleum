@@ -1068,4 +1068,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authorizedTransaction => 'Authorized';
+
+  @override
+  String get comLicense => 'License No.';
+
+  @override
+  String get saveChanges => 'Save changes';
 }

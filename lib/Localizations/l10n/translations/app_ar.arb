@@ -68,7 +68,7 @@
   "email": "ایمیل آدرس",
   "update": "بروزرسانی",
   "cancel": "انصراف",
-  "edit": "تغییر آوردن",
+  "edit": "ویرایش",
   "newKeyword": "نوی",
   "active": "فعال",
   "blocked": "مسدود",
@@ -356,5 +356,7 @@
   "sameCurrencyOnlyAllowed": "د سرچینې او منزل حسابونه باید په یوه اسعارو وي.",
   "accountLimitMessage": "د حساب حد زیات شوی یا کافي موجودي نشته",
   "date": "تاریخ",
-  "authorizedTransaction": "تایید شده"
+  "authorizedTransaction": "تایید شده",
+  "comLicense": "جواز شمیره",
+  "saveChanges": "تبتول"
 }

@@ -147,8 +147,7 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
     return ZDropdown<EmpDepartment>(
       title: AppLocalizations.of(context)!.department,
       items: EmpDepartment.values.toList(),
-      itemLabel: (dep) =>
-          DepartmentTranslator.getTranslatedDepartment(context, dep),
+      itemLabel: (dep) => DepartmentTranslator.getTranslatedDepartment(context, dep),
       selectedItem: _selectedDepartment,
       onItemSelected: _handleSelected,
       leadingBuilder: (dep) => _getDepartmentIcon(dep),

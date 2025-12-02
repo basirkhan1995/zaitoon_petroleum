@@ -68,7 +68,7 @@
   "email": "ایمیل آدرس",
   "update": "بروزرسانی",
   "cancel": "انصراف",
-  "edit": "تغییر آوردن",
+  "edit": "ویرایش",
   "newKeyword": "جدید",
   "active": "فعال",
   "blocked": "مسدود",
@@ -356,5 +356,7 @@
   "sameCurrencyOnlyAllowed": "حساب مبدأ و مقصد باید دارای ارز یکسان باشند.",
   "accountLimitMessage": "سقف اعتبار حساب بیش از حد مجاز است یا موجودی کافی نیست",
   "date": "تاریخ",
-  "authorizedTransaction": "تایید شده"
+  "authorizedTransaction": "تایید شده",
+  "comLicense": "نمبر جواز",
+  "saveChanges": "ثبت کردن"
 }

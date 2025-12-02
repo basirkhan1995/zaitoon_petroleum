@@ -65,6 +65,45 @@ class Repositories {
       throw e.toString();
     }
   }
+  Future<Map<String, dynamic>> editCompanyProfile({required CompanySettingsModel newData}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/setting/companyProfile.php",
+          data: newData.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> uploadCompanyProfile({required Uint8List image}) async {
+    try {
+      // Create a valid filename like Postman does
+      final String fileName = "photo_${DateTime.now().millisecondsSinceEpoch}.jpg";
+
+      FormData formData = FormData.fromMap({
+        "image": MultipartFile.fromBytes(
+          image,
+          filename: fileName,
+          contentType: MediaType("image", "jpeg"),
+        ),
+      });
+
+      final response = await api.uploadFile(
+        endpoint: "/setting/companyProfile.php",
+        data: formData,
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   ///Stakeholder | Individuals .................................................
   Future<List<IndividualsModel>> getStakeholders({int? indId}) async {
     try {
@@ -167,10 +206,7 @@ class Repositories {
   }
 
 
-  Future<Map<String, dynamic>> uploadPersonalPhoto({
-    required int perID,
-    required Uint8List image,
-  }) async {
+  Future<Map<String, dynamic>> uploadPersonalPhoto({required int perID, required Uint8List image,}) async {
     try {
       // Create a valid filename like Postman does
       final String fileName = "photo_${DateTime.now().millisecondsSinceEpoch}.jpg";
@@ -179,7 +215,7 @@ class Repositories {
         "perID": perID.toString(),
         "image": MultipartFile.fromBytes(
           image,
-          filename: fileName,            // IMPORTANT!
+          filename: fileName,
           contentType: MediaType("image", "jpeg"),
         ),
       });
@@ -197,31 +233,6 @@ class Repositories {
     }
   }
 
-
-  Future<Map<String, dynamic>> uploadPersonalPhoto2({
-    required int perID,
-    required Uint8List image,
-  }) async {
-    try {
-      FormData formData = FormData.fromMap({
-        "perID": perID,
-        "image": MultipartFile.fromBytes(
-          image,
-        ),
-      });
-
-      // Add headers if needed
-      final response = await api.uploadFile(
-        endpoint: "/stakeholder/uploadPersonalPhoto.php",
-        data: formData,
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
 
   ///Accounts | Stakeholder's Account ..........................................
   Future<List<AccountsModel>> getAccounts({int? ownerId}) async {
@@ -360,7 +371,7 @@ class Repositories {
       throw "$e";
     }
   }
-  Future<List<GlAccountsModel>> getGlAccounts({List<int>? categories, List<int>? excludeAccounts, String? search, String? local}) async {
+  Future<List<GlAccountsModel>> getGlAccountsByOptions({List<int>? categories, List<int>? excludeAccounts, String? search, String? local}) async {
     try {
 
       final response = await api.post(
@@ -398,7 +409,21 @@ class Repositories {
       throw "$e";
     }
   }
-
+  Future<Map<String, dynamic>> deleteGl({required int accNumber}) async {
+    try {
+      final response = await api.delete(
+          endpoint: "/finance/glAccount.php",
+          data: {
+            "gl":accNumber
+          }
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
   ///Users .....................................................................
   Future<List<UsersModel>> getUsers({int? usrOwner}) async {
     try {
@@ -513,6 +538,20 @@ class Repositories {
       throw e.toString();
     }
   }
+  Future<Map<String, dynamic>> updateEmployee({required EmployeeModel newEmployee}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/HR/employees.php",
+          data: newEmployee.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   ///Permissions ..............................................................
   Future<List<UserPermissionsModel>> getPermissions({required String usrName}) async {
     try {
