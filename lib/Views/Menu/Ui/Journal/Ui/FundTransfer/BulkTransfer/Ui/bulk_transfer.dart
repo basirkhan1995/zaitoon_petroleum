@@ -565,7 +565,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
         entryCurrency != widget.selectedCurrency;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 3),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
       ),
@@ -573,7 +573,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
         spacing: 5,
         children: [
           SizedBox(
-            width: 40,
+            width: 37,
             child: Text(
               '${widget.index + 1}',
               textAlign: TextAlign.center,
@@ -583,92 +583,96 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
           // Account Selection
           Expanded(
             flex: 2,
-            child: GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
-              key: ValueKey('account_${widget.entry.rowId}'),
-              showAllOnFocus: true,
-              controller: widget.accountController,
-              title: '',
-              hintText: AppLocalizations.of(context)!.accounts,
-              isRequired: true,
-              bloc: context.read<AccountsBloc>(),
-              fetchAllFunction: (bloc) => bloc.add(
-                LoadAccountsEvent(),
-              ),
-              searchFunction: (bloc, query) => bloc.add(
-                LoadAccountsEvent(),
-              ),
-              itemBuilder: (context, account) => Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
+            child: SizedBox(
+              height: 40,
+              child: GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
+                key: ValueKey('account_${widget.entry.rowId}'),
+                showAllOnFocus: true,
+                controller: widget.accountController,
+                title: '',
+                hintText: AppLocalizations.of(context)!.accounts,
+                isRequired: true,
+                bloc: context.read<AccountsBloc>(),
+                fetchAllFunction: (bloc) => bloc.add(
+                  LoadAccountsEvent(),
                 ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        account.accName ?? '',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          account.accNumber.toString(),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
+                searchFunction: (bloc, query) => bloc.add(
+                  LoadAccountsEvent(),
+                ),
+                itemBuilder: (context, account) => Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          account.accName ?? '',
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: account.actCurrency == widget.selectedCurrency
-                                ? Colors.green.shade100
-                                : Colors.orange.shade100,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            account.actCurrency ?? 'USD',
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            account.accNumber.toString(),
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: account.actCurrency == widget.selectedCurrency
-                                  ? Colors.black
-                                  : Colors.black,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: account.actCurrency == widget.selectedCurrency
+                                  ? Colors.green.shade100
+                                  : Colors.orange.shade100,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              account.actCurrency ?? 'USD',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: account.actCurrency == widget.selectedCurrency
+                                    ? Colors.grey
+                                    : Colors.black,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
+                itemToString: (account) => account.accName ?? "",
+                stateToLoading: (state) => state is AccountLoadingState,
+                loadingBuilder: (context) => const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 1),
+                ),
+                stateToItems: (state) {
+                  if (state is AccountLoadedState) return state.accounts;
+                  return [];
+                },
+                onSelected: (account) {
+                  widget.accountController.text = account.accName ?? '';
+                  widget.onChanged(widget.entry.copyWith(
+                    accountNumber: account.accNumber,
+                    accountName: account.accName,
+                    currency: account.actCurrency,
+                  ));
+                },
+                noResultsText: 'No account found',
+                showClearButton: true,
               ),
-              itemToString: (account) => account.accName ?? "",
-              stateToLoading: (state) => state is AccountLoadingState,
-              loadingBuilder: (context) => const SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(strokeWidth: 1),
-              ),
-              stateToItems: (state) {
-                if (state is AccountLoadedState) return state.accounts;
-                return [];
-              },
-              onSelected: (account) {
-                widget.accountController.text = account.accName ?? '';
-                widget.onChanged(widget.entry.copyWith(
-                  accountNumber: account.accNumber,
-                  accountName: account.accName,
-                  currency: account.actCurrency,
-                ));
-              },
-              noResultsText: 'No account found',
-              showClearButton: true,
             ),
           ),
 
           // Currency
           SizedBox(
             width: 50,
+            height: 40,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 9),
               decoration: BoxDecoration(
@@ -682,6 +686,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 entryCurrency,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: hasCurrencyMismatch ? Colors.orange : Colors.black,
+                  fontSize: 13
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -695,6 +700,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
             child: TextField(
               key: ValueKey('debit_${widget.entry.rowId}'),
               controller: widget.debitController,
+              style: TextStyle(fontSize: 15),
               focusNode: widget.focusNode,
               textInputAction: TextInputAction.next,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -755,6 +761,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
               controller: widget.creditController,
               textInputAction: TextInputAction.next,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
+              style: TextStyle(fontSize: 15),
               decoration: InputDecoration(
                 hintText: '0.00',
                 suffixText: entryCurrency,
@@ -824,6 +831,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 controller: widget.narrationController,
                 textInputAction: TextInputAction.done,
                 maxLines: 1,
+                style: TextStyle(fontSize: 13),
                 decoration: InputDecoration(
                   hintText: AppLocalizations.of(context)!.narration,
                   suffixStyle: TextStyle(
@@ -866,6 +874,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
             child: IconButton(
               icon: Icon(
                 Icons.delete_outline,
+                size: 20,
                 color: Theme.of(context).colorScheme.error,
               ),
               onPressed: () => widget.onRemove(widget.entry.rowId),
@@ -874,7 +883,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
         ],
       ),
     );
-  }
+   }
 }
 
 class _TransferSummary extends StatelessWidget {

@@ -68,8 +68,7 @@ class GenericTextfield<T, B extends BlocBase<S>, S> extends StatefulWidget {
     this.padding,
     this.showClearButton = true,
     this.showAllOnFocus = true,
-  }) : assert(bloc != null || searchFunction == null,
-  'If searchFunction is provided, bloc must also be provided');
+  }) : assert(bloc != null || searchFunction == null, 'If searchFunction is provided, bloc must also be provided');
 
   @override
   State<GenericTextfield<T, B, S>> createState() => _GenericTextfieldState<T, B, S>();
@@ -128,7 +127,6 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
         widget.fetchAllFunction!(widget.bloc!);
         _firstFocus = false;
       }
-
       if (_currentSuggestions.isNotEmpty) {
         _showOverlay(_currentSuggestions);
       }
@@ -143,13 +141,10 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
 
   void _showOverlay(List<T> items) {
     _removeOverlay();
-
     final renderBox = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final overlay = Overlay.of(context).context.findRenderObject() as RenderBox?;
     if (renderBox == null || overlay == null) return;
-
     final position = renderBox.localToGlobal(Offset.zero, ancestor: overlay);
-
     _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
         left: position.dx,
@@ -174,10 +169,7 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
 
   Widget _buildSuggestionsList(List<T> items) {
     if (items.isEmpty) {
-      final isLoading = widget.bloc != null &&
-          widget.stateToLoading != null &&
-          widget.stateToLoading!(widget.bloc!.state);
-
+      final isLoading = widget.bloc != null && widget.stateToLoading != null && widget.stateToLoading!(widget.bloc!.state);
       return SizedBox(
         height: 60,
         child: Center(
@@ -190,14 +182,13 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
               : Text(
             widget.noResultsText,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontSize: 12,
               color: Theme.of(context).colorScheme.outline.withValues(alpha: .7),
             ),
           ),
         ),
       );
     }
-
-
     return ConstrainedBox(
       constraints: const BoxConstraints(maxHeight: 200),
       child: ListView.builder(
@@ -225,35 +216,27 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
 
   String? _customValidator(String? value) {
     if (widget.isRequired && (value == null || value.isEmpty)) {
-    //  return AppLocalizations.of(context)!.required(widget.title);
+      // return AppLocalizations.of(context)!.required(widget.title);
       return widget.title;
     }
-
     if (widget.itemValidator != null) {
       final selectedItem = _currentSuggestions.firstWhere(
             (item) => widget.itemToString(item) == value,
         orElse: () => null as T,
       );
-
       if (selectedItem != null) {
         return widget.itemValidator!(selectedItem);
       }
     }
-
-    if (value != null &&
-        value.isNotEmpty &&
-        !_currentSuggestions.any((item) => widget.itemToString(item) == value)) {
-     // return AppLocalizations.of(context)!.valid(widget.title.toLowerCase());
+    if (value != null && value.isNotEmpty && !_currentSuggestions.any((item) => widget.itemToString(item) == value)) {
+      // return AppLocalizations.of(context)!.valid(widget.title.toLowerCase());
       return widget.title;
     }
     return null;
   }
 
   Widget? _buildSuffixIcon() {
-    final isLoading = widget.bloc != null &&
-        widget.stateToLoading != null &&
-        widget.stateToLoading!(widget.bloc!.state);
-
+    final isLoading = widget.bloc != null && widget.stateToLoading != null && widget.stateToLoading!(widget.bloc!.state);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -273,8 +256,7 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
             splashColor: Theme.of(context).colorScheme.primary.withAlpha(23),
             highlightColor: Theme.of(context).colorScheme.primary.withAlpha(23),
             hoverColor: Theme.of(context).colorScheme.primary.withAlpha(23),
-            icon: Icon(Icons.clear, size: 16,
-                color: Theme.of(context).colorScheme.secondary),
+            icon: Icon(Icons.clear, size: 14, color: Theme.of(context).colorScheme.secondary),
             onPressed: () {
               widget.controller?.clear();
               widget.onChanged?.call('');
@@ -294,154 +276,151 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: widget.padding ?? const EdgeInsets.symmetric(vertical: 8),
+      padding: widget.padding ?? EdgeInsets.zero,
       child: SizedBox(
         width: widget.width ?? double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (widget.title.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Row(
-                  children: [
-                    Text(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.title.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 3),
+                  child: Row(
+                    children: [
+                      Text(
                         widget.title,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontSize: 12,
                           color: Theme.of(context).colorScheme.outline.withValues(alpha: .7),
-                        )),
-                    if (widget.isRequired)
-                      Padding(
-                        padding: const EdgeInsets.only(left: 2),
-                        child: Text(
-                          ' *',
-                          style: TextStyle(color: Theme.of(context).colorScheme.error),
                         ),
                       ),
-                  ],
+                      if (widget.isRequired)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 2),
+                          child: Text(
+                            ' *',
+                            style: TextStyle(color: Theme.of(context).colorScheme.error),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            CompositedTransformTarget(
-              link: _layerLink,
-              child: TextFormField(
-
-                focusNode: _focusNode,
-                key: _fieldKey,
-                controller: widget.controller,
-                onChanged: (value) {
-                  setState(() {
-                    _showClear = value.isNotEmpty;
-                  });
-
-                  if (_debounce?.isActive ?? false) _debounce!.cancel();
-
-                  _debounce = Timer(const Duration(milliseconds: 500), () {
-                    if (value.isNotEmpty && widget.bloc != null && widget.searchFunction != null) {
-                      widget.searchFunction!(widget.bloc!, value);
-                    } else if (value.isEmpty && widget.bloc != null && widget.fetchAllFunction != null) {
-                      widget.fetchAllFunction!(widget.bloc!);
-                    } else {
-                      _currentSuggestions = [];
+              CompositedTransformTarget(
+                link: _layerLink,
+                child: TextFormField(
+                  focusNode: _focusNode,
+                  key: _fieldKey,
+                  controller: widget.controller,
+                  onChanged: (value) {
+                    setState(() {
+                      _showClear = value.isNotEmpty;
+                    });
+                    if (_debounce?.isActive ?? false) _debounce!.cancel();
+                    _debounce = Timer(const Duration(milliseconds: 500), () {
+                      if (value.isNotEmpty && widget.bloc != null && widget.searchFunction != null) {
+                        widget.searchFunction!(widget.bloc!, value);
+                      } else if (value.isEmpty && widget.bloc != null && widget.fetchAllFunction != null) {
+                        widget.fetchAllFunction!(widget.bloc!);
+                      } else {
+                        _currentSuggestions = [];
+                        _removeOverlay();
+                      }
+                    });
+                  },
+                  readOnly: widget.readOnly,
+                  validator: widget.validator ?? _customValidator,
+                  onFieldSubmitted: (value) {
+                    final input = value.trim();
+                    // Call the optional external submit handler
+                    widget.onSubmitted?.call(name: input);
+          
+                    // Try to match item by product code (proCode)
+                    final match = _currentSuggestions.firstWhere(
+                          (item) {
+                        String? code;
+                        try {
+                          final dynamic dyn = item;
+                          code = dyn.proCode?.toLowerCase();
+                        } catch (_) {}
+                        return code == input.toLowerCase();
+                      },
+                      orElse: () => null as T,
+                    );
+                    if (match != null) {
+                      widget.controller?.text = widget.itemToString(match); // show proName
+                      widget.onChanged?.call(widget.itemToString(match));
+                      widget.onSelected?.call(match);
+                      _focusNode.unfocus();
                       _removeOverlay();
                     }
-                  });
-                },
-                readOnly: widget.readOnly,
-                validator: widget.validator ?? _customValidator,
-                onFieldSubmitted: (value) {
-                  final input = value.trim();
-
-                  // Call the optional external submit handler
-                  widget.onSubmitted?.call(name: input);
-
-                  // Try to match item by product code (proCode)
-                  final match = _currentSuggestions.firstWhere(
-                        (item) {
-                      String? code;
-                      try {
-                        final dynamic dyn = item;
-                        code = dyn.proCode?.toLowerCase();
-                      } catch (_) {}
-
-                      return code == input.toLowerCase();
-                    },
-                    orElse: () => null as T,
-                  );
-
-                  if (match != null) {
-                    widget.controller?.text = widget.itemToString(match); // show proName
-                    widget.onChanged?.call(widget.itemToString(match));
-                    widget.onSelected?.call(match);
-                    _focusNode.unfocus();
-                    _removeOverlay();
-                  }
-                },
-
-                decoration: InputDecoration(
-                  prefixIcon: widget.icon != null
-                      ? Icon(widget.icon, size: 20)
-                      : null,
-                  suffixIcon: _buildSuffixIcon(),
-                  hintText: widget.hintText,
-                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary.withValues(alpha: .5)),
-                  isDense: widget.compactMode,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(3),
-                    borderSide: BorderSide(
-                      color:Theme.of(context).colorScheme.secondary.withValues(alpha: .3),
+                  },
+                  style: TextStyle(fontSize: 13),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    prefixIcon: widget.icon != null ? Icon(widget.icon, size: 18) : null,
+                    suffixIcon: _buildSuffixIcon(),
+                    hintText: widget.hintText,
+                    hintStyle: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.secondary.withValues(alpha: .5),
                     ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(3),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.secondary.withValues(alpha: .3),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                    disabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.secondary.withValues(alpha: .3),
+                      ),
                     ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(3),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.primary,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.secondary.withValues(alpha: .3),
+                      ),
                     ),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(3),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.error,
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(3),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.error,
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            if (widget.end != null) widget.end!,
-            if (widget.bloc != null)
-              BlocListener<B, S>(
-                bloc: widget.bloc,
-                listener: (context, state) {
-                  final items = widget.stateToItems(state);
-                  setState(() {
-                    _currentSuggestions = items;
-                  });
-                  if (_focusNode.hasFocus) {
-                    _showOverlay(items); // Always show overlay, even if empty
-                  } else {
-                    _removeOverlay();
-                  }
-                },
-                child: const SizedBox.shrink(),
-              ),
-
-          ],
+              if (widget.end != null) widget.end!,
+              if (widget.bloc != null)
+                BlocListener<B, S>(
+                  bloc: widget.bloc,
+                  listener: (context, state) {
+                    final items = widget.stateToItems(state);
+                    setState(() {
+                      _currentSuggestions = items;
+                    });
+                    if (_focusNode.hasFocus) {
+                      _showOverlay(items); // Always show overlay, even if empty
+                    } else {
+                      _removeOverlay();
+                    }
+                  },
+                  child: const SizedBox.shrink(),
+                ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-
