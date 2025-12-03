@@ -108,7 +108,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => AccStatementBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => EmployeeBloc(Repositories(ApiServices()))..add(LoadEmployeeEvent())),
         BlocProvider(create: (context) => FetchAtatBloc(Repositories(ApiServices()))),
-        BlocProvider(create: (context) => TransferBloc()),
+        BlocProvider(create: (context) => TransferBloc(Repositories(ApiServices()))),
       ],
 
       child: BlocBuilder<LocalizationBloc, Locale>(

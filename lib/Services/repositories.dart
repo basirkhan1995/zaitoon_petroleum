@@ -204,8 +204,6 @@ class Repositories {
       throw e.toString();
     }
   }
-
-
   Future<Map<String, dynamic>> uploadPersonalPhoto({required int perID, required Uint8List image,}) async {
     try {
       // Create a valid filename like Postman does
@@ -825,6 +823,32 @@ class Repositories {
       throw '${e.message}';
     } catch (e) {
       throw e.toString();
+    }
+  }
+
+
+  Future<Map<String, dynamic>> saveBulkTransfer({required String userName, required List<Map<String, dynamic>> records,}) async {
+    try {
+      final response = await api.post(
+        endpoint: '/journal/fundTransferMA.php',
+        data: {
+          'usrName': userName,
+          'records': records,
+        },
+      );
+
+      // Parse response
+      final responseData = response.data;
+      if (responseData is Map<String, dynamic>) {
+        return responseData;
+      } else if (responseData is String) {
+        // If response is a simple string message
+        return {'msg': responseData};
+      }
+
+      return {'msg': 'Unknown response format'};
+    } catch (e) {
+      throw Exception('Failed to save bulk transfer: $e');
     }
   }
   Future<Map<String, dynamic>> authorizeTxn({required String reference, required String? usrName}) async {

@@ -1,62 +1,91 @@
-import 'package:equatable/equatable.dart';
+part of 'transfer_bloc.dart';
 
-abstract class TransferEvent extends Equatable {
+sealed class TransferEvent extends Equatable {
   const TransferEvent();
 }
 
-// initialize
 class InitializeTransferEvent extends TransferEvent {
   @override
   List<Object?> get props => [];
 }
 
-// Add row
-class AddDebitRowEvent extends TransferEvent {
+class AddTransferEntryEvent extends TransferEvent {
   @override
   List<Object?> get props => [];
 }
 
-class AddCreditRowEvent extends TransferEvent {
-  @override
-  List<Object?> get props => [];
-}
-
-// Remove row
-class RemoveEntryEvent extends TransferEvent {
+class RemoveTransferEntryEvent extends TransferEvent {
   final int id;
-  final bool isDebit;
-
-  const RemoveEntryEvent({required this.id, required this.isDebit});
+  const RemoveTransferEntryEvent(this.id);
 
   @override
-  List<Object?> get props => [id, isDebit];
+  List<Object?> get props => [id];
 }
 
-// Update row
-class UpdateEntryEvent extends TransferEvent {
+class UpdateTransferEntryEvent extends TransferEvent {
   final int id;
-  final bool isDebit;
-  final String? accountNumber;
+  final int? accountNumber; // Changed to int
   final String? accountName;
   final String? currency;
-  final double? amount;
+  final double? debit;
+  final double? credit;
+  final String? narration;
 
-  const UpdateEntryEvent({
+  const UpdateTransferEntryEvent({
     required this.id,
-    required this.isDebit,
     this.accountNumber,
     this.accountName,
     this.currency,
-    this.amount,
+    this.debit,
+    this.credit,
+    this.narration,
   });
 
   @override
-  List<Object?> get props =>
-      [id, isDebit, accountNumber, accountName, currency, amount];
+  List<Object?> get props => [
+    id,
+    accountNumber,
+    accountName,
+    currency,
+    debit,
+    credit,
+    narration,
+  ];
 }
 
-// save
+class SelectAccountEvent extends TransferEvent {
+  final AccountsModel account;
+  const SelectAccountEvent(this.account);
+
+  @override
+  List<Object?> get props => [account];
+}
+
+class ClearAccountEvent extends TransferEvent {
+  @override
+  List<Object?> get props => [];
+}
+
 class SaveTransferEvent extends TransferEvent {
+  final String userName;
+  final Completer<String> completer;
+
+  const SaveTransferEvent({
+    required this.userName,
+    required this.completer,
+  });
+
+  @override
+  List<Object?> get props => [userName];
+}
+
+class ResetTransferEvent extends TransferEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+// Add to transfer_event.dart
+class ClearApiErrorEvent extends TransferEvent {
   @override
   List<Object?> get props => [];
 }

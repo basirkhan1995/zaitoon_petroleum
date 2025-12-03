@@ -92,7 +92,6 @@ class _DesktopState extends State<_Desktop> {
     } catch (e) {
       debugPrint('Image crop failed: $e');
     }
-
   }
 
   @override
