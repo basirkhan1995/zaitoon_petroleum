@@ -28,7 +28,7 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
   final TextEditingController _currencyController = TextEditingController(text: 'USD');
   String? userName;
   String? _selectedCurrency;
-  bool _isDisposed = false; // Track if widget is disposed
+  bool _isDisposed = false;
 
   @override
   void initState() {
@@ -38,17 +38,14 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
   }
 
   void _clearAllControllersAndFocus() {
-    // Only clear text and unfocus, NEVER dispose here
     for (final controllers in _rowControllers.values) {
       for (final controller in controllers) {
         controller.clear();
       }
     }
-
     for (final node in _rowFocusNodes.values) {
       node.unfocus();
     }
-
     _selectedCurrency = 'USD';
     _currencyController.text = 'USD';
   }
@@ -56,8 +53,6 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
   @override
   void dispose() {
     _isDisposed = true;
-
-    // Only dispose controllers in dispose() method
     for (final controllers in _rowControllers.values) {
       for (final controller in controllers) {
         controller.dispose();
@@ -69,7 +64,6 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
       node.dispose();
     }
     _rowFocusNodes.clear();
-
     _currencyController.dispose();
     super.dispose();
   }
@@ -77,85 +71,13 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
   void _ensureControllerForEntry(TransferEntry entry) {
     if (!_rowControllers.containsKey(entry.rowId)) {
       _rowControllers[entry.rowId] = [
-        TextEditingController(text: entry.accountName ?? ''), // Account
-        TextEditingController(text: entry.debit > 0 ? entry.debit.toAmount() : ''), // Debit
-        TextEditingController(text: entry.credit > 0 ? entry.credit.toAmount() : ''), // Credit
-        TextEditingController(text: entry.narration), // Narration
+        TextEditingController(text: entry.accountName ?? ''),
+        TextEditingController(text: entry.debit > 0 ? entry.debit.toAmount() : ''),
+        TextEditingController(text: entry.credit > 0 ? entry.credit.toAmount() : ''),
+        TextEditingController(text: entry.narration),
       ];
-
       if (!_rowFocusNodes.containsKey(entry.rowId)) {
         _rowFocusNodes[entry.rowId] = FocusNode();
-      }
-    }
-  }
-
-  void _removeControllerForEntry(int rowId) {
-    if (_isDisposed) return;
-
-    final controllers = _rowControllers.remove(rowId);
-    if (controllers != null) {
-      for (final controller in controllers) {
-        controller.dispose();
-      }
-    }
-
-    final focusNode = _rowFocusNodes.remove(rowId);
-    focusNode?.dispose();
-  }
-
-  void _syncControllersWithState(TransferLoadedState state) {
-    if (_isDisposed) return;
-
-    final currentRowIds = state.entries.map((e) => e.rowId).toSet();
-    final existingRowIds = _rowControllers.keys.toSet();
-    final deletedRowIds = existingRowIds.difference(currentRowIds);
-
-    for (final rowId in deletedRowIds) {
-      _removeControllerForEntry(rowId);
-    }
-
-    // Create/update controllers for current entries
-    for (final entry in state.entries) {
-      _ensureControllerForEntry(entry);
-
-      final controllers = _rowControllers[entry.rowId]!;
-
-      // Update account name if changed
-      if (controllers[0].text != (entry.accountName ?? '')) {
-        controllers[0].text = entry.accountName ?? '';
-      }
-
-      // Update debit if changed
-      if (entry.debit > 0) {
-        final formatted = entry.debit.toAmount();
-        if (controllers[1].text != formatted) {
-          controllers[1].text = formatted;
-        }
-        // Clear credit if debit is set
-        if (entry.credit == 0 && controllers[2].text.isNotEmpty) {
-          controllers[2].text = '';
-        }
-      } else if (controllers[1].text.isNotEmpty) {
-        controllers[1].text = '';
-      }
-
-      // Update credit if changed
-      if (entry.credit > 0) {
-        final formatted = entry.credit.toAmount();
-        if (controllers[2].text != formatted) {
-          controllers[2].text = formatted;
-        }
-        // Clear debit if credit is set
-        if (entry.debit == 0 && controllers[1].text.isNotEmpty) {
-          controllers[1].text = '';
-        }
-      } else if (controllers[2].text.isNotEmpty) {
-        controllers[2].text = '';
-      }
-
-      // Update narration if changed
-      if (controllers[3].text != entry.narration) {
-        controllers[3].text = entry.narration;
       }
     }
   }
@@ -163,7 +85,7 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
   @override
   Widget build(BuildContext context) {
     return ZFormDialog(
-      width: MediaQuery.of(context).size.width * .8,
+      width: MediaQuery.of(context).size.width * .7,
       icon: Icons.bubble_chart_outlined,
       isActionTrue: false,
       onAction: null,
@@ -176,58 +98,34 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
 
           return BlocConsumer<TransferBloc, TransferState>(
             listener: (context, state) {
-              if (state is TransferSavedState) {
-                if (state.success) {
-                  Utils.showOverlayMessage(context,
-                    message: state.reference,
-                    isError: false,
-                  );
-
-                  // Only clear text on success, don't dispose
-                  _clearAllControllersAndFocus();
-                }
+              if (state is TransferSavedState && state.success) {
+                Utils.showOverlayMessage(context, message: state.reference, isError: false);
+                _clearAllControllersAndFocus();
               } else if (state is TransferApiErrorState) {
-                Utils.showOverlayMessage(context,
-                  message: state.error,
-                  isError: true,
-                );
+                Utils.showOverlayMessage(context, message: state.error, isError: true);
               }
             },
             builder: (context, state) {
               if (_isDisposed) return const SizedBox.shrink();
 
-              if (state is TransferLoadedState) {
-                // Only sync controllers if entries exist
-                if (state.entries.isNotEmpty) {
-                  _syncControllersWithState(state);
-                } else {
-                  // When entries are empty, just clear text
-                  _clearAllControllersAndFocus();
+              if (state is TransferLoadedState || state is TransferSavingState) {
+                final entries = (state is TransferLoadedState ? state.entries : (state as TransferSavingState).entries);
+                for (final entry in entries) {
+                  _ensureControllerForEntry(entry);
                 }
-                return _buildLoadedState(context, state);
-              } else if (state is TransferSavingState) {
-                // Show saving state with current entries
-                if (state.entries.isNotEmpty) {
-                  _syncControllersWithState(state);
-                }
-                return _buildLoadedState(context, state);
+
+                return _buildLoadedState(context, state is TransferLoadedState ? state : TransferLoadedState(
+                  entries: (state as TransferSavingState).entries,
+                  totalDebit: state.entries.fold(0.0, (sum, e) => sum + e.debit),
+                  totalCredit: state.entries.fold(0.0, (sum, e) => sum + e.credit),
+                ));
               } else if (state is TransferApiErrorState) {
-                // Show error state but preserve entries
                 return _buildErrorState(context, state);
               } else if (state is TransferErrorState) {
-                return Center(
-                  child: Text(
-                    state.error,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                  ),
-                );
+                return Center(child: Text(state.error, style: TextStyle(color: Theme.of(context).colorScheme.error)));
               }
 
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+              return const Center(child: CircularProgressIndicator());
             },
           );
         },
@@ -236,15 +134,11 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
   }
 
   Widget _buildLoadedState(BuildContext context, TransferLoadedState state) {
-    // Check if state is empty (after reset)
     final isEmpty = state.entries.isEmpty;
     bool hasCurrencyMismatch = false;
-
     if (!isEmpty && _selectedCurrency != null) {
       for (final entry in state.entries) {
-        if (entry.currency != null &&
-            entry.currency!.isNotEmpty &&
-            entry.currency != _selectedCurrency) {
+        if (entry.currency != null && entry.currency!.isNotEmpty && entry.currency != _selectedCurrency) {
           hasCurrencyMismatch = true;
           break;
         }
@@ -293,8 +187,6 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
                   _buildSaveButton(context, state, hasCurrencyMismatch),
                 ],
               ),
-
-              // Show message when empty
               if (isEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
@@ -304,16 +196,11 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
                       const SizedBox(width: 8),
                       Text(
                         'Add entries to begin transaction',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.blue, fontSize: 12),
                       ),
                     ],
                   ),
                 ),
-
-              // Warnings (only show when not empty)
               if (!isEmpty && hasCurrencyMismatch)
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
@@ -323,15 +210,11 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
                       const SizedBox(width: 8),
                       Text(
                         AppLocalizations.of(context)!.transactionMismatchCcyAlert,
-                        style: TextStyle(
-                          color: Colors.orange,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.orange, fontSize: 12),
                       ),
                     ],
                   ),
                 ),
-
               if (!isEmpty && (state.totalDebit - state.totalCredit).abs() > 0.01)
                 Padding(
                   padding: const EdgeInsets.only(top: 4.0),
@@ -341,10 +224,7 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
                       const SizedBox(width: 8),
                       Text(
                         AppLocalizations.of(context)!.debitNoEqualCredit,
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.red, fontSize: 12),
                       ),
                     ],
                   ),
@@ -352,29 +232,19 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
             ],
           ),
         ),
-
         if (!isEmpty) ...[
           const SizedBox(height: 8),
-          // Entries Header
           _TransferHeaderRow(currencySymbol: _selectedCurrency ?? 'USD'),
           const SizedBox(height: 8),
-
-          // Entries List
           Expanded(
             child: ListView.builder(
               shrinkWrap: true,
               itemCount: state.entries.length,
               itemBuilder: (context, index) {
                 final entry = state.entries[index];
-                if (_isDisposed) return const SizedBox.shrink();
-
                 final controllers = _rowControllers[entry.rowId];
                 final focusNode = _rowFocusNodes[entry.rowId];
-
-                // Safety check for controllers
-                if (controllers == null || focusNode == null) {
-                  return const SizedBox.shrink();
-                }
+                if (controllers == null || focusNode == null) return const SizedBox.shrink();
 
                 return _TransferEntryRow(
                   key: ValueKey(entry.rowId),
@@ -402,49 +272,28 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
                   },
                   onRemove: (id) {
                     if (_isDisposed) return;
-                    context.read<TransferBloc>().add(
-                      RemoveTransferEntryEvent(id),
-                    );
+                    context.read<TransferBloc>().add(RemoveTransferEntryEvent(id));
                   },
                 );
               },
             ),
           ),
-
-          // Summary Section
           _TransferSummary(
             totalDebit: state.totalDebit,
             totalCredit: state.totalCredit,
             currencySymbol: _selectedCurrency ?? 'USD',
           ),
         ] else ...[
-          // Empty state placeholder
           Expanded(
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.receipt_long_outlined,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.outline.withValues(alpha: .5),
-                  ),
+                  Icon(Icons.receipt_long_outlined, size: 64, color: Theme.of(context).colorScheme.outline.withValues(alpha: .5)),
                   const SizedBox(height: 16),
-                  Text(
-                    'No entries added',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.outline.withValues(alpha: .7),
-                      fontSize: 16,
-                    ),
-                  ),
+                  Text('No entries added', style: TextStyle(color: Theme.of(context).colorScheme.outline.withValues(alpha: .7), fontSize: 16)),
                   const SizedBox(height: 8),
-                  Text(
-                    'Click "+ Add Entry" to start',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.outline.withValues(alpha: .5),
-                      fontSize: 14,
-                    ),
-                  ),
+                  Text('Click "+ Add Entry" to start', style: TextStyle(color: Theme.of(context).colorScheme.outline.withValues(alpha: .5), fontSize: 14)),
                 ],
               ),
             ),
@@ -879,13 +728,14 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
               ),
               onChanged: (value) {
                 final debit = value.cleanAmount.toDoubleAmount();
-                if (debit > 0) {
-                  widget.creditController.text = '';
-                }
-                widget.onChanged(widget.entry.copyWith(
-                  debit: debit,
-                  credit: 0.0,
-                ));
+
+                widget.onChanged(
+                  widget.entry.copyWith(debit: debit, credit: 0.0),
+                );
+              },
+              onTap: () {
+                // Clear debit when starting to type in credit
+                widget.creditController.clear();
               },
               onEditingComplete: () {
                 final debit = widget.debitController.text.cleanAmount.toDoubleAmount();
@@ -935,20 +785,32 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
               ),
               onChanged: (value) {
                 final credit = value.cleanAmount.toDoubleAmount();
-                if (credit > 0) {
-                  widget.debitController.text = '';
-                }
-                widget.onChanged(widget.entry.copyWith(
-                  credit: credit,
-                  debit: 0.0,
-                ));
+
+                widget.onChanged(
+                  widget.entry.copyWith(credit: credit, debit: 0.0),
+                );
               },
+
+              onTap: () {
+                widget.debitController.clear();
+              },
+
               onEditingComplete: () {
                 final credit = widget.creditController.text.cleanAmount.toDoubleAmount();
+
                 if (credit > 0) {
                   widget.creditController.text = credit.toAmount();
+                  widget.debitController.clear();
                 }
+
+                widget.onChanged(
+                  widget.entry.copyWith(
+                    debit: 0.0,
+                    credit: credit,
+                  ),
+                );
               },
+
             ),
           ),
 
