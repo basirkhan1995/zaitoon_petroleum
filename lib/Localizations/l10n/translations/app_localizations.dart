@@ -2149,7 +2149,7 @@ abstract class AppLocalizations {
   /// No description provided for @accountLimitMessage.
   ///
   /// In en, this message translates to:
-  /// **'Account limit exceeded or insufficient balance.'**
+  /// **'Insufficient balance or account limit reached.'**
   String get accountLimitMessage;
 
   /// No description provided for @date.
@@ -2253,6 +2253,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Act'**
   String get actionBrief;
+
+  /// No description provided for @transactionFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Failed'**
+  String get transactionFailedTitle;
 }
 
 class _AppLocalizationsDelegate

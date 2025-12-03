@@ -1061,7 +1061,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountLimitMessage =>
-      'Account limit exceeded or insufficient balance.';
+      'Insufficient balance or account limit reached.';
 
   @override
   String get date => 'Date';
@@ -1116,4 +1116,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get actionBrief => 'Act';
+
+  @override
+  String get transactionFailedTitle => 'Transaction Failed';
 }

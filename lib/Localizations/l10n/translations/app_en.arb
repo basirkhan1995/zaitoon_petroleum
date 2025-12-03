@@ -354,7 +354,7 @@
   "operationFailedMessage": "Unable to process your request at this time.",
   "sameCurrencyNotAllowed": "Currency mismatch detected. Please choose accounts with identical currency.",
   "sameCurrencyOnlyAllowed": "Currency mismatch detected. Please choose accounts with identical currency.",
-  "accountLimitMessage": "Account limit exceeded or insufficient balance.",
+  "accountLimitMessage": "Insufficient balance or account limit reached.",
   "date": "Date",
   "authorizedTransaction": "Authorized",
   "comLicense": "License No.",
@@ -371,5 +371,6 @@
   "currencyMismatchMessage": "Currency mismatch in transaction",
   "transactionMismatchCcyAlert": "Your accounts currencies are not matching with your transaction main currency.",
   "ccyCode": "CCY",
-  "actionBrief": "Act"
+  "actionBrief": "Act",
+  "transactionFailedTitle": "Transaction Failed"
 }

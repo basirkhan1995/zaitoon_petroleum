@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
@@ -24,12 +23,12 @@ class BulkTransferScreen extends StatefulWidget {
 }
 
 class _BulkTransferScreenState extends State<BulkTransferScreen> {
-  // Store controllers by rowId: index -> TextEditingController
   final Map<int, List<TextEditingController>> _rowControllers = {};
   final Map<int, FocusNode> _rowFocusNodes = {};
   final TextEditingController _currencyController = TextEditingController(text: 'USD');
   String? userName;
   String? _selectedCurrency;
+  bool _isDisposed = false; // Track if widget is disposed
 
   @override
   void initState() {
@@ -38,16 +37,39 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
     _selectedCurrency = 'USD';
   }
 
+  void _clearAllControllersAndFocus() {
+    // Only clear text and unfocus, NEVER dispose here
+    for (final controllers in _rowControllers.values) {
+      for (final controller in controllers) {
+        controller.clear();
+      }
+    }
+
+    for (final node in _rowFocusNodes.values) {
+      node.unfocus();
+    }
+
+    _selectedCurrency = 'USD';
+    _currencyController.text = 'USD';
+  }
+
   @override
   void dispose() {
-    for (final node in _rowFocusNodes.values) {
-      node.dispose();
-    }
+    _isDisposed = true;
+
+    // Only dispose controllers in dispose() method
     for (final controllers in _rowControllers.values) {
       for (final controller in controllers) {
         controller.dispose();
       }
     }
+    _rowControllers.clear();
+
+    for (final node in _rowFocusNodes.values) {
+      node.dispose();
+    }
+    _rowFocusNodes.clear();
+
     _currencyController.dispose();
     super.dispose();
   }
@@ -68,6 +90,8 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
   }
 
   void _removeControllerForEntry(int rowId) {
+    if (_isDisposed) return;
+
     final controllers = _rowControllers.remove(rowId);
     if (controllers != null) {
       for (final controller in controllers) {
@@ -80,6 +104,8 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
   }
 
   void _syncControllersWithState(TransferLoadedState state) {
+    if (_isDisposed) return;
+
     final currentRowIds = state.entries.map((e) => e.rowId).toSet();
     final existingRowIds = _rowControllers.keys.toSet();
     final deletedRowIds = existingRowIds.difference(currentRowIds);
@@ -137,7 +163,7 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
   @override
   Widget build(BuildContext context) {
     return ZFormDialog(
-      width: MediaQuery.of(context).size.width *.8,
+      width: MediaQuery.of(context).size.width * .8,
       icon: Icons.bubble_chart_outlined,
       isActionTrue: false,
       onAction: null,
@@ -153,12 +179,14 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
               if (state is TransferSavedState) {
                 if (state.success) {
                   Utils.showOverlayMessage(context,
-                    message: AppLocalizations.of(context)!.successTransactionMessage,
+                    message: state.reference,
                     isError: false,
                   );
+
+                  // Only clear text on success, don't dispose
+                  _clearAllControllersAndFocus();
                 }
               } else if (state is TransferApiErrorState) {
-                // Show error message
                 Utils.showOverlayMessage(context,
                   message: state.error,
                   isError: true,
@@ -166,16 +194,23 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
               }
             },
             builder: (context, state) {
-              if (state is TransferLoadedState) {
-                _syncControllersWithState(state);
+              if (_isDisposed) return const SizedBox.shrink();
 
+              if (state is TransferLoadedState) {
+                // Only sync controllers if entries exist
+                if (state.entries.isNotEmpty) {
+                  _syncControllersWithState(state);
+                } else {
+                  // When entries are empty, just clear text
+                  _clearAllControllersAndFocus();
+                }
                 return _buildLoadedState(context, state);
               } else if (state is TransferSavingState) {
-                return Center(
-                  child: CircularProgressIndicator(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                );
+                // Show saving state with current entries
+                if (state.entries.isNotEmpty) {
+                  _syncControllersWithState(state);
+                }
+                return _buildLoadedState(context, state);
               } else if (state is TransferApiErrorState) {
                 // Show error state but preserve entries
                 return _buildErrorState(context, state);
@@ -201,8 +236,11 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
   }
 
   Widget _buildLoadedState(BuildContext context, TransferLoadedState state) {
+    // Check if state is empty (after reset)
+    final isEmpty = state.entries.isEmpty;
     bool hasCurrencyMismatch = false;
-    if (_selectedCurrency != null) {
+
+    if (!isEmpty && _selectedCurrency != null) {
       for (final entry in state.entries) {
         if (entry.currency != null &&
             entry.currency!.isNotEmpty &&
@@ -217,31 +255,28 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
       children: [
         // Header Section
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 3),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-
             children: [
-
               Row(
-
                 children: [
                   Expanded(
                     child: CurrencyDropdown(
                       height: 40,
-                        title: '',
-                        initiallySelectedSingle: CurrenciesModel(ccyCode: _selectedCurrency),
-                        isMulti: false,
-                        onMultiChanged: (_){},
-                        onSingleChanged: (e){
-                          setState(() {
-                            _selectedCurrency = e?.ccyCode??"";
-                          });
-                        },
+                      title: '',
+                      initiallySelectedSingle: CurrenciesModel(ccyCode: _selectedCurrency),
+                      isMulti: false,
+                      onMultiChanged: (_) {},
+                      onSingleChanged: (e) {
+                        setState(() {
+                          _selectedCurrency = e?.ccyCode ?? "USD";
+                        });
+                      },
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -259,8 +294,27 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
                 ],
               ),
 
-              // Warnings
-              if (hasCurrencyMismatch)
+              // Show message when empty
+              if (isEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.blue, size: 16),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Add entries to begin transaction',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+              // Warnings (only show when not empty)
+              if (!isEmpty && hasCurrencyMismatch)
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Row(
@@ -278,7 +332,7 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
                   ),
                 ),
 
-              if ((state.totalDebit - state.totalCredit).abs() > 0.01)
+              if (!isEmpty && (state.totalDebit - state.totalCredit).abs() > 0.01)
                 Padding(
                   padding: const EdgeInsets.only(top: 4.0),
                   child: Row(
@@ -299,62 +353,103 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
           ),
         ),
 
-        const SizedBox(height: 8),
+        if (!isEmpty) ...[
+          const SizedBox(height: 8),
+          // Entries Header
+          _TransferHeaderRow(currencySymbol: _selectedCurrency ?? 'USD'),
+          const SizedBox(height: 8),
 
-        // Entries Header
-        _TransferHeaderRow(currencySymbol: _selectedCurrency ?? 'USD'),
+          // Entries List
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: state.entries.length,
+              itemBuilder: (context, index) {
+                final entry = state.entries[index];
+                if (_isDisposed) return const SizedBox.shrink();
 
-        const SizedBox(height: 8),
+                final controllers = _rowControllers[entry.rowId];
+                final focusNode = _rowFocusNodes[entry.rowId];
 
-        // Entries List
-        Expanded(
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: state.entries.length,
-            itemBuilder: (context, index) {
-              final entry = state.entries[index];
-              final controllers = _rowControllers[entry.rowId]!;
-              final focusNode = _rowFocusNodes[entry.rowId]!;
+                // Safety check for controllers
+                if (controllers == null || focusNode == null) {
+                  return const SizedBox.shrink();
+                }
 
-              return _TransferEntryRow(
-                key: ValueKey(entry.rowId),
-                entry: entry,
-                index: index,
-                focusNode: focusNode,
-                accountController: controllers[0],
-                debitController: controllers[1],
-                creditController: controllers[2],
-                narrationController: controllers[3],
-                selectedCurrency: _selectedCurrency,
-                onChanged: (updatedEntry) {
-                  context.read<TransferBloc>().add(
-                    UpdateTransferEntryEvent(
-                      id: updatedEntry.rowId,
-                      accountNumber: updatedEntry.accountNumber,
-                      accountName: updatedEntry.accountName,
-                      currency: updatedEntry.currency,
-                      debit: updatedEntry.debit,
-                      credit: updatedEntry.credit,
-                      narration: updatedEntry.narration,
-                    ),
-                  );
-                },
-                onRemove: (id) {
-                  context.read<TransferBloc>().add(
-                    RemoveTransferEntryEvent(id),
-                  );
-                },
-              );
-            },
+                return _TransferEntryRow(
+                  key: ValueKey(entry.rowId),
+                  entry: entry,
+                  index: index,
+                  focusNode: focusNode,
+                  accountController: controllers[0],
+                  debitController: controllers[1],
+                  creditController: controllers[2],
+                  narrationController: controllers[3],
+                  selectedCurrency: _selectedCurrency,
+                  onChanged: (updatedEntry) {
+                    if (_isDisposed) return;
+                    context.read<TransferBloc>().add(
+                      UpdateTransferEntryEvent(
+                        id: updatedEntry.rowId,
+                        accountNumber: updatedEntry.accountNumber,
+                        accountName: updatedEntry.accountName,
+                        currency: updatedEntry.currency,
+                        debit: updatedEntry.debit,
+                        credit: updatedEntry.credit,
+                        narration: updatedEntry.narration,
+                      ),
+                    );
+                  },
+                  onRemove: (id) {
+                    if (_isDisposed) return;
+                    context.read<TransferBloc>().add(
+                      RemoveTransferEntryEvent(id),
+                    );
+                  },
+                );
+              },
+            ),
           ),
-        ),
 
-        // Summary Section
-        _TransferSummary(
-          totalDebit: state.totalDebit,
-          totalCredit: state.totalCredit,
-          currencySymbol: _selectedCurrency ?? 'USD',
-        ),
+          // Summary Section
+          _TransferSummary(
+            totalDebit: state.totalDebit,
+            totalCredit: state.totalCredit,
+            currencySymbol: _selectedCurrency ?? 'USD',
+          ),
+        ] else ...[
+          // Empty state placeholder
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.receipt_long_outlined,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.outline.withValues(alpha: .5),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No entries added',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.outline.withValues(alpha: .7),
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Click "+ Add Entry" to start',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.outline.withValues(alpha: .5),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -381,7 +476,7 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Transaction Failed',
+                      AppLocalizations.of(context)!.transactionFailedTitle,
                       style: TextStyle(
                         color: Colors.red,
                         fontWeight: FontWeight.bold,
@@ -425,29 +520,68 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
     final isBalanced = (state.totalDebit - state.totalCredit).abs() < 0.01;
     final hasEntries = state.entries.isNotEmpty;
     final allAccountsValid = state.entries.every((entry) => entry.accountNumber != null);
-    final isValid = isBalanced && hasEntries && allAccountsValid && !hasCurrencyMismatch;
 
-    return ZOutlineButton(
-      height: 40,
-      icon: Icons.cached_rounded,
-      onPressed: !isValid || userName == null
-          ? null
-          : () async {
-        final completer = Completer<String>();
-        context.read<TransferBloc>().add(
-          SaveTransferEvent(
-            userName: userName!,
-            completer: completer,
-          ),
+    // Check that at least one entry has non-zero amount (debit or credit > 0)
+    final hasNonZeroAmount = state.entries.any((entry) =>
+    entry.debit > 0 || entry.credit > 0
+    );
+
+    // Also check that debits and credits are not mixed in the same entry
+    final hasValidAmounts = state.entries.every((entry) =>
+    (entry.debit > 0 && entry.credit == 0) || // Either debit only
+        (entry.credit > 0 && entry.debit == 0) || // Or credit only
+        (entry.debit == 0 && entry.credit == 0)   // Or both zero (if you allow zero amounts)
+    );
+
+    // Check that there are no entries with both debit and credit > 0
+    final hasNoMixedEntries = state.entries.every((entry) =>
+    !(entry.debit > 0 && entry.credit > 0)
+    );
+
+    final isValid = isBalanced &&
+        hasEntries &&
+        allAccountsValid &&
+        hasNonZeroAmount &&
+        hasValidAmounts &&
+        hasNoMixedEntries &&
+        !hasCurrencyMismatch;
+
+    return BlocBuilder<TransferBloc, TransferState>(
+      builder: (context, blocState) {
+        final isSaving = blocState is TransferSavingState;
+
+        return ZOutlineButton(
+          height: 40,
+          icon: isSaving ? null : Icons.cached_rounded,
+          onPressed: !isValid || userName == null || isSaving
+              ? null
+              : () async {
+            final completer = Completer<String>();
+            context.read<TransferBloc>().add(
+              SaveTransferEvent(
+                userName: userName!,
+                completer: completer,
+              ),
+            );
+            try {
+              await completer.future;
+            } catch (e) {
+              // Error is handled in listener via TransferApiErrorState
+            }
+          },
+          width: 120,
+          label: isSaving
+              ? SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          )
+              : Text(AppLocalizations.of(context)!.create),
         );
-        try {
-          await completer.future;
-        } catch (e) {
-          // Error is handled in listener via TransferApiErrorState
-        }
       },
-      width: 120,
-      label: Text(AppLocalizations.of(context)!.create),
     );
   }
 }
@@ -463,82 +597,86 @@ class _TransferHeaderRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 12),
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-        decoration: BoxDecoration(
-          color: color.primary,
-          borderRadius: BorderRadius.circular(3),
-        ),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 30,
-              child: Text(
-                '#',
-                style: TextStyle(
-                  color: color.surface,
-                  fontWeight: FontWeight.w500,
-                ),
+      margin: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+      decoration: BoxDecoration(
+        color: color.primary,
+        borderRadius: BorderRadius.circular(3),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 30,
+            child: Text(
+              '#',
+              style: TextStyle(
+                color: color.surface,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            Expanded(
-              flex: 2,
-              child: Text(
-                AppLocalizations.of(context)!.accounts,
-                style: TextStyle(
-                  color: color.surface,
-                  fontWeight: FontWeight.w500,
-                ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              AppLocalizations.of(context)!.accounts,
+              style: TextStyle(
+                color: color.surface,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            SizedBox(
-              width: 50,
-              child: Text(
-                AppLocalizations.of(context)!.ccyCode,
-                style: TextStyle(
-                  color: color.surface,
-                  fontWeight: FontWeight.w500,
-                ),
+          ),
+          SizedBox(
+            width: 50,
+            child: Text(
+              AppLocalizations.of(context)!.ccyCode,
+              style: TextStyle(
+                color: color.surface,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            SizedBox(
-              width: 150,
-              child: Text(
-                '${AppLocalizations.of(context)!.debitTitle} ($currencySymbol)',
-                style: TextStyle(
-                  color: color.surface,
-                  fontWeight: FontWeight.w500,
-                ),
+          ),
+          SizedBox(
+            width: 150,
+            child: Text(
+              '${AppLocalizations.of(context)!.debitTitle} ($currencySymbol)',
+              style: TextStyle(
+                color: color.surface,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            SizedBox(
-              width: 150,
-              child: Text(
-                '${AppLocalizations.of(context)!.creditTitle} ($currencySymbol)',
-                style: TextStyle(
-                  color: color.surface,
-                  fontWeight: FontWeight.w500,
-                ),
+          ),
+          SizedBox(
+            width: 150,
+            child: Text(
+              '${AppLocalizations.of(context)!.creditTitle} ($currencySymbol)',
+              style: TextStyle(
+                color: color.surface,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            Expanded(
-              flex: 2,
-              child: Text(
-                AppLocalizations.of(context)!.narration,
-                style: TextStyle(
-                  color: color.surface,
-                  fontWeight: FontWeight.w500,
-                ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              AppLocalizations.of(context)!.narration,
+              style: TextStyle(
+                color: color.surface,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            SizedBox(
-              child: Icon(Icons.delete_outline_rounded,color: Theme.of(context).colorScheme.surface,size: 20)
+          ),
+          SizedBox(
+            child: Icon(
+              Icons.delete_outline_rounded,
+              color: Theme.of(context).colorScheme.surface,
+              size: 20,
             ),
-          ],
-        ));
-    }
+          ),
+        ],
+      ),
+    );
+  }
 }
-
 
 class _TransferEntryRow extends StatefulWidget {
   final TransferEntry entry;
@@ -624,7 +762,6 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                     ),
-
                     Row(
                       children: [
                         Text(
@@ -695,13 +832,14 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
               child: Text(
                 entryCurrency,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: hasCurrencyMismatch ? Colors.orange : Colors.black),
+                  color: hasCurrencyMismatch ? Colors.orange : Colors.black,
+                ),
                 textAlign: TextAlign.center,
               ),
             ),
           ),
 
-          //Debit
+          // Debit
           SizedBox(
             width: 150,
             height: 40,
@@ -722,7 +860,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
                   borderSide: BorderSide(
-                    color: Colors.grey.shade400, // default unfocused color
+                    color: Colors.grey.shade400,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -758,7 +896,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
             ),
           ),
 
-         // Credit
+          // Credit
           SizedBox(
             width: 150,
             height: 40,
@@ -778,7 +916,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
                   borderSide: BorderSide(
-                    color: Colors.grey.shade400, // default unfocused color
+                    color: Colors.grey.shade400,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -834,7 +972,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(3),
                     borderSide: BorderSide(
-                      color: Colors.grey.shade400, // default unfocused color
+                      color: Colors.grey.shade400,
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
@@ -862,7 +1000,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
 
           // Delete
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 6),
             child: IconButton(
               icon: Icon(
                 Icons.delete_outline,
@@ -894,88 +1032,93 @@ class _TransferSummary extends StatelessWidget {
     final isBalanced = difference.abs() < 0.01;
 
     return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 6),
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: isBalanced ? Colors.green : Colors.red,
-            width: 1,
-          ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(
+          color: isBalanced ? Colors.green : Colors.red,
+          width: 1,
         ),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.totalDebit,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.outline.withValues(alpha: .6)),
-                    ),
-                    Text(
-                      '$currencySymbol ${totalDebit.toAmount()}',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.totalCredit,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.outline.withValues(alpha: .6)),
-                    ),
-                    Text(
-                      '$currencySymbol ${totalCredit.toAmount()}',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.difference,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.outline.withValues(alpha: .6)),
-                    ),
-                    Text(
-                      '$currencySymbol ${difference.abs().toAmount()}',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: isBalanced ? Colors.green : Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            if (!isBalanced)
-            const SizedBox(height: 8),
-            if (!isBalanced)
-              Row(
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.error, color: Colors.red, size: 16),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(context)!.debitNoEqualCredit,
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 12,
-                      ),
+                  Text(
+                    AppLocalizations.of(context)!.totalDebit,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.outline.withValues(alpha: .6),
+                    ),
+                  ),
+                  Text(
+                    '$currencySymbol ${totalDebit.toAmount()}',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ],
               ),
-          ],
-        )
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.totalCredit,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.outline.withValues(alpha: .6),
+                    ),
+                  ),
+                  Text(
+                    '$currencySymbol ${totalCredit.toAmount()}',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.difference,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.outline.withValues(alpha: .6),
+                    ),
+                  ),
+                  Text(
+                    '$currencySymbol ${difference.abs().toAmount()}',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: isBalanced ? Colors.green : Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          if (!isBalanced) const SizedBox(height: 8),
+          if (!isBalanced)
+            Row(
+              children: [
+                Icon(Icons.error, color: Colors.red, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    AppLocalizations.of(context)!.debitNoEqualCredit,
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
     );
   }
 }

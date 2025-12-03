@@ -1054,8 +1054,7 @@ class AppLocalizationsFa extends AppLocalizations {
       'حساب مبدأ و مقصد باید دارای ارز یکسان باشند.';
 
   @override
-  String get accountLimitMessage =>
-      'سقف اعتبار حساب بیش از حد مجاز است یا موجودی کافی نیست';
+  String get accountLimitMessage => 'سقف اعتبار یا موجودی حساب  کافی نیست';
 
   @override
   String get date => 'تاریخ';
@@ -1109,4 +1108,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get actionBrief => 'عملیات';
+
+  @override
+  String get transactionFailedTitle => 'عملیات ناموفق';
 }

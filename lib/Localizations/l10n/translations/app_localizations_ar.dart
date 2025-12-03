@@ -1056,7 +1056,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'د سرچینې او منزل حسابونه باید په یوه اسعارو وي.';
 
   @override
-  String get accountLimitMessage => 'د حساب حد زیات شوی یا کافي موجودي نشته';
+  String get accountLimitMessage => 'د حساب حد یا کافي موجودي نشته';
 
   @override
   String get date => 'تاریخ';
@@ -1110,4 +1110,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get actionBrief => 'عملیات';
+
+  @override
+  String get transactionFailedTitle => 'عملیات ناموفق';
 }

@@ -354,7 +354,7 @@
   "operationFailedMessage": "عملیات ناموفق بود. لطفاً دوباره تلاش کنید.",
   "sameCurrencyNotAllowed": "حساب مبدأ و مقصد باید دارای ارز یکسان باشند.",
   "sameCurrencyOnlyAllowed": "حساب مبدأ و مقصد باید دارای ارز یکسان باشند.",
-  "accountLimitMessage": "سقف اعتبار حساب بیش از حد مجاز است یا موجودی کافی نیست",
+  "accountLimitMessage": "سقف اعتبار یا موجودی حساب  کافی نیست",
   "date": "تاریخ",
   "authorizedTransaction": "تایید شده",
   "comLicense": "نمبر جواز",
@@ -371,5 +371,6 @@
   "currencyMismatchMessage": "ارز معامله یکسان نیست.",
   "transactionMismatchCcyAlert": "اسعار حساب های معاملات شما با ارز معامله گروهی شما همیخوانی ندارد.",
   "ccyCode": "اسعار",
-  "actionBrief": "عملیات"
+  "actionBrief": "عملیات",
+  "transactionFailedTitle": "عملیات ناموفق"
 }

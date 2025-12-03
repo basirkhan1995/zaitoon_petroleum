@@ -354,7 +354,7 @@
   "operationFailedMessage": "عملیات ناکام شو. مهرباني وکړئ بیا هڅه وکړئ.",
   "sameCurrencyNotAllowed": "د سرچینې او منزل حسابونه باید په یوه اسعارو وي.",
   "sameCurrencyOnlyAllowed": "د سرچینې او منزل حسابونه باید په یوه اسعارو وي.",
-  "accountLimitMessage": "د حساب حد زیات شوی یا کافي موجودي نشته",
+  "accountLimitMessage": "د حساب حد یا کافي موجودي نشته",
   "date": "تاریخ",
   "authorizedTransaction": "تایید شده",
   "comLicense": "جواز شمیره",
@@ -371,5 +371,6 @@
   "currencyMismatchMessage": "ارز معامله یکسان نیست.",
   "transactionMismatchCcyAlert": "اسعار حساب های معاملات شما با ارز معامله گروهی شما همیخوانی ندارد.",
   "ccyCode": "اسعار",
-  "actionBrief": "عملیات"
+  "actionBrief": "عملیات",
+  "transactionFailedTitle": "عملیات ناموفق"
 }

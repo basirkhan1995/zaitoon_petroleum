@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import '../../../../../../../../Services/localization_services.dart';
 import '../../../../../../../../Services/repositories.dart';
 import '../../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
 import '../model/transfer_model.dart';
@@ -80,7 +81,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     }
   }
 
+  // In TransferBloc - update the _onSaveTransfer method
   Future<void> _onSaveTransfer(SaveTransferEvent event, Emitter<TransferState> emit) async {
+    final tr = localizationService.loc;
     if (state is! TransferLoadedState) {
       event.completer.completeError('Invalid state');
       return;
@@ -90,7 +93,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
     // Validate debit = credit
     if (currentState.totalDebit != currentState.totalCredit) {
-      final error = 'Debit and Credit totals must be equal';
+      final error = tr.debitNoEqualCredit;
       emit(TransferApiErrorState(
         error: error,
         errorType: 'validation',
@@ -153,8 +156,18 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       final msg = result['msg']?.toString().toLowerCase() ?? '';
 
       if (msg.contains('success')) {
-        // Success - reset form
-        emit(TransferSavedState(true, 'Transaction successful'));
+        // Success - reset form with fresh state
+        final reference = result['reference']?.toString() ?? 'Transaction successful';
+        emit(TransferSavedState(true, reference));
+
+        // Reset to fresh state after showing success
+        await Future.delayed(const Duration(milliseconds: 500)); // Small delay for UX
+        emit(TransferLoadedState(
+          entries: [],
+          totalDebit: 0.0,
+          totalCredit: 0.0,
+        ));
+
         event.completer.complete('success');
       } else {
         // Handle different error types from API
@@ -163,16 +176,16 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
         if (msg.contains('no limit') || msg.contains('insufficient')) {
           errorType = 'no limit';
-          errorMessage = 'Insufficient balance or account limit reached';
+          errorMessage = tr.accountLimitMessage;
         } else if (msg.contains('blocked')) {
           errorType = 'blocked';
-          errorMessage = 'Account is blocked';
+          errorMessage = tr.blockedAccountMessage;
         } else if (msg.contains('diff ccy')) {
           errorType = 'diff ccy';
-          errorMessage = 'Currency mismatch in transaction';
+          errorMessage = tr.currencyMismatchMessage;
         } else if (msg.contains('failed')) {
           errorType = 'failed';
-          errorMessage = 'Transaction failed';
+          errorMessage = tr.transactionFailedTitle;
         }
 
         // Return to loaded state with error

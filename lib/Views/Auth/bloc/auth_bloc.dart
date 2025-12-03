@@ -14,7 +14,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this._repo) : super(AuthInitial()) {
 
     on<LoginEvent>((event, emit) async {
-      final locale = localizationService.loc;
+      final tr = localizationService.loc;
       emit(AuthLoadingState());
 
       try {
@@ -28,15 +28,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
           switch (result) {
             case "incorrect":
-              emit(AuthErrorState(locale.incorrectCredential));
+              emit(AuthErrorState(tr.incorrectCredential));
               return;
 
             case "blocked":
-              emit(AuthErrorState(locale.blockedMessage));
+              emit(AuthErrorState(tr.blockedMessage));
               return;
 
             case "unverified":
-              emit(AuthErrorState(locale.unverified));
+              emit(AuthErrorState(tr.unverified));
               return;
 
             case "fcp":
