@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
+import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
+import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/features/currency_drop.dart';
 import '../../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
-import '../../../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../../../Features/Other/utils.dart';
-import '../../../../../../../../Features/Widgets/button.dart';
 import '../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../../../Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
@@ -78,7 +80,6 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
   }
 
   void _syncControllersWithState(TransferLoadedState state) {
-    // Remove controllers for deleted entries
     final currentRowIds = state.entries.map((e) => e.rowId).toSet();
     final existingRowIds = _rowControllers.keys.toSet();
     final deletedRowIds = existingRowIds.difference(currentRowIds);
@@ -135,11 +136,13 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Bulk Transfer"),
-      ),
-      body: BlocBuilder<AuthBloc, AuthState>(
+    return ZFormDialog(
+      width: MediaQuery.of(context).size.width *.8,
+      icon: Icons.bubble_chart_outlined,
+      isActionTrue: false,
+      onAction: null,
+      title: AppLocalizations.of(context)!.bulkTransfer,
+      child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, auth) {
           if (auth is AuthenticatedState) {
             userName = auth.loginData.usrName;
@@ -150,7 +153,7 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
               if (state is TransferSavedState) {
                 if (state.success) {
                   Utils.showOverlayMessage(context,
-                    message: 'Transfer completed successfully',
+                    message: AppLocalizations.of(context)!.successTransactionMessage,
                     isError: false,
                   );
                 }
@@ -198,7 +201,6 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
   }
 
   Widget _buildLoadedState(BuildContext context, TransferLoadedState state) {
-    // Validate currency mismatch
     bool hasCurrencyMismatch = false;
     if (_selectedCurrency != null) {
       for (final entry in state.entries) {
@@ -215,70 +217,42 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
       children: [
         // Header Section
         Container(
-          padding: const EdgeInsets.all(16),
-          margin: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 3),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+
             children: [
-              // Currency Selection
+
               Row(
+
                 children: [
                   Expanded(
-                    child: TextField(
-                      controller: _currencyController,
-                      decoration: InputDecoration(
-                        labelText: 'Transaction Currency',
-                        hintText: 'USD',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.check),
-                          onPressed: () {
-                            setState(() {
-                              _selectedCurrency = _currencyController.text.trim().toUpperCase();
-                            });
-                            // Update all entries with selected currency
-                            for (final entry in state.entries) {
-                              context.read<TransferBloc>().add(
-                                UpdateTransferEntryEvent(
-                                  id: entry.rowId,
-                                  accountNumber: entry.accountNumber,
-                                  accountName: entry.accountName,
-                                  currency: _selectedCurrency,
-                                  debit: entry.debit,
-                                  credit: entry.credit,
-                                  narration: entry.narration,
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedCurrency = value.trim().toUpperCase();
-                        });
-                      },
+                    child: CurrencyDropdown(
+                      height: 40,
+                        title: '',
+                        initiallySelectedSingle: CurrenciesModel(ccyCode: _selectedCurrency),
+                        isMulti: false,
+                        onMultiChanged: (_){},
+                        onSingleChanged: (e){
+                          setState(() {
+                            _selectedCurrency = e?.ccyCode??"";
+                          });
+                        },
                     ),
                   ),
                   const SizedBox(width: 8),
                   ZOutlineButton(
-                    height: 48,
+                    height: 40,
                     icon: Icons.add,
                     onPressed: () {
                       context.read<TransferBloc>().add(AddTransferEntryEvent());
                     },
-                    width: 130,
-                    label: const Text('Add Entry'),
+                    width: 120,
+                    label: Text(AppLocalizations.of(context)!.addEntry),
                   ),
                   const SizedBox(width: 8),
                   _buildSaveButton(context, state, hasCurrencyMismatch),
@@ -294,7 +268,7 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
                       Icon(Icons.warning, color: Colors.orange, size: 16),
                       const SizedBox(width: 8),
                       Text(
-                        'Some accounts have different currency. Click check icon to update all.',
+                        AppLocalizations.of(context)!.transactionMismatchCcyAlert,
                         style: TextStyle(
                           color: Colors.orange,
                           fontSize: 12,
@@ -312,7 +286,7 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
                       Icon(Icons.error, color: Colors.red, size: 16),
                       const SizedBox(width: 8),
                       Text(
-                        'Debit and Credit totals are not equal!',
+                        AppLocalizations.of(context)!.debitNoEqualCredit,
                         style: TextStyle(
                           color: Colors.red,
                           fontSize: 12,
@@ -325,7 +299,7 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
           ),
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
 
         // Entries Header
         _TransferHeaderRow(currencySymbol: _selectedCurrency ?? 'USD'),
@@ -453,8 +427,9 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
     final allAccountsValid = state.entries.every((entry) => entry.accountNumber != null);
     final isValid = isBalanced && hasEntries && allAccountsValid && !hasCurrencyMismatch;
 
-    return ZButton(
-      height: 46,
+    return ZOutlineButton(
+      height: 40,
+      icon: Icons.cached_rounded,
       onPressed: !isValid || userName == null
           ? null
           : () async {
@@ -467,13 +442,12 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
         );
         try {
           await completer.future;
-          // Success is handled in listener
         } catch (e) {
           // Error is handled in listener via TransferApiErrorState
         }
       },
-      width: 130,
-      label: const Text('Save Transfer'),
+      width: 120,
+      label: Text(AppLocalizations.of(context)!.create),
     );
   }
 }
@@ -490,10 +464,10 @@ class _TransferHeaderRow extends StatelessWidget {
     final color = Theme.of(context).colorScheme;
     return Container(
         margin: const EdgeInsets.symmetric(horizontal: 12),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
         decoration: BoxDecoration(
           color: color.primary,
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(3),
         ),
         child: Row(
           children: [
@@ -510,7 +484,7 @@ class _TransferHeaderRow extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Text(
-                'Account',
+                AppLocalizations.of(context)!.accounts,
                 style: TextStyle(
                   color: color.surface,
                   fontWeight: FontWeight.w500,
@@ -518,10 +492,9 @@ class _TransferHeaderRow extends StatelessWidget {
               ),
             ),
             SizedBox(
-              width: 95,
+              width: 50,
               child: Text(
-                textAlign: TextAlign.center,
-                'Currency',
+                AppLocalizations.of(context)!.ccyCode,
                 style: TextStyle(
                   color: color.surface,
                   fontWeight: FontWeight.w500,
@@ -529,9 +502,9 @@ class _TransferHeaderRow extends StatelessWidget {
               ),
             ),
             SizedBox(
-              width: 120,
+              width: 150,
               child: Text(
-                'Debit ($currencySymbol)',
+                '${AppLocalizations.of(context)!.debitTitle} ($currencySymbol)',
                 style: TextStyle(
                   color: color.surface,
                   fontWeight: FontWeight.w500,
@@ -539,9 +512,9 @@ class _TransferHeaderRow extends StatelessWidget {
               ),
             ),
             SizedBox(
-              width: 120,
+              width: 150,
               child: Text(
-                'Credit ($currencySymbol)',
+                '${AppLocalizations.of(context)!.creditTitle} ($currencySymbol)',
                 style: TextStyle(
                   color: color.surface,
                   fontWeight: FontWeight.w500,
@@ -549,8 +522,9 @@ class _TransferHeaderRow extends StatelessWidget {
               ),
             ),
             Expanded(
+              flex: 2,
               child: Text(
-                'Narration',
+                AppLocalizations.of(context)!.narration,
                 style: TextStyle(
                   color: color.surface,
                   fontWeight: FontWeight.w500,
@@ -558,15 +532,7 @@ class _TransferHeaderRow extends StatelessWidget {
               ),
             ),
             SizedBox(
-              width: 80,
-              child: Text(
-                'Action',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: color.surface,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              child: Icon(Icons.delete_outline_rounded,color: Theme.of(context).colorScheme.surface,size: 20)
             ),
           ],
         ));
@@ -612,12 +578,12 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
         entryCurrency != widget.selectedCurrency;
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-      margin: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
       ),
       child: Row(
+        spacing: 5,
         children: [
           SizedBox(
             width: 40,
@@ -635,7 +601,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
               showAllOnFocus: true,
               controller: widget.accountController,
               title: '',
-              hintText: 'Account',
+              hintText: AppLocalizations.of(context)!.accounts,
               isRequired: true,
               bloc: context.read<AccountsBloc>(),
               fetchAllFunction: (bloc) => bloc.add(
@@ -649,19 +615,22 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                   horizontal: 8,
                   vertical: 4,
                 ),
-                child: Column(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      account.accName ?? '',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                    Expanded(
+                      child: Text(
+                        account.accName ?? '',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
                     ),
+
                     Row(
                       children: [
                         Text(
                           account.accNumber.toString(),
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.outline,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -677,8 +646,8 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                             account.actCurrency ?? 'USD',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: account.actCurrency == widget.selectedCurrency
-                                  ? Colors.green
-                                  : Colors.orange,
+                                  ? Colors.black
+                                  : Colors.black,
                             ),
                           ),
                         ),
@@ -692,7 +661,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
               loadingBuilder: (context) => const SizedBox(
                 width: 16,
                 height: 16,
-                child: CircularProgressIndicator(strokeWidth: 2),
+                child: CircularProgressIndicator(strokeWidth: 1),
               ),
               stateToItems: (state) {
                 if (state is AccountLoadedState) return state.accounts;
@@ -703,7 +672,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 widget.onChanged(widget.entry.copyWith(
                   accountNumber: account.accNumber,
                   accountName: account.accName,
-                  currency: widget.selectedCurrency ?? account.actCurrency,
+                  currency: account.actCurrency,
                 ));
               },
               noResultsText: 'No account found',
@@ -713,48 +682,61 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
 
           // Currency
           SizedBox(
-            width: 80,
+            width: 50,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 9),
               decoration: BoxDecoration(
                 color: hasCurrencyMismatch ? Colors.orange.shade50 : null,
                 border: Border.all(
                   color: hasCurrencyMismatch ? Colors.orange : Colors.grey.shade400,
                 ),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(3),
               ),
               child: Text(
                 entryCurrency,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: hasCurrencyMismatch ? Colors.orange : Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
+                  color: hasCurrencyMismatch ? Colors.orange : Colors.black),
                 textAlign: TextAlign.center,
               ),
             ),
           ),
 
-          // Debit
+          //Debit
           SizedBox(
-            width: 120,
+            width: 150,
+            height: 40,
             child: TextField(
               key: ValueKey('debit_${widget.entry.rowId}'),
               controller: widget.debitController,
               focusNode: widget.focusNode,
               textInputAction: TextInputAction.next,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
-                SmartThousandsDecimalFormatter(),
-              ],
               decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 5),
                 hintText: '0.00',
                 suffixText: entryCurrency,
                 suffixStyle: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(3),
+                  borderSide: BorderSide(
+                    color: Colors.grey.shade400, // default unfocused color
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(3),
+                  borderSide: BorderSide(
+                    color: Colors.grey.shade400,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(3),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 1,
+                  ),
                 ),
               ),
               onChanged: (value) {
@@ -776,26 +758,41 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
             ),
           ),
 
-          // Credit
+         // Credit
           SizedBox(
-            width: 120,
+            width: 150,
+            height: 40,
             child: TextField(
               key: ValueKey('credit_${widget.entry.rowId}'),
               controller: widget.creditController,
               textInputAction: TextInputAction.next,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
-                SmartThousandsDecimalFormatter(),
-              ],
               decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                 hintText: '0.00',
                 suffixText: entryCurrency,
                 suffixStyle: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(3),
+                  borderSide: BorderSide(
+                    color: Colors.grey.shade400, // default unfocused color
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(3),
+                  borderSide: BorderSide(
+                    color: Colors.grey.shade400,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(3),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 1,
+                  ),
                 ),
               ),
               onChanged: (value) {
@@ -819,35 +816,59 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
 
           // Narration
           Expanded(
-            child: TextField(
-              key: ValueKey('narration_${widget.entry.rowId}'),
-              controller: widget.narrationController,
-              textInputAction: TextInputAction.done,
-              maxLines: 1,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-                hintText: 'Description',
+            flex: 2,
+            child: SizedBox(
+              height: 40,
+              child: TextField(
+                key: ValueKey('narration_${widget.entry.rowId}'),
+                controller: widget.narrationController,
+                textInputAction: TextInputAction.done,
+                maxLines: 1,
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.narration,
+                  suffixStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade400, // default unfocused color
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                      width: 1,
+                    ),
+                  ),
+                ),
+                onChanged: (value) {
+                  widget.onChanged(widget.entry.copyWith(
+                    narration: value,
+                  ));
+                },
               ),
-              onChanged: (value) {
-                widget.onChanged(widget.entry.copyWith(
-                  narration: value,
-                ));
-              },
             ),
           ),
 
           // Delete
-          SizedBox(
-            width: 80,
-            child: Center(
-              child: IconButton(
-                icon: Icon(
-                  Icons.delete_outline,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-                onPressed: () => widget.onRemove(widget.entry.rowId),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 6),
+            child: IconButton(
+              icon: Icon(
+                Icons.delete_outline,
+                color: Theme.of(context).colorScheme.error,
               ),
+              onPressed: () => widget.onRemove(widget.entry.rowId),
             ),
           ),
         ],
@@ -873,11 +894,11 @@ class _TransferSummary extends StatelessWidget {
     final isBalanced = difference.abs() < 0.01;
 
     return Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 6),
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(4),
           border: Border.all(
             color: isBalanced ? Colors.green : Colors.red,
             width: 1,
@@ -892,12 +913,12 @@ class _TransferSummary extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Total Debit:',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      AppLocalizations.of(context)!.totalDebit,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.outline.withValues(alpha: .6)),
                     ),
                     Text(
                       '$currencySymbol ${totalDebit.toAmount()}',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
@@ -907,12 +928,12 @@ class _TransferSummary extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Total Credit:',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      AppLocalizations.of(context)!.totalCredit,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.outline.withValues(alpha: .6)),
                     ),
                     Text(
                       '$currencySymbol ${totalCredit.toAmount()}',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
@@ -922,20 +943,20 @@ class _TransferSummary extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Difference:',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      AppLocalizations.of(context)!.difference,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.outline.withValues(alpha: .6)),
                     ),
                     Text(
                       '$currencySymbol ${difference.abs().toAmount()}',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: isBalanced ? Colors.green : Colors.red,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
                 ),
               ],
             ),
+            if (!isBalanced)
             const SizedBox(height: 8),
             if (!isBalanced)
               Row(
@@ -944,7 +965,7 @@ class _TransferSummary extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Debit and Credit totals are not equal. Please adjust amounts to balance.',
+                      AppLocalizations.of(context)!.debitNoEqualCredit,
                       style: TextStyle(
                         color: Colors.red,
                         fontSize: 12,

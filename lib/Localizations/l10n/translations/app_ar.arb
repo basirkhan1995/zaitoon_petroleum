@@ -360,5 +360,16 @@
   "comLicense": "جواز شمیره",
   "saveChanges": "تبتول",
   "bulkTransfer": "ډله ییز انتقال",
-  "crop": "قطع کردن"
+  "crop": "قطع کردن",
+  "totalDebit": "مجموعه دبت",
+  "totalCredit": "مجموعه کریدت",
+  "difference": "تفاوت",
+  "debitNoEqualCredit": "ټول ډیبیټ او کریډیټ مساوي ندي، مهرباني وکړئ مقدارونه د توازن سره تنظیم کړئ.",
+  "successTransactionMessage": "انتقال با موفقیت انجام شد.",
+  "addEntry": "نوی ورودی",
+  "blockedAccountMessage": "حساب مسدود میباشد.",
+  "currencyMismatchMessage": "ارز معامله یکسان نیست.",
+  "transactionMismatchCcyAlert": "اسعار حساب های معاملات شما با ارز معامله گروهی شما همیخوانی ندارد.",
+  "ccyCode": "اسعار",
+  "actionBrief": "عملیات"
 }

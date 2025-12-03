@@ -1080,4 +1080,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get crop => 'Crop';
+
+  @override
+  String get totalDebit => 'Total Debit';
+
+  @override
+  String get totalCredit => 'Total Credit';
+
+  @override
+  String get difference => 'Difference';
+
+  @override
+  String get debitNoEqualCredit =>
+      'Total debit and credit is not equal, please adjust amounts to balance.';
+
+  @override
+  String get successTransactionMessage =>
+      'Transfer has been successfully completed.';
+
+  @override
+  String get addEntry => 'Add Entry';
+
+  @override
+  String get blockedAccountMessage => 'Account is blocked.';
+
+  @override
+  String get currencyMismatchMessage => 'Currency mismatch in transaction';
+
+  @override
+  String get transactionMismatchCcyAlert =>
+      'Your accounts currencies are not matching with your transaction main currency.';
+
+  @override
+  String get ccyCode => 'CCY';
+
+  @override
+  String get actionBrief => 'Act';
 }

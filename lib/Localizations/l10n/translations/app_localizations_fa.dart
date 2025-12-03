@@ -1074,4 +1074,39 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get crop => 'قطع کردن';
+
+  @override
+  String get totalDebit => 'مجموعه دبت';
+
+  @override
+  String get totalCredit => 'مجموعه کریدت';
+
+  @override
+  String get difference => 'تفاوت';
+
+  @override
+  String get debitNoEqualCredit =>
+      'مجموع بدهی و بستانکاری برابر نیست، لطفاً مبالغ را اصلاح کنید تا تعادل برقرار شود.';
+
+  @override
+  String get successTransactionMessage => 'لیږد په بریالیتوب سره بشپړ شو.';
+
+  @override
+  String get addEntry => 'ورودی جدید';
+
+  @override
+  String get blockedAccountMessage => 'حساب مسدود میباشد.';
+
+  @override
+  String get currencyMismatchMessage => 'ارز معامله یکسان نیست.';
+
+  @override
+  String get transactionMismatchCcyAlert =>
+      'اسعار حساب های معاملات شما با ارز معامله گروهی شما همیخوانی ندارد.';
+
+  @override
+  String get ccyCode => 'اسعار';
+
+  @override
+  String get actionBrief => 'عملیات';
 }

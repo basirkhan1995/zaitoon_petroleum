@@ -360,5 +360,16 @@
   "comLicense": "نمبر جواز",
   "saveChanges": "ثبت کردن",
   "bulkTransfer": "انتقال گروهی",
-  "crop": "قطع کردن"
+  "crop": "قطع کردن",
+  "totalDebit": "مجموعه دبت",
+  "totalCredit": "مجموعه کریدت",
+  "difference": "تفاوت",
+  "debitNoEqualCredit": "مجموع بدهی و بستانکاری برابر نیست، لطفاً مبالغ را اصلاح کنید تا تعادل برقرار شود.",
+  "successTransactionMessage": "لیږد په بریالیتوب سره بشپړ شو.",
+  "addEntry": "ورودی جدید",
+  "blockedAccountMessage": "حساب مسدود میباشد.",
+  "currencyMismatchMessage": "ارز معامله یکسان نیست.",
+  "transactionMismatchCcyAlert": "اسعار حساب های معاملات شما با ارز معامله گروهی شما همیخوانی ندارد.",
+  "ccyCode": "اسعار",
+  "actionBrief": "عملیات"
 }

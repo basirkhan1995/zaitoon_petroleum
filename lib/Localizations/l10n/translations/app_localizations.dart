@@ -2187,6 +2187,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Crop'**
   String get crop;
+
+  /// No description provided for @totalDebit.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Debit'**
+  String get totalDebit;
+
+  /// No description provided for @totalCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Credit'**
+  String get totalCredit;
+
+  /// No description provided for @difference.
+  ///
+  /// In en, this message translates to:
+  /// **'Difference'**
+  String get difference;
+
+  /// No description provided for @debitNoEqualCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Total debit and credit is not equal, please adjust amounts to balance.'**
+  String get debitNoEqualCredit;
+
+  /// No description provided for @successTransactionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer has been successfully completed.'**
+  String get successTransactionMessage;
+
+  /// No description provided for @addEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Entry'**
+  String get addEntry;
+
+  /// No description provided for @blockedAccountMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Account is blocked.'**
+  String get blockedAccountMessage;
+
+  /// No description provided for @currencyMismatchMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency mismatch in transaction'**
+  String get currencyMismatchMessage;
+
+  /// No description provided for @transactionMismatchCcyAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'Your accounts currencies are not matching with your transaction main currency.'**
+  String get transactionMismatchCcyAlert;
+
+  /// No description provided for @ccyCode.
+  ///
+  /// In en, this message translates to:
+  /// **'CCY'**
+  String get ccyCode;
+
+  /// No description provided for @actionBrief.
+  ///
+  /// In en, this message translates to:
+  /// **'Act'**
+  String get actionBrief;
 }
 
 class _AppLocalizationsDelegate

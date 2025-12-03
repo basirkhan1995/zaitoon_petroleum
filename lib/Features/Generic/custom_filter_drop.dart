@@ -117,7 +117,6 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme;
 
     // Display the selected items nicely for multi-select
     String displayText;
@@ -136,15 +135,17 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
     return Focus(
       focusNode: _focusNode,
       child: Column(
+        mainAxisSize: MainAxisSize.min, // <-- minimize vertical space
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Updated title section to use customTitle if provided
-          if (widget.customTitle != null)
+          // Only show title if it actually has content
+          if (widget.customTitle != null && widget.customTitle is! SizedBox)
             widget.customTitle!
           else if (widget.title.isNotEmpty)
             Text(widget.title, style: Theme.of(context).textTheme.bodyMedium),
 
-          if ((widget.customTitle != null || widget.title.isNotEmpty))
+          // Only add spacing if title is present
+          if ((widget.customTitle != null && widget.customTitle is! SizedBox) || widget.title.isNotEmpty)
             const SizedBox(height: 5),
 
           GestureDetector(
@@ -166,9 +167,9 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
               height: widget.height ?? 40,
               decoration: BoxDecoration(
-                color: color.surface,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(widget.radius ?? 4),
-                border: Border.all(color: color.outline.withValues(alpha: .3)),
+                border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -190,9 +191,9 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
                   widget.disableAction
                       ? const SizedBox()
                       : Icon(
-                     size: 20,
+                    size: 20,
                     _isOpen ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                    color: color.outline.withValues(alpha: .9),
+                    color: Theme.of(context).colorScheme.outline.withValues(alpha: .9),
                   ),
                 ],
               ),

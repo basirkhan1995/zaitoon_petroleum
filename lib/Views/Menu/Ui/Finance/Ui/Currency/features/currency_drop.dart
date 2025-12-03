@@ -55,7 +55,6 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
       builder: (context, state) {
         final bool isLoading = state is CurrenciesLoadingState;
 
-        // Build the title widget with loading indicator
         Widget buildTitle() {
           if (isLoading) {
             return Row(
@@ -85,48 +84,52 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
           return Text('Error: ${state.message}');
         }
 
-        return ZDropdown<CurrenciesModel>(
-          disableAction: widget.disableAction,
-          title: '', // We'll handle title separately
-          height: widget.height,
-          leadingBuilder: (CurrenciesModel ccy) {
-            return SizedBox(
-              width: 30,
-              child: Flag.fromString(
-                ccy.ccyCountryCode ?? "",
-                height: 20,
-                width: 30,
-                borderRadius: 2,
-                fit: BoxFit.fill,
-              ),
-            );
-          },
-          items: state is CurrenciesLoadedState ? state.ccy : [],
-          multiSelect: widget.isMulti,
-          selectedItems: widget.isMulti ? _selectedMulti : [],
-          selectedItem: widget.isMulti ? null : _selectedSingle,
-          itemLabel: (item) => item.ccyCode ?? "",
-          initialValue: AppLocalizations.of(context)!.currencyTitle,
+        return Column(
+          mainAxisSize: MainAxisSize.min, // Ensures minimal vertical space
+          children: [
+            ZDropdown<CurrenciesModel>(
+              disableAction: widget.disableAction,
+              title: '', // keep empty, using customTitle
+              height: widget.height,
+              leadingBuilder: (CurrenciesModel ccy) {
+                return SizedBox(
+                  width: 30,
+                  child: Flag.fromString(
+                    ccy.ccyCountryCode ?? "",
+                    height: 20,
+                    width: 30,
+                    borderRadius: 2,
+                    fit: BoxFit.fill,
+                  ),
+                );
+              },
+              items: state is CurrenciesLoadedState ? state.ccy : [],
+              multiSelect: widget.isMulti,
+              selectedItems: widget.isMulti ? _selectedMulti : [],
+              selectedItem: widget.isMulti ? null : _selectedSingle,
+              itemLabel: (item) => item.ccyCode ?? "",
+              initialValue: AppLocalizations.of(context)!.currencyTitle,
 
-          // MULTI-SELECT HANDLER
-          onMultiSelectChanged: widget.isMulti
-              ? (selected) {
-            setState(() => _selectedMulti = selected);
-            widget.onMultiChanged(selected);
-          }
-              : null,
+              onMultiSelectChanged: widget.isMulti
+                  ? (selected) {
+                setState(() => _selectedMulti = selected);
+                widget.onMultiChanged(selected);
+              }
+                  : null,
+              onItemSelected: widget.isMulti
+                  ? (_) {}
+                  : (item) {
+                setState(() => _selectedSingle = item);
+                widget.onSingleChanged?.call(item);
+              },
+              isLoading: false,
+              itemStyle: Theme.of(context).textTheme.titleMedium,
 
-          // SINGLE-SELECT HANDLER
-          onItemSelected: widget.isMulti
-              ? (_) {}
-              : (item) {
-            setState(() => _selectedSingle = item);
-            widget.onSingleChanged?.call(item);
-          },
-          isLoading: false,
-          itemStyle: Theme.of(context).textTheme.titleMedium,
-          // Custom title widget that includes loading indicator
-          customTitle: buildTitle(),
+              customTitle: (widget.title != null && widget.title!.isNotEmpty)
+                  ? buildTitle()
+                  : const SizedBox.shrink(), // No space if no title
+            ),
+          ],
         );
       },
     );

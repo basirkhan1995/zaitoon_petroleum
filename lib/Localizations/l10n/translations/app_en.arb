@@ -360,5 +360,16 @@
   "comLicense": "License No.",
   "saveChanges": "Save changes",
   "bulkTransfer": "Bulk Transfer",
-  "crop": "Crop"
+  "crop": "Crop",
+  "totalDebit": "Total Debit",
+  "totalCredit": "Total Credit",
+  "difference": "Difference",
+  "debitNoEqualCredit": "Total debit and credit is not equal, please adjust amounts to balance.",
+  "successTransactionMessage": "Transfer has been successfully completed.",
+  "addEntry": "Add Entry",
+  "blockedAccountMessage": "Account is blocked.",
+  "currencyMismatchMessage": "Currency mismatch in transaction",
+  "transactionMismatchCcyAlert": "Your accounts currencies are not matching with your transaction main currency.",
+  "ccyCode": "CCY",
+  "actionBrief": "Act"
 }
