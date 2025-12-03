@@ -1476,7 +1476,7 @@ class _DesktopState extends State<_Desktop> {
                             if (login.hasPermission(24) ?? false)
                               ZOutlineButton(
                                 toolTip: "F5",
-                                label: Text(locale.accountTransfer),
+                                label: Text(locale.fundTransferTitle),
                                 icon: Icons.swap_horiz_rounded,
                                 width: double.infinity,
                                 onPressed: () => accountToAccount(trnType: "ATAT"),
@@ -1484,7 +1484,7 @@ class _DesktopState extends State<_Desktop> {
                             if (login.hasPermission(24) ?? false)
                               ZOutlineButton(
                                 toolTip: "F5",
-                                label: Text(locale.bulkTransfer),
+                                label: Text(locale.fundTransferMultiTitle),
                                 icon: Icons.swap_horiz_rounded,
                                 width: double.infinity,
                                 onPressed: (){

@@ -23,7 +23,7 @@
   "newDatabase": "New Database",
   "browse": "Browse",
   "connect": "Connect",
-  "zaitoonSlogan": "Empowering Ideas. Building Trust",
+  "zaitoonSlogan": "Empowering Ideas, Building Trust",
   "zaitoonTitle": "Zaitoon System",
   "initialStock": "Initial Stock",
   "serverConnection": "Server Connection",
@@ -359,7 +359,7 @@
   "authorizedTransaction": "Authorized",
   "comLicense": "License No.",
   "saveChanges": "Save changes",
-  "bulkTransfer": "Bulk Transfer",
+  "bulkTransfer": "Fund Transfer - Multi Accounts",
   "crop": "Crop",
   "totalDebit": "Total Debit",
   "totalCredit": "Total Credit",
@@ -372,5 +372,7 @@
   "transactionMismatchCcyAlert": "Your accounts currencies are not matching with your transaction main currency.",
   "ccyCode": "CCY",
   "actionBrief": "Act",
-  "transactionFailedTitle": "Transaction Failed"
+  "transactionFailedTitle": "Transaction Failed",
+  "fundTransferTitle": "Fund Transfer SA",
+  "fundTransferMultiTitle": "Fund Transfer MA"
 }

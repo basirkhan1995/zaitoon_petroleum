@@ -23,7 +23,7 @@
   "newDatabase": "دیتابیس جدید",
   "browse": "باز کردن",
   "connect": "اتصال",
-  "zaitoonSlogan": "توان‌بخشی به ایده‌ها، ساختن اعتماد",
+  "zaitoonSlogan": "توان‌ بخشی به ایده‌ ها، ساختن اعتماد",
   "zaitoonTitle": "شرکت نرم افزار زیتون",
   "initialStock": "موجودی اولیه",
   "serverConnection": "اتصال سرور",
@@ -359,7 +359,7 @@
   "authorizedTransaction": "تایید شده",
   "comLicense": "نمبر جواز",
   "saveChanges": "ثبت کردن",
-  "bulkTransfer": "انتقال گروهی",
+  "bulkTransfer": "انتقال وجه - حساب‌ های چندگانه",
   "crop": "قطع کردن",
   "totalDebit": "مجموعه دبت",
   "totalCredit": "مجموعه کریدت",
@@ -372,5 +372,7 @@
   "transactionMismatchCcyAlert": "اسعار حساب های معاملات شما با ارز معامله گروهی شما همیخوانی ندارد.",
   "ccyCode": "اسعار",
   "actionBrief": "عملیات",
-  "transactionFailedTitle": "عملیات ناموفق"
+  "transactionFailedTitle": "عملیات ناموفق",
+  "fundTransferTitle": "انتقال وجه - انفرادی",
+  "fundTransferMultiTitle": "انتقال وجه - چندگانه"
 }

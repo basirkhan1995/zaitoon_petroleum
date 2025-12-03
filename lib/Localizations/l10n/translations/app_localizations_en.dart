@@ -43,7 +43,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get connect => 'Connect';
 
   @override
-  String get zaitoonSlogan => 'Empowering Ideas. Building Trust';
+  String get zaitoonSlogan => 'Empowering Ideas, Building Trust';
 
   @override
   String get zaitoonTitle => 'Zaitoon System';
@@ -1076,7 +1076,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveChanges => 'Save changes';
 
   @override
-  String get bulkTransfer => 'Bulk Transfer';
+  String get bulkTransfer => 'Fund Transfer - Multi Accounts';
 
   @override
   String get crop => 'Crop';
@@ -1119,4 +1119,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transactionFailedTitle => 'Transaction Failed';
+
+  @override
+  String get fundTransferTitle => 'Fund Transfer SA';
+
+  @override
+  String get fundTransferMultiTitle => 'Fund Transfer MA';
 }

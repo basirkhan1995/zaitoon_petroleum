@@ -331,6 +331,54 @@ class Repositories {
       throw e.toString();
     }
   }
+  Future<List<AccountsModel>> getAccountFilter({
+  final int? start,
+  final int? end,
+  final String? input,
+  final String? locale,
+  final List<String>? exclude,
+  final String? ccy,
+  }) async {
+    try {
+
+      // Fetch data from API
+      final response = await api.post(
+        endpoint: "/journal/allAccounts.php",
+        data: {
+          "ccy": ccy,
+          "local": locale ?? "en",
+          "input": input,
+          "groupStart": start,
+          "groupStop": end,
+          "account": exclude
+        },
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => AccountsModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
 
   /// GL Accounts | System
   Future<List<GlAccountsModel>> getAllGlAccounts({String? local}) async {

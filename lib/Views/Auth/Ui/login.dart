@@ -425,9 +425,18 @@ class _DesktopState extends State<_Desktop> {
         Row(
           spacing: 8,
           children: [
-            SizedBox(
-              width: 140,
-              height: 140,
+            Container(
+              width: 90,
+              height: 90,
+              padding: const EdgeInsets.all(3),
+              margin: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(
+                  color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: .09),
+                ),
+              ),
               child: Image.asset('assets/images/zaitoonLogo.png'),
             ),
 
@@ -435,15 +444,16 @@ class _DesktopState extends State<_Desktop> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
-              spacing: 5,
+              spacing: 0,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.zPetroleum,
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.zPetroleum.toUpperCase(),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontFamily: "OpenSans",
-                    fontWeight: FontWeight.bold,
                     fontSize: 40,
-                  ),
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold
+                  )
                 ),
                 Text(
                   AppLocalizations.of(context)!.zaitoonSlogan,
@@ -574,7 +584,7 @@ class _DesktopState extends State<_Desktop> {
             ),
           ),
         ),
-        SizedBox(height: 450, child: Image.asset('assets/images/login.png')),
+      //  SizedBox(height: 450, child: Image.asset('assets/images/login.png')),
       ],
     );
   }

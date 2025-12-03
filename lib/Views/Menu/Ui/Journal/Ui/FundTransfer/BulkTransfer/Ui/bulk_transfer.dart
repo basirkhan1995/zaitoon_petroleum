@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
@@ -7,6 +8,7 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/features/currency_drop.dart';
 import '../../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
+import '../../../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../../../Features/Other/utils.dart';
 import '../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Auth/bloc/auth_bloc.dart';
@@ -609,19 +611,13 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                     children: [
                       Expanded(
                         child: Text(
-                          account.accName ?? '',
+                         "${account.accName} | ${account.accNumber}",
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
                       ),
                       Row(
                         children: [
-                          Text(
-                            account.accNumber.toString(),
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
+
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
@@ -634,7 +630,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                               account.actCurrency ?? 'USD',
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: account.actCurrency == widget.selectedCurrency
-                                    ? Colors.grey
+                                    ? Colors.black
                                     : Colors.black,
                               ),
                             ),
@@ -644,7 +640,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                     ],
                   ),
                 ),
-                itemToString: (account) => account.accName ?? "",
+                itemToString: (account) => "${account.accName} | ${account.accNumber}",
                 stateToLoading: (state) => state is AccountLoadingState,
                 loadingBuilder: (context) => const SizedBox(
                   width: 16,
@@ -704,9 +700,14 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
               focusNode: widget.focusNode,
               textInputAction: TextInputAction.next,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                  RegExp(r'[0-9.,]*'),
+                ),
+                SmartThousandsDecimalFormatter(),
+              ],
               decoration: InputDecoration(
                 hintText: '0.00',
-                suffixText: entryCurrency,
                 suffixStyle: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
@@ -714,57 +715,63 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade400,
-                  ),
+                  borderSide: BorderSide(color: Colors.grey.shade400),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade400,
-                  ),
+                  borderSide: BorderSide(color: Colors.grey.shade400),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 1,
-                  ),
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1),
                 ),
               ),
               onChanged: (value) {
                 final debit = value.cleanAmount.toDoubleAmount();
 
+                if (debit > 0) {
+                  // Clear credit if debit is entered
+                  widget.creditController.clear();
+                }
+
                 widget.onChanged(
                   widget.entry.copyWith(debit: debit, credit: 0.0),
                 );
               },
-              onTap: () {
-                // Clear debit when starting to type in credit
-                widget.creditController.clear();
-              },
               onEditingComplete: () {
                 final debit = widget.debitController.text.cleanAmount.toDoubleAmount();
+
                 if (debit > 0) {
                   widget.debitController.text = debit.toAmount();
+                  // Clear credit explicitly
+                  widget.creditController.clear();
                 }
+
+                widget.onChanged(
+                  widget.entry.copyWith(debit: debit, credit: 0.0),
+                );
               },
             ),
           ),
 
-          // Credit
+         // Credit
           SizedBox(
             width: 150,
             height: 40,
-            child: TextField(
+            child: TextFormField(
               key: ValueKey('credit_${widget.entry.rowId}'),
               controller: widget.creditController,
               textInputAction: TextInputAction.next,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               style: TextStyle(fontSize: 15),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                  RegExp(r'[0-9.,]*'),
+                ),
+                SmartThousandsDecimalFormatter(),
+              ],
               decoration: InputDecoration(
                 hintText: '0.00',
-                suffixText: entryCurrency,
                 suffixStyle: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
@@ -772,54 +779,45 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade400,
-                  ),
+                  borderSide: BorderSide(color: Colors.grey.shade400),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade400,
-                  ),
+                  borderSide: BorderSide(color: Colors.grey.shade400),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 1,
-                  ),
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1),
                 ),
               ),
               onChanged: (value) {
                 final credit = value.cleanAmount.toDoubleAmount();
 
+                if (credit > 0) {
+                  // Clear debit if credit is entered
+                  widget.debitController.clear();
+                }
+
                 widget.onChanged(
                   widget.entry.copyWith(credit: credit, debit: 0.0),
                 );
               },
-
-              onTap: () {
-                widget.debitController.clear();
-              },
-
               onEditingComplete: () {
                 final credit = widget.creditController.text.cleanAmount.toDoubleAmount();
 
                 if (credit > 0) {
                   widget.creditController.text = credit.toAmount();
+                  // Clear debit explicitly
                   widget.debitController.clear();
                 }
 
                 widget.onChanged(
-                  widget.entry.copyWith(
-                    debit: 0.0,
-                    credit: credit,
-                  ),
+                  widget.entry.copyWith(credit: credit, debit: 0.0),
                 );
               },
-
             ),
           ),
+
 
           // Narration
           Expanded(
@@ -830,6 +828,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 key: ValueKey('narration_${widget.entry.rowId}'),
                 controller: widget.narrationController,
                 textInputAction: TextInputAction.done,
+
                 maxLines: 1,
                 style: TextStyle(fontSize: 13),
                 decoration: InputDecoration(

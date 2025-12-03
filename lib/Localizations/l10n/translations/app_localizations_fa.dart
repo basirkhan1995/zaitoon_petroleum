@@ -43,7 +43,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get connect => 'اتصال';
 
   @override
-  String get zaitoonSlogan => 'توان‌بخشی به ایده‌ها، ساختن اعتماد';
+  String get zaitoonSlogan => 'توان‌ بخشی به ایده‌ ها، ساختن اعتماد';
 
   @override
   String get zaitoonTitle => 'شرکت نرم افزار زیتون';
@@ -1069,7 +1069,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get saveChanges => 'ثبت کردن';
 
   @override
-  String get bulkTransfer => 'انتقال گروهی';
+  String get bulkTransfer => 'انتقال وجه - حساب‌ های چندگانه';
 
   @override
   String get crop => 'قطع کردن';
@@ -1111,4 +1111,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get transactionFailedTitle => 'عملیات ناموفق';
+
+  @override
+  String get fundTransferTitle => 'انتقال وجه - انفرادی';
+
+  @override
+  String get fundTransferMultiTitle => 'انتقال وجه - چندگانه';
 }

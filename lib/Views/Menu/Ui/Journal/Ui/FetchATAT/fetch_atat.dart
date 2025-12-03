@@ -85,10 +85,8 @@ class _DesktopState extends State<_Desktop> {
     }
   },
   builder: (context, state) {
-    return BlocConsumer<FetchAtatBloc, FetchAtatState>(
-        listener: (context, state) {
-          // TODO: implement listener
-        },
+    return BlocBuilder<FetchAtatBloc, FetchAtatState>(
+
         builder: (context, state) {
           if (state is FetchATATLoadedState) {
             loadedAtat = state.atat;
@@ -409,66 +407,64 @@ class _DesktopState extends State<_Desktop> {
                         spacing: 8,
                         children: [
                           if (showAuthorizeButton)
-                            Expanded(
-                              child: ZOutlineButton(
-                                onPressed: () {
-                                  context.read<TransactionsBloc>().add(
-                                    AuthorizeTxnEvent(
-                                      reference: loadedAtat?.trnReference ?? "",
-                                      usrName: login.usrName ?? "",
-                                    ),
-                                  );
-                                },
-                                icon: isAuthorizeLoading
-                                    ? null
-                                    : Icons.check_box_outlined,
-                                isActive: true,
-                                label: isAuthorizeLoading
-                                    ? SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 3,
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.surface,
-                                        ),
-                                      )
-                                    : Text(tr.authorize),
-                              ),
+                            ZOutlineButton(
+                              width: 130,
+                              onPressed: () {
+                                context.read<TransactionsBloc>().add(
+                                  AuthorizeTxnEvent(
+                                    reference: loadedAtat?.trnReference ?? "",
+                                    usrName: login.usrName ?? "",
+                                  ),
+                                );
+                              },
+                              icon: isAuthorizeLoading
+                                  ? null
+                                  : Icons.check_box_outlined,
+                              isActive: true,
+                              label: isAuthorizeLoading
+                                  ? SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 3,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.surface,
+                                      ),
+                                    )
+                                  : Text(tr.authorize),
                             ),
 
                           if (showDeleteButton)
-                            Expanded(
-                              child: ZOutlineButton(
-                                icon: isDeleteLoading
-                                    ? null
-                                    : Icons.delete_outline_rounded,
-                                isActive: true,
-                                backgroundHover: Theme.of(
-                                  context,
-                                ).colorScheme.error,
-                                onPressed: () {
-                                  context.read<TransactionsBloc>().add(
-                                    DeletePendingTxnEvent(
-                                      reference: loadedAtat?.trnReference ?? "",
-                                      usrName: login.usrName ?? "",
-                                    ),
-                                  );
-                                },
-                                label: isDeleteLoading
-                                    ? SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 3,
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.primary,
-                                        ),
-                                      )
-                                    : Text(tr.delete),
-                              ),
+                            ZOutlineButton(
+                              width: 130,
+                              icon: isDeleteLoading
+                                  ? null
+                                  : Icons.delete_outline_rounded,
+                              isActive: true,
+                              backgroundHover: Theme.of(
+                                context,
+                              ).colorScheme.error,
+                              onPressed: () {
+                                context.read<TransactionsBloc>().add(
+                                  DeletePendingTxnEvent(
+                                    reference: loadedAtat?.trnReference ?? "",
+                                    usrName: login.usrName ?? "",
+                                  ),
+                                );
+                              },
+                              label: isDeleteLoading
+                                  ? SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 3,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
+                                      ),
+                                    )
+                                  : Text(tr.delete),
                             ),
                         ],
                       ),

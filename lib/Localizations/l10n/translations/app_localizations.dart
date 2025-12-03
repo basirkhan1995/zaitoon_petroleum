@@ -163,7 +163,7 @@ abstract class AppLocalizations {
   /// No description provided for @zaitoonSlogan.
   ///
   /// In en, this message translates to:
-  /// **'Empowering Ideas. Building Trust'**
+  /// **'Empowering Ideas, Building Trust'**
   String get zaitoonSlogan;
 
   /// No description provided for @zaitoonTitle.
@@ -2179,7 +2179,7 @@ abstract class AppLocalizations {
   /// No description provided for @bulkTransfer.
   ///
   /// In en, this message translates to:
-  /// **'Bulk Transfer'**
+  /// **'Fund Transfer - Multi Accounts'**
   String get bulkTransfer;
 
   /// No description provided for @crop.
@@ -2259,6 +2259,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Transaction Failed'**
   String get transactionFailedTitle;
+
+  /// No description provided for @fundTransferTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fund Transfer SA'**
+  String get fundTransferTitle;
+
+  /// No description provided for @fundTransferMultiTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fund Transfer MA'**
+  String get fundTransferMultiTitle;
 }
 
 class _AppLocalizationsDelegate

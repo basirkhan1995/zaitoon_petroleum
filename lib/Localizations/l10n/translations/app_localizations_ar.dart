@@ -1071,7 +1071,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get saveChanges => 'تبتول';
 
   @override
-  String get bulkTransfer => 'ډله ییز انتقال';
+  String get bulkTransfer => 'د فنډ لیږد - څو حسابونه';
 
   @override
   String get crop => 'قطع کردن';
@@ -1113,4 +1113,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get transactionFailedTitle => 'عملیات ناموفق';
+
+  @override
+  String get fundTransferTitle => 'انتقال وجه - انفرادی';
+
+  @override
+  String get fundTransferMultiTitle => 'انتقال وجه - چندگانه';
 }
