@@ -92,6 +92,11 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
+    double dateWith = 80;
+    double refWidth = 180;
+    double amountWidth = 130;
+    double balanceWidth =  160;
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
@@ -120,402 +125,405 @@ class _DesktopState extends State<_Desktop> {
         builder: (context, state) {
           return Form(
             key: formKey,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                    vertical: 5,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        spacing: 8,
-                        children: [
-                          Utils.zBackButton(context),
-                          Text(
-                            locale.accountStatement,
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          ZOutlineButton(
-                            width: 100,
-                            icon: FontAwesomeIcons.filePdf,
-                            label: Text("PDF"),
-                            onPressed: (){
-                             if(formKey.currentState!.validate()){
-                               showDialog(
-                                 context: context,
-                                 builder:
-                                     (_) => PrintPreviewDialog<AccountStatementModel>(
-                                   data: accountStatementModel!,
-                                   company: company,
-                                   buildPreview: ({
-                                     required data,
-                                     required language,
-                                     required orientation,
-                                     required pageFormat,
-                                   }) {
-                                     return AccountStatementPrintSettings().printPreview(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                      vertical: 5,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          spacing: 8,
+                          children: [
+                            Utils.zBackButton(context),
+                            Text(
+                              locale.accountStatement,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            ZOutlineButton(
+                              width: 100,
+                              icon: FontAwesomeIcons.filePdf,
+                              label: Text("PDF"),
+                              onPressed: (){
+                               if(formKey.currentState!.validate()){
+                                 showDialog(
+                                   context: context,
+                                   builder:
+                                       (_) => PrintPreviewDialog<AccountStatementModel>(
+                                     data: accountStatementModel!,
+                                     company: company,
+                                     buildPreview: ({
+                                       required data,
+                                       required language,
+                                       required orientation,
+                                       required pageFormat,
+                                     }) {
+                                       return AccountStatementPrintSettings().printPreview(
+                                           company: company,
+                                           language: language,
+                                           orientation: orientation,
+                                           pageFormat: pageFormat,
+                                           info: accountStatementModel!
+                                       );
+                                     },
+                                     onPrint: ({
+                                       required data,
+                                       required language,
+                                       required orientation,
+                                       required pageFormat,
+                                       required selectedPrinter,
+                                       required copies,
+                                       required pages, // This will now work
+                                     }) {
+                                       return AccountStatementPrintSettings()
+                                           .printDocument(
+                                         statement: records,
                                          company: company,
                                          language: language,
                                          orientation: orientation,
                                          pageFormat: pageFormat,
-                                         info: accountStatementModel!
-                                     );
-                                   },
-                                   onPrint: ({
-                                     required data,
-                                     required language,
-                                     required orientation,
-                                     required pageFormat,
-                                     required selectedPrinter,
-                                     required copies,
-                                     required pages, // This will now work
-                                   }) {
-                                     return AccountStatementPrintSettings()
-                                         .printDocument(
-                                       statement: records,
-                                       company: company,
-                                       language: language,
-                                       orientation: orientation,
-                                       pageFormat: pageFormat,
-                                       selectedPrinter: selectedPrinter,
-                                       info: accountStatementModel!,
-                                       copies: copies,
-                                       pages: pages, // Pass pages to your print method
-                                     );
-                                   },
-                                   onSave: ({
-                                     required data,
-                                     required language,
-                                     required orientation,
-                                     required pageFormat,
-                                   }) {
-                                     return AccountStatementPrintSettings().createDocument(
-                                       statement: records,
-                                       company: company,
-                                       language: language,
-                                       orientation: orientation,
-                                       pageFormat: pageFormat,
-                                       info: accountStatementModel!,
-                                     );
-                                   },
-                                 ),
-                               );
-                             }else{
-                               Utils.showOverlayMessage(context, message: locale.accountStatementMessage, isError: true);
-                             }
-                            },
-                          ),
-                          SizedBox(width: 8),
-                          ZOutlineButton(
-                            isActive: true,
-                            icon: Icons.call_to_action_outlined,
-                            width: 100,
-                            onPressed: () {
-                              if (formKey.currentState!.validate()) {
-                              onSubmit();
-                              }
-                            },
-                            label: Text(locale.apply),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Row(
-                    spacing: 8,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 500,
-                        child:
-                            GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
-                              showAllOnFocus: true,
-                              controller: accountController,
-                              title: locale.accounts,
-                              hintText: locale.accNameOrNumber,
-                              isRequired: true,
-                              bloc: context.read<GlAccountsBloc>(),
-                              fetchAllFunction: (bloc) => bloc.add(
-                                LoadGlAccountEvent(
-                                  local: myLocale ?? "en",
-                                  categories: [5],
-                                ),
-                              ),
-                              searchFunction: (bloc, query) => bloc.add(
-                                LoadGlAccountEvent(
-                                  local: myLocale ?? "en",
-                                  categories: [5],
-                                  search: query,
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return locale.required(locale.accounts);
-                                }
-                                return null;
+                                         selectedPrinter: selectedPrinter,
+                                         info: accountStatementModel!,
+                                         copies: copies,
+                                         pages: pages, // Pass pages to your print method
+                                       );
+                                     },
+                                     onSave: ({
+                                       required data,
+                                       required language,
+                                       required orientation,
+                                       required pageFormat,
+                                     }) {
+                                       return AccountStatementPrintSettings().createDocument(
+                                         statement: records,
+                                         company: company,
+                                         language: language,
+                                         orientation: orientation,
+                                         pageFormat: pageFormat,
+                                         info: accountStatementModel!,
+                                       );
+                                     },
+                                   ),
+                                 );
+                               }else{
+                                 Utils.showOverlayMessage(context, message: locale.accountStatementMessage, isError: true);
+                               }
                               },
-                              itemBuilder: (context, account) => Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 5,
-                                  vertical: 5,
+                            ),
+                            SizedBox(width: 8),
+                            ZOutlineButton(
+                              isActive: true,
+                              icon: Icons.call_to_action_outlined,
+                              width: 100,
+                              onPressed: () {
+                                if (formKey.currentState!.validate()) {
+                                onSubmit();
+                                }
+                              },
+                              label: Text(locale.apply),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Row(
+                      spacing: 8,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 500,
+                          child:
+                              GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
+                                showAllOnFocus: true,
+                                controller: accountController,
+                                title: locale.accounts,
+                                hintText: locale.accNameOrNumber,
+                                isRequired: true,
+                                bloc: context.read<GlAccountsBloc>(),
+                                fetchAllFunction: (bloc) => bloc.add(
+                                  LoadGlAccountEvent(
+                                    local: myLocale ?? "en",
+                                    categories: [5],
+                                  ),
                                 ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "${account.accNumber} | ${account.accName}",
+                                searchFunction: (bloc, query) => bloc.add(
+                                  LoadGlAccountEvent(
+                                    local: myLocale ?? "en",
+                                    categories: [5],
+                                    search: query,
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return locale.required(locale.accounts);
+                                  }
+                                  return null;
+                                },
+                                itemBuilder: (context, account) => Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 5,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "${account.accNumber} | ${account.accName}",
+                                            style: Theme.of(
+                                              context,
+                                            ).textTheme.bodyLarge,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                itemToString: (acc) =>
+                                    "${acc.accNumber} | ${acc.accName}",
+                                stateToLoading: (state) =>
+                                    state is GlAccountsLoadingState,
+                                loadingBuilder: (context) => const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 3,
+                                  ),
+                                ),
+                                stateToItems: (state) {
+                                  if (state is GlAccountLoadedState) {
+                                    return state.gl;
+                                  }
+                                  return [];
+                                },
+                                onSelected: (value) {
+                                  setState(() {
+                                    accNumber = value.accNumber;
+                                  });
+                                },
+                                noResultsText: locale.noDataFound,
+                                showClearButton: true,
+                              ),
+                        ),
+                        fromDateWidget(),
+                        toDateWidget(),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: dateWith,
+                          child: Text(
+                            locale.txnDate,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                        SizedBox(
+                          width: refWidth,
+                          child: Text(
+                            locale.referenceNumber,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            locale.narration,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                        SizedBox(
+                          width: amountWidth,
+                          child: Text(
+                            textAlign: myLocale == "en"
+                                ? TextAlign.right
+                                : TextAlign.left,
+                            locale.debitTitle,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                        SizedBox(
+                          width: amountWidth,
+                          child: Text(
+                            textAlign: myLocale == "en"
+                                ? TextAlign.right
+                                : TextAlign.left,
+                            locale.creditTitle,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                        SizedBox(
+                          width: balanceWidth,
+                          child: Text(
+                            textAlign: myLocale == "en"
+                                ? TextAlign.right
+                                : TextAlign.left,
+                            locale.balance,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Divider(
+                    endIndent: 10,
+                    indent: 10,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  Expanded(
+                    child: BlocBuilder<AccStatementBloc, AccStatementState>(
+                      builder: (context, state) {
+                        if (state is AccStatementLoadingState) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        if (state is AccStatementErrorState) {
+                          return Center(child: Text(state.message));
+                        }
+                        if (state is AccStatementLoadedState) {
+                          final records = state.accStatementDetails.records;
+                          accountStatementModel = state.accStatementDetails;
+                          if (records == null || records.isEmpty) {
+                            return Center(child: Text("No transactions found"));
+                          }
+
+                          return ListView.builder(
+                            itemCount: records.length,
+                            itemBuilder: (context, index) {
+                              final stmt = records[index];
+                              Color bg =
+                                  stmt.trdNarration == "Opening Balance" ||
+                                      stmt.trdNarration == "Closing Balance"
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.secondary;
+                              bool isOp =
+                                  stmt.trdNarration == "Opening Balance" ||
+                                  stmt.trdNarration == "Closing Balance";
+                              return InkWell(
+                                hoverColor: Theme.of(
+                                  context,
+                                ).colorScheme.primary.withValues(alpha: 0.05),
+                                highlightColor: Theme.of(
+                                  context,
+                                ).colorScheme.primary.withValues(alpha: 0.05),
+                                onTap: isOp
+                                    ? null
+                                    : () {
+                                        context.read<TxnReferenceBloc>().add(
+                                          FetchTxnByReferenceEvent(
+                                            stmt.trnReference ?? "",
+                                          ),
+                                        );
+                                      },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 15,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: index.isOdd
+                                        ? Theme.of(context).colorScheme.primary
+                                              .withValues(alpha: 0.05)
+                                        : Colors.transparent,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: dateWith,
+                                        child: Text(
+                                          stmt.trnEntryDate?.toFormattedDate() ??
+                                              "",
                                           style: Theme.of(
                                             context,
-                                          ).textTheme.bodyLarge,
+                                          ).textTheme.titleSmall,
                                         ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              itemToString: (acc) =>
-                                  "${acc.accNumber} | ${acc.accName}",
-                              stateToLoading: (state) =>
-                                  state is GlAccountsLoadingState,
-                              loadingBuilder: (context) => const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 3,
-                                ),
-                              ),
-                              stateToItems: (state) {
-                                if (state is GlAccountLoadedState) {
-                                  return state.gl;
-                                }
-                                return [];
-                              },
-                              onSelected: (value) {
-                                setState(() {
-                                  accNumber = value.accNumber;
-                                });
-                              },
-                              noResultsText: locale.noDataFound,
-                              showClearButton: true,
-                            ),
-                      ),
-                      fromDateWidget(),
-                      toDateWidget(),
-                    ],
-                  ),
-                ),
+                                      ),
+                                      SizedBox(
+                                        width: refWidth,
+                                        child: Text(stmt.trnReference ?? ""),
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          stmt.trdNarration ?? "",
+                                          style: TextStyle(color: bg),
+                                        ),
+                                      ),
+                                      Text(stmt.status??"",style: TextStyle(color: Theme.of(context).colorScheme.error),),
+                                      SizedBox(
+                                        width: amountWidth,
+                                        child: Text(
+                                          textAlign: myLocale == "en"
+                                              ? TextAlign.right
+                                              : TextAlign.left,
+                                          "${stmt.debit?.toAmount()}",
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium,
+                                        ),
+                                      ),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 100,
-                        child: Text(
-                          locale.txnDate,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 190,
-                        child: Text(
-                          locale.referenceNumber,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          locale.narration,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 100,
-                        child: Text(
-                          textAlign: myLocale == "en"
-                              ? TextAlign.right
-                              : TextAlign.left,
-                          locale.debitTitle,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 100,
-                        child: Text(
-                          textAlign: myLocale == "en"
-                              ? TextAlign.right
-                              : TextAlign.left,
-                          locale.creditTitle,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 130,
-                        child: Text(
-                          textAlign: myLocale == "en"
-                              ? TextAlign.right
-                              : TextAlign.left,
-                          locale.balance,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Divider(
-                  endIndent: 10,
-                  indent: 10,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                Expanded(
-                  child: BlocBuilder<AccStatementBloc, AccStatementState>(
-                    builder: (context, state) {
-                      if (state is AccStatementLoadingState) {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                      if (state is AccStatementErrorState) {
-                        return Center(child: Text(state.message));
-                      }
-                      if (state is AccStatementLoadedState) {
-                        final records = state.accStatementDetails.records;
-                        accountStatementModel = state.accStatementDetails;
-                        if (records == null || records.isEmpty) {
-                          return Center(child: Text("No transactions found"));
+                                      SizedBox(
+                                        width: amountWidth,
+                                        child: Text(
+                                          textAlign: myLocale == "en"
+                                              ? TextAlign.right
+                                              : TextAlign.left,
+                                          "${stmt.credit?.toAmount()}",
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: balanceWidth,
+                                        child: Text(
+                                          textAlign: myLocale == "en"
+                                              ? TextAlign.right
+                                              : TextAlign.left,
+                                          "${stmt.total?.toAmount()}",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall
+                                              ?.copyWith(color: bg),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
                         }
-
-                        return ListView.builder(
-                          itemCount: records.length,
-                          itemBuilder: (context, index) {
-                            final stmt = records[index];
-                            Color bg =
-                                stmt.trdNarration == "Opening Balance" ||
-                                    stmt.trdNarration == "Closing Balance"
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.secondary;
-                            bool isOp =
-                                stmt.trdNarration == "Opening Balance" ||
-                                stmt.trdNarration == "Closing Balance";
-                            return InkWell(
-                              hoverColor: Theme.of(
-                                context,
-                              ).colorScheme.primary.withValues(alpha: 0.05),
-                              highlightColor: Theme.of(
-                                context,
-                              ).colorScheme.primary.withValues(alpha: 0.05),
-                              onTap: isOp
-                                  ? null
-                                  : () {
-                                      context.read<TxnReferenceBloc>().add(
-                                        FetchTxnByReferenceEvent(
-                                          stmt.trnReference ?? "",
-                                        ),
-                                      );
-                                    },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 15,
-                                  vertical: 5,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: index.isOdd
-                                      ? Theme.of(context).colorScheme.primary
-                                            .withValues(alpha: 0.05)
-                                      : Colors.transparent,
-                                ),
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 100,
-                                      child: Text(
-                                        stmt.trnEntryDate?.toFormattedDate() ??
-                                            "",
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.titleSmall,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 190,
-                                      child: Text(stmt.trnReference ?? ""),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        stmt.trdNarration ?? "",
-                                        style: TextStyle(color: bg),
-                                      ),
-                                    ),
-                                    Text(stmt.status??"",style: TextStyle(color: Theme.of(context).colorScheme.error),),
-                                    SizedBox(
-                                      width: 100,
-                                      child: Text(
-                                        textAlign: myLocale == "en"
-                                            ? TextAlign.right
-                                            : TextAlign.left,
-                                        "${stmt.debit?.toAmount()}",
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodyMedium,
-                                      ),
-                                    ),
-
-                                    SizedBox(
-                                      width: 100,
-                                      child: Text(
-                                        textAlign: myLocale == "en"
-                                            ? TextAlign.right
-                                            : TextAlign.left,
-                                        "${stmt.credit?.toAmount()}",
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodyMedium,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 130,
-                                      child: Text(
-                                        textAlign: myLocale == "en"
-                                            ? TextAlign.right
-                                            : TextAlign.left,
-                                        "${stmt.total?.toAmount()}",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall
-                                            ?.copyWith(color: bg),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
+                        return Center(
+                          child: NoDataWidget(
+                            title: locale.accountStatement,
+                            message:
+                                locale.accountStatementMessage,
+                            enableAction: false,
+                          ),
                         );
-                      }
-                      return Center(
-                        child: NoDataWidget(
-                          title: locale.accountStatement,
-                          message:
-                              locale.accountStatementMessage,
-                          enableAction: false,
-                        ),
-                      );
-                    },
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

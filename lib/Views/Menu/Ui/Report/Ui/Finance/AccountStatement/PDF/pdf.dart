@@ -539,7 +539,7 @@ class AccountStatementPrintSettings extends PrintServices {
         for (var i = 0; i < (items.records?.length ?? 0); i++)
           pw.Container(
             width: double.infinity,
-            padding: const pw.EdgeInsets.symmetric(vertical: 2),
+            padding: const pw.EdgeInsets.symmetric(vertical: 4),
             decoration: pw.BoxDecoration(
               color: i.isOdd ? pw.PdfColors.grey100 : null,
               border: pw.Border(
