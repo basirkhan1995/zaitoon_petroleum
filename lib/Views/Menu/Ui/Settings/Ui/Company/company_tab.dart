@@ -30,7 +30,7 @@ class _CompanyTabsViewState extends State<CompanyTabsView> {
       ),
       MenuDefinition(
         value: CompanySettingsMenuName.branch,
-        label: AppLocalizations.of(context)!.branches,
+        label: AppLocalizations.of(context)!.branch,
         screen: const BranchesView(),
         icon: Icons.location_city_rounded,
       ),

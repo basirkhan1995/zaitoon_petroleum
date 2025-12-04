@@ -13,6 +13,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_blo
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/bloc/transaction_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import '../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../Features/Generic/underline_tab.dart';
 import '../../../../Features/Other/cover.dart';
@@ -68,7 +69,7 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
-  String? myLocale;
+  String? currentLocale;
   String? usrName;
 
   @override
@@ -78,7 +79,7 @@ class _DesktopState extends State<_Desktop> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         setState(() {
-          myLocale = context.read<LocalizationBloc>().state.languageCode;
+          currentLocale = context.read<LocalizationBloc>().state.languageCode;
         });
       }
     });
@@ -99,12 +100,14 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
+    String unlimitedValue = "999999999999";
     final baseCurrency = _getBaseCurrency(context);
     final locale = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
     final state = context.watch<AuthBloc>().state;
     TextStyle? headerStyle = textTheme.titleMedium?.copyWith(color: color.primary);
+    TextStyle? amountStyle = textTheme.titleSmall?.copyWith(color: color.primary);
     TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.outline.withValues(alpha: .7));
     TextStyle? bodyStyle = textTheme.titleSmall;
     if (state is! AuthenticatedState) {
@@ -129,7 +132,10 @@ class _DesktopState extends State<_Desktop> {
       showDialog(
         context: context,
         builder: (context) {
-          return BlocBuilder<TransactionsBloc, TransactionsState>(
+          return BlocConsumer<TransactionsBloc, TransactionsState>(
+            listener: (context,state){
+              if(state is TransactionLoadedState){}
+            },
             builder: (context, trState) {
               return StatefulBuilder(
                 builder: (context, setState) {
@@ -142,11 +148,11 @@ class _DesktopState extends State<_Desktop> {
                         OnCashTransactionEvent(
                           TransactionsModel(
                             usrName: login.usrName,
-                            account: accNumber,
-                            accCcy: accCurrency ?? "",
+                            trdAccount: accNumber,
+                            trdCcy: accCurrency ?? "",
                             trnType: trnType,
-                            amount: amount.text.cleanAmount,
-                            narration: narration.text,
+                            trdAmount: amount.text.cleanAmount,
+                            trdNarration: narration.text,
                           ),
                         ),
                       );
@@ -386,11 +392,11 @@ class _DesktopState extends State<_Desktop> {
                     OnCashTransactionEvent(
                       TransactionsModel(
                         usrName: login.usrName,
-                        account: accNumber,
-                        accCcy: baseCurrency,
+                        trdAccount: accNumber,
+                        trdCcy: baseCurrency,
                         trnType: trnType,
-                        amount: amount.text.cleanAmount,
-                        narration: narration.text,
+                        trdAmount: amount.text.cleanAmount,
+                        trdNarration: narration.text,
                       ),
                     ),
                   );
@@ -420,13 +426,13 @@ class _DesktopState extends State<_Desktop> {
                           bloc: context.read<GlAccountsBloc>(),
                           fetchAllFunction: (bloc) => bloc.add(
                             LoadGlAccountEvent(
-                              local: myLocale ?? "en",
+                              local: currentLocale ?? "en",
                               categories: [3],
                             ),
                           ),
                           searchFunction: (bloc, query) => bloc.add(
                             LoadGlAccountEvent(
-                              local: myLocale ?? "en",
+                              local: currentLocale ?? "en",
                               categories: [3],
                               search: query,
                             ),
@@ -561,11 +567,11 @@ class _DesktopState extends State<_Desktop> {
                     OnCashTransactionEvent(
                       TransactionsModel(
                         usrName: login.usrName,
-                        account: accNumber,
-                        accCcy: baseCurrency ?? "",
+                        trdAccount: accNumber,
+                        trdCcy: baseCurrency ?? "",
                         trnType: trnType ?? "",
-                        amount: amount.text.cleanAmount,
-                        narration: narration.text,
+                        trdAmount: amount.text.cleanAmount,
+                        trdNarration: narration.text,
                       ),
                     ),
                   );
@@ -595,13 +601,13 @@ class _DesktopState extends State<_Desktop> {
                           bloc: context.read<GlAccountsBloc>(),
                           fetchAllFunction: (bloc) => bloc.add(
                             LoadGlAccountEvent(
-                              local: myLocale ?? "en",
+                              local: currentLocale ?? "en",
                               categories: [4],
                             ),
                           ),
                           searchFunction: (bloc, query) => bloc.add(
                             LoadGlAccountEvent(
-                              local: myLocale ?? "en",
+                              local: currentLocale ?? "en",
                               categories: [4],
                               search: query,
                             ),
@@ -738,11 +744,11 @@ class _DesktopState extends State<_Desktop> {
                     OnCashTransactionEvent(
                       TransactionsModel(
                         usrName: login.usrName,
-                        account: accNumber,
-                        accCcy: baseCurrency,
+                        trdAccount: accNumber,
+                        trdCcy: baseCurrency,
                         trnType: trnType,
-                        amount: amount.text.cleanAmount,
-                        narration: narration.text,
+                        trdAmount: amount.text.cleanAmount,
+                        trdNarration: narration.text,
                       ),
                     ),
                   );
@@ -776,14 +782,14 @@ class _DesktopState extends State<_Desktop> {
                           bloc: context.read<GlAccountsBloc>(),
                           fetchAllFunction: (bloc) => bloc.add(
                             LoadGlAccountEvent(
-                              local: myLocale ?? "en",
+                              local: currentLocale ?? "en",
                               categories: [1, 2, 3, 4],
                               excludeAccounts: [10101010, 10101011],
                             ),
                           ),
                           searchFunction: (bloc, query) => bloc.add(
                             LoadGlAccountEvent(
-                              local: myLocale ?? "en",
+                              local: currentLocale ?? "en",
                               categories: [1, 2, 3, 4],
                               excludeAccounts: [10101010, 10101011],
                               search: query,
@@ -898,7 +904,7 @@ class _DesktopState extends State<_Desktop> {
       );
     }
     void accountToAccount({String? trnType}) {
-    final locale = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
 
       /// Debit .......................................
       final creditAccountCtrl = TextEditingController();
@@ -928,14 +934,17 @@ class _DesktopState extends State<_Desktop> {
       showDialog(
         context: context,
         builder: (context) {
-          return BlocBuilder<TransactionsBloc, TransactionsState>(
+          return BlocConsumer<TransactionsBloc, TransactionsState>(
+            listener: (context,state){
+
+            },
             builder: (context, trState) {
               return StatefulBuilder(
                 builder: (context,setState) {
                   return ZFormDialog(
                     width: 800,
                     icon: Icons.swap_horiz_rounded,
-                    title: locale.accountTransfer,
+                    title: tr.fundTransferTitle,
                     onAction: (){
                       context.read<TransactionsBloc>().add(OnACTATTransactionEvent(TransactionsModel(
                         usrName: login.usrName,
@@ -943,8 +952,8 @@ class _DesktopState extends State<_Desktop> {
                         fromAccCy: debitAccCurrency,
                         toAccount: creditAccNumber,
                         toAccCcy: creditAccCurrency,
-                        amount: amount.text.cleanAmount,
-                        narration: narration.text,
+                        trdAmount: amount.text.cleanAmount,
+                        trdNarration: narration.text,
                       )));
                     },
                     actionLabel: trState is TxnLoadingState
@@ -956,7 +965,7 @@ class _DesktopState extends State<_Desktop> {
                               color: Theme.of(context).colorScheme.surface,
                             ),
                           )
-                        : Text(locale.create),
+                        : Text(tr.create),
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -972,22 +981,18 @@ class _DesktopState extends State<_Desktop> {
                                Expanded(
                                  child: Column(
                                    children: [
-                                     GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
+                                     GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
                                        showAllOnFocus: true,
                                        controller: debitAccountCtrl,
-                                       title: locale.accounts,
-                                       hintText: locale.accNameOrNumber,
+                                       title: tr.accounts,
+                                       hintText: tr.accNameOrNumber,
                                        isRequired: true,
                                        bloc: context.read<AccountsBloc>(),
-                                       fetchAllFunction: (bloc) => bloc.add(
-                                         LoadStkAccountsEvent(),
-                                       ),
-                                       searchFunction: (bloc, query) => bloc.add(
-                                         LoadStkAccountsEvent(),
-                                       ),
+                                       fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 1,end: 5,exclude: "10101010,10101011",ccy: baseCurrency, locale: currentLocale ?? 'en')),
+                                       searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(input: query, start: 1,end: 5, exclude: "10101010,10101011",ccy:  baseCurrency,locale: currentLocale ?? 'en')),
                                        validator: (value) {
                                          if (value.isEmpty) {
-                                           return locale.required(locale.accounts);
+                                           return tr.required(tr.accounts);
                                          }
                                          return null;
                                        },
@@ -1003,7 +1008,7 @@ class _DesktopState extends State<_Desktop> {
                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                children: [
                                                  Text(
-                                                   "${account.accnumber} | ${account.accName}",
+                                                   "${account.accNumber} | ${account.accName}",
                                                    style: Theme.of(context).textTheme.bodyMedium,
                                                  ),
                                                ],
@@ -1012,7 +1017,7 @@ class _DesktopState extends State<_Desktop> {
                                          ),
                                        ),
                                        itemToString: (acc) =>
-                                       "${acc.accnumber} | ${acc.accName}",
+                                       "${acc.accNumber} | ${acc.accName}",
                                        stateToLoading: (state) =>
                                        state is AccountLoadingState,
                                        loadingBuilder: (context) => const SizedBox(
@@ -1021,24 +1026,24 @@ class _DesktopState extends State<_Desktop> {
                                          child: CircularProgressIndicator(strokeWidth: 3),
                                        ),
                                        stateToItems: (state) {
-                                         if (state is StkAccountLoadedState) {
+                                         if (state is AccountLoadedState) {
                                            return state.accounts;
                                          }
                                          return [];
                                        },
                                        onSelected: (value) {
                                          setState(() {
-                                           debitAccNumber = value.accnumber;
-                                           debitCcySymbol = value.ccySymbol;
+                                           debitAccNumber = value.accNumber;
+                                           debitCcySymbol = value.actCurrency;
                                            debitAccCurrency = value.actCurrency;
                                            debitAccName = value.accName ?? "";
-                                           debitAvailableBalance = value.avilBalance;
-                                           debitCurrentBalance = value.curBalance;
-                                           debitAccountLimit = value.actCreditLimit;
-                                           debitStatus = value.actStatus ?? 0;
+                                           debitAvailableBalance = value.accBalance;
+                                           debitCurrentBalance = value.accBalance;
+                                           debitAccountLimit = value.accCreditLimit;
+                                           debitStatus = value.accStatus ?? 0;
                                          });
                                        },
-                                       noResultsText: locale.noDataFound,
+                                       noResultsText: tr.noDataFound,
                                        showClearButton: true,
                                      ),
                                      if(debitAccName !=null && debitAccName!.isNotEmpty)
@@ -1051,7 +1056,7 @@ class _DesktopState extends State<_Desktop> {
                                              padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 3),
                                              child: Row(
                                                children: [
-                                                 Text(locale.details,style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                 Text(tr.details,style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                                    color: Theme.of(context).colorScheme.primary
                                                  ))
                                                ],
@@ -1073,25 +1078,25 @@ class _DesktopState extends State<_Desktop> {
                                                    children: [
                                                      SizedBox(
                                                          width: 170,
-                                                         child: Text(locale.accountNumber,style: titleStyle)),
+                                                         child: Text(tr.accountNumber,style: titleStyle)),
                                                      SizedBox(
                                                          width: 170,
-                                                         child: Text(locale.accountName,style: titleStyle)),
+                                                         child: Text(tr.accountName,style: titleStyle)),
                                                      SizedBox(
                                                          width: 170,
-                                                         child: Text(locale.currencyTitle,style: titleStyle)),
+                                                         child: Text(tr.currencyTitle,style: titleStyle)),
                                                      SizedBox(
                                                          width: 170,
-                                                         child: Text(locale.accountLimit,style: titleStyle)),
+                                                         child: Text(tr.accountLimit,style: titleStyle)),
                                                      SizedBox(
                                                          width: 170,
-                                                         child: Text(locale.status,style: titleStyle)),
+                                                         child: Text(tr.status,style: titleStyle)),
+                                                     // SizedBox(
+                                                     //     width: 170,
+                                                     //     child: Text(locale.currentBalance,style: titleStyle)),
                                                      SizedBox(
                                                          width: 170,
-                                                         child: Text(locale.currentBalance,style: titleStyle)),
-                                                     SizedBox(
-                                                         width: 170,
-                                                         child: Text(locale.availableBalance,style: titleStyle)),
+                                                         child: Text(tr.availableBalance,style: titleStyle)),
                                                    ],
                                                  ),
                                                  Column(
@@ -1102,10 +1107,10 @@ class _DesktopState extends State<_Desktop> {
                                                      Text(debitAccNumber.toString()),
                                                      Text(debitAccName??""),
                                                      Text(debitAccCurrency??""),
-                                                     Text(debitAccountLimit?.toAmount()??""),
-                                                     Text(debitStatus == 1? locale.active : locale.blocked),
-                                                     Text("$debitCcySymbol${debitCurrentBalance?.toAmount()}",style: headerStyle),
-                                                     Text("$debitCcySymbol${debitAvailableBalance?.toAmount()}",style: headerStyle),
+                                                     Text(debitAccountLimit?.toAmount() == unlimitedValue.toAmount()? tr.unlimited : debitAccountLimit?.toAmount() ??""),
+                                                     Text(debitStatus == 1? tr.active : tr.blocked),
+                                                   //  Text("${debitCurrentBalance?.toAmount()} $debitCcySymbol",style: amountStyle),
+                                                     Text("${debitAvailableBalance?.toAmount()} $debitCcySymbol",style: amountStyle),
                                                    ],
                                                  ),
                                                ],
@@ -1121,22 +1126,19 @@ class _DesktopState extends State<_Desktop> {
                                Expanded(
                                   child: Column(
                                     children: [
-                                      GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
+                                      GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
                                         showAllOnFocus: true,
                                         controller: creditAccountCtrl,
-                                        title: locale.accounts,
-                                        hintText: locale.accNameOrNumber,
+                                        title: tr.accounts,
+                                        hintText: tr.accNameOrNumber,
                                         isRequired: true,
                                         bloc: context.read<AccountsBloc>(),
-                                        fetchAllFunction: (bloc) => bloc.add(
-                                          LoadStkAccountsEvent(),
-                                        ),
-                                        searchFunction: (bloc, query) => bloc.add(
-                                          LoadStkAccountsEvent(),
-                                        ),
+                                        fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 1,end: 5,exclude: "10101010,10101011",ccy: baseCurrency, locale: currentLocale ?? 'en')),
+                                        searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(input: query, start: 1,end: 5, exclude: "10101010,10101011",ccy:  baseCurrency,locale: currentLocale ?? 'en')),
+
                                         validator: (value) {
                                           if (value.isEmpty) {
-                                            return locale.required(locale.accounts);
+                                            return tr.required(tr.accounts);
                                           }
                                           return null;
                                         },
@@ -1152,7 +1154,7 @@ class _DesktopState extends State<_Desktop> {
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text(
-                                                    "${account.accnumber} | ${account.accName}",
+                                                    "${account.accNumber} | ${account.accName}",
                                                     style: Theme.of(context).textTheme.bodyLarge,
                                                   ),
                                                 ],
@@ -1161,7 +1163,7 @@ class _DesktopState extends State<_Desktop> {
                                           ),
                                         ),
                                         itemToString: (acc) =>
-                                        "${acc.accnumber} | ${acc.accName}",
+                                        "${acc.accNumber} | ${acc.accName}",
                                         stateToLoading: (state) =>
                                         state is AccountLoadingState,
                                         loadingBuilder: (context) => const SizedBox(
@@ -1170,24 +1172,24 @@ class _DesktopState extends State<_Desktop> {
                                           child: CircularProgressIndicator(strokeWidth: 3),
                                         ),
                                         stateToItems: (state) {
-                                          if (state is StkAccountLoadedState) {
+                                          if (state is AccountLoadedState) {
                                             return state.accounts;
                                           }
                                           return [];
                                         },
                                         onSelected: (value) {
                                           setState(() {
-                                            creditAccNumber = value.accnumber;
-                                            creditCcySymbol = value.ccySymbol;
+                                            creditAccNumber = value.accNumber;
+                                            creditCcySymbol = value.actCurrency;
                                             creditAccCurrency = value.actCurrency;
                                             creditAccName = value.accName ?? "";
-                                            creditAvailableBalance = value.avilBalance;
-                                            creditCurrentBalance = value.curBalance;
-                                            creditAccountLimit = value.actCreditLimit;
-                                            creditStatus = value.actStatus ?? 0;
+                                            creditAvailableBalance = value.accBalance;
+                                            creditCurrentBalance = value.accBalance;
+                                            creditAccountLimit = value.accCreditLimit;
+                                            creditStatus = value.accStatus ?? 0;
                                           });
                                         },
-                                        noResultsText: locale.noDataFound,
+                                        noResultsText: tr.noDataFound,
                                         showClearButton: true,
                                       ),
                                       if(creditAccName !=null && creditAccName!.isNotEmpty)
@@ -1200,7 +1202,7 @@ class _DesktopState extends State<_Desktop> {
                                                 padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 3),
                                                 child: Row(
                                                   children: [
-                                                    Text(locale.details,style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                    Text(tr.details,style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                                       color: Theme.of(context).colorScheme.primary
                                                     ))
                                                   ],
@@ -1222,25 +1224,25 @@ class _DesktopState extends State<_Desktop> {
                                                       children: [
                                                         SizedBox(
                                                             width: 170,
-                                                            child: Text(locale.accountNumber,style: titleStyle)),
+                                                            child: Text(tr.accountNumber,style: titleStyle)),
                                                         SizedBox(
                                                             width: 170,
-                                                            child: Text(locale.accountName,style: titleStyle)),
+                                                            child: Text(tr.accountName,style: titleStyle)),
                                                         SizedBox(
                                                             width: 170,
-                                                            child: Text(locale.currencyTitle,style: titleStyle)),
+                                                            child: Text(tr.currencyTitle,style: titleStyle)),
                                                         SizedBox(
                                                             width: 170,
-                                                            child: Text(locale.accountLimit,style: titleStyle)),
+                                                            child: Text(tr.accountLimit,style: titleStyle)),
                                                         SizedBox(
                                                             width: 170,
-                                                            child: Text(locale.status,style: titleStyle)),
+                                                            child: Text(tr.status,style: titleStyle)),
+                                                        // SizedBox(
+                                                        //     width: 170,
+                                                        //     child: Text(locale.currentBalance,style: titleStyle)),
                                                         SizedBox(
                                                             width: 170,
-                                                            child: Text(locale.currentBalance,style: titleStyle)),
-                                                        SizedBox(
-                                                            width: 170,
-                                                            child: Text(locale.availableBalance,style: titleStyle)),
+                                                            child: Text(tr.availableBalance,style: titleStyle)),
                                                       ],
                                                     ),
                                                     Column(
@@ -1251,10 +1253,10 @@ class _DesktopState extends State<_Desktop> {
                                                         Text(creditAccNumber.toString()),
                                                         Text(creditAccName??""),
                                                         Text(creditAccCurrency??""),
-                                                        Text(creditAccountLimit?.toAmount()??""),
-                                                        Text(creditStatus == 1? locale.active : locale.blocked),
-                                                        Text("$creditCcySymbol${creditCurrentBalance?.toAmount()}",style: headerStyle),
-                                                        Text("$creditCcySymbol${creditAvailableBalance?.toAmount()}",style: headerStyle),
+                                                        Text(creditAccountLimit?.toAmount() == unlimitedValue.toAmount()? tr.unlimited : creditAccountLimit?.toAmount() ??""),
+                                                        Text(creditStatus == 1? tr.active : tr.blocked),
+                                                      //  Text("${creditCurrentBalance?.toAmount()} $creditCcySymbol",style: amountStyle),
+                                                        Text("${creditAvailableBalance?.toAmount()} $creditCcySymbol",style: amountStyle),
                                                       ],
                                                     ),
                                                   ],
@@ -1283,7 +1285,7 @@ class _DesktopState extends State<_Desktop> {
                               ],
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return locale.required(locale.exchangeRate);
+                                  return tr.required(tr.exchangeRate);
                                 }
 
                                 // Remove formatting (e.g. commas)
@@ -1294,18 +1296,18 @@ class _DesktopState extends State<_Desktop> {
                                 final amount = double.tryParse(clean);
 
                                 if (amount == null || amount <= 0.0) {
-                                  return locale.amountGreaterZero;
+                                  return tr.amountGreaterZero;
                                 }
 
                                 return null;
                               },
                               controller: amount,
-                              title: locale.amount,
+                              title: tr.amount,
                             ),
                             ZTextFieldEntitled(
                               keyboardInputType: TextInputType.multiline,
                               controller: narration,
-                              title: locale.narration,
+                              title: tr.narration,
                             ),
                             if(trState is TransactionErrorState)
                               SizedBox(height: 10),

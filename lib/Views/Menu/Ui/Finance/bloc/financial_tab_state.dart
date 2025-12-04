@@ -4,7 +4,7 @@ enum FinanceTabName {endOfYear, payroll, crossCurrency, glAccounts, exchangeRate
 
 class FinanceTabState extends Equatable {
   final FinanceTabName tab;
-  const FinanceTabState({this.tab = FinanceTabName.endOfYear});
+  const FinanceTabState({this.tab = FinanceTabName.currencies});
   @override
   List<Object> get props => [tab];
 }

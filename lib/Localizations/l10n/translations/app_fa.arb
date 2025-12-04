@@ -377,5 +377,6 @@
   "fundTransferMultiTitle": "انتقال وجه - چندگانه",
   "storage": "مخزن",
   "storages": "ذخایر",
-  "location": "موقعیت"
+  "location": "موقعیت",
+  "unlimited": "نامحدود"
 }

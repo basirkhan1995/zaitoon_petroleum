@@ -59,8 +59,8 @@ class _DesktopState extends State<_Desktop> {
   final TextEditingController storageDetails = TextEditingController();
   final TextEditingController storageLocation = TextEditingController();
 
-  int statusValue = 1;
-
+  int statusValue = 0;
+  bool isActive = false;
 
   final formKey = GlobalKey<FormState>();
 
@@ -75,6 +75,7 @@ class _DesktopState extends State<_Desktop> {
       storageDetails.text = m.stgDetails??"";
       storageLocation.text = m.stgLocation ??"";
       statusValue = m.stgStatus ?? 1;
+      isActive = statusValue == 1;
     }
   }
 
@@ -91,7 +92,8 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     final theme = Theme.of(context).colorScheme;
-
+    final textTheme = Theme.of(context).textTheme;
+    TextStyle? titleStyle = textTheme.titleSmall?.copyWith();
     final isEdit = widget.model != null;
 
     return ZFormDialog(
@@ -165,16 +167,16 @@ class _DesktopState extends State<_Desktop> {
                 Row(
                   spacing: 8,
                   children: [
-                    Checkbox(
-                      visualDensity: VisualDensity(horizontal: -4,vertical: -4),
+                    Switch.adaptive(
                       value: statusValue == 1,
                       onChanged: (value) {
                         setState(() {
-                         // statusValue = value;
+                          isActive = value;
+                          statusValue = isActive ? 1 : 0;
                         });
                       },
                     ),
-                    Text(locale.status),
+                    Text(isActive? locale.active: locale.inactive,style: titleStyle),
                   ],
                 ),
                 SizedBox(height: 10)

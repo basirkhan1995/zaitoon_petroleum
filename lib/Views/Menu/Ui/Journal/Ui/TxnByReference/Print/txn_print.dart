@@ -26,7 +26,7 @@ class CashTransactionPrint extends PrintServices{
 
       // Save the document
       await saveDocument(
-        suggestedName: "${txn.account}_${txn.accCcy}.pdf",
+        suggestedName: "${txn.trdAccount}_${txn.trdCcy}.pdf",
         pdf: document,
       );
     } catch (e) {

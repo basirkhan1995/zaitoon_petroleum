@@ -78,9 +78,9 @@ class _DesktopState extends State<_Desktop> {
     if (widget.model != null) {
       final m = widget.model!;
       accName.text = m.accName ?? "";
-      accountLimit.text = m.actCreditLimit ?? "";
+      accountLimit.text = m.accCreditLimit ?? "";
       defaultCcy = m.actCurrency ?? "";
-      statusValue = m.actStatus ?? 0;
+      statusValue = m.accStatus ?? 0;
       status = statusValue == 1;
     }
   }
@@ -272,8 +272,8 @@ class _DesktopState extends State<_Desktop> {
     final data = AccountsModel(
       accName: accName.text,
       actCurrency: ccyCode?.ccyCode ??"USD",
-      actStatus: statusValue,
-      actCreditLimit: accountLimit.text,
+      accStatus: statusValue,
+      accCreditLimit: accountLimit.text,
       actSignatory: widget.signatory ?? widget.model?.actSignatory,
       accNumber: widget.model?.accNumber,
     );

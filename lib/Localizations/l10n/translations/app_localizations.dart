@@ -2289,6 +2289,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Location'**
   String get location;
+
+  /// No description provided for @unlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited'**
+  String get unlimited;
 }
 
 class _AppLocalizationsDelegate

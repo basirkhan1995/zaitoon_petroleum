@@ -1134,4 +1134,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get location => 'Location';
+
+  @override
+  String get unlimited => 'Unlimited';
 }

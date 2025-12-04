@@ -506,7 +506,7 @@ class AccountStatementPrintSettings extends PrintServices {
               pw.SizedBox(
                 width: amountWidth,
                 child: buildTextWidget(
-                  textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
+                  textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                   text: getTranslation(locale: "debit", language: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
@@ -515,7 +515,7 @@ class AccountStatementPrintSettings extends PrintServices {
               pw.SizedBox(
                 width: amountWidth,
                 child: buildTextWidget(
-                  textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
+                  textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                   text: getTranslation(locale: "credit", language: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
@@ -527,10 +527,11 @@ class AccountStatementPrintSettings extends PrintServices {
                   text:
                   getTranslation(locale: "balance", language: language),
                   fontSize: 8,
-                  textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
+                  textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
+              pw.SizedBox(width: 10),
             ],
           ),
         ),
@@ -586,19 +587,11 @@ class AccountStatementPrintSettings extends PrintServices {
                     ),
                   ),
                 ),
-                pw.SizedBox(
-                  width: 10,
-                  child: buildTextWidget(
-                    textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
-                    text: items.records![i].status??"",
-                    color: pw.PdfColors.red,
-                    fontSize: 7,
-                  ),
-                ),
+
                 pw.SizedBox(
                   width: amountWidth,
                   child: buildTextWidget(
-                    textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
+                    textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                     text: items.records![i].debit?.toAmount()??"",
                     fontSize: 7,
                   ),
@@ -606,7 +599,7 @@ class AccountStatementPrintSettings extends PrintServices {
                 pw.SizedBox(
                   width: amountWidth,
                   child: buildTextWidget(
-                    textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
+                    textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                     text: items.records![i].credit?.toAmount() ??"",
                     fontSize: 7,
                   ),
@@ -614,9 +607,19 @@ class AccountStatementPrintSettings extends PrintServices {
                 pw.SizedBox(
                   width: balanceWidth,
                   child: buildTextWidget(
-                    textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
+                    textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                     fontWeight: pw.FontWeight.bold,
                     text: items.records![i].total?.toAmount() ??"",
+                    color: items.records![i].trdNarration == "Opening Balance" || items.records![i].trdNarration == "Closing Balance"? pw.PdfColors.blue : null,
+                    fontSize: 7,
+                  ),
+                ),
+                pw.SizedBox(
+                  width: 10,
+                  child: buildTextWidget(
+                    textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
+                    text: items.records![i].status??"",
+                    color: pw.PdfColors.red,
                     fontSize: 7,
                   ),
                 ),

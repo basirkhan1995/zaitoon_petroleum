@@ -1128,4 +1128,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get location => 'ځای';
+
+  @override
+  String get unlimited => 'نامحدود';
 }

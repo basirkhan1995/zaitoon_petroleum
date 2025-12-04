@@ -14,38 +14,53 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
       emit(TxnLoadingState());
       try{
         final txn = await _repo.getTransactionsByStatus(status: event.status);
-        emit(TransactionLoadedState(txn));
+        emit(TransactionLoadedState(txn: txn));
       }catch(e){
         emit(TransactionErrorState(e.toString()));
       }
     });
-    on<OnCashTransactionEvent>((event, emit) async{
+    on<OnCashTransactionEvent>((event, emit) async {
       final locale = localizationService.loc;
+
       emit(TxnLoadingState());
-      try{
-        final response = await _repo.cashFlowOperations(newTransaction: event.transaction);
-        final msg = response['msg'];
-        switch (msg) {
-          case "success":
-            emit(TransactionSuccessState());
-            break;
 
-          case "over limit":
-            emit(TransactionErrorState(locale.accountLimitMessage));
-            break;
+      try {
+        final response = await _repo.cashFlowOperations(
+          newTransaction: event.transaction,
+        );
 
-          case "blocked":
-            emit(TransactionErrorState(locale.blockedMessage));
-            break;
+        final msg = response['msg']; // may exist only for error cases
 
-          default:
-            emit(TransactionErrorState(msg));
+        // If msg exists => it's always an error
+        if (msg != null) {
+          switch (msg) {
+            case "over limit":
+              emit(TransactionErrorState(locale.accountLimitMessage));
+              return;
+
+            case "blocked":
+              emit(TransactionErrorState(locale.blockedMessage));
+              return;
+
+            default:
+              emit(TransactionErrorState(msg.toString()));
+              return;
+          }
         }
 
-      }catch(e){
-       emit(TransactionErrorState(e.toString()));
+        // SUCCESS → msg is null
+        emit(TransactionSuccessState());
+
+        // Convert response to model
+        final txn = TransactionsModel.fromMap(response);
+        emit(TransactionLoadedState(txn: [] ,printTxn: txn));
+
+      } catch (e) {
+        emit(TransactionErrorState(e.toString()));
       }
     });
+
+
     on<OnACTATTransactionEvent>((event, emit) async{
       final locale = localizationService.loc;
       emit(TxnLoadingState());

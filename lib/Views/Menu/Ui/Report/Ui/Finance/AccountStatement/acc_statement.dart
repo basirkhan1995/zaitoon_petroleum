@@ -325,6 +325,7 @@ class _DesktopState extends State<_Desktop> {
                       ],
                     ),
                   ),
+                  SizedBox(height: 10),
 
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -380,6 +381,7 @@ class _DesktopState extends State<_Desktop> {
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
+                        SizedBox(width: 15),
                       ],
                     ),
                   ),
@@ -465,7 +467,7 @@ class _DesktopState extends State<_Desktop> {
                                           style: TextStyle(color: bg),
                                         ),
                                       ),
-                                      Text(stmt.status??"",style: TextStyle(color: Theme.of(context).colorScheme.error),),
+
                                       SizedBox(
                                         width: amountWidth,
                                         child: Text(
@@ -504,6 +506,11 @@ class _DesktopState extends State<_Desktop> {
                                               ?.copyWith(color: bg),
                                         ),
                                       ),
+                                      SizedBox(
+                                          width: 15,
+                                          child: Text(stmt.status??"",
+                                            textAlign: myLocale == "en"? TextAlign.right : TextAlign.left,
+                                            style: TextStyle(color: Theme.of(context).colorScheme.error),)),
                                     ],
                                   ),
                                 ),

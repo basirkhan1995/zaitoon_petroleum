@@ -377,5 +377,6 @@
   "fundTransferMultiTitle": "Fund Transfer MA",
   "storage": "Storage",
   "storages": "Storages",
-  "location": "Location"
+  "location": "Location",
+  "unlimited": "Unlimited"
 }

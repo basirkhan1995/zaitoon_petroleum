@@ -344,9 +344,9 @@ class _DesktopState extends State<_Desktop> {
                                             context.read<TransactionsBloc>().add(UpdatePendingTransactionEvent(TransactionsModel(
                                               trnReference: loadedTxn?.trnReference??"",
                                               usrName: login.usrName,
-                                              accCcy: loadedTxn?.currency??"",
-                                              narration: narration.text,
-                                              amount: amount.text.cleanAmount,
+                                              trdCcy: loadedTxn?.currency??"",
+                                              trdNarration: narration.text,
+                                              trdAmount: amount.text.cleanAmount,
                                             )));
                                           },
                                           label: isUpdateLoading

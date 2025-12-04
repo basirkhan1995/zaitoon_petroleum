@@ -248,7 +248,7 @@ class _DesktopState extends State<_Desktop> {
                                children: [
                                  SizedBox(
                                      width: 140,
-                                     child: Text(txn.trnEntryDate!.toFullDateTime)),
+                                     child: Text(txn.trnEntryDate?.toFullDateTime??"")),
                                  SizedBox(width: 20),
                                  Expanded(
                                      child: Text(txn.trnReference.toString())),

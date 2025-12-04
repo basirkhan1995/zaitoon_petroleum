@@ -1126,4 +1126,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get location => 'موقعیت';
+
+  @override
+  String get unlimited => 'نامحدود';
 }

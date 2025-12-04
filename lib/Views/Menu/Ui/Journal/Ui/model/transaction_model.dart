@@ -9,17 +9,19 @@ class TransactionsModel {
   final String? trnReference;
   final String? trnType;
   final String? trntName;
+  final int? trdBranch;
   final String? maker;
   final String? checker;
   final int? trnStatus;
   final String? trnStateText;
   final DateTime? trnEntryDate;
 
+  ///Cash transaction
   final String? usrName;
-  final String? narration;
-  final String? accCcy;
-  final int? account;
-  final String? amount;
+  final String? trdNarration;
+  final String? trdCcy;
+  final int? trdAccount;
+  final String? trdAmount;
 
   ///Account to Account
   final int? fromAccount;
@@ -34,14 +36,15 @@ class TransactionsModel {
     this.maker,
     this.checker,
     this.trnStatus,
+    this.trdBranch,
     this.trnStateText,
     this.trnEntryDate,
 
     this.usrName,
-    this.narration,
-    this.amount,
-    this.account,
-    this.accCcy,
+    this.trdNarration,
+    this.trdAmount,
+    this.trdAccount,
+    this.trdCcy,
 
     this.fromAccount,
     this.toAccount,
@@ -72,6 +75,11 @@ class TransactionsModel {
 
   factory TransactionsModel.fromMap(Map<String, dynamic> json) => TransactionsModel(
     trnReference: json["trnReference"],
+    trdAccount: json["trdAccount"],
+    trdCcy: json["trdCcy"],
+    trdNarration: json["trdNarration"],
+    trdAmount: json["trdAmount"],
+    trdBranch: json["trdBranch"],
     trnType: json["trnType"],
     trntName: json["trntName"],
     maker: json["maker"],
@@ -85,10 +93,10 @@ class TransactionsModel {
     "reference":trnReference,
     "trnType": trnType,
     "usrName": usrName,
-    "account": account,
-    "accCcy": accCcy,
-    "amount": amount,
-    "narration": narration,
+    "account": trdAccount,
+    "accCcy": trdCcy,
+    "amount": trdAmount,
+    "narration": trdNarration,
 
     "fromAccount": fromAccount,
     "fromAccCcy": fromAccCy,

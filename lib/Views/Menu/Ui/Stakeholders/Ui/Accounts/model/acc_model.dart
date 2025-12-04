@@ -15,10 +15,10 @@ class AccountsModel {
   final int? actId;
   final int? actAccount;
   final String? actCurrency;
-  final String? actCreditLimit;
+  final String? accCreditLimit;
   final int? actSignatory;
   final int? actCompany;
-  final int? actStatus;
+  final int? accStatus;
   final String? accBalance;
 
   AccountsModel({
@@ -28,11 +28,11 @@ class AccountsModel {
     this.actId,
     this.actAccount,
     this.actCurrency,
-    this.actCreditLimit,
+    this.accCreditLimit,
     this.actSignatory,
     this.accBalance,
     this.actCompany,
-    this.actStatus,
+    this.accStatus,
   });
 
   AccountsModel copyWith({
@@ -42,10 +42,10 @@ class AccountsModel {
     int? actId,
     int? actAccount,
     String? actCurrency,
-    String? actCreditLimit,
+    String? accCreditLimit,
     int? actSignatory,
     int? actCompany,
-    int? actStatus,
+    int? accStatus,
     String? accBalance,
   }) =>
       AccountsModel(
@@ -55,10 +55,10 @@ class AccountsModel {
         actId: actId ?? this.actId,
         actAccount: actAccount ?? this.actAccount,
         actCurrency: actCurrency ?? this.actCurrency,
-        actCreditLimit: actCreditLimit ?? this.actCreditLimit,
+        accCreditLimit: accCreditLimit ?? this.accCreditLimit,
         actSignatory: actSignatory ?? this.actSignatory,
         actCompany: actCompany ?? this.actCompany,
-        actStatus: actStatus ?? this.actStatus,
+        accStatus: accStatus ?? this.accStatus,
         accBalance: accBalance ?? this.accBalance,
       );
 
@@ -69,11 +69,12 @@ class AccountsModel {
     actId: json["actID"],
     actAccount: json["actAccount"],
     actCurrency: json["actCurrency"],
-    actCreditLimit: json["actCreditLimit"],
-    accBalance: json["actCreditLimit"],
+    accCreditLimit: json["accCreditLimit"],
+    accBalance: json["accBalance"],
     actSignatory: json["actSignatory"],
     actCompany: json["actCompany"],
-    actStatus: json["actStatus"],
+    accStatus: json["accStatus"],
+
   );
 
   Map<String, dynamic> toMap() => {
@@ -83,9 +84,9 @@ class AccountsModel {
     "actID": actId,
     "actAccount": actAccount,
     "actCurrency": actCurrency,
-    "actCreditLimit": actCreditLimit,
+    "actCreditLimit": accCreditLimit,
     "actSignatory": actSignatory,
     "actCompany": actCompany,
-    "actStatus": actStatus,
+    "actStatus": accStatus,
   };
 }
