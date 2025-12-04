@@ -2271,6 +2271,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fund Transfer MA'**
   String get fundTransferMultiTitle;
+
+  /// No description provided for @storage.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage'**
+  String get storage;
+
+  /// No description provided for @storages.
+  ///
+  /// In en, this message translates to:
+  /// **'Storages'**
+  String get storages;
+
+  /// No description provided for @location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get location;
 }
 
 class _AppLocalizationsDelegate

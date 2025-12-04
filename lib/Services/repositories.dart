@@ -12,6 +12,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/model/stmt_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
 import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
@@ -331,14 +332,7 @@ class Repositories {
       throw e.toString();
     }
   }
-  Future<List<AccountsModel>> getAccountFilter({
-  final int? start,
-  final int? end,
-  final String? input,
-  final String? locale,
-  final String? exclude,
-  final String? ccy,
-  }) async {
+  Future<List<AccountsModel>> getAccountFilter({final int? start, final int? end, final String? input, final String? locale, final String? exclude, final String? ccy,}) async {
     try {
 
       // Fetch data from API
@@ -1116,6 +1110,67 @@ class Repositories {
       final response = await api.post(
           endpoint: "/setting/branchAuthLimit.php",
           data: newLimit.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  /// Storage ..................................................................
+  Future<List<StorageModel>> getStorage() async {
+    try {
+
+      // Fetch data from API
+      final response = await api.get(
+        endpoint: "/setting/storage.php",
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => StorageModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+  Future<Map<String, dynamic>> addStorage({required StorageModel newStorage}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/setting/storage.php",
+          data: newStorage.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> updateStorage({required StorageModel newStorage}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/setting/storage.php",
+          data: newStorage.toMap()
       );
       return response.data;
     } on DioException catch (e) {

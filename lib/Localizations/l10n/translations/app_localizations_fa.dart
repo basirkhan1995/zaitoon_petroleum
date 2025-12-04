@@ -1117,4 +1117,13 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get fundTransferMultiTitle => 'انتقال وجه - چندگانه';
+
+  @override
+  String get storage => 'مخزن';
+
+  @override
+  String get storages => 'ذخایر';
+
+  @override
+  String get location => 'موقعیت';
 }

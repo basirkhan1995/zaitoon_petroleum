@@ -26,6 +26,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStateme
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/bloc/branch_limit_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/bloc/brc_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/bloc/storage_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/bloc/company_settings_menu_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualByID/bloc/stakeholder_by_id_bloc.dart';
@@ -109,6 +110,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => EmployeeBloc(Repositories(ApiServices()))..add(LoadEmployeeEvent())),
         BlocProvider(create: (context) => FetchAtatBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => TransferBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => StorageBloc(Repositories(ApiServices()))..add(LoadStorageEvent())),
       ],
 
       child: BlocBuilder<LocalizationBloc, Locale>(

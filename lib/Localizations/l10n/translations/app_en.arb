@@ -374,5 +374,8 @@
   "actionBrief": "Act",
   "transactionFailedTitle": "Transaction Failed",
   "fundTransferTitle": "Fund Transfer SA",
-  "fundTransferMultiTitle": "Fund Transfer MA"
+  "fundTransferMultiTitle": "Fund Transfer MA",
+  "storage": "Storage",
+  "storages": "Storages",
+  "location": "Location"
 }

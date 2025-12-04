@@ -1125,4 +1125,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fundTransferMultiTitle => 'Fund Transfer MA';
+
+  @override
+  String get storage => 'Storage';
+
+  @override
+  String get storages => 'Storages';
+
+  @override
+  String get location => 'Location';
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/storage.dart';
 import '../../../../../../Features/Generic/generic_menu.dart';
 import '../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'Branches/Ui/branches.dart';
@@ -31,7 +32,14 @@ class _CompanyTabsViewState extends State<CompanyTabsView> {
         value: CompanySettingsMenuName.branch,
         label: AppLocalizations.of(context)!.branches,
         screen: const BranchesView(),
-        icon: Icons.location_disabled_rounded,
+        icon: Icons.location_city_rounded,
+      ),
+
+      MenuDefinition(
+        value: CompanySettingsMenuName.storage,
+        label: AppLocalizations.of(context)!.storages,
+        screen: const StorageView(),
+        icon: Icons.inventory_2_rounded,
       ),
 
     ];

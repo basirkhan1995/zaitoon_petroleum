@@ -374,5 +374,8 @@
   "actionBrief": "عملیات",
   "transactionFailedTitle": "عملیات ناموفق",
   "fundTransferTitle": "انتقال وجه - انفرادی",
-  "fundTransferMultiTitle": "انتقال وجه - چندگانه"
+  "fundTransferMultiTitle": "انتقال وجه - چندگانه",
+  "storage": "مخزن",
+  "storages": "ذخایر",
+  "location": "ځای"
 }
