@@ -104,7 +104,7 @@ class _DesktopState extends State<_Desktop> {
           company.startDate = fromDate;
           company.endDate = toDate;
           company.statementDate = DateTime.now().toFullDateTime;
-
+         // company.comLogo = state.company.comLogo;
         }
     return BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
         listener: (context, state) {

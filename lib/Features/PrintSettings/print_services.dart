@@ -266,6 +266,16 @@ abstract class PrintServices {
 
   String getTranslation({required String locale, required String language}) {
     const translation = {
+      'totalDebits' : {
+        'en':"Total Debit",
+        'fa':"مجموعه دبت",
+        "ar":"مجموعه دبت"
+      },
+      'totalCredits' : {
+        'en':"Total Credit",
+        'fa':"مجموعه دبت",
+        "ar":"مجموعه دبت"
+      },
       'statementAccount' : {
         'en':"Statement of Account",
         'fa':"صورت حساب",
