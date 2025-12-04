@@ -4,9 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
+import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/features/currency_drop.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import '../../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../../../Features/Other/utils.dart';
@@ -84,8 +86,13 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
     }
   }
 
+  String? baseCurrency;
   @override
   Widget build(BuildContext context) {
+    final comState = context.watch<CompanyProfileBloc>().state;
+    if(comState is CompanyProfileLoadedState){
+      baseCurrency = comState.company.comLocalCcy;
+    }
     return ZFormDialog(
       width: MediaQuery.of(context).size.width * .7,
       icon: Icons.bubble_chart_outlined,
@@ -170,7 +177,7 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
                       onMultiChanged: (_) {},
                       onSingleChanged: (e) {
                         setState(() {
-                          _selectedCurrency = e?.ccyCode ?? "USD";
+                          _selectedCurrency = e?.ccyCode ?? baseCurrency;
                         });
                       },
                     ),
@@ -236,7 +243,7 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
         ),
         if (!isEmpty) ...[
           const SizedBox(height: 8),
-          _TransferHeaderRow(currencySymbol: _selectedCurrency ?? 'USD'),
+          _TransferHeaderRow(currencySymbol: _selectedCurrency ?? baseCurrency??""),
           const SizedBox(height: 8),
           Expanded(
             child: ListView.builder(
@@ -283,7 +290,7 @@ class _BulkTransferScreenState extends State<BulkTransferScreen> {
           _TransferSummary(
             totalDebit: state.totalDebit,
             totalCredit: state.totalCredit,
-            currencySymbol: _selectedCurrency ?? 'USD',
+            currencySymbol: _selectedCurrency ?? baseCurrency ?? "",
           ),
         ] else ...[
           Expanded(
@@ -560,12 +567,18 @@ class _TransferEntryRow extends StatefulWidget {
 }
 
 class __TransferEntryRowState extends State<_TransferEntryRow> {
+  String? baseCurrency;
+  String? currentLocale;
+
   @override
   Widget build(BuildContext context) {
-    final entryCurrency = widget.entry.currency ?? widget.selectedCurrency ?? 'USD';
-    final hasCurrencyMismatch = widget.selectedCurrency != null &&
-        entryCurrency != widget.selectedCurrency;
-
+    final entryCurrency = widget.entry.currency ?? widget.selectedCurrency ?? baseCurrency;
+    final hasCurrencyMismatch = widget.selectedCurrency != null && entryCurrency != widget.selectedCurrency;
+    currentLocale = context.watch<LocalizationBloc>().state.countryCode;
+    final comState = context.watch<CompanyProfileBloc>().state;
+    if(comState is CompanyProfileLoadedState){
+      baseCurrency = comState.company.comLocalCcy;
+    }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 3),
       decoration: BoxDecoration(
@@ -595,12 +608,8 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 hintText: AppLocalizations.of(context)!.accounts,
                 isRequired: true,
                 bloc: context.read<AccountsBloc>(),
-                fetchAllFunction: (bloc) => bloc.add(
-                  LoadAccountsEvent(),
-                ),
-                searchFunction: (bloc, query) => bloc.add(
-                  LoadAccountsEvent(),
-                ),
+                fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 1,end: 5,exclude: "10101010,10101011",ccy: widget.selectedCurrency ?? baseCurrency, locale: currentLocale ?? 'en')),
+                searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(input: query, start: 1,end: 5, exclude: "10101010,10101011",ccy: widget.selectedCurrency ?? baseCurrency,locale: currentLocale ?? 'en')),
                 itemBuilder: (context, account) => Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -611,7 +620,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                     children: [
                       Expanded(
                         child: Text(
-                         "${account.accName} | ${account.accNumber}",
+                          "${account.accNumber} | ${account.accName}",
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
                       ),
@@ -627,7 +636,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
-                              account.actCurrency ?? 'USD',
+                              account.actCurrency ?? baseCurrency??"",
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: account.actCurrency == widget.selectedCurrency
                                     ? Colors.black
@@ -640,7 +649,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                     ],
                   ),
                 ),
-                itemToString: (account) => "${account.accName} | ${account.accNumber}",
+                itemToString: (account) => "${account.accNumber} | ${account.accName}",
                 stateToLoading: (state) => state is AccountLoadingState,
                 loadingBuilder: (context) => const SizedBox(
                   width: 16,
@@ -679,7 +688,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 borderRadius: BorderRadius.circular(3),
               ),
               child: Text(
-                entryCurrency,
+                entryCurrency ?? baseCurrency??"",
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: hasCurrencyMismatch ? Colors.orange : Colors.black,
                   fontSize: 13

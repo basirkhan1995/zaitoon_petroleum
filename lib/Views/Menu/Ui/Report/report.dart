@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Accounts/accounts.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/gl_statement.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/Activities/activities.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/BalanceSheet/balance_sheet.dart';
@@ -23,6 +24,7 @@ enum ActionKey {
   receivable,
   treasury,
   exchangeRate,
+  accountsReport,
 
   //Transactions
   balanceSheet,
@@ -83,6 +85,7 @@ class _DesktopState extends State<_Desktop> {
       {"title": locale.debtors, "icon": FontAwesomeIcons.arrowTrendDown, "action": ActionKey.receivable},
       {"title": locale.exchangeRate, "icon": Icons.compare_arrows_rounded, "action": ActionKey.exchangeRate},
       {"title": locale.treasury, "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.treasury},
+      {"title": locale.accounts, "icon": Icons.account_circle, "action": ActionKey.accountsReport},
     ];
 
     final List<Map<String, dynamic>> stockButtons = [
@@ -217,6 +220,7 @@ class _DesktopState extends State<_Desktop> {
       case ActionKey.receivable: Utils.goto(context, ReceivablesView());
       case ActionKey.exchangeRate: Utils.goto(context, ExchangeRateReportView());
       case ActionKey.treasury: Utils.goto(context, TreasuryView());
+      case ActionKey.accountsReport: Utils.goto(context, AccountsReportView());
 
       //Transactions
       case ActionKey.profitAndLoss: Utils.goto(context, IncomeStatementView());

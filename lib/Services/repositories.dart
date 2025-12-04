@@ -336,7 +336,7 @@ class Repositories {
   final int? end,
   final String? input,
   final String? locale,
-  final List<String>? exclude,
+  final String? exclude,
   final String? ccy,
   }) async {
     try {
@@ -346,12 +346,12 @@ class Repositories {
         endpoint: "/journal/allAccounts.php",
         data: {
           "ccy": ccy,
-          "local": locale ?? "en",
+          "local": locale,
           "input": input,
           "groupStart": start,
           "groupStop": end,
           "account": exclude
-        },
+        }
       );
 
       // Handle error messages from server

@@ -23,7 +23,7 @@ class LoadAccountsFilterEvent extends AccountsEvent{
   final int? end;
   final String? input;
   final String? locale;
-  final List<String>? exclude;
+  final String? exclude;
   final String? ccy;
 
   const LoadAccountsFilterEvent({this.start, this.end, this.input, this.locale, this.exclude, this.ccy});

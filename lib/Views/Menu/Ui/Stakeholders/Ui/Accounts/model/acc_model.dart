@@ -19,6 +19,7 @@ class AccountsModel {
   final int? actSignatory;
   final int? actCompany;
   final int? actStatus;
+  final String? accBalance;
 
   AccountsModel({
     this.accNumber,
@@ -29,6 +30,7 @@ class AccountsModel {
     this.actCurrency,
     this.actCreditLimit,
     this.actSignatory,
+    this.accBalance,
     this.actCompany,
     this.actStatus,
   });
@@ -44,6 +46,7 @@ class AccountsModel {
     int? actSignatory,
     int? actCompany,
     int? actStatus,
+    String? accBalance,
   }) =>
       AccountsModel(
         accNumber: accNumber ?? this.accNumber,
@@ -56,6 +59,7 @@ class AccountsModel {
         actSignatory: actSignatory ?? this.actSignatory,
         actCompany: actCompany ?? this.actCompany,
         actStatus: actStatus ?? this.actStatus,
+        accBalance: accBalance ?? this.accBalance,
       );
 
   factory AccountsModel.fromMap(Map<String, dynamic> json) => AccountsModel(
@@ -66,6 +70,7 @@ class AccountsModel {
     actAccount: json["actAccount"],
     actCurrency: json["actCurrency"],
     actCreditLimit: json["actCreditLimit"],
+    accBalance: json["actCreditLimit"],
     actSignatory: json["actSignatory"],
     actCompany: json["actCompany"],
     actStatus: json["actStatus"],

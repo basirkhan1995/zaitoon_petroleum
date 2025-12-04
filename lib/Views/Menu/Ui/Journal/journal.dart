@@ -1327,7 +1327,6 @@ class _DesktopState extends State<_Desktop> {
       );
     }
 
-
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): () => onCashDepositWithdraw(trnType: "CHDP"),
       const SingleActivator(LogicalKeyboardKey.f2): () => onCashDepositWithdraw(trnType: "CHWL"),
