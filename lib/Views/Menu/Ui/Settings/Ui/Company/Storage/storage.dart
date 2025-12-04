@@ -126,7 +126,7 @@ class _DesktopState extends State<_Desktop> {
                     width: 200,
                     child: Text(locale.address,style: titleStyle)),
                 SizedBox(
-                    width: 50,
+                    width: 60,
                     child: Text(locale.status,style: titleStyle)),
               ],
             ),
@@ -183,7 +183,7 @@ class _DesktopState extends State<_Desktop> {
                                     child: Text(st.stgLocation??"")),
 
                                 SizedBox(
-                                    width: 50,
+                                    width: 60,
                                     child: Text(st.stgStatus == 1? locale.active : locale.inactive))
                             ],
                           ),

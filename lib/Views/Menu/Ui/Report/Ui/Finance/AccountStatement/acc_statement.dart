@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,6 +25,7 @@ import 'PDF/pdf.dart';
 import 'bloc/acc_statement_bloc.dart';
 import 'model/stmt_model.dart';
 import 'package:shamsi_date/shamsi_date.dart';
+import 'dart:typed_data';
 
 class AccountStatementView extends StatelessWidget {
   const AccountStatementView({super.key});
@@ -67,19 +70,16 @@ class _DesktopState extends State<_Desktop> {
   int? accNumber;
   String? myLocale;
   final formKey = GlobalKey<FormState>();
-
-  String fromDate = DateTime.now()
-      .subtract(Duration(days: 7))
-      .toFormattedDate();
+  Uint8List _companyLogo = Uint8List(0);
+  final company = ReportModel();
+  String fromDate = DateTime.now().subtract(Duration(days: 7)).toFormattedDate();
   String toDate = DateTime.now().toFormattedDate();
-  Jalali shamsiFromDate = DateTime.now()
-      .subtract(Duration(days: 7))
-      .toAfghanShamsi;
+  Jalali shamsiFromDate = DateTime.now().subtract(Duration(days: 7)).toAfghanShamsi;
   Jalali shamsiToDate = DateTime.now().toAfghanShamsi;
 
   List<AccountStatementModel> records = [];
   AccountStatementModel? accountStatementModel;
-  final company = ReportModel();
+
 
   @override
   void initState() {
@@ -109,7 +109,15 @@ class _DesktopState extends State<_Desktop> {
           company.startDate = fromDate;
           company.endDate = toDate;
           company.statementDate = DateTime.now().toFullDateTime;
-         // company.comLogo = state.company.comLogo;
+          final base64Logo = state.company.comLogo;
+          if (base64Logo != null && base64Logo.isNotEmpty) {
+            try {
+              _companyLogo = base64Decode(base64Logo);
+              company.comLogo = _companyLogo;
+            } catch (e) {
+              _companyLogo = Uint8List(0);
+            }
+          }
         }
     return BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
         listener: (context, state) {
@@ -157,8 +165,7 @@ class _DesktopState extends State<_Desktop> {
                                if(formKey.currentState!.validate()){
                                  showDialog(
                                    context: context,
-                                   builder:
-                                       (_) => PrintPreviewDialog<AccountStatementModel>(
+                                   builder: (_) => PrintPreviewDialog<AccountStatementModel>(
                                      data: accountStatementModel!,
                                      company: company,
                                      buildPreview: ({
@@ -182,10 +189,9 @@ class _DesktopState extends State<_Desktop> {
                                        required pageFormat,
                                        required selectedPrinter,
                                        required copies,
-                                       required pages, // This will now work
+                                       required pages,
                                      }) {
-                                       return AccountStatementPrintSettings()
-                                           .printDocument(
+                                       return AccountStatementPrintSettings().printDocument(
                                          statement: records,
                                          company: company,
                                          language: language,
@@ -194,7 +200,7 @@ class _DesktopState extends State<_Desktop> {
                                          selectedPrinter: selectedPrinter,
                                          info: accountStatementModel!,
                                          copies: copies,
-                                         pages: pages, // Pass pages to your print method
+                                         pages: pages,
                                        );
                                      },
                                      onSave: ({

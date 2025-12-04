@@ -190,7 +190,6 @@ class _DesktopState extends State<_Desktop> {
 
   void onSubmit() {
     if (!formKey.currentState!.validate()) return;
-
     final data = StorageModel(
       stgId: widget.model?.stgId,
       stgName: storageName.text,
@@ -204,6 +203,12 @@ class _DesktopState extends State<_Desktop> {
     if (widget.model == null) {
       bloc.add(AddStorageEvent(data));
     } else {
+      print(widget.model?.stgId);
+      print(storageName.text);
+      print(storageDetails.text);
+      print(storageLocation.text);
+      print(statusValue);
+
       bloc.add(UpdateStorageEvent(data));
     }
   }

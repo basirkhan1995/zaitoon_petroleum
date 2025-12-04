@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
@@ -20,6 +22,7 @@ import '../../../../Features/Other/cover.dart';
 import '../../../../Features/Other/responsive.dart';
 import '../../../../Features/Other/shortcut.dart';
 import '../../../../Features/Other/thousand_separator.dart';
+import '../../../../Features/PrintSettings/report_model.dart';
 import '../../../../Features/Widgets/outline_button.dart';
 import '../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
@@ -28,7 +31,6 @@ import '../../../Auth/bloc/auth_bloc.dart';
 import '../Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import '../Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
 import 'Ui/FundTransfer/BulkTransfer/Ui/bulk_transfer.dart';
-
 
 class JournalView extends StatelessWidget {
   const JournalView({super.key});
@@ -51,7 +53,6 @@ class _Mobile extends StatelessWidget {
     return const Placeholder();
   }
 }
-
 class _Tablet extends StatelessWidget {
   const _Tablet();
 
@@ -71,7 +72,9 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   String? currentLocale;
   String? usrName;
-
+  Uint8List _companyLogo = Uint8List(0);
+  final company = ReportModel();
+  TransactionsModel? transactionsModel;
   @override
   void initState() {
     super.initState();
@@ -134,7 +137,64 @@ class _DesktopState extends State<_Desktop> {
         builder: (context) {
           return BlocConsumer<TransactionsBloc, TransactionsState>(
             listener: (context,state){
-              if(state is TransactionLoadedState){}
+              // if(state is TransactionLoadedState){
+              //   transactionsModel = state.printTxn;
+              //   showDialog(
+              //     context: context,
+              //     builder: (_) => PrintPreviewDialog<TransactionsModel>(
+              //       data: transactionsModel!,
+              //       company: company,
+              //       buildPreview: ({
+              //         required data,
+              //         required language,
+              //         required orientation,
+              //         required pageFormat,
+              //       }) {
+              //         return CashFlowTransactionPrint().printPreview(
+              //           company: company,
+              //           language: language,
+              //           orientation: orientation,
+              //           pageFormat: pageFormat,
+              //           data: transactionsModel!,
+              //         );
+              //       },
+              //       onPrint: ({
+              //         required data,
+              //         required language,
+              //         required orientation,
+              //         required pageFormat,
+              //         required selectedPrinter,
+              //         required copies,
+              //         required pages,
+              //       }) {
+              //         return CashFlowTransactionPrint().printDocument(
+              //           company: company,
+              //           language: language,
+              //           orientation: orientation,
+              //           pageFormat: pageFormat,
+              //           selectedPrinter: selectedPrinter,
+              //           data: transactionsModel!,
+              //           copies: copies,
+              //           pages: pages,
+              //         );
+              //       },
+              //       onSave: ({
+              //         required data,
+              //         required language,
+              //         required orientation,
+              //         required pageFormat,
+              //       }) {
+              //         return CashFlowTransactionPrint().createDocument(
+              //           data: transactionsModel!,
+              //           company: company,
+              //           language: language,
+              //           orientation: orientation,
+              //           pageFormat: pageFormat,
+              //         );
+              //       },
+              //     ),
+              //   );
+              // }
             },
             builder: (context, trState) {
               return StatefulBuilder(
@@ -314,7 +374,6 @@ class _DesktopState extends State<_Desktop> {
                             SizedBox(height: 5),
                             ZTextFieldEntitled(
                               isRequired: true,
-                              // onSubmit: (_)=> onSubmit(),
                               keyboardInputType: TextInputType.numberWithOptions(
                                 decimal: true,
                               ),
@@ -346,7 +405,6 @@ class _DesktopState extends State<_Desktop> {
                               title: locale.amount,
                             ),
                             ZTextFieldEntitled(
-                              // onSubmit: (_)=> onSubmit(),
                               keyboardInputType: TextInputType.multiline,
                               controller: narration,
                               title: locale.narration,
@@ -934,10 +992,7 @@ class _DesktopState extends State<_Desktop> {
       showDialog(
         context: context,
         builder: (context) {
-          return BlocConsumer<TransactionsBloc, TransactionsState>(
-            listener: (context,state){
-
-            },
+          return BlocBuilder<TransactionsBloc, TransactionsState>(
             builder: (context, trState) {
               return StatefulBuilder(
                 builder: (context,setState) {
@@ -1340,199 +1395,216 @@ class _DesktopState extends State<_Desktop> {
     };
 
     return Scaffold(
-      body: BlocListener<TransactionsBloc, TransactionsState>(
-        listener: (context, state) {},
-        child: GlobalShortcuts(
-          shortcuts: shortcuts,
-          child: Column(
-            children: [
-              // -------------------- HEADER & TABS --------------------
-              Cover(
-                margin: const EdgeInsets.only(top: 6, bottom: 5),
-                radius: 5,
-                color: Theme.of(context).colorScheme.surface,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0,
-                        vertical: 7,
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            locale.journal,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Theme.of(context).colorScheme.primary,
-                              fontSize: context.scaledFont(0.015),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    CustomUnderlineTabBar<JournalTabName>(
-                      tabs: [
-                        JournalTabName.allTransactions,
-                        JournalTabName.authorized,
-                        JournalTabName.pending,
-                      ],
-                      currentTab: context.watch<JournalTabBloc>().state.tab,
-                      onTabChanged: (tab) => context.read<JournalTabBloc>().add(
-                        JournalOnChangedEvent(tab),
-                      ),
-                      labelBuilder: (tab) {
-                        switch (tab) {
-                          case JournalTabName.allTransactions: return locale.allTransactions;
-                          case JournalTabName.authorized: return locale.authorizedTransactions;
-                          case JournalTabName.pending: return locale.pendingTransactions;
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ),
-
-              // -------------------- MAIN CONTENT --------------------
-              Expanded(
-                child: Row(
-                  children: [
-                    // LEFT SIDE — TAB SCREENS
-                    Expanded(
-                      child: BlocBuilder<JournalTabBloc, JournalTabState>(
-                        builder: (context, state) {
-                          switch (state.tab) {
-                            case JournalTabName.allTransactions: return const AllTransactionsView();
-                            case JournalTabName.authorized: return const AuthorizedTransactionsView();
-                            case JournalTabName.pending: return const PendingTransactionsView();
-                          }
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(width: 3),
-
-                    // RIGHT SIDE — SHORTCUT BUTTONS PANEL
-                    Container(
-                      width: 190,
-                      margin: EdgeInsets.symmetric(horizontal: 3),
-                      height: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 12,
+      body: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
+  builder: (context, state) {
+    if(state is CompanyProfileLoadedState){
+      company.comName = state.company.comName??"";
+      company.comAddress = state.company.addName??"";
+      company.compPhone = state.company.comPhone??"";
+      company.comEmail = state.company.comEmail??"";
+      company.statementDate = DateTime.now().toFullDateTime;
+      final base64Logo = state.company.comLogo;
+      if (base64Logo != null && base64Logo.isNotEmpty) {
+        try {
+          _companyLogo = base64Decode(base64Logo);
+          company.comLogo = _companyLogo;
+        } catch (e) {
+          _companyLogo = Uint8List(0);
+        }
+      }
+    }
+    return GlobalShortcuts(
+      shortcuts: shortcuts,
+      child: Column(
+        children: [
+          // -------------------- HEADER & TABS --------------------
+          Cover(
+            margin: const EdgeInsets.only(top: 6, bottom: 5),
+            radius: 5,
+            color: Theme.of(context).colorScheme.surface,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 7,
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        locale.journal,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: context.scaledFont(0.015),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          spacing: 8,
+                      ),
+                    ],
+                  ),
+                ),
+                CustomUnderlineTabBar<JournalTabName>(
+                  tabs: [
+                    JournalTabName.allTransactions,
+                    JournalTabName.authorized,
+                    JournalTabName.pending,
+                  ],
+                  currentTab: context.watch<JournalTabBloc>().state.tab,
+                  onTabChanged: (tab) => context.read<JournalTabBloc>().add(
+                    JournalOnChangedEvent(tab),
+                  ),
+                  labelBuilder: (tab) {
+                    switch (tab) {
+                      case JournalTabName.allTransactions: return locale.allTransactions;
+                      case JournalTabName.authorized: return locale.authorizedTransactions;
+                      case JournalTabName.pending: return locale.pendingTransactions;
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+
+          // -------------------- MAIN CONTENT --------------------
+          Expanded(
+            child: Row(
+              children: [
+                // LEFT SIDE — TAB SCREENS
+                Expanded(
+                  child: BlocBuilder<JournalTabBloc, JournalTabState>(
+                    builder: (context, state) {
+                      switch (state.tab) {
+                        case JournalTabName.allTransactions: return const AllTransactionsView();
+                        case JournalTabName.authorized: return const AuthorizedTransactionsView();
+                        case JournalTabName.pending: return const PendingTransactionsView();
+                      }
+                    },
+                  ),
+                ),
+
+                const SizedBox(width: 3),
+
+                // RIGHT SIDE — SHORTCUT BUTTONS PANEL
+                Container(
+                  width: 190,
+                  margin: EdgeInsets.symmetric(horizontal: 3),
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 8,
+                      children: [
+                        Wrap(
+                          spacing: 5,
                           children: [
-                            Wrap(
-                              spacing: 5,
-                              children: [
-                                const Icon(Icons.reset_tv_rounded, size: 20),
-                                Text(
-                                  locale.cashFlow,
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                              ],
+                            const Icon(Icons.reset_tv_rounded, size: 20),
+                            Text(
+                              locale.cashFlow,
+                              style: Theme.of(context).textTheme.titleSmall,
                             ),
-
-                            if (login.hasPermission(19) ?? false)
-                              ZOutlineButton(
-                                toolTip: "F1",
-                                label: Text(locale.deposit),
-                                icon: Icons.arrow_circle_down_rounded,
-                                width: double.infinity,
-                                onPressed: () =>
-                                    onCashDepositWithdraw(trnType: "CHDP"),
-                              ),
-                            if (login.hasPermission(18) ?? false)
-                              ZOutlineButton(
-                                toolTip: "F2",
-                                label: Text(locale.withdraw),
-                                icon: Icons.arrow_circle_up_rounded,
-                                width: double.infinity,
-                                onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
-                              ),
-                            if (login.hasPermission(22) ?? false)
-                              ZOutlineButton(
-                                toolTip: "F3",
-                                label: Text(locale.income),
-                                icon: Icons.arrow_circle_down_rounded,
-                                width: double.infinity,
-                                onPressed: () => onCashIncome(trnType: "INCM"),
-                              ),
-                            if (login.hasPermission(23) ?? false)
-                              ZOutlineButton(
-                                toolTip: "F4",
-                                label: Text(locale.expense),
-                                icon: Icons.arrow_circle_up_rounded,
-                                width: double.infinity,
-                                onPressed: () => onCashExpense(trnType: "XPNS"),
-                              ),
-                            if (login.hasPermission(24) ?? false)
-                              ZOutlineButton(
-                                toolTip: "F5",
-                                label: Text(locale.fundTransferTitle),
-                                icon: Icons.swap_horiz_rounded,
-                                width: double.infinity,
-                                onPressed: () => accountToAccount(trnType: "ATAT"),
-                              ),
-                            if (login.hasPermission(24) ?? false)
-                              ZOutlineButton(
-                                toolTip: "F5",
-                                label: Text(locale.fundTransferMultiTitle),
-                                icon: Icons.swap_horiz_rounded,
-                                width: double.infinity,
-                                onPressed: (){
-                                  showDialog(context: context, builder: (context){
-                                    return BulkTransferScreen();
-                                  });
-                                },
-                              ),
-                            SizedBox(height: 5),
-                            Wrap(
-                              spacing: 5,
-                              children: [
-                                const Icon(Icons.computer_rounded, size: 20),
-                                Text(
-                                  locale.systemAction,
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                              ],
-                            ),
-
-                            if (login.hasPermission(21) ?? false)
-                              ZOutlineButton(
-                                toolTip: "F6",
-                                label: Text(locale.glCreditTitle),
-                                width: double.infinity,
-                                icon: Icons.call_to_action_outlined,
-                                onPressed: () => onGL(trnType: "GLCR"),
-                              ),
-                            if (login.hasPermission(20) ?? false)
-                              ZOutlineButton(
-                                toolTip: "F7",
-                                label: Text(locale.glDebitTitle),
-                                width: double.infinity,
-                                icon: Icons.call_to_action_outlined,
-                                onPressed: () => onGL(trnType: "GLDR"),
-                              ),
                           ],
                         ),
-                      ),
+
+                        if (login.hasPermission(19) ?? false)
+                          ZOutlineButton(
+                            toolTip: "F1",
+                            label: Text(locale.deposit),
+                            icon: Icons.arrow_circle_down_rounded,
+                            width: double.infinity,
+                            onPressed: () =>
+                                onCashDepositWithdraw(trnType: "CHDP"),
+                          ),
+                        if (login.hasPermission(18) ?? false)
+                          ZOutlineButton(
+                            toolTip: "F2",
+                            label: Text(locale.withdraw),
+                            icon: Icons.arrow_circle_up_rounded,
+                            width: double.infinity,
+                            onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
+                          ),
+                        if (login.hasPermission(22) ?? false)
+                          ZOutlineButton(
+                            toolTip: "F3",
+                            label: Text(locale.income),
+                            icon: Icons.arrow_circle_down_rounded,
+                            width: double.infinity,
+                            onPressed: () => onCashIncome(trnType: "INCM"),
+                          ),
+                        if (login.hasPermission(23) ?? false)
+                          ZOutlineButton(
+                            toolTip: "F4",
+                            label: Text(locale.expense),
+                            icon: Icons.arrow_circle_up_rounded,
+                            width: double.infinity,
+                            onPressed: () => onCashExpense(trnType: "XPNS"),
+                          ),
+                        if (login.hasPermission(24) ?? false)
+                          ZOutlineButton(
+                            toolTip: "F5",
+                            label: Text(locale.fundTransferTitle),
+                            icon: Icons.swap_horiz_rounded,
+                            width: double.infinity,
+                            onPressed: () => accountToAccount(trnType: "ATAT"),
+                          ),
+                        if (login.hasPermission(24) ?? false)
+                          ZOutlineButton(
+                            toolTip: "F5",
+                            label: Text(locale.fundTransferMultiTitle),
+                            icon: Icons.swap_horiz_rounded,
+                            width: double.infinity,
+                            onPressed: (){
+                              showDialog(context: context, builder: (context){
+                                return BulkTransferScreen();
+                              });
+                            },
+                          ),
+                        SizedBox(height: 5),
+                        Wrap(
+                          spacing: 5,
+                          children: [
+                            const Icon(Icons.computer_rounded, size: 20),
+                            Text(
+                              locale.systemAction,
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                          ],
+                        ),
+
+                        if (login.hasPermission(21) ?? false)
+                          ZOutlineButton(
+                            toolTip: "F6",
+                            label: Text(locale.glCreditTitle),
+                            width: double.infinity,
+                            icon: Icons.call_to_action_outlined,
+                            onPressed: () => onGL(trnType: "GLCR"),
+                          ),
+                        if (login.hasPermission(20) ?? false)
+                          ZOutlineButton(
+                            toolTip: "F7",
+                            label: Text(locale.glDebitTitle),
+                            width: double.infinity,
+                            icon: Icons.call_to_action_outlined,
+                            onPressed: () => onGL(trnType: "GLDR"),
+                          ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
+    );
+  },
+),
     );
   }
 }

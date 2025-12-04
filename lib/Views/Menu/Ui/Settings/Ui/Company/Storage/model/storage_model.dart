@@ -51,6 +51,6 @@ class StorageModel {
     "stgName": stgName,
     "stgDetails": stgDetails,
     "stgLocation": stgLocation,
-    "stgStatus": stgStatus,
+    "stgStatus": stgStatus
   };
 }

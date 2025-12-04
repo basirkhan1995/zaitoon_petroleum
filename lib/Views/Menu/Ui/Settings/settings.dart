@@ -74,7 +74,6 @@ class _Desktop extends StatelessWidget {
 
             return GenericTab<SettingsTabName>(
               borderRadius: 3,
-
               title: AppLocalizations.of(context)!.settings,
               description: AppLocalizations.of(context)!.settingsHint,
               tabContainerColor: Theme.of(context).colorScheme.surface,

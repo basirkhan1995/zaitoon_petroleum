@@ -454,8 +454,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
           canChangeOrientation: true,
           canChangePageFormat: true,
           pdfPreviewPageDecoration: const BoxDecoration(color: Colors.white),
-          build: (context) => widget
-              .buildPreview(
+          build: (context) => widget.buildPreview(
             data: widget.data,
             language: language,
             orientation: orientation,

@@ -145,9 +145,12 @@ class GenericTab<T> extends StatelessWidget {
                     if(onBack !=null)
                       SizedBox(width: 5),
                     Expanded(
-                      child: Text(
-                        title!,
-                        style: Theme.of(context).textTheme.titleLarge,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          title!,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
                       ),
                     ),
                   ],
@@ -155,12 +158,15 @@ class GenericTab<T> extends StatelessWidget {
                 const SizedBox(height: 5),
               ],
               if (description != null) ...[
-                Text(
-                  description!,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(color: Theme.of(context).colorScheme.secondary),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    description!,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: Theme.of(context).colorScheme.secondary),
+                  ),
                 ),
                 const SizedBox(height: 10),
               ],

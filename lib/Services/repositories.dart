@@ -1172,6 +1172,7 @@ class Repositories {
           endpoint: "/setting/storage.php",
           data: newStorage.toMap()
       );
+      print(response.data);
       return response.data;
     } on DioException catch (e) {
       throw '${e.message}';
