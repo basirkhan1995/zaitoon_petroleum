@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
@@ -12,9 +13,9 @@ class AccountsReportView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-      mobile: _Mobile(),
-      desktop: _Desktop(),
-      tablet: _Tablet(),
+      mobile: const _Mobile(),
+      desktop: const _Desktop(),
+      tablet: const _Tablet(),
     );
   }
 }
@@ -47,76 +48,74 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   String? currentLocale;
   String? baseCurrency;
+  bool _initialLoaded = false;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    // Read initial values without watching
-    final compState = context.read<CompanyProfileBloc>().state;
-    if (compState is CompanyProfileLoadedState) {
-      baseCurrency = compState.company.comLocalCcy;
+    if (!_initialLoaded) {
+      final compState = context.read<CompanyProfileBloc>().state;
+      if (compState is CompanyProfileLoadedState) {
+        baseCurrency = compState.company.comLocalCcy;
+      }
+
+      currentLocale = context.read<LocalizationBloc>().state.countryCode;
+
+      _loadAccounts();
+      _initialLoaded = true;
     }
-
-    currentLocale = context.read<LocalizationBloc>().state.countryCode;
-
-    // Try loading accounts only if both values are available
-    _tryLoadAccounts();
   }
 
-  /// Load only when both required values exist
-  void _tryLoadAccounts() {
-    if (currentLocale != null && baseCurrency != null) {
-      context.read<AccountsBloc>().add(
-        LoadAccountsFilterEvent(
-          start: 1,
-          end: 5,
-          locale: currentLocale!,
-          ccy: baseCurrency!,
-        ),
-      );
-    }
+  void _loadAccounts() {
+    context.read<AccountsBloc>().add(
+      LoadAccountsFilterEvent(
+        start: 1,
+        end: 5,
+        locale: currentLocale ?? "en",
+        ccy: baseCurrency ?? "USD",
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    //final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+
     return MultiBlocListener(
       listeners: [
-        /// Listen for company profile changes
         BlocListener<CompanyProfileBloc, CompanyProfileState>(
           listener: (context, state) {
             if (state is CompanyProfileLoadedState) {
               setState(() {
                 baseCurrency = state.company.comLocalCcy;
               });
-              _tryLoadAccounts();
+              _loadAccounts();
             }
           },
         ),
 
-        /// Listen for locale changes
         BlocListener<LocalizationBloc, Locale>(
           listener: (context, state) {
             setState(() {
               currentLocale = state.countryCode;
             });
-            _tryLoadAccounts();
+            _loadAccounts();
           },
         ),
       ],
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Accounts Report"),
-        ),
+        appBar: AppBar(title: const Text("Accounts Report")),
 
         body: BlocBuilder<AccountsBloc, AccountsState>(
           builder: (context, state) {
-            if (state is AccountErrorState) {
-              return Center(child: Text(state.message));
-            }
-
             if (state is AccountLoadingState) {
               return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is AccountErrorState) {
+              return Center(child: Text(state.message));
             }
 
             if (state is AccountLoadedState) {
@@ -128,16 +127,21 @@ class _DesktopState extends State<_Desktop> {
                 itemCount: state.accounts.length,
                 itemBuilder: (context, index) {
                   final account = state.accounts[index];
-                  return ListTile(
-                    title: Row(
+
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 7),
+                    decoration: BoxDecoration(
+                      color: index.isEven
+                          ? color.primary.withValues(alpha: .05)
+                          : Colors.transparent,
+                    ),
+                    child: Row(
                       children: [
-                        SizedBox(
-                            width: 80,
-                            child: Text(account.accNumber.toString())),
-                        Text(account.accName.toString()),
+                        SizedBox(width: 80, child: Text(account.accNumber.toString())),
+                        Expanded(child: Text(account.accName.toString())),
+                        Text(account.accBalance?.toAmount() ?? ""),
                       ],
                     ),
-                    trailing: Text(account.accBalance?.toAmount() ?? ""),
                   );
                 },
               );
