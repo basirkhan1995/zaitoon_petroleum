@@ -266,6 +266,11 @@ abstract class PrintServices {
 
   String getTranslation({required String locale, required String language}) {
     const translation = {
+      'moneyReceipt' : {
+        'en':"Money Receipt",
+        'fa':"رسید پول",
+        "ar":"پول رسید"
+      },
       'totalDebits' : {
         'en':"Total Debit",
         'fa':"مجموعه دبت",
@@ -600,6 +605,21 @@ abstract class PrintServices {
         'en': 'Account Statement',
         'fa': 'صورت حساب اشخاص',
         'ar': 'صورت حساب اشخاص',
+      },
+      'trnType': {
+        'en': 'Transaction Code',
+        'fa': 'کد معامله',
+        'ar': 'معامله کد',
+      },
+      'checker': {
+        'en': 'Checker',
+        'fa': 'تایید کننده',
+        'ar': 'تایید کونکی',
+      },
+      'maker': {
+        'en': 'Maker',
+        'fa': 'اجراء کننده',
+        'ar': 'اجراء کونکی',
       },
       'CHDP': {
         'en': 'Cash Deposit',

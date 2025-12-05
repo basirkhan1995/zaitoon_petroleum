@@ -22,6 +22,7 @@ import '../../../../Features/Other/cover.dart';
 import '../../../../Features/Other/responsive.dart';
 import '../../../../Features/Other/shortcut.dart';
 import '../../../../Features/Other/thousand_separator.dart';
+import '../../../../Features/PrintSettings/print_preview.dart';
 import '../../../../Features/PrintSettings/report_model.dart';
 import '../../../../Features/Widgets/outline_button.dart';
 import '../../../../Features/Widgets/textfield_entitled.dart';
@@ -30,6 +31,7 @@ import 'package:flutter/services.dart';
 import '../../../Auth/bloc/auth_bloc.dart';
 import '../Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import '../Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
+import 'PDF/cash_flow_print.dart';
 import 'Ui/FundTransfer/BulkTransfer/Ui/bulk_transfer.dart';
 
 class JournalView extends StatelessWidget {
@@ -136,66 +138,70 @@ class _DesktopState extends State<_Desktop> {
         context: context,
         builder: (context) {
           return BlocConsumer<TransactionsBloc, TransactionsState>(
-            listener: (context,state){
-              // if(state is TransactionLoadedState){
-              //   transactionsModel = state.printTxn;
-              //   showDialog(
-              //     context: context,
-              //     builder: (_) => PrintPreviewDialog<TransactionsModel>(
-              //       data: transactionsModel!,
-              //       company: company,
-              //       buildPreview: ({
-              //         required data,
-              //         required language,
-              //         required orientation,
-              //         required pageFormat,
-              //       }) {
-              //         return CashFlowTransactionPrint().printPreview(
-              //           company: company,
-              //           language: language,
-              //           orientation: orientation,
-              //           pageFormat: pageFormat,
-              //           data: transactionsModel!,
-              //         );
-              //       },
-              //       onPrint: ({
-              //         required data,
-              //         required language,
-              //         required orientation,
-              //         required pageFormat,
-              //         required selectedPrinter,
-              //         required copies,
-              //         required pages,
-              //       }) {
-              //         return CashFlowTransactionPrint().printDocument(
-              //           company: company,
-              //           language: language,
-              //           orientation: orientation,
-              //           pageFormat: pageFormat,
-              //           selectedPrinter: selectedPrinter,
-              //           data: transactionsModel!,
-              //           copies: copies,
-              //           pages: pages,
-              //         );
-              //       },
-              //       onSave: ({
-              //         required data,
-              //         required language,
-              //         required orientation,
-              //         required pageFormat,
-              //       }) {
-              //         return CashFlowTransactionPrint().createDocument(
-              //           data: transactionsModel!,
-              //           company: company,
-              //           language: language,
-              //           orientation: orientation,
-              //           pageFormat: pageFormat,
-              //         );
-              //       },
-              //     ),
-              //   );
-              // }
-            },
+              listener: (context, state) {
+                if (state is TransactionLoadedState && state.printTxn != null) {
+
+                  print(state.printTxn?.trnEntryDate ?? "");
+
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    showDialog(
+                      context: context,
+                      builder: (_) => PrintPreviewDialog<TransactionsModel>(
+                        data: state.printTxn!,
+                        company: company,
+                        buildPreview: ({
+                          required data,
+                          required language,
+                          required orientation,
+                          required pageFormat,
+                        }) {
+                          return CashFlowTransactionPrint().printPreview(
+                            company: company,
+                            language: language,
+                            orientation: orientation,
+                            pageFormat: pageFormat,
+                            data: data,
+                          );
+                        },
+                        onPrint: ({
+                          required data,
+                          required language,
+                          required orientation,
+                          required pageFormat,
+                          required selectedPrinter,
+                          required copies,
+                          required pages,
+                        }) {
+                          return CashFlowTransactionPrint().printDocument(
+                            company: company,
+                            language: language,
+                            orientation: orientation,
+                            pageFormat: pageFormat,
+                            selectedPrinter: selectedPrinter,
+                            data: data,
+                            copies: copies,
+                            pages: pages,
+                          );
+                        },
+                        onSave: ({
+                          required data,
+                          required language,
+                          required orientation,
+                          required pageFormat,
+                        }) {
+                          return CashFlowTransactionPrint().createDocument(
+                            data: data,
+                            company: company,
+                            language: language,
+                            orientation: orientation,
+                            pageFormat: pageFormat,
+                          );
+                        },
+                      ),
+                    );
+                  });
+                }
+              },
             builder: (context, trState) {
               return StatefulBuilder(
                 builder: (context, setState) {

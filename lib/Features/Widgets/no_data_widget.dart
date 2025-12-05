@@ -23,9 +23,8 @@ class NoDataWidget extends StatelessWidget {
             ),
             if(title !=null && title!.isNotEmpty)
             Text(title??"", style: Theme.of(context).textTheme.titleMedium),
-            message == null? SizedBox() : Text(message??AppLocalizations.of(context)!.noDataFound,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.secondary.withValues(alpha: .7))),
-            SizedBox(height: 15),
+            message == null? SizedBox() : Text(message??AppLocalizations.of(context)!.noDataFound, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.outline.withValues(alpha: .9))),
+            SizedBox(height: 8),
             if(enableAction)
             ZOutlineButton(
               width: 100,
