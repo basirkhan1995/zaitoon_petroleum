@@ -58,7 +58,7 @@ class ZTextFieldEntitled extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 0),
       child: SizedBox(
         child: Column(
           children: [
@@ -74,7 +74,7 @@ class ZTextFieldEntitled extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 12),
                         ),
                         isRequired
                             ? Text(
@@ -149,14 +149,14 @@ class ZTextFieldEntitled extends StatelessWidget {
                         hintText: hint,
                         hintStyle: const TextStyle(
                           fontWeight: FontWeight.normal,
-                          fontSize: 12,
+                          fontSize: 10,
                           color: Colors.grey,
                         ),
                         isDense: compactMode ?? true,
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: 5,
                           vertical: vertical ?? 12.0,
-                        ), // Adjust this value to control the height
+                        ),
                       ),
                     ),
                   ),
@@ -181,8 +181,7 @@ class ZTextFieldEntitled extends StatelessWidget {
                       ),
                     ],
                   ),
-                )
-                : SizedBox(),
+                ) : SizedBox(),
           ],
         ),
       ),

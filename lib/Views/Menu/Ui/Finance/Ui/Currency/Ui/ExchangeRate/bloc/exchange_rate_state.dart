@@ -28,7 +28,10 @@ final class ExchangeRateErrorState extends ExchangeRateState {
 
 final class ExchangeRateLoadedState extends ExchangeRateState {
   final List<ExchangeRateModel> rates;
-  const ExchangeRateLoadedState(this.rates);
+  final String? rate;
+  const ExchangeRateLoadedState({required this.rates, this.rate});
   @override
-  List<Object> get props => [rates];
+  List<Object> get props => [rates, rate??"0.00"];
 }
+
+

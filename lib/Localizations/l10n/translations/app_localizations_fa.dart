@@ -1129,4 +1129,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get unlimited => 'نامحدود';
+
+  @override
+  String get fxTransactionTitle => 'تبادله ارزی - چندگانه';
 }

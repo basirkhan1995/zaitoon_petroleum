@@ -18,7 +18,7 @@ class TransactionReferencePrintSettings extends PrintServices{
     required pw.PageOrientation orientation,
     required ReportModel company,
     required pw.PdfPageFormat pageFormat,
-  }) async {
+    }) async {
     try {
       final document = await generateStatement(
           report: company,
@@ -235,6 +235,7 @@ class TransactionReferencePrintSettings extends PrintServices{
       {"title": "branch", "value": data.branch.toString()},
       {"title": "trnType", "value": data.trnType.toString()},
       {"title": "accountNumber", "value": data.account.toString()},
+      {"title": "accountName", "value": data.accName.toString()},
       {"title": "amount", "value": "${data.amount?.toAmount()} ${data.currency}"},
       {"title": "narration", "value": data.narration ?? ""},
     ];

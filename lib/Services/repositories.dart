@@ -751,6 +751,35 @@ class Repositories {
       throw e.toString();
     }
   }
+  Future<String?> getSingleRate({required String fromCcy, required String toCcy}) async {
+    try {
+      final response = await api.post(
+        endpoint: "/journal/getSingleExRate.php",
+        data: {
+          'ccyFrom': fromCcy,
+          'ccyTo': toCcy,
+        },
+      );
+      print(response.data);
+      // Handle server error response
+      if (response.data is Map<String, dynamic> &&
+          response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // Expecting a Map: { "crExchange": "66.300000" }
+      if (response.data is Map<String, dynamic>) {
+        return response.data["crExchange"]?.toString();
+      }
+
+      return null;
+    } on DioException catch (e) {
+      throw e.message ?? "Unknown Dio error";
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
 
   /// Transactions | Cash Deposit | Withdraw ...................................
   Future<List<TransactionsModel>> getTransactionsByStatus({String? status}) async {

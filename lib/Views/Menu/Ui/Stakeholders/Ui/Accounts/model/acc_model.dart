@@ -20,8 +20,10 @@ class AccountsModel {
   final int? actCompany;
   final int? accStatus;
   final String? accBalance;
+  final String? accAvailBalance;
 
   AccountsModel({
+    this.accAvailBalance,
     this.accNumber,
     this.accCategory,
     this.accName,
@@ -36,6 +38,7 @@ class AccountsModel {
   });
 
   AccountsModel copyWith({
+    String? accAvailBalance,
     int? accNumber,
     int? accCategory,
     String? accName,
@@ -49,6 +52,7 @@ class AccountsModel {
     String? accBalance,
   }) =>
       AccountsModel(
+        accAvailBalance: accAvailBalance ?? this.accAvailBalance,
         accNumber: accNumber ?? this.accNumber,
         accCategory: accCategory ?? this.accCategory,
         accName: accName ?? this.accName,
@@ -63,6 +67,7 @@ class AccountsModel {
       );
 
   factory AccountsModel.fromMap(Map<String, dynamic> json) => AccountsModel(
+    accAvailBalance: json["accAvailBalance"],
     accNumber: json["accNumber"],
     accCategory: json["accCategory"],
     accName: json["accName"],
@@ -78,6 +83,7 @@ class AccountsModel {
   );
 
   Map<String, dynamic> toMap() => {
+    "accAvailBalance":accAvailBalance,
     "accNumber": accNumber,
     "accCategory": accCategory,
     "accName": accName,

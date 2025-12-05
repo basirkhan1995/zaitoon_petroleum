@@ -797,16 +797,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get referenceNumber => 'Reference';
 
   @override
-  String get txnMaker => 'TXN Maker';
+  String get txnMaker => 'Maker';
 
   @override
-  String get txnDate => 'TXN Date';
+  String get txnDate => 'Date';
 
   @override
   String get authorizer => 'Authorizer';
 
   @override
-  String get txnType => 'TXN Type';
+  String get txnType => 'Type';
 
   @override
   String get branchName => 'Branch name';
@@ -1137,4 +1137,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unlimited => 'Unlimited';
+
+  @override
+  String get fxTransactionTitle => 'FX Transaction - Multi Accounts';
 }

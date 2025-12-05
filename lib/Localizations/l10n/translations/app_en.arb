@@ -271,10 +271,10 @@
   "amount": "Amount",
   "narration": "Narration",
   "referenceNumber": "Reference",
-  "txnMaker": "TXN Maker",
-  "txnDate": "TXN Date",
+  "txnMaker": "Maker",
+  "txnDate": "Date",
   "authorizer": "Authorizer",
-  "txnType": "TXN Type",
+  "txnType": "Type",
   "branchName": "Branch name",
   "branchId": "Code",
   "selected": "Selected",
@@ -378,5 +378,6 @@
   "storage": "Storage",
   "storages": "Storages",
   "location": "Location",
-  "unlimited": "Unlimited"
+  "unlimited": "Unlimited",
+  "fxTransactionTitle": "FX Transaction - Multi Accounts"
 }

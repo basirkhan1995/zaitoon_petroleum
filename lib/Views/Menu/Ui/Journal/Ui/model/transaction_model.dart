@@ -21,6 +21,7 @@ class TransactionsModel {
   final String? trdNarration;
   final String? trdCcy;
   final int? trdAccount;
+  final String? accName;
   final String? trdAmount;
 
   ///Account to Account
@@ -34,6 +35,7 @@ class TransactionsModel {
     this.trnType,
     this.trntName,
     this.maker,
+    this.accName,
     this.checker,
     this.trnStatus,
     this.trdBranch,
@@ -57,6 +59,7 @@ class TransactionsModel {
     String? trnType,
     String? trntName,
     String? maker,
+    String? accName,
     String? checker,
     int? trnStatus,
     String? trnStateText,
@@ -68,6 +71,7 @@ class TransactionsModel {
         trntName: trntName ?? this.trntName,
         maker: maker ?? this.maker,
         checker: checker ?? this.checker,
+        accName: accName ?? this.accName,
         trnStatus: trnStatus ?? this.trnStatus,
         trnStateText: trnStateText ?? this.trnStateText,
         trnEntryDate: trnEntryDate ?? this.trnEntryDate,
@@ -76,6 +80,7 @@ class TransactionsModel {
   factory TransactionsModel.fromMap(Map<String, dynamic> json) => TransactionsModel(
     trnReference: json["trnReference"],
     trdAccount: json["trdAccount"],
+    accName: json["accName"],
     trdCcy: json["trdCcy"],
     trdNarration: json["trdNarration"],
     trdAmount: json["trdAmount"],

@@ -1651,13 +1651,13 @@ abstract class AppLocalizations {
   /// No description provided for @txnMaker.
   ///
   /// In en, this message translates to:
-  /// **'TXN Maker'**
+  /// **'Maker'**
   String get txnMaker;
 
   /// No description provided for @txnDate.
   ///
   /// In en, this message translates to:
-  /// **'TXN Date'**
+  /// **'Date'**
   String get txnDate;
 
   /// No description provided for @authorizer.
@@ -1669,7 +1669,7 @@ abstract class AppLocalizations {
   /// No description provided for @txnType.
   ///
   /// In en, this message translates to:
-  /// **'TXN Type'**
+  /// **'Type'**
   String get txnType;
 
   /// No description provided for @branchName.
@@ -2295,6 +2295,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unlimited'**
   String get unlimited;
+
+  /// No description provided for @fxTransactionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FX Transaction - Multi Accounts'**
+  String get fxTransactionTitle;
 }
 
 class _AppLocalizationsDelegate

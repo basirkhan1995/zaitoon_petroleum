@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/EndOfYear/end_year.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/FxTransaction/fx_transaction.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/gl_accounts.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Payroll/payroll.dart';
 import '../../../../Features/Generic/rounded_tab.dart';
@@ -40,12 +39,6 @@ class FinanceView extends StatelessWidget {
                   label: AppLocalizations.of(context)!.glAccounts,
                   screen: const GlAccountsView(),
                 ),
-              if (login.hasPermission(10) ?? false)
-              TabDefinition(
-                value: FinanceTabName.crossCurrency,
-                label: AppLocalizations.of(context)!.fxTransaction,
-                screen: const FxTransactionView(),
-              ),
               if (login.hasPermission(7) ?? false)
               TabDefinition(
                 value: FinanceTabName.payroll,

@@ -18,3 +18,11 @@ class AddExchangeRateEvent extends ExchangeRateEvent{
   @override
   List<Object> get props => [newRate];
 }
+
+class GetExchangeRateEvent extends ExchangeRateEvent{
+  final String fromCcy;
+  final String toCcy;
+  const GetExchangeRateEvent({required this.fromCcy, required this.toCcy});
+  @override
+  List<Object> get props => [fromCcy, toCcy];
+}

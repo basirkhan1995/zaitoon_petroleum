@@ -378,5 +378,6 @@
   "storage": "مخزن",
   "storages": "ذخایر",
   "location": "ځای",
-  "unlimited": "نامحدود"
+  "unlimited": "نامحدود",
+  "fxTransactionTitle": "تبادله ارزی - چندگانه"
 }

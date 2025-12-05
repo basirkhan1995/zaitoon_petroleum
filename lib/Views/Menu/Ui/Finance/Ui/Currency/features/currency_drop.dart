@@ -75,7 +75,7 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
           } else {
             return Text(
               widget.title ?? AppLocalizations.of(context)!.currencyTitle,
-              style: Theme.of(context).textTheme.titleSmall,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 12),
             );
           }
         }

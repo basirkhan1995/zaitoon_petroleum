@@ -8,6 +8,7 @@ import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FxTransaction/Ui/fx_transaction.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/View/all_transactions.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/View/authorized.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/View/pending.dart';
@@ -116,6 +117,7 @@ class _DesktopState extends State<_Desktop> {
     TextStyle? amountStyle = textTheme.titleSmall?.copyWith(color: color.primary);
     TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.outline.withValues(alpha: .7));
     TextStyle? bodyStyle = textTheme.titleSmall;
+
     if (state is! AuthenticatedState) {
       return const SizedBox();
     }
@@ -961,7 +963,7 @@ class _DesktopState extends State<_Desktop> {
     void accountToAccount({String? trnType}) {
     final tr = AppLocalizations.of(context)!;
 
-      /// Debit .......................................
+      /// Credit .......................................
       final creditAccountCtrl = TextEditingController();
       String? creditAccCurrency;
       String? creditCurrentBalance;
@@ -972,10 +974,10 @@ class _DesktopState extends State<_Desktop> {
       String? creditCcySymbol;
       int? creditStatus;
 
-      /// Credit .....................................
+      /// Debit .....................................
       final debitAccountCtrl = TextEditingController();
       String? debitAccCurrency;
-      String? debitCurrentBalance ;
+      String? debitCurrentBalance;
       String? debitAvailableBalance;
       int? debitAccNumber;
       String? debitAccName;
@@ -1089,7 +1091,7 @@ class _DesktopState extends State<_Desktop> {
                                            debitCcySymbol = value.actCurrency;
                                            debitAccCurrency = value.actCurrency;
                                            debitAccName = value.accName ?? "";
-                                           debitAvailableBalance = value.accBalance;
+                                           debitAvailableBalance = value.accAvailBalance;
                                            debitCurrentBalance = value.accBalance;
                                            debitAccountLimit = value.accCreditLimit;
                                            debitStatus = value.accStatus ?? 0;
@@ -1143,9 +1145,9 @@ class _DesktopState extends State<_Desktop> {
                                                      SizedBox(
                                                          width: 170,
                                                          child: Text(tr.status,style: titleStyle)),
-                                                     // SizedBox(
-                                                     //     width: 170,
-                                                     //     child: Text(locale.currentBalance,style: titleStyle)),
+                                                     SizedBox(
+                                                         width: 170,
+                                                         child: Text(locale.currentBalance,style: titleStyle)),
                                                      SizedBox(
                                                          width: 170,
                                                          child: Text(tr.availableBalance,style: titleStyle)),
@@ -1161,7 +1163,7 @@ class _DesktopState extends State<_Desktop> {
                                                      Text(debitAccCurrency??""),
                                                      Text(debitAccountLimit?.toAmount() == unlimitedValue.toAmount()? tr.unlimited : debitAccountLimit?.toAmount() ??""),
                                                      Text(debitStatus == 1? tr.active : tr.blocked),
-                                                   //  Text("${debitCurrentBalance?.toAmount()} $debitCcySymbol",style: amountStyle),
+                                                     Text("${debitCurrentBalance?.toAmount()} $debitCcySymbol",style: amountStyle),
                                                      Text("${debitAvailableBalance?.toAmount()} $debitCcySymbol",style: amountStyle),
                                                    ],
                                                  ),
@@ -1235,7 +1237,7 @@ class _DesktopState extends State<_Desktop> {
                                             creditCcySymbol = value.actCurrency;
                                             creditAccCurrency = value.actCurrency;
                                             creditAccName = value.accName ?? "";
-                                            creditAvailableBalance = value.accBalance;
+                                            creditAvailableBalance = value.accAvailBalance;
                                             creditCurrentBalance = value.accBalance;
                                             creditAccountLimit = value.accCreditLimit;
                                             creditStatus = value.accStatus ?? 0;
@@ -1289,9 +1291,9 @@ class _DesktopState extends State<_Desktop> {
                                                         SizedBox(
                                                             width: 170,
                                                             child: Text(tr.status,style: titleStyle)),
-                                                        // SizedBox(
-                                                        //     width: 170,
-                                                        //     child: Text(locale.currentBalance,style: titleStyle)),
+                                                        SizedBox(
+                                                            width: 170,
+                                                            child: Text(locale.currentBalance,style: titleStyle)),
                                                         SizedBox(
                                                             width: 170,
                                                             child: Text(tr.availableBalance,style: titleStyle)),
@@ -1307,7 +1309,7 @@ class _DesktopState extends State<_Desktop> {
                                                         Text(creditAccCurrency??""),
                                                         Text(creditAccountLimit?.toAmount() == unlimitedValue.toAmount()? tr.unlimited : creditAccountLimit?.toAmount() ??""),
                                                         Text(creditStatus == 1? tr.active : tr.blocked),
-                                                      //  Text("${creditCurrentBalance?.toAmount()} $creditCcySymbol",style: amountStyle),
+                                                        Text("${creditCurrentBalance?.toAmount()} $creditCcySymbol",style: amountStyle),
                                                         Text("${creditAvailableBalance?.toAmount()} $creditCcySymbol",style: amountStyle),
                                                       ],
                                                     ),
@@ -1565,6 +1567,18 @@ class _DesktopState extends State<_Desktop> {
                             onPressed: (){
                               showDialog(context: context, builder: (context){
                                 return BulkTransferScreen();
+                              });
+                            },
+                          ),
+                        if (login.hasPermission(24) ?? false)
+                          ZOutlineButton(
+                            toolTip: "F5",
+                            label: Text(locale.fxTransaction),
+                            icon: Icons.swap_horiz_rounded,
+                            width: double.infinity,
+                            onPressed: (){
+                              showDialog(context: context, builder: (context){
+                                return FxTransactionScreen();
                               });
                             },
                           ),

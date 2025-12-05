@@ -14,7 +14,17 @@ class ExchangeRateBloc extends Bloc<ExchangeRateEvent, ExchangeRateState> {
       emit(ExchangeRateLoadingState());
       try{
        final rates = await _repo.getExchangeRate(ccyCode: event.ccyCode);
-       emit(ExchangeRateLoadedState(rates));
+       emit(ExchangeRateLoadedState(rates: rates));
+      }catch(e){
+        emit(ExchangeRateErrorState(e.toString()));
+      }
+    });
+
+    on<GetExchangeRateEvent>((event, emit)async {
+      emit(ExchangeRateLoadingState());
+      try{
+        final rate = await _repo.getSingleRate(fromCcy: event.fromCcy,toCcy: event.toCcy);
+        emit(ExchangeRateLoadedState(rates: [],rate: rate));
       }catch(e){
         emit(ExchangeRateErrorState(e.toString()));
       }
