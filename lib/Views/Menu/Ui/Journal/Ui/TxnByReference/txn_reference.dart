@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
@@ -11,9 +13,13 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/t
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import '../../../../../../Features/Other/thousand_separator.dart';
+import '../../../../../../Features/PrintSettings/print_preview.dart';
+import '../../../../../../Features/PrintSettings/report_model.dart';
 import '../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
+import 'Print/txn_print.dart';
 import 'model/txn_ref_model.dart';
 
 class TxnReferenceView extends StatelessWidget {
@@ -57,7 +63,8 @@ class _DesktopState extends State<_Desktop> {
   final TextEditingController narration = TextEditingController();
   final TextEditingController amount = TextEditingController();
   TxnByReferenceModel? loadedTxn;
-
+  Uint8List _companyLogo = Uint8List(0);
+  final company = ReportModel();
   String? reference;
   @override
   void dispose() {
@@ -81,6 +88,24 @@ class _DesktopState extends State<_Desktop> {
       return const SizedBox();
     }
     final login = auth.loginData;
+    return BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
+  builder: (context, state) {
+    if(state is CompanyProfileLoadedState){
+      company.comName = state.company.comName??"";
+      company.comAddress = state.company.addName??"";
+      company.compPhone = state.company.comPhone??"";
+      company.comEmail = state.company.comEmail??"";
+      company.statementDate = DateTime.now().toFullDateTime;
+      final base64Logo = state.company.comLogo;
+      if (base64Logo != null && base64Logo.isNotEmpty) {
+        try {
+          _companyLogo = base64Decode(base64Logo);
+          company.comLogo = _companyLogo;
+        } catch (e) {
+          _companyLogo = Uint8List(0);
+        }
+      }
+    }
     return ZFormDialog(
       width: 500,
       isActionTrue: false,
@@ -164,7 +189,7 @@ class _DesktopState extends State<_Desktop> {
                                 ),
 
                                 InkWell(
-                                    onTap: (){},
+                                    onTap: ()=> getPrint(data: state.transaction, company: company),
                                     child: Icon(Icons.print,size: 20,color: color.primary,))
                               ],
                             ),
@@ -398,5 +423,66 @@ class _DesktopState extends State<_Desktop> {
         ),
       ),
     );
+  },
+);
+  }
+  void getPrint({required TxnByReferenceModel data, required ReportModel company}){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+        context: context,
+        builder: (_) => PrintPreviewDialog<TxnByReferenceModel>(
+          data: data,
+          company: company,
+          buildPreview: ({
+            required data,
+            required language,
+            required orientation,
+            required pageFormat,
+          }) {
+            return TransactionReferencePrintSettings().printPreview(
+              company: company,
+              language: language,
+              orientation: orientation,
+              pageFormat: pageFormat,
+              data: data,
+            );
+          },
+          onPrint: ({
+            required data,
+            required language,
+            required orientation,
+            required pageFormat,
+            required selectedPrinter,
+            required copies,
+            required pages,
+          }) {
+            return TransactionReferencePrintSettings().printDocument(
+              company: company,
+              language: language,
+              orientation: orientation,
+              pageFormat: pageFormat,
+              selectedPrinter: selectedPrinter,
+              data: data,
+              copies: copies,
+              pages: pages,
+            );
+          },
+          onSave: ({
+            required data,
+            required language,
+            required orientation,
+            required pageFormat,
+          }) {
+            return TransactionReferencePrintSettings().createDocument(
+              data: data,
+              company: company,
+              language: language,
+              orientation: orientation,
+              pageFormat: pageFormat,
+            );
+          },
+        ),
+      );
+    });
   }
 }

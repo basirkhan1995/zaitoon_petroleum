@@ -464,7 +464,7 @@ class _TransferHeaderRow extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            width: 30,
+            width: 25,
             child: Text(
               '#',
               style: TextStyle(

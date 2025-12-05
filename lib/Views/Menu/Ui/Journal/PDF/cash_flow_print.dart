@@ -100,16 +100,7 @@ class CashFlowTransactionPrint extends PrintServices{
         build: (context) => [
           horizontalDivider(),
           pw.SizedBox(height: 5),
-          pw.Row(
-            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-            children: [
-              buildTextWidget(text: getTranslation(locale: 'moneyReceipt', language: language),fontWeight: pw.FontWeight.bold),
-              buildTextWidget(text: getTranslation(locale: data.trnType??"", language: language),fontWeight: pw.FontWeight.bold),
-            ]
-          ),
-          pw.SizedBox(height: 5),
-          voucher(data: data,language: language)
-          
+          voucher(data: data,language: language),
         ],
         header: (context) => prebuiltHeader,
         footer: (context) => footer(
@@ -233,46 +224,56 @@ class CashFlowTransactionPrint extends PrintServices{
     required String language,
   }) {
     final lang = NumberToWords.getLanguageFromLocale(Locale(language));
-    
+
     final cleanAmount = data.trdAmount?.replaceAll(',', '') ?? "0";
     final parsedAmount = int.tryParse(
       double.tryParse(cleanAmount)?.toStringAsFixed(0) ?? "0",
     ) ?? 0;
 
     final rows = <Map<String, String>>[
-      {"title": "reference", "value": data.trnReference ?? ""},
-      {"title": "amount", "value": "${data.trdAmount?.toAmount()} ${data.trdCcy}"},
-      {"title": "accountNumber", "value": data.trdAccount.toString()},
-      {"title": "branch", "value": data.trdBranch.toString()},
-      {"title": "narration", "value": data.trdNarration ?? ""},
       {"title": "date", "value": data.trnEntryDate?.toFullDateTime ?? ""},
+      {"title": "reference", "value": data.trnReference ?? ""},
+      {"title": "branch", "value": data.trdBranch.toString()},
       {"title": "trnType", "value": data.trnType.toString()},
+      {"title": "accountNumber", "value": data.trdAccount.toString()},
+      {"title": "amount", "value": "${data.trdAmount?.toAmount()} ${data.trdCcy}"},
+      {"title": "narration", "value": data.trdNarration ?? ""},
     ];
 
     return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      mainAxisAlignment: pw.MainAxisAlignment.start,
       children: [
+        pw.SizedBox(height: 5),
+        pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              buildTextWidget(text: getTranslation(locale: 'moneyReceipt', language: language),fontWeight: pw.FontWeight.bold),
+              buildTextWidget(text: getTranslation(locale: data.trnType??"", language: language),fontWeight: pw.FontWeight.bold),
+            ]
+        ),
+        pw.SizedBox(height: 5),
         pw.Container(
           decoration: pw.BoxDecoration(
-            border: pw.Border.all(width: 0.3),
+            border: pw.Border.all(width: 0.1),
           ),
           child: pw.Column(
-            children: rows
-                .map((r) => pw.Container(padding: const pw.EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 4,
+            children: rows.map((r) => pw.Container(padding: const pw.EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 3,
                 ),
                 decoration: pw.BoxDecoration(
                   border: pw.Border(
-                    bottom: pw.BorderSide(width: 0.3),
+                    bottom: pw.BorderSide(width: 0.1),
                   ),
                 ),
                 child: pw.Row(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  mainAxisAlignment: pw.MainAxisAlignment.start,
                   children: [
-                    // TITLE
+
                     pw.Container(
-                      width: 120,
+                      width: 90,
                       child: buildTextWidget(
                         text: "${getTranslation(locale: r["title"]!, language: language)}:",
                         fontSize: 8
@@ -281,12 +282,9 @@ class CashFlowTransactionPrint extends PrintServices{
 
                     pw.SizedBox(width: 5),
 
-                    // VALUE (AUTO RTL OR LTR)
-                    pw.Expanded(
-                      child: buildTextWidget(
-                        text: r["value"]!,
-                        fontSize: 8,
-                      ),
+                    buildTextWidget(
+                      text: r["value"]!,
+                      fontSize: 8,
                     ),
                   ],
                 ),
@@ -302,24 +300,14 @@ class CashFlowTransactionPrint extends PrintServices{
           text: getTranslation(locale: 'amountInWords', language: language),
           fontSize:8,
         ),
+        horizontalDivider(),
 
         buildTextWidget(
           text: "${NumberToWords.convert(parsedAmount, lang)} ${data.trdCcy}",
-          fontSize: 8,
-          color: pw.PdfColors.blue
+          fontSize: 7,
         ),
-
         pw.SizedBox(height: 5),
-
-        buildTextWidget(
-          text: getTranslation(locale: 'maker', language: language),
-          fontSize:8,
-        ),
-        horizontalDivider(),
-        buildTextWidget(
-          text: data.maker??"",
-          fontSize:8,
-        ),
+       signatory(language: language, data: data)
 
 
       ],
@@ -327,5 +315,45 @@ class CashFlowTransactionPrint extends PrintServices{
   }
 
 
+  //Signature
+  signatory({required language, required TransactionsModel data}) {
+    return pw.Padding(
+      padding: pw.EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Column(
+            mainAxisAlignment: pw.MainAxisAlignment.start,
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            children: [
+              horizontalDivider(width: 120),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.start,
+                children: [
+                  buildTextWidget(text: getTranslation(locale: 'createdBy', language: language), fontSize: 7),
+                  buildTextWidget(text: " ${data.maker} ", fontSize: 7),
+                ],
+              ),
+            ],
+          ),
+          pw.Column(
+            mainAxisAlignment: pw.MainAxisAlignment.start,
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            children: [
+              horizontalDivider(width: 120),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.start,
+                children: [
+                  buildTextWidget(text: getTranslation(locale: 'authorizedBy', language: language), fontSize: 7),
+                  buildTextWidget(text: data.checker??"", fontSize: 7),
+                ],
+              ),
 
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }

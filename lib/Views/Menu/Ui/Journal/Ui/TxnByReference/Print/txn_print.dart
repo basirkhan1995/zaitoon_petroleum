@@ -1,15 +1,19 @@
+import 'dart:ui';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/PrintSettings/print_services.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart' as pw;
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/txn_ref_model.dart';
+import '../../../../../../../Features/Other/amount_to_word.dart';
 import '../../../../../../../Features/PrintSettings/report_model.dart';
 
-class CashTransactionPrint extends PrintServices{
+class TransactionReferencePrintSettings extends PrintServices{
 
   Future<void> createDocument({
-    required TransactionsModel txn,
+    required TxnByReferenceModel data,
     required String language,
     required pw.PageOrientation orientation,
     required ReportModel company,
@@ -18,7 +22,7 @@ class CashTransactionPrint extends PrintServices{
     try {
       final document = await generateStatement(
           report: company,
-          statementData: txn,
+          data: data,
           language: language,
           orientation: orientation,
           pageFormat: pageFormat
@@ -26,7 +30,7 @@ class CashTransactionPrint extends PrintServices{
 
       // Save the document
       await saveDocument(
-        suggestedName: "${txn.trdAccount}_${txn.trdCcy}.pdf",
+        suggestedName: "transaction.pdf",
         pdf: document,
       );
     } catch (e) {
@@ -35,7 +39,7 @@ class CashTransactionPrint extends PrintServices{
   }
 
   Future<void> printDocument({
-    required TransactionsModel txn,
+    required TxnByReferenceModel data,
     required String language,
     required pw.PageOrientation orientation,
     required ReportModel company,
@@ -47,7 +51,7 @@ class CashTransactionPrint extends PrintServices{
     try {
       final document = await generateStatement(
         report: company,
-        statementData: txn,
+        data: data,
         language: language,
         orientation: orientation,
         pageFormat: pageFormat,
@@ -73,7 +77,7 @@ class CashTransactionPrint extends PrintServices{
   Future<pw.Document> generateStatement({
     required String language,
     required ReportModel report,
-    required TransactionsModel statementData,
+    required TxnByReferenceModel data,
     required pw.PageOrientation orientation,
     required pw.PdfPageFormat pageFormat,
   }) async {
@@ -94,8 +98,8 @@ class CashTransactionPrint extends PrintServices{
         orientation: orientation,
         build: (context) => [
           horizontalDivider(),
-
-
+          pw.SizedBox(height: 5),
+          voucher(data: data,language: language),
         ],
         header: (context) => prebuiltHeader,
         footer: (context) => footer(
@@ -115,14 +119,14 @@ class CashTransactionPrint extends PrintServices{
     required String language,
     required ReportModel company,
     required pw.PageOrientation orientation,
-    required TransactionsModel info,
+    required TxnByReferenceModel data,
     required pw.PdfPageFormat pageFormat,
   }) async {
     return generateStatement(
       report: company,
       language: language,
       orientation: orientation,
-      statementData: info,
+      data: data,
       pageFormat: pageFormat,
     );
   }
@@ -136,15 +140,16 @@ class CashTransactionPrint extends PrintServices{
       children: [
         pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          crossAxisAlignment: pw.CrossAxisAlignment.center,
           children: [
             // Company info (left side)
             pw.Expanded(
               flex: 3,
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
+                mainAxisAlignment: pw.MainAxisAlignment.center,
                 children: [
-                  buildTextWidget(text: report.comName ?? "", fontSize: 25,tightBounds: true),
+                  buildTextWidget(text: report.comName ?? "", fontSize: 20,tightBounds: true),
                   pw.SizedBox(height: 3),
                   buildTextWidget(text: report.statementDate ?? "", fontSize: 10),
                 ],
@@ -153,8 +158,8 @@ class CashTransactionPrint extends PrintServices{
             // Logo (right side)
             if (image != null)
               pw.Container(
-                width: 50,
-                height: 50,
+                width: 40,
+                height: 40,
                 child: pw.Image(image, fit: pw.BoxFit.contain),
               ),
           ],
@@ -209,6 +214,145 @@ class CashTransactionPrint extends PrintServices{
           ],
         ),
       ],
+    );
+  }
+
+
+  pw.Widget voucher({
+    required TxnByReferenceModel data,
+    required String language,
+  }) {
+    final lang = NumberToWords.getLanguageFromLocale(Locale(language));
+
+    final cleanAmount = data.amount?.replaceAll(',', '') ?? "0";
+    final parsedAmount = int.tryParse(
+      double.tryParse(cleanAmount)?.toStringAsFixed(0) ?? "0",
+    ) ?? 0;
+
+    final rows = <Map<String, String>>[
+      {"title": "date", "value": data.trnEntryDate?.toFullDateTime ?? ""},
+      {"title": "reference", "value": data.trnReference ?? ""},
+      {"title": "branch", "value": data.branch.toString()},
+      {"title": "trnType", "value": data.trnType.toString()},
+      {"title": "accountNumber", "value": data.account.toString()},
+      {"title": "amount", "value": "${data.amount?.toAmount()} ${data.currency}"},
+      {"title": "narration", "value": data.narration ?? ""},
+    ];
+
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      mainAxisAlignment: pw.MainAxisAlignment.start,
+      children: [
+        pw.SizedBox(height: 5),
+        pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              buildTextWidget(text: getTranslation(locale: 'moneyReceipt', language: language),fontWeight: pw.FontWeight.bold),
+              buildTextWidget(text: getTranslation(locale: data.trnType??"", language: language),fontWeight: pw.FontWeight.bold),
+            ]
+        ),
+        pw.SizedBox(height: 5),
+        pw.Container(
+          decoration: pw.BoxDecoration(
+            border: pw.Border.all(width: 0.1),
+          ),
+          child: pw.Column(
+            children: rows.map((r) => pw.Container(padding: const pw.EdgeInsets.symmetric(
+              horizontal: 5,
+              vertical: 3,
+            ),
+              decoration: pw.BoxDecoration(
+                border: pw.Border(
+                  bottom: pw.BorderSide(width: 0.1),
+                ),
+              ),
+              child: pw.Row(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                mainAxisAlignment: pw.MainAxisAlignment.start,
+                children: [
+
+                  pw.Container(
+                    width: 90,
+                    child: buildTextWidget(
+                        text: "${getTranslation(locale: r["title"]!, language: language)}:",
+                        fontSize: 8
+                    ),
+                  ),
+
+                  pw.SizedBox(width: 5),
+
+                  buildTextWidget(
+                    text: r["value"]!,
+                    fontSize: 8,
+                  ),
+                ],
+              ),
+            ),
+            )
+                .toList(),
+          ),
+        ),
+
+        pw.SizedBox(height: 5),
+
+        buildTextWidget(
+          text: getTranslation(locale: 'amountInWords', language: language),
+          fontSize:8,
+        ),
+        horizontalDivider(),
+
+        buildTextWidget(
+          text: "${NumberToWords.convert(parsedAmount, lang)} ${data.currency}",
+          fontSize: 7,
+        ),
+        pw.SizedBox(height: 5),
+        signatory(language: language, data: data)
+
+
+      ],
+    );
+  }
+
+
+  //Signature
+  signatory({required language, required TxnByReferenceModel data}) {
+    return pw.Padding(
+      padding: pw.EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Column(
+            mainAxisAlignment: pw.MainAxisAlignment.start,
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            children: [
+              horizontalDivider(width: 120),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.start,
+                children: [
+                  buildTextWidget(text: getTranslation(locale: 'createdBy', language: language), fontSize: 7),
+                  buildTextWidget(text: " ${data.maker} ", fontSize: 7),
+                ],
+              ),
+            ],
+          ),
+          pw.Column(
+            mainAxisAlignment: pw.MainAxisAlignment.start,
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            children: [
+              horizontalDivider(width: 120),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.start,
+                children: [
+                  buildTextWidget(text: getTranslation(locale: 'authorizedBy', language: language), fontSize: 7),
+                  buildTextWidget(text: data.checker??"", fontSize: 7),
+                ],
+              ),
+
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

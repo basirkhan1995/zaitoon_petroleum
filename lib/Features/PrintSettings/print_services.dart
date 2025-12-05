@@ -680,7 +680,7 @@ abstract class PrintServices {
       },
 
       'authorizedBy':{
-        'en':'Authorized By',
+        'en':'Authorized by: ',
         'fa':'تایید کننده',
         'ar':'تایید کونکی',
       },

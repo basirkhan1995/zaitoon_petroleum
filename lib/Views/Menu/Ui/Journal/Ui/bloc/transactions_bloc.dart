@@ -59,8 +59,6 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
         emit(TransactionErrorState(e.toString()));
       }
     });
-
-
     on<OnACTATTransactionEvent>((event, emit) async{
       final locale = localizationService.loc;
       emit(TxnLoadingState());

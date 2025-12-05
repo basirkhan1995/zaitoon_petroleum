@@ -77,6 +77,7 @@ class _DesktopState extends State<_Desktop> {
   Uint8List _companyLogo = Uint8List(0);
   final company = ReportModel();
   TransactionsModel? transactionsModel;
+  bool isPrint = true;
   @override
   void initState() {
     super.initState();
@@ -139,68 +140,7 @@ class _DesktopState extends State<_Desktop> {
         builder: (context) {
           return BlocConsumer<TransactionsBloc, TransactionsState>(
               listener: (context, state) {
-                if (state is TransactionLoadedState && state.printTxn != null) {
-
-                  print(state.printTxn?.trnEntryDate ?? "");
-
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    showDialog(
-                      context: context,
-                      builder: (_) => PrintPreviewDialog<TransactionsModel>(
-                        data: state.printTxn!,
-                        company: company,
-                        buildPreview: ({
-                          required data,
-                          required language,
-                          required orientation,
-                          required pageFormat,
-                        }) {
-                          return CashFlowTransactionPrint().printPreview(
-                            company: company,
-                            language: language,
-                            orientation: orientation,
-                            pageFormat: pageFormat,
-                            data: data,
-                          );
-                        },
-                        onPrint: ({
-                          required data,
-                          required language,
-                          required orientation,
-                          required pageFormat,
-                          required selectedPrinter,
-                          required copies,
-                          required pages,
-                        }) {
-                          return CashFlowTransactionPrint().printDocument(
-                            company: company,
-                            language: language,
-                            orientation: orientation,
-                            pageFormat: pageFormat,
-                            selectedPrinter: selectedPrinter,
-                            data: data,
-                            copies: copies,
-                            pages: pages,
-                          );
-                        },
-                        onSave: ({
-                          required data,
-                          required language,
-                          required orientation,
-                          required pageFormat,
-                        }) {
-                          return CashFlowTransactionPrint().createDocument(
-                            data: data,
-                            company: company,
-                            language: language,
-                            orientation: orientation,
-                            pageFormat: pageFormat,
-                          );
-                        },
-                      ),
-                    );
-                  });
-                }
+               
               },
             builder: (context, trState) {
               return StatefulBuilder(
@@ -415,12 +355,26 @@ class _DesktopState extends State<_Desktop> {
                               controller: narration,
                               title: locale.narration,
                             ),
+                            Row(
+                              spacing: 5,
+                              children: [
+                                Checkbox(
+                                    visualDensity: VisualDensity(horizontal: -4),
+                                    value: isPrint,
+                                    onChanged: (e){
+                                      setState((){
+                                        isPrint = e ?? true;
+                                      });
+                                }),
+                                Text(locale.print)
+                              ],
+                            ),
 
                             if(trState is TransactionErrorState)
                             SizedBox(height: 10),
                             Row(
                               children: [
-                                trState is TransactionErrorState? Text(trState.message) : SizedBox()
+                                trState is TransactionErrorState? Text(trState.message,style: TextStyle(color: color.error),) : SizedBox()
                               ],
                             )
                           ],
@@ -587,17 +541,30 @@ class _DesktopState extends State<_Desktop> {
                           title: locale.amount,
                         ),
                         ZTextFieldEntitled(
-                          // onSubmit: (_)=> onSubmit(),
                           keyboardInputType: TextInputType.multiline,
                           controller: narration,
                           title: locale.narration,
                         ),
 
+                        Row(
+                          spacing: 5,
+                          children: [
+                            Checkbox(
+                                visualDensity: VisualDensity(horizontal: -4),
+                                value: isPrint,
+                                onChanged: (e){
+                                  setState((){
+                                    isPrint = e ?? true;
+                                  });
+                                }),
+                            Text(locale.print)
+                          ],
+                        ),
                         if(trState is TransactionErrorState)
                           SizedBox(height: 10),
                         Row(
                           children: [
-                            trState is TransactionErrorState? Text(trState.message) : SizedBox()
+                            trState is TransactionErrorState? Text(trState.message,style: TextStyle(color: color.error),) : SizedBox()
                           ],
                         )
                       ],
@@ -731,7 +698,6 @@ class _DesktopState extends State<_Desktop> {
 
                         ZTextFieldEntitled(
                           isRequired: true,
-                          // onSubmit: (_)=> onSubmit(),
                           keyboardInputType: TextInputType.numberWithOptions(
                             decimal: true,
                           ),
@@ -763,16 +729,29 @@ class _DesktopState extends State<_Desktop> {
                           title: locale.amount,
                         ),
                         ZTextFieldEntitled(
-                          // onSubmit: (_)=> onSubmit(),
                           keyboardInputType: TextInputType.multiline,
                           controller: narration,
                           title: locale.narration,
+                        ),
+                        Row(
+                          spacing: 5,
+                          children: [
+                            Checkbox(
+                                visualDensity: VisualDensity(horizontal: -4),
+                                value: isPrint,
+                                onChanged: (e){
+                                  setState((){
+                                    isPrint = e ?? true;
+                                  });
+                                }),
+                            Text(locale.print)
+                          ],
                         ),
                         if(trState is TransactionErrorState)
                           SizedBox(height: 10),
                         Row(
                           children: [
-                            trState is TransactionErrorState? Text(trState.message) : SizedBox()
+                            trState is TransactionErrorState? Text(trState.message,style: TextStyle(color: color.error),) : SizedBox()
                           ],
                         )
                       ],
@@ -888,8 +867,7 @@ class _DesktopState extends State<_Desktop> {
                               ],
                             ),
                           ),
-                          itemToString: (acc) =>
-                              "${acc.accNumber} | ${acc.accName}",
+                          itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
                           stateToLoading: (state) =>
                               state is GlAccountsLoadingState,
                           loadingBuilder: (context) => const SizedBox(
@@ -945,10 +923,23 @@ class _DesktopState extends State<_Desktop> {
                           title: locale.amount,
                         ),
                         ZTextFieldEntitled(
-                          // onSubmit: (_)=> onSubmit(),
                           keyboardInputType: TextInputType.multiline,
                           controller: narration,
                           title: locale.narration,
+                        ),
+                        Row(
+                          spacing: 5,
+                          children: [
+                            Checkbox(
+                                visualDensity: VisualDensity(horizontal: -4),
+                                value: isPrint,
+                                onChanged: (e){
+                                  setState((){
+                                    isPrint = e ?? true;
+                                  });
+                                }),
+                            Text(locale.print)
+                          ],
                         ),
                         if(trState is TransactionErrorState)
                           SizedBox(height: 10),
@@ -1419,7 +1410,13 @@ class _DesktopState extends State<_Desktop> {
         }
       }
     }
-    return GlobalShortcuts(
+    return BlocListener<TransactionsBloc, TransactionsState>(
+  listener: (context, state) {
+    if (state is TransactionLoadedState && state.printTxn != null) {
+      getPrinted(data: state.printTxn!, company: company);
+    }
+  },
+  child: GlobalShortcuts(
       shortcuts: shortcuts,
       child: Column(
         children: [
@@ -1608,9 +1605,71 @@ class _DesktopState extends State<_Desktop> {
           ),
         ],
       ),
-    );
+    ),
+);
   },
 ),
     );
+  }
+  void getPrinted({required TransactionsModel data, required ReportModel company}){
+    if(isPrint) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          builder: (_) => PrintPreviewDialog<TransactionsModel>(
+            data: data,
+            company: company,
+            buildPreview: ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+            }) {
+              return CashFlowTransactionPrint().printPreview(
+                company: company,
+                language: language,
+                orientation: orientation,
+                pageFormat: pageFormat,
+                data: data,
+              );
+            },
+            onPrint: ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+              required selectedPrinter,
+              required copies,
+              required pages,
+            }) {
+              return CashFlowTransactionPrint().printDocument(
+                company: company,
+                language: language,
+                orientation: orientation,
+                pageFormat: pageFormat,
+                selectedPrinter: selectedPrinter,
+                data: data,
+                copies: copies,
+                pages: pages,
+              );
+            },
+            onSave: ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+            }) {
+              return CashFlowTransactionPrint().createDocument(
+                data: data,
+                company: company,
+                language: language,
+                orientation: orientation,
+                pageFormat: pageFormat,
+              );
+            },
+          ),
+        );
+      });
+    }
   }
 }
