@@ -309,7 +309,6 @@ class CashFlowTransactionPrint extends PrintServices{
         pw.SizedBox(height: 5),
        signatory(language: language, data: data)
 
-
       ],
     );
   }

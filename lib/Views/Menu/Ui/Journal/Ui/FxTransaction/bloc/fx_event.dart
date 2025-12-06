@@ -9,9 +9,14 @@ class InitializeFxEvent extends FxEvent {
   List<Object?> get props => [];
 }
 
+// Update in fx_event.dart
 class AddFxEntryEvent extends FxEvent {
+  final String? initialCurrency;
+
+  const AddFxEntryEvent({this.initialCurrency});
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [initialCurrency];
 }
 
 class RemoveFxEntryEvent extends FxEvent {
@@ -68,15 +73,21 @@ class ClearFxAccountEvent extends FxEvent {
 
 class SaveFxEvent extends FxEvent {
   final String userName;
+  final String fromCurrency;
+  final String toCurrency;
+  final double exchangeRate;
   final Completer<String> completer;
 
   const SaveFxEvent({
     required this.userName,
+    required this.fromCurrency,
+    required this.toCurrency,
+    required this.exchangeRate,
     required this.completer,
   });
 
   @override
-  List<Object?> get props => [userName];
+  List<Object?> get props => [userName, fromCurrency, toCurrency, exchangeRate];
 }
 
 class ResetFxEvent extends FxEvent {

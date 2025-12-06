@@ -33,16 +33,11 @@ class FxBloc extends Bloc<FxEvent, FxState> {
 
     final currentState = state as FxLoadedState;
 
-    // Create new entry with default currency (use first entry's currency or USD)
-    final defaultCurrency = currentState.entries.isNotEmpty
-        ? currentState.entries.first.currency ?? 'USD'
-        : 'USD';
-
     final newEntry = TransferEntry(
       rowId: DateTime.now().millisecondsSinceEpoch,
       accountNumber: null,
       accountName: '',
-      currency: defaultCurrency,
+      currency: event.initialCurrency ?? 'USD',
       debit: 0.0,
       credit: 0.0,
       narration: '',

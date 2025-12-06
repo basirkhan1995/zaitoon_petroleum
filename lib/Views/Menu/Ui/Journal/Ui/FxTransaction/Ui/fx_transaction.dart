@@ -37,6 +37,8 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
   String? _toSelectedCurrency;
 
   bool _isDisposed = false;
+  double _exchangeRate = 1.0;
+  double _totalConvertedAmount = 0.0;
 
   @override
   void initState() {
@@ -44,18 +46,18 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     context.read<FxBloc>().add(InitializeFxEvent());
     _fromSelectedCurrency = 'USD';
     _toSelectedCurrency = 'AFN';
+    _fetchExchangeRate();
+  }
 
-    final xBloc = context.read<ExchangeRateBloc>();
-    xBloc.add(
-      GetExchangeRateEvent(
-        fromCcy: _fromSelectedCurrency ?? "USD",
-        toCcy: _toSelectedCurrency ?? "AFN",
-      ),
-    );
-
-    final rateState = context.read<ExchangeRateBloc>().state;
-    if (rateState is ExchangeRateLoadedState) {
-      _exchangeRateCtrl.text = rateState.rate ?? "";
+  void _fetchExchangeRate() {
+    if (_fromSelectedCurrency != null && _toSelectedCurrency != null) {
+      final xBloc = context.read<ExchangeRateBloc>();
+      xBloc.add(
+        GetExchangeRateEvent(
+          fromCcy: _fromSelectedCurrency!,
+          toCcy: _toSelectedCurrency!,
+        ),
+      );
     }
   }
 
@@ -70,6 +72,9 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     }
     _fromSelectedCurrency = 'USD';
     _toSelectedCurrency = "AFN";
+    _exchangeRateCtrl.clear();
+    _exchangeRate = 1.0;
+    _totalConvertedAmount = 0.0;
   }
 
   @override
@@ -109,10 +114,9 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
   }
 
   String? baseCurrency;
+
   @override
   Widget build(BuildContext context) {
-
-
     final comState = context.watch<CompanyProfileBloc>().state;
     if (comState is CompanyProfileLoadedState) {
       baseCurrency = comState.company.comLocalCcy;
@@ -121,7 +125,12 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     return BlocListener<ExchangeRateBloc, ExchangeRateState>(
       listener: (context, state) {
         if (state is ExchangeRateLoadedState) {
+          final rate = double.tryParse(state.rate ?? "1.0") ?? 1.0;
+          _exchangeRate = rate;
           _exchangeRateCtrl.text = state.rate ?? "";
+
+          // Recalculate converted amount when exchange rate changes
+          _calculateConvertedAmount();
         }
       },
       child: ZFormDialog(
@@ -164,21 +173,24 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                     _ensureControllerForEntry(entry);
                   }
 
+                  // Calculate converted amount whenever entries change
+                  _calculateConvertedAmount();
+
                   return _buildLoadedState(
                     context,
                     state is FxLoadedState
                         ? state
                         : FxLoadedState(
-                            entries: (state as FxSavingState).entries,
-                            totalDebit: state.entries.fold(
-                              0.0,
-                              (sum, e) => sum + e.debit,
-                            ),
-                            totalCredit: state.entries.fold(
-                              0.0,
-                              (sum, e) => sum + e.credit,
-                            ),
-                          ),
+                      entries: (state as FxSavingState).entries,
+                      totalDebit: state.entries.fold(
+                        0.0,
+                            (sum, e) => sum + e.debit,
+                      ),
+                      totalCredit: state.entries.fold(
+                        0.0,
+                            (sum, e) => sum + e.credit,
+                      ),
+                    ),
                   );
                 } else if (state is FxApiErrorState) {
                   return _buildErrorState(context, state);
@@ -202,20 +214,47 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     );
   }
 
+  void _calculateConvertedAmount() {
+    // Get total debit amount in from currency
+    final fxState = context.read<FxBloc>().state;
+    if (fxState is FxLoadedState) {
+      final totalDebit = fxState.totalDebit;
+      _totalConvertedAmount = totalDebit * _exchangeRate;
+    }
+  }
+
   Widget _buildLoadedState(BuildContext context, FxLoadedState state) {
     final isEmpty = state.entries.isEmpty;
     final isRateLoading = context.watch<ExchangeRateBloc>().state is ExchangeRateLoadingState;
-    bool hasCurrencyMismatch = false;
-    if (!isEmpty && _fromSelectedCurrency != null) {
+
+    // Check for currency mismatches
+    bool hasDebitCurrencyMismatch = false;
+    bool hasCreditCurrencyMismatch = false;
+    bool hasInvalidEntryType = false;
+
+    if (!isEmpty) {
       for (final entry in state.entries) {
-        if (entry.currency != null &&
-            entry.currency!.isNotEmpty &&
-            entry.currency != _fromSelectedCurrency) {
-          hasCurrencyMismatch = true;
-          break;
+        // Check if entry has debit (should be fromCurrency)
+        if (entry.debit > 0) {
+          if (entry.currency != null && entry.currency != _fromSelectedCurrency) {
+            hasDebitCurrencyMismatch = true;
+          }
+        }
+        // Check if entry has credit (should be toCurrency)
+        else if (entry.credit > 0) {
+          if (entry.currency != null && entry.currency != _toSelectedCurrency) {
+            hasCreditCurrencyMismatch = true;
+          }
+        }
+        // Check if entry has both debit and credit (invalid)
+        else if (entry.debit > 0 && entry.credit > 0) {
+          hasInvalidEntryType = true;
         }
       }
     }
+
+    // Calculate if credit matches converted amount
+    final creditMatchesConverted = (state.totalCredit - _totalConvertedAmount).abs() < 0.01;
 
     return Column(
       children: [
@@ -247,14 +286,19 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                         setState(() {
                           _fromSelectedCurrency = e?.ccyCode ?? baseCurrency;
                         });
-                        if(_fromSelectedCurrency !=null && _toSelectedCurrency !=null){
-                          final xBloc = context.read<ExchangeRateBloc>();
-                          xBloc.add(
-                            GetExchangeRateEvent(
-                              fromCcy: _fromSelectedCurrency ?? "USD",
-                              toCcy: _toSelectedCurrency ?? "AFN",
-                            ),
-                          );
+                        _fetchExchangeRate();
+
+                        // Update debit entries currency
+                        final fxBloc = context.read<FxBloc>();
+                        for (final entry in state.entries) {
+                          if (entry.debit > 0) {
+                            fxBloc.add(
+                              UpdateFxEntryEvent(
+                                id: entry.rowId,
+                                currency: _fromSelectedCurrency,
+                              ),
+                            );
+                          }
                         }
                       },
                     ),
@@ -273,14 +317,19 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                         setState(() {
                           _toSelectedCurrency = e?.ccyCode ?? baseCurrency;
                         });
-                        if(_fromSelectedCurrency !=null && _toSelectedCurrency !=null){
-                          final xBloc = context.read<ExchangeRateBloc>();
-                          xBloc.add(
-                            GetExchangeRateEvent(
-                              fromCcy: _fromSelectedCurrency ?? "USD",
-                              toCcy: _toSelectedCurrency ?? "AFN",
-                            ),
-                          );
+                        _fetchExchangeRate();
+
+                        // Update credit entries currency
+                        final fxBloc = context.read<FxBloc>();
+                        for (final entry in state.entries) {
+                          if (entry.credit > 0) {
+                            fxBloc.add(
+                              UpdateFxEntryEvent(
+                                id: entry.rowId,
+                                currency: _toSelectedCurrency,
+                              ),
+                            );
+                          }
                         }
                       },
                     ),
@@ -295,6 +344,11 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                           height: 16,
                           child: CircularProgressIndicator(strokeWidth: 2)) : null,
                       title: AppLocalizations.of(context)!.exchangeRate,
+                      onChanged: (value) {
+                        final rate = double.tryParse(value) ?? 1.0;
+                        _exchangeRate = rate;
+                        _calculateConvertedAmount();
+                      },
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -302,13 +356,22 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                     height: 40,
                     icon: Icons.add,
                     onPressed: () {
-                      context.read<FxBloc>().add(AddFxEntryEvent());
+                      // Add entry with fromCurrency by default (for debit)
+                      context.read<FxBloc>().add(AddFxEntryEvent(
+                        initialCurrency: _fromSelectedCurrency,
+                      ));
                     },
                     width: 120,
                     label: Text(AppLocalizations.of(context)!.addEntry),
                   ),
                   const SizedBox(width: 8),
-                  _buildSaveButton(context, state, hasCurrencyMismatch),
+                  _buildSaveButton(
+                    context,
+                    state,
+                    hasDebitCurrencyMismatch,
+                    hasCreditCurrencyMismatch,
+                    creditMatchesConverted,
+                  ),
                 ],
               ),
               if (isEmpty)
@@ -325,7 +388,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                     ],
                   ),
                 ),
-              if (!isEmpty && hasCurrencyMismatch)
+              if (!isEmpty && hasDebitCurrencyMismatch)
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Row(
@@ -333,24 +396,49 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                       Icon(Icons.warning, color: Colors.orange, size: 16),
                       const SizedBox(width: 8),
                       Text(
-                        AppLocalizations.of(
-                          context,
-                        )!.transactionMismatchCcyAlert,
+                        'Debit account currency must match selected "From" currency',
                         style: TextStyle(color: Colors.orange, fontSize: 12),
                       ),
                     ],
                   ),
                 ),
-              if (!isEmpty &&
-                  (state.totalDebit - state.totalCredit).abs() > 0.01)
+              if (!isEmpty && hasCreditCurrencyMismatch)
                 Padding(
-                  padding: const EdgeInsets.only(top: 4.0),
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.warning, color: Colors.orange, size: 16),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Credit account currency must match selected "To" currency',
+                        style: TextStyle(color: Colors.orange, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              if (!isEmpty && hasInvalidEntryType)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
                   child: Row(
                     children: [
                       Icon(Icons.error, color: Colors.red, size: 16),
                       const SizedBox(width: 8),
                       Text(
-                        AppLocalizations.of(context)!.debitNoEqualCredit,
+                        'An entry cannot have both debit and credit amounts',
+                        style: TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              if (!isEmpty && !creditMatchesConverted)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.warning, color: Colors.red, size: 16),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Total credit amount does not match converted amount',
                         style: TextStyle(color: Colors.red, fontSize: 12),
                       ),
                     ],
@@ -362,7 +450,8 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
         if (!isEmpty) ...[
           const SizedBox(height: 8),
           _TransferHeaderRow(
-            currencySymbol: _fromSelectedCurrency ?? baseCurrency ?? "",
+            fromCurrencySymbol: _fromSelectedCurrency ?? baseCurrency ?? "",
+            toCurrencySymbol: _toSelectedCurrency ?? baseCurrency ?? "",
           ),
           const SizedBox(height: 8),
           Expanded(
@@ -373,8 +462,15 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                 final entry = state.entries[index];
                 final controllers = _rowControllers[entry.rowId];
                 final focusNode = _rowFocusNodes[entry.rowId];
-                if (controllers == null || focusNode == null)
+                if (controllers == null || focusNode == null) {
                   return const SizedBox.shrink();
+                }
+
+                // Determine if this is a debit or credit entry
+                final isDebitEntry = entry.debit > 0;
+                final expectedCurrency = isDebitEntry ? _fromSelectedCurrency : _toSelectedCurrency;
+                final hasCurrencyMismatch = entry.currency != null &&
+                    entry.currency != expectedCurrency;
 
                 return _TransferEntryRow(
                   key: ValueKey(entry.rowId),
@@ -385,7 +481,10 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   debitController: controllers[1],
                   creditController: controllers[2],
                   narrationController: controllers[3],
-                  selectedCurrency: _fromSelectedCurrency,
+                  fromCurrency: _fromSelectedCurrency,
+                  toCurrency: _toSelectedCurrency,
+                  expectedCurrency: expectedCurrency,
+                  hasCurrencyMismatch: hasCurrencyMismatch,
                   onChanged: (updatedEntry) {
                     if (_isDisposed) return;
                     context.read<FxBloc>().add(
@@ -411,7 +510,10 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
           _TransferSummary(
             totalDebit: state.totalDebit,
             totalCredit: state.totalCredit,
-            currencySymbol: _fromSelectedCurrency ?? baseCurrency ?? "",
+            fromCurrencySymbol: _fromSelectedCurrency ?? baseCurrency ?? "",
+            toCurrencySymbol: _toSelectedCurrency ?? baseCurrency ?? "",
+            exchangeRate: _exchangeRate,
+            totalConvertedAmount: _totalConvertedAmount,
           ),
         ] else ...[
           Expanded(
@@ -456,10 +558,8 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
   }
 
   Widget _buildErrorState(BuildContext context, FxApiErrorState state) {
-    // Show error but keep entries for editing
     return Column(
       children: [
-        // Error Banner
         Container(
           padding: const EdgeInsets.all(16),
           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -499,7 +599,6 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
           ),
         ),
 
-        // Show the entries (reuse the loaded state builder with error state entries)
         Expanded(
           child: _buildLoadedState(
             context,
@@ -507,11 +606,11 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
               entries: state.entries,
               totalDebit: state.entries.fold(
                 0.0,
-                (sum, entry) => sum + entry.debit,
+                    (sum, entry) => sum + entry.debit,
               ),
               totalCredit: state.entries.fold(
                 0.0,
-                (sum, entry) => sum + entry.credit,
+                    (sum, entry) => sum + entry.credit,
               ),
             ),
           ),
@@ -521,43 +620,54 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
   }
 
   Widget _buildSaveButton(
-    BuildContext context,
-    FxLoadedState state,
-    bool hasCurrencyMismatch,
-  ) {
-    final isBalanced = (state.totalDebit - state.totalCredit).abs() < 0.01;
+      BuildContext context,
+      FxLoadedState state,
+      bool hasDebitCurrencyMismatch,
+      bool hasCreditCurrencyMismatch,
+      bool creditMatchesConverted,
+      ) {
     final hasEntries = state.entries.isNotEmpty;
     final allAccountsValid = state.entries.every(
-      (entry) => entry.accountNumber != null,
+          (entry) => entry.accountNumber != null,
     );
 
     // Check that at least one entry has non-zero amount (debit or credit > 0)
     final hasNonZeroAmount = state.entries.any(
-      (entry) => entry.debit > 0 || entry.credit > 0,
+          (entry) => entry.debit > 0 || entry.credit > 0,
     );
 
-    // Also check that debits and credits are not mixed in the same entry
+    // Check that debits and credits are not mixed in the same entry
     final hasValidAmounts = state.entries.every(
-      (entry) =>
-          (entry.debit > 0 && entry.credit == 0) || // Either debit only
-          (entry.credit > 0 && entry.debit == 0) || // Or credit only
-          (entry.debit == 0 &&
-              entry.credit == 0), // Or both zero (if you allow zero amounts)
+          (entry) =>
+      (entry.debit > 0 && entry.credit == 0) ||
+          (entry.credit > 0 && entry.debit == 0) ||
+          (entry.debit == 0 && entry.credit == 0),
     );
 
     // Check that there are no entries with both debit and credit > 0
     final hasNoMixedEntries = state.entries.every(
-      (entry) => !(entry.debit > 0 && entry.credit > 0),
+          (entry) => !(entry.debit > 0 && entry.credit > 0),
     );
 
+    // Check that we have both debit and credit entries
+    final hasDebitEntries = state.entries.any((entry) => entry.debit > 0);
+    final hasCreditEntries = state.entries.any((entry) => entry.credit > 0);
+    final hasBothTypes = hasDebitEntries && hasCreditEntries;
+
+    // Validate that total debit > 0
+    final hasValidDebit = state.totalDebit > 0;
+
     final isValid =
-        isBalanced &&
         hasEntries &&
-        allAccountsValid &&
-        hasNonZeroAmount &&
-        hasValidAmounts &&
-        hasNoMixedEntries &&
-        !hasCurrencyMismatch;
+            allAccountsValid &&
+            hasNonZeroAmount &&
+            hasValidAmounts &&
+            hasNoMixedEntries &&
+            !hasDebitCurrencyMismatch &&
+            !hasCreditCurrencyMismatch &&
+            hasBothTypes &&
+            hasValidDebit &&
+            creditMatchesConverted;
 
     return BlocBuilder<FxBloc, FxState>(
       builder: (context, blocState) {
@@ -569,26 +679,32 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
           onPressed: !isValid || userName == null || isSaving
               ? null
               : () async {
-                  final completer = Completer<String>();
-                  context.read<FxBloc>().add(
-                    SaveFxEvent(userName: userName!, completer: completer),
-                  );
-                  try {
-                    await completer.future;
-                  } catch (e) {
-                    // Error is handled in listener via TransferApiErrorState
-                  }
-                },
+            final completer = Completer<String>();
+            context.read<FxBloc>().add(
+              SaveFxEvent(
+                userName: userName!,
+                fromCurrency: _fromSelectedCurrency ?? "",
+                toCurrency: _toSelectedCurrency ?? "",
+                exchangeRate: _exchangeRate,
+                completer: completer,
+              ),
+            );
+            try {
+              await completer.future;
+            } catch (e) {
+              // Error is handled in listener via TransferApiErrorState
+            }
+          },
           width: 120,
           label: isSaving
               ? SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                )
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          )
               : Text(AppLocalizations.of(context)!.create),
         );
       },
@@ -597,9 +713,13 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
 }
 
 class _TransferHeaderRow extends StatelessWidget {
-  final String currencySymbol;
+  final String fromCurrencySymbol;
+  final String toCurrencySymbol;
 
-  const _TransferHeaderRow({required this.currencySymbol});
+  const _TransferHeaderRow({
+    required this.fromCurrencySymbol,
+    required this.toCurrencySymbol,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -646,7 +766,7 @@ class _TransferHeaderRow extends StatelessWidget {
           SizedBox(
             width: 150,
             child: Text(
-              '${AppLocalizations.of(context)!.debitTitle} ($currencySymbol)',
+              '${AppLocalizations.of(context)!.debitTitle} ($fromCurrencySymbol)',
               style: TextStyle(
                 color: color.surface,
                 fontWeight: FontWeight.w500,
@@ -656,7 +776,7 @@ class _TransferHeaderRow extends StatelessWidget {
           SizedBox(
             width: 150,
             child: Text(
-              '${AppLocalizations.of(context)!.creditTitle} ($currencySymbol)',
+              '${AppLocalizations.of(context)!.creditTitle} ($toCurrencySymbol)',
               style: TextStyle(
                 color: color.surface,
                 fontWeight: FontWeight.w500,
@@ -694,7 +814,10 @@ class _TransferEntryRow extends StatefulWidget {
   final TextEditingController debitController;
   final TextEditingController creditController;
   final TextEditingController narrationController;
-  final String? selectedCurrency;
+  final String? fromCurrency;
+  final String? toCurrency;
+  final String? expectedCurrency;
+  final bool hasCurrencyMismatch;
   final Function(TransferEntry) onChanged;
   final Function(int) onRemove;
 
@@ -707,7 +830,10 @@ class _TransferEntryRow extends StatefulWidget {
     required this.debitController,
     required this.creditController,
     required this.narrationController,
-    this.selectedCurrency,
+    this.fromCurrency,
+    this.toCurrency,
+    this.expectedCurrency,
+    required this.hasCurrencyMismatch,
     required this.onChanged,
     required this.onRemove,
   });
@@ -723,16 +849,16 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
-    final entryCurrency =
-        widget.entry.currency ?? widget.selectedCurrency ?? baseCurrency;
-    final hasCurrencyMismatch =
-        widget.selectedCurrency != null &&
-        entryCurrency != widget.selectedCurrency;
     currentLocale = context.watch<LocalizationBloc>().state.countryCode;
     final comState = context.watch<CompanyProfileBloc>().state;
     if (comState is CompanyProfileLoadedState) {
       baseCurrency = comState.company.comLocalCcy;
     }
+
+    // Determine if this is a debit or credit entry
+    final isDebitEntry = widget.entry.debit > 0;
+    final expectedCurrency = isDebitEntry ? widget.fromCurrency : widget.toCurrency;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
@@ -750,104 +876,113 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
             child: SizedBox(
               height: 40,
               child:
-                  GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
-                    key: ValueKey('account_${widget.entry.rowId}'),
-                    showAllOnFocus: true,
-                    controller: widget.accountController,
-                    title: '',
-                    hintText: AppLocalizations.of(context)!.accounts,
-                    isRequired: true,
-                    bloc: context.read<AccountsBloc>(),
-                    fetchAllFunction: (bloc) => bloc.add(
-                      LoadAccountsFilterEvent(
-                        start: 1,
-                        end: 5,
-                        exclude: "10101010,10101011",
-                        ccy: widget.selectedCurrency ?? baseCurrency,
-                        locale: currentLocale ?? 'en',
+              GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
+                key: ValueKey('account_${widget.entry.rowId}'),
+                showAllOnFocus: true,
+                controller: widget.accountController,
+                title: '',
+                hintText: AppLocalizations.of(context)!.accounts,
+                isRequired: true,
+                bloc: context.read<AccountsBloc>(),
+                fetchAllFunction: (bloc) => bloc.add(
+                  LoadAccountsFilterEvent(
+                    start: 1,
+                    end: 5,
+                    exclude: "10101010,10101011",
+                    ccy: expectedCurrency ?? baseCurrency,
+                    locale: currentLocale ?? 'en',
+                  ),
+                ),
+                searchFunction: (bloc, query) => bloc.add(
+                  LoadAccountsFilterEvent(
+                    input: query,
+                    start: 1,
+                    end: 5,
+                    exclude: "10101010,10101011",
+                    ccy: expectedCurrency ?? baseCurrency,
+                    locale: currentLocale ?? 'en',
+                  ),
+                ),
+                itemBuilder: (context, account) => Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "${account.accNumber} | ${account.accName}",
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
                       ),
-                    ),
-                    searchFunction: (bloc, query) => bloc.add(
-                      LoadAccountsFilterEvent(
-                        input: query,
-                        start: 1,
-                        end: 5,
-                        exclude: "10101010,10101011",
-                        ccy: widget.selectedCurrency ?? baseCurrency,
-                        locale: currentLocale ?? 'en',
-                      ),
-                    ),
-                    itemBuilder: (context, account) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
                         children: [
-                          Expanded(
-                            child: Text(
-                              "${account.accNumber} | ${account.accName}",
-                              style: Theme.of(context).textTheme.titleSmall,
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
                             ),
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color:
-                                      account.actCurrency ==
-                                          widget.selectedCurrency
-                                      ? Colors.green.shade100
-                                      : Colors.orange.shade100,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  account.actCurrency ?? baseCurrency ?? "",
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(
-                                        color:
-                                            account.actCurrency ==
-                                                widget.selectedCurrency
-                                            ? Colors.black
-                                            : Colors.black,
-                                      ),
-                                ),
+                            decoration: BoxDecoration(
+                              color: account.actCurrency == expectedCurrency
+                                  ? Colors.green.shade100
+                                  : Colors.orange.shade100,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              account.actCurrency ?? baseCurrency ?? "",
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                color: Colors.black,
                               ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                    itemToString: (account) =>
-                        "${account.accNumber} | ${account.accName}",
-                    stateToLoading: (state) => state is AccountLoadingState,
-                    loadingBuilder: (context) => const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 1),
-                    ),
-                    stateToItems: (state) {
-                      if (state is AccountLoadedState) return state.accounts;
-                      return [];
-                    },
-                    onSelected: (account) {
-                      widget.accountController.text = account.accName ?? '';
-                      widget.onChanged(
-                        widget.entry.copyWith(
-                          accountNumber: account.accNumber,
-                          accountName: account.accName,
-                          currency: account.actCurrency,
-                        ),
-                      );
-                    },
-                    noResultsText: 'No account found',
-                    showClearButton: true,
+                    ],
                   ),
+                ),
+                itemToString: (account) =>
+                "${account.accNumber} | ${account.accName}",
+                stateToLoading: (state) => state is AccountLoadingState,
+                loadingBuilder: (context) => const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 1),
+                ),
+                stateToItems: (state) {
+                  if (state is AccountLoadedState) return state.accounts;
+                  return [];
+                },
+                onSelected: (account) {
+                  widget.accountController.text = account.accName ?? '';
+
+                  // Check if selected account currency matches expected currency
+                  final accountCurrency = account.actCurrency;
+                  final isCurrencyValid = accountCurrency == expectedCurrency;
+
+                  widget.onChanged(
+                    widget.entry.copyWith(
+                      accountNumber: account.accNumber,
+                      accountName: account.accName,
+                      currency: account.actCurrency,
+                    ),
+                  );
+
+                  if (!isCurrencyValid) {
+                    Utils.showOverlayMessage(
+                      context,
+                      message: isDebitEntry
+                          ? 'Debit account currency ($accountCurrency) must match "From" currency ($expectedCurrency)'
+                          : 'Credit account currency ($accountCurrency) must match "To" currency ($expectedCurrency)',
+                      isError: true,
+                    );
+                  }
+                },
+                noResultsText: 'No account found',
+                showClearButton: true,
+              ),
             ),
           ),
 
@@ -858,18 +993,18 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 9),
               decoration: BoxDecoration(
-                color: hasCurrencyMismatch ? Colors.orange.shade50 : null,
+                color: widget.hasCurrencyMismatch ? Colors.orange.shade50 : null,
                 border: Border.all(
-                  color: hasCurrencyMismatch
+                  color: widget.hasCurrencyMismatch
                       ? Colors.orange
                       : color.outline.withValues(alpha: .5),
                 ),
                 borderRadius: BorderRadius.circular(3),
               ),
               child: Text(
-                entryCurrency ?? baseCurrency ?? "",
+                widget.entry.currency ?? baseCurrency ?? "",
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: hasCurrencyMismatch
+                  color: widget.hasCurrencyMismatch
                       ? Colors.orange
                       : Theme.of(context).colorScheme.onSurface,
                   fontSize: 13,
@@ -930,11 +1065,20 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 if (debit > 0) {
                   // Clear credit if debit is entered
                   widget.creditController.clear();
-                }
 
-                widget.onChanged(
-                  widget.entry.copyWith(debit: debit, credit: 0.0),
-                );
+                  // Update currency to from currency when debit is entered
+                  widget.onChanged(
+                    widget.entry.copyWith(
+                      debit: debit,
+                      credit: 0.0,
+                      currency: widget.fromCurrency,
+                    ),
+                  );
+                } else {
+                  widget.onChanged(
+                    widget.entry.copyWith(debit: debit, credit: 0.0),
+                  );
+                }
               },
               onEditingComplete: () {
                 final debit = widget.debitController.text.cleanAmount
@@ -942,13 +1086,20 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
 
                 if (debit > 0) {
                   widget.debitController.text = debit.toAmount();
-                  // Clear credit explicitly
                   widget.creditController.clear();
-                }
 
-                widget.onChanged(
-                  widget.entry.copyWith(debit: debit, credit: 0.0),
-                );
+                  widget.onChanged(
+                    widget.entry.copyWith(
+                      debit: debit,
+                      credit: 0.0,
+                      currency: widget.fromCurrency,
+                    ),
+                  );
+                } else {
+                  widget.onChanged(
+                    widget.entry.copyWith(debit: debit, credit: 0.0),
+                  );
+                }
               },
             ),
           ),
@@ -1003,11 +1154,20 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 if (credit > 0) {
                   // Clear debit if credit is entered
                   widget.debitController.clear();
-                }
 
-                widget.onChanged(
-                  widget.entry.copyWith(credit: credit, debit: 0.0),
-                );
+                  // Update currency to to currency when credit is entered
+                  widget.onChanged(
+                    widget.entry.copyWith(
+                      credit: credit,
+                      debit: 0.0,
+                      currency: widget.toCurrency,
+                    ),
+                  );
+                } else {
+                  widget.onChanged(
+                    widget.entry.copyWith(credit: credit, debit: 0.0),
+                  );
+                }
               },
               onEditingComplete: () {
                 final credit = widget.creditController.text.cleanAmount
@@ -1015,13 +1175,20 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
 
                 if (credit > 0) {
                   widget.creditController.text = credit.toAmount();
-                  // Clear debit explicitly
                   widget.debitController.clear();
-                }
 
-                widget.onChanged(
-                  widget.entry.copyWith(credit: credit, debit: 0.0),
-                );
+                  widget.onChanged(
+                    widget.entry.copyWith(
+                      credit: credit,
+                      debit: 0.0,
+                      currency: widget.toCurrency,
+                    ),
+                  );
+                } else {
+                  widget.onChanged(
+                    widget.entry.copyWith(credit: credit, debit: 0.0),
+                  );
+                }
               },
             ),
           ),
@@ -1035,7 +1202,6 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 key: ValueKey('narration_${widget.entry.rowId}'),
                 controller: widget.narrationController,
                 textInputAction: TextInputAction.done,
-
                 maxLines: 1,
                 style: TextStyle(fontSize: 13),
                 decoration: InputDecoration(
@@ -1096,18 +1262,24 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
 class _TransferSummary extends StatelessWidget {
   final double totalDebit;
   final double totalCredit;
-  final String currencySymbol;
+  final String fromCurrencySymbol;
+  final String toCurrencySymbol;
+  final double exchangeRate;
+  final double totalConvertedAmount;
 
   const _TransferSummary({
     required this.totalDebit,
     required this.totalCredit,
-    required this.currencySymbol,
+    required this.fromCurrencySymbol,
+    required this.toCurrencySymbol,
+    required this.exchangeRate,
+    required this.totalConvertedAmount,
   });
 
   @override
   Widget build(BuildContext context) {
-    final difference = totalDebit - totalCredit;
-    final isBalanced = difference.abs() < 0.01;
+    // Check if credit matches converted amount
+    final creditMatchesConverted = (totalCredit - totalConvertedAmount).abs() < 0.01;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -1116,7 +1288,7 @@ class _TransferSummary extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
-          color: isBalanced ? Colors.green : Colors.red,
+          color: creditMatchesConverted ? Colors.green : Colors.red,
           width: 1,
         ),
       ),
@@ -1129,7 +1301,7 @@ class _TransferSummary extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    AppLocalizations.of(context)!.totalDebit,
+                    'Total Debit',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: Theme.of(
                         context,
@@ -1137,7 +1309,7 @@ class _TransferSummary extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '$currencySymbol ${totalDebit.toAmount()}',
+                    '$fromCurrencySymbol ${totalDebit.toAmount()}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -1148,7 +1320,7 @@ class _TransferSummary extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    AppLocalizations.of(context)!.totalCredit,
+                    'Exchange Rate',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: Theme.of(
                         context,
@@ -1156,9 +1328,9 @@ class _TransferSummary extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '$currencySymbol ${totalCredit.toAmount()}',
+                    '1 $fromCurrencySymbol = $exchangeRate $toCurrencySymbol',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
+                      color: Colors.blue,
                     ),
                   ),
                 ],
@@ -1167,7 +1339,7 @@ class _TransferSummary extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    AppLocalizations.of(context)!.difference,
+                    'Converted Amount',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: Theme.of(
                         context,
@@ -1175,28 +1347,51 @@ class _TransferSummary extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '$currencySymbol ${difference.abs().toAmount()}',
+                    '$toCurrencySymbol ${totalConvertedAmount.toAmount()}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: isBalanced ? Colors.green : Colors.red,
+                      color: Colors.purple,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Total Credit',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.outline.withValues(alpha: .6),
+                    ),
+                  ),
+                  Text(
+                    '$toCurrencySymbol ${totalCredit.toAmount()}',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: creditMatchesConverted ? Colors.green : Colors.red,
                     ),
                   ),
                 ],
               ),
             ],
           ),
-          if (!isBalanced) const SizedBox(height: 8),
-          if (!isBalanced)
-            Row(
-              children: [
-                Icon(Icons.error, color: Colors.red, size: 16),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    AppLocalizations.of(context)!.debitNoEqualCredit,
-                    style: const TextStyle(color: Colors.red, fontSize: 12),
+          if (!creditMatchesConverted)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Row(
+                children: [
+                  Icon(Icons.warning, color: Colors.red, size: 16),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Credit amount does not match converted amount. '
+                          'Expected: $toCurrencySymbol ${totalConvertedAmount.toAmount()}, '
+                          'Actual: $toCurrencySymbol ${totalCredit.toAmount()}',
+                      style: const TextStyle(color: Colors.red, fontSize: 12),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
         ],
       ),
