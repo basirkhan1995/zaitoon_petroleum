@@ -72,7 +72,7 @@ class _DesktopState extends State<_Desktop> {
       isActionTrue: false,
       onAction: null,
       icon: Icons.home_repair_service_outlined,
-      title: tr.accountTransfer,
+      title: loadedAtat?.trnType == "ATAT"? tr.accountTransfer : tr.fxTransaction,
       child: BlocConsumer<FetchAtatBloc, FetchAtatState>(
   listener: (context, state) {
     if (state is FetchATATLoadedState) {

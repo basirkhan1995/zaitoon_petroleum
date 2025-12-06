@@ -7,7 +7,6 @@ import '../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
 import '../model/fx_model.dart';
 part 'fx_event.dart';
 part 'fx_state.dart';
-
 class FxBloc extends Bloc<FxEvent, FxState> {
   final Repositories repo;
   FxBloc(this.repo) : super(FxInitial()) {
@@ -19,7 +18,6 @@ class FxBloc extends Bloc<FxEvent, FxState> {
     on<ResetFxEvent>(_onReset);
     on<ClearFxApiErrorEvent>(_onClearApiError);
   }
-
   void _onInitialize(InitializeFxEvent event, Emitter<FxState> emit) {
     emit(FxLoadedState(
       entries: [],
@@ -27,12 +25,9 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       totalCredit: 0.0,
     ));
   }
-
   void _onAddEntry(AddFxEntryEvent event, Emitter<FxState> emit) {
     if (state is! FxLoadedState) return;
-
     final currentState = state as FxLoadedState;
-
     final newEntry = TransferEntry(
       rowId: DateTime.now().millisecondsSinceEpoch,
       accountNumber: null,
@@ -42,11 +37,9 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       credit: 0.0,
       narration: '',
     );
-
     final updatedEntries = List<TransferEntry>.from(currentState.entries)..add(newEntry);
     _updateStateWithEntries(updatedEntries, emit);
   }
-
   void _onRemoveEntry(RemoveFxEntryEvent event, Emitter<FxState> emit) {
     if (state is FxLoadedState) {
       final currentState = state as FxLoadedState;
@@ -54,7 +47,6 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       _updateStateWithEntries(updatedEntries, emit);
     }
   }
-
   void _onUpdateEntry(UpdateFxEntryEvent event, Emitter<FxState> emit) {
     if (state is FxLoadedState) {
       final currentState = state as FxLoadedState;
@@ -71,11 +63,9 @@ class FxBloc extends Bloc<FxEvent, FxState> {
         }
         return entry;
       }).toList();
-
       _updateStateWithEntries(updatedEntries, emit);
     }
   }
-
   // In TransferBloc - update the _onSaveTransfer method
   Future<void> _onSaveTransfer(SaveFxEvent event, Emitter<FxState> emit) async {
     final tr = localizationService.loc;
@@ -83,12 +73,11 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       event.completer.completeError('Invalid state');
       return;
     }
-
     final currentState = state as FxLoadedState;
-
-    // Validate debit = credit
-    if (currentState.totalDebit != currentState.totalCredit) {
-      final error = tr.debitNoEqualCredit;
+    // Validate total credit == total debit * exchange rate (with tolerance for floating point)
+    final expectedCredit = currentState.totalDebit * event.exchangeRate;
+    if ((currentState.totalCredit - expectedCredit).abs() > 0.01) {
+      final error = tr.debitNoEqualCredit; // Reuse or update this localization as needed (e.g., to mention converted amount mismatch)
       emit(FxApiErrorState(
         error: error,
         errorType: 'validation',
@@ -97,7 +86,6 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       event.completer.completeError(error);
       return;
     }
-
     // Validate at least one entry
     if (currentState.entries.isEmpty) {
       final error = 'Add at least one transfer entry';
@@ -109,7 +97,6 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       event.completer.completeError(error);
       return;
     }
-
     // Validate all entries have account
     for (final entry in currentState.entries) {
       if (entry.accountNumber == null) {
@@ -123,14 +110,12 @@ class FxBloc extends Bloc<FxEvent, FxState> {
         return;
       }
     }
-
     // Show saving state
     emit(FxSavingState(
       entries: currentState.entries,
       totalDebit: currentState.totalDebit,
       totalCredit: currentState.totalCredit,
     ));
-
     try {
       // Convert entries to API format
       final records = currentState.entries.map((entry) => {
@@ -140,21 +125,17 @@ class FxBloc extends Bloc<FxEvent, FxState> {
         'credit': entry.credit,
         'narration': entry.narration,
       }).toList();
-
       // Call API
-      final result = await repo.saveBulkTransfer(
+      final result = await repo.saveFxTransfer(
         userName: event.userName,
         records: records,
       );
-
       // Check API response
       final msg = result['msg']?.toString().toLowerCase() ?? '';
-
       if (msg.contains('success')) {
         // Success - reset form with fresh state
         final reference = result['reference']?.toString() ?? 'Transaction successful';
         emit(FxSavedState(true, reference));
-
         // Reset to fresh state after showing success
         await Future.delayed(const Duration(milliseconds: 500)); // Small delay for UX
         emit(FxLoadedState(
@@ -162,13 +143,11 @@ class FxBloc extends Bloc<FxEvent, FxState> {
           totalDebit: 0.0,
           totalCredit: 0.0,
         ));
-
         event.completer.complete('success');
       } else {
         // Handle different error types from API
         String errorType = 'failed';
         String errorMessage = msg;
-
         if (msg.contains('no limit') || msg.contains('insufficient')) {
           errorType = 'no limit';
           errorMessage = tr.accountLimitMessage;
@@ -182,7 +161,6 @@ class FxBloc extends Bloc<FxEvent, FxState> {
           errorType = 'failed';
           errorMessage = tr.transactionFailedTitle;
         }
-
         // Return to loaded state with error
         emit(FxApiErrorState(
           error: errorMessage,
@@ -200,7 +178,6 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       event.completer.completeError(e.toString());
     }
   }
-
   void _onClearApiError(ClearFxApiErrorEvent event, Emitter<FxState> emit) {
     if (state is FxApiErrorState) {
       final errorState = state as FxApiErrorState;
@@ -212,7 +189,6 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       ));
     }
   }
-
   void _onReset(ResetFxEvent event, Emitter<FxState> emit) {
     emit(FxLoadedState(
       entries: [],
@@ -220,14 +196,12 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       totalCredit: 0.0,
     ));
   }
-
   void _updateStateWithEntries(
       List<TransferEntry> entries,
       Emitter<FxState> emit,
       ) {
     final totalDebit = entries.fold(0.0, (sum, entry) => sum + entry.debit);
     final totalCredit = entries.fold(0.0, (sum, entry) => sum + entry.credit);
-
     emit(FxLoadedState(
       entries: entries,
       totalDebit: totalDebit,

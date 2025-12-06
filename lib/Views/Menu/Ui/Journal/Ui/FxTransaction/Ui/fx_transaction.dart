@@ -40,13 +40,18 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
   double _exchangeRate = 1.0;
   double _totalConvertedAmount = 0.0;
 
+  // Store entry errors for display
+  final Map<int, String> _entryErrors = {};
+
   @override
   void initState() {
     super.initState();
     context.read<FxBloc>().add(InitializeFxEvent());
     _fromSelectedCurrency = 'USD';
     _toSelectedCurrency = 'AFN';
-    _fetchExchangeRate();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchExchangeRate();
+    });
   }
 
   void _fetchExchangeRate() {
@@ -75,6 +80,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     _exchangeRateCtrl.clear();
     _exchangeRate = 1.0;
     _totalConvertedAmount = 0.0;
+    _entryErrors.clear();
   }
 
   @override
@@ -126,11 +132,16 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
       listener: (context, state) {
         if (state is ExchangeRateLoadedState) {
           final rate = double.tryParse(state.rate ?? "1.0") ?? 1.0;
+
+          // Update exchange rate without setState
           _exchangeRate = rate;
           _exchangeRateCtrl.text = state.rate ?? "";
 
-          // Recalculate converted amount when exchange rate changes
-          _calculateConvertedAmount();
+          // Update narration with new rate for all entries that have amounts
+          _updateAllNarrationWithRate();
+
+          // Recalculate converted amount
+          _recalculateConvertedAmount();
         }
       },
       child: ZFormDialog(
@@ -154,6 +165,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                     isError: false,
                   );
                   _clearAllControllersAndFocus();
+                  context.read<FxBloc>().add(InitializeFxEvent());
                 } else if (state is FxApiErrorState) {
                   Utils.showOverlayMessage(
                     context,
@@ -174,7 +186,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   }
 
                   // Calculate converted amount whenever entries change
-                  _calculateConvertedAmount();
+                  _recalculateConvertedAmount();
 
                   return _buildLoadedState(
                     context,
@@ -214,7 +226,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     );
   }
 
-  void _calculateConvertedAmount() {
+  void _recalculateConvertedAmount() {
     // Get total debit amount in from currency
     final fxState = context.read<FxBloc>().state;
     if (fxState is FxLoadedState) {
@@ -223,34 +235,92 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     }
   }
 
+  void _updateAllNarrationWithRate() {
+    final fxState = context.read<FxBloc>().state;
+    if (fxState is! FxLoadedState) return;
+
+    for (final entry in fxState.entries) {
+      if (entry.debit > 0 || entry.credit > 0) {
+        final controllers = _rowControllers[entry.rowId];
+        if (controllers != null) {
+          final narrationController = controllers[3];
+          final currentNarration = narrationController.text;
+          final ratePattern = RegExp(r'@\d+(\.\d+)?');
+
+          String newNarration;
+          if (ratePattern.hasMatch(currentNarration)) {
+            newNarration = currentNarration.replaceAll(
+              ratePattern,
+              '@${_exchangeRate.toStringAsFixed(2)}',
+            );
+          } else if (currentNarration.trim().isNotEmpty) {
+            newNarration = '${currentNarration.trim()} @${_exchangeRate.toStringAsFixed(2)}';
+          } else {
+            newNarration = '@${_exchangeRate.toStringAsFixed(2)}';
+          }
+
+          if (currentNarration != newNarration) {
+            narrationController.text = newNarration;
+            context.read<FxBloc>().add(
+              UpdateFxEntryEvent(
+                id: entry.rowId,
+                narration: newNarration,
+              ),
+            );
+          }
+        }
+      }
+    }
+  }
+
   Widget _buildLoadedState(BuildContext context, FxLoadedState state) {
     final isEmpty = state.entries.isEmpty;
     final isRateLoading = context.watch<ExchangeRateBloc>().state is ExchangeRateLoadingState;
 
-    // Check for currency mismatches
+    // Check for currency mismatches and other errors
     bool hasDebitCurrencyMismatch = false;
     bool hasCreditCurrencyMismatch = false;
     bool hasInvalidEntryType = false;
+    bool hasValidationErrors = false;
+
+    // Recalculate errors
+    final newEntryErrors = <int, String>{};
 
     if (!isEmpty) {
       for (final entry in state.entries) {
+        String? errorMessage;
+
+        // Check if entry has both debit and credit (invalid)
+        if (entry.debit > 0 && entry.credit > 0) {
+          errorMessage = 'Entry cannot have both debit and credit amounts';
+          hasInvalidEntryType = true;
+        }
         // Check if entry has debit (should be fromCurrency)
-        if (entry.debit > 0) {
+        else if (entry.debit > 0) {
           if (entry.currency != null && entry.currency != _fromSelectedCurrency) {
+            errorMessage = 'Debit account currency (${entry.currency}) must match From currency ($_fromSelectedCurrency)';
             hasDebitCurrencyMismatch = true;
           }
         }
         // Check if entry has credit (should be toCurrency)
         else if (entry.credit > 0) {
           if (entry.currency != null && entry.currency != _toSelectedCurrency) {
+            errorMessage = 'Credit account currency (${entry.currency}) must match To currency ($_toSelectedCurrency)';
             hasCreditCurrencyMismatch = true;
           }
         }
-        // Check if entry has both debit and credit (invalid)
-        else if (entry.debit > 0 && entry.credit > 0) {
-          hasInvalidEntryType = true;
+
+        if (errorMessage != null) {
+          newEntryErrors[entry.rowId] = errorMessage;
+          hasValidationErrors = true;
         }
       }
+    }
+
+    // Update entry errors only if changed
+    if (_mapsAreDifferent(_entryErrors, newEntryErrors)) {
+      _entryErrors.clear();
+      _entryErrors.addAll(newEntryErrors);
     }
 
     // Calculate if credit matches converted amount
@@ -283,21 +353,22 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                       isMulti: false,
                       onMultiChanged: (_) {},
                       onSingleChanged: (e) {
-                        setState(() {
-                          _fromSelectedCurrency = e?.ccyCode ?? baseCurrency;
-                        });
-                        _fetchExchangeRate();
+                        final newCurrency = e?.ccyCode ?? baseCurrency;
+                        if (newCurrency != _fromSelectedCurrency) {
+                          _fromSelectedCurrency = newCurrency;
+                          _fetchExchangeRate();
 
-                        // Update debit entries currency
-                        final fxBloc = context.read<FxBloc>();
-                        for (final entry in state.entries) {
-                          if (entry.debit > 0) {
-                            fxBloc.add(
-                              UpdateFxEntryEvent(
-                                id: entry.rowId,
-                                currency: _fromSelectedCurrency,
-                              ),
-                            );
+                          // Update debit entries currency
+                          final fxBloc = context.read<FxBloc>();
+                          for (final entry in state.entries) {
+                            if (entry.debit > 0) {
+                              fxBloc.add(
+                                UpdateFxEntryEvent(
+                                  id: entry.rowId,
+                                  currency: _fromSelectedCurrency,
+                                ),
+                              );
+                            }
                           }
                         }
                       },
@@ -314,21 +385,22 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                       isMulti: false,
                       onMultiChanged: (_) {},
                       onSingleChanged: (e) {
-                        setState(() {
-                          _toSelectedCurrency = e?.ccyCode ?? baseCurrency;
-                        });
-                        _fetchExchangeRate();
+                        final newCurrency = e?.ccyCode ?? baseCurrency;
+                        if (newCurrency != _toSelectedCurrency) {
+                          _toSelectedCurrency = newCurrency;
+                          _fetchExchangeRate();
 
-                        // Update credit entries currency
-                        final fxBloc = context.read<FxBloc>();
-                        for (final entry in state.entries) {
-                          if (entry.credit > 0) {
-                            fxBloc.add(
-                              UpdateFxEntryEvent(
-                                id: entry.rowId,
-                                currency: _toSelectedCurrency,
-                              ),
-                            );
+                          // Update credit entries currency
+                          final fxBloc = context.read<FxBloc>();
+                          for (final entry in state.entries) {
+                            if (entry.credit > 0) {
+                              fxBloc.add(
+                                UpdateFxEntryEvent(
+                                  id: entry.rowId,
+                                  currency: _toSelectedCurrency,
+                                ),
+                              );
+                            }
                           }
                         }
                       },
@@ -338,7 +410,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   Expanded(
                     child: ZTextFieldEntitled(
                       controller: _exchangeRateCtrl,
-                      end: isRateLoading? Container(
+                      end: isRateLoading ? Container(
                           padding: EdgeInsets.symmetric(horizontal: 0),
                           width: 16,
                           height: 16,
@@ -347,7 +419,8 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                       onChanged: (value) {
                         final rate = double.tryParse(value) ?? 1.0;
                         _exchangeRate = rate;
-                        _calculateConvertedAmount();
+                        _recalculateConvertedAmount();
+                        _updateAllNarrationWithRate();
                       },
                     ),
                   ),
@@ -370,79 +443,46 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                     state,
                     hasDebitCurrencyMismatch,
                     hasCreditCurrencyMismatch,
+                    hasInvalidEntryType,
                     creditMatchesConverted,
                   ),
                 ],
               ),
+
+              // Display general warnings
               if (isEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.info_outline, color: Colors.blue, size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Add entries to begin transaction',
-                        style: TextStyle(color: Colors.blue, fontSize: 12),
-                      ),
-                    ],
-                  ),
+                _buildWarningMessage(
+                  Icons.info_outline,
+                  Colors.blue,
+                  'Add entries to begin transaction',
                 ),
-              if (!isEmpty && hasDebitCurrencyMismatch)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.warning, color: Colors.orange, size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Debit account currency must match selected "From" currency',
-                        style: TextStyle(color: Colors.orange, fontSize: 12),
-                      ),
-                    ],
-                  ),
+
+              if (hasDebitCurrencyMismatch)
+                _buildWarningMessage(
+                  Icons.warning,
+                  Colors.orange,
+                  'Some debit entries have currency mismatch',
                 ),
-              if (!isEmpty && hasCreditCurrencyMismatch)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.warning, color: Colors.orange, size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Credit account currency must match selected "To" currency',
-                        style: TextStyle(color: Colors.orange, fontSize: 12),
-                      ),
-                    ],
-                  ),
+
+              if (hasCreditCurrencyMismatch)
+                _buildWarningMessage(
+                  Icons.warning,
+                  Colors.orange,
+                  'Some credit entries have currency mismatch',
                 ),
-              if (!isEmpty && hasInvalidEntryType)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.error, color: Colors.red, size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        'An entry cannot have both debit and credit amounts',
-                        style: TextStyle(color: Colors.red, fontSize: 12),
-                      ),
-                    ],
-                  ),
+
+              if (hasInvalidEntryType)
+                _buildWarningMessage(
+                  Icons.error,
+                  Colors.red,
+                  'Some entries have both debit and credit amounts',
                 ),
+
               if (!isEmpty && !creditMatchesConverted)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.warning, color: Colors.red, size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Total credit amount does not match converted amount',
-                        style: TextStyle(color: Colors.red, fontSize: 12),
-                      ),
-                    ],
-                  ),
+                _buildWarningMessage(
+                  Icons.warning,
+                  Colors.red,
+                  'Total credit does not match converted amount',
                 ),
             ],
           ),
@@ -466,43 +506,103 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   return const SizedBox.shrink();
                 }
 
-                // Determine if this is a debit or credit entry
+                // Determine if this is a debit or credit entry based on amount
                 final isDebitEntry = entry.debit > 0;
-                final expectedCurrency = isDebitEntry ? _fromSelectedCurrency : _toSelectedCurrency;
-                final hasCurrencyMismatch = entry.currency != null &&
+                final isCreditEntry = entry.credit > 0;
+                final expectedCurrency = isDebitEntry
+                    ? _fromSelectedCurrency
+                    : (isCreditEntry ? _toSelectedCurrency : null);
+
+                // Only show currency mismatch if there's an amount AND currency doesn't match
+                final hasCurrencyMismatch = expectedCurrency != null &&
+                    entry.currency != null &&
                     entry.currency != expectedCurrency;
 
-                return _TransferEntryRow(
-                  key: ValueKey(entry.rowId),
-                  entry: entry,
-                  index: index,
-                  focusNode: focusNode,
-                  accountController: controllers[0],
-                  debitController: controllers[1],
-                  creditController: controllers[2],
-                  narrationController: controllers[3],
-                  fromCurrency: _fromSelectedCurrency,
-                  toCurrency: _toSelectedCurrency,
-                  expectedCurrency: expectedCurrency,
-                  hasCurrencyMismatch: hasCurrencyMismatch,
-                  onChanged: (updatedEntry) {
-                    if (_isDisposed) return;
-                    context.read<FxBloc>().add(
-                      UpdateFxEntryEvent(
-                        id: updatedEntry.rowId,
-                        accountNumber: updatedEntry.accountNumber,
-                        accountName: updatedEntry.accountName,
-                        currency: updatedEntry.currency,
-                        debit: updatedEntry.debit,
-                        credit: updatedEntry.credit,
-                        narration: updatedEntry.narration,
+                return Column(
+                  key: ValueKey('entry_row_${entry.rowId}'),
+                  children: [
+                    if (_entryErrors.containsKey(entry.rowId))
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.orange[50],
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.orange),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.warning, color: Colors.orange, size: 14),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                _entryErrors[entry.rowId]!,
+                                style: TextStyle(
+                                  color: Colors.orange[800],
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    );
-                  },
-                  onRemove: (id) {
-                    if (_isDisposed) return;
-                    context.read<FxBloc>().add(RemoveFxEntryEvent(id));
-                  },
+                    _TransferEntryRow(
+                      key: ValueKey(entry.rowId),
+                      entry: entry,
+                      index: index,
+                      focusNode: focusNode,
+                      accountController: controllers[0],
+                      debitController: controllers[1],
+                      creditController: controllers[2],
+                      narrationController: controllers[3],
+                      fromCurrency: _fromSelectedCurrency,
+                      toCurrency: _toSelectedCurrency,
+                      expectedCurrency: expectedCurrency,
+                      hasCurrencyMismatch: hasCurrencyMismatch,
+                      exchangeRate: _exchangeRate,
+                      errorMessage: _entryErrors[entry.rowId],
+                      onChanged: (updatedEntry) {
+                        if (_isDisposed) return;
+
+                        // Add rate to narration if amount is entered
+                        if ((updatedEntry.debit > 0 || updatedEntry.credit > 0) &&
+                            !updatedEntry.narration.contains('@')) {
+                          final newNarration = updatedEntry.narration.isNotEmpty
+                              ? '${updatedEntry.narration} @${_exchangeRate.toStringAsFixed(2)}'
+                              : '@${_exchangeRate.toStringAsFixed(2)}';
+
+                          context.read<FxBloc>().add(
+                            UpdateFxEntryEvent(
+                              id: updatedEntry.rowId,
+                              accountNumber: updatedEntry.accountNumber,
+                              accountName: updatedEntry.accountName,
+                              currency: updatedEntry.currency,
+                              debit: updatedEntry.debit,
+                              credit: updatedEntry.credit,
+                              narration: newNarration,
+                            ),
+                          );
+                        } else {
+                          context.read<FxBloc>().add(
+                            UpdateFxEntryEvent(
+                              id: updatedEntry.rowId,
+                              accountNumber: updatedEntry.accountNumber,
+                              accountName: updatedEntry.accountName,
+                              currency: updatedEntry.currency,
+                              debit: updatedEntry.debit,
+                              credit: updatedEntry.credit,
+                              narration: updatedEntry.narration,
+                            ),
+                          );
+                        }
+                      },
+                      onRemove: (id) {
+                        if (_isDisposed) return;
+                        context.read<FxBloc>().add(RemoveFxEntryEvent(id));
+                        _entryErrors.remove(id);
+                      },
+                    ),
+                  ],
                 );
               },
             ),
@@ -554,6 +654,33 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
           ),
         ],
       ],
+    );
+  }
+
+  bool _mapsAreDifferent(Map<int, String> map1, Map<int, String> map2) {
+    if (map1.length != map2.length) return true;
+    for (final key in map1.keys) {
+      if (!map2.containsKey(key) || map1[key] != map2[key]) return true;
+    }
+    return false;
+  }
+
+  Widget _buildWarningMessage(IconData icon, Color color, String message) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 6.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: color, size: 14),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(color: color, fontSize: 11),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -624,6 +751,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
       FxLoadedState state,
       bool hasDebitCurrencyMismatch,
       bool hasCreditCurrencyMismatch,
+      bool hasInvalidEntryType,
       bool creditMatchesConverted,
       ) {
     final hasEntries = state.entries.isNotEmpty;
@@ -644,11 +772,6 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
           (entry.debit == 0 && entry.credit == 0),
     );
 
-    // Check that there are no entries with both debit and credit > 0
-    final hasNoMixedEntries = state.entries.every(
-          (entry) => !(entry.debit > 0 && entry.credit > 0),
-    );
-
     // Check that we have both debit and credit entries
     final hasDebitEntries = state.entries.any((entry) => entry.debit > 0);
     final hasCreditEntries = state.entries.any((entry) => entry.credit > 0);
@@ -657,17 +780,18 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     // Validate that total debit > 0
     final hasValidDebit = state.totalDebit > 0;
 
+    // Check if any entries have validation errors
+    final hasEntryErrors = _entryErrors.isNotEmpty;
+
     final isValid =
         hasEntries &&
             allAccountsValid &&
             hasNonZeroAmount &&
             hasValidAmounts &&
-            hasNoMixedEntries &&
-            !hasDebitCurrencyMismatch &&
-            !hasCreditCurrencyMismatch &&
             hasBothTypes &&
             hasValidDebit &&
-            creditMatchesConverted;
+            creditMatchesConverted &&
+            !hasEntryErrors;
 
     return BlocBuilder<FxBloc, FxState>(
       builder: (context, blocState) {
@@ -818,6 +942,8 @@ class _TransferEntryRow extends StatefulWidget {
   final String? toCurrency;
   final String? expectedCurrency;
   final bool hasCurrencyMismatch;
+  final double exchangeRate;
+  final String? errorMessage;
   final Function(TransferEntry) onChanged;
   final Function(int) onRemove;
 
@@ -834,6 +960,8 @@ class _TransferEntryRow extends StatefulWidget {
     this.toCurrency,
     this.expectedCurrency,
     required this.hasCurrencyMismatch,
+    required this.exchangeRate,
+    this.errorMessage,
     required this.onChanged,
     required this.onRemove,
   });
@@ -845,10 +973,77 @@ class _TransferEntryRow extends StatefulWidget {
 class __TransferEntryRowState extends State<_TransferEntryRow> {
   String? baseCurrency;
   String? currentLocale;
+  bool _hasInitializedNarration = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize narration with rate in next frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeNarrationWithRate();
+    });
+  }
+
+  void _initializeNarrationWithRate() {
+    if (!_hasInitializedNarration &&
+        (widget.entry.debit > 0 || widget.entry.credit > 0) &&
+        !widget.entry.narration.contains('@') &&
+        widget.exchangeRate > 0) {
+      _addRateToNarration();
+      _hasInitializedNarration = true;
+    }
+  }
+
+  void _addRateToNarration() {
+    final currentNarration = widget.narrationController.text;
+    final ratePattern = RegExp(r'@\d+(\.\d+)?');
+
+    String newNarration;
+    if (ratePattern.hasMatch(currentNarration)) {
+      // Update existing rate
+      newNarration = currentNarration.replaceAll(
+        ratePattern,
+        '@${widget.exchangeRate.toStringAsFixed(2)}',
+      );
+    } else if (currentNarration.trim().isNotEmpty) {
+      // Add rate to existing narration
+      newNarration = '${currentNarration.trim()} @${widget.exchangeRate.toStringAsFixed(2)}';
+    } else {
+      // Just add rate
+      newNarration = '@${widget.exchangeRate.toStringAsFixed(2)}';
+    }
+
+    widget.narrationController.text = newNarration;
+  }
+
+  void _handleAmountChange(double newAmount, bool isDebit) {
+    // Clear opposite field
+    if (isDebit) {
+      widget.creditController.clear();
+    } else {
+      widget.debitController.clear();
+    }
+
+    // Force currency based on debit/credit
+    final forcedCurrency = isDebit ? widget.fromCurrency : widget.toCurrency;
+
+    // Update entry
+    final updatedEntry = widget.entry.copyWith(
+      debit: isDebit ? newAmount : 0.0,
+      credit: !isDebit ? newAmount : 0.0,
+      currency: forcedCurrency,
+    );
+
+    widget.onChanged(updatedEntry);
+
+    // Add rate to narration if amount > 0
+    if (newAmount > 0 && !widget.entry.narration.contains('@')) {
+      _addRateToNarration();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme;
     currentLocale = context.watch<LocalizationBloc>().state.countryCode;
     final comState = context.watch<CompanyProfileBloc>().state;
     if (comState is CompanyProfileLoadedState) {
@@ -857,11 +1052,23 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
 
     // Determine if this is a debit or credit entry
     final isDebitEntry = widget.entry.debit > 0;
+    final isCreditEntry = widget.entry.credit > 0;
     final expectedCurrency = isDebitEntry ? widget.fromCurrency : widget.toCurrency;
+
+    // Check if we should show currency validation
+    final shouldValidateCurrency = (isDebitEntry || isCreditEntry);
+    final showCurrencyError = shouldValidateCurrency && widget.hasCurrencyMismatch;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
+      decoration: BoxDecoration(
+        color: showCurrencyError
+            ? Colors.orange[50]
+            : Theme.of(context).colorScheme.surface,
+        border: showCurrencyError
+            ? Border.all(color: Colors.orange, width: 1)
+            : null,
+      ),
       child: Row(
         spacing: 5,
         children: [
@@ -875,8 +1082,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
             flex: 2,
             child: SizedBox(
               height: 40,
-              child:
-              GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
+              child: GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
                 key: ValueKey('account_${widget.entry.rowId}'),
                 showAllOnFocus: true,
                 controller: widget.accountController,
@@ -888,7 +1094,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                   LoadAccountsFilterEvent(
                     start: 1,
                     end: 5,
-                    exclude: "10101010,10101011",
+                    exclude: "10101011",
                     ccy: expectedCurrency ?? baseCurrency,
                     locale: currentLocale ?? 'en',
                   ),
@@ -898,7 +1104,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                     input: query,
                     start: 1,
                     end: 5,
-                    exclude: "10101010,10101011",
+                    exclude: "10101011",
                     ccy: expectedCurrency ?? baseCurrency,
                     locale: currentLocale ?? 'en',
                   ),
@@ -925,16 +1131,25 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: account.actCurrency == expectedCurrency
+                              color: shouldValidateCurrency &&
+                                  account.actCurrency == expectedCurrency
                                   ? Colors.green.shade100
-                                  : Colors.orange.shade100,
+                                  : shouldValidateCurrency
+                                  ? Colors.orange.shade100
+                                  : Colors.grey.shade100,
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
                               account.actCurrency ?? baseCurrency ?? "",
                               style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(
-                                color: Colors.black,
+                                color: shouldValidateCurrency &&
+                                    account.actCurrency == expectedCurrency
+                                    ? Colors.green[800]
+                                    : shouldValidateCurrency
+                                    ? Colors.orange[800]
+                                    : Colors.grey[800],
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
@@ -958,27 +1173,33 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 onSelected: (account) {
                   widget.accountController.text = account.accName ?? '';
 
-                  // Check if selected account currency matches expected currency
                   final accountCurrency = account.actCurrency;
-                  final isCurrencyValid = accountCurrency == expectedCurrency;
 
-                  widget.onChanged(
-                    widget.entry.copyWith(
-                      accountNumber: account.accNumber,
-                      accountName: account.accName,
-                      currency: account.actCurrency,
-                    ),
+                  // Update entry with selected account
+                  final updatedEntry = widget.entry.copyWith(
+                    accountNumber: account.accNumber,
+                    accountName: account.accName,
+                    currency: accountCurrency,
                   );
 
-                  if (!isCurrencyValid) {
-                    Utils.showOverlayMessage(
-                      context,
-                      message: isDebitEntry
-                          ? 'Debit account currency ($accountCurrency) must match "From" currency ($expectedCurrency)'
-                          : 'Credit account currency ($accountCurrency) must match "To" currency ($expectedCurrency)',
-                      isError: true,
-                    );
+                  // If amount exists, check currency match
+                  if (shouldValidateCurrency) {
+                    final isCurrencyValid = accountCurrency == expectedCurrency;
+
+                    if (!isCurrencyValid) {
+                      // Show warning but don't prevent selection
+                      Utils.showOverlayMessage(
+                        context,
+                        message: isDebitEntry
+                            ? 'Debit account should be in $expectedCurrency (selected: $accountCurrency)'
+                            : 'Credit account should be in $expectedCurrency (selected: $accountCurrency)',
+                        isError: true,
+                        duration: Duration(seconds: 2),
+                      );
+                    }
                   }
+
+                  widget.onChanged(updatedEntry);
                 },
                 noResultsText: 'No account found',
                 showClearButton: true,
@@ -986,35 +1207,48 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
             ),
           ),
 
-          // Currency
+          // Currency Display - SIMPLIFIED VERSION
           SizedBox(
             width: 50,
             height: 40,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 9),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               decoration: BoxDecoration(
-                color: widget.hasCurrencyMismatch ? Colors.orange.shade50 : null,
+                color: showCurrencyError
+                    ? Colors.orange.shade50
+                    : Colors.grey.shade100,
                 border: Border.all(
-                  color: widget.hasCurrencyMismatch
+                  color: showCurrencyError
                       ? Colors.orange
-                      : color.outline.withValues(alpha: .5),
+                      : Theme.of(context).colorScheme.outline.withValues(alpha: .5),
+                  width: showCurrencyError ? 2 : 1,
                 ),
                 borderRadius: BorderRadius.circular(3),
               ),
-              child: Text(
-                widget.entry.currency ?? baseCurrency ?? "",
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: widget.hasCurrencyMismatch
-                      ? Colors.orange
-                      : Theme.of(context).colorScheme.onSurface,
-                  fontSize: 13,
+              child: Tooltip(
+                message: shouldValidateCurrency && expectedCurrency != null
+                    ? 'Selected: ${widget.entry.currency ?? "---"}\nExpected: $expectedCurrency'
+                    : 'Currency: ${widget.entry.currency ?? "---"}',
+                child: Center(
+                  child: Text(
+                    widget.entry.currency ?? baseCurrency ?? "",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: showCurrencyError
+                          ? Colors.orange[800]
+                          : Theme.of(context).colorScheme.onSurface,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
           ),
 
-          // Debit
+          // Debit Field
           SizedBox(
             width: 150,
             height: 40,
@@ -1031,6 +1265,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
               ],
               decoration: InputDecoration(
                 hintText: '0.00',
+                suffixText: widget.entry.debit > 0 ? 'Dr' : null,
                 suffixStyle: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
@@ -1042,69 +1277,37 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
                   borderSide: BorderSide(
-                    color: color.outline.withValues(alpha: .5),
+                    color: showCurrencyError && isDebitEntry
+                        ? Colors.orange
+                        : Theme.of(context).colorScheme.outline.withValues(alpha: .5),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
                   borderSide: BorderSide(
-                    color: color.outline.withValues(alpha: .5),
+                    color: showCurrencyError && isDebitEntry
+                        ? Colors.orange
+                        : Theme.of(context).colorScheme.outline.withValues(alpha: .5),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: showCurrencyError && isDebitEntry
+                        ? Colors.orange
+                        : Theme.of(context).colorScheme.primary,
                     width: 1,
                   ),
                 ),
               ),
               onChanged: (value) {
                 final debit = value.cleanAmount.toDoubleAmount();
-
-                if (debit > 0) {
-                  // Clear credit if debit is entered
-                  widget.creditController.clear();
-
-                  // Update currency to from currency when debit is entered
-                  widget.onChanged(
-                    widget.entry.copyWith(
-                      debit: debit,
-                      credit: 0.0,
-                      currency: widget.fromCurrency,
-                    ),
-                  );
-                } else {
-                  widget.onChanged(
-                    widget.entry.copyWith(debit: debit, credit: 0.0),
-                  );
-                }
-              },
-              onEditingComplete: () {
-                final debit = widget.debitController.text.cleanAmount
-                    .toDoubleAmount();
-
-                if (debit > 0) {
-                  widget.debitController.text = debit.toAmount();
-                  widget.creditController.clear();
-
-                  widget.onChanged(
-                    widget.entry.copyWith(
-                      debit: debit,
-                      credit: 0.0,
-                      currency: widget.fromCurrency,
-                    ),
-                  );
-                } else {
-                  widget.onChanged(
-                    widget.entry.copyWith(debit: debit, credit: 0.0),
-                  );
-                }
+                _handleAmountChange(debit, true);
               },
             ),
           ),
 
-          // Credit
+          // Credit Field
           SizedBox(
             width: 150,
             height: 40,
@@ -1120,6 +1323,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
               ],
               decoration: InputDecoration(
                 hintText: '0.00',
+                suffixText: widget.entry.credit > 0 ? 'Cr' : null,
                 suffixStyle: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
@@ -1131,69 +1335,37 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
                   borderSide: BorderSide(
-                    color: color.outline.withValues(alpha: .5),
+                    color: showCurrencyError && isCreditEntry
+                        ? Colors.orange
+                        : Theme.of(context).colorScheme.outline.withValues(alpha: .5),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
                   borderSide: BorderSide(
-                    color: color.outline.withValues(alpha: .5),
+                    color: showCurrencyError && isCreditEntry
+                        ? Colors.orange
+                        : Theme.of(context).colorScheme.outline.withValues(alpha: .5),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: showCurrencyError && isCreditEntry
+                        ? Colors.orange
+                        : Theme.of(context).colorScheme.primary,
                     width: 1,
                   ),
                 ),
               ),
               onChanged: (value) {
                 final credit = value.cleanAmount.toDoubleAmount();
-
-                if (credit > 0) {
-                  // Clear debit if credit is entered
-                  widget.debitController.clear();
-
-                  // Update currency to to currency when credit is entered
-                  widget.onChanged(
-                    widget.entry.copyWith(
-                      credit: credit,
-                      debit: 0.0,
-                      currency: widget.toCurrency,
-                    ),
-                  );
-                } else {
-                  widget.onChanged(
-                    widget.entry.copyWith(credit: credit, debit: 0.0),
-                  );
-                }
-              },
-              onEditingComplete: () {
-                final credit = widget.creditController.text.cleanAmount
-                    .toDoubleAmount();
-
-                if (credit > 0) {
-                  widget.creditController.text = credit.toAmount();
-                  widget.debitController.clear();
-
-                  widget.onChanged(
-                    widget.entry.copyWith(
-                      credit: credit,
-                      debit: 0.0,
-                      currency: widget.toCurrency,
-                    ),
-                  );
-                } else {
-                  widget.onChanged(
-                    widget.entry.copyWith(credit: credit, debit: 0.0),
-                  );
-                }
+                _handleAmountChange(credit, false);
               },
             ),
           ),
 
-          // Narration
+          // Narration Field
           Expanded(
             flex: 2,
             child: SizedBox(
@@ -1206,9 +1378,13 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 style: TextStyle(fontSize: 13),
                 decoration: InputDecoration(
                   hintText: AppLocalizations.of(context)!.narration,
+                  suffixText: (widget.entry.debit > 0 || widget.entry.credit > 0)
+                      ? '@${widget.exchangeRate.toStringAsFixed(2)}'
+                      : null,
                   suffixStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Colors.blue[700],
                     fontWeight: FontWeight.bold,
+                    fontSize: 11,
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -1217,19 +1393,25 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(3),
                     borderSide: BorderSide(
-                      color: color.outline.withValues(alpha: .5),
+                      color: showCurrencyError
+                          ? Colors.orange
+                          : Theme.of(context).colorScheme.outline.withValues(alpha: .5),
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(3),
                     borderSide: BorderSide(
-                      color: color.outline.withValues(alpha: .5),
+                      color: showCurrencyError
+                          ? Colors.orange
+                          : Theme.of(context).colorScheme.outline.withValues(alpha: .5),
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(3),
                     borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.primary,
+                      color: showCurrencyError
+                          ? Colors.orange
+                          : Theme.of(context).colorScheme.primary,
                       width: 1,
                     ),
                   ),
@@ -1241,7 +1423,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
             ),
           ),
 
-          // Delete
+          // Delete Button
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6),
             child: IconButton(
@@ -1280,6 +1462,7 @@ class _TransferSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     // Check if credit matches converted amount
     final creditMatchesConverted = (totalCredit - totalConvertedAmount).abs() < 0.01;
+    final difference = (totalCredit - totalConvertedAmount).abs();
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -1385,8 +1568,7 @@ class _TransferSummary extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'Credit amount does not match converted amount. '
-                          'Expected: $toCurrencySymbol ${totalConvertedAmount.toAmount()}, '
-                          'Actual: $toCurrencySymbol ${totalCredit.toAmount()}',
+                          'Difference: $toCurrencySymbol ${difference.toAmount()}',
                       style: const TextStyle(color: Colors.red, fontSize: 12),
                     ),
                   ),

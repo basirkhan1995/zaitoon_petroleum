@@ -1,3 +1,32 @@
+class FxTransaction {
+  final String fromCurrency;
+  final String toCurrency;
+  final double exchangeRate;
+  final List<TransferEntry> entries;
+
+  FxTransaction({
+    required this.fromCurrency,
+    required this.toCurrency,
+    required this.exchangeRate,
+    required this.entries,
+  });
+
+  FxTransaction copyWith({
+    String? fromCurrency,
+    String? toCurrency,
+    double? exchangeRate,
+    List<TransferEntry>? entries,
+  }) {
+    return FxTransaction(
+      fromCurrency: fromCurrency ?? this.fromCurrency,
+      toCurrency: toCurrency ?? this.toCurrency,
+      exchangeRate: exchangeRate ?? this.exchangeRate,
+      entries: entries ?? this.entries,
+    );
+  }
+}
+
+
 class TransferEntry {
   final int rowId;
   final int? accountNumber; // Changed to int

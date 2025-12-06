@@ -229,7 +229,7 @@ class _DesktopState extends State<_Desktop> {
                           final txn = filteredList[index];
                           return InkWell(
                             onTap: () {
-                              if (txn.trnType == "ATAT") {
+                              if (txn.trnType == "ATAT" || txn.trnType == "CRFX") {
                                 context.read<FetchAtatBloc>().add(
                                   FetchAccToAccEvent(
                                     txn.trnReference ?? "",

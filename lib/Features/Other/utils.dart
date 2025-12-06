@@ -289,6 +289,7 @@ class Utils{
       case "GLCR":return AppLocalizations.of(context)!.glCreditTitle;
       case "GLDR":return AppLocalizations.of(context)!.glDebitTitle;
       case "ATAT":return AppLocalizations.of(context)!.accountTransfer;
+      case "CRFX":return AppLocalizations.of(context)!.fxTransaction;
       default: return "NOT FOUND";
     }
   }

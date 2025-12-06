@@ -922,6 +922,31 @@ class Repositories {
       throw Exception('Failed to save bulk transfer: $e');
     }
   }
+  Future<Map<String, dynamic>> saveFxTransfer({required String userName, required List<Map<String, dynamic>> records,}) async {
+    try {
+      final response = await api.post(
+        endpoint: '/journal/crossCurrency.php',
+        data: {
+          'usrName': userName,
+          'records': records,
+        },
+      );
+
+      // Parse response
+      final responseData = response.data;
+      if (responseData is Map<String, dynamic>) {
+        return responseData;
+      } else if (responseData is String) {
+        // If response is a simple string message
+        return {'msg': responseData};
+      }
+
+      return {'msg': 'Unknown response format'};
+    } catch (e) {
+      throw Exception('Failed to save bulk transfer: $e');
+    }
+  }
+
   Future<Map<String, dynamic>> authorizeTxn({required String reference, required String? usrName}) async {
     try {
       final response = await api.put(
