@@ -9,85 +9,85 @@ class InitializeFxEvent extends FxEvent {
   List<Object?> get props => [];
 }
 
-// Update in fx_event.dart
 class AddFxEntryEvent extends FxEvent {
-  final String? initialCurrency;
+  final bool isDebit;
 
-  const AddFxEntryEvent({this.initialCurrency});
+  const AddFxEntryEvent({required this.isDebit});
 
   @override
-  List<Object?> get props => [initialCurrency];
+  List<Object?> get props => [isDebit];
 }
 
 class RemoveFxEntryEvent extends FxEvent {
   final int id;
-  const RemoveFxEntryEvent(this.id);
+  final bool isDebit;
+
+  const RemoveFxEntryEvent(this.id, {required this.isDebit});
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [id, isDebit];
 }
 
 class UpdateFxEntryEvent extends FxEvent {
   final int id;
-  final int? accountNumber; // Changed to int
+  final bool isDebit;
+  final int? accountNumber;
   final String? accountName;
   final String? currency;
-  final double? debit;
-  final double? credit;
+  final double? amount;
   final String? narration;
 
   const UpdateFxEntryEvent({
     required this.id,
+    required this.isDebit,
     this.accountNumber,
     this.accountName,
     this.currency,
-    this.debit,
-    this.credit,
+    this.amount,
     this.narration,
   });
 
   @override
   List<Object?> get props => [
     id,
+    isDebit,
     accountNumber,
     accountName,
     currency,
-    debit,
-    credit,
+    amount,
     narration,
   ];
 }
 
-class SelectFxAccountEvent extends FxEvent {
-  final AccountsModel account;
-  const SelectFxAccountEvent(this.account);
+class UpdateBaseCurrencyEvent extends FxEvent {
+  final String? baseCurrency;
+
+  const UpdateBaseCurrencyEvent(this.baseCurrency);
 
   @override
-  List<Object?> get props => [account];
+  List<Object?> get props => [baseCurrency];
 }
 
-class ClearFxAccountEvent extends FxEvent {
+class UpdateNarrationEvent extends FxEvent {
+  final String narration;
+
+  const UpdateNarrationEvent(this.narration);
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [narration];
 }
 
 class SaveFxEvent extends FxEvent {
   final String userName;
-  final String fromCurrency;
-  final String toCurrency;
-  final double exchangeRate;
   final Completer<String> completer;
 
   const SaveFxEvent({
     required this.userName,
-    required this.fromCurrency,
-    required this.toCurrency,
-    required this.exchangeRate,
     required this.completer,
   });
 
   @override
-  List<Object?> get props => [userName, fromCurrency, toCurrency, exchangeRate];
+  List<Object?> get props => [userName];
 }
 
 class ResetFxEvent extends FxEvent {
@@ -95,7 +95,6 @@ class ResetFxEvent extends FxEvent {
   List<Object?> get props => [];
 }
 
-// Add to transfer_event.dart
 class ClearFxApiErrorEvent extends FxEvent {
   @override
   List<Object?> get props => [];

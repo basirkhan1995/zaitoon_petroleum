@@ -1,211 +1,526 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../../../../../../../Services/localization_services.dart';
 import '../../../../../../../../Services/repositories.dart';
-import '../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
 import '../model/fx_model.dart';
+
 part 'fx_event.dart';
 part 'fx_state.dart';
+
 class FxBloc extends Bloc<FxEvent, FxState> {
   final Repositories repo;
+
   FxBloc(this.repo) : super(FxInitial()) {
     on<InitializeFxEvent>(_onInitialize);
     on<AddFxEntryEvent>(_onAddEntry);
     on<RemoveFxEntryEvent>(_onRemoveEntry);
     on<UpdateFxEntryEvent>(_onUpdateEntry);
+    on<UpdateBaseCurrencyEvent>(_onUpdateBaseCurrency);
+    on<UpdateNarrationEvent>(_onUpdateNarration);
     on<SaveFxEvent>(_onSaveTransfer);
     on<ResetFxEvent>(_onReset);
     on<ClearFxApiErrorEvent>(_onClearApiError);
   }
+
   void _onInitialize(InitializeFxEvent event, Emitter<FxState> emit) {
     emit(FxLoadedState(
-      entries: [],
-      totalDebit: 0.0,
-      totalCredit: 0.0,
+      baseCurrency: null,
+      narration: '',
+      debitEntries: [],
+      creditEntries: [],
+      totalDebitBase: 0.0,
+      totalCreditBase: 0.0,
     ));
   }
+
   void _onAddEntry(AddFxEntryEvent event, Emitter<FxState> emit) {
-    if (state is! FxLoadedState) return;
-    final currentState = state as FxLoadedState;
+    if (state is! FxLoadedState && state is! FxSavingState && state is! FxApiErrorState) return;
+
+    final currentState = state;
+    List<TransferEntry> currentDebitEntries = [];
+    List<TransferEntry> currentCreditEntries = [];
+    String? currentBaseCurrency;
+    String currentNarration = '';
+    double currentTotalDebitBase = 0.0;
+    double currentTotalCreditBase = 0.0;
+
+    if (currentState is FxLoadedState) {
+      currentDebitEntries = currentState.debitEntries;
+      currentCreditEntries = currentState.creditEntries;
+      currentBaseCurrency = currentState.baseCurrency;
+      currentNarration = currentState.narration;
+      currentTotalDebitBase = currentState.totalDebitBase;
+      currentTotalCreditBase = currentState.totalCreditBase;
+    } else if (currentState is FxSavingState) {
+      currentDebitEntries = currentState.debitEntries;
+      currentCreditEntries = currentState.creditEntries;
+      currentBaseCurrency = currentState.baseCurrency;
+      currentNarration = currentState.narration;
+      currentTotalDebitBase = currentState.totalDebitBase;
+      currentTotalCreditBase = currentState.totalCreditBase;
+    } else if (currentState is FxApiErrorState) {
+      currentDebitEntries = currentState.debitEntries;
+      currentCreditEntries = currentState.creditEntries;
+      currentBaseCurrency = currentState.baseCurrency;
+      currentNarration = currentState.narration;
+      currentTotalDebitBase = currentState.totalDebitBase;
+      currentTotalCreditBase = currentState.totalCreditBase;
+    }
+
     final newEntry = TransferEntry(
       rowId: DateTime.now().millisecondsSinceEpoch,
       accountNumber: null,
       accountName: '',
-      currency: event.initialCurrency ?? 'USD',
-      debit: 0.0,
-      credit: 0.0,
+      currency: null,
+      amount: 0.0,
+      isDebit: event.isDebit,
       narration: '',
     );
-    final updatedEntries = List<TransferEntry>.from(currentState.entries)..add(newEntry);
-    _updateStateWithEntries(updatedEntries, emit);
-  }
-  void _onRemoveEntry(RemoveFxEntryEvent event, Emitter<FxState> emit) {
-    if (state is FxLoadedState) {
-      final currentState = state as FxLoadedState;
-      final updatedEntries = currentState.entries.where((entry) => entry.rowId != event.id).toList();
-      _updateStateWithEntries(updatedEntries, emit);
+
+    if (event.isDebit) {
+      final updatedEntries = List<TransferEntry>.from(currentDebitEntries)..add(newEntry);
+      emit(FxLoadedState(
+        baseCurrency: currentBaseCurrency,
+        narration: currentNarration,
+        debitEntries: updatedEntries,
+        creditEntries: currentCreditEntries,
+        totalDebitBase: currentTotalDebitBase,
+        totalCreditBase: currentTotalCreditBase,
+      ));
+    } else {
+      final updatedEntries = List<TransferEntry>.from(currentCreditEntries)..add(newEntry);
+      emit(FxLoadedState(
+        baseCurrency: currentBaseCurrency,
+        narration: currentNarration,
+        debitEntries: currentDebitEntries,
+        creditEntries: updatedEntries,
+        totalDebitBase: currentTotalDebitBase,
+        totalCreditBase: currentTotalCreditBase,
+      ));
     }
   }
+
+  void _onRemoveEntry(RemoveFxEntryEvent event, Emitter<FxState> emit) {
+    if (state is! FxLoadedState && state is! FxSavingState && state is! FxApiErrorState) return;
+
+    final currentState = state;
+    List<TransferEntry> currentDebitEntries = [];
+    List<TransferEntry> currentCreditEntries = [];
+    String? currentBaseCurrency;
+    String currentNarration = '';
+    double currentTotalDebitBase = 0.0;
+    double currentTotalCreditBase = 0.0;
+
+    if (currentState is FxLoadedState) {
+      currentDebitEntries = currentState.debitEntries;
+      currentCreditEntries = currentState.creditEntries;
+      currentBaseCurrency = currentState.baseCurrency;
+      currentNarration = currentState.narration;
+      currentTotalDebitBase = currentState.totalDebitBase;
+      currentTotalCreditBase = currentState.totalCreditBase;
+    } else if (currentState is FxSavingState) {
+      currentDebitEntries = currentState.debitEntries;
+      currentCreditEntries = currentState.creditEntries;
+      currentBaseCurrency = currentState.baseCurrency;
+      currentNarration = currentState.narration;
+      currentTotalDebitBase = currentState.totalDebitBase;
+      currentTotalCreditBase = currentState.totalCreditBase;
+    } else if (currentState is FxApiErrorState) {
+      currentDebitEntries = currentState.debitEntries;
+      currentCreditEntries = currentState.creditEntries;
+      currentBaseCurrency = currentState.baseCurrency;
+      currentNarration = currentState.narration;
+      currentTotalDebitBase = currentState.totalDebitBase;
+      currentTotalCreditBase = currentState.totalCreditBase;
+    }
+
+    if (event.isDebit) {
+      final updatedEntries = currentDebitEntries
+          .where((entry) => entry.rowId != event.id)
+          .toList();
+      emit(FxLoadedState(
+        baseCurrency: currentBaseCurrency,
+        narration: currentNarration,
+        debitEntries: updatedEntries,
+        creditEntries: currentCreditEntries,
+        totalDebitBase: currentTotalDebitBase,
+        totalCreditBase: currentTotalCreditBase,
+      ));
+    } else {
+      final updatedEntries = currentCreditEntries
+          .where((entry) => entry.rowId != event.id)
+          .toList();
+      emit(FxLoadedState(
+        baseCurrency: currentBaseCurrency,
+        narration: currentNarration,
+        debitEntries: currentDebitEntries,
+        creditEntries: updatedEntries,
+        totalDebitBase: currentTotalDebitBase,
+        totalCreditBase: currentTotalCreditBase,
+      ));
+    }
+  }
+
   void _onUpdateEntry(UpdateFxEntryEvent event, Emitter<FxState> emit) {
-    if (state is FxLoadedState) {
-      final currentState = state as FxLoadedState;
-      final updatedEntries = currentState.entries.map((entry) {
+    if (state is! FxLoadedState && state is! FxSavingState && state is! FxApiErrorState) return;
+
+    final currentState = state;
+    List<TransferEntry> currentDebitEntries = [];
+    List<TransferEntry> currentCreditEntries = [];
+    String? currentBaseCurrency;
+    String currentNarration = '';
+    double currentTotalDebitBase = 0.0;
+    double currentTotalCreditBase = 0.0;
+
+    if (currentState is FxLoadedState) {
+      currentDebitEntries = currentState.debitEntries;
+      currentCreditEntries = currentState.creditEntries;
+      currentBaseCurrency = currentState.baseCurrency;
+      currentNarration = currentState.narration;
+      currentTotalDebitBase = currentState.totalDebitBase;
+      currentTotalCreditBase = currentState.totalCreditBase;
+    } else if (currentState is FxSavingState) {
+      currentDebitEntries = currentState.debitEntries;
+      currentCreditEntries = currentState.creditEntries;
+      currentBaseCurrency = currentState.baseCurrency;
+      currentNarration = currentState.narration;
+      currentTotalDebitBase = currentState.totalDebitBase;
+      currentTotalCreditBase = currentState.totalCreditBase;
+    } else if (currentState is FxApiErrorState) {
+      currentDebitEntries = currentState.debitEntries;
+      currentCreditEntries = currentState.creditEntries;
+      currentBaseCurrency = currentState.baseCurrency;
+      currentNarration = currentState.narration;
+      currentTotalDebitBase = currentState.totalDebitBase;
+      currentTotalCreditBase = currentState.totalCreditBase;
+    }
+
+    if (event.isDebit) {
+      final updatedEntries = currentDebitEntries.map((entry) {
         if (entry.rowId == event.id) {
           return entry.copyWith(
             accountNumber: event.accountNumber ?? entry.accountNumber,
             accountName: event.accountName ?? entry.accountName,
             currency: event.currency ?? entry.currency,
-            debit: event.debit ?? entry.debit,
-            credit: event.credit ?? entry.credit,
+            amount: event.amount ?? entry.amount,
             narration: event.narration ?? entry.narration,
           );
         }
         return entry;
       }).toList();
-      _updateStateWithEntries(updatedEntries, emit);
+      emit(FxLoadedState(
+        baseCurrency: currentBaseCurrency,
+        narration: currentNarration,
+        debitEntries: updatedEntries,
+        creditEntries: currentCreditEntries,
+        totalDebitBase: currentTotalDebitBase,
+        totalCreditBase: currentTotalCreditBase,
+      ));
+    } else {
+      final updatedEntries = currentCreditEntries.map((entry) {
+        if (entry.rowId == event.id) {
+          return entry.copyWith(
+            accountNumber: event.accountNumber ?? entry.accountNumber,
+            accountName: event.accountName ?? entry.accountName,
+            currency: event.currency ?? entry.currency,
+            amount: event.amount ?? entry.amount,
+            narration: event.narration ?? entry.narration,
+          );
+        }
+        return entry;
+      }).toList();
+      emit(FxLoadedState(
+        baseCurrency: currentBaseCurrency,
+        narration: currentNarration,
+        debitEntries: currentDebitEntries,
+        creditEntries: updatedEntries,
+        totalDebitBase: currentTotalDebitBase,
+        totalCreditBase: currentTotalCreditBase,
+      ));
     }
   }
-  // In TransferBloc - update the _onSaveTransfer method
+
+  void _onUpdateBaseCurrency(UpdateBaseCurrencyEvent event, Emitter<FxState> emit) {
+    if (state is! FxLoadedState && state is! FxSavingState && state is! FxApiErrorState) return;
+
+    final currentState = state;
+    List<TransferEntry> currentDebitEntries = [];
+    List<TransferEntry> currentCreditEntries = [];
+    String? currentBaseCurrency;
+    String currentNarration = '';
+    double currentTotalDebitBase = 0.0;
+    double currentTotalCreditBase = 0.0;
+
+    if (currentState is FxLoadedState) {
+      currentDebitEntries = currentState.debitEntries;
+      currentCreditEntries = currentState.creditEntries;
+      currentBaseCurrency = currentState.baseCurrency;
+      currentNarration = currentState.narration;
+      currentTotalDebitBase = currentState.totalDebitBase;
+      currentTotalCreditBase = currentState.totalCreditBase;
+    } else if (currentState is FxSavingState) {
+      currentDebitEntries = currentState.debitEntries;
+      currentCreditEntries = currentState.creditEntries;
+      currentBaseCurrency = currentState.baseCurrency;
+      currentNarration = currentState.narration;
+      currentTotalDebitBase = currentState.totalDebitBase;
+      currentTotalCreditBase = currentState.totalCreditBase;
+    } else if (currentState is FxApiErrorState) {
+      currentDebitEntries = currentState.debitEntries;
+      currentCreditEntries = currentState.creditEntries;
+      currentBaseCurrency = currentState.baseCurrency;
+      currentNarration = currentState.narration;
+      currentTotalDebitBase = currentState.totalDebitBase;
+      currentTotalCreditBase = currentState.totalCreditBase;
+    }
+
+    emit(FxLoadedState(
+      baseCurrency: event.baseCurrency,
+      narration: currentNarration,
+      debitEntries: currentDebitEntries,
+      creditEntries: currentCreditEntries,
+      totalDebitBase: currentTotalDebitBase,
+      totalCreditBase: currentTotalCreditBase,
+    ));
+  }
+
+  void _onUpdateNarration(UpdateNarrationEvent event, Emitter<FxState> emit) {
+    if (state is! FxLoadedState && state is! FxSavingState && state is! FxApiErrorState) return;
+
+    final currentState = state;
+    List<TransferEntry> currentDebitEntries = [];
+    List<TransferEntry> currentCreditEntries = [];
+    String? currentBaseCurrency;
+    String currentNarration = '';
+    double currentTotalDebitBase = 0.0;
+    double currentTotalCreditBase = 0.0;
+
+    if (currentState is FxLoadedState) {
+      currentDebitEntries = currentState.debitEntries;
+      currentCreditEntries = currentState.creditEntries;
+      currentBaseCurrency = currentState.baseCurrency;
+      currentNarration = currentState.narration;
+      currentTotalDebitBase = currentState.totalDebitBase;
+      currentTotalCreditBase = currentState.totalCreditBase;
+    } else if (currentState is FxSavingState) {
+      currentDebitEntries = currentState.debitEntries;
+      currentCreditEntries = currentState.creditEntries;
+      currentBaseCurrency = currentState.baseCurrency;
+      currentNarration = currentState.narration;
+      currentTotalDebitBase = currentState.totalDebitBase;
+      currentTotalCreditBase = currentState.totalCreditBase;
+    } else if (currentState is FxApiErrorState) {
+      currentDebitEntries = currentState.debitEntries;
+      currentCreditEntries = currentState.creditEntries;
+      currentBaseCurrency = currentState.baseCurrency;
+      currentNarration = currentState.narration;
+      currentTotalDebitBase = currentState.totalDebitBase;
+      currentTotalCreditBase = currentState.totalCreditBase;
+    }
+
+    emit(FxLoadedState(
+      baseCurrency: currentBaseCurrency,
+      narration: event.narration,
+      debitEntries: currentDebitEntries,
+      creditEntries: currentCreditEntries,
+      totalDebitBase: currentTotalDebitBase,
+      totalCreditBase: currentTotalCreditBase,
+    ));
+  }
+
   Future<void> _onSaveTransfer(SaveFxEvent event, Emitter<FxState> emit) async {
-    final tr = localizationService.loc;
     if (state is! FxLoadedState) {
       event.completer.completeError('Invalid state');
       return;
     }
+
     final currentState = state as FxLoadedState;
-    // Validate total credit == total debit * exchange rate (with tolerance for floating point)
-    final expectedCredit = currentState.totalDebit * event.exchangeRate;
-    if ((currentState.totalCredit - expectedCredit).abs() > 0.01) {
-      final error = tr.debitNoEqualCredit; // Reuse or update this localization as needed (e.g., to mention converted amount mismatch)
+
+    // Validate base currency is selected
+    if (currentState.baseCurrency == null || currentState.baseCurrency!.isEmpty) {
+      final error = 'Please select base currency';
       emit(FxApiErrorState(
         error: error,
         errorType: 'validation',
-        entries: currentState.entries,
+        baseCurrency: currentState.baseCurrency,
+        narration: currentState.narration,
+        debitEntries: currentState.debitEntries,
+        creditEntries: currentState.creditEntries,
+        totalDebitBase: currentState.totalDebitBase,
+        totalCreditBase: currentState.totalCreditBase,
       ));
       event.completer.completeError(error);
       return;
     }
-    // Validate at least one entry
-    if (currentState.entries.isEmpty) {
-      final error = 'Add at least one transfer entry';
+
+    // Validate at least one debit and one credit entry
+    if (currentState.debitEntries.isEmpty || currentState.creditEntries.isEmpty) {
+      final error = 'Add at least one debit and one credit entry';
       emit(FxApiErrorState(
         error: error,
         errorType: 'validation',
-        entries: currentState.entries,
+        baseCurrency: currentState.baseCurrency,
+        narration: currentState.narration,
+        debitEntries: currentState.debitEntries,
+        creditEntries: currentState.creditEntries,
+        totalDebitBase: currentState.totalDebitBase,
+        totalCreditBase: currentState.totalCreditBase,
       ));
       event.completer.completeError(error);
       return;
     }
-    // Validate all entries have account
-    for (final entry in currentState.entries) {
+
+    // Validate all entries have accounts
+    for (final entry in currentState.debitEntries) {
       if (entry.accountNumber == null) {
-        final error = 'All entries must have an account';
+        final error = 'All debit entries must have an account';
         emit(FxApiErrorState(
           error: error,
           errorType: 'validation',
-          entries: currentState.entries,
+          baseCurrency: currentState.baseCurrency,
+          narration: currentState.narration,
+          debitEntries: currentState.debitEntries,
+          creditEntries: currentState.creditEntries,
+          totalDebitBase: currentState.totalDebitBase,
+          totalCreditBase: currentState.totalCreditBase,
         ));
         event.completer.completeError(error);
         return;
       }
     }
+
+    for (final entry in currentState.creditEntries) {
+      if (entry.accountNumber == null) {
+        final error = 'All credit entries must have an account';
+        emit(FxApiErrorState(
+          error: error,
+          errorType: 'validation',
+          baseCurrency: currentState.baseCurrency,
+          narration: currentState.narration,
+          debitEntries: currentState.debitEntries,
+          creditEntries: currentState.creditEntries,
+          totalDebitBase: currentState.totalDebitBase,
+          totalCreditBase: currentState.totalCreditBase,
+        ));
+        event.completer.completeError(error);
+        return;
+      }
+    }
+
     // Show saving state
     emit(FxSavingState(
-      entries: currentState.entries,
-      totalDebit: currentState.totalDebit,
-      totalCredit: currentState.totalCredit,
+      baseCurrency: currentState.baseCurrency,
+      narration: currentState.narration,
+      debitEntries: currentState.debitEntries,
+      creditEntries: currentState.creditEntries,
+      totalDebitBase: currentState.totalDebitBase,
+      totalCreditBase: currentState.totalCreditBase,
     ));
+
     try {
-      // Convert entries to API format
-      final records = currentState.entries.map((entry) => {
+      // Combine debit and credit entries for API
+      final allEntries = [
+        ...currentState.debitEntries.map((entry) => entry),
+        ...currentState.creditEntries.map((entry) => entry),
+      ];
+
+      final records = allEntries.map((entry) => {
         'account': entry.accountNumber ?? 0,
-        'ccy': entry.currency ?? 'USD',
-        'debit': entry.debit,
-        'credit': entry.credit,
-        'narration': entry.narration,
+        'ccy': entry.currency ?? currentState.baseCurrency!,
+        'debit': entry.isDebit ? entry.amount : 0.0,
+        'credit': !entry.isDebit ? entry.amount : 0.0,
+        'narration': entry.narration ?? currentState.narration,
       }).toList();
-      // Call API
+
       final result = await repo.saveFxTransfer(
         userName: event.userName,
         records: records,
       );
-      // Check API response
+
       final msg = result['msg']?.toString().toLowerCase() ?? '';
       if (msg.contains('success')) {
-        // Success - reset form with fresh state
         final reference = result['reference']?.toString() ?? 'Transaction successful';
         emit(FxSavedState(true, reference));
-        // Reset to fresh state after showing success
-        await Future.delayed(const Duration(milliseconds: 500)); // Small delay for UX
+
+        await Future.delayed(const Duration(milliseconds: 500));
+
         emit(FxLoadedState(
-          entries: [],
-          totalDebit: 0.0,
-          totalCredit: 0.0,
+          baseCurrency: currentState.baseCurrency,
+          narration: '',
+          debitEntries: [],
+          creditEntries: [],
+          totalDebitBase: 0.0,
+          totalCreditBase: 0.0,
         ));
+
         event.completer.complete('success');
       } else {
-        // Handle different error types from API
         String errorType = 'failed';
         String errorMessage = msg;
-        if (msg.contains('no limit') || msg.contains('insufficient')) {
-          errorType = 'no limit';
-          errorMessage = tr.accountLimitMessage;
-        } else if (msg.contains('blocked')) {
-          errorType = 'blocked';
-          errorMessage = tr.blockedAccountMessage;
-        } else if (msg.contains('diff ccy')) {
-          errorType = 'diff ccy';
-          errorMessage = tr.currencyMismatchMessage;
-        } else if (msg.contains('failed')) {
-          errorType = 'failed';
-          errorMessage = tr.transactionFailedTitle;
-        }
-        // Return to loaded state with error
+
+        // You can add more specific error handling here
+
         emit(FxApiErrorState(
           error: errorMessage,
           errorType: errorType,
-          entries: currentState.entries,
+          baseCurrency: currentState.baseCurrency,
+          narration: currentState.narration,
+          debitEntries: currentState.debitEntries,
+          creditEntries: currentState.creditEntries,
+          totalDebitBase: currentState.totalDebitBase,
+          totalCreditBase: currentState.totalCreditBase,
         ));
         event.completer.completeError(errorMessage);
       }
     } catch (e) {
-      // Return to loaded state on error
       emit(FxApiErrorState(
         error: e.toString(),
-        entries: currentState.entries,
+        baseCurrency: currentState.baseCurrency,
+        narration: currentState.narration,
+        debitEntries: currentState.debitEntries,
+        creditEntries: currentState.creditEntries,
+        totalDebitBase: currentState.totalDebitBase,
+        totalCreditBase: currentState.totalCreditBase,
       ));
       event.completer.completeError(e.toString());
     }
   }
+
   void _onClearApiError(ClearFxApiErrorEvent event, Emitter<FxState> emit) {
     if (state is FxApiErrorState) {
       final errorState = state as FxApiErrorState;
-      // Go back to loaded state with preserved entries
       emit(FxLoadedState(
-        entries: errorState.entries,
-        totalDebit: errorState.entries.fold(0.0, (sum, entry) => sum + entry.debit),
-        totalCredit: errorState.entries.fold(0.0, (sum, entry) => sum + entry.credit),
+        baseCurrency: errorState.baseCurrency,
+        narration: errorState.narration,
+        debitEntries: errorState.debitEntries,
+        creditEntries: errorState.creditEntries,
+        totalDebitBase: errorState.totalDebitBase,
+        totalCreditBase: errorState.totalCreditBase,
       ));
     }
   }
+
   void _onReset(ResetFxEvent event, Emitter<FxState> emit) {
-    emit(FxLoadedState(
-      entries: [],
-      totalDebit: 0.0,
-      totalCredit: 0.0,
-    ));
-  }
-  void _updateStateWithEntries(
-      List<TransferEntry> entries,
-      Emitter<FxState> emit,
-      ) {
-    final totalDebit = entries.fold(0.0, (sum, entry) => sum + entry.debit);
-    final totalCredit = entries.fold(0.0, (sum, entry) => sum + entry.credit);
-    emit(FxLoadedState(
-      entries: entries,
-      totalDebit: totalDebit,
-      totalCredit: totalCredit,
-    ));
+    if (state is FxLoadedState || state is FxSavingState || state is FxApiErrorState) {
+      final currentState = state;
+      String? currentBaseCurrency;
+
+      if (currentState is FxLoadedState) {
+        currentBaseCurrency = currentState.baseCurrency;
+      } else if (currentState is FxSavingState) {
+        currentBaseCurrency = currentState.baseCurrency;
+      } else if (currentState is FxApiErrorState) {
+        currentBaseCurrency = currentState.baseCurrency;
+      }
+
+      emit(FxLoadedState(
+        baseCurrency: currentBaseCurrency,
+        narration: '',
+        debitEntries: [],
+        creditEntries: [],
+        totalDebitBase: 0.0,
+        totalCreditBase: 0.0,
+      ));
+    }
   }
 }

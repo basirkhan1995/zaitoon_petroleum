@@ -17,73 +17,105 @@ final class FxErrorState extends FxState {
   List<Object> get props => [error];
 }
 
-// Add this state to transfer_state.dart
-final class FxApiErrorState extends FxState {
-  final String error;
-  final String? errorType; // 'no limit', 'blocked', 'diff ccy', etc.
-  final List<TransferEntry> entries; // Keep entries to preserve data
-
-  const FxApiErrorState({
-    required this.error,
-    this.errorType,
-    required this.entries,
-  });
-
-  @override
-  List<Object> get props => [error, errorType ?? '', entries];
-}
-
-final class FxLoadingState extends FxState {
-  @override
-  List<Object> get props => [];
-}
-
 final class FxLoadedState extends FxState {
-  final List<TransferEntry> entries;
-  final double totalDebit;
-  final double totalCredit;
-  final AccountsModel? selectedAccount;
+  final String? baseCurrency;
+  final String narration;
+  final List<TransferEntry> debitEntries;
+  final List<TransferEntry> creditEntries;
+  final double totalDebitBase;
+  final double totalCreditBase;
 
   const FxLoadedState({
-    required this.entries,
-    required this.totalDebit,
-    required this.totalCredit,
-    this.selectedAccount,
+    this.baseCurrency,
+    this.narration = '',
+    required this.debitEntries,
+    required this.creditEntries,
+    required this.totalDebitBase,
+    required this.totalCreditBase,
   });
 
   FxLoadedState copyWith({
-    List<TransferEntry>? entries,
-    double? totalDebit,
-    double? totalCredit,
-    AccountsModel? selectedAccount,
+    String? baseCurrency,
+    String? narration,
+    List<TransferEntry>? debitEntries,
+    List<TransferEntry>? creditEntries,
+    double? totalDebitBase,
+    double? totalCreditBase,
   }) {
     return FxLoadedState(
-      entries: entries ?? this.entries,
-      totalDebit: totalDebit ?? this.totalDebit,
-      totalCredit: totalCredit ?? this.totalCredit,
-      selectedAccount: selectedAccount ?? this.selectedAccount,
+      baseCurrency: baseCurrency ?? this.baseCurrency,
+      narration: narration ?? this.narration,
+      debitEntries: debitEntries ?? this.debitEntries,
+      creditEntries: creditEntries ?? this.creditEntries,
+      totalDebitBase: totalDebitBase ?? this.totalDebitBase,
+      totalCreditBase: totalCreditBase ?? this.totalCreditBase,
     );
   }
 
   @override
   List<Object> get props => [
-    entries,
-    totalDebit,
-    totalCredit,
-    selectedAccount?.accNumber ?? 0,
+    baseCurrency ?? '',
+    narration,
+    debitEntries,
+    creditEntries,
+    totalDebitBase,
+    totalCreditBase,
+  ];
+}
+
+final class FxApiErrorState extends FxState {
+  final String error;
+  final String? errorType;
+  final String? baseCurrency;
+  final String narration;
+  final List<TransferEntry> debitEntries;
+  final List<TransferEntry> creditEntries;
+  final double totalDebitBase;
+  final double totalCreditBase;
+
+  const FxApiErrorState({
+    required this.error,
+    this.errorType,
+    required this.baseCurrency,
+    required this.narration,
+    required this.debitEntries,
+    required this.creditEntries,
+    required this.totalDebitBase,
+    required this.totalCreditBase,
+  });
+
+  @override
+  List<Object> get props => [
+    error,
+    errorType ?? '',
+    baseCurrency ?? '',
+    narration,
+    debitEntries,
+    creditEntries,
+    totalDebitBase,
+    totalCreditBase,
   ];
 }
 
 final class FxSavingState extends FxLoadedState {
   const FxSavingState({
-    required super.entries,
-    required super.totalDebit,
-    required super.totalCredit,
-    super.selectedAccount,
+    super.baseCurrency,
+    super.narration,
+    required super.debitEntries,
+    required super.creditEntries,
+    required super.totalDebitBase,
+    required super.totalCreditBase,
   });
 
   @override
-  List<Object> get props => [entries, totalDebit, totalCredit];
+  List<Object> get props => [
+    baseCurrency ?? '',
+    narration,
+    debitEntries,
+    creditEntries,
+    totalDebitBase,
+    totalCreditBase,
+  ];
 }
 
 final class FxSavedState extends FxState {
