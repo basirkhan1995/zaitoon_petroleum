@@ -379,5 +379,9 @@
   "storages": "Storages",
   "location": "Location",
   "unlimited": "Unlimited",
-  "fxTransactionTitle": "FX Transaction - Multi Accounts"
+  "fxTransactionTitle": "FX Transaction - Multi Accounts",
+  "debitAccCcy": "Debit Account Currency",
+  "creditAccCcy": "Credit Account Currency",
+  "convertedAmount": "Converted Amount",
+  "convertedAmountNotMatch": "Credit amount does not match converted amount."
 }

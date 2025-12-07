@@ -379,5 +379,9 @@
   "storages": "ذخایر",
   "location": "موقعیت",
   "unlimited": "نامحدود",
-  "fxTransactionTitle": "تبادله ارزی - چندگانه"
+  "fxTransactionTitle": "تبادله ارزی - چندگانه",
+  "debitAccCcy": "ارز حساب دبت",
+  "creditAccCcy": "ارز حساب کریدت",
+  "convertedAmount": "مبلغ تبادله شده",
+  "convertedAmountNotMatch": "مبلغ کریدت با مبلغ تبادله شده یکسان نیست."
 }

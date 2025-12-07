@@ -1132,4 +1132,17 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get fxTransactionTitle => 'تبادله ارزی - چندگانه';
+
+  @override
+  String get debitAccCcy => 'ارز حساب دبت';
+
+  @override
+  String get creditAccCcy => 'ارز حساب کریدت';
+
+  @override
+  String get convertedAmount => 'مبلغ تبادله شده';
+
+  @override
+  String get convertedAmountNotMatch =>
+      'مبلغ کریدت با مبلغ تبادله شده یکسان نیست.';
 }

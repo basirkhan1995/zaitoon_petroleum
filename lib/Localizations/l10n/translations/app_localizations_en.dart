@@ -1140,4 +1140,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fxTransactionTitle => 'FX Transaction - Multi Accounts';
+
+  @override
+  String get debitAccCcy => 'Debit Account Currency';
+
+  @override
+  String get creditAccCcy => 'Credit Account Currency';
+
+  @override
+  String get convertedAmount => 'Converted Amount';
+
+  @override
+  String get convertedAmountNotMatch =>
+      'Credit amount does not match converted amount.';
 }

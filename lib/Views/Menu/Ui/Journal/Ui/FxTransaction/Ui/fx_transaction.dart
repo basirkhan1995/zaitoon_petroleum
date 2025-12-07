@@ -145,7 +145,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
         }
       },
       child: ZFormDialog(
-        width: MediaQuery.of(context).size.width * .7,
+        width: MediaQuery.of(context).size.width * .8,
         icon: Icons.bubble_chart_outlined,
         isActionTrue: false,
         onAction: null,
@@ -281,7 +281,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     bool hasDebitCurrencyMismatch = false;
     bool hasCreditCurrencyMismatch = false;
     bool hasInvalidEntryType = false;
-    bool hasValidationErrors = false;
+   // bool hasValidationErrors = false;
 
     // Recalculate errors
     final newEntryErrors = <int, String>{};
@@ -312,7 +312,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
 
         if (errorMessage != null) {
           newEntryErrors[entry.rowId] = errorMessage;
-          hasValidationErrors = true;
+        //  hasValidationErrors = true;
         }
       }
     }
@@ -346,7 +346,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   Expanded(
                     child: CurrencyDropdown(
                       height: 40,
-                      title: AppLocalizations.of(context)!.from,
+                      title: AppLocalizations.of(context)!.debitAccCcy,
                       initiallySelectedSingle: CurrenciesModel(
                         ccyCode: _fromSelectedCurrency,
                       ),
@@ -378,7 +378,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   Expanded(
                     child: CurrencyDropdown(
                       height: 40,
-                      title: AppLocalizations.of(context)!.toCurrency,
+                      title: AppLocalizations.of(context)!.creditAccCcy,
                       initiallySelectedSingle: CurrenciesModel(
                         ccyCode: _toSelectedCurrency,
                       ),
@@ -908,7 +908,7 @@ class _TransferHeaderRow extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 2,
+            flex: 3,
             child: Text(
               AppLocalizations.of(context)!.narration,
               style: TextStyle(
@@ -1367,7 +1367,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
 
           // Narration Field
           Expanded(
-            flex: 2,
+            flex: 3,
             child: SizedBox(
               height: 40,
               child: TextField(
@@ -1379,8 +1379,7 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 decoration: InputDecoration(
                   hintText: AppLocalizations.of(context)!.narration,
                   suffixText: (widget.entry.debit > 0 || widget.entry.credit > 0)
-                      ? '@${widget.exchangeRate.toStringAsFixed(2)}'
-                      : null,
+                      ? '@${widget.exchangeRate.toStringAsFixed(2)}' : null,
                   suffixStyle: TextStyle(
                     color: Colors.blue[700],
                     fontWeight: FontWeight.bold,
@@ -1484,7 +1483,7 @@ class _TransferSummary extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Total Debit',
+                    AppLocalizations.of(context)!.totalDebit,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: Theme.of(
                         context,
@@ -1503,7 +1502,7 @@ class _TransferSummary extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Exchange Rate',
+                    AppLocalizations.of(context)!.exchangeRate,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: Theme.of(
                         context,
@@ -1522,7 +1521,7 @@ class _TransferSummary extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Converted Amount',
+                    AppLocalizations.of(context)!.convertedAmount,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: Theme.of(
                         context,
@@ -1541,7 +1540,7 @@ class _TransferSummary extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Total Credit',
+                    AppLocalizations.of(context)!.totalCredit,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: Theme.of(
                         context,
@@ -1567,8 +1566,8 @@ class _TransferSummary extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Credit amount does not match converted amount. '
-                          'Difference: $toCurrencySymbol ${difference.toAmount()}',
+                      '${AppLocalizations.of(context)!.convertedAmountNotMatch} '
+                      '${AppLocalizations.of(context)!.difference}: $toCurrencySymbol ${difference.toAmount()}',
                       style: const TextStyle(color: Colors.red, fontSize: 12),
                     ),
                   ),

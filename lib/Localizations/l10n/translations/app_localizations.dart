@@ -2301,6 +2301,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'FX Transaction - Multi Accounts'**
   String get fxTransactionTitle;
+
+  /// No description provided for @debitAccCcy.
+  ///
+  /// In en, this message translates to:
+  /// **'Debit Account Currency'**
+  String get debitAccCcy;
+
+  /// No description provided for @creditAccCcy.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit Account Currency'**
+  String get creditAccCcy;
+
+  /// No description provided for @convertedAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Converted Amount'**
+  String get convertedAmount;
+
+  /// No description provided for @convertedAmountNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit amount does not match converted amount.'**
+  String get convertedAmountNotMatch;
 }
 
 class _AppLocalizationsDelegate
