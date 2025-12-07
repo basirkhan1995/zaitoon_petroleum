@@ -33,8 +33,8 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
   final Map<int, FocusNode> _rowFocusNodes = {};
   final TextEditingController _exchangeRateCtrl = TextEditingController();
   String? userName;
-  String? _fromCurrency; // Currency we're converting FROM (debit side)
-  String? _toCurrency;   // Currency we're converting TO (credit side)
+  String? _fromCurrency;
+  String? _toCurrency;
 
   bool _isDisposed = false;
   double _exchangeRate = 1.0;
@@ -291,7 +291,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   Expanded(
                     child: CurrencyDropdown(
                       height: 40,
-                      title: 'FROM Currency',
+                      title: AppLocalizations.of(context)!.debitAccCcy,
                       initiallySelectedSingle: CurrenciesModel(
                         ccyCode: _fromCurrency,
                       ),
@@ -323,7 +323,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   Expanded(
                     child: CurrencyDropdown(
                       height: 40,
-                      title: 'TO Currency',
+                      title: AppLocalizations.of(context)!.creditAccCcy,
                       initiallySelectedSingle: CurrenciesModel(
                         ccyCode: _toCurrency,
                       ),
@@ -1311,7 +1311,7 @@ class _TransferSummary extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Total FROM',
+                    AppLocalizations.of(context)!.totalDebit,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: Theme.of(
                         context,
@@ -1368,7 +1368,7 @@ class _TransferSummary extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Total TO',
+                    AppLocalizations.of(context)!.totalCredit,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: Theme.of(
                         context,
