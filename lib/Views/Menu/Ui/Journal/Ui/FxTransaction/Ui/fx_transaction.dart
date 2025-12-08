@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
@@ -216,7 +217,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
         }
       },
       child: ZFormDialog(
-        width: MediaQuery.of(context).size.width * .99,
+        width: MediaQuery.of(context).size.width * .9,
         icon: Icons.currency_exchange,
         isActionTrue: false,
         onAction: null,
@@ -437,6 +438,8 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                 ),
 
               Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(
                     flex: 2,
@@ -477,7 +480,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 8),
                   Expanded(
                     flex: 4,
                     child: ZTextFieldEntitled(
@@ -488,7 +491,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 8),
                   _buildSaveButton(
                     context,
                     baseCurrency: baseCurrency,
@@ -533,7 +536,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
               Expanded(
                 child: _buildSideSection(
                   context,
-                  title: 'Debit Side',
+                  title: AppLocalizations.of(context)!.debitSide,
                   entries: debitEntries,
                   isDebit: true,
                   totalAmount: debitEntries.fold(0.0, (sum, entry) => sum + entry.amount),
@@ -548,7 +551,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
               Expanded(
                 child: _buildSideSection(
                   context,
-                  title: 'Credit Side',
+                  title: AppLocalizations.of(context)!.creditSide,
                   entries: creditEntries,
                   isDebit: false,
                   totalAmount: creditEntries.fold(0.0, (sum, entry) => sum + entry.amount),
@@ -586,6 +589,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
         required double totalBase,
         required String? baseCurrency,
       }) {
+    final tr = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
@@ -611,12 +615,13 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                 ),
                 const Spacer(),
                 ZOutlineButton(
-                  height: 32,
+                  height: 33,
+                  width: 130,
                   icon: Icons.add,
                   onPressed: () {
                     context.read<FxBloc>().add(AddFxEntryEvent(isDebit: isDebit));
                   },
-                  label: const Text('Add Row'),
+                  label: Text(tr.addEntry),
                 ),
               ],
             ),
@@ -839,7 +844,8 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
 
     return ZOutlineButton(
       height: 40,
-      icon: Icons.save,
+      isActive: true,
+      icon: Icons.screen_rotation_alt_rounded,
       onPressed: !isValid || userName == null || isSaving
           ? null
           : () async {
@@ -866,7 +872,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
           color: Theme.of(context).colorScheme.primary,
         ),
       )
-          : const Text('Save'),
+          : Text(AppLocalizations.of(context)!.create),
     );
   }
 }
@@ -879,6 +885,9 @@ class _TableHeaderRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
+    final TextStyle? titleStyle = textTheme.titleSmall;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
@@ -886,14 +895,15 @@ class _TableHeaderRow extends StatelessWidget {
         border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          SizedBox(width: 40, child: const Text('#')),
-          const Expanded(child: Text('Account')),
-          SizedBox(width: 80, child: const Text('Currency')),
-          SizedBox(width: 120, child: const Text('Amount')),
-          SizedBox(width: 140, child: const Text('Exchange Rate')),
-          SizedBox(width: 120, child: Text('Amount in ${baseCurrency ?? "Base"}')),
-          SizedBox(width: 40, child: const Text('')),
+          SizedBox(width: 25, child: const Text('#')),
+          Expanded(child: Text(tr.accounts,style: titleStyle)),
+          SizedBox(width: 50, child: Text(tr.ccyCode,style: titleStyle)),
+          SizedBox(width: 130, child: Text(tr.amount,style: titleStyle)),
+          SizedBox(width: 140, child: Text(tr.exchangeRate,style: titleStyle)),
+          SizedBox(width: 140, child: Text('${tr.amountIn} ${baseCurrency ?? tr.baseTitle}',style: titleStyle)),
+          SizedBox(width: 25, child: Text('')),
         ],
       ),
     );
@@ -1025,15 +1035,16 @@ class __EntryRowState extends State<_EntryRow> {
     });
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 12),
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
       ),
       child: Row(
+        spacing: 5,
         children: [
           // Index
           SizedBox(
-            width: 40,
+            width: 20,
             child: Text('${widget.index + 1}'),
           ),
 
@@ -1120,8 +1131,13 @@ class __EntryRowState extends State<_EntryRow> {
           ),
 
           // Currency Display
-          SizedBox(
-            width: 80,
+          Container(
+            width: 50,
+            height: 40,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(3),
+              border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3))
+            ),
             child: Center(
               child: Text(
                 widget.entry.currency ?? '---',
@@ -1163,8 +1179,13 @@ class __EntryRowState extends State<_EntryRow> {
           ),
 
           // Exchange Rate Display
-          SizedBox(
+          Container(
             width: 140,
+            height: 40,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(3),
+                border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3))
+            ),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1190,8 +1211,8 @@ class __EntryRowState extends State<_EntryRow> {
                             textAlign: TextAlign.center,
                           )
                         else
-                          const Text(
-                            'Same Currency',
+                           Text(
+                            AppLocalizations.of(context)!.sameCurrency,
                             style: TextStyle(
                               fontSize: 11,
                               color: Colors.green,
@@ -1216,8 +1237,13 @@ class __EntryRowState extends State<_EntryRow> {
           ),
 
           // Amount in Base Currency
-          SizedBox(
+          Container(
             width: 120,
+            height: 40,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(3),
+                border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3))
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -1234,8 +1260,13 @@ class __EntryRowState extends State<_EntryRow> {
           ),
 
           // Remove Button
-          SizedBox(
+          Container(
             width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(3),
+                border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3))
+            ),
             child: IconButton(
               icon: Icon(Icons.delete_outline, color: Colors.red.shade400),
               onPressed: widget.onRemove,

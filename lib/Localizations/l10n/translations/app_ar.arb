@@ -383,5 +383,10 @@
   "debitAccCcy": "ارز حساب دبت",
   "creditAccCcy": "ارز حساب کریدت",
   "convertedAmount": "مبلغ تبادله شده",
-  "convertedAmountNotMatch": "مبلغ کریدت با مبلغ تبادله شده یکسان نیست."
+  "convertedAmountNotMatch": "مبلغ کریدت با مبلغ تبادله شده یکسان نیست.",
+  "amountIn": "مبلغ به",
+  "baseTitle": "پایه",
+  "creditSide": "کریدت",
+  "debitSide": "دبت",
+  "sameCurrency": "ارز یکسان"
 }

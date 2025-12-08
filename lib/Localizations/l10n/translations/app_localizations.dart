@@ -2325,6 +2325,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Credit amount does not match converted amount.'**
   String get convertedAmountNotMatch;
+
+  /// No description provided for @amountIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount In'**
+  String get amountIn;
+
+  /// No description provided for @baseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Base'**
+  String get baseTitle;
+
+  /// No description provided for @creditSide.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit side'**
+  String get creditSide;
+
+  /// No description provided for @debitSide.
+  ///
+  /// In en, this message translates to:
+  /// **'Debit side'**
+  String get debitSide;
+
+  /// No description provided for @sameCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Same Currency'**
+  String get sameCurrency;
 }
 
 class _AppLocalizationsDelegate

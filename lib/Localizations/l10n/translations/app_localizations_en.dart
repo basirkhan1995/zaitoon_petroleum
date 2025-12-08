@@ -1153,4 +1153,19 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get convertedAmountNotMatch =>
       'Credit amount does not match converted amount.';
+
+  @override
+  String get amountIn => 'Amount In';
+
+  @override
+  String get baseTitle => 'Base';
+
+  @override
+  String get creditSide => 'Credit side';
+
+  @override
+  String get debitSide => 'Debit side';
+
+  @override
+  String get sameCurrency => 'Same Currency';
 }

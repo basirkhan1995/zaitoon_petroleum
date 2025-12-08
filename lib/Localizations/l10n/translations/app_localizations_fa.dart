@@ -1145,4 +1145,19 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get convertedAmountNotMatch =>
       'مبلغ کریدت با مبلغ تبادله شده یکسان نیست.';
+
+  @override
+  String get amountIn => 'مبلغ به';
+
+  @override
+  String get baseTitle => 'پایه';
+
+  @override
+  String get creditSide => 'کریدت';
+
+  @override
+  String get debitSide => 'دبت';
+
+  @override
+  String get sameCurrency => 'ارز یکسان';
 }

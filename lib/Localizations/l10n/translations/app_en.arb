@@ -383,5 +383,10 @@
   "debitAccCcy": "Debit Account Currency",
   "creditAccCcy": "Credit Account Currency",
   "convertedAmount": "Converted Amount",
-  "convertedAmountNotMatch": "Credit amount does not match converted amount."
+  "convertedAmountNotMatch": "Credit amount does not match converted amount.",
+  "amountIn": "Amount In",
+  "baseTitle": "Base",
+  "creditSide": "Credit side",
+  "debitSide": "Debit side",
+  "sameCurrency": "Same Currency"
 }
