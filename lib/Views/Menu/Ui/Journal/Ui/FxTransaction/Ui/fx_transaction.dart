@@ -237,7 +237,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
       },
       child: ZFormDialog(
         width: MediaQuery.of(context).size.width * .95,
-        icon: Icons.currency_exchange,
+        icon: Icons.currency_exchange_rounded,
         isActionTrue: false,
         onAction: null,
         title: AppLocalizations.of(context)!.fxTransactionTitle,
@@ -347,7 +347,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                         Icon(Icons.check_circle, color: Colors.green, size: 64),
                         const SizedBox(height: 16),
                         Text(
-                          'Transaction Successful!',
+                          AppLocalizations.of(context)!.successTransactionMessage,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -360,11 +360,12 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                           style: const TextStyle(color: Colors.grey),
                         ),
                         const SizedBox(height: 24),
-                        ElevatedButton(
+                        ZOutlineButton(
+                          width: 120,
                           onPressed: () {
                             context.read<FxBloc>().add(InitializeFxEvent());
                           },
-                          child: const Text('New Transaction'),
+                          label: const Text('New Transaction'),
                         ),
                       ],
                     ),
@@ -492,9 +493,9 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 5),
                   Expanded(
-                    flex: 4,
+                    flex: 6,
                     child: ZTextFieldEntitled(
                       title: AppLocalizations.of(context)!.narration,
                       controller: _narrationController,
@@ -503,7 +504,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 5),
                   _buildSaveButton(
                     context,
                     baseCurrency: baseCurrency,
@@ -608,7 +609,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: Column(
         children: [
@@ -776,10 +777,11 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
       }) {
     final tr = AppLocalizations.of(context)!;
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(10),
+      margin: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
       decoration: BoxDecoration(
         color: totalsMatch ? Colors.green.shade50 : Colors.red.shade50,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(5),
         border: Border.all(
           color: totalsMatch ? Colors.green : Colors.red,
         ),
@@ -880,7 +882,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
           // Error is handled in listener
         }
       },
-      width: 120,
+      width: 140,
       label: isSaving
           ? SizedBox(
         width: 20,
@@ -988,22 +990,6 @@ class __EntryRowState extends State<_EntryRow> {
     _checkIfGLAccount();
   }
 
-  void _checkIfGLAccount() {
-    // Only show dropdown if account has no currency
-    // When row is first added (no account selected yet), don't show dropdown
-    _isGLAccount = widget.entry.accountNumber != null &&
-        (widget.entry.currency == null || widget.entry.currency!.isEmpty);
-  }
-
-  void _setupRateController() {
-    _rateController.text = _exchangeRate.toStringAsFixed(6);
-    _rateFocusNode.addListener(() {
-      if (!_rateFocusNode.hasFocus && _isEditingRate) {
-        _saveExchangeRate();
-      }
-    });
-  }
-
   void _saveExchangeRate() {
     final newRate = double.tryParse(_rateController.text) ?? _originalFetchedRate;
 
@@ -1021,10 +1007,19 @@ class __EntryRowState extends State<_EntryRow> {
       _rateController.text = _exchangeRate.toStringAsFixed(6);
     } else {
       _exchangeRate = newRate;
+
       // Update the exchange rates map
       if (widget.entry.currency != null && widget.baseCurrency != null) {
         final key = '${widget.entry.currency}:${widget.baseCurrency}';
         widget.exchangeRates[key] = _exchangeRate;
+
+        // Update the entry with exchange rate formatted as string
+        context.read<FxBloc>().add(UpdateFxEntryEvent(
+          id: widget.entry.rowId,
+          isDebit: widget.isDebit,
+          exchangeRate: _exchangeRate.toStringAsFixed(4), // Save formatted rate
+        ));
+
         // Notify parent about rate change
         widget.onExchangeRateChanged(widget.entry.currency!, widget.baseCurrency!, _exchangeRate);
       }
@@ -1033,6 +1028,22 @@ class __EntryRowState extends State<_EntryRow> {
 
     setState(() {
       _isEditingRate = false;
+    });
+  }
+
+  void _checkIfGLAccount() {
+    // Only show dropdown if account has no currency
+    // When row is first added (no account selected yet), don't show dropdown
+    _isGLAccount = widget.entry.accountNumber != null &&
+        (widget.entry.currency == null || widget.entry.currency!.isEmpty);
+  }
+
+  void _setupRateController() {
+    _rateController.text = _exchangeRate.toStringAsFixed(6);
+    _rateFocusNode.addListener(() {
+      if (!_rateFocusNode.hasFocus && _isEditingRate) {
+        _saveExchangeRate();
+      }
     });
   }
 
@@ -1185,7 +1196,7 @@ class __EntryRowState extends State<_EntryRow> {
               child: GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
                 controller: widget.accountController,
                 title: '',
-                hintText: 'Select Account',
+                hintText: AppLocalizations.of(context)!.accounts,
                 isRequired: true,
                 bloc: context.read<AccountsBloc>(),
                 fetchAllFunction: (bloc) => bloc.add(
@@ -1286,6 +1297,7 @@ class __EntryRowState extends State<_EntryRow> {
                     id: widget.entry.rowId,
                     isDebit: widget.isDebit,
                     currency: selectedCurrency.ccyCode,
+                    exchangeRate: _exchangeRate.toStringAsFixed(4),
                   ));
 
                   // Update local state

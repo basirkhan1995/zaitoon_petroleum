@@ -28,39 +28,6 @@ class RemoveFxEntryEvent extends FxEvent {
   List<Object?> get props => [id, isDebit];
 }
 
-class UpdateFxEntryEvent extends FxEvent {
-  final int id;
-  final bool isDebit;
-  final int? accountNumber;
-  final String? accountName;
-  final String? currency;
-  final double? amount;
-  final String? exchangeRate; // Add
-  final String? narration;
-
-  const UpdateFxEntryEvent({
-    required this.id,
-    required this.isDebit,
-    this.accountNumber,
-    this.accountName,
-    this.currency,
-    this.exchangeRate,
-    this.amount,
-    this.narration,
-  });
-
-  @override
-  List<Object?> get props => [
-    id,
-    isDebit,
-    accountNumber,
-    accountName,
-    currency,
-    exchangeRate,
-    amount,
-    narration,
-  ];
-}
 
 class UpdateBaseCurrencyEvent extends FxEvent {
   final String? baseCurrency;
@@ -78,6 +45,40 @@ class UpdateNarrationEvent extends FxEvent {
 
   @override
   List<Object?> get props => [narration];
+}
+
+class UpdateFxEntryEvent extends FxEvent {
+  final int id;
+  final bool isDebit;
+  final int? accountNumber;
+  final String? accountName;
+  final String? currency;
+  final double? amount;
+  final String? exchangeRate; // Already has this!
+  final String? narration;
+
+  const UpdateFxEntryEvent({
+    required this.id,
+    required this.isDebit,
+    this.accountNumber,
+    this.accountName,
+    this.currency,
+    this.exchangeRate, // Already has this!
+    this.amount,
+    this.narration,
+  });
+
+  @override
+  List<Object?> get props => [
+    id,
+    isDebit,
+    accountNumber,
+    accountName,
+    currency,
+    exchangeRate, // Already has this!
+    amount,
+    narration,
+  ];
 }
 
 class SaveFxEvent extends FxEvent {

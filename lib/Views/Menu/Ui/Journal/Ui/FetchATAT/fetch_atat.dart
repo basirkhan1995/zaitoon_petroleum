@@ -162,31 +162,22 @@ class _DesktopState extends State<_Desktop> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Row(
-                        spacing: 5,
-                        children: [
-                          Icon(Icons.arrow_circle_up_rounded,color: Colors.red),
-                          Text(
-                            tr.debitTitle,
-                            style: textTheme.titleMedium?.copyWith(
-                              color: color.outline,
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        tr.debitTitle,
+                        style: textTheme.titleMedium?.copyWith(
+                          color: color.outline,
+                        ),
                       ),
                     ),
                     Expanded(
-                      child: Row(
-                        spacing: 5,
-                        children: [
-                          Icon(Icons.arrow_circle_down_rounded,color: Colors.green),
-                          Text(
-                            tr.creditTitle,
-                            style: textTheme.titleMedium?.copyWith(
-                              color: color.outline,
-                            ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Text(
+                          tr.creditTitle,
+                          style: textTheme.titleMedium?.copyWith(
+                            color: color.outline,
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ],

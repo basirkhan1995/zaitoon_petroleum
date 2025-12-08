@@ -204,10 +204,12 @@ class FxBloc extends Bloc<FxEvent, FxState> {
             currency: event.currency ?? entry.currency,
             amount: event.amount ?? entry.amount,
             narration: event.narration ?? entry.narration,
+            exchangeRate: event.exchangeRate ?? entry.exchangeRate,
           );
         }
         return entry;
       }).toList();
+
       emit(FxLoadedState(
         baseCurrency: currentBaseCurrency,
         narration: currentNarration,
@@ -225,10 +227,12 @@ class FxBloc extends Bloc<FxEvent, FxState> {
             currency: event.currency ?? entry.currency,
             amount: event.amount ?? entry.amount,
             narration: event.narration ?? entry.narration,
+            exchangeRate: event.exchangeRate ?? entry.exchangeRate,
           );
         }
         return entry;
       }).toList();
+
       emit(FxLoadedState(
         baseCurrency: currentBaseCurrency,
         narration: currentNarration,
@@ -246,7 +250,7 @@ class FxBloc extends Bloc<FxEvent, FxState> {
     final currentState = state;
     List<TransferEntry> currentDebitEntries = [];
     List<TransferEntry> currentCreditEntries = [];
-    String? currentBaseCurrency;
+
     String currentNarration = '';
     double currentTotalDebitBase = 0.0;
     double currentTotalCreditBase = 0.0;
@@ -254,21 +258,19 @@ class FxBloc extends Bloc<FxEvent, FxState> {
     if (currentState is FxLoadedState) {
       currentDebitEntries = currentState.debitEntries;
       currentCreditEntries = currentState.creditEntries;
-      currentBaseCurrency = currentState.baseCurrency;
+
       currentNarration = currentState.narration;
       currentTotalDebitBase = currentState.totalDebitBase;
       currentTotalCreditBase = currentState.totalCreditBase;
     } else if (currentState is FxSavingState) {
       currentDebitEntries = currentState.debitEntries;
       currentCreditEntries = currentState.creditEntries;
-      currentBaseCurrency = currentState.baseCurrency;
       currentNarration = currentState.narration;
       currentTotalDebitBase = currentState.totalDebitBase;
       currentTotalCreditBase = currentState.totalCreditBase;
     } else if (currentState is FxApiErrorState) {
       currentDebitEntries = currentState.debitEntries;
       currentCreditEntries = currentState.creditEntries;
-      currentBaseCurrency = currentState.baseCurrency;
       currentNarration = currentState.narration;
       currentTotalDebitBase = currentState.totalDebitBase;
       currentTotalCreditBase = currentState.totalCreditBase;
@@ -291,7 +293,6 @@ class FxBloc extends Bloc<FxEvent, FxState> {
     List<TransferEntry> currentDebitEntries = [];
     List<TransferEntry> currentCreditEntries = [];
     String? currentBaseCurrency;
-    String currentNarration = '';
     double currentTotalDebitBase = 0.0;
     double currentTotalCreditBase = 0.0;
 
@@ -299,21 +300,18 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       currentDebitEntries = currentState.debitEntries;
       currentCreditEntries = currentState.creditEntries;
       currentBaseCurrency = currentState.baseCurrency;
-      currentNarration = currentState.narration;
       currentTotalDebitBase = currentState.totalDebitBase;
       currentTotalCreditBase = currentState.totalCreditBase;
     } else if (currentState is FxSavingState) {
       currentDebitEntries = currentState.debitEntries;
       currentCreditEntries = currentState.creditEntries;
       currentBaseCurrency = currentState.baseCurrency;
-      currentNarration = currentState.narration;
       currentTotalDebitBase = currentState.totalDebitBase;
       currentTotalCreditBase = currentState.totalCreditBase;
     } else if (currentState is FxApiErrorState) {
       currentDebitEntries = currentState.debitEntries;
       currentCreditEntries = currentState.creditEntries;
       currentBaseCurrency = currentState.baseCurrency;
-      currentNarration = currentState.narration;
       currentTotalDebitBase = currentState.totalDebitBase;
       currentTotalCreditBase = currentState.totalCreditBase;
     }
@@ -420,16 +418,28 @@ class FxBloc extends Bloc<FxEvent, FxState> {
     try {
       // Combine debit and credit entries for API
       final allEntries = [
-        ...currentState.debitEntries.map((entry) => entry),
-        ...currentState.creditEntries.map((entry) => entry),
+        ...currentState.debitEntries,
+        ...currentState.creditEntries,
       ];
 
-      final records = allEntries.map((entry) => {
-        'account': entry.accountNumber ?? 0,
-        'ccy': entry.currency ?? currentState.baseCurrency!,
-        'debit': entry.isDebit ? entry.amount : 0.0,
-        'credit': !entry.isDebit ? entry.amount : 0.0,
-        'narration': entry.narration ?? currentState.narration,
+      final records = allEntries.map((entry) {
+        // Build narration: "main_narration @exchange_rate"
+        String fullNarration = currentState.narration;
+
+        // Append exchange rate if it exists and entry currency is different from base
+        if (entry.exchangeRate != null &&
+            entry.exchangeRate!.isNotEmpty &&
+            entry.currency != currentState.baseCurrency) {
+          fullNarration = "${currentState.narration} @${entry.exchangeRate}";
+        }
+
+        return {
+          'account': entry.accountNumber ?? 0,
+          'ccy': entry.currency ?? currentState.baseCurrency!,
+          'debit': entry.isDebit ? entry.amount : 0.0,
+          'credit': !entry.isDebit ? entry.amount : 0.0,
+          'narration': fullNarration,
+        };
       }).toList();
 
       final result = await repo.saveFxTransfer(
@@ -458,8 +468,6 @@ class FxBloc extends Bloc<FxEvent, FxState> {
         String errorType = 'failed';
         String errorMessage = msg;
 
-        // You can add more specific error handling here
-
         emit(FxApiErrorState(
           error: errorMessage,
           errorType: errorType,
@@ -485,7 +493,6 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       event.completer.completeError(e.toString());
     }
   }
-
   void _onClearApiError(ClearFxApiErrorEvent event, Emitter<FxState> emit) {
     if (state is FxApiErrorState) {
       final errorState = state as FxApiErrorState;

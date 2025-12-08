@@ -8,7 +8,7 @@ class TransferEntry extends Equatable {
   final double amount;
   final bool isDebit;
   final String? narration;
-
+  final String? exchangeRate;
   const TransferEntry({
     required this.rowId,
     this.accountNumber,
@@ -17,6 +17,7 @@ class TransferEntry extends Equatable {
     this.amount = 0.0,
     this.isDebit = true,
     this.narration = '',
+    this.exchangeRate,
   });
 
   TransferEntry copyWith({
@@ -26,6 +27,7 @@ class TransferEntry extends Equatable {
     double? amount,
     bool? isDebit,
     String? narration,
+    String? exchangeRate,
   }) {
     return TransferEntry(
       rowId: rowId,
@@ -35,6 +37,7 @@ class TransferEntry extends Equatable {
       amount: amount ?? this.amount,
       isDebit: isDebit ?? this.isDebit,
       narration: narration ?? this.narration,
+      exchangeRate: exchangeRate ?? this.exchangeRate,
     );
   }
 
@@ -47,5 +50,6 @@ class TransferEntry extends Equatable {
     amount,
     isDebit,
     narration,
+    exchangeRate
   ];
 }
