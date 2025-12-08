@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../../../../../../../Services/repositories.dart';
+import '../../../../../../../Services/localization_services.dart';
 import '../model/fx_model.dart';
 
 part 'fx_event.dart';
@@ -414,7 +415,7 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       totalDebitBase: currentState.totalDebitBase,
       totalCreditBase: currentState.totalCreditBase,
     ));
-
+    final tr = localizationService.loc;
     try {
       // Combine debit and credit entries for API
       final allEntries = [
@@ -430,7 +431,7 @@ class FxBloc extends Bloc<FxEvent, FxState> {
         if (entry.exchangeRate != null &&
             entry.exchangeRate!.isNotEmpty &&
             entry.currency != currentState.baseCurrency) {
-          fullNarration = "${currentState.narration} @${entry.exchangeRate}";
+          fullNarration = "@${entry.exchangeRate} = ${entry.convertedAmount} ${currentState.baseCurrency} - ${currentState.narration}";
         }
 
         return {
@@ -448,6 +449,8 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       );
 
       final msg = result['msg']?.toString().toLowerCase() ?? '';
+      final accountNo = result['account']?.toString().toLowerCase() ?? '';
+
       if (msg.contains('success')) {
         final reference = result['reference']?.toString() ?? 'Transaction successful';
         emit(FxSavedState(true, reference));
@@ -467,10 +470,17 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       } else {
         String errorType = 'failed';
         String errorMessage = msg;
-
+        if(msg == "no Limit"){
+          errorMessage = tr.accountLimitMessage;
+        }if(msg == "blocked"){
+          errorMessage = tr.blockedMessage;
+        }if(msg == "failed"){
+          errorMessage = tr.transactionFailedTitle;
+        }
         emit(FxApiErrorState(
           error: errorMessage,
           errorType: errorType,
+          accountNo: accountNo,
           baseCurrency: currentState.baseCurrency,
           narration: currentState.narration,
           debitEntries: currentState.debitEntries,

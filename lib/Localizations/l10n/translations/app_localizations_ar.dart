@@ -1188,4 +1188,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get enterRate => 'اسعارو نرخ';
+
+  @override
+  String get driverName => 'معلومات راننده';
+
+  @override
+  String get vehicle => 'واسطه نقلیه';
+
+  @override
+  String get hireDate => 'تاریخ استخدام';
 }

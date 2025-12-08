@@ -15,6 +15,8 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfi
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/model/driver_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/model/vehicle_model.dart';
 import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/model/limit_model.dart';
@@ -780,6 +782,110 @@ class Repositories {
     }
   }
 
+  ///Driver ....................................................................
+  Future<List<DriverModel>> getDrivers({int? empId}) async {
+    try {
+      // Build query parameters dynamically
+      final queryParams = {'empID': empId};
+
+      // Fetch data from API
+      final response = await api.get(
+        endpoint: "/transport/drivers.php",
+        queryParams: queryParams,
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => DriverModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+
+  ///Vehicles ..................................................................
+  Future<List<VehicleModel>> getVehicles({int? vehicleId}) async {
+    try {
+      // Build query parameters dynamically
+      final queryParams = {'vclID': vehicleId};
+
+      // Fetch data from API
+      final response = await api.get(
+        endpoint: "/transport/vehicle.php",
+        queryParams: queryParams,
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => VehicleModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+  Future<Map<String, dynamic>> addVehicle({required VehicleModel newVehicle}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/transport/vehicle.php",
+          data: newVehicle.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> updateVehicle({required VehicleModel newVehicle}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/transport/vehicle.php",
+          data: newVehicle.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  /// Shipping .................................................................
+
 
   /// Transactions | Cash Deposit | Withdraw ...................................
   Future<List<TransactionsModel>> getTransactionsByStatus({String? status}) async {
@@ -897,7 +1003,6 @@ class Repositories {
     }
   }
 
-
   Future<Map<String, dynamic>> saveBulkTransfer({required String userName, required List<Map<String, dynamic>> records,}) async {
     try {
       final response = await api.post(
@@ -938,7 +1043,7 @@ class Repositories {
         return responseData;
       } else if (responseData is String) {
         // If response is a simple string message
-        return {'msg': responseData};
+        return {'msg': responseData, 'account': responseData};
       }
 
       return {'msg': 'Unknown response format'};

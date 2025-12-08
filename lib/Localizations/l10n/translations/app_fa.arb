@@ -396,5 +396,8 @@
   "totalTitle": "مجموعه",
   "debitNotEqualBaseCurrency": "مقادیر بدهکار و بستانکار باید متوازن شوند.",
   "adjusted": "تنظیم شده",
-  "enterRate": "نرخ اسعار"
+  "enterRate": "نرخ اسعار",
+  "driverName": "معلومات راننده",
+  "vehicle": "واسطه نقلیه",
+  "hireDate": "تاریخ استخدام"
 }

@@ -396,5 +396,8 @@
   "totalTitle": "ټول",
   "debitNotEqualBaseCurrency": "د بدهکار او بستانکار مقدار باید مساوي وي.",
   "adjusted": "تنظیم شوی",
-  "enterRate": "اسعارو نرخ"
+  "enterRate": "اسعارو نرخ",
+  "driverName": "معلومات راننده",
+  "vehicle": "واسطه نقلیه",
+  "hireDate": "تاریخ استخدام"
 }

@@ -332,7 +332,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                 } else if (state is FxErrorState) {
                   return Center(
                     child: Text(
-                      state.error,
+                      "${state.error}: (${state.accountNo})",
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.error,
                       ),
@@ -428,7 +428,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
             children: [
               if (hasError && fxState is FxApiErrorState)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 15),
                   margin: const EdgeInsets.only(bottom: 8),
                   decoration: BoxDecoration(
                     color: Colors.red.shade50,
@@ -441,7 +441,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          fxState.error,
+                          "${fxState.error} ${fxState.accountNo}",
                           style: const TextStyle(color: Colors.red, fontSize: 12),
                         ),
                       ),
@@ -1299,6 +1299,7 @@ class __EntryRowState extends State<_EntryRow> {
                     isDebit: widget.isDebit,
                     currency: selectedCurrency.ccyCode,
                     exchangeRate: _exchangeRate.toStringAsFixed(4),
+                    convertedAmount: _amountInBase.toAmount()
                   ));
 
                   // Update local state
@@ -1347,6 +1348,7 @@ class __EntryRowState extends State<_EntryRow> {
                   id: widget.entry.rowId,
                   isDebit: widget.isDebit,
                   exchangeRate: _exchangeRate.toStringAsFixed(4),
+                  convertedAmount: _amountInBase.toAmount(),
                 ));
               },
             ),

@@ -1186,4 +1186,13 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get enterRate => 'نرخ اسعار';
+
+  @override
+  String get driverName => 'معلومات راننده';
+
+  @override
+  String get vehicle => 'واسطه نقلیه';
+
+  @override
+  String get hireDate => 'تاریخ استخدام';
 }

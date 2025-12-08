@@ -11,10 +11,11 @@ final class FxInitial extends FxState {
 
 final class FxErrorState extends FxState {
   final String error;
-  const FxErrorState(this.error);
+  final String? accountNo;
+  const FxErrorState({required this.error, this.accountNo});
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => [error, accountNo ??""];
 }
 
 final class FxLoadedState extends FxState {
@@ -65,6 +66,7 @@ final class FxLoadedState extends FxState {
 
 final class FxApiErrorState extends FxState {
   final String error;
+  final String? accountNo;
   final String? errorType;
   final String? baseCurrency;
   final String narration;
@@ -76,6 +78,7 @@ final class FxApiErrorState extends FxState {
   const FxApiErrorState({
     required this.error,
     this.errorType,
+    this.accountNo,
     required this.baseCurrency,
     required this.narration,
     required this.debitEntries,
@@ -88,6 +91,7 @@ final class FxApiErrorState extends FxState {
   List<Object> get props => [
     error,
     errorType ?? '',
+    accountNo ?? '',
     baseCurrency ?? '',
     narration,
     debitEntries,

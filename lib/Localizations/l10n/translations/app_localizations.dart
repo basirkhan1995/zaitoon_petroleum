@@ -2403,6 +2403,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rate'**
   String get enterRate;
+
+  /// No description provided for @driverName.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver Information'**
+  String get driverName;
+
+  /// No description provided for @vehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle'**
+  String get vehicle;
+
+  /// No description provided for @hireDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Hired date'**
+  String get hireDate;
 }
 
 class _AppLocalizationsDelegate

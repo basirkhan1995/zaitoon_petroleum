@@ -35,6 +35,8 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualDetail
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/bloc/stk_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/bloc/stock_tab_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/bloc/driver_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/bloc/vehicle_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/bloc/transport_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/bloc/menu_bloc.dart';
 import 'Features/PrintSettings/bloc/PageOrientation/page_orientation_cubit.dart';
@@ -112,6 +114,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => TransferBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => FxBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => StorageBloc(Repositories(ApiServices()))..add(LoadStorageEvent())),
+        BlocProvider(create: (context) => DriverBloc(Repositories(ApiServices()))..add(LoadDriverEvent())),
+        BlocProvider(create: (context) => VehicleBloc(Repositories(ApiServices()))..add(LoadVehicleEvent())),
+
       ],
 
       child: BlocBuilder<LocalizationBloc, Locale>(

@@ -1194,4 +1194,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterRate => 'Rate';
+
+  @override
+  String get driverName => 'Driver Information';
+
+  @override
+  String get vehicle => 'Vehicle';
+
+  @override
+  String get hireDate => 'Hired date';
 }

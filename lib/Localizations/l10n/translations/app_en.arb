@@ -396,5 +396,8 @@
   "totalTitle": "Total",
   "debitNotEqualBaseCurrency": "Debit and credit amounts must balance.",
   "adjusted": "Adjusted",
-  "enterRate": "Rate"
+  "enterRate": "Rate",
+  "driverName": "Driver Information",
+  "vehicle": "Vehicle",
+  "hireDate": "Hired date"
 }

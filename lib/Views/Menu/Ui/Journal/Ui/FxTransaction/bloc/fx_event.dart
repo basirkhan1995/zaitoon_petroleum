@@ -54,7 +54,8 @@ class UpdateFxEntryEvent extends FxEvent {
   final String? accountName;
   final String? currency;
   final double? amount;
-  final String? exchangeRate; // Already has this!
+  final String? exchangeRate;
+  final String? convertedAmount;
   final String? narration;
 
   const UpdateFxEntryEvent({
@@ -62,8 +63,9 @@ class UpdateFxEntryEvent extends FxEvent {
     required this.isDebit,
     this.accountNumber,
     this.accountName,
+    this.convertedAmount,
     this.currency,
-    this.exchangeRate, // Already has this!
+    this.exchangeRate,
     this.amount,
     this.narration,
   });
@@ -75,7 +77,8 @@ class UpdateFxEntryEvent extends FxEvent {
     accountNumber,
     accountName,
     currency,
-    exchangeRate, // Already has this!
+    exchangeRate,
+    convertedAmount,
     amount,
     narration,
   ];
