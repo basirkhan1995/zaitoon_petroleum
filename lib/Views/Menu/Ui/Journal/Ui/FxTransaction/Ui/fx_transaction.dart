@@ -1155,19 +1155,15 @@ class __EntryRowState extends State<_EntryRow> {
           SizedBox(
             width: 120,
             height: 40,
-            child: TextField(
+            child: ZTextFieldEntitled(
+              title: '',
               controller: widget.amountController,
               focusNode: widget.focusNode,
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
+              //keyboardType: TextInputType.numberWithOptions(decimal: true),
+              inputFormat: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
                 SmartThousandsDecimalFormatter(),
               ],
-              decoration: const InputDecoration(
-                hintText: '0.00',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 8),
-              ),
               onChanged: (value) {
                 final amount = value.cleanAmount.toDoubleAmount();
                 widget.onAmountChanged(amount);
