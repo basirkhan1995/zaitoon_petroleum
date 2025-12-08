@@ -916,10 +916,11 @@ class _TableHeaderRow extends StatelessWidget {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 25, child: const Text('#')),
+          SizedBox(width: 20, child: const Text('#')),
           Expanded(child: Text(tr.accounts,style: titleStyle)),
-          SizedBox(width: 50, child: Text(tr.ccyCode,style: titleStyle)),
+          SizedBox(width: 80, child: Text(tr.ccyCode,style: titleStyle)),
           SizedBox(width: 130, child: Text(tr.amount,style: titleStyle)),
           SizedBox(width: 140, child: Text(tr.exchangeRate,style: titleStyle)),
           SizedBox(width: 140, child: Text('${tr.amountIn} ${baseCurrency ?? tr.baseTitle}',style: titleStyle)),
@@ -1185,7 +1186,7 @@ class __EntryRowState extends State<_EntryRow> {
         children: [
           // Index
           SizedBox(
-            width: 20,
+            width: 15,
             child: Text('${widget.index + 1}'),
           ),
 
@@ -1342,6 +1343,11 @@ class __EntryRowState extends State<_EntryRow> {
                 final amount = value.cleanAmount.toDoubleAmount();
                 widget.onAmountChanged(amount);
                 _calculateAmountInBase();
+                context.read<FxBloc>().add(UpdateFxEntryEvent(
+                  id: widget.entry.rowId,
+                  isDebit: widget.isDebit,
+                  exchangeRate: _exchangeRate.toStringAsFixed(4),
+                ));
               },
             ),
           ),
