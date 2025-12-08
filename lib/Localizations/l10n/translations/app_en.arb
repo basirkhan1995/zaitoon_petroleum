@@ -388,5 +388,13 @@
   "baseTitle": "Base",
   "creditSide": "Credit side",
   "debitSide": "Debit side",
-  "sameCurrency": "Same Currency"
+  "sameCurrency": "Same Currency",
+  "exchangeRatePercentage": "Exchange rate can only be adjusted within ±5% of the system rate.",
+  "balanced": "BALANCED",
+  "unbalanced": "UNBALANCED",
+  "various": "Various",
+  "totalTitle": "Total",
+  "debitNotEqualBaseCurrency": "Debit and credit amounts must balance.",
+  "adjusted": "Adjusted",
+  "enterRate": "Rate"
 }

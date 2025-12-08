@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
@@ -39,6 +38,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
   String? userName;
   String? _baseCurrency;
   final Map<String, double> _exchangeRates = {};
+  final Map<String, double> _originalExchangeRates = {}; // Store original rates for validation
   bool _isDisposed = false;
 
   // Track which rate requests are for which currencies
@@ -68,6 +68,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     // Don't fetch rate if same currency
     if (fromCcy == toCcy) {
       _exchangeRates[key] = 1.0;
+      _originalExchangeRates[key] = 1.0;
       return 1.0;
     }
 
@@ -107,11 +108,13 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
   void _handleExchangeRateResponse(String fromCcy, String toCcy, double rate) {
     final key = '$fromCcy:$toCcy';
     _exchangeRates[key] = rate;
+    _originalExchangeRates[key] = rate; // Store as original rate
 
     // Also store the reverse rate
     final reverseKey = '$toCcy:$fromCcy';
     if (rate > 0) {
       _exchangeRates[reverseKey] = 1.0 / rate;
+      _originalExchangeRates[reverseKey] = 1.0 / rate;
     }
 
     // Complete pending request if exists
@@ -125,12 +128,27 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     }
   }
 
+  void _updateExchangeRate(String fromCcy, String toCcy, double newRate) {
+    final key = '$fromCcy:$toCcy';
+    _exchangeRates[key] = newRate;
+
+    // Update UI
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   double _getExchangeRate(String fromCcy, String toCcy) {
     if (fromCcy == toCcy) return 1.0;
-
     final key = '$fromCcy:$toCcy';
     return _exchangeRates[key] ?? 1.0;
   }
+
+  // double _getOriginalExchangeRate(String fromCcy, String toCcy) {
+  //   if (fromCcy == toCcy) return 1.0;
+  //   final key = '$fromCcy:$toCcy';
+  //   return _originalExchangeRates[key] ?? _exchangeRates[key] ?? 1.0;
+  // }
 
   double _convertToBase(double amount, String currency) {
     if (_baseCurrency == null || currency == _baseCurrency) return amount;
@@ -163,6 +181,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
 
     _narrationController.clear();
     _exchangeRates.clear();
+    _originalExchangeRates.clear();
     _pendingRateRequests.clear();
     _rateCurrencyPairs.clear();
   }
@@ -217,7 +236,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
         }
       },
       child: ZFormDialog(
-        width: MediaQuery.of(context).size.width * .9,
+        width: MediaQuery.of(context).size.width * .95,
         icon: Icons.currency_exchange,
         isActionTrue: false,
         onAction: null,
@@ -376,15 +395,11 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     final hasDebitEntries = debitEntries.isNotEmpty;
     final hasCreditEntries = creditEntries.isNotEmpty;
     final hasEntries = hasDebitEntries || hasCreditEntries;
-
-    // Calculate totals in base currency
+    final tr = AppLocalizations.of(context)!;
+    // Calculate totals in base currency - using current exchange rates
     double calculatedDebitBase = 0;
     for (final entry in debitEntries) {
       if (entry.currency != null && entry.amount > 0) {
-        if (baseCurrency != null && entry.currency != baseCurrency) {
-          // Fetch exchange rate if needed (async, will update UI when completed)
-          _fetchExchangeRate(entry.currency!, baseCurrency);
-        }
         calculatedDebitBase += _convertToBase(entry.amount, entry.currency!);
       }
     }
@@ -392,10 +407,6 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     double calculatedCreditBase = 0;
     for (final entry in creditEntries) {
       if (entry.currency != null && entry.amount > 0) {
-        if (baseCurrency != null && entry.currency != baseCurrency) {
-          // Fetch exchange rate if needed (async, will update UI when completed)
-          _fetchExchangeRate(entry.currency!, baseCurrency);
-        }
         calculatedCreditBase += _convertToBase(entry.amount, entry.currency!);
       }
     }
@@ -407,7 +418,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
       children: [
         // Header Section
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(8),
@@ -416,7 +427,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
             children: [
               if (hasError && fxState is FxApiErrorState)
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   margin: const EdgeInsets.only(bottom: 8),
                   decoration: BoxDecoration(
                     color: Colors.red.shade50,
@@ -445,7 +456,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                     flex: 2,
                     child: CurrencyDropdown(
                       height: 40,
-                      title: 'Base Currency',
+                      title: tr.baseCurrency,
                       initiallySelectedSingle: CurrenciesModel(
                         ccyCode: baseCurrency,
                       ),
@@ -459,6 +470,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
 
                           // Clear exchange rates when base currency changes
                           _exchangeRates.clear();
+                          _originalExchangeRates.clear();
                           _pendingRateRequests.clear();
                           _rateCurrencyPairs.clear();
 
@@ -484,7 +496,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   Expanded(
                     flex: 4,
                     child: ZTextFieldEntitled(
-                      title: 'Narration',
+                      title: AppLocalizations.of(context)!.narration,
                       controller: _narrationController,
                       onChanged: (value) {
                         context.read<FxBloc>().add(UpdateNarrationEvent(value));
@@ -513,8 +525,8 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Debit and Credit totals must match in base currency. '
-                              'Difference: ${baseCurrency ?? ''} ${difference.toAmount()}',
+                          '${tr.debitNotEqualBaseCurrency} '
+                              '${tr.difference}: ${baseCurrency ?? ''} ${difference.toAmount()}',
                           style: const TextStyle(color: Colors.red, fontSize: 12),
                         ),
                       ),
@@ -525,41 +537,44 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
           ),
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
 
         // Debit and Credit Sections
         Expanded(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Debit Section
-              Expanded(
-                child: _buildSideSection(
-                  context,
-                  title: AppLocalizations.of(context)!.debitSide,
-                  entries: debitEntries,
-                  isDebit: true,
-                  totalAmount: debitEntries.fold(0.0, (sum, entry) => sum + entry.amount),
-                  totalBase: calculatedDebitBase,
-                  baseCurrency: baseCurrency,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 2),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Debit Section
+                Expanded(
+                  child: _buildSideSection(
+                    context,
+                    title: AppLocalizations.of(context)!.debitSide,
+                    entries: debitEntries,
+                    isDebit: true,
+                    totalAmount: debitEntries.fold(0.0, (sum, entry) => sum + entry.amount),
+                    totalBase: calculatedDebitBase,
+                    baseCurrency: baseCurrency,
+                  ),
                 ),
-              ),
 
-              const SizedBox(width: 16),
+                const SizedBox(width: 16),
 
-              // Credit Section
-              Expanded(
-                child: _buildSideSection(
-                  context,
-                  title: AppLocalizations.of(context)!.creditSide,
-                  entries: creditEntries,
-                  isDebit: false,
-                  totalAmount: creditEntries.fold(0.0, (sum, entry) => sum + entry.amount),
-                  totalBase: calculatedCreditBase,
-                  baseCurrency: baseCurrency,
+                // Credit Section
+                Expanded(
+                  child: _buildSideSection(
+                    context,
+                    title: AppLocalizations.of(context)!.creditSide,
+                    entries: creditEntries,
+                    isDebit: false,
+                    totalAmount: creditEntries.fold(0.0, (sum, entry) => sum + entry.amount),
+                    totalBase: calculatedCreditBase,
+                    baseCurrency: baseCurrency,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
 
@@ -670,14 +685,10 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   amountController: controllers[1],
                   focusNode: focusNode,
                   exchangeRates: _exchangeRates,
+                  originalExchangeRates: _originalExchangeRates,
                   fetchExchangeRate: _fetchExchangeRate,
                   onAccountSelected: (account) {
-                    final updatedEntry = entry.copyWith(
-                      accountNumber: account.accNumber,
-                      accountName: account.accName,
-                      currency: account.actCurrency,
-                    );
-
+                    // Remove the unused variable declaration
                     context.read<FxBloc>().add(UpdateFxEntryEvent(
                       id: entry.rowId,
                       isDebit: isDebit,
@@ -702,6 +713,12 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                     if (baseCurrency != null && entry.currency != null && entry.currency != baseCurrency) {
                       _fetchExchangeRate(entry.currency!, baseCurrency);
                     }
+
+                    // Force UI update for totals
+                    setState(() {});
+                  },
+                  onExchangeRateChanged: (fromCcy, toCcy, newRate) {
+                    _updateExchangeRate(fromCcy, toCcy, newRate);
                   },
                   onRemove: () {
                     context.read<FxBloc>().add(RemoveFxEntryEvent(entry.rowId, isDebit: isDebit));
@@ -720,8 +737,8 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
             ),
             child: Row(
               children: [
-                const Text(
-                  'Total:',
+                 Text(
+                  '${tr.totalTitle}:',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
@@ -729,11 +746,11 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '${totalAmount.toAmount()} (various)',
+                      '${totalAmount.toAmount()} (${tr.various})',
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      '${baseCurrency ?? ''} ${totalBase.toAmount()} (base)',
+                      '${baseCurrency ?? ''} ${totalBase.toAmount()} (${tr.baseTitle})',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey.shade600,
@@ -757,6 +774,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
         required double difference,
         required String? baseCurrency,
       }) {
+    final tr = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -770,24 +788,24 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildSummaryItem(
-            'Total Debit (Base)',
+            '${tr.totalDebit} (${tr.baseTitle})',
             '${baseCurrency ?? ''} ${totalDebitBase.toAmount()}',
             totalsMatch ? Colors.green.shade800 : Colors.red.shade800,
           ),
           _buildSummaryItem(
-            'Total Credit (Base)',
+            '${tr.totalCredit} (${tr.baseTitle})',
             '${baseCurrency ?? ''} ${totalCreditBase.toAmount()}',
             totalsMatch ? Colors.green.shade800 : Colors.red.shade800,
           ),
           _buildSummaryItem(
-            'Status',
-            totalsMatch ? 'BALANCED' : 'UNBALANCED',
+            tr.status,
+            totalsMatch ? tr.balanced : tr.unbalanced,
             totalsMatch ? Colors.green : Colors.red,
             isBold: true,
           ),
           if (!totalsMatch)
             _buildSummaryItem(
-              'Difference',
+              tr.difference,
               '${baseCurrency ?? ''} ${difference.toAmount()}',
               Colors.red,
             ),
@@ -845,7 +863,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     return ZOutlineButton(
       height: 40,
       isActive: true,
-      icon: Icons.screen_rotation_alt_rounded,
+      icon: isSaving? null : Icons.screen_rotation_alt_rounded,
       onPressed: !isValid || userName == null || isSaving
           ? null
           : () async {
@@ -869,7 +887,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
         height: 20,
         child: CircularProgressIndicator(
           strokeWidth: 2,
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.surface,
         ),
       )
           : Text(AppLocalizations.of(context)!.create),
@@ -919,9 +937,11 @@ class _EntryRow extends StatefulWidget {
   final TextEditingController amountController;
   final FocusNode focusNode;
   final Map<String, double> exchangeRates;
+  final Map<String, double> originalExchangeRates;
   final Future<double> Function(String, String) fetchExchangeRate;
   final Function(AccountsModel) onAccountSelected;
   final Function(double) onAmountChanged;
+  final Function(String, String, double) onExchangeRateChanged;
   final Function() onRemove;
 
   const _EntryRow({
@@ -933,9 +953,11 @@ class _EntryRow extends StatefulWidget {
     required this.amountController,
     required this.focusNode,
     required this.exchangeRates,
+    required this.originalExchangeRates,
     required this.fetchExchangeRate,
     required this.onAccountSelected,
     required this.onAmountChanged,
+    required this.onExchangeRateChanged,
     required this.onRemove,
   });
 
@@ -949,12 +971,83 @@ class __EntryRowState extends State<_EntryRow> {
   double _amountInBase = 0.0;
   double _exchangeRate = 1.0;
   bool _isLoadingRate = false;
+  bool _isEditingRate = false;
+  late TextEditingController _rateController;
+  late FocusNode _rateFocusNode;
+  double _originalFetchedRate = 1.0;
+  bool _isGLAccount = false;
 
   @override
   void initState() {
     super.initState();
+    _rateController = TextEditingController();
+    _rateFocusNode = FocusNode();
     _calculateAmountInBase();
     _fetchRateIfNeeded();
+    _setupRateController();
+    _checkIfGLAccount();
+  }
+
+  void _checkIfGLAccount() {
+    // Only show dropdown if account has no currency
+    // When row is first added (no account selected yet), don't show dropdown
+    _isGLAccount = widget.entry.accountNumber != null &&
+        (widget.entry.currency == null || widget.entry.currency!.isEmpty);
+  }
+
+  void _setupRateController() {
+    _rateController.text = _exchangeRate.toStringAsFixed(6);
+    _rateFocusNode.addListener(() {
+      if (!_rateFocusNode.hasFocus && _isEditingRate) {
+        _saveExchangeRate();
+      }
+    });
+  }
+
+  void _saveExchangeRate() {
+    final newRate = double.tryParse(_rateController.text) ?? _originalFetchedRate;
+
+    // Validate the rate change (within ±5% of original fetched rate)
+    final minRate = _originalFetchedRate * 0.95;
+    final maxRate = _originalFetchedRate * 1.05;
+
+    if (newRate < minRate || newRate > maxRate) {
+      // Show error and revert to original
+      Utils.showOverlayMessage(
+        context,
+        message: AppLocalizations.of(context)!.exchangeRatePercentage,
+        isError: true,
+      );
+      _rateController.text = _exchangeRate.toStringAsFixed(6);
+    } else {
+      _exchangeRate = newRate;
+      // Update the exchange rates map
+      if (widget.entry.currency != null && widget.baseCurrency != null) {
+        final key = '${widget.entry.currency}:${widget.baseCurrency}';
+        widget.exchangeRates[key] = _exchangeRate;
+        // Notify parent about rate change
+        widget.onExchangeRateChanged(widget.entry.currency!, widget.baseCurrency!, _exchangeRate);
+      }
+      _calculateAmountInBase();
+    }
+
+    setState(() {
+      _isEditingRate = false;
+    });
+  }
+
+  void _startEditingRate() {
+    // Only allow editing if currencies are different
+    if (widget.entry.currency != null &&
+        widget.baseCurrency != null &&
+        widget.entry.currency != widget.baseCurrency) {
+      setState(() {
+        _isEditingRate = true;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _rateFocusNode.requestFocus();
+      });
+    }
   }
 
   void _fetchRateIfNeeded() async {
@@ -964,13 +1057,22 @@ class __EntryRowState extends State<_EntryRow> {
 
       final key = '${widget.entry.currency}:${widget.baseCurrency}';
 
+      // Get original rate for validation
+      _originalFetchedRate = widget.originalExchangeRates[key] ?? _exchangeRate;
+
       if (!widget.exchangeRates.containsKey(key)) {
         setState(() {
           _isLoadingRate = true;
         });
 
         try {
-          await widget.fetchExchangeRate(widget.entry.currency!, widget.baseCurrency!);
+          final rate = await widget.fetchExchangeRate(widget.entry.currency!, widget.baseCurrency!);
+          // Update the rate
+          widget.exchangeRates[key] = rate;
+          _exchangeRate = rate;
+          _originalFetchedRate = rate; // Store as original for validation
+          _rateController.text = rate.toStringAsFixed(6);
+          _calculateAmountInBase();
         } catch (e) {
           // Handle error
         } finally {
@@ -980,6 +1082,12 @@ class __EntryRowState extends State<_EntryRow> {
             });
           }
         }
+      } else {
+        // Use existing rate
+        _exchangeRate = widget.exchangeRates[key]!;
+        _rateController.text = _exchangeRate.toStringAsFixed(6);
+        // Get original rate for validation
+        _originalFetchedRate = widget.originalExchangeRates[key] ?? _exchangeRate;
       }
     }
   }
@@ -995,15 +1103,30 @@ class __EntryRowState extends State<_EntryRow> {
         _exchangeRate = widget.exchangeRates[key] ?? 1.0;
         _amountInBase = widget.entry.amount * _exchangeRate;
       }
+      // Update controller if not editing
+      if (!_isEditingRate) {
+        _rateController.text = _exchangeRate.toStringAsFixed(6);
+      }
     } else {
       _amountInBase = 0.0;
       _exchangeRate = 1.0;
+      if (!_isEditingRate) {
+        _rateController.text = '1.00';
+      }
+    }
+    // Trigger UI update
+    if (mounted) {
+      setState(() {});
     }
   }
 
   @override
   void didUpdateWidget(covariant _EntryRow oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    // Check if GL account status changed
+    _checkIfGLAccount();
+
     if (widget.entry.currency != oldWidget.entry.currency ||
         widget.entry.amount != oldWidget.entry.amount ||
         widget.baseCurrency != oldWidget.baseCurrency ||
@@ -1022,6 +1145,13 @@ class __EntryRowState extends State<_EntryRow> {
   }
 
   @override
+  void dispose() {
+    _rateController.dispose();
+    _rateFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     currentLocale = context.watch<LocalizationBloc>().state.countryCode;
     final comState = context.watch<CompanyProfileBloc>().state;
@@ -1029,7 +1159,7 @@ class __EntryRowState extends State<_EntryRow> {
       baseCurrency = comState.company.comLocalCcy;
     }
 
-    // Update calculation when widget updates
+    // Recalculate when widget builds
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _calculateAmountInBase();
     });
@@ -1063,7 +1193,6 @@ class __EntryRowState extends State<_EntryRow> {
                     start: 1,
                     end: 5,
                     exclude: "10101011",
-                    ccy: baseCurrency,
                     locale: currentLocale ?? 'en',
                   ),
                 ),
@@ -1073,7 +1202,6 @@ class __EntryRowState extends State<_EntryRow> {
                     start: 1,
                     end: 5,
                     exclude: "10101011",
-                    ccy: baseCurrency,
                     locale: currentLocale ?? 'en',
                   ),
                 ),
@@ -1100,7 +1228,7 @@ class __EntryRowState extends State<_EntryRow> {
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          account.actCurrency ?? baseCurrency ?? "",
+                          account.actCurrency ?? "",
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(
                             color: Colors.grey[800],
@@ -1123,22 +1251,57 @@ class __EntryRowState extends State<_EntryRow> {
                   if (state is AccountLoadedState) return state.accounts;
                   return [];
                 },
-                onSelected: widget.onAccountSelected,
+                onSelected: (account) {
+                  widget.onAccountSelected(account);
+                  // Check if this is a GL account (no currency)
+                  _isGLAccount = account.actCurrency == null || account.actCurrency!.isEmpty;
+                  setState(() {});
+                },
                 noResultsText: 'No account found',
                 showClearButton: true,
               ),
             ),
           ),
 
-          // Currency Display
+          // Currency Display - Only show dropdown for GL accounts (no currency)
           Container(
-            width: 50,
+            width: 80,
             height: 40,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3),
-              border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3))
-            ),
-            child: Center(
+            decoration: !_isGLAccount? BoxDecoration(
+                borderRadius: BorderRadius.circular(3),
+                border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3))
+            ) : null,
+            child: _isGLAccount
+                ? CurrencyDropdown(
+              height: 40,
+              flag: false,
+              initiallySelectedSingle: CurrenciesModel(
+                ccyCode: widget.entry.currency ?? "",
+              ),
+              isMulti: false,
+              onMultiChanged: (_) {},
+              onSingleChanged: (selectedCurrency) {
+                if (selectedCurrency != null) {
+                  context.read<FxBloc>().add(UpdateFxEntryEvent(
+                    id: widget.entry.rowId,
+                    isDebit: widget.isDebit,
+                    currency: selectedCurrency.ccyCode,
+                  ));
+
+                  // Update local state
+                  _isGLAccount = false;
+
+                  // Fetch exchange rate if needed
+                  if (widget.baseCurrency != null && selectedCurrency.ccyCode != widget.baseCurrency) {
+                    widget.fetchExchangeRate(selectedCurrency.ccyCode!, widget.baseCurrency!);
+                  }
+
+                  // Trigger recalculation
+                  _calculateAmountInBase();
+                }
+              },
+            )
+                : Center(
               child: Text(
                 widget.entry.currency ?? '---',
                 style: TextStyle(
@@ -1159,7 +1322,6 @@ class __EntryRowState extends State<_EntryRow> {
               title: '',
               controller: widget.amountController,
               focusNode: widget.focusNode,
-              //keyboardType: TextInputType.numberWithOptions(decimal: true),
               inputFormat: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
                 SmartThousandsDecimalFormatter(),
@@ -1167,14 +1329,12 @@ class __EntryRowState extends State<_EntryRow> {
               onChanged: (value) {
                 final amount = value.cleanAmount.toDoubleAmount();
                 widget.onAmountChanged(amount);
-                // Recalculate amount in base
                 _calculateAmountInBase();
-                setState(() {});
               },
             ),
           ),
 
-          // Exchange Rate Display
+          // Editable Exchange Rate Display
           Container(
             width: 140,
             height: 40,
@@ -1183,56 +1343,11 @@ class __EntryRowState extends State<_EntryRow> {
                 border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3))
             ),
             child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  if (_isLoadingRate)
-                    const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 1),
-                    )
-                  else if (widget.entry.currency != null && widget.baseCurrency != null)
-                    Column(
-                      children: [
-                        if (widget.entry.currency != widget.baseCurrency)
-                          Text(
-                            '1 ${widget.entry.currency} = ${_exchangeRate.toStringAsFixed(6)} ${widget.baseCurrency}',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.blue.shade700,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            textAlign: TextAlign.center,
-                          )
-                        else
-                           Text(
-                            AppLocalizations.of(context)!.sameCurrency,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.green,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                      ],
-                    )
-                  else
-                    const Text(
-                      '---',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                ],
-              ),
+              child: _buildExchangeRateWidget(),
             ),
           ),
 
-          // Amount in Base Currency
+          // Amount in Base Currency - This should update when rate changes
           Container(
             width: 120,
             height: 40,
@@ -1245,7 +1360,7 @@ class __EntryRowState extends State<_EntryRow> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  '${widget.baseCurrency ?? ""} ${_amountInBase.toAmount()}',
+                  _amountInBase.toAmount(),
                   style: TextStyle(
                     color: Colors.grey.shade700,
                     fontWeight: FontWeight.bold,
@@ -1272,5 +1387,90 @@ class __EntryRowState extends State<_EntryRow> {
         ],
       ),
     );
+  }
+
+  Widget _buildExchangeRateWidget() {
+    if (_isLoadingRate) {
+      return const SizedBox(
+        width: 16,
+        height: 16,
+        child: CircularProgressIndicator(strokeWidth: 1),
+      );
+    }
+
+    if (widget.entry.currency != null && widget.baseCurrency != null) {
+      if (widget.entry.currency == widget.baseCurrency) {
+        return Text(
+          AppLocalizations.of(context)!.sameCurrency,
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.green,
+            fontWeight: FontWeight.w500,
+          ),
+          textAlign: TextAlign.center,
+        );
+      } else {
+        final isAdjusted = (_exchangeRate - _originalFetchedRate).abs() > 0.000001;
+
+        return GestureDetector(
+          onTap: () => _startEditingRate(),
+          child: _isEditingRate
+              ? Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: TextField(
+              controller: _rateController,
+              focusNode: _rateFocusNode,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.blue.shade700,
+                fontWeight: FontWeight.w500,
+              ),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.zero,
+                isDense: true,
+                hintText: AppLocalizations.of(context)!.enterRate,
+              ),
+              onEditingComplete: _saveExchangeRate,
+              onSubmitted: (_) => _saveExchangeRate(),
+            ),
+          )
+              : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '1 ${widget.entry.currency} = ${_exchangeRate.toStringAsFixed(6)} ${widget.baseCurrency}',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.blue.shade700,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              if (isAdjusted)
+                Text(
+                  AppLocalizations.of(context)!.adjusted,
+                  style: TextStyle(
+                    fontSize: 8,
+                    color: Colors.orange,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+            ],
+          ),
+        );
+      }
+    } else {
+      return const Text(
+        '---',
+        style: TextStyle(
+          fontSize: 11,
+          color: Colors.grey,
+        ),
+        textAlign: TextAlign.center,
+      );
+    }
   }
 }

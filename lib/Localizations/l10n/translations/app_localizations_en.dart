@@ -1168,4 +1168,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sameCurrency => 'Same Currency';
+
+  @override
+  String get exchangeRatePercentage =>
+      'Exchange rate can only be adjusted within ±5% of the system rate.';
+
+  @override
+  String get balanced => 'BALANCED';
+
+  @override
+  String get unbalanced => 'UNBALANCED';
+
+  @override
+  String get various => 'Various';
+
+  @override
+  String get totalTitle => 'Total';
+
+  @override
+  String get debitNotEqualBaseCurrency =>
+      'Debit and credit amounts must balance.';
+
+  @override
+  String get adjusted => 'Adjusted';
+
+  @override
+  String get enterRate => 'Rate';
 }

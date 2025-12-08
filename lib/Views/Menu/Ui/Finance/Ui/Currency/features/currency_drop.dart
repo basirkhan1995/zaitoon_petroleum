@@ -11,6 +11,7 @@ class CurrencyDropdown extends StatefulWidget {
   final bool isMulti;
   final double height;
   final bool disableAction;
+  final bool flag;
   final ValueChanged<List<CurrenciesModel>> onMultiChanged;
   final ValueChanged<CurrenciesModel?>? onSingleChanged;
   final List<CurrenciesModel>? initiallySelected;
@@ -21,6 +22,7 @@ class CurrencyDropdown extends StatefulWidget {
     required this.isMulti,
     required this.onMultiChanged,
     this.height = 45,
+    this.flag = true,
     this.disableAction = false,
     this.onSingleChanged,
     this.title,
@@ -92,7 +94,8 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
               title: '', // keep empty, using customTitle
               height: widget.height,
               leadingBuilder: (CurrenciesModel ccy) {
-                return SizedBox(
+                if(widget.flag) {
+                  return SizedBox(
                   width: 30,
                   child: Flag.fromString(
                     ccy.ccyCountryCode ?? "",
@@ -102,6 +105,7 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
                     fit: BoxFit.fill,
                   ),
                 );
+                } return SizedBox.shrink();
               },
               items: state is CurrenciesLoadedState ? state.ccy : [],
               multiSelect: widget.isMulti,
@@ -109,19 +113,19 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
               selectedItem: widget.isMulti ? null : _selectedSingle,
               itemLabel: (item) => item.ccyCode ?? "",
               initialValue: AppLocalizations.of(context)!.currencyTitle,
-
               onMultiSelectChanged: widget.isMulti
                   ? (selected) {
                 setState(() => _selectedMulti = selected);
                 widget.onMultiChanged(selected);
-              }
-                  : null,
+              } : null,
+
               onItemSelected: widget.isMulti
                   ? (_) {}
                   : (item) {
                 setState(() => _selectedSingle = item);
                 widget.onSingleChanged?.call(item);
               },
+
               isLoading: false,
               itemStyle: Theme.of(context).textTheme.titleMedium,
 

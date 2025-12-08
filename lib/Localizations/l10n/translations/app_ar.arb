@@ -388,5 +388,13 @@
   "baseTitle": "پایه",
   "creditSide": "کریدت",
   "debitSide": "دبت",
-  "sameCurrency": "ارز یکسان"
+  "sameCurrency": "ارز یکسان",
+  "exchangeRatePercentage": "د تبادلې نرخ یوازې د سیسټم نرخ ±5٪ دننه تنظیم کیدی شي.",
+  "balanced": "متوازن",
+  "unbalanced": "نا متوازن",
+  "various": "په ګڼو اسعارو کې",
+  "totalTitle": "ټول",
+  "debitNotEqualBaseCurrency": "د بدهکار او بستانکار مقدار باید مساوي وي.",
+  "adjusted": "تنظیم شوی",
+  "enterRate": "اسعارو نرخ"
 }

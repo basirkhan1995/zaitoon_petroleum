@@ -1160,4 +1160,30 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get sameCurrency => 'ارز یکسان';
+
+  @override
+  String get exchangeRatePercentage =>
+      'نرخ ارز فقط میتواند در محدوده ±5٪ از نرخ سیستم تنظیم شود';
+
+  @override
+  String get balanced => 'متعادل';
+
+  @override
+  String get unbalanced => 'نامتعادل';
+
+  @override
+  String get various => 'نمایش چند ارزی';
+
+  @override
+  String get totalTitle => 'مجموعه';
+
+  @override
+  String get debitNotEqualBaseCurrency =>
+      'مقادیر بدهکار و بستانکار باید متوازن شوند.';
+
+  @override
+  String get adjusted => 'تنظیم شده';
+
+  @override
+  String get enterRate => 'نرخ اسعار';
 }

@@ -388,5 +388,13 @@
   "baseTitle": "پایه",
   "creditSide": "کریدت",
   "debitSide": "دبت",
-  "sameCurrency": "ارز یکسان"
+  "sameCurrency": "ارز یکسان",
+  "exchangeRatePercentage": "نرخ ارز فقط میتواند در محدوده ±5٪ از نرخ سیستم تنظیم شود",
+  "balanced": "متعادل",
+  "unbalanced": "نامتعادل",
+  "various": "نمایش چند ارزی",
+  "totalTitle": "مجموعه",
+  "debitNotEqualBaseCurrency": "مقادیر بدهکار و بستانکار باید متوازن شوند.",
+  "adjusted": "تنظیم شده",
+  "enterRate": "نرخ اسعار"
 }

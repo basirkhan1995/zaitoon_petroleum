@@ -1162,4 +1162,30 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get sameCurrency => 'ارز یکسان';
+
+  @override
+  String get exchangeRatePercentage =>
+      'د تبادلې نرخ یوازې د سیسټم نرخ ±5٪ دننه تنظیم کیدی شي.';
+
+  @override
+  String get balanced => 'متوازن';
+
+  @override
+  String get unbalanced => 'نا متوازن';
+
+  @override
+  String get various => 'په ګڼو اسعارو کې';
+
+  @override
+  String get totalTitle => 'ټول';
+
+  @override
+  String get debitNotEqualBaseCurrency =>
+      'د بدهکار او بستانکار مقدار باید مساوي وي.';
+
+  @override
+  String get adjusted => 'تنظیم شوی';
+
+  @override
+  String get enterRate => 'اسعارو نرخ';
 }

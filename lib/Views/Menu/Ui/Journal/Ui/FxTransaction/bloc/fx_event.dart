@@ -35,6 +35,7 @@ class UpdateFxEntryEvent extends FxEvent {
   final String? accountName;
   final String? currency;
   final double? amount;
+  final String? exchangeRate; // Add
   final String? narration;
 
   const UpdateFxEntryEvent({
@@ -43,6 +44,7 @@ class UpdateFxEntryEvent extends FxEvent {
     this.accountNumber,
     this.accountName,
     this.currency,
+    this.exchangeRate,
     this.amount,
     this.narration,
   });
@@ -54,6 +56,7 @@ class UpdateFxEntryEvent extends FxEvent {
     accountNumber,
     accountName,
     currency,
+    exchangeRate,
     amount,
     narration,
   ];

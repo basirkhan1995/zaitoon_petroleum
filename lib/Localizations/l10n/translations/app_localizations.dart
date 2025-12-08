@@ -2355,6 +2355,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Same Currency'**
   String get sameCurrency;
+
+  /// No description provided for @exchangeRatePercentage.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange rate can only be adjusted within ±5% of the system rate.'**
+  String get exchangeRatePercentage;
+
+  /// No description provided for @balanced.
+  ///
+  /// In en, this message translates to:
+  /// **'BALANCED'**
+  String get balanced;
+
+  /// No description provided for @unbalanced.
+  ///
+  /// In en, this message translates to:
+  /// **'UNBALANCED'**
+  String get unbalanced;
+
+  /// No description provided for @various.
+  ///
+  /// In en, this message translates to:
+  /// **'Various'**
+  String get various;
+
+  /// No description provided for @totalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get totalTitle;
+
+  /// No description provided for @debitNotEqualBaseCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Debit and credit amounts must balance.'**
+  String get debitNotEqualBaseCurrency;
+
+  /// No description provided for @adjusted.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjusted'**
+  String get adjusted;
+
+  /// No description provided for @enterRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate'**
+  String get enterRate;
 }
 
 class _AppLocalizationsDelegate
