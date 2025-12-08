@@ -322,7 +322,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pm => 'ب.ظ';
 
   @override
-  String get zPetroleum => 'د زیتون سافټویر';
+  String get zPetroleum => 'د زیتون حسابداری سیستم';
 
   @override
   String get hijriShamsi => 'هجری شمسی';
