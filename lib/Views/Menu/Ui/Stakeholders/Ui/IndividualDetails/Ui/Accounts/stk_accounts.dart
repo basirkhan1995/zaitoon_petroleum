@@ -113,12 +113,11 @@ class _DesktopState extends State<_Desktop> {
             child: Row(
               children: [
                 Expanded(child: Text(locale.accountInformation,style: Theme.of(context).textTheme.titleMedium)),
-
                 SizedBox(
                     width: 100,
-                    child: Text(locale.currencyTitle,style: Theme.of(context).textTheme.titleMedium)),
+                    child: Text(locale.status,style: Theme.of(context).textTheme.titleMedium)),
                 SizedBox(
-                    width: 100,
+                    width: 150,
                     child: Text(locale.balance,style: Theme.of(context).textTheme.titleMedium)),
 
               ],
@@ -216,25 +215,45 @@ class _DesktopState extends State<_Desktop> {
                                         style: Theme.of(context).textTheme.titleMedium,
                                       ),
 
-                                      const SizedBox(height: 4),
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 6.0),
-                                        child: Cover(
-                                          color: color.surface,
-                                          child: Text(acc.accNumber.toString()),
-                                        ),
-                                      ),
+                                      const SizedBox(height: 1),
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(right: 3.0),
+                                            child: Cover(
+                                              color: color.surface,
+                                              child: Text(acc.accNumber.toString()),
+                                            ),
+                                          ),
 
+                                          Padding(
+                                            padding: const EdgeInsets.only(right: 3.0),
+                                            child: Cover(
+                                              color: color.surface,
+                                              child: Text(acc.actCurrency.toString()),
+                                            ),
+                                          ),
+                                        ],
+                                      )
                                     ],
                                   ),
                                 ),
 
                                 SizedBox(
-                                    width: 100,
-                                    child: Text(acc.actCurrency.toString())),
+                                  width: 100,
+                                  child: Text(acc.accStatus == 1? locale.active : locale.blocked),
+                                ),
+
                                 SizedBox(
-                                    width: 100,
-                                    child: Text("")),
+                                    width: 150,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text("${acc.accBalance?.toAmount()} ${acc.actCurrency}"),
+                                        Text("${acc.accAvailBalance?.toAmount()} ${acc.actCurrency}"),
+                                      ],
+                                    )),
 
                               ],
                             ),

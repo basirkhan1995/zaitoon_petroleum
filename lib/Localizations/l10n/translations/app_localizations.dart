@@ -1375,7 +1375,7 @@ abstract class AppLocalizations {
   /// No description provided for @blockedMessage.
   ///
   /// In en, this message translates to:
-  /// **'You\'re blocked, contact your administrator please?'**
+  /// **'You\'re blocked, contact your administrator please.'**
   String get blockedMessage;
 
   /// No description provided for @ceo.
@@ -2421,6 +2421,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hired date'**
   String get hireDate;
+
+  /// No description provided for @vehicleModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle Model'**
+  String get vehicleModel;
+
+  /// No description provided for @driver.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver'**
+  String get driver;
+
+  /// No description provided for @manufacturedYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Manufactured'**
+  String get manufacturedYear;
+
+  /// No description provided for @vehiclePlate.
+  ///
+  /// In en, this message translates to:
+  /// **'Plate No'**
+  String get vehiclePlate;
+
+  /// No description provided for @vehicleType.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get vehicleType;
+
+  /// No description provided for @fuelType.
+  ///
+  /// In en, this message translates to:
+  /// **'Fuel'**
+  String get fuelType;
+
+  /// No description provided for @vinNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle Identification No'**
+  String get vinNumber;
+
+  /// No description provided for @enginePower.
+  ///
+  /// In en, this message translates to:
+  /// **'Engine Power'**
+  String get enginePower;
+
+  /// No description provided for @vclRegisteredNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered License'**
+  String get vclRegisteredNo;
+
+  /// No description provided for @ownership.
+  ///
+  /// In en, this message translates to:
+  /// **'Onwership'**
+  String get ownership;
+
+  /// No description provided for @rental.
+  ///
+  /// In en, this message translates to:
+  /// **'Rental'**
+  String get rental;
+
+  /// No description provided for @owned.
+  ///
+  /// In en, this message translates to:
+  /// **'Owned'**
+  String get owned;
+
+  /// No description provided for @lease.
+  ///
+  /// In en, this message translates to:
+  /// **'Lease'**
+  String get lease;
+
+  /// No description provided for @petrol.
+  ///
+  /// In en, this message translates to:
+  /// **'Petrol'**
+  String get petrol;
+
+  /// No description provided for @diesel.
+  ///
+  /// In en, this message translates to:
+  /// **'Diesel'**
+  String get diesel;
+
+  /// No description provided for @cngGas.
+  ///
+  /// In en, this message translates to:
+  /// **'CNG'**
+  String get cngGas;
+
+  /// No description provided for @lpgGass.
+  ///
+  /// In en, this message translates to:
+  /// **'LPG'**
+  String get lpgGass;
+
+  /// No description provided for @electric.
+  ///
+  /// In en, this message translates to:
+  /// **'Electric'**
+  String get electric;
+
+  /// No description provided for @hydrogen.
+  ///
+  /// In en, this message translates to:
+  /// **'Hydrogen'**
+  String get hydrogen;
+
+  /// No description provided for @hybrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Hybrid'**
+  String get hybrid;
+
+  /// No description provided for @truck.
+  ///
+  /// In en, this message translates to:
+  /// **'Truck'**
+  String get truck;
+
+  /// No description provided for @tanker.
+  ///
+  /// In en, this message translates to:
+  /// **'Tanker'**
+  String get tanker;
+
+  /// No description provided for @trailer.
+  ///
+  /// In en, this message translates to:
+  /// **'Trailer'**
+  String get trailer;
+
+  /// No description provided for @pickup.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup'**
+  String get pickup;
+
+  /// No description provided for @van.
+  ///
+  /// In en, this message translates to:
+  /// **'Van'**
+  String get van;
+
+  /// No description provided for @bus.
+  ///
+  /// In en, this message translates to:
+  /// **'Bus'**
+  String get bus;
+
+  /// No description provided for @miniVan.
+  ///
+  /// In en, this message translates to:
+  /// **'Mini Van'**
+  String get miniVan;
+
+  /// No description provided for @sedan.
+  ///
+  /// In en, this message translates to:
+  /// **'Sedan'**
+  String get sedan;
+
+  /// No description provided for @suv.
+  ///
+  /// In en, this message translates to:
+  /// **'SUV'**
+  String get suv;
+
+  /// No description provided for @motorcycle.
+  ///
+  /// In en, this message translates to:
+  /// **'Motorcycle'**
+  String get motorcycle;
+
+  /// No description provided for @rickshaw.
+  ///
+  /// In en, this message translates to:
+  /// **'Rickshaw'**
+  String get rickshaw;
+
+  /// No description provided for @ambulance.
+  ///
+  /// In en, this message translates to:
+  /// **'Ambulance'**
+  String get ambulance;
+
+  /// No description provided for @fireTruck.
+  ///
+  /// In en, this message translates to:
+  /// **'Fire Truck'**
+  String get fireTruck;
+
+  /// No description provided for @tractor.
+  ///
+  /// In en, this message translates to:
+  /// **'Tractor'**
+  String get tractor;
+
+  /// No description provided for @refrigeratedTruck.
+  ///
+  /// In en, this message translates to:
+  /// **'Refrigerated Truck'**
+  String get refrigeratedTruck;
+
+  /// No description provided for @meter.
+  ///
+  /// In en, this message translates to:
+  /// **'Odometer'**
+  String get meter;
+
+  /// No description provided for @vclExpireDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Register Expire date'**
+  String get vclExpireDate;
 }
 
 class _AppLocalizationsDelegate

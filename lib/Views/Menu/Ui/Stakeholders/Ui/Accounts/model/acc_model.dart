@@ -74,13 +74,11 @@ class AccountsModel {
     actId: json["actID"],
     actAccount: json["actAccount"],
     actCurrency: json["actCurrency"],
-   // accCreditLimit: json["accCreditLimit"],
-    accCreditLimit: json["actCreditLimit"],
+    accCreditLimit: json["accCreditLimit"],
     accBalance: json["accBalance"],
     actSignatory: json["actSignatory"],
     actCompany: json["actCompany"],
-    //accStatus: json["accStatus"],
-    accStatus: json["actStatus"],
+    accStatus: json["accStatus"],
   );
 
   Map<String, dynamic> toMap() => {

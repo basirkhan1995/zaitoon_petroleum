@@ -1342,7 +1342,7 @@ class _DesktopState extends State<_Desktop> {
                               ],
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return tr.required(tr.exchangeRate);
+                                  return tr.required(tr.amount);
                                 }
 
                                 // Remove formatting (e.g. commas)

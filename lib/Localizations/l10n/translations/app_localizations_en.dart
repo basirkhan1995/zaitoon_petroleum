@@ -654,7 +654,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get blockedMessage =>
-      'You\'re blocked, contact your administrator please?';
+      'You\'re blocked, contact your administrator please.';
 
   @override
   String get ceo => 'CEO';
@@ -1203,4 +1203,115 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hireDate => 'Hired date';
+
+  @override
+  String get vehicleModel => 'Vehicle Model';
+
+  @override
+  String get driver => 'Driver';
+
+  @override
+  String get manufacturedYear => 'Manufactured';
+
+  @override
+  String get vehiclePlate => 'Plate No';
+
+  @override
+  String get vehicleType => 'Category';
+
+  @override
+  String get fuelType => 'Fuel';
+
+  @override
+  String get vinNumber => 'Vehicle Identification No';
+
+  @override
+  String get enginePower => 'Engine Power';
+
+  @override
+  String get vclRegisteredNo => 'Registered License';
+
+  @override
+  String get ownership => 'Onwership';
+
+  @override
+  String get rental => 'Rental';
+
+  @override
+  String get owned => 'Owned';
+
+  @override
+  String get lease => 'Lease';
+
+  @override
+  String get petrol => 'Petrol';
+
+  @override
+  String get diesel => 'Diesel';
+
+  @override
+  String get cngGas => 'CNG';
+
+  @override
+  String get lpgGass => 'LPG';
+
+  @override
+  String get electric => 'Electric';
+
+  @override
+  String get hydrogen => 'Hydrogen';
+
+  @override
+  String get hybrid => 'Hybrid';
+
+  @override
+  String get truck => 'Truck';
+
+  @override
+  String get tanker => 'Tanker';
+
+  @override
+  String get trailer => 'Trailer';
+
+  @override
+  String get pickup => 'Pickup';
+
+  @override
+  String get van => 'Van';
+
+  @override
+  String get bus => 'Bus';
+
+  @override
+  String get miniVan => 'Mini Van';
+
+  @override
+  String get sedan => 'Sedan';
+
+  @override
+  String get suv => 'SUV';
+
+  @override
+  String get motorcycle => 'Motorcycle';
+
+  @override
+  String get rickshaw => 'Rickshaw';
+
+  @override
+  String get ambulance => 'Ambulance';
+
+  @override
+  String get fireTruck => 'Fire Truck';
+
+  @override
+  String get tractor => 'Tractor';
+
+  @override
+  String get refrigeratedTruck => 'Refrigerated Truck';
+
+  @override
+  String get meter => 'Odometer';
+
+  @override
+  String get vclExpireDate => 'Register Expire date';
 }

@@ -1197,4 +1197,115 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get hireDate => 'تاریخ استخدام';
+
+  @override
+  String get vehicleModel => 'د موټر ماډل';
+
+  @override
+  String get driver => 'موټر چلوونکی';
+
+  @override
+  String get manufacturedYear => 'د تولید کال';
+
+  @override
+  String get vehiclePlate => 'پلیت شمیره';
+
+  @override
+  String get vehicleType => 'د وسایط ډول';
+
+  @override
+  String get fuelType => 'د سونګ ډول';
+
+  @override
+  String get vinNumber => 'شاسی شمیره';
+
+  @override
+  String get enginePower => 'قدرت ماشین';
+
+  @override
+  String get vclRegisteredNo => 'جواز سیر شمیره';
+
+  @override
+  String get ownership => 'مالکیت';
+
+  @override
+  String get rental => 'کرايي ';
+
+  @override
+  String get owned => 'ملکیت لرونکی';
+
+  @override
+  String get lease => 'اجاره';
+
+  @override
+  String get petrol => 'پټرول ';
+
+  @override
+  String get diesel => 'ډیزل ';
+
+  @override
+  String get cngGas => 'سي‌ ان‌ جي';
+
+  @override
+  String get lpgGass => 'گاز مایع';
+
+  @override
+  String get electric => 'برقي ';
+
+  @override
+  String get hydrogen => 'هایدروجن ';
+
+  @override
+  String get hybrid => 'برقی';
+
+  @override
+  String get truck => 'لارۍ ';
+
+  @override
+  String get tanker => 'ټانکر ';
+
+  @override
+  String get trailer => 'ټریلر ';
+
+  @override
+  String get pickup => 'وانت';
+
+  @override
+  String get van => 'ون ';
+
+  @override
+  String get bus => 'بس ';
+
+  @override
+  String get miniVan => 'مینی ون';
+
+  @override
+  String get sedan => 'سدان ';
+
+  @override
+  String get suv => 'شاسی‌ بلند ';
+
+  @override
+  String get motorcycle => 'موټرسايکل ';
+
+  @override
+  String get rickshaw => 'رکشاه';
+
+  @override
+  String get ambulance => 'آمبولانس ';
+
+  @override
+  String get fireTruck => 'د اور وژنې موټر';
+
+  @override
+  String get tractor => 'تراکتور ';
+
+  @override
+  String get refrigeratedTruck => 'د یخچال لارۍ';
+
+  @override
+  String get meter => 'د کیلومتر شمېرونکی';
+
+  @override
+  String get vclExpireDate => 'تاریخ انقضا جواز سیر';
 }

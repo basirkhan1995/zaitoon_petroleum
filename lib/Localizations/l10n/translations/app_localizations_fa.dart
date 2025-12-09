@@ -1195,4 +1195,115 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get hireDate => 'تاریخ استخدام';
+
+  @override
+  String get vehicleModel => 'مدل موتر';
+
+  @override
+  String get driver => 'راننده';
+
+  @override
+  String get manufacturedYear => 'سال تولید';
+
+  @override
+  String get vehiclePlate => 'نمبر پلیت';
+
+  @override
+  String get vehicleType => 'نوع وسیله نقلیه';
+
+  @override
+  String get fuelType => 'نوع سوخت';
+
+  @override
+  String get vinNumber => 'شاسی نمبر';
+
+  @override
+  String get enginePower => 'قدرت ماشین';
+
+  @override
+  String get vclRegisteredNo => 'نمبر جواز سیر';
+
+  @override
+  String get ownership => 'مالکیت';
+
+  @override
+  String get rental => 'کرایه';
+
+  @override
+  String get owned => 'مالکیتی ';
+
+  @override
+  String get lease => 'اجاره';
+
+  @override
+  String get petrol => 'پترول';
+
+  @override
+  String get diesel => 'دیزل';
+
+  @override
+  String get cngGas => 'سي‌ ان‌ جي';
+
+  @override
+  String get lpgGass => 'گاز مایع';
+
+  @override
+  String get electric => 'برقی';
+
+  @override
+  String get hydrogen => 'هیدروژن ';
+
+  @override
+  String get hybrid => 'برقی';
+
+  @override
+  String get truck => 'کامیون';
+
+  @override
+  String get tanker => 'تانکر';
+
+  @override
+  String get trailer => 'تریلر ';
+
+  @override
+  String get pickup => 'وانت ';
+
+  @override
+  String get van => 'ون ';
+
+  @override
+  String get bus => 'بس ';
+
+  @override
+  String get miniVan => 'مینی ون';
+
+  @override
+  String get sedan => 'سدان ';
+
+  @override
+  String get suv => 'شاسی‌ بلند ';
+
+  @override
+  String get motorcycle => 'موتورسیکلت ';
+
+  @override
+  String get rickshaw => 'رکشاه';
+
+  @override
+  String get ambulance => 'آمبولانس ';
+
+  @override
+  String get fireTruck => 'اطفایه';
+
+  @override
+  String get tractor => 'تراکتور ';
+
+  @override
+  String get refrigeratedTruck => 'کامیون یخچالی';
+
+  @override
+  String get meter => 'کیلومترشمار ';
+
+  @override
+  String get vclExpireDate => 'تاریخ انقضا جواز سیر';
 }

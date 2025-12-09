@@ -243,7 +243,7 @@ class Repositories {
 
       // Fetch data from API
       final response = await api.get(
-        endpoint: "/stakeholder/account.php",
+        endpoint: "/journal/allAccounts.php",
         queryParams: queryParams,
       );
 
