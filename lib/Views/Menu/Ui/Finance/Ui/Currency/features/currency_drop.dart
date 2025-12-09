@@ -64,12 +64,12 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
               children: [
                 Text(
                   widget.title ?? AppLocalizations.of(context)!.currencyTitle,
-                  style: Theme.of(context).textTheme.titleSmall,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 12),
                 ),
                 const SizedBox(width: 8),
                 const SizedBox(
-                  width: 16,
-                  height: 16,
+                  width: 15,
+                  height: 15,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
               ],

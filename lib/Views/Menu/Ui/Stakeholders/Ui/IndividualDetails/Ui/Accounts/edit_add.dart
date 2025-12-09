@@ -15,9 +15,7 @@ import '../../../../../Finance/Ui/Currency/features/currency_drop.dart';
 class AccountsAddEditView extends StatelessWidget {
   final AccountsModel? model;
   final int? signatory;
-
   const AccountsAddEditView({super.key, this.model, this.signatory});
-
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
@@ -41,9 +39,7 @@ class _Mobile extends StatelessWidget {
 
 class _Tablet extends StatelessWidget {
   final AccountsModel? model;
-
   const _Tablet({this.model});
-
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
@@ -98,6 +94,7 @@ class _DesktopState extends State<_Desktop> {
     final theme = Theme.of(context).colorScheme;
     final isEdit = widget.model != null;
     return ZFormDialog(
+      icon: Icons.account_circle,
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       width: 500,
 
@@ -128,8 +125,10 @@ class _DesktopState extends State<_Desktop> {
           builder: (context, state) {
             return Column(
               mainAxisSize: MainAxisSize.min,
+              spacing: 8,
               children: [
                 Row(
+                  spacing: 5,
                   children: [
                     Expanded(
                       child: ZTextFieldEntitled(
@@ -148,7 +147,7 @@ class _DesktopState extends State<_Desktop> {
                     SizedBox(
                       width: 120,
                       child: CurrencyDropdown(
-                        height: 41,
+                        height: 40,
                         disableAction: widget.model != null,
                         title: locale.currencyTitle,
                         isMulti: false,
@@ -163,7 +162,6 @@ class _DesktopState extends State<_Desktop> {
                 ),
 
                 ZTextFieldEntitled(
-                  isRequired: true,
                   onSubmit: (_) => onSubmit(),
                   keyboardInputType:
                   TextInputType.numberWithOptions(
@@ -177,71 +175,26 @@ class _DesktopState extends State<_Desktop> {
                   ],
                   title: locale.accountLimit,
                   controller: accountLimit,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return locale.required(locale.accountLimit);
-                    }
-
-                    // Remove formatting (e.g. commas)
-                    final clean = value.replaceAll(
-                      RegExp(r'[^\d.]'),
-                      '',
-                    );
-                    final amount = double.tryParse(clean);
-
-                    if (amount == null || amount <= 0.0) {
-                      return "Amount greater than zero";
-                    }
-
-                    return null;
-                  },
+                  // validator: (value) {
+                  //   if (value == null || value.isEmpty) {
+                  //     return locale.required(locale.accountLimit);
+                  //   }
+                  //
+                  //   // Remove formatting (e.g. commas)
+                  //   final clean = value.replaceAll(
+                  //     RegExp(r'[^\d.]'),
+                  //     '',
+                  //   );
+                  //   final amount = double.tryParse(clean);
+                  //
+                  //   if (amount == null || amount <= 0.0) {
+                  //     return "Amount greater than zero";
+                  //   }
+                  //
+                  //   return null;
+                  // },
                 ),
-                SizedBox(height: 5),
 
-                // GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
-                //   controller: accName,
-                //   title: AppLocalizations.of(context)!.accounts,
-                //   hintText: locale.accNameOrNumber,
-                //   isRequired: true,
-                //   bloc: context.read<GlAccountsBloc>(),
-                //   stateToLoading: (state) => state is GlAccountsLoadingState,
-                //   loadingBuilder: (context) => const SizedBox(
-                //     width: 16,
-                //     height: 16,
-                //     child: CircularProgressIndicator(strokeWidth: 2),
-                //   ),
-                //   fetchAllFunction: (bloc) => bloc.add(LoadGlAccountEvent("en")),
-                //   itemBuilder:
-                //       (context, account) => Padding(
-                //     padding: const EdgeInsets.all(5),
-                //     child: Column(
-                //       crossAxisAlignment:
-                //       CrossAxisAlignment.start,
-                //       children: [
-                //         Text(
-                //           "(${account.accNumber}) ${account.accName}",
-                //           style:
-                //           Theme.of(
-                //             context,
-                //           ).textTheme.bodyLarge,
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                //   itemToString: (account) => account.accName ?? "",
-                //
-                //   stateToItems: (state) {
-                //     if (state is GlAccountLoadedState) {
-                //       return state.gl;
-                //     }
-                //     return [];
-                //   },
-                //   onSelected: (value) {},
-                //   noResultsText: 'No matching accounts found',
-                //   showClearButton: true,
-                //   padding: const EdgeInsets.only(bottom: 16),
-                // ),
-                //
                 Row(
                   children: [
                     Checkbox(

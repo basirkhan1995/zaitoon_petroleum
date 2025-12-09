@@ -146,7 +146,7 @@ class _DesktopState extends State<_Desktop> {
                     message: state.message,
                     onRefresh: () {
                       context.read<AccountsBloc>().add(
-                        LoadAccountsEvent(),
+                        LoadAccountsEvent(ownerId: widget.ind.perId),
                       );
                     },
                   );

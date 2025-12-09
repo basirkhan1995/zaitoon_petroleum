@@ -125,7 +125,8 @@ class _DesktopState extends State<_Desktop> {
     final isEdit = widget.model != null;
 
     return ZFormDialog(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      icon: Icons.add,
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
       width: 550,
 
       title: isEdit ? locale.update : locale.newKeyword,
@@ -155,22 +156,12 @@ class _DesktopState extends State<_Desktop> {
           builder: (context, state) {
             return Column(
               mainAxisSize: MainAxisSize.min,
+              spacing: 8,
               children: [
                 if (isEdit)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // GestureDetector(
-                    //   onTap: ()=> pickAndShowImage(widget.model!.perId!,context),
-                    //   child: ImageHelper.stakeholderProfile(
-                    //     imageName: imageName,
-                    //     localImageBytes: selectedImageBytes,
-                    //     size: 110,
-                    //     border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
-                    //     shapeStyle: ShapeStyle.roundedRectangle,
-                    //     showCameraIcon: true,
-                    //   ),
-                    // )
 
                     GestureDetector(
                       onTap: () => pickAndCropImage(widget.model!.perId!),
@@ -304,8 +295,10 @@ class _DesktopState extends State<_Desktop> {
 
 
                 Row(
+                  spacing: 8,
                   children: [
                     Checkbox(
+                      visualDensity: VisualDensity(horizontal: -4),
                       value: isMailingAddress,
                       onChanged: (value) {
                         setState(() {

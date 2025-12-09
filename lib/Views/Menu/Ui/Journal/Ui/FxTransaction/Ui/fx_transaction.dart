@@ -230,7 +230,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
         }
       },
       child: ZFormDialog(
-        width: MediaQuery.of(context).size.width * .95,
+        width: MediaQuery.of(context).size.width * .99,
         icon: Icons.currency_exchange_rounded,
         isActionTrue: false,
         onAction: null,
@@ -925,9 +925,9 @@ class _TableHeaderRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
-    final TextStyle? titleStyle = textTheme.titleSmall;
+    final TextStyle? titleStyle = textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold);
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
         border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
@@ -1410,11 +1410,11 @@ class __EntryRowState extends State<_EntryRow> {
               iconSize: 20,
             ),
           ),
+
         ],
       ),
     );
   }
-
   Widget _buildExchangeRateWidget() {
     if (_isLoadingRate) {
       return const SizedBox(

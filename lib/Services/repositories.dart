@@ -274,8 +274,6 @@ class Repositories {
   }
   Future<List<StakeholdersAccountsModel>> getStakeholdersAccounts({String? search}) async {
     try {
-
-      // Fetch data from API
       final response = await api.post(
         endpoint: "/journal/accountDetails.php",
         data: {

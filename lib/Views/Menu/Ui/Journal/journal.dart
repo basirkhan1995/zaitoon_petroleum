@@ -140,10 +140,7 @@ class _DesktopState extends State<_Desktop> {
       showDialog(
         context: context,
         builder: (context) {
-          return BlocConsumer<TransactionsBloc, TransactionsState>(
-              listener: (context, state) {
-               
-              },
+          return BlocBuilder<TransactionsBloc, TransactionsState>(
             builder: (context, trState) {
               return StatefulBuilder(
                 builder: (context, setState) {
@@ -180,6 +177,7 @@ class _DesktopState extends State<_Desktop> {
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
+                          spacing: 12,
                           children: [
                             GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
                               showAllOnFocus: true,
@@ -436,6 +434,7 @@ class _DesktopState extends State<_Desktop> {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
+                      spacing: 12,
                       children: [
                         GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
                           showAllOnFocus: true,
@@ -624,6 +623,7 @@ class _DesktopState extends State<_Desktop> {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
+                      spacing: 12,
                       children: [
                         GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
                           showAllOnFocus: true,
@@ -813,6 +813,7 @@ class _DesktopState extends State<_Desktop> {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
+                      spacing: 12,
                       children: [
                         GenericTextfield<
                           GlAccountsModel,
@@ -1025,6 +1026,7 @@ class _DesktopState extends State<_Desktop> {
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
+                          spacing: 12,
                           children: [
                             Row(
                               spacing: 8,
@@ -1103,6 +1105,7 @@ class _DesktopState extends State<_Desktop> {
                                      if(debitAccName !=null && debitAccName!.isNotEmpty)
                                      Cover(
                                          color: color.surface,
+                                         margin: EdgeInsets.symmetric(vertical: 5),
                                          child: Column(
                                        children: [
                                          if(debitAccName !=null && debitAccName!.isNotEmpty)
@@ -1248,6 +1251,7 @@ class _DesktopState extends State<_Desktop> {
                                       ),
                                       if(creditAccName !=null && creditAccName!.isNotEmpty)
                                       Cover(
+                                        margin: EdgeInsets.symmetric(vertical: 5),
                                         color: Theme.of(context).colorScheme.surface,
                                         child: Column(
                                           children: [
@@ -1327,7 +1331,6 @@ class _DesktopState extends State<_Desktop> {
                             SizedBox(height: 5),
                             ZTextFieldEntitled(
                               isRequired: true,
-                              // onSubmit: (_)=> onSubmit(),
                               keyboardInputType: TextInputType.numberWithOptions(
                                 decimal: true,
                               ),
