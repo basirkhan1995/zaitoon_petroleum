@@ -677,7 +677,6 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   final key = '${entry.currency}:$baseCurrency';
                   exchangeRate = _exchangeRates[key] ?? 1.0;
                 }
-
                 return _EntryRow(
                   entry: entry,
                   index: index,
