@@ -243,7 +243,6 @@ class _DesktopState extends State<_Desktop> {
                                   width: 100,
                                   child: Text(acc.accStatus == 1? locale.active : locale.blocked),
                                 ),
-
                                 SizedBox(
                                     width: 150,
                                     child: Column(
@@ -254,7 +253,6 @@ class _DesktopState extends State<_Desktop> {
                                         Text("${acc.accAvailBalance?.toAmount()} ${acc.actCurrency}"),
                                       ],
                                     )),
-
                               ],
                             ),
                           ),
