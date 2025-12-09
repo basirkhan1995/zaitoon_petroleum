@@ -144,12 +144,6 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     return _exchangeRates[key] ?? 1.0;
   }
 
-  // double _getOriginalExchangeRate(String fromCcy, String toCcy) {
-  //   if (fromCcy == toCcy) return 1.0;
-  //   final key = '$fromCcy:$toCcy';
-  //   return _originalExchangeRates[key] ?? _exchangeRates[key] ?? 1.0;
-  // }
-
   double _convertToBase(double amount, String currency) {
     if (_baseCurrency == null || currency == _baseCurrency) return amount;
     final rate = _getExchangeRate(currency, _baseCurrency!);
@@ -677,6 +671,13 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   return const SizedBox.shrink();
                 }
 
+                // Get exchange rate for this entry
+                double exchangeRate = 1.0;
+                if (entry.currency != null && baseCurrency != null && entry.currency != baseCurrency) {
+                  final key = '${entry.currency}:$baseCurrency';
+                  exchangeRate = _exchangeRates[key] ?? 1.0;
+                }
+
                 return _EntryRow(
                   entry: entry,
                   index: index,
@@ -689,7 +690,6 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   originalExchangeRates: _originalExchangeRates,
                   fetchExchangeRate: _fetchExchangeRate,
                   onAccountSelected: (account) {
-                    // Remove the unused variable declaration
                     context.read<FxBloc>().add(UpdateFxEntryEvent(
                       id: entry.rowId,
                       isDebit: isDebit,
@@ -704,10 +704,15 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                     }
                   },
                   onAmountChanged: (amount) {
+                    // Calculate converted amount
+                    final convertedAmount = (amount * exchangeRate).toStringAsFixed(2);
+
                     context.read<FxBloc>().add(UpdateFxEntryEvent(
                       id: entry.rowId,
                       isDebit: isDebit,
                       amount: amount,
+                      exchangeRate: exchangeRate.toStringAsFixed(4),
+                      convertedAmount: convertedAmount, // Pass calculated converted amount
                     ));
 
                     // Fetch exchange rate if needed
@@ -720,6 +725,20 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   },
                   onExchangeRateChanged: (fromCcy, toCcy, newRate) {
                     _updateExchangeRate(fromCcy, toCcy, newRate);
+
+                    // Calculate converted amount with new rate
+                    final convertedAmount = (entry.amount * newRate).toStringAsFixed(2);
+
+                    // Update the bloc with new exchange rate and converted amount
+                    context.read<FxBloc>().add(UpdateFxEntryEvent(
+                      id: entry.rowId,
+                      isDebit: isDebit,
+                      exchangeRate: newRate.toStringAsFixed(4),
+                      convertedAmount: convertedAmount,
+                    ));
+
+                    // Update UI
+                    setState(() {});
                   },
                   onRemove: () {
                     context.read<FxBloc>().add(RemoveFxEntryEvent(entry.rowId, isDebit: isDebit));
@@ -738,7 +757,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
             ),
             child: Row(
               children: [
-                 Text(
+                Text(
                   '${tr.totalTitle}:',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
@@ -1014,13 +1033,6 @@ class __EntryRowState extends State<_EntryRow> {
         final key = '${widget.entry.currency}:${widget.baseCurrency}';
         widget.exchangeRates[key] = _exchangeRate;
 
-        // Update the entry with exchange rate formatted as string
-        context.read<FxBloc>().add(UpdateFxEntryEvent(
-          id: widget.entry.rowId,
-          isDebit: widget.isDebit,
-          exchangeRate: _exchangeRate.toStringAsFixed(4), // Save formatted rate
-        ));
-
         // Notify parent about rate change
         widget.onExchangeRateChanged(widget.entry.currency!, widget.baseCurrency!, _exchangeRate);
       }
@@ -1295,11 +1307,11 @@ class __EntryRowState extends State<_EntryRow> {
               onSingleChanged: (selectedCurrency) {
                 if (selectedCurrency != null) {
                   context.read<FxBloc>().add(UpdateFxEntryEvent(
-                    id: widget.entry.rowId,
-                    isDebit: widget.isDebit,
-                    currency: selectedCurrency.ccyCode,
-                    exchangeRate: _exchangeRate.toStringAsFixed(4),
-                    convertedAmount: _amountInBase.toAmount()
+                      id: widget.entry.rowId,
+                      isDebit: widget.isDebit,
+                      currency: selectedCurrency.ccyCode,
+                      exchangeRate: _exchangeRate.toStringAsFixed(4),
+                      convertedAmount: _amountInBase.toAmount()
                   ));
 
                   // Update local state
@@ -1342,14 +1354,9 @@ class __EntryRowState extends State<_EntryRow> {
               ],
               onChanged: (value) {
                 final amount = value.cleanAmount.toDoubleAmount();
+                // Call onAmountChanged with amount
                 widget.onAmountChanged(amount);
                 _calculateAmountInBase();
-                context.read<FxBloc>().add(UpdateFxEntryEvent(
-                  id: widget.entry.rowId,
-                  isDebit: widget.isDebit,
-                  exchangeRate: _exchangeRate.toStringAsFixed(4),
-                  convertedAmount: _amountInBase.toAmount(),
-                ));
               },
             ),
           ),

@@ -1003,7 +1003,7 @@ class Repositories {
     }
   }
 
-  Future<Map<String, dynamic>> saveBulkTransfer({required String userName, required List<Map<String, dynamic>> records,}) async {
+  Future<Map<String, dynamic>> bulkTransfer({required String userName, required List<Map<String, dynamic>> records,}) async {
     try {
       final response = await api.post(
         endpoint: '/journal/fundTransferMA.php',
@@ -1027,7 +1027,7 @@ class Repositories {
       throw Exception('Failed to save bulk transfer: $e');
     }
   }
-  Future<Map<String, dynamic>> saveFxTransfer({required String userName, required List<Map<String, dynamic>> records,}) async {
+  Future<Map<String, dynamic>> fxTransfer({required String userName, required List<Map<String, dynamic>> records,}) async {
     try {
       final response = await api.post(
         endpoint: '/journal/crossCurrency.php',

@@ -424,14 +424,24 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       ];
 
       final records = allEntries.map((entry) {
-        // Build narration: "main_narration @exchange_rate"
+        // Build narration: include convertedAmount
         String fullNarration = currentState.narration;
 
-        // Append exchange rate if it exists and entry currency is different from base
+        // Append exchange rate and converted amount if they exist and entry currency is different from base
         if (entry.exchangeRate != null &&
             entry.exchangeRate!.isNotEmpty &&
+            entry.convertedAmount != null &&
+            entry.convertedAmount!.isNotEmpty &&
             entry.currency != currentState.baseCurrency) {
           fullNarration = "@${entry.exchangeRate} = ${entry.convertedAmount} ${currentState.baseCurrency} - ${currentState.narration}";
+        } else if (entry.exchangeRate != null &&
+            entry.exchangeRate!.isNotEmpty &&
+            entry.currency != currentState.baseCurrency) {
+          // Fallback: calculate convertedAmount if not already set
+          final amount = entry.amount;
+          final exchangeRate = double.tryParse(entry.exchangeRate!) ?? 1.0;
+          final convertedAmount = (amount * exchangeRate).toStringAsFixed(2);
+          fullNarration = "@${entry.exchangeRate} = $convertedAmount ${currentState.baseCurrency} - ${currentState.narration}";
         }
 
         return {
@@ -443,7 +453,7 @@ class FxBloc extends Bloc<FxEvent, FxState> {
         };
       }).toList();
 
-      final result = await repo.saveFxTransfer(
+      final result = await repo.fxTransfer(
         userName: event.userName,
         records: records,
       );

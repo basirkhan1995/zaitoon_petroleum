@@ -147,7 +147,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       }).toList();
 
       // Call API
-      final result = await repo.saveBulkTransfer(
+      final result = await repo.bulkTransfer(
         userName: event.userName,
         records: records,
       );
