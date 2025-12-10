@@ -144,8 +144,8 @@ class _GregorianDatePickerState extends State<GregorianDatePicker> {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        width: showYearPanel ? 550 : 370, // expand only width
-        height: 520, // fixed height so it never grows
+        width: showYearPanel ? 500 : 340, // expand only width
+        height: 450,
         padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
         decoration: BoxDecoration(
           color: color.surface,
@@ -248,7 +248,7 @@ class _GregorianDatePickerState extends State<GregorianDatePicker> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 5),
 
                   // Month/year nav (header 2) — prevent overflow
                   Container(
@@ -275,11 +275,13 @@ class _GregorianDatePickerState extends State<GregorianDatePicker> {
                           ),
                         ),
                         IconButton(
+                          iconSize: 20,
                           icon: Icon(Icons.chevron_left, color: color.secondary),
                           onPressed: () => _navigateMonth(-1),
                           tooltip: 'Previous month',
                         ),
                         IconButton(
+                          iconSize: 20,
                           icon: Icon(Icons.chevron_right, color: color.secondary),
                           onPressed: () => _navigateMonth(1),
                           tooltip: 'Next month',
@@ -322,7 +324,7 @@ class _GregorianDatePickerState extends State<GregorianDatePicker> {
                             padding: EdgeInsets.zero,
                             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 7,
-                              childAspectRatio: 1,
+                              childAspectRatio: 1.1,
                             ),
                             itemCount: 42,
                             itemBuilder: (context, index) {
@@ -375,25 +377,23 @@ class _GregorianDatePickerState extends State<GregorianDatePicker> {
                     ),
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 5),
 
                   // Footer (fixed), stays visible
                   Row(
                     children: [
-                      Expanded(
-                        child: ZOutlineButton(
-                          height: 40,
-                          onPressed: _selectToday,
-                          label: Text(locale.today),
-                        ),
+                      ZOutlineButton(
+                        height: 30,
+                        width: 90,
+                        onPressed: _selectToday,
+                        label: Text(locale.today),
                       ),
                       const SizedBox(width: 8),
-                      Expanded(
-                        child: ZButton(
-                          height: 40,
-                          onPressed: _pendingSelection != null ? _confirmSelection : null,
-                          label: Text(locale.selectKeyword),
-                        ),
+                      ZButton(
+                        width: 90,
+                        height: 30,
+                        onPressed: _pendingSelection != null ? _confirmSelection : null,
+                        label: Text(locale.selectKeyword),
                       ),
                     ],
                   ),

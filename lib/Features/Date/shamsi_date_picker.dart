@@ -144,8 +144,8 @@ class _AfghanDatePickerState extends State<AfghanDatePicker> {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        width: _showYearSelector ? 550 : 370,
-        height: 490,
+        width: _showYearSelector ? 500 : 340,
+        height: 450,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: color.surface,
@@ -234,8 +234,8 @@ class _AfghanDatePickerState extends State<AfghanDatePicker> {
                           ),
                         ),
                       ),
-                      IconButton(icon: Icon(Icons.chevron_left), onPressed: () => _navigateMonth(-1)),
-                      IconButton(icon: Icon(Icons.chevron_right), onPressed: () => _navigateMonth(1)),
+                      IconButton(icon: Icon(Icons.chevron_left), onPressed: () => _navigateMonth(-1),iconSize: 20),
+                      IconButton(icon: Icon(Icons.chevron_right), onPressed: () => _navigateMonth(1),iconSize: 20),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -294,9 +294,14 @@ class _AfghanDatePickerState extends State<AfghanDatePicker> {
                   // Footer buttons
                   Row(
                     children: [
-                      Expanded(child: ZOutlineButton(height: 40, onPressed: _selectToday, label: Text(locale.today))),
+                      ZOutlineButton(
+                          width: 90,
+                          height: 30, onPressed: _selectToday, label: Text(locale.today)),
                       const SizedBox(width: 8),
-                      Expanded(child: ZButton(height: 40, onPressed: _pendingSelection != null ? _confirmSelection : null, label: Text(locale.selectKeyword))),
+                      ZButton(
+                          height: 30,
+                          width: 90,
+                          onPressed: _pendingSelection != null ? _confirmSelection : null, label: Text(locale.selectKeyword)),
                     ],
                   ),
                 ],
