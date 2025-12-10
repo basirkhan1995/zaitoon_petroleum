@@ -23,12 +23,14 @@ class VehicleModel {
   final String? driver;
   final int? vclStatus;
   final String? usrName;
+  final int? driverId;
 
   VehicleModel({
     this.vclId,
     this.vclModel,
     this.vclYear,
     this.vclVinNo,
+    this.driverId,
     this.vclFuelType,
     this.vclEnginPower,
     this.vclBodyType,
@@ -124,7 +126,8 @@ class VehicleModel {
     "vclPurchaseAccount": vclPurchaseAccount,
     "vclPurchaseTrnRef": vclPurchaseTrnRef,
     "driver": driver,
+    "vclDriver": driverId,
     "vclStatus": vclStatus,
-    "user":usrName
+    "user":usrName,
   };
 }

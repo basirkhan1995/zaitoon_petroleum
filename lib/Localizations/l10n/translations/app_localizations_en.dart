@@ -1314,4 +1314,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get vclExpireDate => 'Expire date';
+
+  @override
+  String get remark => 'Remark';
 }

@@ -2643,6 +2643,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Expire date'**
   String get vclExpireDate;
+
+  /// No description provided for @remark.
+  ///
+  /// In en, this message translates to:
+  /// **'Remark'**
+  String get remark;
 }
 
 class _AppLocalizationsDelegate

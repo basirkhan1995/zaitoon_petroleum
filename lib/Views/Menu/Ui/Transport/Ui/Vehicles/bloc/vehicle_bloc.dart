@@ -28,6 +28,8 @@ class VehicleBloc extends Bloc<VehicleEvent, VehicleState> {
         if(msg == "success"){
           emit(VehicleSuccessState());
           add(LoadVehicleEvent());
+        }else{
+          emit(VehicleErrorState(msg));
         }
       }catch(e){
         emit(VehicleErrorState(e.toString()));
@@ -42,6 +44,8 @@ class VehicleBloc extends Bloc<VehicleEvent, VehicleState> {
         if(msg == "success"){
           emit(VehicleSuccessState());
           add(LoadVehicleEvent());
+        }else{
+          emit(VehicleErrorState(msg));
         }
       }catch(e){
         emit(VehicleErrorState(e.toString()));

@@ -1308,4 +1308,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get vclExpireDate => 'انقضا نیته';
+
+  @override
+  String get remark => 'ملاحظه';
 }

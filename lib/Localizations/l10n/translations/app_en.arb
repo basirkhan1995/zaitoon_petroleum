@@ -436,5 +436,6 @@
   "tractor": "Tractor",
   "refrigeratedTruck": "Refrigerated Truck",
   "meter": "Odometer",
-  "vclExpireDate": "Expire date"
+  "vclExpireDate": "Expire date",
+  "remark": "Remark"
 }

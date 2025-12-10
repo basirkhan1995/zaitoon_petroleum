@@ -436,5 +436,6 @@
   "tractor": "تراکتور ",
   "refrigeratedTruck": "کامیون یخچالی",
   "meter": "کیلومترشمار ",
-  "vclExpireDate": "تاریخ انقضا"
+  "vclExpireDate": "تاریخ انقضا",
+  "remark": "ملاحظه"
 }

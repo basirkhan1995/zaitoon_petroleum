@@ -124,7 +124,7 @@ class _DesktopState extends State<_Desktop> {
             key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              spacing: 0,
+              spacing: 10,
               children: [
                 if(widget.model == null)
                 GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(

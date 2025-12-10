@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../Localizations/l10n/translations/app_localizations.dart';
+
 typedef LoadingBuilder = Widget Function(BuildContext context);
 typedef ItemBuilder<T> = Widget Function(BuildContext context, T item);
 typedef ItemToString<T> = String Function(T item);
@@ -216,8 +218,7 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
 
   String? _customValidator(String? value) {
     if (widget.isRequired && (value == null || value.isEmpty)) {
-      // return AppLocalizations.of(context)!.required(widget.title);
-      return widget.title;
+       return AppLocalizations.of(context)!.required(widget.title);
     }
     if (widget.itemValidator != null) {
       final selectedItem = _currentSuggestions.firstWhere(
@@ -229,7 +230,6 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
       }
     }
     if (value != null && value.isNotEmpty && !_currentSuggestions.any((item) => widget.itemToString(item) == value)) {
-      // return AppLocalizations.of(context)!.valid(widget.title.toLowerCase());
       return widget.title;
     }
     return null;

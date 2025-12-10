@@ -1306,4 +1306,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get vclExpireDate => 'تاریخ انقضا';
+
+  @override
+  String get remark => 'ملاحظه';
 }

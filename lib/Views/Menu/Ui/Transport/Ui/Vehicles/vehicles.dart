@@ -171,7 +171,11 @@ class _DesktopState extends State<_Desktop> {
                         itemBuilder: (context,index){
                           final vehicle = filteredList[index];
                         return InkWell(
-                          onTap: (){},
+                          onTap: (){
+                            showDialog(context: context, builder: (context){
+                              return AddEditVehicleView(model: vehicle);
+                            });
+                          },
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 8),
                             decoration: BoxDecoration(

@@ -184,7 +184,7 @@ class _DesktopState extends State<_Desktop> {
                                 children: [
                                   ImageHelper.stakeholderProfile(
                                     imageName: emp.empImage,
-                                    size: 50,
+                                    size: 40,
                                   ),
                                   SizedBox(width: 8),
                                   Expanded(

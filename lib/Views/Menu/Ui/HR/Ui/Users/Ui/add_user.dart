@@ -106,7 +106,7 @@ class _DesktopState extends State<_Desktop> {
               key: formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                spacing: 5,
+                spacing: 12,
                 children: [
                   Row(
                     spacing: 5,

@@ -7,6 +7,7 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/bloc/driver_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/model/driver_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/bloc/vehicle_bloc.dart';
@@ -19,6 +20,7 @@ import '../../../../../../Features/Date/zdate_picker.dart';
 import '../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../../../Features/Other/image_helper.dart';
 import '../../../../../../Features/Other/thousand_separator.dart';
+import '../../../../../Auth/bloc/auth_bloc.dart';
 
 class AddEditVehicleView extends StatelessWidget {
   final VehicleModel? model;
@@ -68,13 +70,14 @@ class _DesktopState extends State<_Desktop> {
   final vclVinNo = TextEditingController();
   final vclEnginPower = TextEditingController();
   final vclRegNo = TextEditingController();
-  final vclOdoMeter = TextEditingController();
   final vclPurchaseAmount = TextEditingController();
   final driverCtrl = TextEditingController();
   final amount = TextEditingController();
-  String ownerShipValue = "Owned";
-  String vehicleCategory = '';
-  String fuel = '';
+
+  int? driverId;
+  String? ownerShipValue;
+  String? vehicleCategory;
+  String? fuel;
   String vehicleExpireDateGregorian = DateTime.now().toFormattedDate();
   Jalali vehicleExpireDateShamsi = DateTime.now().toAfghanShamsi;
 
@@ -92,13 +95,43 @@ class _DesktopState extends State<_Desktop> {
   }
 
   @override
+  void initState() {
+    if(widget.model != null){
+      final m = widget.model!;
+      plateNo.text = m.vclPlateNo??"";
+      driverCtrl.text = m.driver ??"";
+      vclVinNo.text = m.vclVinNo ??"";
+      vclPurchaseAmount.text = m.vclPurchaseAmount??"";
+      driverId = m.driverId;
+      vclYear.text = m.vclYear ??"";
+      vclModel.text = m.vclModel??"";
+      odometer.text = m.vclOdoMeter.toString();
+      vclPurchaseAmount.text = m.vclPurchaseAmount?.toAmount()??"";
+      vclEnginPower.text = m.vclEnginPower??"";
+      vclRegNo.text = m.vclRegNo??"";
+      fuel = m.vclFuelType ??"";
+      vehicleCategory = m.vclBodyType ??"";
+      ownerShipValue = m.vclOwnership;
+    }
+    super.initState();
+  }
+
+  LoginData? loginData;
+
+  @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isEdit = widget.model != null;
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    loginData = state.loginData;
+
     return ZFormDialog(
       onAction: onSubmit,
-
       icon: Icons.fire_truck_rounded,
       title: isEdit ? tr.update : tr.newKeyword,
       actionLabel: (context.watch<VehicleBloc>().state is VehicleLoadingState)
@@ -143,14 +176,13 @@ class _DesktopState extends State<_Desktop> {
                     SizedBox(
                       width: double.infinity,
                       child:
-                          GenericTextfield<
-                            DriverModel,
-                            DriverBloc,
-                            DriverState
-                          >(
+                          GenericTextfield<DriverModel, DriverBloc, DriverState>(
                             controller: driverCtrl,
+                            validator: (e){
+                              return null;
+                            },
                             title: tr.driver,
-                            hintText: AppLocalizations.of(context)!.accounts,
+                            hintText: tr.driver,
                             bloc: context.read<DriverBloc>(),
                             fetchAllFunction: (bloc) =>
                                 bloc.add(LoadDriverEvent()),
@@ -188,11 +220,16 @@ class _DesktopState extends State<_Desktop> {
                               child: CircularProgressIndicator(strokeWidth: 1),
                             ),
                             stateToItems: (state) {
-                              if (state is DriverLoadedState)
+                              if (state is DriverLoadedState) {
                                 return state.drivers;
+                              }
                               return [];
                             },
-                            onSelected: (account) {},
+                            onSelected: (account) {
+                              setState(() {
+                                driverId = account.empId;
+                              });
+                            },
                             noResultsText: 'No driver found',
                             showClearButton: true,
                           ),
@@ -217,7 +254,6 @@ class _DesktopState extends State<_Desktop> {
                         Expanded(
                           flex: 2,
                           child: ZTextFieldEntitled(
-                            isRequired: true,
                             title: tr.meter,
                             controller: odometer,
                             inputFormat: [
@@ -273,12 +309,21 @@ class _DesktopState extends State<_Desktop> {
                     Row(
                       spacing: 8,
                       children: [
-                        Expanded(child: FuelDropdown(onFuelSelected: (e) {})),
+                        Expanded(child: FuelDropdown(onFuelSelected: (e) {
+                          setState(() {
+                            fuel = e.name;
+                          });
+                        })),
                         Expanded(
-                          child: VehicleDropdown(onVehicleSelected: (e) {}),
+                          child: VehicleDropdown(onVehicleSelected: (e) {
+                            setState(() {
+                              vehicleCategory = e.name;
+                            });
+                          }),
                         ),
                         Expanded(
                           child: OwnershipDropdown(
+                            selectedOwnership: VehicleOwnership.owned,
                             onOwnershipSelected: (e) {
                               setState(() {
                                 ownerShipValue = e.name;
@@ -289,7 +334,6 @@ class _DesktopState extends State<_Desktop> {
                       ],
                     ),
                     ZTextFieldEntitled(
-                      isRequired: true,
                       keyboardInputType: TextInputType.numberWithOptions(
                         decimal: true,
                       ),
@@ -297,21 +341,12 @@ class _DesktopState extends State<_Desktop> {
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
                         SmartThousandsDecimalFormatter(),
                       ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return tr.required(tr.amount);
-                        }
-
-                        // Remove formatting (e.g. commas)
-                        final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
-                        final amount = double.tryParse(clean);
-
-                        if (amount == null || amount <= 0.0) {
-                          return tr.amountGreaterZero;
-                        }
-
-                        return null;
-                      },
+                      // validator: (value) {
+                      //   if (value == null || value.isEmpty) {
+                      //     return tr.required(tr.amount);
+                      //   }
+                      //   return null;
+                      // },
                       controller: amount,
                       title: tr.amount,
                     ),
@@ -346,6 +381,12 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ],
                     ),
+
+                    Row(
+                      children: [
+                        state is VehicleErrorState? Text(state.message,style: TextStyle(color: theme.colorScheme.error),) : SizedBox.shrink(),
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -373,21 +414,22 @@ class _DesktopState extends State<_Desktop> {
     if (!formKey.currentState!.validate()) return;
     final bloc = context.read<VehicleBloc>();
     final data = VehicleModel(
-      driver: driverCtrl.text,
-      vclPlateNo: plateNo.text,
+      usrName: loginData?.usrName,
       vclModel: vclModel.text,
-      vclOdoMeter: int.tryParse(vclOdoMeter.text),
-      vclRegNo: vclRegNo.text,
-      vclVinNo: vclVinNo.text,
-      vclId: widget.model?.vclId,
       vclYear: vclYear.text,
-      vclStatus: 1,
-      vclOwnership: ownerShipValue,
+      vclVinNo: vclVinNo.text,
+      vclFuelType: fuel ?? AppLocalizations.of(context)!.petrol,
       vclEnginPower: vclEnginPower.text,
+      vclBodyType: vehicleCategory ?? AppLocalizations.of(context)!.truck,
+      vclRegNo: vclRegNo.text,
       vclExpireDate: DateTime.tryParse(vehicleExpireDateGregorian),
-      vclFuelType: fuel,
-      vclBodyType: vehicleCategory,
+      vclPlateNo: plateNo.text,
+      vclOdoMeter: int.tryParse(odometer.text),
+      vclOwnership: ownerShipValue ?? AppLocalizations.of(context)!.owned,
       vclPurchaseAmount: amount.text.cleanAmount,
+      driverId: driverId,
+      vclStatus: 1,
+      vclId: widget.model?.vclId,
     );
 
     if (widget.model == null) {
