@@ -291,9 +291,8 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
                     children: [
                       Text(
                         widget.title,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontSize: 12,
-                          color: Theme.of(context).colorScheme.outline.withValues(alpha: .7),
                         ),
                       ),
                       if (widget.isRequired)

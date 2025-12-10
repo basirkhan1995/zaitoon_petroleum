@@ -69,8 +69,8 @@ class _DesktopState extends State<_Desktop> {
 
   String ownerShipValue = "Owned";
 
-  String vehicleExpireDateGregorian = DateTime.now().subtract(Duration(days: 7)).toFormattedDate();
-  Jalali vehicleExpireDateShamsi = DateTime.now().subtract(Duration(days: 7)).toAfghanShamsi;
+  String vehicleExpireDateGregorian = DateTime.now().toFormattedDate();
+  Jalali vehicleExpireDateShamsi = DateTime.now().toAfghanShamsi;
 
   @override
   void dispose() {
@@ -107,6 +107,62 @@ class _DesktopState extends State<_Desktop> {
                     }
                     return null;
                   },
+                ),
+                // Driver Selection
+                SizedBox(
+                  width: double.infinity,
+                  child: GenericTextfield<DriverModel, DriverBloc, DriverState>(
+                    controller: driverCtrl,
+                    title: tr.driver,
+                    hintText: AppLocalizations.of(context)!.accounts,
+                    isRequired: true,
+                    bloc: context.read<DriverBloc>(),
+                    fetchAllFunction: (bloc) => bloc.add(
+                      LoadDriverEvent(),
+                    ),
+                    searchFunction: (bloc, query) => bloc.add(
+                      LoadDriverEvent(
+                      ),
+                    ),
+                    itemBuilder: (context, driver) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      child: Row(
+                        spacing: 8,
+                        children: [
+                          ImageHelper.stakeholderProfile(
+                            imageName: driver.perPhoto,
+                            size: 35,
+                          ),
+                          Expanded(
+                            child: Text(
+                              "${driver.perfullName}",
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    itemToString: (account) =>
+                    "${account.perfullName}",
+                    stateToLoading: (state) => state is DriverLoadingState,
+                    loadingBuilder: (context) => const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 1),
+                    ),
+                    stateToItems: (state) {
+                      if (state is DriverLoadedState) return state.drivers;
+                      return [];
+                    },
+                    onSelected: (account) {
+
+                    },
+                    noResultsText: 'No driver found',
+                    showClearButton: true,
+                  ),
                 ),
                 Row(
                   spacing: 5,
@@ -222,63 +278,6 @@ class _DesktopState extends State<_Desktop> {
                   },
                   controller: amount,
                   title: tr.amount,
-                ),
-
-                // Driver Selection
-                SizedBox(
-                  width: double.infinity,
-                  child: GenericTextfield<DriverModel, DriverBloc, DriverState>(
-                    controller: driverCtrl,
-                    title: tr.driver,
-                    hintText: AppLocalizations.of(context)!.accounts,
-                    isRequired: true,
-                    bloc: context.read<DriverBloc>(),
-                    fetchAllFunction: (bloc) => bloc.add(
-                      LoadDriverEvent(),
-                    ),
-                    searchFunction: (bloc, query) => bloc.add(
-                      LoadDriverEvent(
-                      ),
-                    ),
-                    itemBuilder: (context, driver) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      child: Row(
-                        spacing: 8,
-                        children: [
-                          ImageHelper.stakeholderProfile(
-                            imageName: driver.perPhoto,
-                            size: 35,
-                          ),
-                          Expanded(
-                            child: Text(
-                              "${driver.perfullName}",
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    itemToString: (account) =>
-                    "${account.perfullName}",
-                    stateToLoading: (state) => state is DriverLoadingState,
-                    loadingBuilder: (context) => const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 1),
-                    ),
-                    stateToItems: (state) {
-                      if (state is DriverLoadedState) return state.drivers;
-                      return [];
-                    },
-                    onSelected: (account) {
-
-                    },
-                    noResultsText: 'No driver found',
-                    showClearButton: true,
-                  ),
                 ),
 
 

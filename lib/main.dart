@@ -126,7 +126,7 @@ class MyApp extends StatelessWidget {
               final theme = AppThemes(TextTheme.of(context));
               return MaterialApp(
                   debugShowCheckedModeBanner: false,
-                  title: 'Zaitoon Petroleum',
+                  title: 'Zaitoon System',
                   localizationsDelegates: [
                     AppLocalizations.delegate,
                     GlobalMaterialLocalizations.delegate,

@@ -72,8 +72,10 @@ class _DesktopState extends State<_Desktop> {
       LoadAccountsFilterEvent(
         start: 1,
         end: 5,
-        locale: currentLocale ?? "en",
-        ccy: baseCurrency ?? "USD",
+        ccy: baseCurrency,
+        locale: "en",
+        exclude: '',
+        input: ''
       ),
     );
   }
@@ -129,7 +131,7 @@ class _DesktopState extends State<_Desktop> {
                   final account = state.accounts[index];
 
                   return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 7),
+                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                     decoration: BoxDecoration(
                       color: index.isEven
                           ? color.primary.withValues(alpha: .05)
@@ -139,7 +141,7 @@ class _DesktopState extends State<_Desktop> {
                       children: [
                         SizedBox(width: 80, child: Text(account.accNumber.toString())),
                         Expanded(child: Text(account.accName.toString())),
-                        Text(account.accBalance?.toAmount() ?? ""),
+                        Text("${account.accBalance?.toAmount()} ${account.actCurrency??baseCurrency}"),
                       ],
                     ),
                   );

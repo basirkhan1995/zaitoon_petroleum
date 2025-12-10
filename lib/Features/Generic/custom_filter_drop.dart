@@ -142,7 +142,7 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
           if (widget.customTitle != null && widget.customTitle is! SizedBox)
             widget.customTitle!
           else if (widget.title.isNotEmpty)
-            Text(widget.title, style: Theme.of(context).textTheme.bodyMedium),
+            Text(widget.title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 12)),
 
           // Only add spacing if title is present
           if ((widget.customTitle != null && widget.customTitle is! SizedBox) || widget.title.isNotEmpty)

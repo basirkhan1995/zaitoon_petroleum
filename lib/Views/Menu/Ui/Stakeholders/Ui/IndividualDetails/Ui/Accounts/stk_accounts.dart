@@ -66,7 +66,11 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final locale = AppLocalizations.of(context)!;
+
+    TextStyle? amountStyle = textTheme.titleMedium?.copyWith(color: color.primary);
+    TextStyle? amountTitle = textTheme.titleSmall?.copyWith(color: color.outline.withValues(alpha: .7));
 
     return Scaffold(
       backgroundColor: color.surface,
@@ -117,7 +121,7 @@ class _DesktopState extends State<_Desktop> {
                     width: 100,
                     child: Text(locale.status,style: Theme.of(context).textTheme.titleMedium)),
                 SizedBox(
-                    width: 150,
+                    width: 200,
                     child: Text(locale.balance,style: Theme.of(context).textTheme.titleMedium)),
 
               ],
@@ -169,6 +173,7 @@ class _DesktopState extends State<_Desktop> {
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {
                       final acc = filteredList[index];
+                      bool isAvailableEqualCurrent = acc.accAvailBalance == acc.accBalance;
 
                       // ---------- UI ----------
                       return InkWell(
@@ -193,7 +198,7 @@ class _DesktopState extends State<_Desktop> {
                                 // ---------- Avatar ----------
                                 CircleAvatar(
                                   backgroundColor: Utils.currencyColors(acc.actCurrency??""),
-                                  radius: 23,
+                                  radius: 25,
                                   child: Text(
                                     acc.accName?.getFirstLetter??"",
                                     style: TextStyle(
@@ -244,13 +249,28 @@ class _DesktopState extends State<_Desktop> {
                                   child: Text(acc.accStatus == 1? locale.active : locale.blocked),
                                 ),
                                 SizedBox(
-                                    width: 150,
+                                    width: 200,
                                     child: Column(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text("${acc.accBalance?.toAmount()} ${acc.actCurrency}"),
-                                        Text("${acc.accAvailBalance?.toAmount()} ${acc.actCurrency}"),
+                                        if(!isAvailableEqualCurrent)
+                                        Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(locale.currentBalance,style: amountTitle),
+                                            Text("${acc.accBalance?.toAmount()} ${acc.actCurrency}",style: amountStyle),
+                                          ],
+                                        ),
+                                        Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(locale.availableBalance,style: amountTitle),
+                                            Text("${acc.accAvailBalance?.toAmount()} ${acc.actCurrency}",style: amountStyle),
+                                          ],
+                                        ),
                                       ],
                                     )),
                               ],
