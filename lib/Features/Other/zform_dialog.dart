@@ -46,7 +46,7 @@ class _ZFormDialogState extends State<ZFormDialog> {
     return StatefulBuilder(
         builder: (context,setState) {
           return Padding(
-            padding: const EdgeInsets.all(15.0),
+            padding: widget.padding ?? const EdgeInsets.all(15.0),
             child: AlertDialog(
               alignment: widget.alignment ?? AlignmentGeometry.center,
               contentPadding: EdgeInsets.zero,
@@ -67,7 +67,7 @@ class _ZFormDialogState extends State<ZFormDialog> {
                       buildHeader(),
                       Flexible(
                         child: Container(
-                          padding: widget.padding?? EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+                          padding: widget.padding ?? EdgeInsets.symmetric(horizontal: 5,vertical: 5),
                           child: widget.child,
                         ),
                       ),
@@ -85,7 +85,7 @@ class _ZFormDialogState extends State<ZFormDialog> {
     final locale = AppLocalizations.of(context)!;
     return Padding(
       padding: widget.padding ?? const EdgeInsets.symmetric(
-        horizontal: 8.0,
+        horizontal: 15,
         vertical: 10,
       ),
       child: Row(

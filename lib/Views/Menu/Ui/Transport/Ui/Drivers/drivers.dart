@@ -111,9 +111,6 @@ class _DesktopState extends State<_Desktop> {
                     width: 170,
                     child: Text(locale.mobile1,style: titleStyle)),
                 SizedBox(
-                    width: 180,
-                    child: Text(locale.address,style: titleStyle)),
-                SizedBox(
                     width: 250,
                     child: Text(locale.vehicle,style: titleStyle)),
                 SizedBox(
@@ -175,7 +172,7 @@ class _DesktopState extends State<_Desktop> {
                                 children: [
                                   ImageHelper.stakeholderProfile(
                                     imageName: emp.perPhoto,
-                                    size: 50,
+                                    size: 40,
                                   ),
                                   SizedBox(width: 8),
                                   Expanded(
@@ -183,9 +180,6 @@ class _DesktopState extends State<_Desktop> {
                                   SizedBox(
                                       width: 170,
                                       child: Text(emp.perPhone??"")),
-                                  SizedBox(
-                                      width: 180,
-                                      child: Text(emp.address??"")),
                                   SizedBox(
                                       width: 250,
                                       child: Text(emp.vehicle??"")),

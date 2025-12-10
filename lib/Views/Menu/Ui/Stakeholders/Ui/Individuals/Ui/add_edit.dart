@@ -348,25 +348,6 @@ class _DesktopState extends State<_Desktop> {
     }
   }
 
-
-
-  // void pickAndShowImage(int perId, BuildContext context) async {
-  //   final bloc = context.read<IndividualsBloc>();
-  //   final imageBytes = await Utils.pickImage();
-  //
-  //   if (imageBytes != null && imageBytes.isNotEmpty) {
-  //     setState(() {
-  //       selectedImageBytes = imageBytes; // Show immediately
-  //     });
-  //
-  //     bloc.add(
-  //       UploadIndProfileImageEvent(perId: perId, image: imageBytes),
-  //     );
-  //   }
-  // }
-
-
-
   void onSubmit() {
     if (!formKey.currentState!.validate()) return;
 

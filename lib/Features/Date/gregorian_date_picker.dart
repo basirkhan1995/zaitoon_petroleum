@@ -232,14 +232,16 @@ class _GregorianDatePickerState extends State<GregorianDatePicker> {
                 children: [
                   // Selected date display (header 1) — prevent overflow
                   Row(
+                    spacing: 5,
                     children: [
+                      Icon(Icons.calendar_month_rounded,color: color.outline),
                       Expanded(
                         child: Text(
                           _formatSelectedDate(_pendingSelection ?? _selectedDate),
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: color.primary.withValues(alpha: .7),
+                            color: color.outline,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

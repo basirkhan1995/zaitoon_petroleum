@@ -22,6 +22,7 @@ class VehicleModel {
   final String? vclPurchaseTrnRef;
   final String? driver;
   final int? vclStatus;
+  final String? usrName;
 
   VehicleModel({
     this.vclId,
@@ -41,6 +42,7 @@ class VehicleModel {
     this.vclPurchaseTrnRef,
     this.driver,
     this.vclStatus,
+    this.usrName
   });
 
   VehicleModel copyWith({
@@ -61,6 +63,7 @@ class VehicleModel {
     String? vclPurchaseTrnRef,
     String? driver,
     int? vclStatus,
+    String? usrName,
   }) =>
       VehicleModel(
         vclId: vclId ?? this.vclId,
@@ -80,6 +83,7 @@ class VehicleModel {
         vclPurchaseTrnRef: vclPurchaseTrnRef ?? this.vclPurchaseTrnRef,
         driver: driver ?? this.driver,
         vclStatus: vclStatus ?? this.vclStatus,
+        usrName: usrName ?? this.usrName
       );
 
   factory VehicleModel.fromMap(Map<String, dynamic> json) => VehicleModel(
@@ -100,6 +104,7 @@ class VehicleModel {
     vclPurchaseTrnRef: json["vclPurchaseTrnRef"],
     driver: json["driver"],
     vclStatus: json["vclStatus"],
+    usrName: json["user"]
   );
 
   Map<String, dynamic> toMap() => {
@@ -120,5 +125,6 @@ class VehicleModel {
     "vclPurchaseTrnRef": vclPurchaseTrnRef,
     "driver": driver,
     "vclStatus": vclStatus,
+    "user":usrName
   };
 }

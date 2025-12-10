@@ -1307,5 +1307,5 @@ class AppLocalizationsAr extends AppLocalizations {
   String get meter => 'د کیلومتر شمېرونکی';
 
   @override
-  String get vclExpireDate => 'تاریخ انقضا جواز سیر';
+  String get vclExpireDate => 'انقضا نیته';
 }

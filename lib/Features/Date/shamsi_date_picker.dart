@@ -211,14 +211,14 @@ class _AfghanDatePickerState extends State<AfghanDatePicker> {
               child: Column(
                 children: [
                   Row(
+                    spacing: 5,
                     children: [
+                      Icon(Icons.calendar_month_rounded,color: color.outline),
                       Text(_formatSelectedDate(_pendingSelection ?? _selectedDate),
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color.primary.withValues(alpha: .7))),
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: color.outline)),
                     ],
                   ),
-
                   const SizedBox(height: 12),
-
                   // Month navigation
                   Row(
                     children: [

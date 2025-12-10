@@ -1313,5 +1313,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get meter => 'Odometer';
 
   @override
-  String get vclExpireDate => 'Register Expire date';
+  String get vclExpireDate => 'Expire date';
 }

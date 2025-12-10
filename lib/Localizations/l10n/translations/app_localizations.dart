@@ -2641,7 +2641,7 @@ abstract class AppLocalizations {
   /// No description provided for @vclExpireDate.
   ///
   /// In en, this message translates to:
-  /// **'Register Expire date'**
+  /// **'Expire date'**
   String get vclExpireDate;
 }
 
