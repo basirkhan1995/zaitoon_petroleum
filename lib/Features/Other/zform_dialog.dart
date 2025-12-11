@@ -7,6 +7,7 @@ class ZFormDialog extends StatefulWidget {
   final VoidCallback? onAction;
   final Widget? actionLabel;
   final String title;
+  final Color? backgroundColor;
   final IconData? icon;
   final Widget? child;
   final bool isButtonEnabled;
@@ -21,6 +22,7 @@ class ZFormDialog extends StatefulWidget {
   const ZFormDialog({
     super.key,
     required this.onAction,
+    this.backgroundColor,
     this.actionLabel,
     this.child,
     this.alignment,
@@ -58,7 +60,7 @@ class _ZFormDialogState extends State<ZFormDialog> {
                   padding: EdgeInsets.zero,
                   width: widget.width ?? MediaQuery.sizeOf(context).width * .4,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
+                    color: widget.backgroundColor ?? Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Column(

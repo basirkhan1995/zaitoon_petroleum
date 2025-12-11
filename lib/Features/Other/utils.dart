@@ -290,7 +290,7 @@ class Utils{
       case "GLDR":return AppLocalizations.of(context)!.glDebitTitle;
       case "ATAT":return AppLocalizations.of(context)!.accountTransfer;
       case "CRFX":return AppLocalizations.of(context)!.fxTransaction;
-      default: return "NOT FOUND";
+      default: return txn;
     }
   }
 

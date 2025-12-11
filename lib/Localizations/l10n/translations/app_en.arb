@@ -406,7 +406,7 @@
   "vehiclePlate": "Plate No",
   "vehicleType": "Category",
   "fuelType": "Fuel",
-  "vinNumber": "Vehicle Identification No",
+  "vinNumber": "VIN Number",
   "enginePower": "Engine Power",
   "vclRegisteredNo": "Registered License",
   "ownership": "Onwership",
@@ -437,5 +437,11 @@
   "refrigeratedTruck": "Refrigerated Truck",
   "meter": "Odometer",
   "vclExpireDate": "Expire date",
-  "remark": "Remark"
+  "remark": "Remark",
+  "transactionDetails": "Transaction Details",
+  "debitAccount": "Debit Account",
+  "creditAccount": "Credit Account",
+  "vehicleDetails": "Vehicle Details",
+  "authorizedTitle": "Authorized",
+  "pendingTitle": "Pending"
 }

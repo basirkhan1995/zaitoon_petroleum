@@ -435,7 +435,13 @@
   "fireTruck": "اطفایه",
   "tractor": "تراکتور ",
   "refrigeratedTruck": "کامیون یخچالی",
-  "meter": "کیلومترشمار ",
+  "meter": "کیلومتر شمار ",
   "vclExpireDate": "تاریخ انقضا",
-  "remark": "ملاحظه"
+  "remark": "ملاحظه",
+  "transactionDetails": "جزئیات معامله",
+  "debitAccount": "حساب دبت",
+  "creditAccount": "حساب کردیت",
+  "vehicleDetails": "معلومات موتر",
+  "authorizedTitle": "تایید شده",
+  "pendingTitle": "تایید ناشده"
 }

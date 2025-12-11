@@ -1223,7 +1223,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fuelType => 'Fuel';
 
   @override
-  String get vinNumber => 'Vehicle Identification No';
+  String get vinNumber => 'VIN Number';
 
   @override
   String get enginePower => 'Engine Power';
@@ -1317,4 +1317,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get remark => 'Remark';
+
+  @override
+  String get transactionDetails => 'Transaction Details';
+
+  @override
+  String get debitAccount => 'Debit Account';
+
+  @override
+  String get creditAccount => 'Credit Account';
+
+  @override
+  String get vehicleDetails => 'Vehicle Details';
+
+  @override
+  String get authorizedTitle => 'Authorized';
+
+  @override
+  String get pendingTitle => 'Pending';
 }

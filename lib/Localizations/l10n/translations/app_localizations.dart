@@ -2461,7 +2461,7 @@ abstract class AppLocalizations {
   /// No description provided for @vinNumber.
   ///
   /// In en, this message translates to:
-  /// **'Vehicle Identification No'**
+  /// **'VIN Number'**
   String get vinNumber;
 
   /// No description provided for @enginePower.
@@ -2649,6 +2649,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remark'**
   String get remark;
+
+  /// No description provided for @transactionDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Details'**
+  String get transactionDetails;
+
+  /// No description provided for @debitAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Debit Account'**
+  String get debitAccount;
+
+  /// No description provided for @creditAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit Account'**
+  String get creditAccount;
+
+  /// No description provided for @vehicleDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle Details'**
+  String get vehicleDetails;
+
+  /// No description provided for @authorizedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorized'**
+  String get authorizedTitle;
+
+  /// No description provided for @pendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pendingTitle;
 }
 
 class _AppLocalizationsDelegate

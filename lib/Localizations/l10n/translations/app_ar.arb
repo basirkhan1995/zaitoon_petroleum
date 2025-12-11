@@ -437,5 +437,11 @@
   "refrigeratedTruck": "د یخچال لارۍ",
   "meter": "د کیلومتر شمېرونکی",
   "vclExpireDate": "انقضا نیته",
-  "remark": "ملاحظه"
+  "remark": "ملاحظه",
+  "transactionDetails": "جزئیات معامله",
+  "debitAccount": "دبت حساب",
+  "creditAccount": "کریدت حساب",
+  "vehicleDetails": "معلومات موتر",
+  "authorizedTitle": "تایید شوی",
+  "pendingTitle": "تایید ناشده"
 }

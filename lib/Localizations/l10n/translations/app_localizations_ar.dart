@@ -1311,4 +1311,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get remark => 'ملاحظه';
+
+  @override
+  String get transactionDetails => 'جزئیات معامله';
+
+  @override
+  String get debitAccount => 'دبت حساب';
+
+  @override
+  String get creditAccount => 'کریدت حساب';
+
+  @override
+  String get vehicleDetails => 'معلومات موتر';
+
+  @override
+  String get authorizedTitle => 'تایید شوی';
+
+  @override
+  String get pendingTitle => 'تایید ناشده';
 }

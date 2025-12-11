@@ -1302,11 +1302,29 @@ class AppLocalizationsFa extends AppLocalizations {
   String get refrigeratedTruck => 'کامیون یخچالی';
 
   @override
-  String get meter => 'کیلومترشمار ';
+  String get meter => 'کیلومتر شمار ';
 
   @override
   String get vclExpireDate => 'تاریخ انقضا';
 
   @override
   String get remark => 'ملاحظه';
+
+  @override
+  String get transactionDetails => 'جزئیات معامله';
+
+  @override
+  String get debitAccount => 'حساب دبت';
+
+  @override
+  String get creditAccount => 'حساب کردیت';
+
+  @override
+  String get vehicleDetails => 'معلومات موتر';
+
+  @override
+  String get authorizedTitle => 'تایید شده';
+
+  @override
+  String get pendingTitle => 'تایید ناشده';
 }

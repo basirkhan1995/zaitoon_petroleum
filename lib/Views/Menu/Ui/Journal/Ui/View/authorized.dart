@@ -4,6 +4,8 @@ import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchGLAT/Ui/glat_view.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchGLAT/bloc/glat_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../Features/Other/utils.dart';
@@ -53,6 +55,9 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
+  bool _isLoadingDialog = false;
+  String? _loadingRef;
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -69,150 +74,214 @@ class _DesktopState extends State<_Desktop> {
     super.dispose();
   }
 
+  void _handleTransactionTap(dynamic txn) {
+    setState(() {
+      _isLoadingDialog = true;
+      _loadingRef = txn.trnReference;
+    });
+
+    if (txn.trnType == "ATAT" || txn.trnType == "CRFX") {
+      context.read<FetchAtatBloc>().add(
+        FetchAccToAccEvent(txn.trnReference ?? ""),
+      );
+    } else if (txn.trnType == "GLAT") {
+      context.read<GlatBloc>().add(LoadGlatEvent(txn.trnReference ?? ""));
+    } else {
+      context.read<TxnReferenceBloc>().add(
+        FetchTxnByReferenceEvent(txn.trnReference ?? ""),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: BlocConsumer<FetchAtatBloc, FetchAtatState>(
-  listener: (context, state) {
-    if (state is FetchATATLoadedState) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return FetchAtatView();
-        },
-      );
-    }
-  },
-  builder: (context, state) {
-    if (state is FetchATATLoadingState) {
-      return Center(child: CircularProgressIndicator());
-    }
-    return BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
-        listener: (context, state) {
-          if (state is TxnReferenceLoadedState) {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return TxnReferenceView();
-              },
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is TxnReferenceLoadingState) {
-            return Center(child: CircularProgressIndicator());
-          }
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10.0,
-                  vertical: 8,
-                ),
-                child: Row(
-                  spacing: 8,
-                  children: [
-                    Expanded(
-                      child: ZSearchField(
-                        icon: FontAwesomeIcons.magnifyingGlass,
-                        controller: searchController,
-                        hint: AppLocalizations.of(context)!.search,
-                        onChanged: (e) {
-                          setState(() {});
-                        },
-                        title: "",
+
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<GlatBloc, GlatState>(
+          listener: (context, state) {
+            if (state is GlatLoadedState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              showDialog(
+                context: context,
+                builder: (context) => GlatView(),
+              );
+            } else if (state is GlatErrorState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              Utils.showOverlayMessage(
+                context,
+                title: locale.noData,
+                message: state.message,
+                isError: true,
+              );
+            } else if (state is GlatLoadingState) {
+              setState(() {
+                _isLoadingDialog = true;
+              });
+            }
+          },
+        ),
+        BlocListener<FetchAtatBloc, FetchAtatState>(
+          listener: (context, state) {
+            if (state is FetchATATLoadedState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              showDialog(
+                context: context,
+                builder: (context) => FetchAtatView(),
+              );
+            } else if (state is FetchATATErrorState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              Utils.showOverlayMessage(
+                context,
+                title: locale.noData,
+                message: state.message,
+                isError: true,
+              );
+            } else if (state is FetchATATLoadingState) {
+              setState(() {
+                _isLoadingDialog = true;
+              });
+            }
+          },
+        ),
+        BlocListener<TxnReferenceBloc, TxnReferenceState>(
+          listener: (context, state) {
+            if (state is TxnReferenceLoadedState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              showDialog(
+                context: context,
+                builder: (context) => TxnReferenceView(),
+              );
+            } else if (state is TxnReferenceErrorState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              Utils.showOverlayMessage(
+                context,
+                title: locale.noData,
+                message: state.error,
+                isError: true,
+              );
+            } else if (state is TxnReferenceLoadingState) {
+              setState(() {
+                _isLoadingDialog = true;
+              });
+            }
+          },
+        ),
+      ],
+      child: Stack(
+        children: [
+          Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            body: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10.0,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    spacing: 8,
+                    children: [
+                      Expanded(
+                        child: ZSearchField(
+                          icon: FontAwesomeIcons.magnifyingGlass,
+                          controller: searchController,
+                          hint: AppLocalizations.of(context)!.search,
+                          onChanged: (e) {
+                            setState(() {});
+                          },
+                          title: "",
+                        ),
                       ),
-                    ),
-                    ZOutlineButton(
-                      toolTip: "F5",
-                      width: 120,
-                      icon: Icons.refresh,
-                      onPressed: () {
-                        context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('auth'));
-                      },
-                      label: Text(locale.refresh),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 140,
-                      child: Text(locale.txnDate, style: textTheme.titleSmall),
-                    ),
-                    SizedBox(width: 20),
-                    Expanded(
-                      child: Text(
-                        locale.referenceNumber,
-                        style: textTheme.titleSmall,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 110,
-                      child: Text(locale.txnType, style: textTheme.titleSmall),
-                    ),
-                    SizedBox(width: 20),
-                    SizedBox(
-                      width: 110,
-                      child: Text(locale.maker, style: textTheme.titleSmall),
-                    ),
-                    SizedBox(
-                      width: 110,
-                      child: Text(locale.checker, style: textTheme.titleSmall),
-                    ),
-                    SizedBox(width: 20),
-                  ],
-                ),
-              ),
-              Divider(
-                indent: 10,
-                endIndent: 10,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              Expanded(
-                child: BlocConsumer<TransactionsBloc, TransactionsState>(
-                  listener: (context, state) {
-                    if (state is TransactionSuccessState) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        Navigator.of(context).pop();
-                        context.read<TransactionsBloc>().add(
-                          LoadAllTransactionsEvent('auth'),
-                        );
-                      });
-                    }
-                  },
-                  builder: (context, state) {
-                    if (state is TransactionErrorState) {
-                      return NoDataWidget(
-                        message: state.message,
-                        onRefresh: () {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            context.read<TransactionsBloc>().add(
-                              LoadAllTransactionsEvent('auth'),
-                            );
-                          });
+                      ZOutlineButton(
+                        toolTip: "F5",
+                        width: 120,
+                        icon: Icons.refresh,
+                        onPressed: () {
+                          context
+                              .read<TransactionsBloc>()
+                              .add(LoadAllTransactionsEvent('auth'));
                         },
-                      );
-                    }
-                    if (state is TxnLoadingState) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    if (state is TransactionLoadedState) {
-                      final query = searchController.text.toLowerCase().trim();
-                      final filteredList = state.txn.where((item) {
-                        final name = item.trnReference?.toLowerCase() ?? '';
-                        return name.contains(query);
-                      }).toList();
-                      if (filteredList.isEmpty) {
+                        label: Text(locale.refresh),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 162,
+                        child:
+                        Text(locale.txnDate, style: textTheme.titleSmall),
+                      ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: Text(
+                          locale.referenceNumber,
+                          style: textTheme.titleSmall,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 110,
+                        child: Text(locale.txnType, style: textTheme.titleSmall),
+                      ),
+                      SizedBox(width: 20),
+                      SizedBox(
+                        width: 110,
+                        child: Text(locale.maker, style: textTheme.titleSmall),
+                      ),
+                      SizedBox(
+                        width: 110,
+                        child: Text(locale.checker, style: textTheme.titleSmall),
+                      ),
+                      SizedBox(width: 20),
+                    ],
+                  ),
+                ),
+                Divider(
+                  indent: 10,
+                  endIndent: 10,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                Expanded(
+                  child: BlocConsumer<TransactionsBloc, TransactionsState>(
+                    listener: (context, state) {
+                      if (state is TransactionSuccessState) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          Navigator.of(context).pop();
+                          context.read<TransactionsBloc>().add(
+                            LoadAllTransactionsEvent('auth'),
+                          );
+                        });
+                      }
+                    },
+                    builder: (context, state) {
+                      if (state is TransactionErrorState) {
                         return NoDataWidget(
-                          message: locale.noDataFound,
+                          message: state.message,
                           onRefresh: () {
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               context.read<TransactionsBloc>().add(
@@ -222,92 +291,128 @@ class _DesktopState extends State<_Desktop> {
                           },
                         );
                       }
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: filteredList.length,
-                        itemBuilder: (context, index) {
-                          final txn = filteredList[index];
-                          return InkWell(
-                            onTap: () {
-                              if (txn.trnType == "ATAT" || txn.trnType == "CRFX") {
-                                context.read<FetchAtatBloc>().add(
-                                  FetchAccToAccEvent(
-                                    txn.trnReference ?? "",
-                                  ),
+                      if (state is TxnLoadingState) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      if (state is TransactionLoadedState) {
+                        final query = searchController.text.toLowerCase().trim();
+                        final filteredList = state.txn.where((item) {
+                          final name = item.trnReference?.toLowerCase() ?? '';
+                          return name.contains(query);
+                        }).toList();
+                        if (filteredList.isEmpty) {
+                          return NoDataWidget(
+                            message: locale.noDataFound,
+                            onRefresh: () {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                context.read<TransactionsBloc>().add(
+                                  LoadAllTransactionsEvent('auth'),
                                 );
-                              } else {
-                                context.read<TxnReferenceBloc>().add(
-                                  FetchTxnByReferenceEvent(
-                                    txn.trnReference ?? "",
-                                  ),
-                                );
-                              }
+                              });
                             },
-                            hoverColor: Theme.of(
-                              context,
-                            ).colorScheme.primary.withValues(alpha: .05),
-                            highlightColor: Theme.of(
-                              context,
-                            ).colorScheme.primary.withValues(alpha: .05),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: index.isOdd
-                                    ? Theme.of(context).colorScheme.primary
-                                          .withValues(alpha: .06)
-                                    : Colors.transparent,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 140,
-                                      child: Text(
-                                        txn.trnEntryDate!.toFullDateTime,
-                                      ),
-                                    ),
-                                    SizedBox(width: 20),
-                                    Expanded(
-                                      child: Text(txn.trnReference.toString()),
-                                    ),
+                          );
+                        }
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: filteredList.length,
+                          itemBuilder: (context, index) {
+                            final txn = filteredList[index];
+                            final isLoadingThisItem = _isLoadingDialog &&
+                                _loadingRef == txn.trnReference;
 
-                                    SizedBox(
-                                      width: 110,
-                                      child: Text(
-                                        Utils.getTxnCode(
-                                          txn: txn.trnType ?? "",
-                                          context: context,
+                            return InkWell(
+                              onTap: isLoadingThisItem
+                                  ? null
+                                  : () => _handleTransactionTap(txn),
+                              hoverColor: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withValues(alpha: .05),
+                              highlightColor: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withValues(alpha: .05),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: index.isOdd
+                                      ? Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withValues(alpha: .06)
+                                      : Colors.transparent,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 162,
+                                        child: Row(
+                                          children: [
+                                            if (isLoadingThisItem)
+                                              Container(
+                                                width: 16,
+                                                height: 16,
+                                                margin:
+                                                const EdgeInsets.only(right: 8),
+                                                child:
+                                                const CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                ),
+                                              ),
+                                            Text(
+                                              txn.trnEntryDate!.toFullDateTime,
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ),
-                                    SizedBox(width: 20),
-                                    SizedBox(
-                                      width: 110,
-                                      child: Text(txn.maker ?? ""),
-                                    ),
-                                    SizedBox(
-                                      width: 110,
-                                      child: Text(txn.checker ?? ""),
-                                    ),
-                                    SizedBox(width: 20),
-                                  ],
+                                      SizedBox(width: 20),
+                                      Expanded(
+                                        child: Text(txn.trnReference.toString()),
+                                      ),
+                                      SizedBox(
+                                        width: 110,
+                                        child: Text(
+                                          Utils.getTxnCode(
+                                            txn: txn.trnType ?? "",
+                                            context: context,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 20),
+                                      SizedBox(
+                                        width: 110,
+                                        child: Text(txn.maker ?? ""),
+                                      ),
+                                      SizedBox(
+                                        width: 110,
+                                        child: Text(txn.checker ?? ""),
+                                      ),
+                                      SizedBox(width: 20),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      );
-                    }
-                    return const SizedBox();
-                  },
+                            );
+                          },
+                        );
+                      }
+                      return const SizedBox();
+                    },
+                  ),
                 ),
+              ],
+            ),
+          ),
+          if (_isLoadingDialog && _loadingRef == null)
+            Container(
+              color: Colors.black.withAlpha(100),
+              child: const Center(
+                child: CircularProgressIndicator(),
               ),
-            ],
-          );
-        },
-      );
-  },
-),
+            ),
+        ],
+      ),
     );
   }
 }

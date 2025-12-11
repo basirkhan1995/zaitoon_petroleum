@@ -18,6 +18,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/UserDetail/bloc/user_detai
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/bloc/users_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/bloc/hrtab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/bloc/fetch_atat_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchGLAT/bloc/glat_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FundTransfer/BulkTransfer/bloc/transfer_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FxTransaction/bloc/fx_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
@@ -113,6 +114,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => FetchAtatBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => TransferBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => FxBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => GlatBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => StorageBloc(Repositories(ApiServices()))..add(LoadStorageEvent())),
         BlocProvider(create: (context) => DriverBloc(Repositories(ApiServices()))..add(LoadDriverEvent())),
         BlocProvider(create: (context) => VehicleBloc(Repositories(ApiServices()))..add(LoadVehicleEvent())),
