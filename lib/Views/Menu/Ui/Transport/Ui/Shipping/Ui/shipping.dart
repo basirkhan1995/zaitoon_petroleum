@@ -144,7 +144,7 @@ class _DesktopState extends State<_Desktop> {
                         itemBuilder: (context,index){
                           final shp = state.shipping[index];
                           return ListTile(
-                            title: Text(shp.remark??""),
+                            title: Text(shp.proName??""),
                           );
                     });
                   }

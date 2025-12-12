@@ -899,7 +899,7 @@ class Repositories {
     }
   }
 
-  Future<List<ShippingModel>> getShipping({required int id}) async {
+  Future<List<ShippingModel>> getShipping({int? id}) async {
     try {
       final queryParams = {'shpID': id};
       final response = await api.get(
