@@ -1,17 +1,24 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchGLAT/Print/glat_print.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchGLAT/bloc/glat_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchGLAT/model/glat_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import '../../../../../../../Features/Other/responsive.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../../../Features/PrintSettings/print_preview.dart';
+import '../../../../../../../Features/PrintSettings/report_model.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../../Auth/bloc/auth_bloc.dart';
 import '../../bloc/transactions_bloc.dart';
-
+import 'package:flutter/services.dart';
 class GlatView extends StatelessWidget {
   const GlatView({super.key});
 
@@ -52,7 +59,9 @@ class _Desktop extends StatefulWidget {
 
 class _DesktopState extends State<_Desktop> {
   GlatModel? loadedGlat;
-
+  final company = ReportModel();
+  bool isPrint = true;
+  Uint8List _companyLogo = Uint8List(0);
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
@@ -68,6 +77,24 @@ class _DesktopState extends State<_Desktop> {
 
     final login = auth.loginData;
 
+    return BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
+  builder: (context, state) {
+    if(state is CompanyProfileLoadedState){
+      company.comName = state.company.comName??"";
+      company.comAddress = state.company.addName??"";
+      company.compPhone = state.company.comPhone??"";
+      company.comEmail = state.company.comEmail??"";
+      company.statementDate = DateTime.now().toFullDateTime;
+      final base64Logo = state.company.comLogo;
+      if (base64Logo != null && base64Logo.isNotEmpty) {
+        try {
+          _companyLogo = base64Decode(base64Logo);
+          company.comLogo = _companyLogo;
+        } catch (e) {
+          _companyLogo = Uint8List(0);
+        }
+      }
+    }
     return ZFormDialog(
       onAction: null,
       title: tr.transactionDetails,
@@ -145,7 +172,7 @@ class _DesktopState extends State<_Desktop> {
                             _buildStatusBadge(context, glat.transaction?.trnStateText??""),
                             CircleAvatar(
                                 backgroundColor: color.outline.withValues(alpha: .06),
-                                child: IconButton(onPressed: (){}, icon: Icon(Icons.print)))
+                                child: IconButton(onPressed: ()=> getPrinted(data: loadedGlat!, company: company), icon: Icon(Icons.print)))
                           ],
                         ),
                       ],
@@ -359,11 +386,14 @@ class _DesktopState extends State<_Desktop> {
         ),
       ),
     );
+  },
+);
   }
 
   Widget _buildStatusBadge(BuildContext context, String status) {
     final color = Theme.of(context).colorScheme;
-    final isAuthorized = status.toLowerCase().contains("authorize");
+    print(status);
+    final isAuthorized = status.toLowerCase().contains("Authorize");
     final tr = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -429,5 +459,67 @@ class _DesktopState extends State<_Desktop> {
         ],
       ),
     );
+  }
+
+  void getPrinted({required GlatModel data, required ReportModel company}){
+    if(isPrint) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          builder: (_) => PrintPreviewDialog<GlatModel>(
+            data: data,
+            company: company,
+            buildPreview: ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+            }) {
+              return GlatPrintSettings().printPreview(
+                company: company,
+                language: language,
+                orientation: orientation,
+                pageFormat: pageFormat,
+                data: data,
+              );
+            },
+            onPrint: ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+              required selectedPrinter,
+              required copies,
+              required pages,
+            }) {
+              return GlatPrintSettings().printDocument(
+                company: company,
+                language: language,
+                orientation: orientation,
+                pageFormat: pageFormat,
+                selectedPrinter: selectedPrinter,
+                data: data,
+                copies: copies,
+                pages: pages,
+              );
+            },
+            onSave: ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+            }) {
+              return GlatPrintSettings().createDocument(
+                data: data,
+                company: company,
+                language: language,
+                orientation: orientation,
+                pageFormat: pageFormat,
+              );
+            },
+          ),
+        );
+      });
+    }
   }
 }

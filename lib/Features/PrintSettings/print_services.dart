@@ -839,6 +839,119 @@ abstract class PrintServices {
         'ar':'رسید مبلغ',
       },
 
+      'vehicleDetails': {
+        'en': 'Vehicle Details',
+        'fa': 'جزئیات وسیله نقلیه',
+        'ar': 'د موټرو معلومات',
+      },
+      'vehicleID': {
+        'en': 'Vehicle ID',
+        'fa': 'شناسه وسیله نقلیه',
+        'ar': 'د موټر آی ډی',
+      },
+      'model': {
+        'en': 'Model',
+        'fa': 'مدل',
+        'ar': 'مودل',
+      },
+      'year': {
+        'en': 'Year',
+        'fa': 'سال',
+        'ar': 'کال',
+      },
+      'vinNumber': {
+        'en': 'VIN Number',
+        'fa': 'شماره VIN',
+        'ar': 'وی آی اېن نمبر',
+      },
+      'fuelType': {
+        'en': 'Fuel Type',
+        'fa': 'نوع سوخت',
+        'ar': 'د سون توکي ډول',
+      },
+      'enginePower': {
+        'en': 'Engine Power',
+        'fa': 'قدرت موتور',
+        'ar': 'د انجن قوت',
+      },
+      'bodyType': {
+        'en': 'Body Type',
+        'fa': 'نوع بدنه',
+        'ar': 'د بدن ډول',
+      },
+      'plateNumber': {
+        'en': 'Plate Number',
+        'fa': 'شماره پلاک',
+        'ar': 'د پلیټ نمبر',
+      },
+      'registrationNumber': {
+        'en': 'Registration Number',
+        'fa': 'شماره ثبت',
+        'ar': 'د ثبت نمبر',
+      },
+      'expiryDate': {
+        'en': 'Expiry Date',
+        'fa': 'تاریخ انقضا',
+        'ar': 'د پای نیټه',
+      },
+      'odometer': {
+        'en': 'Odometer',
+        'fa': 'کیلومتر شمار',
+        'ar': 'د ګزاریچې شمار',
+      },
+      'purchaseAmount': {
+        'en': 'Purchase Amount',
+        'fa': 'مبلغ خرید',
+        'ar': 'د پیرود مقدار',
+      },
+      'driver': {
+        'en': 'Driver',
+        'fa': 'راننده',
+        'ar': 'چلوونکی',
+      },
+
+      'transactionDetails': {
+        'en': 'Transaction Details',
+        'fa': 'جزئیات تراکنش',
+        'ar': 'د معاملې معلومات',
+      },
+
+      'transactionStatus': {
+        'en': 'Transaction Status',
+        'fa': 'وضعیت تراکنش',
+        'ar': 'د معاملې حالت',
+      },
+      'inactive': {
+        'en': 'Inactive',
+        'fa': 'غیرفعال',
+        'ar': 'غیر فعال',
+      },
+      'active': {
+        'en': 'Active',
+        'fa': 'فعال',
+        'ar': 'فعال',
+      },
+      'pending': {
+        'en': 'Pending',
+        'fa': 'در انتظار',
+        'ar': 'په تمه کې',
+      },
+      'approved': {
+        'en': 'Approved',
+        'fa': 'تایید شده',
+        'ar': 'تصویب شوی',
+      },
+      'rejected': {
+        'en': 'Rejected',
+        'fa': 'رد شده',
+        'ar': 'رد شوی',
+      },
+      'unknown': {
+        'en': 'Unknown',
+        'fa': 'ناشناخته',
+        'ar': 'نامعلوم',
+      },
+
     };
 
     // Default to English if language not found
