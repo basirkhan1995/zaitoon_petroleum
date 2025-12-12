@@ -120,15 +120,21 @@ class _DesktopState extends State<_Desktop> {
                 child: Column(
                   spacing: 13,
                   children: [
-                    GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
+                    GenericTextfield<
+                      IndividualsModel,
+                      IndividualsBloc,
+                      IndividualsState
+                    >(
                       showAllOnFocus: true,
                       controller: customerCtrl,
                       title: tr.individuals,
                       hintText: tr.individuals,
                       isRequired: true,
                       bloc: context.read<IndividualsBloc>(),
-                      fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
-                      searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
+                      fetchAllFunction: (bloc) =>
+                          bloc.add(LoadIndividualsEvent()),
+                      searchFunction: (bloc, query) =>
+                          bloc.add(LoadIndividualsEvent()),
                       validator: (value) {
                         if (value.isEmpty) {
                           return tr.required(tr.individuals);
@@ -155,8 +161,10 @@ class _DesktopState extends State<_Desktop> {
                           ],
                         ),
                       ),
-                      itemToString: (acc) => "${acc.perName} ${acc.perLastName}",
-                      stateToLoading: (state) => state is IndividualLoadingState,
+                      itemToString: (acc) =>
+                          "${acc.perName} ${acc.perLastName}",
+                      stateToLoading: (state) =>
+                          state is IndividualLoadingState,
                       loadingBuilder: (context) => const SizedBox(
                         width: 16,
                         height: 16,
@@ -184,7 +192,8 @@ class _DesktopState extends State<_Desktop> {
                       isRequired: true,
                       bloc: context.read<VehicleBloc>(),
                       fetchAllFunction: (bloc) => bloc.add(LoadVehicleEvent()),
-                      searchFunction: (bloc, query) => bloc.add(LoadVehicleEvent()),
+                      searchFunction: (bloc, query) =>
+                          bloc.add(LoadVehicleEvent()),
                       validator: (value) {
                         if (value.isEmpty) {
                           return tr.required(tr.vehicle);
@@ -211,7 +220,8 @@ class _DesktopState extends State<_Desktop> {
                           ],
                         ),
                       ),
-                      itemToString: (veh) => "${veh.vclModel} | ${veh.vclPlateNo}",
+                      itemToString: (veh) =>
+                          "${veh.vclModel} | ${veh.vclPlateNo}",
                       stateToLoading: (state) => state is VehicleLoadingState,
                       loadingBuilder: (context) => const SizedBox(
                         width: 16,
@@ -243,12 +253,15 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         ),
 
-                        Expanded(child: UnitDropdown(
-                            onUnitSelected: (e){
+                        Expanded(
+                          child: UnitDropdown(
+                            onUnitSelected: (e) {
                               setState(() {
                                 unit = e.name;
                               });
-                            })),
+                            },
+                          ),
+                        ),
                       ],
                     ),
 
@@ -259,8 +272,8 @@ class _DesktopState extends State<_Desktop> {
                           child: ZTextFieldEntitled(
                             controller: shpFrom,
                             title: tr.shpFrom,
-                            validator: (value){
-                              if(value.isEmpty){
+                            validator: (value) {
+                              if (value.isEmpty) {
                                 return tr.required(tr.shpFrom);
                               }
                               return null;
@@ -271,8 +284,8 @@ class _DesktopState extends State<_Desktop> {
                           child: ZTextFieldEntitled(
                             controller: shpTo,
                             title: tr.shpTo,
-                            validator: (value){
-                              if(value.isEmpty){
+                            validator: (value) {
+                              if (value.isEmpty) {
                                 return tr.required(tr.shpTo);
                               }
                               return null;
@@ -327,7 +340,9 @@ class _DesktopState extends State<_Desktop> {
                               decimal: true,
                             ),
                             inputFormat: [
-                              FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'[0-9.,]*'),
+                              ),
                               SmartThousandsDecimalFormatter(),
                             ],
                             validator: (value) {
@@ -336,7 +351,10 @@ class _DesktopState extends State<_Desktop> {
                               }
 
                               // Remove formatting (e.g. commas)
-                              final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
+                              final clean = value.replaceAll(
+                                RegExp(r'[^\d.]'),
+                                '',
+                              );
                               final amount = double.tryParse(clean);
 
                               if (amount == null || amount <= 0.0) {
@@ -356,7 +374,9 @@ class _DesktopState extends State<_Desktop> {
                               decimal: true,
                             ),
                             inputFormat: [
-                              FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'[0-9.,]*'),
+                              ),
                               SmartThousandsDecimalFormatter(),
                             ],
                             validator: (value) {
@@ -365,7 +385,10 @@ class _DesktopState extends State<_Desktop> {
                               }
 
                               // Remove formatting (e.g. commas)
-                              final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
+                              final clean = value.replaceAll(
+                                RegExp(r'[^\d.]'),
+                                '',
+                              );
                               final amount = double.tryParse(clean);
 
                               if (amount == null || amount <= 0.0) {
@@ -380,9 +403,19 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ],
                     ),
-                    ZTextFieldEntitled(
-                      controller: remark,
-                      title: tr.remark,
+                    ZTextFieldEntitled(controller: remark, title: tr.remark),
+
+                    Row(
+                      children: [
+                        state is ShippingErrorState
+                            ? Text(
+                                state.error,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              )
+                            : SizedBox(),
+                      ],
                     ),
                   ],
                 ),
