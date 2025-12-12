@@ -762,7 +762,7 @@ class Repositories {
           'ccyTo': toCcy,
         },
       );
-      print(response.data);
+
       // Handle server error response
       if (response.data is Map<String, dynamic> &&
           response.data['msg'] != null) {
@@ -892,6 +892,41 @@ class Repositories {
           data: newShipping.toMap()
       );
       return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<List<ShippingModel>> getShipping({required int id}) async {
+    try {
+      final queryParams = {'shpID': id};
+      final response = await api.get(
+          endpoint: '/transport/shipping.php',
+          queryParams: queryParams
+      );
+
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => ShippingModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
     } on DioException catch (e) {
       throw '${e.message}';
     } catch (e) {

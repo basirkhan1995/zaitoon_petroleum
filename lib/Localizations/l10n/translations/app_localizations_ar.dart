@@ -1329,4 +1329,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pendingTitle => 'تایید ناشده';
+
+  @override
+  String get shpFrom => 'بارگیری موقعیت';
+
+  @override
+  String get shpTo => 'تخلیه موقعیت';
+
+  @override
+  String get loadingDate => 'بارگیری نیته';
+
+  @override
+  String get unloadingDate => 'تخلیه نیته';
+
+  @override
+  String get shippingRent => 'کرایه مبلغ';
+
+  @override
+  String get loadingSize => 'بارگیری مقدار';
+
+  @override
+  String get unloadingSize => 'تخلیه مقدار';
+
+  @override
+  String get unit => 'واحد';
 }

@@ -1,88 +1,129 @@
+// To parse this JSON data, do
+//
+//     final shippingModel = shippingModelFromMap(jsonString);
+
 import 'dart:convert';
 
-ShippingModel shippingModelFromMap(String str) => ShippingModel.fromMap(json.decode(str));
+List<ShippingModel> shippingModelFromMap(String str) => List<ShippingModel>.from(json.decode(str).map((x) => ShippingModel.fromMap(x)));
 
-String shippingModelToMap(ShippingModel data) => json.encode(data.toMap());
+String shippingModelToMap(List<ShippingModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toMap())));
 
 class ShippingModel {
-  final int? shpProduct;
-  final int? shpVehicle;
-  final int? shpCustomer;
+  final int? shpId;
+  final String? vehicle;
+  final String? proName;
+  final int? productId;
+  final int? customerId;
+  final int? vehicleId;
+
+  final String? customer;
   final String? shpFrom;
   final DateTime? shpMovingDate;
+  final String? shpLoadSize;
+  final String? shpUnit;
   final String? shpTo;
   final DateTime? shpArriveDate;
-  final String? shpLoadSize;
   final String? shpUnloadSize;
-  final String? shpUnit;
   final String? shpRent;
+  final String? total;
+  final int? shpStatus;
 
   ShippingModel({
-    this.shpProduct,
-    this.shpVehicle,
-    this.shpCustomer,
+    this.shpId,
+    this.vehicle,
+    this.proName,
+    this.customer,
     this.shpFrom,
     this.shpMovingDate,
+    this.shpLoadSize,
+    this.shpUnit,
     this.shpTo,
     this.shpArriveDate,
-    this.shpLoadSize,
     this.shpUnloadSize,
-    this.shpUnit,
     this.shpRent,
+    this.total,
+    this.shpStatus,
+    this.productId,
+    this.vehicleId,
+    this.customerId,
   });
 
   ShippingModel copyWith({
-    int? shpProduct,
-    int? shpVehicle,
-    int? shpCustomer,
+    int? shpId,
+    String? vehicle,
+    String? proName,
+    String? customer,
     String? shpFrom,
     DateTime? shpMovingDate,
+    String? shpLoadSize,
+    String? shpUnit,
     String? shpTo,
     DateTime? shpArriveDate,
-    String? shpLoadSize,
     String? shpUnloadSize,
-    String? shpUnit,
     String? shpRent,
+    String? total,
+    int? shpStatus,
+    int? productId,
+    int? customerId,
+    int? vehicleId,
   }) =>
       ShippingModel(
-        shpProduct: shpProduct ?? this.shpProduct,
-        shpVehicle: shpVehicle ?? this.shpVehicle,
-        shpCustomer: shpCustomer ?? this.shpCustomer,
+        shpId: shpId ?? this.shpId,
+        vehicle: vehicle ?? this.vehicle,
+        proName: proName ?? this.proName,
+        customer: customer ?? this.customer,
         shpFrom: shpFrom ?? this.shpFrom,
         shpMovingDate: shpMovingDate ?? this.shpMovingDate,
+        shpLoadSize: shpLoadSize ?? this.shpLoadSize,
+        shpUnit: shpUnit ?? this.shpUnit,
         shpTo: shpTo ?? this.shpTo,
         shpArriveDate: shpArriveDate ?? this.shpArriveDate,
-        shpLoadSize: shpLoadSize ?? this.shpLoadSize,
         shpUnloadSize: shpUnloadSize ?? this.shpUnloadSize,
-        shpUnit: shpUnit ?? this.shpUnit,
         shpRent: shpRent ?? this.shpRent,
+        total: total ?? this.total,
+        shpStatus: shpStatus ?? this.shpStatus,
+        productId: productId ?? this.productId,
+        customerId: customerId ?? this.customerId,
+        vehicleId: vehicleId ?? this.vehicleId
       );
 
   factory ShippingModel.fromMap(Map<String, dynamic> json) => ShippingModel(
-    shpProduct: json["shpProduct"],
-    shpVehicle: json["shpVehicle"],
-    shpCustomer: json["shpCustomer"],
+    shpId: json["shpID"],
+    vehicle: json["vehicle"],
+    proName: json["proName"],
+    customer: json["customer"],
     shpFrom: json["shpFrom"],
     shpMovingDate: json["shpMovingDate"] == null ? null : DateTime.parse(json["shpMovingDate"]),
+    shpLoadSize: json["shpLoadSize"],
+    shpUnit: json["shpUnit"],
     shpTo: json["shpTo"],
     shpArriveDate: json["shpArriveDate"] == null ? null : DateTime.parse(json["shpArriveDate"]),
-    shpLoadSize: json["shpLoadSize"],
     shpUnloadSize: json["shpUnloadSize"],
-    shpUnit: json["shpUnit"],
     shpRent: json["shpRent"],
+    total: json["total"],
+    shpStatus: json["shpStatus"],
+    productId: json["shpProduct"],
+    customerId: json["shpCustomer"],
+    vehicleId: json["shpVehicle"]
   );
 
   Map<String, dynamic> toMap() => {
-    "shpProduct": shpProduct,
-    "shpVehicle": shpVehicle,
-    "shpCustomer": shpCustomer,
+    "shpID": shpId,
+    "vehicle": vehicle,
+    "proName": proName,
+    "customer": customer,
     "shpFrom": shpFrom,
-    "shpMovingDate": "${shpMovingDate!.year.toString().padLeft(4, '0')}-${shpMovingDate!.month.toString().padLeft(2, '0')}-${shpMovingDate!.day.toString().padLeft(2, '0')}",
-    "shpTo": shpTo,
-    "shpArriveDate": "${shpArriveDate!.year.toString().padLeft(4, '0')}-${shpArriveDate!.month.toString().padLeft(2, '0')}-${shpArriveDate!.day.toString().padLeft(2, '0')}",
+    "shpMovingDate": shpMovingDate?.toIso8601String(),
     "shpLoadSize": shpLoadSize,
-    "shpUnloadSize": shpUnloadSize,
     "shpUnit": shpUnit,
+    "shpTo": shpTo,
+    "shpArriveDate": shpArriveDate?.toIso8601String(),
+    "shpUnloadSize": shpUnloadSize,
     "shpRent": shpRent,
+    "total": total,
+    "shpStatus": shpStatus,
+    "shpCustomer": customerId,
+    "shpVehicle": vehicleId,
+    "shpProduct": productId
   };
 }

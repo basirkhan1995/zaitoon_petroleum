@@ -157,7 +157,6 @@ class _DesktopState extends State<_Desktop> {
                   ],
                 ),
               ),
-
               SizedBox(height: 5),
               Divider(
                 indent: 15,endIndent: 15,color: Theme.of(context).colorScheme.outline.withValues(alpha: .3),height: 0,

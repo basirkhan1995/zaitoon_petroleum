@@ -2685,6 +2685,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pending'**
   String get pendingTitle;
+
+  /// No description provided for @shpFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping from'**
+  String get shpFrom;
+
+  /// No description provided for @shpTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping to'**
+  String get shpTo;
+
+  /// No description provided for @loadingDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading date'**
+  String get loadingDate;
+
+  /// No description provided for @unloadingDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Unloading date'**
+  String get unloadingDate;
+
+  /// No description provided for @shippingRent.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping rent'**
+  String get shippingRent;
+
+  /// No description provided for @loadingSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading size'**
+  String get loadingSize;
+
+  /// No description provided for @unloadingSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Unloading size'**
+  String get unloadingSize;
+
+  /// No description provided for @unit.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get unit;
 }
 
 class _AppLocalizationsDelegate

@@ -5,7 +5,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/vehicles.d
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/bloc/transport_tab_bloc.dart';
 import '../../../../Features/Generic/tab_bar.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
-import 'Ui/Shipping/shipping.dart';
+import 'Ui/Shipping/Ui/shipping.dart';
 
 
 class TransportView extends StatelessWidget {

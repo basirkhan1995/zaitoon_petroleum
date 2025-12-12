@@ -19,6 +19,8 @@ class UpdateShippingEvent extends ShippingEvent{
 }
 
 class LoadShippingEvent extends ShippingEvent{
+  final int? shpId;
+  const LoadShippingEvent({this.shpId});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [shpId];
 }

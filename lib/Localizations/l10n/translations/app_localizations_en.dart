@@ -1335,4 +1335,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pendingTitle => 'Pending';
+
+  @override
+  String get shpFrom => 'Shipping from';
+
+  @override
+  String get shpTo => 'Shipping to';
+
+  @override
+  String get loadingDate => 'Loading date';
+
+  @override
+  String get unloadingDate => 'Unloading date';
+
+  @override
+  String get shippingRent => 'Shipping rent';
+
+  @override
+  String get loadingSize => 'Loading size';
+
+  @override
+  String get unloadingSize => 'Unloading size';
+
+  @override
+  String get unit => 'Unit';
 }

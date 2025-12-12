@@ -1327,4 +1327,28 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get pendingTitle => 'تایید ناشده';
+
+  @override
+  String get shpFrom => 'موقعیت بارگیری';
+
+  @override
+  String get shpTo => 'موقعیت تخلیه';
+
+  @override
+  String get loadingDate => 'تاریخ بارگیری';
+
+  @override
+  String get unloadingDate => 'تاریخ تخلیه';
+
+  @override
+  String get shippingRent => 'مبلغ کرایه';
+
+  @override
+  String get loadingSize => 'مقدار بارگیری';
+
+  @override
+  String get unloadingSize => 'مقدار تخلیه';
+
+  @override
+  String get unit => 'واحد';
 }

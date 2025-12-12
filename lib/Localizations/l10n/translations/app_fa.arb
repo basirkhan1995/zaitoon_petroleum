@@ -443,5 +443,13 @@
   "creditAccount": "حساب کردیت",
   "vehicleDetails": "معلومات موتر",
   "authorizedTitle": "تایید شده",
-  "pendingTitle": "تایید ناشده"
+  "pendingTitle": "تایید ناشده",
+  "shpFrom": "موقعیت بارگیری",
+  "shpTo": "موقعیت تخلیه",
+  "loadingDate": "تاریخ بارگیری",
+  "unloadingDate": "تاریخ تخلیه",
+  "shippingRent": "مبلغ کرایه",
+  "loadingSize": "مقدار بارگیری",
+  "unloadingSize": "مقدار تخلیه",
+  "unit": "واحد"
 }

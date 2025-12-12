@@ -11,6 +11,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
   ShippingBloc(this._repo) : super(ShippingInitial()) {
 
     on<AddShippingEvent>((event, emit) async{
+      emit(ShippingLoadingState());
      try{
       final res = await _repo.addShipping(newShipping: event.newShipping);
        final msg = res['msg'];
@@ -21,6 +22,16 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
      }catch(e){
       emit(ShippingErrorState(e.toString()));
      }
+    });
+
+    on<LoadShippingEvent>((event, emit) async{
+      emit(ShippingLoadingState());
+      try{
+        final res = await _repo.getShipping(id: event.shpId!);
+        emit(ShippingLoadedState(res));
+      }catch(e){
+        emit(ShippingErrorState(e.toString()));
+      }
     });
 
   }

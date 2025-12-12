@@ -443,5 +443,13 @@
   "creditAccount": "Credit Account",
   "vehicleDetails": "Vehicle Details",
   "authorizedTitle": "Authorized",
-  "pendingTitle": "Pending"
+  "pendingTitle": "Pending",
+  "shpFrom": "Shipping from",
+  "shpTo": "Shipping to",
+  "loadingDate": "Loading date",
+  "unloadingDate": "Unloading date",
+  "shippingRent": "Shipping rent",
+  "loadingSize": "Loading size",
+  "unloadingSize": "Unloading size",
+  "unit": "Unit"
 }

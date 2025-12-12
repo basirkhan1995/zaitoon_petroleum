@@ -185,6 +185,7 @@ class _DesktopState extends State<_Desktop> {
                   noResultsText: locale.noDataFound,
                   showClearButton: true,
                 ),
+
                 if(widget.model == null)
                 GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
                   showAllOnFocus: true,

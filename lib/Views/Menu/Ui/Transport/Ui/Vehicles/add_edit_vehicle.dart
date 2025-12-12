@@ -212,8 +212,7 @@ class _DesktopState extends State<_Desktop> {
                               ),
                             ),
                             itemToString: (account) => "${account.perfullName}",
-                            stateToLoading: (state) =>
-                                state is DriverLoadingState,
+                            stateToLoading: (state) => state is DriverLoadingState,
                             loadingBuilder: (context) => const SizedBox(
                               width: 16,
                               height: 16,
@@ -341,12 +340,14 @@ class _DesktopState extends State<_Desktop> {
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
                         SmartThousandsDecimalFormatter(),
                       ],
+
                       // validator: (value) {
                       //   if (value == null || value.isEmpty) {
                       //     return tr.required(tr.amount);
                       //   }
                       //   return null;
                       // },
+
                       controller: amount,
                       title: tr.amount,
                     ),
