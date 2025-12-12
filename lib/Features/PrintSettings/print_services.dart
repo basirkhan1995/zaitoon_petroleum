@@ -1,10 +1,10 @@
 import 'dart:io';
-
 import 'package:file_selector/file_selector.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+
 
 abstract class PrintServices {
 
@@ -119,7 +119,6 @@ abstract class PrintServices {
       return null;
     }
   }
-
 
   static pw.TextStyle _textStyle({
     required String text,

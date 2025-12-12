@@ -143,7 +143,9 @@ class _DesktopState extends State<_Desktop> {
                           spacing: 8,
                           children: [
                             _buildStatusBadge(context, glat.transaction?.trnStateText??""),
-                            IconButton(onPressed: (){}, icon: Icon(Icons.print))
+                            CircleAvatar(
+                                backgroundColor: color.outline.withValues(alpha: .06),
+                                child: IconButton(onPressed: (){}, icon: Icon(Icons.print)))
                           ],
                         ),
                       ],

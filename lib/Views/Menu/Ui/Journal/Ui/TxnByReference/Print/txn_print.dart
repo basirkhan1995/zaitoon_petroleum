@@ -217,7 +217,6 @@ class TransactionReferencePrintSettings extends PrintServices{
     );
   }
 
-
   pw.Widget voucher({
     required TxnByReferenceModel data,
     required String language,
