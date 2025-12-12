@@ -1351,4 +1351,13 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get unit => 'واحد';
+
+  @override
+  String get advanceAmount => 'مبلغ پیش پرداخت';
+
+  @override
+  String get tonTitle => 'تن';
+
+  @override
+  String get kgTitle => 'کیلوگرام';
 }

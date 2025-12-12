@@ -451,5 +451,8 @@
   "shippingRent": "Shipping rent",
   "loadingSize": "Loading size",
   "unloadingSize": "Unloading size",
-  "unit": "Unit"
+  "unit": "Unit",
+  "advanceAmount": "Advance amount",
+  "tonTitle": "Ton",
+  "kgTitle": "Kg"
 }

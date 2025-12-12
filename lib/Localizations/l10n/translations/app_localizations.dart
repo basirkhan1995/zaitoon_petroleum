@@ -2733,6 +2733,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unit'**
   String get unit;
+
+  /// No description provided for @advanceAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Advance amount'**
+  String get advanceAmount;
+
+  /// No description provided for @tonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ton'**
+  String get tonTitle;
+
+  /// No description provided for @kgTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Kg'**
+  String get kgTitle;
 }
 
 class _AppLocalizationsDelegate

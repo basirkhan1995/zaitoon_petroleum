@@ -15,7 +15,6 @@ class ShippingModel {
   final int? productId;
   final int? customerId;
   final int? vehicleId;
-
   final String? customer;
   final String? shpFrom;
   final DateTime? shpMovingDate;
@@ -27,7 +26,9 @@ class ShippingModel {
   final String? shpRent;
   final String? total;
   final int? shpStatus;
-
+  final String? usrName;
+  final String? advanceAmount;
+  final String? remark;
   ShippingModel({
     this.shpId,
     this.vehicle,
@@ -46,6 +47,9 @@ class ShippingModel {
     this.productId,
     this.vehicleId,
     this.customerId,
+    this.advanceAmount,
+    this.remark,
+    this.usrName,
   });
 
   ShippingModel copyWith({
@@ -66,6 +70,9 @@ class ShippingModel {
     int? productId,
     int? customerId,
     int? vehicleId,
+    String? remark,
+    String? advanceAmount,
+    String? usrName,
   }) =>
       ShippingModel(
         shpId: shpId ?? this.shpId,
@@ -84,7 +91,10 @@ class ShippingModel {
         shpStatus: shpStatus ?? this.shpStatus,
         productId: productId ?? this.productId,
         customerId: customerId ?? this.customerId,
-        vehicleId: vehicleId ?? this.vehicleId
+        vehicleId: vehicleId ?? this.vehicleId,
+        usrName: usrName ?? this.usrName,
+        advanceAmount: advanceAmount ?? this.advanceAmount,
+        remark: remark ?? this.remark
       );
 
   factory ShippingModel.fromMap(Map<String, dynamic> json) => ShippingModel(
@@ -104,7 +114,9 @@ class ShippingModel {
     shpStatus: json["shpStatus"],
     productId: json["shpProduct"],
     customerId: json["shpCustomer"],
-    vehicleId: json["shpVehicle"]
+    vehicleId: json["shpVehicle"],
+    remark: json["remark"],
+    usrName: json["usrName"]
   );
 
   Map<String, dynamic> toMap() => {
@@ -124,6 +136,9 @@ class ShippingModel {
     "shpStatus": shpStatus,
     "shpCustomer": customerId,
     "shpVehicle": vehicleId,
-    "shpProduct": productId
+    "shpProduct": productId,
+    "usrName": usrName,
+    "shpAdvance": advanceAmount,
+    "shpRemark": remark,
   };
 }

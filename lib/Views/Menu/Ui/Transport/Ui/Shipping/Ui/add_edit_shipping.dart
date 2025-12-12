@@ -68,10 +68,13 @@ class _DesktopState extends State<_Desktop> {
   final unloadingSize = TextEditingController();
   final customerCtrl = TextEditingController();
   final vehicleCtrl = TextEditingController();
+  final remark = TextEditingController();
+  final advanceAmount = TextEditingController();
 
   String shpFromGregorian = DateTime.now().toFormattedDate();
   Jalali shpFromShamsi = DateTime.now().toAfghanShamsi;
 
+  String? usrName;
   String shpToGregorian = DateTime.now().toFormattedDate();
   Jalali shpToShamsi = DateTime.now().toAfghanShamsi;
 
@@ -79,6 +82,7 @@ class _DesktopState extends State<_Desktop> {
 
   int? customerId;
   int? vehicleId;
+  String? unit;
   @override
   void dispose() {
     shippingRent.dispose();
@@ -239,7 +243,12 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         ),
 
-                        Expanded(child: UnitDropdown(onUnitSelected: (e){})),
+                        Expanded(child: UnitDropdown(
+                            onUnitSelected: (e){
+                              setState(() {
+                                unit = e.name;
+                              });
+                            })),
                       ],
                     ),
 
@@ -308,32 +317,72 @@ class _DesktopState extends State<_Desktop> {
                       ],
                     ),
 
-                    ZTextFieldEntitled(
-                      isRequired: true,
-                      keyboardInputType: TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      inputFormat: [
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
-                        SmartThousandsDecimalFormatter(),
+                    Row(
+                      spacing: 8,
+                      children: [
+                        Expanded(
+                          child: ZTextFieldEntitled(
+                            isRequired: true,
+                            keyboardInputType: TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            inputFormat: [
+                              FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
+                              SmartThousandsDecimalFormatter(),
+                            ],
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return tr.required(tr.shippingRent);
+                              }
+
+                              // Remove formatting (e.g. commas)
+                              final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
+                              final amount = double.tryParse(clean);
+
+                              if (amount == null || amount <= 0.0) {
+                                return tr.amountGreaterZero;
+                              }
+
+                              return null;
+                            },
+                            controller: shippingRent,
+                            title: tr.shippingRent,
+                          ),
+                        ),
+                        Expanded(
+                          child: ZTextFieldEntitled(
+                            isRequired: true,
+                            keyboardInputType: TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            inputFormat: [
+                              FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
+                              SmartThousandsDecimalFormatter(),
+                            ],
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return tr.required(tr.advanceAmount);
+                              }
+
+                              // Remove formatting (e.g. commas)
+                              final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
+                              final amount = double.tryParse(clean);
+
+                              if (amount == null || amount <= 0.0) {
+                                return tr.amountGreaterZero;
+                              }
+
+                              return null;
+                            },
+                            controller: advanceAmount,
+                            title: tr.advanceAmount,
+                          ),
+                        ),
                       ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return tr.required(tr.shippingRent);
-                        }
-
-                        // Remove formatting (e.g. commas)
-                        final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
-                        final amount = double.tryParse(clean);
-
-                        if (amount == null || amount <= 0.0) {
-                          return tr.amountGreaterZero;
-                        }
-
-                        return null;
-                      },
-                      controller: shippingRent,
-                      title: tr.shippingRent,
+                    ),
+                    ZTextFieldEntitled(
+                      controller: remark,
+                      title: tr.remark,
                     ),
                   ],
                 ),
@@ -370,7 +419,11 @@ class _DesktopState extends State<_Desktop> {
       customerId: customerId,
       shpArriveDate: DateTime.tryParse(shpToGregorian),
       shpMovingDate: DateTime.tryParse(shpFromGregorian),
-      shpUnit: "TN",
+      usrName: usrName ?? "victus",
+      advanceAmount: advanceAmount.text.cleanAmount,
+      remark: remark.text,
+      shpId: widget.model?.shpId,
+      shpUnit: unit ?? "TN",
     );
     final bloc = context.read<ShippingBloc>();
     if (widget.model == null) {

@@ -1359,4 +1359,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unit => 'Unit';
+
+  @override
+  String get advanceAmount => 'Advance amount';
+
+  @override
+  String get tonTitle => 'Ton';
+
+  @override
+  String get kgTitle => 'Kg';
 }

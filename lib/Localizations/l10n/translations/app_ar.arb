@@ -451,5 +451,8 @@
   "shippingRent": "کرایه مبلغ",
   "loadingSize": "بارگیری مقدار",
   "unloadingSize": "تخلیه مقدار",
-  "unit": "واحد"
+  "unit": "واحد",
+  "advanceAmount": "مبلغ پیش پرداخت",
+  "tonTitle": "تن",
+  "kgTitle": "کیلوگرام"
 }
