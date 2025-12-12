@@ -1,4 +1,6 @@
-
+// To parse this JSON data, do
+//
+//     final glatModel = glatModelFromMap(jsonString);
 
 import 'dart:convert';
 
@@ -16,7 +18,7 @@ class GlatModel {
   final String? vclBodyType;
   final String? vclPlateNo;
   final String? vclRegNo;
-  final String? vclExpireDate;
+  final DateTime? vclExpireDate;
   final int? vclOdoMeter;
   final String? vclPurchaseAmount;
   final String? driver;
@@ -51,7 +53,7 @@ class GlatModel {
     String? vclBodyType,
     String? vclPlateNo,
     String? vclRegNo,
-    String? vclExpireDate,
+    DateTime? vclExpireDate,
     int? vclOdoMeter,
     String? vclPurchaseAmount,
     String? driver,
@@ -86,7 +88,7 @@ class GlatModel {
     vclBodyType: json["vclBodyType"],
     vclPlateNo: json["vclPlateNo"],
     vclRegNo: json["vclRegNo"],
-    vclExpireDate: json["vclExpireDate"],
+    vclExpireDate: json["vclExpireDate"] == null ? null : DateTime.parse(json["vclExpireDate"]),
     vclOdoMeter: json["vclOdoMeter"],
     vclPurchaseAmount: json["vclPurchaseAmount"],
     driver: json["driver"],
@@ -104,7 +106,7 @@ class GlatModel {
     "vclBodyType": vclBodyType,
     "vclPlateNo": vclPlateNo,
     "vclRegNo": vclRegNo,
-    "vclExpireDate": vclExpireDate,
+    "vclExpireDate": "${vclExpireDate!.year.toString().padLeft(4, '0')}-${vclExpireDate!.month.toString().padLeft(2, '0')}-${vclExpireDate!.day.toString().padLeft(2, '0')}",
     "vclOdoMeter": vclOdoMeter,
     "vclPurchaseAmount": vclPurchaseAmount,
     "driver": driver,
@@ -122,6 +124,8 @@ class Transaction {
   final String? maker;
   final String? checker;
   final String? narration;
+  final int? trnStatus;
+  final String? trnStateText;
 
   Transaction({
     this.trnReference,
@@ -132,6 +136,8 @@ class Transaction {
     this.maker,
     this.checker,
     this.narration,
+    this.trnStatus,
+    this.trnStateText,
   });
 
   Transaction copyWith({
@@ -143,6 +149,8 @@ class Transaction {
     String? maker,
     String? checker,
     String? narration,
+    int? trnStatus,
+    String? trnStateText,
   }) =>
       Transaction(
         trnReference: trnReference ?? this.trnReference,
@@ -153,6 +161,8 @@ class Transaction {
         maker: maker ?? this.maker,
         checker: checker ?? this.checker,
         narration: narration ?? this.narration,
+        trnStatus: trnStatus ?? this.trnStatus,
+        trnStateText: trnStateText ?? this.trnStateText,
       );
 
   factory Transaction.fromMap(Map<String, dynamic> json) => Transaction(
@@ -164,6 +174,8 @@ class Transaction {
     maker: json["maker"],
     checker: json["checker"],
     narration: json["narration"],
+    trnStatus: json["trnStatus"],
+    trnStateText: json["trnStateText"],
   );
 
   Map<String, dynamic> toMap() => {
@@ -175,5 +187,7 @@ class Transaction {
     "maker": maker,
     "checker": checker,
     "narration": narration,
+    "trnStatus": trnStatus,
+    "trnStateText": trnStateText,
   };
 }

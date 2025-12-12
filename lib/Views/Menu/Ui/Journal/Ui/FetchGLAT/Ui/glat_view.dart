@@ -98,8 +98,8 @@ class _DesktopState extends State<_Desktop> {
               final transaction = glat.transaction;
 
               // Check if any buttons should be shown
-              final bool showAuthorizeButton = glat.vclStatus == 0 && login.usrName != transaction?.maker;
-              final bool showDeleteButton = glat.vclStatus == 0 && transaction?.maker == login.usrName;
+              final bool showAuthorizeButton = glat.transaction?.trnStatus == 0 && login.usrName != transaction?.maker;
+              final bool showDeleteButton = glat.transaction?.trnStatus == 0 && transaction?.maker == login.usrName;
               final bool showAnyButton = showAuthorizeButton || showDeleteButton;
 
               return Column(
@@ -139,7 +139,7 @@ class _DesktopState extends State<_Desktop> {
                             ),
                           ),
                         ),
-                        _buildStatusBadge(context, glat.vclStatus == 1 ? tr.authorizedTitle : tr.pendingTitle),
+                        _buildStatusBadge(context, glat.transaction?.trnStateText??""),
                       ],
                     ),
                   ),
@@ -219,7 +219,7 @@ class _DesktopState extends State<_Desktop> {
                                   _buildDetailRow(tr.checker, transaction?.checker ?? "-",
                                       isHighlighted: transaction?.checker == null),
                                   _buildDetailRow(tr.status,
-                                      glat.vclStatus == 1 ? tr.authorizedTitle : tr.pendingTitle,
+                                      glat.transaction?.trnStatus == 1 ? tr.authorizedTitle : tr.pendingTitle,
                                       isHighlighted: glat.vclStatus == 1),
                                 ],
                               ),
@@ -380,7 +380,7 @@ class _DesktopState extends State<_Desktop> {
           ),
           SizedBox(width: 6),
           Text(
-            status,
+            status == "Pending"? AppLocalizations.of(context)!.authorizedTitle : AppLocalizations.of(context)!.pendingTitle,
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,

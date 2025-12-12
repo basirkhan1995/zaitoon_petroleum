@@ -4,6 +4,7 @@ import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
+import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchGLAT/Ui/glat_view.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
@@ -55,10 +56,11 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   bool _isLoadingDialog = false;
   String? _loadingRef;
-
+  String? myLocale;
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      myLocale = context.read<LocalizationBloc>().state.languageCode;
       context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('all'));
     });
     super.initState();
@@ -360,16 +362,13 @@ class _DesktopState extends State<_Desktop> {
                                                   Container(
                                                     width: 16,
                                                     height: 16,
-                                                    margin: const EdgeInsets.only(
-                                                        right: 8),
+                                                    margin: EdgeInsets.only(right: myLocale == "en"? 8 : 0, left: myLocale == "en"? 0 : 8),
                                                     child:
                                                     const CircularProgressIndicator(
                                                       strokeWidth: 2,
                                                     ),
                                                   ),
-                                                Text(txn.trnEntryDate
-                                                    ?.toFullDateTime ??
-                                                    ""),
+                                                Text(txn.trnEntryDate?.toFullDateTime ?? ""),
                                               ],
                                             ),
                                           ),
