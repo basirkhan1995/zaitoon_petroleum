@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final shippingModel = shippingModelFromMap(jsonString);
-
 import 'dart:convert';
 
 List<ShippingModel> shippingModelFromMap(String str) => List<ShippingModel>.from(json.decode(str).map((x) => ShippingModel.fromMap(x)));
@@ -112,11 +108,6 @@ class ShippingModel {
     shpRent: json["shpRent"],
     total: json["total"],
     shpStatus: json["shpStatus"],
-    productId: json["shpProduct"],
-    customerId: json["shpCustomer"],
-    vehicleId: json["shpVehicle"],
-    remark: json["remark"],
-    usrName: json["usrName"]
   );
 
   Map<String, dynamic> toMap() => {

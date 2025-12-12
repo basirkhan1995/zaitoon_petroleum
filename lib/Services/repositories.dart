@@ -907,7 +907,6 @@ class Repositories {
           queryParams: queryParams
       );
 
-
       // Handle error messages from server
       if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
         throw Exception(response.data['msg']);
@@ -925,7 +924,6 @@ class Repositories {
             .map((json) => ShippingModel.fromMap(json))
             .toList();
       }
-
       return [];
     } on DioException catch (e) {
       throw '${e.message}';

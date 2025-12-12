@@ -448,7 +448,7 @@ class _DesktopState extends State<_Desktop> {
       shpFrom: shpFrom.text,
       shpRent: shippingRent.text.cleanAmount,
       productId: int.tryParse(productId.text),
-      vehicleId: int.tryParse(vehicleCtrl.text),
+      vehicleId: vehicleId,
       customerId: customerId,
       shpArriveDate: DateTime.tryParse(shpToGregorian),
       shpMovingDate: DateTime.tryParse(shpFromGregorian),

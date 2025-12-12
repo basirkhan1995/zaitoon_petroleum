@@ -134,12 +134,17 @@ class _DesktopState extends State<_Desktop> {
                     );
                   }
                   if(state is ShippingLoadedState){
+                    if(state.shipping.isEmpty){
+                      return NoDataWidget(
+                        message: tr.noDataFound,
+                      );
+                    }
                     return ListView.builder(
                         itemCount: state.shipping.length,
                         itemBuilder: (context,index){
                           final shp = state.shipping[index];
                           return ListTile(
-                            title: Text(shp.shpId.toString()),
+                            title: Text(shp.remark??""),
                           );
                     });
                   }
