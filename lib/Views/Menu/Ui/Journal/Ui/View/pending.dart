@@ -15,6 +15,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/txn_re
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
+import '../../../../../../Localizations/Bloc/localizations_bloc.dart';
 
 class PendingTransactionsView extends StatelessWidget {
   const PendingTransactionsView({super.key});
@@ -59,10 +60,11 @@ class _DesktopState extends State<_Desktop> {
   bool _selectionMode = false;
   bool _isLoadingDialog = false;
   String? _loadingRef;
-
+  String? myLocale;
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      myLocale = context.read<LocalizationBloc>().state.languageCode;
       context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('pending'));
     });
     super.initState();
@@ -440,7 +442,7 @@ class _DesktopState extends State<_Desktop> {
                                             Container(
                                               width: 16,
                                               height: 16,
-                                              margin: const EdgeInsets.only(right: 8),
+                                              margin: EdgeInsets.only(right: myLocale == "en"? 8 : 0, left: myLocale == "en"? 0 : 8),
                                               child: const CircularProgressIndicator(
                                                 strokeWidth: 2,
                                               ),

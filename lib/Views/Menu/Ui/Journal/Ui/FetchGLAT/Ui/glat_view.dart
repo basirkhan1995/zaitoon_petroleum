@@ -139,11 +139,16 @@ class _DesktopState extends State<_Desktop> {
                             ),
                           ),
                         ),
-                        _buildStatusBadge(context, glat.transaction?.trnStateText??""),
+                        Row(
+                          spacing: 8,
+                          children: [
+                            _buildStatusBadge(context, glat.transaction?.trnStateText??""),
+                            IconButton(onPressed: (){}, icon: Icon(Icons.print))
+                          ],
+                        ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 5),
 
                   // Two Column Layout for Vehicle and Transaction Details
                   Padding(
@@ -218,9 +223,7 @@ class _DesktopState extends State<_Desktop> {
                                   _buildDetailRow(tr.maker, transaction?.maker ?? "-"),
                                   _buildDetailRow(tr.checker, transaction?.checker ?? "-",
                                       isHighlighted: transaction?.checker == null),
-                                  _buildDetailRow(tr.status,
-                                      glat.transaction?.trnStatus == 1 ? tr.authorizedTitle : tr.pendingTitle,
-                                      isHighlighted: glat.vclStatus == 1),
+                                  _buildDetailRow(tr.status, glat.transaction?.trnStatus == 1 ? tr.authorizedTitle : tr.pendingTitle, isHighlighted: glat.transaction?.trnStatus == 1),
                                 ],
                               ),
                             ),
@@ -359,7 +362,7 @@ class _DesktopState extends State<_Desktop> {
   Widget _buildStatusBadge(BuildContext context, String status) {
     final color = Theme.of(context).colorScheme;
     final isAuthorized = status.toLowerCase().contains("authorize");
-
+    final tr = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -380,7 +383,7 @@ class _DesktopState extends State<_Desktop> {
           ),
           SizedBox(width: 6),
           Text(
-            status == "Pending"? AppLocalizations.of(context)!.authorizedTitle : AppLocalizations.of(context)!.pendingTitle,
+            status == "Pending"? tr.pendingTitle : tr.authorizedTitle,
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,

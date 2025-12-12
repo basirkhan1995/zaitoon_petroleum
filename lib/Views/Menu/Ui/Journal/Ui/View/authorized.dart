@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../Features/Other/utils.dart';
 import '../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
+import '../../../../../../Localizations/Bloc/localizations_bloc.dart';
 import '../FetchATAT/bloc/fetch_atat_bloc.dart';
 import '../FetchATAT/fetch_atat.dart';
 import '../TxnByReference/bloc/txn_reference_bloc.dart';
@@ -57,10 +58,12 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   bool _isLoadingDialog = false;
   String? _loadingRef;
+  String? myLocale;
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      myLocale = context.read<LocalizationBloc>().state.languageCode;
       context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('auth'));
     });
     super.initState();
@@ -353,8 +356,7 @@ class _DesktopState extends State<_Desktop> {
                                               Container(
                                                 width: 16,
                                                 height: 16,
-                                                margin:
-                                                const EdgeInsets.only(right: 8),
+                                                margin: EdgeInsets.only(right: myLocale == "en"? 8 : 0, left: myLocale == "en"? 0 : 8),
                                                 child:
                                                 const CircularProgressIndicator(
                                                   strokeWidth: 2,
