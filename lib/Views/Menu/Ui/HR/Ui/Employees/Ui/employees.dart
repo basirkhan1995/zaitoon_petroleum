@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/Ui/add_edit_employee.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/bloc/employee_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../../../Features/Other/image_helper.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
 import '../features/emp_card.dart';
@@ -145,8 +148,31 @@ class _DesktopState extends State<_Desktop> {
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {
                       final emp = filteredList[index];
-                      return EmployeeCard(
-                        emp: emp,
+                      return InfoCard(
+                        image: ImageHelper.stakeholderProfile(
+                          imageName: emp.empImage,
+                          size: 46,
+                        ),
+                        title: "${emp.perName} ${emp.perLastName}",
+                        subtitle: emp.empPosition,
+                        status: InfoStatus(
+                          label: emp.empStatus == 1 ? "Active" : "Inactive",
+                          color: emp.empStatus == 1 ? Colors.green : Colors.red,
+                        ),
+                        infoItems: [
+                          InfoItem(
+                            icon: Icons.apartment,
+                            text: emp.empDepartment ?? "-",
+                          ),
+                          InfoItem(
+                            icon: Icons.payments,
+                            text: emp.empSalary?.toAmount() ?? "-",
+                          ),
+                          InfoItem(
+                            icon: Icons.date_range,
+                            text: emp.empHireDate?.toFormattedDate() ?? "",
+                          ),
+                        ],
                         onTap: () {
                           showDialog(
                             context: context,

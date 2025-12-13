@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:flutter/services.dart';
 import 'package:zaitoon_petroleum/Features/Other/shortcut.dart';
@@ -76,6 +78,7 @@ class _DesktopState extends State<_Desktop> {
     return GlobalShortcuts(
       shortcuts: shortcuts,
       child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: Column(
           children: [
             Padding(
@@ -142,8 +145,52 @@ class _DesktopState extends State<_Desktop> {
                         itemCount: state.shipping.length,
                         itemBuilder: (context,index){
                           final shp = state.shipping[index];
-                          return ListTile(
-                            title: Text(shp.proName??""),
+                          return InkWell(
+                            onTap: (){},
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 8,horizontal: 5),
+                                decoration: BoxDecoration(
+                                  color: index.isEven? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent
+                                ),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                        width: 30,
+                                        child: Text(shp.shpId.toString())),
+
+                                    Expanded(
+                                        child: Text(shp.vehicle??"")),
+                                    SizedBox(
+                                        width: 130,
+                                        child: Text(shp.proName??"")),
+
+                                    SizedBox(
+                                        width: 130,
+                                        child: Text(shp.customer??"")),
+                                    SizedBox(
+                                        width: 90,
+                                        child: Text(shp.shpMovingDate.toFormattedDate())),
+                                    SizedBox(
+                                        width: 60,
+                                        child: Text(shp.shpUnit??"")),
+                                    SizedBox(
+                                        width: 70,
+                                        child: Text(shp.shpLoadSize??"")),
+                                    SizedBox(
+                                        width: 70,
+                                        child: Text(shp.shpUnloadSize??"")),
+                                    SizedBox(
+                                        width: 110,
+                                        child: Text(shp.total?.toAmount()??"")),
+                                    SizedBox(
+                                        width: 60,
+                                        child: Text(shp.shpStatus == 1? tr.active : tr.inactive)),
+                                  ],
+                                ),
+                              ),
+                            ),
                           );
                     });
                   }

@@ -1,53 +1,130 @@
 import 'package:flutter/material.dart';
-import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
-import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
-import '../../../../../../../Features/Other/image_helper.dart';
-import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
-import '../model/emp_model.dart';
 
-class EmployeeCard extends StatefulWidget {
-  final EmployeeModel emp;
-  final VoidCallback onTap;
+/// A generic card widget for displaying information with avatar, title, subtitle,
+/// status badge, and multiple info rows.
+class InfoCard extends StatefulWidget {
+  /// The image to display (can be network URL, asset path, or widget)
+  final Widget? image;
 
-  const EmployeeCard({
+  /// The main title text
+  final String title;
+
+  /// The subtitle text
+  final String? subtitle;
+
+  /// List of info items to display (icon + text)
+  final List<InfoItem> infoItems;
+
+  /// Status badge configuration
+  final InfoStatus? status;
+
+  /// Callback when card is tapped
+  final VoidCallback? onTap;
+
+  /// Whether the card is hoverable
+  final bool hoverable;
+
+  /// Minimum height of the card
+  final double minHeight;
+
+  /// Maximum height of the card
+  final double maxHeight;
+
+  /// Border radius
+  final double borderRadius;
+
+  /// Padding inside the card
+  final EdgeInsets padding;
+
+  /// Whether to show divider between header and info items
+  final bool showDivider;
+
+  /// Custom builder for the image section
+  final Widget Function(BuildContext context)? imageBuilder;
+
+  /// Custom builder for the title section
+  final Widget Function(BuildContext context)? titleBuilder;
+
+  /// Custom builder for the info items section
+  final Widget Function(BuildContext context)? infoItemsBuilder;
+
+  const InfoCard({
     super.key,
-    required this.emp,
-    required this.onTap,
+    this.image,
+    required this.title,
+    this.subtitle,
+    this.infoItems = const [],
+    this.status,
+    this.onTap,
+    this.hoverable = true,
+    this.minHeight = 180,
+    this.maxHeight = 280,
+    this.borderRadius = 8,
+    this.padding = const EdgeInsets.all(12),
+    this.showDivider = true,
+    this.imageBuilder,
+    this.titleBuilder,
+    this.infoItemsBuilder,
   });
 
   @override
-  State<EmployeeCard> createState() => _EmployeeCardState();
+  State<InfoCard> createState() => _InfoCardState();
 }
 
-class _EmployeeCardState extends State<EmployeeCard> {
+/// Represents an info item (icon + text)
+class InfoItem {
+  final IconData icon;
+  final String text;
+  final Color? iconColor;
+  final TextStyle? textStyle;
+
+  const InfoItem({
+    required this.icon,
+    required this.text,
+    this.iconColor,
+    this.textStyle,
+  });
+}
+
+/// Represents a status badge
+class InfoStatus {
+  final String label;
+  final Color color;
+  final Color? backgroundColor;
+  final TextStyle? labelStyle;
+
+  const InfoStatus({
+    required this.label,
+    required this.color,
+    this.backgroundColor,
+    this.labelStyle,
+  });
+}
+
+class _InfoCardState extends State<InfoCard> {
   bool _isHovering = false;
 
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
-    final locale = AppLocalizations.of(context)!;
-
-    final emp = widget.emp;
-    final fullName = "${emp.perName} ${emp.perLastName}";
-    final isActive = emp.empStatus == 1;
 
     return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _isHovering = true),
-      onExit: (_) => setState(() => _isHovering = false),
+      cursor: widget.onTap != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
+      onEnter: widget.hoverable ? (_) => setState(() => _isHovering = true) : null,
+      onExit: widget.hoverable ? (_) => setState(() => _isHovering = false) : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOut,
         decoration: BoxDecoration(
           color: color.surface,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(widget.borderRadius),
           border: Border.all(
-            color: _isHovering
+            color: _isHovering && widget.hoverable
                 ? color.primary.withValues(alpha: .5)
                 : color.outline.withValues(alpha: .25),
             width: 1.2,
           ),
-          boxShadow: _isHovering
+          boxShadow: _isHovering && widget.hoverable
               ? [
             BoxShadow(
               color: color.primary.withValues(alpha: .15),
@@ -58,78 +135,32 @@ class _EmployeeCardState extends State<EmployeeCard> {
               : [],
         ),
         child: InkWell(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(widget.borderRadius),
           onTap: widget.onTap,
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: 180, // Minimum height
-              maxHeight: 280, // Maximum height before scrolling
+              minHeight: widget.minHeight,
+              maxHeight: widget.maxHeight,
             ),
-            child: SingleChildScrollView( // Add scrolling for long content
-              physics: const NeverScrollableScrollPhysics(), // Disable if not needed
+            child: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: widget.padding,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /// Avatar + Status
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              ImageHelper.stakeholderProfile(
-                                imageName: emp.empImage,
-                                size: 46,
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                fullName,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall
-                                    ?.copyWith(fontWeight: FontWeight.bold),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                emp.empPosition ?? "",
-                                style: Theme.of(context).textTheme.bodySmall,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                        _StatusBadge(
-                          label: isActive ? locale.active : locale.inactive,
-                          color: isActive ? Colors.green : Colors.red,
-                        ),
-                      ],
-                    ),
+                    // Header section (Image + Title + Status)
+                    _buildHeaderSection(context),
 
-                    const SizedBox(height: 10),
-                    const Divider(height: 1),
-                    const SizedBox(height: 8),
+                    if (widget.showDivider && widget.infoItems.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      const Divider(height: 1),
+                      const SizedBox(height: 8),
+                    ],
 
-                    // Info rows
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _InfoRow(icon: Icons.apartment, text: emp.empDepartment ?? "-"),
-                        const SizedBox(height: 6),
-                        _InfoRow(icon: Icons.payments, text: emp.empSalary?.toAmount() ?? "-"),
-                        const SizedBox(height: 6),
-                        _InfoRow(
-                          icon: Icons.date_range,
-                          text: emp.empHireDate?.toFormattedDate() ?? "",
-                        ),
-                      ],
-                    ),
+                    // Info items section
+                    if (widget.infoItems.isNotEmpty) _buildInfoItemsSection(context),
                   ],
                 ),
               ),
@@ -139,56 +170,113 @@ class _EmployeeCardState extends State<EmployeeCard> {
       ),
     );
   }
-}
 
-class _StatusBadge extends StatelessWidget {
-  final String label;
-  final Color color;
+  Widget _buildHeaderSection(BuildContext context) {
+    // Use custom builder if provided
+    if (widget.imageBuilder != null) {
+      return widget.imageBuilder!(context);
+    }
 
-  const _StatusBadge({
-    required this.label,
-    required this.color,
-  });
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Image
+              if (widget.image != null) ...[
+                widget.image!,
+                const SizedBox(height: 10),
+              ],
 
-  @override
-  Widget build(BuildContext context) {
+              // Title - use custom builder or default
+              if (widget.titleBuilder != null)
+                widget.titleBuilder!(context)
+              else
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      widget.title,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (widget.subtitle != null && widget.subtitle!.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        widget.subtitle!,
+                        style: Theme.of(context).textTheme.bodySmall,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ],
+                ),
+            ],
+          ),
+        ),
+
+        // Status badge
+        if (widget.status != null) _buildStatusBadge(widget.status!),
+      ],
+    );
+  }
+
+  Widget _buildInfoItemsSection(BuildContext context) {
+    // Use custom builder if provided
+    if (widget.infoItemsBuilder != null) {
+      return widget.infoItemsBuilder!(context);
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (int i = 0; i < widget.infoItems.length; i++) ...[
+          if (i > 0) const SizedBox(height: 6),
+          _buildInfoRow(widget.infoItems[i], context),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildStatusBadge(InfoStatus status) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: .12),
+        color: status.backgroundColor ?? status.color.withValues(alpha: .12),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          color: color,
-          fontWeight: FontWeight.w600,
-        ),
+        status.label,
+        style: status.labelStyle ??
+            TextStyle(
+              fontSize: 11,
+              color: status.color,
+              fontWeight: FontWeight.w600,
+            ),
       ),
     );
   }
-}
 
-class _InfoRow extends StatelessWidget {
-  final IconData icon;
-  final String text;
-
-  const _InfoRow({
-    required this.icon,
-    required this.text,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildInfoRow(InfoItem item, BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: Theme.of(context).hintColor),
+        Icon(
+          item.icon,
+          size: 14,
+          color: item.iconColor ?? Theme.of(context).hintColor,
+        ),
         const SizedBox(width: 6),
         Expanded(
           child: Text(
-            text,
-            style: Theme.of(context).textTheme.bodySmall,
+            item.text,
+            style: item.textStyle ?? Theme.of(context).textTheme.bodySmall,
             overflow: TextOverflow.ellipsis,
           ),
         ),

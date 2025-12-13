@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
@@ -10,6 +9,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/bloc/driver
 import '../../../../../../../Features/Other/image_helper.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
+import '../../../HR/Ui/Employees/features/emp_card.dart';
 
 class DriversView extends StatelessWidget {
   const DriversView({super.key});
@@ -66,8 +66,6 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.secondary);
 
     return Scaffold(
       backgroundColor: color.surface,
@@ -101,28 +99,8 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 1),
-            child: Row(
-              children: [
-                Expanded(
-                    child: Text(locale.employeeName,style: titleStyle)),
-                SizedBox(
-                    width: 170,
-                    child: Text(locale.mobile1,style: titleStyle)),
-                SizedBox(
-                    width: 250,
-                    child: Text(locale.vehicle,style: titleStyle)),
-                SizedBox(
-                    width: 100,
-                    child: Text(locale.hireDate,style: titleStyle)),
-                SizedBox(
-                    width: 80,
-                    child: Text(locale.status,style: titleStyle)),
-              ],
-            ),
-          ),
-          Divider(endIndent: 15,indent: 15,color: color.primary),
+
+          Divider(endIndent: 15,indent: 15,color: color.outline.withValues(alpha: .3)),
           Expanded(
             child: BlocConsumer<DriverBloc, DriverState>(
               listener: (context, state) {
@@ -153,49 +131,73 @@ class _DesktopState extends State<_Desktop> {
                       message: locale.noDataFound,
                     );
                   }
-                  return ListView.builder(
-                      itemCount: filteredList.length,
-                      itemBuilder: (context,index){
-                        final emp = filteredList[index];
-                        final fullName = "${emp.perfullName}";
-                        return InkWell(
-                          hoverColor: color.primary.withValues(alpha: .05),
-                          highlightColor: color.primary.withValues(alpha: .05),
-                          onTap: (){},
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: index.isOdd? color.primary.withValues(alpha: .05) : Colors.transparent
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 5),
-                              child: Row(
-                                children: [
-                                  ImageHelper.stakeholderProfile(
-                                    imageName: emp.perPhoto,
-                                    size: 40,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Expanded(
-                                      child: Text(fullName,style: titleStyle?.copyWith(fontWeight: FontWeight.bold))),
-                                  SizedBox(
-                                      width: 170,
-                                      child: Text(emp.perPhone??"")),
-                                  SizedBox(
-                                      width: 250,
-                                      child: Text(emp.vehicle??"")),
-                                  SizedBox(
-                                      width: 100,
-                                      child: Text(emp.empHireDate.toFormattedDate())),
-                                  SizedBox(
-                                      width: 80,
-                                      child: Text(emp.empStatus == 1? locale.active : locale.inactive)),
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(15),
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 300,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 1.25, // Slightly taller for more info
+                    ),
+                    itemCount: filteredList.length,
+                    itemBuilder: (context, index) {
+                      final driver = filteredList[index];
 
-                                ],
-                              ),
+                      return InfoCard(
+                        // Image
+                        image: ImageHelper.stakeholderProfile(
+                          imageName: driver.perPhoto,
+                          size: 46,
+                        ),
+
+                        // Title and Subtitle
+                        title: driver.perfullName ?? "Unnamed Driver",
+                        subtitle: driver.vehicle ?? "No Vehicle",
+
+                        // Status
+                        status: InfoStatus(
+                          label: driver.empStatus == 1 ? locale.active : locale.inactive,
+                          color: driver.empStatus == 1 ? Colors.green : Colors.red,
+                        ),
+
+                        // Information items
+                        infoItems: [
+                          if (driver.perPhone != null && driver.perPhone!.isNotEmpty)
+                            InfoItem(
+                              icon: Icons.phone,
+                              text: driver.perPhone!,
                             ),
+
+                          if (driver.address != null && driver.address!.isNotEmpty)
+                            InfoItem(
+                              icon: Icons.location_on,
+                              text: driver.address??"",
+                              iconColor: Colors.blue,
+                            ),
+
+                          InfoItem(
+                            icon: Icons.directions_car,
+                            text: driver.vehicle ?? "No Vehicle",
+                            iconColor: Colors.deepPurple,
                           ),
-                        );
-                      });
+                        ],
+
+                        // On tap action
+                        // onTap: () {
+                        //   // Open driver details dialog or navigate
+                        //   showDialog(
+                        //     context: context,
+                        //     builder: (_) => AddEditEmployeeView(),
+                        //   );
+                        // },
+
+                        // Optional customization
+                        minHeight: 200,
+                        maxHeight: 300,
+                      );
+                    },
+                  );
                 }
                 return const SizedBox();
               },
