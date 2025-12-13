@@ -52,6 +52,7 @@ class _Desktop extends StatelessWidget {
           margin: EdgeInsets.zero,
           padding: EdgeInsets.zero,
           width: MediaQuery.sizeOf(context).width * .4,
+
           child: ShippingTabView()
         ),
       ),
