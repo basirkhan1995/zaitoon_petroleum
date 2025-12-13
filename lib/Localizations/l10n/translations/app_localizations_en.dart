@@ -1346,16 +1346,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loadingDate => 'Loading date';
 
   @override
-  String get unloadingDate => 'Unloading date';
+  String get unloadingDate => 'ULD Date';
 
   @override
   String get shippingRent => 'Shipping rent';
 
   @override
-  String get loadingSize => 'Loading size';
+  String get loadingSize => 'LD Weight';
 
   @override
-  String get unloadingSize => 'Unloading size';
+  String get unloadingSize => 'ULD Weight';
 
   @override
   String get unit => 'Unit';

@@ -1344,7 +1344,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get shippingRent => 'مبلغ کرایه';
 
   @override
-  String get loadingSize => 'مقدار بارگیری';
+  String get loadingSize => 'وزن بارگیری';
 
   @override
   String get unloadingSize => 'مقدار تخلیه';

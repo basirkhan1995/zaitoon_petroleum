@@ -11,6 +11,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/shipping_s
 import '../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import 'bloc/shipping_bloc.dart';
 
 class ShippingView extends StatelessWidget {
@@ -53,7 +54,7 @@ class _Desktop extends StatefulWidget {
 
 class _DesktopState extends State<_Desktop> {
   final TextEditingController searchController = TextEditingController();
-
+  String? _baseCurrency;
   @override
   void dispose() {
     searchController.dispose();
@@ -65,11 +66,18 @@ class _DesktopState extends State<_Desktop> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ShippingBloc>().add(LoadShippingEvent());
     });
+
+    // Set default base currency from company profile
+    final comState = context.read<CompanyProfileBloc>().state;
+    if (comState is CompanyProfileLoadedState) {
+      _baseCurrency = comState.company.comLocalCcy;
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+
     final tr = AppLocalizations.of(context)!;
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): onAdd,
@@ -118,6 +126,43 @@ class _DesktopState extends State<_Desktop> {
                 ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: Row(
+                children: [
+                SizedBox(
+                    width: 30,
+                    child: Text(tr.id)),
+                  Expanded(
+                      child: Text(tr.vehicles)),
+                  SizedBox(
+                      width: 130,
+                      child: Text(tr.products)),
+                  SizedBox(
+                      width: 130,
+                      child: Text(tr.customer)),
+                  SizedBox(
+                      width: 90,
+                      child: Text(tr.date)),
+                  SizedBox(
+                      width: 110,
+                      child: Text(tr.shippingRent)),
+                  SizedBox(
+                      width: 110,
+                      child: Text(tr.loadingSize)),
+                  SizedBox(
+                      width: 110,
+                      child: Text(tr.unloadingSize)),
+                  SizedBox(
+                      width: 120,
+                      child: Text(tr.totalTitle)),
+                  SizedBox(
+                      width: 60,
+                      child: Text(tr.status)),
+                ],
+              ),
+            ),
+            Divider(endIndent: 15,indent: 15,),
             Expanded(
               child: BlocConsumer<ShippingBloc, ShippingState>(
                 listener: (context, state) {
@@ -147,48 +192,45 @@ class _DesktopState extends State<_Desktop> {
                           final shp = state.shipping[index];
                           return InkWell(
                             onTap: (){},
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(vertical: 8,horizontal: 5),
-                                decoration: BoxDecoration(
-                                  color: index.isEven? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent
-                                ),
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                        width: 30,
-                                        child: Text(shp.shpId.toString())),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 10,horizontal: 15),
+                              decoration: BoxDecoration(
+                                color: index.isEven? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent
+                              ),
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                      width: 30,
+                                      child: Text(shp.shpId.toString())),
 
-                                    Expanded(
-                                        child: Text(shp.vehicle??"")),
-                                    SizedBox(
-                                        width: 130,
-                                        child: Text(shp.proName??"")),
+                                  Expanded(
+                                      child: Text(shp.vehicle??"")),
+                                  SizedBox(
+                                      width: 130,
+                                      child: Text(shp.proName??"")),
 
-                                    SizedBox(
-                                        width: 130,
-                                        child: Text(shp.customer??"")),
-                                    SizedBox(
-                                        width: 90,
-                                        child: Text(shp.shpMovingDate.toFormattedDate())),
-                                    SizedBox(
-                                        width: 60,
-                                        child: Text(shp.shpUnit??"")),
-                                    SizedBox(
-                                        width: 70,
-                                        child: Text(shp.shpLoadSize??"")),
-                                    SizedBox(
-                                        width: 70,
-                                        child: Text(shp.shpUnloadSize??"")),
-                                    SizedBox(
-                                        width: 110,
-                                        child: Text(shp.total?.toAmount()??"")),
-                                    SizedBox(
-                                        width: 60,
-                                        child: Text(shp.shpStatus == 1? tr.active : tr.inactive)),
-                                  ],
-                                ),
+                                  SizedBox(
+                                      width: 130,
+                                      child: Text(shp.customer??"")),
+                                  SizedBox(
+                                      width: 90,
+                                      child: Text(shp.shpMovingDate.toFormattedDate())),
+                                  SizedBox(
+                                      width: 110,
+                                      child: Text("${shp.shpRent?.toAmount()} $_baseCurrency")),
+                                  SizedBox(
+                                      width: 110,
+                                      child: Text("${shp.shpLoadSize} ${shp.shpUnit}")),
+                                  SizedBox(
+                                      width: 110,
+                                      child: Text("${shp.shpUnloadSize} ${shp.shpUnit}")),
+                                  SizedBox(
+                                      width: 120,
+                                      child: Text("${shp.total?.toAmount()} $_baseCurrency")),
+                                  SizedBox(
+                                      width: 60,
+                                      child: Text(shp.shpStatus == 1? tr.active : tr.inactive)),
+                                ],
                               ),
                             ),
                           );

@@ -2707,7 +2707,7 @@ abstract class AppLocalizations {
   /// No description provided for @unloadingDate.
   ///
   /// In en, this message translates to:
-  /// **'Unloading date'**
+  /// **'ULD Date'**
   String get unloadingDate;
 
   /// No description provided for @shippingRent.
@@ -2719,13 +2719,13 @@ abstract class AppLocalizations {
   /// No description provided for @loadingSize.
   ///
   /// In en, this message translates to:
-  /// **'Loading size'**
+  /// **'LD Weight'**
   String get loadingSize;
 
   /// No description provided for @unloadingSize.
   ///
   /// In en, this message translates to:
-  /// **'Unloading size'**
+  /// **'ULD Weight'**
   String get unloadingSize;
 
   /// No description provided for @unit.

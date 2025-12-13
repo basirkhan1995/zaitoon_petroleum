@@ -124,7 +124,6 @@ class _DesktopState extends State<_Desktop> {
             key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              spacing: 10,
               children: [
                 if(widget.model == null)
                 GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
@@ -185,7 +184,8 @@ class _DesktopState extends State<_Desktop> {
                   noResultsText: locale.noDataFound,
                   showClearButton: true,
                 ),
-
+                if(widget.model == null)
+                SizedBox(height: 10),
                 if(widget.model == null)
                 GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
                   showAllOnFocus: true,
@@ -308,7 +308,9 @@ class _DesktopState extends State<_Desktop> {
                     ),
                   ],
                 ),
+                SizedBox(height: 10),
                 ZTextFieldEntitled(controller: empTaxInfo, title: locale.taxInfo),
+                SizedBox(height: 10),
                 ZTextFieldEntitled(
                   controller: empEmail,
                   validator: (value) =>

@@ -123,15 +123,15 @@ class _DesktopState extends State<_Desktop> {
                     GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
                       showAllOnFocus: true,
                       controller: customerCtrl,
-                      title: tr.individuals,
-                      hintText: tr.individuals,
+                      title: tr.customer,
+                      hintText: tr.customer,
                       isRequired: true,
                       bloc: context.read<IndividualsBloc>(),
                       fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
                       searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
                       validator: (value) {
                         if (value.isEmpty) {
-                          return tr.required(tr.individuals);
+                          return tr.required(tr.customer);
                         }
                         return null;
                       },
@@ -321,7 +321,7 @@ class _DesktopState extends State<_Desktop> {
                       ],
                     ),
                     Row(
-                      spacing: 8,
+                      spacing: 5,
                       children: [
                         Expanded(
                           child: ZTextFieldEntitled(
@@ -407,7 +407,7 @@ class _DesktopState extends State<_Desktop> {
                       ],
                     ),
                     Row(
-                      spacing: 8,
+                      spacing: 5,
                       children: [
                         ZOutlineButton(
                             width: 120,

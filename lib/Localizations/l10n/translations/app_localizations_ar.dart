@@ -1346,7 +1346,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get shippingRent => 'کرایه مبلغ';
 
   @override
-  String get loadingSize => 'بارگیری مقدار';
+  String get loadingSize => 'بارگیری وزن';
 
   @override
   String get unloadingSize => 'تخلیه مقدار';

@@ -449,7 +449,7 @@
   "loadingDate": "تاریخ بارگیری",
   "unloadingDate": "تاریخ تخلیه",
   "shippingRent": "مبلغ کرایه",
-  "loadingSize": "مقدار بارگیری",
+  "loadingSize": "وزن بارگیری",
   "unloadingSize": "مقدار تخلیه",
   "unit": "واحد",
   "advanceAmount": "مبلغ پیش پرداخت",
