@@ -20,6 +20,11 @@ class TransportView extends StatelessWidget {
           builder: (context, state) {
             final tabs = <ZTabItem<TransportTabName>>[
               ZTabItem(
+                value: TransportTabName.shipping,
+                label: AppLocalizations.of(context)!.shipping,
+                screen: const ShippingView(),
+              ),
+              ZTabItem(
                 value: TransportTabName.drivers,
                 label: AppLocalizations.of(context)!.drivers,
                 screen: const DriversView(),
@@ -28,11 +33,6 @@ class TransportView extends StatelessWidget {
                 value: TransportTabName.vehicles,
                 label: AppLocalizations.of(context)!.vehicles,
                 screen: const VehiclesView(),
-              ),
-              ZTabItem(
-                value: TransportTabName.shipping,
-                label: AppLocalizations.of(context)!.shipping,
-                screen: const ShippingView(),
               ),
             ];
 

@@ -2755,7 +2755,7 @@ abstract class AppLocalizations {
   /// No description provided for @completedTitle.
   ///
   /// In en, this message translates to:
-  /// **'Completed'**
+  /// **'Delivered'**
   String get completedTitle;
 }
 

@@ -1329,10 +1329,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get pendingTitle => 'تایید ناشده';
 
   @override
-  String get shpFrom => 'موقعیت بارگیری';
+  String get shpFrom => 'مکان بارگیری';
 
   @override
-  String get shpTo => 'موقعیت تخلیه';
+  String get shpTo => 'مکان تخلیه';
 
   @override
   String get loadingDate => 'تاریخ بارگیری';
@@ -1362,5 +1362,5 @@ class AppLocalizationsFa extends AppLocalizations {
   String get kgTitle => 'کیلوگرام';
 
   @override
-  String get completedTitle => 'تکمیل شده';
+  String get completedTitle => 'تحویل شده';
 }

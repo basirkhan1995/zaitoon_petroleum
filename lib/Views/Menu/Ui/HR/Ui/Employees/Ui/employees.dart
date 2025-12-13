@@ -105,8 +105,6 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
           ),
-          SizedBox(height: 5),
-          Divider(endIndent: 15,indent: 15,height: 1, color: color.outline.withValues(alpha: .2)),
           Expanded(
             child: BlocConsumer<EmployeeBloc, EmployeeState>(
               listener: (context, state) {
@@ -143,7 +141,7 @@ class _DesktopState extends State<_Desktop> {
                       maxCrossAxisExtent: 200,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      childAspectRatio: 0.85,
+                      childAspectRatio: 0.95,
                     ),
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {

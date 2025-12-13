@@ -95,12 +95,9 @@ class _DesktopState extends State<_Desktop> {
                     icon: Icons.refresh,
                     onPressed: onRefresh,
                     label: Text(locale.refresh)),
-
               ],
             ),
           ),
-
-          Divider(endIndent: 15,indent: 15,color: color.outline.withValues(alpha: .3)),
           Expanded(
             child: BlocConsumer<DriverBloc, DriverState>(
               listener: (context, state) {
@@ -138,7 +135,7 @@ class _DesktopState extends State<_Desktop> {
                       maxCrossAxisExtent: 200,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      childAspectRatio: 0.85,
+                      childAspectRatio: 0.95,
                     ),
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {

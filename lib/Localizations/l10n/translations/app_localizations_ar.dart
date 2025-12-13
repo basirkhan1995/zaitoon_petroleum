@@ -1331,10 +1331,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pendingTitle => 'تایید ناشده';
 
   @override
-  String get shpFrom => 'بارگیری موقعیت';
+  String get shpFrom => 'بارگیری مکان';
 
   @override
-  String get shpTo => 'تخلیه موقعیت';
+  String get shpTo => 'تخلیه مکان';
 
   @override
   String get loadingDate => 'بارگیری نیته';
@@ -1364,5 +1364,5 @@ class AppLocalizationsAr extends AppLocalizations {
   String get kgTitle => 'کیلوگرام';
 
   @override
-  String get completedTitle => 'تکمیل شده';
+  String get completedTitle => 'تحویل شده';
 }

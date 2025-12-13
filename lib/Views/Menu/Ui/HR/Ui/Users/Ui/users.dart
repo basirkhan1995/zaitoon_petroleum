@@ -8,6 +8,7 @@ import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../../Auth/bloc/auth_bloc.dart';
+import '../../Employees/features/emp_card.dart';
 import '../../UserDetail/user_details.dart';
 import '../bloc/users_bloc.dart';
 
@@ -112,33 +113,6 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 5),
-            child: Row(
-              children: [
-                Expanded(child: Text(locale.userInformation,style: Theme.of(context).textTheme.titleMedium)),
-                SizedBox(
-                    width: 150,
-                    child: Text(locale.userOwner,style: Theme.of(context).textTheme.titleMedium)),
-                SizedBox(
-                    width: 100,
-                    child: Text(locale.branch,style: Theme.of(context).textTheme.titleMedium)),
-                SizedBox(
-                    width: 100,
-                    child: Text(locale.usrRole,style: Theme.of(context).textTheme.titleMedium)),
-                SizedBox(
-                    width: 100,
-                    child: Text(locale.status,style: Theme.of(context).textTheme.titleMedium)),
-
-              ],
-            ),
-          ),
-
-          SizedBox(height: 3),
-          Divider(
-            indent: 15,endIndent: 15,color: Theme.of(context).colorScheme.primary,height: 2,
-          ),
-          SizedBox(height: 10),
           Expanded(
             child: BlocConsumer<UsersBloc, UsersState>(
               listener: (context,state){
@@ -172,87 +146,71 @@ class _DesktopState extends State<_Desktop> {
                       message: locale.noDataFound,
                     );
                   }
-                  return ListView.builder(
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(15),
                     itemCount: filteredList.length,
+                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 200,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.85,
+                    ),
                     itemBuilder: (context, index) {
                       final usr = filteredList[index];
 
-                      // ---------- UI ----------
-                      return InkWell(
-                        highlightColor: color.primary.withValues(alpha: .06),
-                        hoverColor: color.primary.withValues(alpha: .06),
-                        onTap: () {
-                          showDialog(context: context, builder: (context){
-                            return UserDetailsView(usr: usr);
-                          });
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: index.isOdd
-                                ? color.primary.withValues(alpha: .06)
-                                : Colors.transparent,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 3),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // ---------- Avatar ----------
-                                CircleAvatar(
-                                  backgroundColor: color.primary.withValues(alpha: .7),
-                                  radius: 23,
-                                  child: Text(
-                                    usr.usrId.toString(),
-                                    style: TextStyle(
-                                      color: color.surface,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                ),
-
-                                const SizedBox(width: 10),
-
-                                // ---------- Name + Details ----------
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      // Full Name
-                                      Text(
-                                        usr.usrName??"",
-                                        style: Theme.of(context).textTheme.titleMedium,
-                                      ),
-
-                                      const SizedBox(height: 0),
-
-                                        Padding(
-                                          padding: const EdgeInsets.only(right: 6.0),
-                                          child: Text(usr.usrEmail??""),
-                                        ),
-
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                    width: 150,
-                                    child: Text(usr.usrFullName??"")),
-                                SizedBox(
-                                    width: 100,
-                                    child: Text(usr.usrBranch.toString())),
-                                SizedBox(
-                                    width: 100,
-                                    child: Text(usr.usrRole??"")),
-                                SizedBox(
-                                    width: 100,
-                                    child: Text(usr.usrStatus == 1? locale.active : locale.blocked)),
-
-                              ],
+                      return InfoCard(
+                        // ---------- Avatar ----------
+                        image: CircleAvatar(
+                          radius: 23,
+                          backgroundColor:
+                          Theme.of(context).colorScheme.primary.withValues(alpha: .7),
+                          child: Text(
+                            usr.usrId.toString(),
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.surface,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
+
+                        // ---------- Title ----------
+                        title: usr.usrName ?? "-",
+                        subtitle: usr.usrEmail,
+
+                        // ---------- Status ----------
+                        status: InfoStatus(
+                          label: usr.usrStatus == 1 ? locale.active : locale.blocked,
+                          color: usr.usrStatus == 1 ? Colors.green : Colors.red,
+                        ),
+
+                        // ---------- Info Rows ----------
+                        infoItems: [
+                          InfoItem(
+                            icon: Icons.person,
+                            text: usr.usrFullName ?? "-",
+                          ),
+                          InfoItem(
+                            icon: Icons.apartment,
+                            text: usr.usrBranch?.toString() ?? "-",
+                          ),
+                          InfoItem(
+                            icon: Icons.security,
+                            text: usr.usrRole ?? "-",
+                          ),
+                        ],
+
+                        // ---------- Action ----------
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => UserDetailsView(usr: usr),
+                          );
+                        },
                       );
                     },
                   );
+
 
                 }
                 return const SizedBox();

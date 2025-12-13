@@ -1370,5 +1370,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get kgTitle => 'Kg';
 
   @override
-  String get completedTitle => 'Completed';
+  String get completedTitle => 'Delivered';
 }

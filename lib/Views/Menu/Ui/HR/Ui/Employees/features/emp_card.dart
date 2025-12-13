@@ -113,14 +113,14 @@ class _InfoCardState extends State<InfoCard> {
       onEnter: widget.hoverable ? (_) => setState(() => _isHovering = true) : null,
       onExit: widget.hoverable ? (_) => setState(() => _isHovering = false) : null,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
+        duration: const Duration(milliseconds: 400),
         curve: Curves.easeOut,
         decoration: BoxDecoration(
           color: color.surface,
           borderRadius: BorderRadius.circular(widget.borderRadius),
           border: Border.all(
             color: _isHovering && widget.hoverable
-                ? color.primary.withValues(alpha: .5)
+                ? color.primary.withValues(alpha: .3)
                 : color.outline.withValues(alpha: .25),
             width: 1.2,
           ),
@@ -128,7 +128,7 @@ class _InfoCardState extends State<InfoCard> {
               ? [
             BoxShadow(
               color: color.primary.withValues(alpha: .15),
-              blurRadius: 5,
+              blurRadius: 3,
               offset: const Offset(0, 2),
             )
           ]

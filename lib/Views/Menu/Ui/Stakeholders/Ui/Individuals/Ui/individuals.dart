@@ -177,7 +177,7 @@ class _DesktopState extends State<_Desktop> {
                           maxCrossAxisExtent: 200, // control card width
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
-                          childAspectRatio: 0.85,
+                          childAspectRatio: 0.95,
                         ),
                         itemCount: filteredList.length,
                         itemBuilder: (context, index) {

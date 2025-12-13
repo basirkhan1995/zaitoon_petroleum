@@ -444,8 +444,8 @@
   "vehicleDetails": "معلومات موتر",
   "authorizedTitle": "تایید شوی",
   "pendingTitle": "تایید ناشده",
-  "shpFrom": "بارگیری موقعیت",
-  "shpTo": "تخلیه موقعیت",
+  "shpFrom": "بارگیری مکان",
+  "shpTo": "تخلیه مکان",
   "loadingDate": "بارگیری نیته",
   "unloadingDate": "تخلیه نیته",
   "shippingRent": "مبلغ کرایه",
@@ -455,5 +455,5 @@
   "advanceAmount": "مبلغ پیش پرداخت",
   "tonTitle": "تن",
   "kgTitle": "کیلوگرام",
-  "completedTitle": "تکمیل شده"
+  "completedTitle": "تحویل شده"
 }
