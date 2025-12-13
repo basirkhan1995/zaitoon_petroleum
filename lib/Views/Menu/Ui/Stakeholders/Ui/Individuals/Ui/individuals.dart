@@ -93,16 +93,19 @@ class _DesktopState extends State<_Desktop> {
             children: [
               SizedBox(height: 8),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 0),
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
                 child: Row(
                   spacing: 8,
                   children: [
                     Expanded(
-                      flex:5,
-                      child: Text(locale.individuals,style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontSize: 20,
-
-                      )),
+                      flex: 5,
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(locale.individuals,style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontSize: 20,
+                        )),
+                        subtitle: Text(AppLocalizations.of(context)!.stakeholderManage,style: TextStyle(fontSize: 12),),
+                      ),
                     ),
                     Expanded(
                       flex: 2,
@@ -171,10 +174,10 @@ class _DesktopState extends State<_Desktop> {
                      return GridView.builder(
                         padding: const EdgeInsets.all(15),
                         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 240, // control card width
+                          maxCrossAxisExtent: 200, // control card width
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
-                          childAspectRatio: 1,
+                          childAspectRatio: 0.85,
                         ),
                         itemCount: filteredList.length,
                         itemBuilder: (context, index) {
