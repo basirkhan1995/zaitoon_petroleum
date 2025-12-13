@@ -135,10 +135,10 @@ class _DesktopState extends State<_Desktop> {
                     padding: const EdgeInsets.all(15),
                     physics: NeverScrollableScrollPhysics(),
                     gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 300,
+                      maxCrossAxisExtent: 200,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      childAspectRatio: 1.25, // Slightly taller for more info
+                      childAspectRatio: 0.85,
                     ),
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {

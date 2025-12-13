@@ -1349,7 +1349,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unloadingDate => 'ULD Date';
 
   @override
-  String get shippingRent => 'Shipping rent';
+  String get shippingRent => 'L/U Cost';
 
   @override
   String get loadingSize => 'LD Weight';
@@ -1368,4 +1368,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get kgTitle => 'Kg';
+
+  @override
+  String get completedTitle => 'Completed';
 }

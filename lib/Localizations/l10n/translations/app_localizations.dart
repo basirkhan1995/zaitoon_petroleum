@@ -2713,7 +2713,7 @@ abstract class AppLocalizations {
   /// No description provided for @shippingRent.
   ///
   /// In en, this message translates to:
-  /// **'Shipping rent'**
+  /// **'L/U Cost'**
   String get shippingRent;
 
   /// No description provided for @loadingSize.
@@ -2751,6 +2751,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Kg'**
   String get kgTitle;
+
+  /// No description provided for @completedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completedTitle;
 }
 
 class _AppLocalizationsDelegate

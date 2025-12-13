@@ -454,5 +454,6 @@
   "unit": "واحد",
   "advanceAmount": "مبلغ پیش پرداخت",
   "tonTitle": "تن",
-  "kgTitle": "کیلوگرام"
+  "kgTitle": "کیلوگرام",
+  "completedTitle": "تکمیل شده"
 }

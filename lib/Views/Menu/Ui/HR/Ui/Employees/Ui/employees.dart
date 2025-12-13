@@ -140,10 +140,10 @@ class _DesktopState extends State<_Desktop> {
                   return GridView.builder(
                     padding: const EdgeInsets.all(15),
                     gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 300,
+                      maxCrossAxisExtent: 200,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      childAspectRatio: 1.25,
+                      childAspectRatio: 0.85,
                     ),
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {
@@ -156,7 +156,7 @@ class _DesktopState extends State<_Desktop> {
                         title: "${emp.perName} ${emp.perLastName}",
                         subtitle: emp.empPosition,
                         status: InfoStatus(
-                          label: emp.empStatus == 1 ? "Active" : "Inactive",
+                          label: emp.empStatus == 1 ? tr.active : tr.inactive,
                           color: emp.empStatus == 1 ? Colors.green : Colors.red,
                         ),
                         infoItems: [

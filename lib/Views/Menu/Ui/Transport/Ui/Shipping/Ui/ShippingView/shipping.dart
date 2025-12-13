@@ -77,7 +77,7 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
-
+    TextStyle? titleStyle = Theme.of(context).textTheme.titleSmall;
     final tr = AppLocalizations.of(context)!;
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): onAdd,
@@ -126,39 +126,38 @@ class _DesktopState extends State<_Desktop> {
                 ],
               ),
             ),
+            SizedBox(height: 5),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Row(
                 children: [
-                SizedBox(
-                    width: 30,
-                    child: Text(tr.id)),
-                  Expanded(
-                      child: Text(tr.vehicles)),
-                  SizedBox(
-                      width: 130,
-                      child: Text(tr.products)),
-                  SizedBox(
-                      width: 130,
-                      child: Text(tr.customer)),
                   SizedBox(
                       width: 90,
-                      child: Text(tr.date)),
+                      child: Text(tr.date,style: titleStyle)),
+                  Expanded(
+                      child: Text(tr.vehicles,style: titleStyle)),
+                  SizedBox(
+                      width: 130,
+                      child: Text(tr.products,style: titleStyle)),
+                  SizedBox(
+                      width: 130,
+                      child: Text(tr.customer,style: titleStyle)),
+
                   SizedBox(
                       width: 110,
-                      child: Text(tr.shippingRent)),
+                      child: Text(tr.shippingRent,style: titleStyle)),
                   SizedBox(
                       width: 110,
-                      child: Text(tr.loadingSize)),
+                      child: Text(tr.loadingSize,style: titleStyle)),
                   SizedBox(
                       width: 110,
-                      child: Text(tr.unloadingSize)),
+                      child: Text(tr.unloadingSize,style: titleStyle)),
                   SizedBox(
                       width: 120,
-                      child: Text(tr.totalTitle)),
+                      child: Text(tr.totalTitle,style: titleStyle)),
                   SizedBox(
-                      width: 60,
-                      child: Text(tr.status)),
+                      width: 70,
+                      child: Text(tr.status,style: titleStyle)),
                 ],
               ),
             ),
@@ -200,8 +199,8 @@ class _DesktopState extends State<_Desktop> {
                               child: Row(
                                 children: [
                                   SizedBox(
-                                      width: 30,
-                                      child: Text(shp.shpId.toString())),
+                                      width: 90,
+                                      child: Text(shp.shpMovingDate.toFormattedDate())),
 
                                   Expanded(
                                       child: Text(shp.vehicle??"")),
@@ -212,9 +211,6 @@ class _DesktopState extends State<_Desktop> {
                                   SizedBox(
                                       width: 130,
                                       child: Text(shp.customer??"")),
-                                  SizedBox(
-                                      width: 90,
-                                      child: Text(shp.shpMovingDate.toFormattedDate())),
                                   SizedBox(
                                       width: 110,
                                       child: Text("${shp.shpRent?.toAmount()} $_baseCurrency")),
@@ -228,8 +224,8 @@ class _DesktopState extends State<_Desktop> {
                                       width: 120,
                                       child: Text("${shp.total?.toAmount()} $_baseCurrency")),
                                   SizedBox(
-                                      width: 60,
-                                      child: Text(shp.shpStatus == 1? tr.active : tr.inactive)),
+                                      width: 70,
+                                      child: Text(shp.shpStatus == 1? tr.completedTitle : tr.pendingTitle)),
                                 ],
                               ),
                             ),

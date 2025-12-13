@@ -11,6 +11,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/a
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../../HR/Ui/Employees/features/emp_card.dart';
 import '../../IndividualDetails/Ui/Profile/ind_profile.dart';
 import 'package:flutter/services.dart';
 
@@ -92,22 +93,19 @@ class _DesktopState extends State<_Desktop> {
             children: [
               SizedBox(height: 8),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                child: Row(
-                  children: [
-                    Text(locale.individuals,style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontSize: 20,
-
-                    ))
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 0),
                 child: Row(
                   spacing: 8,
                   children: [
                     Expanded(
+                      flex:5,
+                      child: Text(locale.individuals,style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontSize: 20,
+
+                      )),
+                    ),
+                    Expanded(
+                      flex: 2,
                       child: ZSearchField(
                         icon: FontAwesomeIcons.magnifyingGlass,
                         controller: searchController,
@@ -136,32 +134,7 @@ class _DesktopState extends State<_Desktop> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 5),
-                child: Row(
-                  children: [
-                    Expanded(child: Text(locale.stakeholderInfo,style: Theme.of(context).textTheme.titleSmall)),
-                    SizedBox(
-                        width: 250,
-                        child: Text(locale.email,style: Theme.of(context).textTheme.titleSmall)),
-                    SizedBox(
-                        width: 110,
-                        child: Text(locale.mobile1,style: Theme.of(context).textTheme.titleSmall)),
-                    SizedBox(
-                        width: 75,
-                        child: Text(locale.gender,style: Theme.of(context).textTheme.titleSmall)),
-                    SizedBox(
-                        width: 85,
-                        child: Text(locale.nationalId,style: Theme.of(context).textTheme.titleSmall)),
 
-                  ],
-                ),
-              ),
-              SizedBox(height: 5),
-              Divider(
-                indent: 15,endIndent: 15,color: Theme.of(context).colorScheme.outline.withValues(alpha: .3),height: 0,
-              ),
-              SizedBox(height: 10),
               Expanded(
                 child: BlocConsumer<IndividualsBloc, IndividualsState>(
                   listener: (context,state){
@@ -195,7 +168,14 @@ class _DesktopState extends State<_Desktop> {
                           message: locale.noDataFound,
                         );
                       }
-                      return ListView.builder(
+                     return GridView.builder(
+                        padding: const EdgeInsets.all(15),
+                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 240, // control card width
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 1,
+                        ),
                         itemCount: filteredList.length,
                         itemBuilder: (context, index) {
                           final stk = filteredList[index];
@@ -204,65 +184,48 @@ class _DesktopState extends State<_Desktop> {
                           final lastName  = stk.perLastName?.trim() ?? "";
                           final fullName  = "$firstName $lastName".trim();
 
-                          return InkWell(
-                            highlightColor: color.primary.withValues(alpha: .06),
-                            hoverColor: color.primary.withValues(alpha: .06),
-                            onTap: () {
-                              Utils.goto(context, IndividualProfileView(ind: stk));
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: index.isOdd
-                                    ? color.primary.withValues(alpha: .04)
-                                    : Colors.transparent,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 5),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-
-                                          Row(
-                                            spacing: 8,
-                                            children: [
-                                              ImageHelper.stakeholderProfile(
-                                                  imageName: state.individuals[index].imageProfile,size: 45),
-                                              Text(
-                                                fullName.isNotEmpty ? fullName : "—",
-                                                style: Theme.of(context).textTheme.titleMedium,
-                                              ),
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                    ),
-
-                                    SizedBox(
-                                        width: 250,
-                                        child: Text(stk.perEmail??"")),
-                                    SizedBox(
-                                        width: 110,
-                                        child: Text(stk.perPhone??"")),
-                                    SizedBox(
-                                        width: 75,
-                                        child: Text(Utils.genderType(gender: stk.perGender??"",locale: locale))),
-                                    SizedBox(
-                                        width: 85,
-                                        child: Text(stk.perEnidNo??"")),
-
-                                  ],
-                                ),
-                              ),
+                          return InfoCard(
+                            image: ImageHelper.stakeholderProfile(
+                              imageName: stk.imageProfile,
+                              size: 46,
                             ),
+
+                            title: fullName.isNotEmpty ? fullName : "—",
+                            subtitle: stk.perEmail,
+
+                            status: InfoStatus(
+                              label: Utils.genderType(
+                                gender: stk.perGender ?? "",
+                                locale: locale,
+                              ),
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+
+                            infoItems: [
+                              InfoItem(
+                                icon: Icons.email,
+                                text: stk.perEmail ?? "-",
+                              ),
+                              InfoItem(
+                                icon: Icons.phone,
+                                text: stk.perPhone ?? "-",
+                              ),
+                              InfoItem(
+                                icon: Icons.badge,
+                                text: stk.perEnidNo ?? "-",
+                              ),
+                            ],
+
+                            onTap: () {
+                              Utils.goto(
+                                context,
+                                IndividualProfileView(ind: stk),
+                              );
+                            },
                           );
                         },
                       );
+
 
                     }
                     return const SizedBox();

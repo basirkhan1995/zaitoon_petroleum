@@ -1343,7 +1343,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get unloadingDate => 'تخلیه نیته';
 
   @override
-  String get shippingRent => 'کرایه مبلغ';
+  String get shippingRent => 'مبلغ کرایه';
 
   @override
   String get loadingSize => 'بارگیری وزن';
@@ -1362,4 +1362,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get kgTitle => 'کیلوگرام';
+
+  @override
+  String get completedTitle => 'تکمیل شده';
 }

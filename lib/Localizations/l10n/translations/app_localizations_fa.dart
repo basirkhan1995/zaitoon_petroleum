@@ -1360,4 +1360,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get kgTitle => 'کیلوگرام';
+
+  @override
+  String get completedTitle => 'تکمیل شده';
 }
