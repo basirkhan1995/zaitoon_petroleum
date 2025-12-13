@@ -48,7 +48,6 @@ class _Desktop extends StatelessWidget {
         titlePadding: EdgeInsets.zero,
         actionsPadding: EdgeInsets.zero,
         backgroundColor: Theme.of(context).colorScheme.surface,
-
         content: Container(
           margin: EdgeInsets.zero,
           padding: EdgeInsets.zero,
