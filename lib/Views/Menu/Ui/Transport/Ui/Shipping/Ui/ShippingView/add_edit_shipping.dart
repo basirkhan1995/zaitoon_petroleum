@@ -4,20 +4,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/bloc/shipping_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/feature/unit_drop.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/model/shipping_model.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/bloc/vehicle_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/model/vehicle_model.dart';
-import '../../../../../../../Features/Date/zdate_picker.dart';
-import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
-import '../../../../../../../Features/Other/thousand_separator.dart';
-import '../../../../Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
-import '../../../../Stakeholders/Ui/Individuals/individual_model.dart';
+import '../../../../../../../../Features/Date/zdate_picker.dart';
+import '../../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
+import '../../../../../../../../Features/Other/thousand_separator.dart';
+import '../../../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
+import '../../../../../Stakeholders/Ui/Individuals/individual_model.dart';
+import 'bloc/shipping_bloc.dart';
+import 'model/shipping_model.dart';
 
 class AddEditShippingView extends StatelessWidget {
   final ShippingModel? model;
@@ -100,19 +101,18 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
+    usrName = login.usrName??"";
     return BlocBuilder<ShippingBloc, ShippingState>(
       builder: (context, state) {
-        return ZFormDialog(
-          onAction: onSubmit,
-          title: tr.newKeyword,
-          actionLabel: state is ShippingLoadingState
-              ? SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(color: color.surface),
-                )
-              : Text(tr.create),
-          child: SingleChildScrollView(
+        return Scaffold(
+          backgroundColor: color.surface,
+          body: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Form(
@@ -120,21 +120,15 @@ class _DesktopState extends State<_Desktop> {
                 child: Column(
                   spacing: 13,
                   children: [
-                    GenericTextfield<
-                      IndividualsModel,
-                      IndividualsBloc,
-                      IndividualsState
-                    >(
+                    GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
                       showAllOnFocus: true,
                       controller: customerCtrl,
                       title: tr.individuals,
                       hintText: tr.individuals,
                       isRequired: true,
                       bloc: context.read<IndividualsBloc>(),
-                      fetchAllFunction: (bloc) =>
-                          bloc.add(LoadIndividualsEvent()),
-                      searchFunction: (bloc, query) =>
-                          bloc.add(LoadIndividualsEvent()),
+                      fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
+                      searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
                       validator: (value) {
                         if (value.isEmpty) {
                           return tr.required(tr.individuals);
@@ -162,9 +156,9 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ),
                       itemToString: (acc) =>
-                          "${acc.perName} ${acc.perLastName}",
+                      "${acc.perName} ${acc.perLastName}",
                       stateToLoading: (state) =>
-                          state is IndividualLoadingState,
+                      state is IndividualLoadingState,
                       loadingBuilder: (context) => const SizedBox(
                         width: 16,
                         height: 16,
@@ -221,7 +215,7 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ),
                       itemToString: (veh) =>
-                          "${veh.vclModel} | ${veh.vclPlateNo}",
+                      "${veh.vclModel} | ${veh.vclPlateNo}",
                       stateToLoading: (state) => state is VehicleLoadingState,
                       loadingBuilder: (context) => const SizedBox(
                         width: 16,
@@ -242,7 +236,6 @@ class _DesktopState extends State<_Desktop> {
                       noResultsText: tr.noDataFound,
                       showClearButton: true,
                     ),
-
                     Row(
                       spacing: 8,
                       children: [
@@ -264,7 +257,6 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ],
                     ),
-
                     Row(
                       spacing: 5,
                       children: [
@@ -294,7 +286,6 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ],
                     ),
-
                     Row(
                       spacing: 8,
                       children: [
@@ -329,7 +320,6 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ],
                     ),
-
                     Row(
                       spacing: 8,
                       children: [
@@ -404,19 +394,35 @@ class _DesktopState extends State<_Desktop> {
                       ],
                     ),
                     ZTextFieldEntitled(controller: remark, title: tr.remark),
-
                     Row(
                       children: [
                         state is ShippingErrorState
                             ? Text(
-                                state.error,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
-                              )
+                          state.error,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        )
                             : SizedBox(),
                       ],
                     ),
+                    Row(
+                      spacing: 8,
+                      children: [
+                        ZOutlineButton(
+                            width: 120,
+                            label: Text(tr.cancel)),
+                        ZOutlineButton(
+                          isActive: true,
+                          onPressed: ()=> onSubmit(),
+                          width: 120,
+                          label: state is ShippingLoadingState ? SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(color: color.surface),
+                        ) : Text(tr.create),)
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -452,7 +458,7 @@ class _DesktopState extends State<_Desktop> {
       customerId: customerId,
       shpArriveDate: DateTime.tryParse(shpToGregorian),
       shpMovingDate: DateTime.tryParse(shpFromGregorian),
-      usrName: usrName ?? "victus",
+      usrName: usrName ?? "",
       advanceAmount: advanceAmount.text.cleanAmount,
       remark: remark.text,
       shpId: widget.model?.shpId,

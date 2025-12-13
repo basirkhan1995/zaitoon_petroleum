@@ -182,7 +182,6 @@ class _DesktopState extends State<_Desktop> {
                         highlightColor: color.primary.withValues(alpha: .06),
                         hoverColor: color.primary.withValues(alpha: .06),
                         onTap: () {
-                       // Utils.goto(context, PermissionsView(user: usr));
                           showDialog(context: context, builder: (context){
                             return UserDetailsView(usr: usr);
                           });

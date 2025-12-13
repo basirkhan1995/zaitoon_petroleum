@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
-import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/Ui/add_edit_employee.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/bloc/employee_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../../../../Features/Other/image_helper.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
+import '../features/emp_card.dart';
 
 class EmployeesView extends StatelessWidget {
   const EmployeesView({super.key});
@@ -59,10 +57,8 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.secondary);
 
     return Scaffold(
       backgroundColor: color.surface,
@@ -78,7 +74,7 @@ class _DesktopState extends State<_Desktop> {
                   child: ZSearchField(
                     icon: FontAwesomeIcons.magnifyingGlass,
                     controller: searchController,
-                    hint: locale.search,
+                    hint: tr.search,
                     onChanged: (e) {
                       setState(() {
 
@@ -91,7 +87,7 @@ class _DesktopState extends State<_Desktop> {
                     width: 120,
                     icon: Icons.refresh,
                     onPressed: onRefresh,
-                    label: Text(locale.refresh)),
+                    label: Text(tr.refresh)),
                 ZOutlineButton(
                     width: 120,
                     icon: Icons.add,
@@ -102,35 +98,12 @@ class _DesktopState extends State<_Desktop> {
                         return AddEditEmployeeView();
                       });
                     },
-                    label: Text(locale.newKeyword)),
+                    label: Text(tr.newKeyword)),
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 1),
-            child: Row(
-              children: [
-                Expanded(
-                    child: Text(locale.employeeName,style: titleStyle)),
-                SizedBox(
-                    width: 170,
-                    child: Text(locale.jobTitle,style: titleStyle)),
-                SizedBox(
-                    width: 180,
-                    child: Text(locale.department,style: titleStyle)),
-                SizedBox(
-                    width: 100,
-                    child: Text(locale.salary,style: titleStyle)),
-                SizedBox(
-                    width: 100,
-                    child: Text(locale.startDate,style: titleStyle)),
-                SizedBox(
-                    width: 80,
-                    child: Text(locale.status,style: titleStyle)),
-              ],
-            ),
-          ),
-          Divider(endIndent: 15,indent: 15,color: color.primary),
+          SizedBox(height: 5),
+          Divider(endIndent: 15,indent: 15,height: 1, color: color.outline.withValues(alpha: .2)),
           Expanded(
             child: BlocConsumer<EmployeeBloc, EmployeeState>(
               listener: (context, state) {
@@ -144,7 +117,7 @@ class _DesktopState extends State<_Desktop> {
                 }
                 if(state is EmployeeErrorState){
                   return NoDataWidget(
-                    title: locale.accessDenied,
+                    title: tr.accessDenied,
                     message: state.message,
                   );
                 }
@@ -157,60 +130,32 @@ class _DesktopState extends State<_Desktop> {
 
                   if(filteredList.isEmpty){
                     return NoDataWidget(
-                      title: locale.noData,
-                      message: locale.noDataFound,
+                      title: tr.noData,
+                      message: tr.noDataFound,
                     );
                   }
-                  return ListView.builder(
-                      itemCount: filteredList.length,
-                      itemBuilder: (context,index){
-                        final emp = filteredList[index];
-                        final fullName = "${emp.perName} ${emp.perLastName}";
-                        return InkWell(
-                          hoverColor: color.primary.withValues(alpha: .05),
-                          highlightColor: color.primary.withValues(alpha: .05),
-                          onTap: (){
-                            showDialog(context: context, builder: (context){
-                              return AddEditEmployeeView(model: emp);
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: index.isOdd? color.primary.withValues(alpha: .05) : Colors.transparent
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 5),
-                              child: Row(
-                                children: [
-                                  ImageHelper.stakeholderProfile(
-                                    imageName: emp.empImage,
-                                    size: 40,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Expanded(
-                                      child: Text(fullName,style: titleStyle?.copyWith(fontWeight: FontWeight.bold))),
-                                  SizedBox(
-                                      width: 170,
-                                      child: Text(emp.empPosition??"")),
-                                  SizedBox(
-                                      width: 180,
-                                      child: Text(emp.empDepartment??"")),
-                                  SizedBox(
-                                      width: 100,
-                                      child: Text(emp.empSalary?.toAmount()??"")),
-                                  SizedBox(
-                                      width: 100,
-                                      child: Text(emp.empHireDate.toFormattedDate())),
-                                  SizedBox(
-                                      width: 80,
-                                      child: Text(emp.empStatus == 1? locale.active : locale.inactive)),
-
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                  });
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(15),
+                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 300,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 1.25,
+                    ),
+                    itemCount: filteredList.length,
+                    itemBuilder: (context, index) {
+                      final emp = filteredList[index];
+                      return EmployeeCard(
+                        emp: emp,
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => AddEditEmployeeView(model: emp),
+                          );
+                        },
+                      );
+                    },
+                  );
                 }
                 return const SizedBox();
               },

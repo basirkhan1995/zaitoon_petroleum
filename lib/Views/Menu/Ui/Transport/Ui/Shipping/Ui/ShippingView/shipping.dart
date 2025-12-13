@@ -5,11 +5,11 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:flutter/services.dart';
 import 'package:zaitoon_petroleum/Features/Other/shortcut.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/add_edit_shipping.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/bloc/shipping_bloc.dart';
-import '../../../../../../../Features/Widgets/outline_button.dart';
-import '../../../../../../../Features/Widgets/search_field.dart';
-import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/shipping_screen.dart';
+import '../../../../../../../../Features/Widgets/outline_button.dart';
+import '../../../../../../../../Features/Widgets/search_field.dart';
+import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import 'bloc/shipping_bloc.dart';
 
 class ShippingView extends StatelessWidget {
   const ShippingView({super.key});
@@ -68,7 +68,6 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): onAdd,
@@ -162,7 +161,7 @@ class _DesktopState extends State<_Desktop> {
     showDialog(
       context: context,
       builder: (context) {
-        return AddEditShippingView();
+        return ShippingScreen();
       },
     );
   }

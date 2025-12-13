@@ -37,7 +37,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/bloc/stk_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/bloc/stock_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/bloc/driver_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/bloc/shipping_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/bloc/shipping_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/bloc/vehicle_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/bloc/transport_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/bloc/menu_bloc.dart';
@@ -54,6 +54,7 @@ import 'Views/Menu/Ui/Settings/Ui/Company/Branches/bloc/branch_bloc.dart';
 import 'Views/Menu/Ui/Settings/Ui/General/bloc/general_tab_bloc.dart';
 import 'Views/Menu/Ui/Settings/bloc/settings_tab_bloc.dart';
 import 'Views/Menu/Ui/Settings/features/Visibility/bloc/settings_visible_bloc.dart';
+import 'Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/bloc/shipping_bloc.dart';
 import 'Views/PasswordSettings/bloc/password_bloc.dart';
 
 void main() async {
@@ -87,7 +88,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => UserDetailsTabBloc()),
         BlocProvider(create: (context) => TransportTabBloc()),
         BlocProvider(create: (context) => BranchTabBloc()),
-
+        BlocProvider(create: (context) => ShippingTabBloc()),
+        
         ///Services ............................................................
         BlocProvider(create: (context) => PrintLanguageCubit()),
         BlocProvider(create: (context) => PageOrientationCubit()),
