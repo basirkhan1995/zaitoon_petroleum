@@ -223,6 +223,7 @@ class _DesktopState extends State<_Desktop> {
                                   SizedBox(
                                       width: 120,
                                       child: Text("${shp.total?.toAmount()} $_baseCurrency")),
+
                                   SizedBox(
                                       width: 70,
                                       child: Text(shp.shpStatus == 1? tr.completedTitle : tr.pendingTitle)),
