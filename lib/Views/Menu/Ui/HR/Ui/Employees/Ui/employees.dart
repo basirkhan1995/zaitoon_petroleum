@@ -141,7 +141,7 @@ class _DesktopState extends State<_Desktop> {
                       maxCrossAxisExtent: 200,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      childAspectRatio: 0.95,
+                      childAspectRatio: 0.85,
                     ),
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {

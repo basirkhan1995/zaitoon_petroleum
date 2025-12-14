@@ -455,5 +455,8 @@
   "advanceAmount": "مبلغ پیش پرداخت",
   "tonTitle": "تن",
   "kgTitle": "کیلوگرام",
-  "completedTitle": "تحویل شده"
+  "completedTitle": "تحویل شده",
+  "next": "بعدی",
+  "previous": "برگشت",
+  "finish": "انجام"
 }

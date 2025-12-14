@@ -120,64 +120,6 @@ class _DesktopState extends State<_Desktop> {
                 child: Column(
                   spacing: 13,
                   children: [
-                    GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
-                      showAllOnFocus: true,
-                      controller: customerCtrl,
-                      title: tr.customer,
-                      hintText: tr.customer,
-                      isRequired: true,
-                      bloc: context.read<IndividualsBloc>(),
-                      fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
-                      searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return tr.required(tr.customer);
-                        }
-                        return null;
-                      },
-                      itemBuilder: (context, account) => Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 5,
-                          vertical: 5,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "${account.perName} ${account.perLastName}",
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      itemToString: (acc) =>
-                      "${acc.perName} ${acc.perLastName}",
-                      stateToLoading: (state) =>
-                      state is IndividualLoadingState,
-                      loadingBuilder: (context) => const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                      stateToItems: (state) {
-                        if (state is IndividualLoadedState) {
-                          return state.individuals;
-                        }
-                        return [];
-                      },
-                      onSelected: (value) {
-                        setState(() {
-                          customerId = value.perId!;
-                        });
-                      },
-                      noResultsText: tr.noDataFound,
-                      showClearButton: true,
-                    ),
                     GenericTextfield<VehicleModel, VehicleBloc, VehicleState>(
                       showAllOnFocus: true,
                       controller: vehicleCtrl,
@@ -236,6 +178,65 @@ class _DesktopState extends State<_Desktop> {
                       noResultsText: tr.noDataFound,
                       showClearButton: true,
                     ),
+                    GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
+                      showAllOnFocus: true,
+                      controller: customerCtrl,
+                      title: tr.customer,
+                      hintText: tr.customer,
+                      isRequired: true,
+                      bloc: context.read<IndividualsBloc>(),
+                      fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
+                      searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return tr.required(tr.customer);
+                        }
+                        return null;
+                      },
+                      itemBuilder: (context, account) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 5,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "${account.perName} ${account.perLastName}",
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      itemToString: (acc) =>
+                      "${acc.perName} ${acc.perLastName}",
+                      stateToLoading: (state) =>
+                      state is IndividualLoadingState,
+                      loadingBuilder: (context) => const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      stateToItems: (state) {
+                        if (state is IndividualLoadedState) {
+                          return state.individuals;
+                        }
+                        return [];
+                      },
+                      onSelected: (value) {
+                        setState(() {
+                          customerId = value.perId!;
+                        });
+                      },
+                      noResultsText: tr.noDataFound,
+                      showClearButton: true,
+                    ),
+
                     Row(
                       spacing: 8,
                       children: [
@@ -359,7 +360,6 @@ class _DesktopState extends State<_Desktop> {
                         ),
                         Expanded(
                           child: ZTextFieldEntitled(
-                            isRequired: true,
                             keyboardInputType: TextInputType.numberWithOptions(
                               decimal: true,
                             ),
@@ -369,24 +369,6 @@ class _DesktopState extends State<_Desktop> {
                               ),
                               SmartThousandsDecimalFormatter(),
                             ],
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return tr.required(tr.advanceAmount);
-                              }
-
-                              // Remove formatting (e.g. commas)
-                              final clean = value.replaceAll(
-                                RegExp(r'[^\d.]'),
-                                '',
-                              );
-                              final amount = double.tryParse(clean);
-
-                              if (amount == null || amount <= 0.0) {
-                                return tr.amountGreaterZero;
-                              }
-
-                              return null;
-                            },
                             controller: advanceAmount,
                             title: tr.advanceAmount,
                           ),

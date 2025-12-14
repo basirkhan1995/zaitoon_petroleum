@@ -1363,4 +1363,13 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get completedTitle => 'تحویل شده';
+
+  @override
+  String get next => 'بعدی';
+
+  @override
+  String get previous => 'برگشت';
+
+  @override
+  String get finish => 'انجام';
 }

@@ -48,12 +48,16 @@ class _Desktop extends StatelessWidget {
         titlePadding: EdgeInsets.zero,
         actionsPadding: EdgeInsets.zero,
         backgroundColor: Theme.of(context).colorScheme.surface,
-        content: Container(
-          margin: EdgeInsets.zero,
-          padding: EdgeInsets.zero,
-          width: MediaQuery.sizeOf(context).width * .4,
-
-          child: ShippingTabView()
+        content: SizedBox(
+          width: MediaQuery.sizeOf(context).width * .5,
+          child: Container(
+            padding: const EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(5)
+            ),
+            child: ShippingTabView(),
+          )
         ),
       ),
     );

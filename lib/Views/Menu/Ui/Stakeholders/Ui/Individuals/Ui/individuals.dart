@@ -174,10 +174,10 @@ class _DesktopState extends State<_Desktop> {
                      return GridView.builder(
                         padding: const EdgeInsets.all(15),
                         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 200, // control card width
+                          maxCrossAxisExtent: 200,
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
-                          childAspectRatio: 0.95,
+                          childAspectRatio: 0.85,
                         ),
                         itemCount: filteredList.length,
                         itemBuilder: (context, index) {

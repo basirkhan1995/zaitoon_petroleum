@@ -1371,4 +1371,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get completedTitle => 'Delivered';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get previous => 'Previous';
+
+  @override
+  String get finish => 'Finish';
 }

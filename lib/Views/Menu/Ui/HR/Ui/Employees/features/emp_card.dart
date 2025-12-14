@@ -143,7 +143,6 @@ class _InfoCardState extends State<InfoCard> {
               maxHeight: widget.maxHeight,
             ),
             child: SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
               child: Padding(
                 padding: widget.padding,
                 child: Column(
@@ -284,3 +283,4 @@ class _InfoCardState extends State<InfoCard> {
     );
   }
 }
+

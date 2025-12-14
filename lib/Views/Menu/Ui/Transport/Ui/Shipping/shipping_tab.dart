@@ -1,63 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zaitoon_petroleum/Features/Generic/tab_bar.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingExpense/shipping_expense.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/add_edit_shipping.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/bloc/shipping_tab_bloc.dart';
-import '../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../../../../Features/Widgets/stepper.dart';
 
-
-class ShippingTabView extends StatelessWidget {
+class ShippingTabView extends StatefulWidget {
   const ShippingTabView({super.key});
 
   @override
+  State<ShippingTabView> createState() => _ShippingTabViewState();
+}
+
+class _ShippingTabViewState extends State<ShippingTabView> {
+
+  @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(top: 6.0),
-        child: BlocBuilder<ShippingTabBloc, ShippingTabState>(
-          builder: (context, state) {
+      body: CustomStepper(
+        steps: [
+          StepItem(
+            title: 'Order',
+            content: Expanded(child: AddEditShippingView()),
+            icon: Icons.shopping_cart,
+          ),
+          StepItem(
+            title: 'Shipping',
+            content: Expanded(child: ShippingExpenseView()),
+            icon: Icons.local_shipping,
+          ),
+          StepItem(
+            title: "Advance Payment",
+            content: Text("Payment"),
+            icon: Icons.data_exploration,
+          ),
+          StepItem(
+            title: 'Expenses',
+            content: Text("Expenses"),
+            icon: Icons.data_exploration,
+          ),
+          StepItem(
+            title: 'Delivered',
+            content: Text('Delivered confirmation'),
+            icon: Icons.check_circle,
+          ),
+        ],
+        onFinish: (){
 
-            final tabs = <ZTabItem<ShippingTabName>>[
-            //  if(login.hasPermission(14) ?? false)
-              ZTabItem(
-                  value: ShippingTabName.shipping,
-                  label: AppLocalizations.of(context)!.shipping,
-                  screen: const AddEditShippingView(),
-                ),
-            //  if(login.hasPermission(15) ?? false)
-              ZTabItem(
-                value: ShippingTabName.shippingExpense,
-                label: AppLocalizations.of(context)!.expense,
-                screen: const ShippingExpenseView(),
-              ),
-
-            ];
-
-            final availableValues = tabs.map((tab) => tab.value).toList();
-            final selected = availableValues.contains(state.tabs)
-                ? state.tabs
-                : availableValues.first;
-
-            return ZTabContainer<ShippingTabName>(
-              borderRadius: 3,
-              title: AppLocalizations.of(context)!.shipping,
-              tabContainerColor: Theme.of(context).colorScheme.surface,
-              closeButton: true,
-              style: ZTabStyle.underline,
-              selectedValue: selected,
-              onChanged: (val) => context.read<ShippingTabBloc>().add(ShippingOnchangeEvent(val)),
-              tabs: tabs,
-              selectedColor: Theme.of(context).colorScheme.primary,
-              selectedTextColor: Theme.of(context).colorScheme.surface,
-              unselectedTextColor: Theme.of(context).colorScheme.secondary,
-            );
-
-          },
-        ),
+        },
       ),
     );
   }
+
 }

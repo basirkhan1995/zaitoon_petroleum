@@ -455,5 +455,8 @@
   "advanceAmount": "Advance amount",
   "tonTitle": "Ton",
   "kgTitle": "Kg",
-  "completedTitle": "Delivered"
+  "completedTitle": "Delivered",
+  "next": "Next",
+  "previous": "Previous",
+  "finish": "Finish"
 }
