@@ -1380,4 +1380,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get finish => 'Finish';
+
+  @override
+  String get todayTransaction => 'Today\'s Transactions';
+
+  @override
+  String get pendingTransactionTitle => 'Pending Transactions';
+
+  @override
+  String get pendingTransactionHint => 'Awaiting approval or completion';
+
+  @override
+  String get order => 'Order';
+
+  @override
+  String get advancePayment => 'Advance Payment';
+
+  @override
+  String get payment => 'Payment';
 }

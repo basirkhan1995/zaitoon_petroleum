@@ -2775,6 +2775,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Finish'**
   String get finish;
+
+  /// No description provided for @todayTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Transactions'**
+  String get todayTransaction;
+
+  /// No description provided for @pendingTransactionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Transactions'**
+  String get pendingTransactionTitle;
+
+  /// No description provided for @pendingTransactionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting approval or completion'**
+  String get pendingTransactionHint;
+
+  /// No description provided for @order.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get order;
+
+  /// No description provided for @advancePayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Advance Payment'**
+  String get advancePayment;
+
+  /// No description provided for @payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get payment;
 }
 
 class _AppLocalizationsDelegate

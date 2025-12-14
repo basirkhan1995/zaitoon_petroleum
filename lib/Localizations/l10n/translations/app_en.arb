@@ -458,5 +458,11 @@
   "completedTitle": "Delivered",
   "next": "Next",
   "previous": "Previous",
-  "finish": "Finish"
+  "finish": "Finish",
+  "todayTransaction": "Today's Transactions",
+  "pendingTransactionTitle": "Pending Transactions",
+  "pendingTransactionHint": "Awaiting approval or completion",
+  "order": "Order",
+  "advancePayment": "Advance Payment",
+  "payment": "Payment"
 }

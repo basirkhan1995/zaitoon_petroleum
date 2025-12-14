@@ -206,6 +206,15 @@ class _DesktopState extends State<_Desktop> {
                     spacing: 8,
                     children: [
                       Expanded(
+                          flex: 6,
+                          child: ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            visualDensity: VisualDensity(vertical: -4, horizontal: -4),
+                            title: Text(locale.todayTransaction,style: Theme.of(context).textTheme.titleMedium),
+                            subtitle: Text(DateTime.now().toFormattedDate()),
+                          )),
+                      Expanded(
+                        flex: 3,
                         child: ZSearchField(
                           icon: FontAwesomeIcons.magnifyingGlass,
                           controller: searchController,

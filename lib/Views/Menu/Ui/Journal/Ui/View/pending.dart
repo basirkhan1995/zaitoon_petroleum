@@ -247,6 +247,15 @@ class _DesktopState extends State<_Desktop> {
                     spacing: 8,
                     children: [
                       Expanded(
+                          flex: 6,
+                          child: ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            visualDensity: VisualDensity(vertical: -4, horizontal: -4),
+                            title: Text(locale.pendingTransactions,style: Theme.of(context).textTheme.titleMedium),
+                            subtitle: Text(locale.pendingTransactionHint),
+                          )),
+                      Expanded(
+                        flex: 3,
                         child: ZSearchField(
                           icon: FontAwesomeIcons.magnifyingGlass,
                           controller: searchController,
@@ -271,7 +280,7 @@ class _DesktopState extends State<_Desktop> {
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
+
                 // HEADER
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),

@@ -458,5 +458,11 @@
   "completedTitle": "تحویل شده",
   "next": "بعدی",
   "previous": "برگشت",
-  "finish": "انجام"
+  "finish": "انجام",
+  "todayTransaction": "نن معاملات",
+  "pendingTransactionTitle": "معاملات تایید ناشده",
+  "pendingTransactionHint": "د تایید یا بشپړیدو په تمه",
+  "order": "فرمایش",
+  "advancePayment": "پیش پرداخت",
+  "payment": "پرداخت"
 }

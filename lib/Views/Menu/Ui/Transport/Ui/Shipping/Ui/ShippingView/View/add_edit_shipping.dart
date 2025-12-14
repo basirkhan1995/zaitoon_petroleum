@@ -11,14 +11,14 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/feature/un
 import 'package:shamsi_date/shamsi_date.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/bloc/vehicle_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/model/vehicle_model.dart';
-import '../../../../../../../../Features/Date/zdate_picker.dart';
-import '../../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
-import '../../../../../../../../Features/Other/thousand_separator.dart';
-import '../../../../../../../Auth/bloc/auth_bloc.dart';
-import '../../../../../Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
-import '../../../../../Stakeholders/Ui/Individuals/individual_model.dart';
-import 'bloc/shipping_bloc.dart';
-import 'model/shipping_model.dart';
+import '../../../../../../../../../Features/Date/zdate_picker.dart';
+import '../../../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
+import '../../../../../../../../../Features/Other/thousand_separator.dart';
+import '../../../../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../../Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
+import '../../../../../../Stakeholders/Ui/Individuals/individual_model.dart';
+import '../bloc/shipping_bloc.dart';
+import '../model/shipping_model.dart';
 
 class AddEditShippingView extends StatelessWidget {
   final ShippingModel? model;

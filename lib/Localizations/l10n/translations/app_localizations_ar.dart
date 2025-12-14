@@ -1374,4 +1374,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get finish => 'انجام';
+
+  @override
+  String get todayTransaction => 'نن معاملات';
+
+  @override
+  String get pendingTransactionTitle => 'معاملات تایید ناشده';
+
+  @override
+  String get pendingTransactionHint => 'د تایید یا بشپړیدو په تمه';
+
+  @override
+  String get order => 'فرمایش';
+
+  @override
+  String get advancePayment => 'پیش پرداخت';
+
+  @override
+  String get payment => 'پرداخت';
 }

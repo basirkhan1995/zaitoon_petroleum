@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/shipping_tab.dart';
+import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import '../../../../../../Features/Widgets/stepper.dart';
+import 'Ui/ShippingView/View/ShippingExpense/shipping_expense.dart';
+import 'Ui/ShippingView/View/add_edit_shipping.dart';
 
 class ShippingScreen extends StatelessWidget {
 
@@ -40,6 +43,7 @@ class _Desktop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: AlertDialog(
@@ -56,7 +60,38 @@ class _Desktop extends StatelessWidget {
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(5)
             ),
-            child: ShippingTabView(),
+            child: CustomStepper(
+              steps: [
+                StepItem(
+                  title: tr.order,
+                  content: Expanded(child: AddEditShippingView()),
+                  icon: Icons.shopping_cart,
+                ),
+                StepItem(
+                  title: tr.shipping,
+                  content: Expanded(child: ShippingExpenseView()),
+                  icon: Icons.local_shipping,
+                ),
+                StepItem(
+                  title: tr.advancePayment,
+                  content: Text(tr.payment),
+                  icon: Icons.data_exploration,
+                ),
+                StepItem(
+                  title: tr.expense,
+                  content: Text(tr.expense),
+                  icon: Icons.data_exploration,
+                ),
+                StepItem(
+                  title: 'Delivered',
+                  content: Text('Delivered confirmation'),
+                  icon: Icons.check_circle,
+                ),
+              ],
+              onFinish: (){
+
+              },
+            ),
           )
         ),
       ),
