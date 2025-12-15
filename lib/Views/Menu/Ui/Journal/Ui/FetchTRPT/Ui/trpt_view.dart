@@ -232,7 +232,7 @@ class _DesktopState extends State<_Desktop> {
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: .2),
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
                           children: [
@@ -250,10 +250,9 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ),
                       const SizedBox(width: 10),
-                     // _buildStatusBadge(context, trpt.shpStatus, transaction?.trnStatus),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 5),
                   Text(
                     locale.transactionDetails,
                     style: const TextStyle(
