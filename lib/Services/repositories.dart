@@ -8,6 +8,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeR
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/model/emp_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/model/fetch_atat_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchTRPT/model/trtp_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/txn_ref_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/model/stmt_model.dart';
@@ -931,6 +932,40 @@ class Repositories {
       throw e.toString();
     }
   }
+  Future<TrptModel> getTrpt({required String reference}) async {
+    try {
+      final queryParams = {'ref': reference};
+      final response = await api.get(
+          endpoint: '/transport/shippingTransaction.php',
+          queryParams: queryParams
+      );
+
+      final data = response.data;
+      print(data);
+
+      // Case 1: API returns a single object
+      if (data is Map<String, dynamic>) {
+        return TrptModel.fromMap(data);
+      }
+
+      // Case 2: API returns a list with data
+      if (data is List) {
+        if (data.isEmpty) {
+          throw Exception("No transport data found for reference: $reference");
+        }
+        if (data.first is Map<String, dynamic>) {
+          return TrptModel.fromMap(data.first);
+        }
+        throw Exception("Invalid data format in list response");
+      }
+
+      throw Exception("Invalid API response format");
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 
   /// Fetch GL transaction by Vehicle ID
   Future<GlatModel> getGlatTransaction(String ref) async {
@@ -1396,7 +1431,6 @@ class Repositories {
           endpoint: "/setting/storage.php",
           data: newStorage.toMap()
       );
-      print(response.data);
       return response.data;
     } on DioException catch (e) {
       throw '${e.message}';

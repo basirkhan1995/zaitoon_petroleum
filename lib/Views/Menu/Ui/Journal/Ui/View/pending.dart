@@ -10,6 +10,8 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/bloc/fetch_
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/fetch_atat.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchGLAT/Ui/glat_view.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchGLAT/bloc/glat_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchTRPT/Ui/trpt_view.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchTRPT/bloc/trpt_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/txn_reference.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
@@ -96,6 +98,8 @@ class _DesktopState extends State<_Desktop> {
         );
       } else if (txn.trnType == "GLAT") {
         context.read<GlatBloc>().add(LoadGlatEvent(txn.trnReference ?? ""));
+      }else if(txn.trnType == "TRPT"){
+        context.read<TrptBloc>().add(LoadTrptEvent(txn.trnReference ?? ""));
       } else {
         context.read<TxnReferenceBloc>().add(
           FetchTxnByReferenceEvent(txn.trnReference ?? ""),
@@ -116,6 +120,31 @@ class _DesktopState extends State<_Desktop> {
 
     return MultiBlocListener(
       listeners: [
+        BlocListener<TrptBloc, TrptState>(
+          listener: (context, state) {
+            if (state is TrptLoadedState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              showDialog(
+                context: context,
+                builder: (context) => TrptView(reference: state.trpt.shdTrnRef ?? ""),
+              );
+            } else if (state is TrptErrorState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              Utils.showOverlayMessage(
+                context,
+                title: locale.noData,
+                message: state.error,
+                isError: true,
+              );
+            }
+          },
+        ),
         BlocListener<GlatBloc, GlatState>(
           listener: (context, state) {
             if (state is GlatLoadedState) {

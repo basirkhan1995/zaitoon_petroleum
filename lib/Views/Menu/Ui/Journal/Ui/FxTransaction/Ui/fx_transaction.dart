@@ -38,7 +38,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
   String? userName;
   String? _baseCurrency;
   final Map<String, double> _exchangeRates = {};
-  final Map<String, double> _originalExchangeRates = {}; // Store original rates for validation
+  final Map<String, double> _originalExchangeRates = {};
   bool _isDisposed = false;
 
   // Track which rate requests are for which currencies
