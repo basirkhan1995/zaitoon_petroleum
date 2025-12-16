@@ -55,6 +55,58 @@ class UpdateStepperStepEvent extends ShippingEvent {
 
 // This was missing - ADD THIS
 class ClearShippingDetailEvent extends ShippingEvent {
-  @override
   List<Object> get props => [];
+}
+
+class AddShippingExpenseEvent extends ShippingEvent {
+  final int shpId;
+  final int accNumber;
+  final String amount;
+  final String narration;
+  final String usrName;
+
+  const AddShippingExpenseEvent({
+    required this.shpId,
+    required this.accNumber,
+    required this.amount,
+    required this.narration,
+    required this.usrName,
+  });
+
+  @override
+  List<Object> get props => [shpId, accNumber, amount, narration, usrName];
+}
+
+class UpdateShippingExpenseEvent extends ShippingEvent {
+  final int shpId;
+  final String trnReference;
+  final String amount;
+  final String narration;
+  final String usrName;
+
+  const UpdateShippingExpenseEvent({
+    required this.shpId,
+    required this.trnReference,
+    required this.amount,
+    required this.narration,
+    required this.usrName,
+  });
+
+  List<Object> get props => [shpId, trnReference, amount, narration, usrName];
+}
+
+class DeleteShippingExpenseEvent extends ShippingEvent {
+  final int shpId;
+  final String trnReference;
+  final String usrName;
+
+  const DeleteShippingExpenseEvent({
+    required this.shpId,
+    required this.trnReference,
+    required this.usrName,
+  });
+
+  @override
+  List<Object> get props => [shpId, trnReference, usrName];
+
 }

@@ -170,7 +170,7 @@ class _DesktopState extends State<_Desktop> {
                   }
                 },
                 builder: (context, state) {
-                  if(state is ShippingDetailLoadingState){
+                  if(state is ShippingLoadingState){
                     return Center(child: CircularProgressIndicator());
                   }
                   if(state is ShippingErrorState){
@@ -191,20 +191,15 @@ class _DesktopState extends State<_Desktop> {
                           final shp = state.shippingList[index];
                           return InkWell(
                             // In ShippingView - inside ListView.builder's InkWell
-                            onTap: () {
-                              final shipping = state.shippingList[index];
-
-                              // Open the stepper dialog with shipping details
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return BlocProvider.value(
-                                    value: BlocProvider.of<ShippingBloc>(context),
-                                    child: ShippingScreen(shippingId: shipping.shpId), // Use correct property name
+                              onTap: () {
+                                if (shp.shpId != null) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return ShippingScreen(shippingId: shp.shpId!);
+                                    },
                                   );
-                                },
-                              );
-                            },
+                                }},
                             child: Container(
                               padding: EdgeInsets.symmetric(vertical: 10,horizontal: 15),
                               decoration: BoxDecoration(

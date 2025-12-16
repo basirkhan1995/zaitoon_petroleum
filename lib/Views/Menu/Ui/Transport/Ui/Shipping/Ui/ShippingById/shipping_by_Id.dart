@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
@@ -6,7 +5,6 @@ import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../../../../Features/Widgets/stepper.dart';
-import '../../../../../../../../Services/repositories.dart';
 import '../ShippingView/View/ShippingExpense/shipping_expense.dart';
 import '../ShippingView/View/add_edit_shipping.dart';
 import '../ShippingView/bloc/shipping_bloc.dart';
@@ -20,13 +18,11 @@ class ShippingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ShippingBloc(RepositoryProvider.of<Repositories>(context)),
-      child: ResponsiveLayout(
-        mobile: _Mobile(shippingId: shippingId),
-        desktop: _Desktop(shippingId: shippingId),
-        tablet: _Tablet(shippingId: shippingId),
-      ),
+    // Use the existing bloc from parent context
+    return ResponsiveLayout(
+      mobile: _Mobile(shippingId: shippingId),
+      desktop: _Desktop(shippingId: shippingId),
+      tablet: _Tablet(shippingId: shippingId),
     );
   }
 }
@@ -45,6 +41,7 @@ class _DesktopState extends State<_Desktop> {
     super.initState();
     if (widget.shippingId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Use context.read directly since bloc is already available from parent
         context.read<ShippingBloc>().add(
           LoadShippingDetailEvent(widget.shippingId!),
         );
@@ -83,16 +80,15 @@ class _DesktopState extends State<_Desktop> {
 
   Widget _buildLoadingDialog() {
     return AlertDialog(
-      content: Container(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Loading shipping details...'),
-          ],
-        ),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator(),
+          const SizedBox(height: 16),
+          Text('Loading shipping details'),
+        ],
       ),
     );
   }
@@ -100,17 +96,17 @@ class _DesktopState extends State<_Desktop> {
   Widget _buildErrorDialog(String error, BuildContext context) {
     return AlertDialog(
       content: Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error, color: Colors.red, size: 48),
-            SizedBox(height: 16),
+            const Icon(Icons.error, color: Colors.red, size: 48),
+            const SizedBox(height: 16),
             Text(error, textAlign: TextAlign.center),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Close'),
+              child: const Text('Close'),
             ),
           ],
         ),
@@ -181,12 +177,12 @@ class _DesktopState extends State<_Desktop> {
             steps: [
               StepItem(
                 title: tr.order,
-                content: Expanded(child: AddEditShippingView()),
+                content: const Expanded(child: AddEditShippingView()),
                 icon: Icons.shopping_cart,
               ),
               StepItem(
                 title: tr.shipping,
-                content: Expanded(child: ShippingExpenseView()),
+                content: const Expanded(child: ShippingExpenseView()),
                 icon: Icons.local_shipping,
               ),
               StepItem(
@@ -201,7 +197,7 @@ class _DesktopState extends State<_Desktop> {
               ),
               StepItem(
                 title: 'Delivered',
-                content: Text('Delivered confirmation'),
+                content: const Text('Delivered confirmation'),
                 icon: Icons.check_circle,
               ),
             ],
@@ -216,30 +212,30 @@ class _DesktopState extends State<_Desktop> {
 
   Widget _buildIncomeView(ShippingDetailsModel shipping) {
     return Container(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             AppLocalizations.of(context)!.income,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           if (shipping.income != null && shipping.income!.isNotEmpty)
             ...shipping.income!.map((income) => Cover(
               child: ListTile(
-                contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                leading: Icon(Icons.attach_money, color: Colors.green),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+                leading: const Icon(Icons.attach_money, color: Colors.green),
                 title: Text(income.accName ?? ''),
                 subtitle: Text(income.narration ?? ''),
                 trailing: Text(
                   '${income.amount?.toAmount()} ${income.currency}',
-                  style: TextStyle(fontSize: 15),
+                  style: const TextStyle(fontSize: 15),
                 ),
               ),
             )).toList()
           else
-            Text('No income yet'),
+            const Text('No income yet'),
         ],
       ),
     );
@@ -248,26 +244,25 @@ class _DesktopState extends State<_Desktop> {
   Widget _buildExpensesView(ShippingDetailsModel shipping) {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.all(5),
+        padding: const EdgeInsets.all(5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Your expense form...
             Text(
               AppLocalizations.of(context)!.expense,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             if (shipping.expenses != null && shipping.expenses!.isNotEmpty)
               ...shipping.expenses!.map((expense) => Cover(
                 child: ListTile(
-                  visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-                  contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                   title: Text(expense.accName ?? ''),
                   subtitle: Text(expense.narration ?? ''),
                   trailing: Text(
                     '${expense.amount?.toAmount()} ${expense.currency}',
-                    style: TextStyle(fontSize: 15),
+                    style: const TextStyle(fontSize: 15),
                   ),
                 ),
               )).toList()
@@ -281,21 +276,22 @@ class _DesktopState extends State<_Desktop> {
 
   Widget _buildDeliveryView(ShippingDetailsModel shipping) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
             shipping.shpStatus == 1 ? Icons.check_circle : Icons.schedule,
             size: 60,
             color: shipping.shpStatus == 1 ? Colors.green : Colors.orange,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             shipping.shpStatus == 1 ? 'Delivered' : 'Pending',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text('Shipping Status: ${shipping.shpStatus == 1 ? "Completed" : "In Progress"}'),
         ],
       ),

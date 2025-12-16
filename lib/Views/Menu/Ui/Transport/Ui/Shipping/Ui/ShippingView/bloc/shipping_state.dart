@@ -2,7 +2,7 @@
 part of 'shipping_bloc.dart';
 
 abstract class ShippingState extends Equatable {
-  final List<ShippingModel> shippingList; // Always keep the list
+  final List<ShippingModel> shippingList;
   final ShippingDetailsModel? currentShipping;
 
   const ShippingState({
@@ -14,35 +14,37 @@ abstract class ShippingState extends Equatable {
   List<Object?> get props => [shippingList, currentShipping];
 }
 
-// Initial state
 class ShippingInitial extends ShippingState {
   const ShippingInitial() : super(shippingList: const []);
 }
 
-// Loading all shipping
 class ShippingLoadingState extends ShippingState {
-  const ShippingLoadingState({super.shippingList});
+  const ShippingLoadingState({
+    required super.shippingList,
+    super.currentShipping,
+  });
 }
 
-// List loaded successfully
 class ShippingListLoadedState extends ShippingState {
-  const ShippingListLoadedState({required super.shippingList});
+  const ShippingListLoadedState({
+    required super.shippingList,
+    super.currentShipping,
+  });
 }
 
-// Loading single shipping details
 class ShippingDetailLoadingState extends ShippingState {
   final int loadingShpId;
 
   const ShippingDetailLoadingState({
     required super.shippingList,
+    super.currentShipping,
     required this.loadingShpId,
   });
 
   @override
-  List<Object?> get props => [super.props, loadingShpId];
+  List<Object?> get props => [...super.props, loadingShpId];
 }
 
-// Single shipping loaded with details (for stepper)
 class ShippingDetailLoadedState extends ShippingState {
   final int currentStep;
 
@@ -52,7 +54,6 @@ class ShippingDetailLoadedState extends ShippingState {
     this.currentStep = 0,
   });
 
-  // CopyWith for stepper navigation
   ShippingDetailLoadedState copyWith({
     List<ShippingModel>? shippingList,
     ShippingDetailsModel? currentShipping,
@@ -66,31 +67,31 @@ class ShippingDetailLoadedState extends ShippingState {
   }
 
   @override
-  List<Object?> get props => [super.props, currentStep];
+  List<Object?> get props => [...super.props, currentStep];
 }
 
-// Error state
 class ShippingErrorState extends ShippingState {
   final String error;
 
   const ShippingErrorState({
     required super.shippingList,
+    super.currentShipping,
     required this.error,
   });
 
   @override
-  List<Object?> get props => [super.props, error];
+  List<Object?> get props => [...super.props, error];
 }
 
-// Success state (for CRUD operations)
 class ShippingSuccessState extends ShippingState {
   final String message;
 
   const ShippingSuccessState({
     required super.shippingList,
+    super.currentShipping,
     required this.message,
   });
 
   @override
-  List<Object?> get props => [super.props, message];
+  List<Object?> get props => [...super.props, message];
 }

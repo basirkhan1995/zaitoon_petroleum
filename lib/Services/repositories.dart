@@ -915,36 +915,91 @@ class Repositories {
     }
   }
 
-  Future<List<ShippingModel>> getShipping({int? id}) async {
+  // In your Repositories class
+  Future<List<ShippingModel>> getAllShipping({int? id}) async {
     try {
-      final queryParams = {'shpID': id};
-      final response = await api.get(
-          endpoint: '/transport/shipping.php',
-          queryParams: queryParams
-      );
-
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
+      final Map<String, dynamic> queryParams = {};
+      if (id != null) {
+        queryParams['shpID'] = id;
       }
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      final response = await api.get(
+        endpoint: '/transport/shipping.php',
+        queryParams: queryParams,
+      );
+
+      // Check for error messages
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        final msg = response.data['msg'];
+        if (msg == 'failed' || msg == 'error') {
+          throw Exception('Failed to load shipping data');
+        }
+      }
+
+      // Handle empty or null response
+      if (response.data == null) {
         return [];
       }
 
-      // Parse list of stakeholders safely
+      // Parse the response
       if (response.data is List) {
         return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
+            .whereType<Map<String, dynamic>>()
             .map((json) => ShippingModel.fromMap(json))
             .toList();
+      } else if (response.data is Map<String, dynamic>) {
+        // If it's a single object, wrap it in a list
+        return [ShippingModel.fromMap(response.data)];
       }
+
       return [];
     } on DioException catch (e) {
-      throw '${e.message}';
+      throw 'Network error: ${e.message}';
     } catch (e) {
-      throw e.toString();
+      throw 'Failed to load shipping: $e';
+    }
+  }
+
+  Future<ShippingDetailsModel> getShippingById({required int shpId}) async {
+    try {
+      final queryParams = {'shpID': shpId};
+      final response = await api.get(
+        endpoint: '/transport/shipping.php',
+        queryParams: queryParams,
+      );
+
+      final data = response.data;
+
+      // Check for error messages
+      if (data is Map<String, dynamic> && data['msg'] != null) {
+        final msg = data['msg'];
+        if (msg == 'failed' || msg == 'error') {
+          throw Exception('Failed to load shipping details');
+        }
+      }
+
+      // Handle different response formats
+      if (data is Map<String, dynamic>) {
+        // Direct object response (your API format for single shipping)
+        return ShippingDetailsModel.fromMap(data);
+      } else if (data is List) {
+        // List response - take first item
+        if (data.isEmpty) {
+          throw Exception("No shipping found with ID: $shpId");
+        }
+
+        final firstItem = data.first;
+        if (firstItem is Map<String, dynamic>) {
+          return ShippingDetailsModel.fromMap(firstItem);
+        }
+        throw Exception("Invalid data format in list response");
+      }
+
+      throw Exception("Invalid API response format");
+    } on DioException catch (e) {
+      throw 'Network error: ${e.message}';
+    } catch (e) {
+      throw 'Failed to load shipping details: $e';
     }
   }
   Future<TrptModel> getTrpt({required String reference}) async {
@@ -956,7 +1011,6 @@ class Repositories {
       );
 
       final data = response.data;
-      print(data);
 
       // Case 1: API returns a single object
       if (data is Map<String, dynamic>) {
@@ -981,33 +1035,56 @@ class Repositories {
       throw e.toString();
     }
   }
-  Future<ShippingDetailsModel> getShippingById({required int shpId}) async {
+  Future<Map<String, dynamic>> deleteShippingExpense({required String? usrName, required int shpId, required String? trnReference}) async {
     try {
-      final queryParams = {'shpID': shpId};
-      final response = await api.get(
-          endpoint: '/transport/shipping.php',
-          queryParams: queryParams
+      final response = await api.delete(
+          endpoint: "/transport/shippingTransaction.php",
+          data: {
+            "usrName":usrName,
+            "trnReference": trnReference,
+            "shpID": shpId,
+          }
       );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> updateShippingExpense({required String? usrName, required int shpId, required String amount, required String reference, required String narration}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/transport/shippingTransaction.php",
+          data: {
+            "usrName": usrName,
+            "shpID": shpId,
+            "accNumber": reference,
+            "amount": amount,
+            "narration": narration
+          }
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 
-      final data = response.data;
-
-      // Case 1: API returns a single object
-      if (data is Map<String, dynamic>) {
-        return ShippingDetailsModel.fromMap(data);
-      }
-
-      // Case 2: API returns a list with data
-      if (data is List) {
-        if (data.isEmpty) {
-          throw Exception("No transport data found for reference: $shpId");
-        }
-        if (data.first is Map<String, dynamic>) {
-          return ShippingDetailsModel.fromMap(data.first);
-        }
-        throw Exception("Invalid data format in list response");
-      }
-
-      throw Exception("Invalid API response format");
+  Future<Map<String, dynamic>> addShippingExpense({required String? usrName, required int shpId, required String amount, required int accNumber, required String narration}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/transport/shippingTransaction.php",
+          data: {
+            "usrName": usrName,
+            "shpID": shpId,
+            "accNumber": accNumber,
+            "amount": amount,
+            "narration": narration
+          }
+      );
+      return response.data;
     } on DioException catch (e) {
       throw '${e.message}';
     } catch (e) {
