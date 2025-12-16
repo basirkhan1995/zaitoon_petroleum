@@ -127,15 +127,14 @@ class _ZCardState extends State<ZCard> {
           boxShadow: _isHovering && widget.hoverable
               ? [
             BoxShadow(
-              color: color.primary.withValues(alpha: .15),
+              color: color.primary.withValues(alpha: .35),
               blurRadius: 3,
               offset: const Offset(0, 2),
             )
-          ]
-              : [
+          ] : [
             BoxShadow(
               color: color.outline.withValues(alpha: .15),
-              spreadRadius: 1,
+              spreadRadius: 0,
               blurRadius: 1,
               offset: const Offset(0, 1),
             )

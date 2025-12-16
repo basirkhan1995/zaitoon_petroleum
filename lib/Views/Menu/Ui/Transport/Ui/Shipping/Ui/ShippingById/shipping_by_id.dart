@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import '../../../../../../../../Features/Date/zdate_picker.dart';
+import '../../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
+import '../../../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../../../Features/Widgets/stepper.dart';
-import '../ShippingView/View/ShippingExpense/shipping_expense.dart';
-import '../ShippingView/View/add_edit_shipping.dart';
+import '../../../../../../../../Features/Widgets/textfield_entitled.dart';
+import '../../../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
+import '../../../../../Stakeholders/Ui/Individuals/individual_model.dart';
+import '../../../Vehicles/bloc/vehicle_bloc.dart';
+import '../../../Vehicles/model/vehicle_model.dart';
+import '../../feature/unit_drop.dart';
 import '../ShippingView/bloc/shipping_bloc.dart';
 import '../ShippingView/model/shipping_model.dart';
 import '../ShippingView/model/shp_details_model.dart';
+import 'package:shamsi_date/shamsi_date.dart';
 
 class ShippingScreen extends StatelessWidget {
   final int? shippingId;
@@ -49,9 +60,52 @@ class _DesktopState extends State<_Desktop> {
     }
   }
 
+  final productId = TextEditingController();
+  final shpFrom = TextEditingController();
+  final shpTo = TextEditingController();
+  final shippingRent = TextEditingController();
+  final loadingSize = TextEditingController();
+  final unloadingSize = TextEditingController();
+  final customerCtrl = TextEditingController();
+  final vehicleCtrl = TextEditingController();
+  final remark = TextEditingController();
+  final advanceAmount = TextEditingController();
+
+  String shpFromGregorian = DateTime.now().toFormattedDate();
+  Jalali shpFromShamsi = DateTime.now().toAfghanShamsi;
+
+  String? usrName;
+  String shpToGregorian = DateTime.now().toFormattedDate();
+  Jalali shpToShamsi = DateTime.now().toAfghanShamsi;
+
+  final formKey = GlobalKey<FormState>();
+
+  int? customerId;
+  int? vehicleId;
+  String? unit;
+  @override
+  void dispose() {
+    shippingRent.dispose();
+    loadingSize.dispose();
+    unloadingSize.dispose();
+    customerCtrl.dispose();
+    shpFrom.dispose();
+    shpTo.dispose();
+    vehicleCtrl.dispose();
+    productId.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
+    usrName = login.usrName??"";
 
     return BlocConsumer<ShippingBloc, ShippingState>(
       listener: (context, state) {
@@ -78,6 +132,303 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
+  Widget _advancePayment(){
+    final tr = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          ZTextFieldEntitled(
+            keyboardInputType: TextInputType.numberWithOptions(
+              decimal: true,
+            ),
+            inputFormat: [
+              FilteringTextInputFormatter.allow(
+                RegExp(r'[0-9.,]*'),
+              ),
+              SmartThousandsDecimalFormatter(),
+            ],
+            controller: advanceAmount,
+            title: tr.advanceAmount,
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _order(){
+    final tr = AppLocalizations.of(context)!;
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Form(
+          key: formKey,
+          child: Column(
+            spacing: 13,
+            children: [
+              GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
+                showAllOnFocus: true,
+                controller: customerCtrl,
+                title: tr.customer,
+                hintText: tr.customer,
+                isRequired: true,
+                bloc: context.read<IndividualsBloc>(),
+                fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
+                searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return tr.required(tr.customer);
+                  }
+                  return null;
+                },
+                itemBuilder: (context, account) => Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 5,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "${account.perName} ${account.perLastName}",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                itemToString: (acc) =>
+                "${acc.perName} ${acc.perLastName}",
+                stateToLoading: (state) =>
+                state is IndividualLoadingState,
+                loadingBuilder: (context) => const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                stateToItems: (state) {
+                  if (state is IndividualLoadedState) {
+                    return state.individuals;
+                  }
+                  return [];
+                },
+                onSelected: (value) {
+                  setState(() {
+                    customerId = value.perId!;
+                  });
+                },
+                noResultsText: tr.noDataFound,
+                showClearButton: true,
+              ),
+
+              Row(
+                spacing: 10,
+                children: [
+                  Expanded(
+                    child: ZTextFieldEntitled(
+                      controller: productId,
+                      title: tr.products,
+                    ),
+                  ),
+                ],
+              ),
+
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  Widget _shipping(){
+    final tr = AppLocalizations.of(context)!;
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Form(
+          key: formKey,
+          child: Column(
+            spacing: 13,
+            children: [
+              GenericTextfield<VehicleModel, VehicleBloc, VehicleState>(
+                showAllOnFocus: true,
+                controller: vehicleCtrl,
+                title: tr.vehicles,
+                hintText: tr.vehicles,
+                isRequired: true,
+                bloc: context.read<VehicleBloc>(),
+                fetchAllFunction: (bloc) => bloc.add(LoadVehicleEvent()),
+                searchFunction: (bloc, query) =>
+                    bloc.add(LoadVehicleEvent()),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return tr.required(tr.vehicle);
+                  }
+                  return null;
+                },
+                itemBuilder: (context, veh) => Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 5,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "${veh.vclModel} | ${veh.vclPlateNo}",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                itemToString: (veh) =>
+                "${veh.vclModel} | ${veh.vclPlateNo}",
+                stateToLoading: (state) => state is VehicleLoadingState,
+                loadingBuilder: (context) => const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                stateToItems: (state) {
+                  if (state is VehicleLoadedState) {
+                    return state.vehicles;
+                  }
+                  return [];
+                },
+                onSelected: (value) {
+                  setState(() {
+                    vehicleId = value.vclId!;
+                  });
+                },
+                noResultsText: tr.noDataFound,
+                showClearButton: true,
+              ),
+              Row(
+                spacing: 5,
+                children: [
+                  Expanded(
+                    child: ZTextFieldEntitled(
+                      controller: shpFrom,
+                      title: tr.shpFrom,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return tr.required(tr.shpFrom);
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: ZTextFieldEntitled(
+                      controller: shpTo,
+                      title: tr.shpTo,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return tr.required(tr.shpTo);
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                spacing: 8,
+                children: [
+                  Expanded(
+                    child: datePicker(
+                      date: shpFromGregorian,
+                      title: tr.loadingDate,
+                    ),
+                  ),
+                  Expanded(
+                    child: datePicker(
+                      date: shpToGregorian,
+                      title: tr.unloadingDate,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                spacing: 5,
+                children: [
+                  Expanded(
+                    child: ZTextFieldEntitled(
+                      controller: loadingSize,
+                      title: tr.loadingSize,
+                    ),
+                  ),
+                  Expanded(
+                    child: ZTextFieldEntitled(
+                      controller: unloadingSize,
+                      title: tr.unloadingSize,
+                    ),
+                  ),
+                  Expanded(
+                    child: UnitDropdown(
+                      onUnitSelected: (e) {
+                        setState(() {
+                          unit = e.name;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                spacing: 5,
+                children: [
+                  Expanded(
+                    child: ZTextFieldEntitled(
+                      isRequired: true,
+                      keyboardInputType: TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      inputFormat: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'[0-9.,]*'),
+                        ),
+                        SmartThousandsDecimalFormatter(),
+                      ],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return tr.required(tr.shippingRent);
+                        }
+
+                        // Remove formatting (e.g. commas)
+                        final clean = value.replaceAll(
+                          RegExp(r'[^\d.]'),
+                          '',
+                        );
+                        final amount = double.tryParse(clean);
+
+                        if (amount == null || amount <= 0.0) {
+                          return tr.amountGreaterZero;
+                        }
+
+                        return null;
+                      },
+                      controller: shippingRent,
+                      title: tr.shippingRent,
+                    ),
+                  ),
+
+                ],
+              ),
+              ZTextFieldEntitled(controller: remark, title: tr.remark,keyboardInputType: TextInputType.multiline,),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
   Widget _buildLoadingDialog() {
     return AlertDialog(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -115,6 +466,9 @@ class _DesktopState extends State<_Desktop> {
   Widget _buildStepperWithData(ShippingDetailLoadedState state, AppLocalizations tr, BuildContext context) {
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8)
+      ),
       backgroundColor: Theme.of(context).colorScheme.surface,
       content: SizedBox(
         width: MediaQuery.sizeOf(context).width * .6,
@@ -124,18 +478,12 @@ class _DesktopState extends State<_Desktop> {
             steps: [
               StepItem(
                 title: tr.order,
-                content: Expanded(
-                  child: AddEditShippingView(
-                    model: _convertToShippingModel(state.currentShipping!),
-                  ),
-                ),
+                content: _order(),
                 icon: Icons.shopping_cart,
               ),
               StepItem(
                 title: tr.shipping,
-                content: Expanded(
-                  child: ShippingExpenseView(),
-                ),
+                content: _shipping(),
                 icon: Icons.local_shipping,
               ),
               StepItem(
@@ -164,6 +512,9 @@ class _DesktopState extends State<_Desktop> {
   }
   Widget _buildNewShippingStepper(AppLocalizations tr, BuildContext context) {
     return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8)
+      ),
       contentPadding: EdgeInsets.zero,
       backgroundColor: Theme.of(context).colorScheme.surface,
       content: SizedBox(
@@ -174,17 +525,17 @@ class _DesktopState extends State<_Desktop> {
             steps: [
               StepItem(
                 title: tr.order,
-                content: const Expanded(child: AddEditShippingView()),
+                content: _order(),
                 icon: Icons.shopping_cart,
               ),
               StepItem(
                 title: tr.shipping,
-                content: const Expanded(child: ShippingExpenseView()),
+                content: _shipping(),
                 icon: Icons.local_shipping,
               ),
               StepItem(
                 title: tr.advancePayment,
-                content: const Text('Advance Payment'),
+                content: _advancePayment(),
                 icon: Icons.attach_money_outlined,
               ),
               StepItem(
@@ -304,6 +655,17 @@ class _DesktopState extends State<_Desktop> {
       shpRent: details.shpRent,
       total: details.total,
       shpStatus: details.shpStatus,
+    );
+  }
+  Widget datePicker({required String date, required String title}) {
+    return GenericDatePicker(
+      label: title,
+      initialGregorianDate: date,
+      onDateChanged: (newDate) {
+        setState(() {
+          date = newDate;
+        });
+      },
     );
   }
 }

@@ -132,6 +132,9 @@ class _DesktopState extends State<_Desktop> {
               child: Row(
                 children: [
                   SizedBox(
+                      width: 40,
+                      child: Text(tr.id)),
+                  SizedBox(
                       width: 90,
                       child: Text(tr.date,style: titleStyle)),
                   Expanded(
@@ -208,6 +211,9 @@ class _DesktopState extends State<_Desktop> {
                               child: Row(
                                 children: [
                                   SizedBox(
+                                      width: 40,
+                                      child: Text(shp.shpId.toString())),
+                                  SizedBox(
                                       width: 90,
                                       child: Text(shp.shpMovingDate.toFormattedDate())),
 
@@ -225,10 +231,10 @@ class _DesktopState extends State<_Desktop> {
                                       child: Text("${shp.shpRent?.toAmount()} $_baseCurrency")),
                                   SizedBox(
                                       width: 110,
-                                      child: Text("${shp.shpLoadSize} ${shp.shpUnit}")),
+                                      child: Text("${shp.shpLoadSize?.toAmount()} ${shp.shpUnit}")),
                                   SizedBox(
                                       width: 110,
-                                      child: Text("${shp.shpUnloadSize} ${shp.shpUnit}")),
+                                      child: Text("${shp.shpUnloadSize?.toAmount()} ${shp.shpUnit}")),
                                   SizedBox(
                                       width: 120,
                                       child: Text("${shp.total?.toAmount()} $_baseCurrency")),

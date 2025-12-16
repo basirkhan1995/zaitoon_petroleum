@@ -184,6 +184,7 @@ class _DesktopState extends State<_Desktop> {
                             child: Row(
                               spacing: 5,
                               children: [
+                                Icon(Icons.local_shipping_outlined,color: color.outline),
                                Expanded(child: Text(vehicle.vclModel??"")),
                                 SizedBox(
                                     width: 100,

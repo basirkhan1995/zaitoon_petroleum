@@ -61,15 +61,12 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
-    final color = Theme.of(context).colorScheme;
-
     return Scaffold(
-      backgroundColor: color.surface,
       body: Column(
         children: [
           SizedBox(height: 8),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8),
             child: Row(
               spacing: 8,
               children: [
@@ -136,7 +133,7 @@ class _DesktopState extends State<_Desktop> {
                     );
                   }
                   return GridView.builder(
-                    padding: const EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(8),
                     gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                       maxCrossAxisExtent: 200,
                       crossAxisSpacing: 12,
