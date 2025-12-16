@@ -108,6 +108,7 @@ class _DesktopState extends State<_Desktop> {
     }
     final login = state.loginData;
     usrName = login.usrName??"";
+
     return BlocBuilder<ShippingBloc, ShippingState>(
       builder: (context, state) {
         return Scaffold(

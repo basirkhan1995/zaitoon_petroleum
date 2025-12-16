@@ -128,7 +128,7 @@ class _CustomStepperState extends State<CustomStepper> {
                       ? Icon(
                     widget.steps[i].icon,
                     size: 16,
-                    color: theme.colorScheme.onPrimary,
+                    color: theme.colorScheme.surface,
                   )
                       : Text(
                     '${i + 1}',
@@ -175,7 +175,6 @@ class _CustomStepperState extends State<CustomStepper> {
         );
       }
     }
-
     return items;
   }
 }

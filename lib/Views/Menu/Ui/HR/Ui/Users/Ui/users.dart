@@ -73,7 +73,7 @@ class _DesktopState extends State<_Desktop> {
     }
    // final login = state.loginData;
     return Scaffold(
-      backgroundColor: color.surface,
+     // backgroundColor: color.surface,
       body: Column(
         children: [
 
@@ -159,7 +159,7 @@ class _DesktopState extends State<_Desktop> {
                     itemBuilder: (context, index) {
                       final usr = filteredList[index];
 
-                      return InfoCard(
+                      return ZCard(
                         // ---------- Avatar ----------
                         image: ImageHelper.stakeholderProfile(
                         imageName: usr.usrPhoto,

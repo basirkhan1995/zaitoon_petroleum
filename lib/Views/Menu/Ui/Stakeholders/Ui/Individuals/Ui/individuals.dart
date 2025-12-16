@@ -87,7 +87,6 @@ class _DesktopState extends State<_Desktop> {
           margin: EdgeInsets.symmetric(vertical: 7),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
-            color: color.surface
           ),
           child: Column(
             children: [
@@ -187,7 +186,7 @@ class _DesktopState extends State<_Desktop> {
                           final lastName  = stk.perLastName?.trim() ?? "";
                           final fullName  = "$firstName $lastName".trim();
 
-                          return InfoCard(
+                          return ZCard(
                             image: ImageHelper.stakeholderProfile(
                               imageName: stk.imageProfile,
                               size: 46,

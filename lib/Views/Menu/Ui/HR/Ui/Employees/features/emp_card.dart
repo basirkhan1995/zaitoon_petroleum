@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// A generic card widget for displaying information with avatar, title, subtitle,
 /// status badge, and multiple info rows.
-class InfoCard extends StatefulWidget {
+class ZCard extends StatefulWidget {
   /// The image to display (can be network URL, asset path, or widget)
   final Widget? image;
 
@@ -48,7 +48,7 @@ class InfoCard extends StatefulWidget {
   /// Custom builder for the info items section
   final Widget Function(BuildContext context)? infoItemsBuilder;
 
-  const InfoCard({
+  const ZCard({
     super.key,
     this.image,
     required this.title,
@@ -68,7 +68,7 @@ class InfoCard extends StatefulWidget {
   });
 
   @override
-  State<InfoCard> createState() => _InfoCardState();
+  State<ZCard> createState() => _ZCardState();
 }
 
 /// Represents an info item (icon + text)
@@ -101,7 +101,7 @@ class InfoStatus {
   });
 }
 
-class _InfoCardState extends State<InfoCard> {
+class _ZCardState extends State<ZCard> {
   bool _isHovering = false;
 
   @override
@@ -132,7 +132,14 @@ class _InfoCardState extends State<InfoCard> {
               offset: const Offset(0, 2),
             )
           ]
-              : [],
+              : [
+            BoxShadow(
+              color: color.outline.withValues(alpha: .15),
+              spreadRadius: 1,
+              blurRadius: 1,
+              offset: const Offset(0, 1),
+            )
+          ],
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(widget.borderRadius),

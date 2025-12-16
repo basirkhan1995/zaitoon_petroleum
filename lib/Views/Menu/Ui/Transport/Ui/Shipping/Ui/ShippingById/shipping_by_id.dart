@@ -92,7 +92,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   Widget _buildErrorDialog(String error, BuildContext context) {
     return AlertDialog(
       content: Container(
@@ -113,7 +112,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   Widget _buildStepperWithData(ShippingDetailLoadedState state, AppLocalizations tr, BuildContext context) {
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
@@ -164,7 +162,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   Widget _buildNewShippingStepper(AppLocalizations tr, BuildContext context) {
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
@@ -186,14 +183,9 @@ class _DesktopState extends State<_Desktop> {
                 icon: Icons.local_shipping,
               ),
               StepItem(
-                title: tr.expense,
-                content: Text(tr.expense),
-                icon: Icons.data_exploration,
-              ),
-              StepItem(
-                title: tr.income,
-                content: Text(tr.income),
-                icon: Icons.data_exploration,
+                title: tr.advancePayment,
+                content: const Text('Advance Payment'),
+                icon: Icons.attach_money_outlined,
               ),
               StepItem(
                 title: 'Delivered',
@@ -209,7 +201,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   Widget _buildIncomeView(ShippingDetailsModel shipping) {
     return Container(
       padding: const EdgeInsets.all(8),
@@ -233,14 +224,13 @@ class _DesktopState extends State<_Desktop> {
                   style: const TextStyle(fontSize: 15),
                 ),
               ),
-            )).toList()
+            ))
           else
             const Text('No income yet'),
         ],
       ),
     );
   }
-
   Widget _buildExpensesView(ShippingDetailsModel shipping) {
     return SingleChildScrollView(
       child: Container(
@@ -265,7 +255,7 @@ class _DesktopState extends State<_Desktop> {
                     style: const TextStyle(fontSize: 15),
                   ),
                 ),
-              )).toList()
+              ))
             else
               Text(AppLocalizations.of(context)!.noExpenseRecorded),
           ],
@@ -273,7 +263,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   Widget _buildDeliveryView(ShippingDetailsModel shipping) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -297,7 +286,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   ShippingModel _convertToShippingModel(ShippingDetailsModel details) {
     return ShippingModel(
       shpId: details.shpId,

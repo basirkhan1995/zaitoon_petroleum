@@ -141,7 +141,7 @@ class _DesktopState extends State<_Desktop> {
                     itemBuilder: (context, index) {
                       final driver = filteredList[index];
 
-                      return InfoCard(
+                      return ZCard(
                         // Image
                         image: ImageHelper.stakeholderProfile(
                           imageName: driver.perPhoto,

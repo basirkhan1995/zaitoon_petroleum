@@ -7,7 +7,7 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:flutter/services.dart';
 import 'package:zaitoon_petroleum/Features/Other/shortcut.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingById/shipping_by_Id.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingById/shipping_by_id.dart';
 import '../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';

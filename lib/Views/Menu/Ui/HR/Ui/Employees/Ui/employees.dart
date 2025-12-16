@@ -146,7 +146,7 @@ class _DesktopState extends State<_Desktop> {
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {
                       final emp = filteredList[index];
-                      return InfoCard(
+                      return ZCard(
                         image: ImageHelper.stakeholderProfile(
                           imageName: emp.empImage,
                           size: 46,
