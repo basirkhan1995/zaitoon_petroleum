@@ -388,23 +388,23 @@ class _DesktopState extends State<_Desktop> {
                             : SizedBox(),
                       ],
                     ),
-                    Row(
-                      spacing: 5,
-                      children: [
-                        ZOutlineButton(
-                            width: 120,
-                            label: Text(tr.cancel)),
-                        ZOutlineButton(
-                          isActive: true,
-                          onPressed: ()=> onSubmit(),
-                          width: 120,
-                          label: state is ShippingLoadingState ? SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(color: color.surface),
-                        ) : Text(tr.create),)
-                      ],
-                    )
+                    // Row(
+                    //   spacing: 5,
+                    //   children: [
+                    //     ZOutlineButton(
+                    //         width: 120,
+                    //         label: Text(tr.cancel)),
+                    //     ZOutlineButton(
+                    //       isActive: true,
+                    //       onPressed: ()=> onSubmit(),
+                    //       width: 120,
+                    //       label: state is ShippingLoadingState ? SizedBox(
+                    //       width: 16,
+                    //       height: 16,
+                    //       child: CircularProgressIndicator(color: color.surface),
+                    //     ) : Text(tr.create),)
+                    //   ],
+                    // )
                   ],
                 ),
               ),
@@ -450,7 +450,7 @@ class _DesktopState extends State<_Desktop> {
     if (widget.model == null) {
       bloc.add(AddShippingEvent(data));
     } else {
-      bloc.add(UpdateShippingEvent(data));
+      //bloc.add(UpdateShippingEvent(data));
     }
   }
 }

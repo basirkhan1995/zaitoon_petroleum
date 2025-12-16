@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
+import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/Ui/login.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/hr.dart';
@@ -9,6 +11,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfi
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/individuals.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/transport.dart';
 import '../../Features/Generic/generic_menu.dart';
+import '../../Features/Other/image_helper.dart';
 import '../../Features/Other/responsive.dart';
 import '../../Features/Other/secure_storage.dart';
 import '../../Features/Other/utils.dart';
@@ -232,46 +235,230 @@ class _DesktopState extends State<_Desktop> {
                   ? CrossAxisAlignment.start
                   : CrossAxisAlignment.center,
               children: [
-                InkWell(
-                  onTap: _logout,
-                  child: Row(
-                    mainAxisAlignment: isExpanded
-                        ? MainAxisAlignment.start
-                        : MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.power_settings_new_outlined),
-                      if (isExpanded)
-                        Expanded(
-                          child: Text(
-                            AppLocalizations.of(context)!.logout,
-                            softWrap: true,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontWeight: FontWeight.w500),
+
+              InkWell(
+                onTap: (){
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return Dialog(
+                        alignment:
+                        context.read<LocalizationBloc>().state.languageCode == "en"?
+                        AlignmentGeometry.bottomLeft : AlignmentGeometry.bottomRight,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        elevation: 0,
+                        backgroundColor: Colors.transparent,
+                        child: Container(
+                          width: 320,
+                          padding: EdgeInsets.zero,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.circular(8.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: .1),
+                                blurRadius: 20,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Header with gradient background
+                              SizedBox(height: 15),
+                              Column(
+                                children: [
+                                  // Profile image with border
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Theme.of(context).colorScheme.primary,
+                                        width: 1.2,
+                                      ),
+                                    ),
+                                    child: ImageHelper.stakeholderProfile(
+                                      imageName: authState.loginData.usrPhoto,
+                                      size: 80,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  // User name
+                                  Text(
+                                    authState.loginData.usrFullName ?? "No Name",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).colorScheme.onSurface,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  Text(
+                                    authState.loginData.usrName ?? "No Name",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Theme.of(context).colorScheme.onSurface,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+
+                              Divider(indent: 10,endIndent: 10),
+                              // User details
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Email
+                                    _buildDetailRow(
+                                      context,
+                                      icon: Icons.email_outlined,
+                                      text: authState.loginData.usrEmail ?? "No Email",
+                                    ),
+                                    const SizedBox(height: 12),
+
+                                    // Role
+                                    _buildDetailRow(
+                                      context,
+                                      icon: Icons.work_outline,
+                                      text: authState.loginData.usrRole ?? "No Role",
+                                    ),
+                                    const SizedBox(height: 12),
+
+                                    // Branch
+                                    _buildDetailRow(
+                                      context,
+                                      icon: Icons.business_outlined,
+                                      text: authState.loginData.brcName ?? "No Branch",
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              // Divider
+                              const Divider(height: 1, thickness: 1),
+
+                              // Logout button
+                              InkWell(
+                                onTap: () {
+                                  Navigator.of(context).pop(); // Close dialog
+                                  _logout();
+                                },
+                                borderRadius: const BorderRadius.only(
+                                  bottomLeft: Radius.circular(16.0),
+                                  bottomRight: Radius.circular(16.0),
+                                ),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.only(
+                                      bottomLeft: Radius.circular(16.0),
+                                      bottomRight: Radius.circular(16.0),
+                                    ),
+                                    color: Theme.of(context).colorScheme.error.withValues(alpha: .05),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.logout,
+                                        color: Theme.of(context).colorScheme.error,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        AppLocalizations.of(context)!.logout,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: Theme.of(context).colorScheme.error,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                    ],
+                      );
+                    },
+                  );
+                },
+                child: Row(
+                mainAxisSize: MainAxisSize.min, // ⭐ critical
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ImageHelper.stakeholderProfile(
+                    imageName: authState.loginData.usrPhoto,
+                    border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: .3)),
+                    size: 40,
                   ),
-                ),
-                if (isExpanded) const SizedBox(height: 5),
-                if (isExpanded)
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          adminName,
-                          softWrap: true,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+
+                  if (!isExpanded) const SizedBox.shrink(),
+
+                  if (isExpanded) const SizedBox(width: 5),
+
+                  if (isExpanded)
+                    Expanded( // or Flexible
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            adminName,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            authState.loginData.usrRole ?? "",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 11),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-              ],
+                    ),
+                ],
+                            ),
+              )
+
+
+            ],
             ),
           ),
         ),
       ),
+    );
+  }
+  // Helper widget for detail rows
+  Widget _buildDetailRow(BuildContext context, {required IconData icon, required String text}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          icon,
+          size: 18,
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 14,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 }

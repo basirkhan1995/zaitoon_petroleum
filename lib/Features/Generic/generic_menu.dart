@@ -168,6 +168,7 @@ class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
             AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               width: isMenuExpanded ? maxScreenSize : minScreenSize,
+              clipBehavior: Clip.hardEdge,
               height: double.infinity,
               margin: widget.margin ??
                   const EdgeInsets.symmetric(vertical: 10, horizontal: 8),

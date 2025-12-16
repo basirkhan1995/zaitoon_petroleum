@@ -1390,4 +1390,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get payment => 'پرداخت';
+
+  @override
+  String get noExpenseRecorded => 'تاکتون مصرف ثبت نشده است';
 }

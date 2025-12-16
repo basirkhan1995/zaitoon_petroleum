@@ -1398,4 +1398,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get payment => 'Payment';
+
+  @override
+  String get noExpenseRecorded => 'No expenses recorded';
 }

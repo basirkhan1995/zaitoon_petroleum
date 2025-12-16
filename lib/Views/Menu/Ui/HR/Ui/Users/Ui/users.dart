@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/Ui/add_user.dart';
+import '../../../../../../../Features/Other/image_helper.dart';
 import '../../../../../../../Features/Widgets/no_data_widget.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
@@ -160,19 +161,10 @@ class _DesktopState extends State<_Desktop> {
 
                       return InfoCard(
                         // ---------- Avatar ----------
-                        image: CircleAvatar(
-                          radius: 23,
-                          backgroundColor:
-                          Theme.of(context).colorScheme.primary.withValues(alpha: .7),
-                          child: Text(
-                            usr.usrId.toString(),
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.surface,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
+                        image: ImageHelper.stakeholderProfile(
+                        imageName: usr.usrPhoto,
+                        size: 46,
+                      ),
 
                         // ---------- Title ----------
                         title: usr.usrName ?? "-",

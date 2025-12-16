@@ -17,6 +17,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/mode
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/model/driver_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/model/shp_details_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/model/vehicle_model.dart';
 import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
@@ -900,6 +901,20 @@ class Repositories {
     }
   }
 
+  Future<Map<String, dynamic>> updateShipping({required ShippingModel newShipping}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/transport/shipping.php",
+          data: newShipping.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   Future<List<ShippingModel>> getShipping({int? id}) async {
     try {
       final queryParams = {'shpID': id};
@@ -955,6 +970,39 @@ class Repositories {
         }
         if (data.first is Map<String, dynamic>) {
           return TrptModel.fromMap(data.first);
+        }
+        throw Exception("Invalid data format in list response");
+      }
+
+      throw Exception("Invalid API response format");
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<ShippingDetailsModel> getShippingById({required int shpId}) async {
+    try {
+      final queryParams = {'shpID': shpId};
+      final response = await api.get(
+          endpoint: '/transport/shipping.php',
+          queryParams: queryParams
+      );
+
+      final data = response.data;
+
+      // Case 1: API returns a single object
+      if (data is Map<String, dynamic>) {
+        return ShippingDetailsModel.fromMap(data);
+      }
+
+      // Case 2: API returns a list with data
+      if (data is List) {
+        if (data.isEmpty) {
+          throw Exception("No transport data found for reference: $shpId");
+        }
+        if (data.first is Map<String, dynamic>) {
+          return ShippingDetailsModel.fromMap(data.first);
         }
         throw Exception("Invalid data format in list response");
       }

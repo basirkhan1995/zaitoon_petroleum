@@ -464,5 +464,6 @@
   "pendingTransactionHint": "Awaiting approval or completion",
   "order": "Order",
   "advancePayment": "Advance Payment",
-  "payment": "Payment"
+  "payment": "Payment",
+  "noExpenseRecorded": "No expenses recorded"
 }

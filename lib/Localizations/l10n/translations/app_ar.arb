@@ -464,5 +464,6 @@
   "pendingTransactionHint": "د تایید یا بشپړیدو په تمه",
   "order": "فرمایش",
   "advancePayment": "پیش پرداخت",
-  "payment": "پرداخت"
+  "payment": "پرداخت",
+  "noExpenseRecorded": "تاکتون مصرف ثبت نشده است"
 }

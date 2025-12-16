@@ -7,7 +7,7 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:flutter/services.dart';
 import 'package:zaitoon_petroleum/Features/Other/shortcut.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/shipping_screen.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingById/shipping_by_Id.dart';
 import '../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
@@ -170,7 +170,7 @@ class _DesktopState extends State<_Desktop> {
                   }
                 },
                 builder: (context, state) {
-                  if(state is ShippingLoadingState){
+                  if(state is ShippingDetailLoadingState){
                     return Center(child: CircularProgressIndicator());
                   }
                   if(state is ShippingErrorState){
@@ -179,18 +179,32 @@ class _DesktopState extends State<_Desktop> {
                       onRefresh: onRefresh,
                     );
                   }
-                  if(state is ShippingLoadedState){
-                    if(state.shipping.isEmpty){
+                  if(state is ShippingListLoadedState){
+                    if(state.shippingList.isEmpty){
                       return NoDataWidget(
                         message: tr.noDataFound,
                       );
                     }
                     return ListView.builder(
-                        itemCount: state.shipping.length,
+                        itemCount: state.shippingList.length,
                         itemBuilder: (context,index){
-                          final shp = state.shipping[index];
+                          final shp = state.shippingList[index];
                           return InkWell(
-                            onTap: (){},
+                            // In ShippingView - inside ListView.builder's InkWell
+                            onTap: () {
+                              final shipping = state.shippingList[index];
+
+                              // Open the stepper dialog with shipping details
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return BlocProvider.value(
+                                    value: BlocProvider.of<ShippingBloc>(context),
+                                    child: ShippingScreen(shippingId: shipping.shpId), // Use correct property name
+                                  );
+                                },
+                              );
+                            },
                             child: Container(
                               padding: EdgeInsets.symmetric(vertical: 10,horizontal: 15),
                               decoration: BoxDecoration(

@@ -22,6 +22,7 @@ class UsersModel {
   final String? usrPass;
   final bool? usrFcp;
   final bool? usrFev;
+  final String? usrPhoto;
 
   UsersModel({
     this.usrId,
@@ -37,6 +38,7 @@ class UsersModel {
     this.usrEmail,
     this.usrToken,
     this.usrEntryDate,
+    this.usrPhoto,
   });
 
   UsersModel copyWith({
@@ -48,6 +50,7 @@ class UsersModel {
     int? usrBranch,
     String? usrEmail,
     String? usrToken,
+    String? usrPhoto,
     DateTime? usrEntryDate,
   }) =>
       UsersModel(
@@ -60,6 +63,7 @@ class UsersModel {
         usrEmail: usrEmail ?? this.usrEmail,
         usrToken: usrToken ?? this.usrToken,
         usrEntryDate: usrEntryDate ?? this.usrEntryDate,
+        usrPhoto: usrPhoto ?? this.usrPhoto
       );
 
   factory UsersModel.fromMap(Map<String, dynamic> json) => UsersModel(
@@ -72,6 +76,7 @@ class UsersModel {
     usrEmail: json["usrEmail"],
     usrToken: json["usrToken"],
     usrEntryDate: json["usrEntryDate"] == null ? null : DateTime.parse(json["usrEntryDate"]),
+    usrPhoto: json["perPhoto"]
   );
 
   Map<String, dynamic> toMap() => {

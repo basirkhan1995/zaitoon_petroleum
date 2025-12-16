@@ -95,7 +95,7 @@ class _DesktopState extends State<_Desktop> {
   Widget _buildLoadingState() {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           CircularProgressIndicator(
             color: Theme.of(context).primaryColor,
@@ -116,7 +116,7 @@ class _DesktopState extends State<_Desktop> {
   Widget _buildInitialState() {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
             Icons.local_shipping_outlined,
@@ -142,7 +142,7 @@ class _DesktopState extends State<_Desktop> {
       child: Padding(
         padding: const EdgeInsets.all(40),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               Icons.error_outline,
@@ -209,12 +209,13 @@ class _DesktopState extends State<_Desktop> {
     final bool showAnyButton = showAuthorizeButton || showDeleteButton;
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         // Header
         Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 8),
           decoration: BoxDecoration(
-            color: color.primary,
+            color: color.surface,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(8),
               topRight: Radius.circular(8),
@@ -226,37 +227,10 @@ class _DesktopState extends State<_Desktop> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: .2),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.local_shipping, size: 14, color: Colors.white),
-                            const SizedBox(width: 6),
-                            Text(
-                              'TRANSPORT',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                    ],
-                  ),
-                  const SizedBox(height: 5),
                   Text(
                     locale.transactionDetails,
                     style: const TextStyle(
-                      color: Colors.white,
+
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
                     ),
@@ -264,7 +238,7 @@ class _DesktopState extends State<_Desktop> {
                   Text(
                     trpt.shdTrnRef ?? '',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: .8),
+
                       fontSize: 14,
                     ),
                   ),
@@ -272,7 +246,7 @@ class _DesktopState extends State<_Desktop> {
               ),
               IconButton(
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.close, color: Colors.white, size: 24),
+                icon: const Icon(Icons.close, size: 24),
               ),
             ],
           ),
@@ -283,6 +257,7 @@ class _DesktopState extends State<_Desktop> {
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 // Main Amount Card
                 Padding(
@@ -384,9 +359,9 @@ class _DesktopState extends State<_Desktop> {
                                   ],
                                 ),
                                 const Divider(height: 20, thickness: 1),
-                                _buildDetailRow('Load Size', '${trpt.shpLoadSize} ${trpt.shpUnit}'),
-                                _buildDetailRow('Unload Size', '${trpt.shpUnloadSize} ${trpt.shpUnit}'),
-                                _buildDetailRow('Rent', '${trpt.shpRent} USD'),
+                                _buildDetailRow('Load Size', '${trpt.shpLoadSize?.toAmount()} ${trpt.shpUnit}'),
+                                _buildDetailRow('Unload Size', '${trpt.shpUnloadSize?.toAmount()} ${trpt.shpUnit}'),
+                                _buildDetailRow('Rent', '${trpt.shpRent?.toAmount()} ${transaction?.purchaseCurrency}'),
                                 _buildDetailRow('Moving Date', _formatDate(trpt.shpMovingDate)),
                                 _buildDetailRow('Arrival Date', _formatDate(trpt.shpArriveDate)),
                               ],
@@ -429,7 +404,7 @@ class _DesktopState extends State<_Desktop> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       _buildDetailRow('Reference', transaction.trnReference ?? "-"),
-                                      _buildDetailRow('Amount', '${transaction.purchaseAmount} ${transaction.purchaseCurrency}'),
+                                      _buildDetailRow('Amount', '${transaction.purchaseAmount?.toAmount()} ${transaction.purchaseCurrency}'),
                                       _buildDetailRow('Debit Account', transaction.debitAccount?.toString() ?? "-"),
                                     ],
                                   ),

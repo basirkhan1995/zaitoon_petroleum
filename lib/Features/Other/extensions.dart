@@ -31,6 +31,17 @@ extension GetFirstLetterExtension on String {
   }
 }
 
+// Open Features/Other/extensions.dart
+// If firstWhereOrNull doesn't exist, add it:
+extension ListExtensions<T> on List<T> {
+  T? firstWhereOrNull(bool Function(T element) test) {
+    for (var element in this) {
+      if (test(element)) return element;
+    }
+    return null;
+  }
+}
+
 //Amount Formats
 extension NumberFormatting on Object {
   /// Converts string or number to double

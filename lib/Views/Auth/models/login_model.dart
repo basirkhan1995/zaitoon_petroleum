@@ -13,6 +13,7 @@ class LoginData {
   final DateTime? usrEntryDate;
   final int? usrBranch;
   final String? brcName;
+  final String? usrPhoto;
   final List<UsrPermissions>? permissions;
 
   LoginData({
@@ -24,6 +25,7 @@ class LoginData {
     this.usrEntryDate,
     this.usrBranch,
     this.brcName,
+    this.usrPhoto,
     this.permissions,
   });
 
@@ -36,6 +38,7 @@ class LoginData {
     DateTime? usrEntryDate,
     int? usrBranch,
     String? brcName,
+    String? usrPhoto,
     List<UsrPermissions>? permissions,
   }) =>
       LoginData(
@@ -48,6 +51,7 @@ class LoginData {
         usrBranch: usrBranch ?? this.usrBranch,
         brcName: brcName ?? this.brcName,
         permissions: permissions ?? this.permissions,
+        usrPhoto: usrPhoto ?? this.usrPhoto
       );
 
   factory LoginData.fromMap(Map<String, dynamic> json) => LoginData(
@@ -59,6 +63,7 @@ class LoginData {
     usrEntryDate: json["usrEntryDate"] == null ? null : DateTime.parse(json["usrEntryDate"]),
     usrBranch: json["usrBranch"],
     brcName: json["brcName"],
+    usrPhoto: json["perPhoto"],
     permissions: json["permissions"] == null ? [] : List<UsrPermissions>.from(json["permissions"]!.map((x) => UsrPermissions.fromMap(x))),
   );
 
