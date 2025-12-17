@@ -30,6 +30,8 @@ class ShippingInitial extends ShippingState {
     ShippingDetailsModel? currentShipping,
     int? loadingShpId,
   }) {
+    // Return new instance with updated values
+    // Since ShippingInitial is just initial state, we can return a new one
     return ShippingInitial();
   }
 }

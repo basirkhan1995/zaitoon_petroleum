@@ -6,6 +6,7 @@ import 'package:zaitoon_petroleum/Features/Other/alert_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
@@ -34,7 +35,6 @@ class ShippingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use the existing bloc from parent context
     return ResponsiveLayout(
       mobile: _Mobile(shippingId: shippingId),
       desktop: _Desktop(shippingId: shippingId),
@@ -55,9 +55,9 @@ class _DesktopState extends State<_Desktop> {
   @override
   void initState() {
     super.initState();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        currentLocale = context.read<LocalizationBloc>().state.languageCode;
-      });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      currentLocale = context.read<LocalizationBloc>().state.languageCode;
+    });
   }
 
   final productId = TextEditingController();
@@ -120,35 +120,52 @@ class _DesktopState extends State<_Desktop> {
     return BlocConsumer<ShippingBloc, ShippingState>(
       listener: (context, state) {
         if (state is ShippingSuccessState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.green,
-            ),
-          );
-          _clearExpenseForm();
+          // Clear the expense form after success
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _clearExpenseForm();
+            setState(() {
+              _selectedExpenseForEdit = null;
+            });
+          });
         }
         if (state is ShippingErrorState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.error),
-              backgroundColor: Colors.red,
-            ),
-          );
+          Utils.showOverlayMessage(context, message: state.error, isError: true);
         }
       },
-      builder: (context, state) {
-        if (state is ShippingDetailLoadingState) {
-          loadedShippingDetails = state.currentShipping;
+      builder: (context, blocState) {
+        // Get current shipping from any state
+        ShippingDetailsModel? currentShipping;
+
+        if (blocState is ShippingDetailLoadingState) {
+          loadedShippingDetails = blocState.currentShipping;
           return _buildLoadingDialog();
         }
 
-        if (state is ShippingErrorState) {
-          return _buildErrorDialog(state.error, context);
+        if (blocState is ShippingErrorState) {
+          return _buildErrorDialog(blocState.error, context);
         }
 
-        if (state is ShippingDetailLoadedState) {
-          return _buildStepperWithData(state, tr, context);
+        // Extract shipping from various states
+        if (blocState is ShippingDetailLoadedState) {
+          currentShipping = blocState.currentShipping;
+        } else if (blocState is ShippingSuccessState && blocState.currentShipping != null) {
+          currentShipping = blocState.currentShipping;
+        } else if (blocState is ShippingListLoadedState && blocState.currentShipping != null) {
+          currentShipping = blocState.currentShipping;
+        }
+
+        // If we have shipping details, show the stepper
+        if (currentShipping != null) {
+          // Update loaded details
+          if (loadedShippingDetails?.shpId != currentShipping.shpId) {
+            loadedShippingDetails = currentShipping;
+          }
+          return _buildStepperWithData(currentShipping, tr, context);
+        }
+
+        // If we're in the process of loading details
+        if (blocState is ShippingDetailLoadingState) {
+          return _buildLoadingDialog();
         }
 
         // Default: new shipping
@@ -157,7 +174,7 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget _advancePayment(){
+  Widget _advancePayment() {
     final tr = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -181,7 +198,7 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget _order(){
+  Widget _order() {
     final tr = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       child: Padding(
@@ -226,10 +243,8 @@ class _DesktopState extends State<_Desktop> {
                     ],
                   ),
                 ),
-                itemToString: (acc) =>
-                "${acc.perName} ${acc.perLastName}",
-                stateToLoading: (state) =>
-                state is IndividualLoadingState,
+                itemToString: (acc) => "${acc.perName} ${acc.perLastName}",
+                stateToLoading: (state) => state is IndividualLoadingState,
                 loadingBuilder: (context) => const SizedBox(
                   width: 16,
                   height: 16,
@@ -267,7 +282,7 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget _shipping(){
+  Widget _shipping() {
     final tr = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       child: Padding(
@@ -285,8 +300,7 @@ class _DesktopState extends State<_Desktop> {
                 isRequired: true,
                 bloc: context.read<VehicleBloc>(),
                 fetchAllFunction: (bloc) => bloc.add(LoadVehicleEvent()),
-                searchFunction: (bloc, query) =>
-                    bloc.add(LoadVehicleEvent()),
+                searchFunction: (bloc, query) => bloc.add(LoadVehicleEvent()),
                 validator: (value) {
                   if (value.isEmpty) {
                     return tr.required(tr.vehicle);
@@ -313,8 +327,7 @@ class _DesktopState extends State<_Desktop> {
                     ],
                   ),
                 ),
-                itemToString: (veh) =>
-                "${veh.vclModel} | ${veh.vclPlateNo}",
+                itemToString: (veh) => "${veh.vclModel} | ${veh.vclPlateNo}",
                 stateToLoading: (state) => state is VehicleLoadingState,
                 loadingBuilder: (context) => const SizedBox(
                   width: 16,
@@ -427,7 +440,6 @@ class _DesktopState extends State<_Desktop> {
                           return tr.required(tr.shippingRent);
                         }
 
-                        // Remove formatting (e.g. commas)
                         final clean = value.replaceAll(
                           RegExp(r'[^\d.]'),
                           '',
@@ -446,7 +458,7 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ],
               ),
-              ZTextFieldEntitled(controller: remark, title: tr.remark,keyboardInputType: TextInputType.multiline,),
+              ZTextFieldEntitled(controller: remark, title: tr.remark, keyboardInputType: TextInputType.multiline),
             ],
           ),
         ),
@@ -492,7 +504,10 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget _buildStepperWithData(ShippingDetailLoadedState state, AppLocalizations tr, BuildContext context) {
+  Widget _buildStepperWithData(ShippingDetailsModel shipping, AppLocalizations tr, BuildContext context) {
+    // Update loaded details
+    loadedShippingDetails = shipping;
+
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
@@ -504,34 +519,34 @@ class _DesktopState extends State<_Desktop> {
         child: Container(
           padding: const EdgeInsets.all(10.0),
           child: CustomStepper(
-            steps: [
-              StepItem(
-                title: tr.order,
-                content: _order(),
-                icon: Icons.shopping_cart,
-              ),
-              StepItem(
-                title: tr.shipping,
-                content: _shipping(),
-                icon: Icons.local_shipping,
-              ),
-              StepItem(
-                title: tr.expense,
-                content: _buildExpensesView(state.currentShipping!),
-                icon: Icons.data_exploration,
-              ),
-              StepItem(
-                title: tr.income,
-                content: _buildIncomeView(state.currentShipping!),
-                icon: Icons.data_exploration,
-              ),
-              StepItem(
-                title: 'Delivered',
-                content: _buildDeliveryView(state.currentShipping!),
-                icon: Icons.check_circle,
-              ),
-            ],
-            onFinish: onSubmit
+              steps: [
+                StepItem(
+                  title: tr.order,
+                  content: _order(),
+                  icon: Icons.shopping_cart,
+                ),
+                StepItem(
+                  title: tr.shipping,
+                  content: _shipping(),
+                  icon: Icons.local_shipping,
+                ),
+                StepItem(
+                  title: tr.expense,
+                  content: _buildExpensesView(shipping),
+                  icon: Icons.data_exploration,
+                ),
+                StepItem(
+                  title: tr.income,
+                  content: _buildIncomeView(shipping),
+                  icon: Icons.data_exploration,
+                ),
+                StepItem(
+                  title: 'Delivered',
+                  content: _buildDeliveryView(shipping),
+                  icon: Icons.check_circle,
+                ),
+              ],
+              onFinish: onSubmit
           ),
         ),
       ),
@@ -606,7 +621,6 @@ class _DesktopState extends State<_Desktop> {
   }
 
   void onSubmit() {
-   // if (!formKey.currentState!.validate()) return;
     final data = ShippingModel(
       shpLoadSize: loadingSize.text,
       shpUnloadSize: unloadingSize.text,
@@ -670,8 +684,12 @@ class _DesktopState extends State<_Desktop> {
     final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return BlocBuilder<ShippingBloc, ShippingState>(
-      builder: (context, state) {
+    // Use BlocSelector to only get loadingShpId
+    return BlocSelector<ShippingBloc, ShippingState, int?>(
+      selector: (state) => state.loadingShpId,
+      builder: (context, loadingShpId) {
+        final isLoading = loadingShpId == widget.shippingId;
+
         return SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(5),
@@ -709,7 +727,7 @@ class _DesktopState extends State<_Desktop> {
                               width: 100,
                               height: 30,
                               isActive: true,
-                              label: state is ShippingListLoadingState
+                              label: isLoading
                                   ? SizedBox(
                                 width: 20,
                                 height: 20,
@@ -719,7 +737,9 @@ class _DesktopState extends State<_Desktop> {
                                 ),
                               )
                                   : Text(_selectedExpenseForEdit != null ? tr.update : tr.create),
-                              onPressed: () {
+                              onPressed: isLoading
+                                  ? null // Disable button when loading
+                                  : () {
                                 _handleExpenseAction();
                               },
                             ),
@@ -842,7 +862,6 @@ class _DesktopState extends State<_Desktop> {
                       title: tr.narration,
                     ),
                     const SizedBox(height: 5),
-
                   ],
                 ),
 
@@ -867,20 +886,19 @@ class _DesktopState extends State<_Desktop> {
                   Column(
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(vertical: 8,horizontal: 8),
+                        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                         child: Row(
                           children: [
                             SizedBox(
                                 width: 300,
-                                child: Text(tr.referenceNumber,style: textTheme.titleSmall)),
-                            Expanded(
-                                child: Text(tr.narration,style: textTheme.titleSmall)),
+                                child: Text(tr.referenceNumber, style: textTheme.titleSmall)
+                            ),
+                            Expanded(child: Text(tr.narration, style: textTheme.titleSmall)),
                             SizedBox(
                               width: 100,
-                                child: Text(tr.amount,style: textTheme.titleSmall)),
-                            SizedBox(
-                              width: 50,
-                            )
+                              child: Text(tr.amount, style: textTheme.titleSmall),
+                            ),
+                            SizedBox(width: 50)
                           ],
                         ),
                       ),
@@ -895,14 +913,15 @@ class _DesktopState extends State<_Desktop> {
                           itemCount: expenses.length,
                           itemBuilder: (context, index) {
                             final expense = expenses[index];
+
                             return SingleChildScrollView(
                               child: Material(
                                 child: InkWell(
                                   hoverColor: color.primary.withValues(alpha: .06),
                                   highlightColor: color.primary.withValues(alpha: .06),
-                                  onTap: ()=> _loadExpenseForEdit(expense),
+                                  onTap: isLoading ? null : () => _loadExpenseForEdit(expense),
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8,vertical: 8),
+                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                                     decoration: BoxDecoration(
                                       color: _selectedExpenseForEdit?.trdReference == expense.trdReference
                                           ? color.primary.withValues(alpha: .1)
@@ -918,43 +937,55 @@ class _DesktopState extends State<_Desktop> {
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(expense.trdReference??"",
-                                              style: textTheme.titleSmall,
+                                              Text(
+                                                expense.trdReference ?? "",
+                                                style: textTheme.titleSmall,
                                               ),
                                               Row(
                                                 mainAxisAlignment: MainAxisAlignment.start,
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
                                                   SizedBox(
-                                                      width: 70,
-                                                      child: Text(expense.accNumber.toString(),style: TextStyle(color: color.primary),)),
+                                                    width: 70,
+                                                    child: Text(
+                                                      expense.accNumber.toString(),
+                                                      style: TextStyle(color: color.primary),
+                                                    ),
+                                                  ),
                                                   SizedBox(
-                                                      width: 150,
-                                                      child: Text(expense.accName??"")),
+                                                    width: 150,
+                                                    child: Text(expense.accName ?? ""),
+                                                  ),
                                                 ],
                                               )
                                             ],
                                           ),
                                         ),
-                                
-                                        Expanded(child: Text(expense.narration??"")),
+                                        Expanded(child: Text(expense.narration ?? "")),
                                         SizedBox(
                                           width: 100,
-                                          child: Text("${expense.amount?.toAmount()} ${expense.currency}",
-                                          style: Theme.of(context).textTheme.titleSmall?.copyWith(),
+                                          child: Text(
+                                            "${expense.amount?.toAmount()} ${expense.currency}",
+                                            style: Theme.of(context).textTheme.titleSmall?.copyWith(),
                                           ),
                                         ),
-                                
                                         SizedBox(
                                           width: 50,
-                                          child: InkWell(
-                                              onTap: ()=> _showDeleteConfirmationDialog(expense),
-                                              child: Icon(Icons.delete,color: color.error)),
+                                          child: isLoading
+                                              ? SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                              : InkWell(
+                                            onTap: () => _showDeleteConfirmationDialog(expense),
+                                            child: Icon(Icons.delete, color: color.error),
+                                          ),
                                         )
-                                
-                                
                                       ],
-                                    )
+                                    ),
                                   ),
                                 ),
                               ),
@@ -995,16 +1026,11 @@ class _DesktopState extends State<_Desktop> {
 
   void _handleExpenseAction() {
     if (expenseAccNumber == null || expenseAmount.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.required("Fields")),
-        ),
-      );
+      Utils.showOverlayMessage(context, message: "Fields are required", isError: true);
       return;
     }
 
     if (_selectedExpenseForEdit != null) {
-      // Update existing expense
       context.read<ShippingBloc>().add(
         UpdateShippingExpenseEvent(
           shpId: widget.shippingId!,
@@ -1015,7 +1041,6 @@ class _DesktopState extends State<_Desktop> {
         ),
       );
     } else {
-      // Add new expense
       context.read<ShippingBloc>().add(
         AddShippingExpenseEvent(
           shpId: widget.shippingId!,
@@ -1037,7 +1062,7 @@ class _DesktopState extends State<_Desktop> {
         return ZAlertDialog(
             title: tr.areYouSure,
             content: "${tr.delete}? ${expense.amount?.toAmount()} ${expense.currency}",
-            onYes: (){
+            onYes: () {
               context.read<ShippingBloc>().add(
                 DeleteShippingExpenseEvent(
                   shpId: widget.shippingId!,
@@ -1045,7 +1070,8 @@ class _DesktopState extends State<_Desktop> {
                   usrName: usrName ?? "",
                 ),
               );
-            });
+            }
+        );
       },
     );
   }
@@ -1080,7 +1106,11 @@ class _DesktopState extends State<_Desktop> {
       initialGregorianDate: date,
       onDateChanged: (newDate) {
         setState(() {
-          date = newDate;
+          if (title == 'Loading Date') {
+            shpFromGregorian = newDate;
+          } else {
+            shpToGregorian = newDate;
+          }
         });
       },
     );

@@ -240,6 +240,13 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       ) async {
     if (state.currentShipping == null) return;
 
+    // Show loading for this specific operation
+    emit(state.copyWith(
+      shippingList: state.shippingList,
+      currentShipping: state.currentShipping,
+      loadingShpId: event.shpId,
+    ));
+
     try {
       final res = await _repo.addShippingExpense(
         shpId: event.shpId,
@@ -250,12 +257,28 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       );
 
       if (res['msg'] == "success") {
-        add(LoadShippingDetailEvent(event.shpId));
+        // Get ONLY the updated expenses for this shipping
+        final updatedShipping = await _repo.getShippingById(shpId: event.shpId);
+
+        // Update the current state with new shipping details
+        emit(state.copyWith(
+          shippingList: state.shippingList,
+          currentShipping: updatedShipping,
+          loadingShpId: null, // Clear loading
+        ));
+
+        // Show success state (optional)
+        emit(ShippingSuccessState(
+          shippingList: state.shippingList,
+          currentShipping: updatedShipping,
+          loadingShpId: null,
+          message: 'Expense added successfully',
+        ));
       } else if (res['msg'] == "delivered") {
         emit(ShippingErrorState(
           shippingList: state.shippingList,
           currentShipping: state.currentShipping,
-          loadingShpId: state.loadingShpId,
+          loadingShpId: null,
           error: 'Cannot add expense to delivered shipping',
         ));
       } else {
@@ -265,7 +288,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       emit(ShippingErrorState(
         shippingList: state.shippingList,
         currentShipping: state.currentShipping,
-        loadingShpId: state.loadingShpId,
+        loadingShpId: null,
         error: 'Failed to add expense: $e',
       ));
     }
@@ -277,6 +300,13 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       ) async {
     if (state.currentShipping == null) return;
 
+    // Show loading for this specific operation
+    emit(state.copyWith(
+      shippingList: state.shippingList,
+      currentShipping: state.currentShipping,
+      loadingShpId: event.shpId,
+    ));
+
     try {
       final res = await _repo.updateShippingExpense(
         shpId: event.shpId,
@@ -287,18 +317,28 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       );
 
       if (res['msg'] == "success") {
-        add(LoadShippingDetailEvent(event.shpId));
+        // Get ONLY the updated expenses
+        final updatedShipping = await _repo.getShippingById(shpId: event.shpId);
+
+        // Update the current state
+        emit(state.copyWith(
+          shippingList: state.shippingList,
+          currentShipping: updatedShipping,
+          loadingShpId: null,
+        ));
+
+        // Show success state
         emit(ShippingSuccessState(
           shippingList: state.shippingList,
-          currentShipping: state.currentShipping,
-          loadingShpId: state.loadingShpId,
+          currentShipping: updatedShipping,
+          loadingShpId: null,
           message: 'Expense updated successfully',
         ));
       } else if (res['msg'] == "delivered") {
         emit(ShippingErrorState(
           shippingList: state.shippingList,
           currentShipping: state.currentShipping,
-          loadingShpId: state.loadingShpId,
+          loadingShpId: null,
           error: 'Cannot update expense of delivered shipping',
         ));
       } else {
@@ -308,7 +348,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       emit(ShippingErrorState(
         shippingList: state.shippingList,
         currentShipping: state.currentShipping,
-        loadingShpId: state.loadingShpId,
+        loadingShpId: null,
         error: 'Failed to update expense: $e',
       ));
     }
@@ -320,6 +360,13 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       ) async {
     if (state.currentShipping == null) return;
 
+    // Show loading for this specific operation
+    emit(state.copyWith(
+      shippingList: state.shippingList,
+      currentShipping: state.currentShipping,
+      loadingShpId: event.shpId,
+    ));
+
     try {
       final res = await _repo.deleteShippingExpense(
         shpId: event.shpId,
@@ -328,18 +375,28 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       );
 
       if (res['msg'] == "success") {
-        add(LoadShippingDetailEvent(event.shpId));
+        // Get ONLY the updated expenses
+        final updatedShipping = await _repo.getShippingById(shpId: event.shpId);
+
+        // Update the current state
+        emit(state.copyWith(
+          shippingList: state.shippingList,
+          currentShipping: updatedShipping,
+          loadingShpId: null,
+        ));
+
+        // Show success state
         emit(ShippingSuccessState(
           shippingList: state.shippingList,
-          currentShipping: state.currentShipping,
-          loadingShpId: state.loadingShpId,
+          currentShipping: updatedShipping,
+          loadingShpId: null,
           message: 'Expense deleted successfully',
         ));
       } else if (res['msg'] == "delivered") {
         emit(ShippingErrorState(
           shippingList: state.shippingList,
           currentShipping: state.currentShipping,
-          loadingShpId: state.loadingShpId,
+          loadingShpId: null,
           error: 'Cannot delete expense from delivered shipping',
         ));
       } else {
@@ -349,7 +406,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       emit(ShippingErrorState(
         shippingList: state.shippingList,
         currentShipping: state.currentShipping,
-        loadingShpId: state.loadingShpId,
+        loadingShpId: null,
         error: 'Failed to delete expense: $e',
       ));
     }
