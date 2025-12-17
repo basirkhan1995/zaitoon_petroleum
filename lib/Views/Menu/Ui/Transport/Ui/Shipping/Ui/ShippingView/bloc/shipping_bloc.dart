@@ -144,10 +144,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
     }
   }
 
-  Future<void> _onAddShipping(
-      AddShippingEvent event,
-      Emitter<ShippingState> emit,
-      ) async {
+  Future<void> _onAddShipping2(AddShippingEvent event, Emitter<ShippingState> emit,) async {
     try {
       final res = await _repo.addShipping(newShipping: event.newShipping);
 
@@ -180,10 +177,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
     }
   }
 
-  Future<void> _onUpdateShipping(
-      UpdateShippingEvent event,
-      Emitter<ShippingState> emit,
-      ) async {
+  Future<void> _onUpdateShipping2(UpdateShippingEvent event, Emitter<ShippingState> emit,) async {
     try {
       final res = await _repo.updateShipping(newShipping: event.updatedShipping);
 
@@ -197,6 +191,101 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
         }).toList();
 
         // Update current shipping if it's the same
+        ShippingDetailsModel? updatedCurrentShipping = state.currentShipping;
+        if (state.currentShipping?.shpId == event.updatedShipping.shpId) {
+          updatedCurrentShipping = ShippingDetailsModel(
+            shpId: event.updatedShipping.shpId ?? 0,
+            vehicle: event.updatedShipping.vehicle,
+            vclId: event.updatedShipping.vehicleId,
+            proName: event.updatedShipping.proName,
+            proId: event.updatedShipping.productId,
+            customer: event.updatedShipping.customer,
+            shpFrom: event.updatedShipping.shpFrom,
+            shpMovingDate: event.updatedShipping.shpMovingDate,
+            shpLoadSize: event.updatedShipping.shpLoadSize,
+            shpUnit: event.updatedShipping.shpUnit,
+            shpTo: event.updatedShipping.shpTo,
+            shpArriveDate: event.updatedShipping.shpArriveDate,
+            shpUnloadSize: event.updatedShipping.shpUnloadSize,
+            shpRent: event.updatedShipping.shpRent,
+            total: event.updatedShipping.total,
+            shpStatus: event.updatedShipping.shpStatus,
+            income: state.currentShipping?.income ?? [],
+            expenses: state.currentShipping?.expenses ?? [],
+          );
+        }
+
+        emit(ShippingSuccessState(
+          shippingList: updatedList,
+          currentShipping: updatedCurrentShipping,
+          message: 'Shipping updated successfully',
+        ));
+      } else {
+        throw Exception(res['msg'] ?? 'Failed to update shipping');
+      }
+    } catch (e) {
+      emit(ShippingErrorState(
+        shippingList: state.shippingList,
+        currentShipping: state.currentShipping,
+        error: 'Failed to update shipping: $e',
+      ));
+    }
+  }
+
+  // In ShippingBloc, update the event handlers for form submission
+  Future<void> _onAddShipping(AddShippingEvent event, Emitter<ShippingState> emit,) async {
+    emit(ShippingLoadingState(
+      shippingList: state.shippingList,
+      currentShipping: state.currentShipping,
+    ));
+
+    try {
+      final res = await _repo.addShipping(newShipping: event.newShipping);
+
+      if (res['msg'] == "success") {
+        final updatedList = await _repo.getAllShipping();
+        final shpId = res['shpID'];
+
+        if (shpId != null) {
+          // Load the newly created shipping details
+          final shippingDetail = await _repo.getShippingById(shpId: shpId);
+
+          emit(ShippingSuccessState(
+            shippingList: updatedList,
+            currentShipping: shippingDetail,
+            message: 'Shipping added successfully',
+          ));
+        } else {
+          emit(ShippingSuccessState(
+            shippingList: updatedList,
+            currentShipping: state.currentShipping,
+            message: 'Shipping added successfully',
+          ));
+        }
+      } else {
+        throw Exception(res['msg'] ?? 'Failed to add shipping');
+      }
+    } catch (e) {
+      emit(ShippingErrorState(
+        shippingList: state.shippingList,
+        currentShipping: state.currentShipping,
+        error: 'Failed to add shipping: $e',
+      ));
+    }
+  }
+
+  Future<void> _onUpdateShipping(UpdateShippingEvent event, Emitter<ShippingState> emit,) async {
+    emit(ShippingLoadingState(
+      shippingList: state.shippingList,
+      currentShipping: state.currentShipping,
+    ));
+
+    try {
+      final res = await _repo.updateShipping(newShipping: event.updatedShipping);
+
+      if (res['msg'] == "success") {
+        final updatedList = await _repo.getAllShipping();
+
         ShippingDetailsModel? updatedCurrentShipping = state.currentShipping;
         if (state.currentShipping?.shpId == event.updatedShipping.shpId) {
           updatedCurrentShipping = ShippingDetailsModel(
