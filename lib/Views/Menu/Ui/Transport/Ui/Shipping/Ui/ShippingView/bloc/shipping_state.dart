@@ -1,73 +1,121 @@
-// shipping_state.dart
 part of 'shipping_bloc.dart';
 
 abstract class ShippingState extends Equatable {
   final List<ShippingModel> shippingList;
   final ShippingDetailsModel? currentShipping;
+  final int? loadingShpId;
 
   const ShippingState({
     this.shippingList = const [],
     this.currentShipping,
+    this.loadingShpId,
   });
 
   @override
-  List<Object?> get props => [shippingList, currentShipping];
+  List<Object?> get props => [shippingList, currentShipping, loadingShpId];
+
+  ShippingState copyWith({
+    List<ShippingModel>? shippingList,
+    ShippingDetailsModel? currentShipping,
+    int? loadingShpId,
+  });
 }
 
 class ShippingInitial extends ShippingState {
   const ShippingInitial() : super(shippingList: const []);
+
+  @override
+  ShippingInitial copyWith({
+    List<ShippingModel>? shippingList,
+    ShippingDetailsModel? currentShipping,
+    int? loadingShpId,
+  }) {
+    return ShippingInitial();
+  }
 }
 
-class ShippingLoadingState extends ShippingState {
-  const ShippingLoadingState({
+class ShippingListLoadingState extends ShippingState {
+  const ShippingListLoadingState({
     required super.shippingList,
     super.currentShipping,
+    super.loadingShpId,
   });
+
+  @override
+  ShippingListLoadingState copyWith({
+    List<ShippingModel>? shippingList,
+    ShippingDetailsModel? currentShipping,
+    int? loadingShpId,
+  }) {
+    return ShippingListLoadingState(
+      shippingList: shippingList ?? this.shippingList,
+      currentShipping: currentShipping ?? this.currentShipping,
+      loadingShpId: loadingShpId ?? this.loadingShpId,
+    );
+  }
+}
+
+class ShippingDetailLoadingState extends ShippingState {
+  const ShippingDetailLoadingState({
+    required super.shippingList,
+    super.currentShipping,
+    required super.loadingShpId,
+  });
+
+  @override
+  ShippingDetailLoadingState copyWith({
+    List<ShippingModel>? shippingList,
+    ShippingDetailsModel? currentShipping,
+    int? loadingShpId,
+  }) {
+    return ShippingDetailLoadingState(
+      shippingList: shippingList ?? this.shippingList,
+      currentShipping: currentShipping ?? this.currentShipping,
+      loadingShpId: loadingShpId ?? this.loadingShpId,
+    );
+  }
 }
 
 class ShippingListLoadedState extends ShippingState {
   const ShippingListLoadedState({
     required super.shippingList,
     super.currentShipping,
-  });
-}
-
-class ShippingDetailLoadingState extends ShippingState {
-  final int loadingShpId;
-
-  const ShippingDetailLoadingState({
-    required super.shippingList,
-    super.currentShipping,
-    required this.loadingShpId,
+    super.loadingShpId,
   });
 
   @override
-  List<Object?> get props => [...super.props, loadingShpId];
+  ShippingListLoadedState copyWith({
+    List<ShippingModel>? shippingList,
+    ShippingDetailsModel? currentShipping,
+    int? loadingShpId,
+  }) {
+    return ShippingListLoadedState(
+      shippingList: shippingList ?? this.shippingList,
+      currentShipping: currentShipping ?? this.currentShipping,
+      loadingShpId: loadingShpId ?? this.loadingShpId,
+    );
+  }
 }
 
 class ShippingDetailLoadedState extends ShippingState {
-  final int currentStep;
-
   const ShippingDetailLoadedState({
     required super.shippingList,
     required super.currentShipping,
-    this.currentStep = 0,
+    super.loadingShpId,
   });
 
+  @override
   ShippingDetailLoadedState copyWith({
     List<ShippingModel>? shippingList,
     ShippingDetailsModel? currentShipping,
-    int? currentStep,
+    int? loadingShpId,
   }) {
     return ShippingDetailLoadedState(
       shippingList: shippingList ?? this.shippingList,
       currentShipping: currentShipping ?? this.currentShipping,
-      currentStep: currentStep ?? this.currentStep,
+      loadingShpId: loadingShpId ?? this.loadingShpId,
     );
   }
-
-  @override
-  List<Object?> get props => [...super.props, currentStep];
 }
 
 class ShippingErrorState extends ShippingState {
@@ -76,8 +124,24 @@ class ShippingErrorState extends ShippingState {
   const ShippingErrorState({
     required super.shippingList,
     super.currentShipping,
+    super.loadingShpId,
     required this.error,
   });
+
+  @override
+  ShippingErrorState copyWith({
+    List<ShippingModel>? shippingList,
+    ShippingDetailsModel? currentShipping,
+    int? loadingShpId,
+    String? error,
+  }) {
+    return ShippingErrorState(
+      shippingList: shippingList ?? this.shippingList,
+      currentShipping: currentShipping ?? this.currentShipping,
+      loadingShpId: loadingShpId ?? this.loadingShpId,
+      error: error ?? this.error,
+    );
+  }
 
   @override
   List<Object?> get props => [...super.props, error];
@@ -89,10 +153,25 @@ class ShippingSuccessState extends ShippingState {
   const ShippingSuccessState({
     required super.shippingList,
     super.currentShipping,
+    super.loadingShpId,
     required this.message,
   });
 
   @override
+  ShippingSuccessState copyWith({
+    List<ShippingModel>? shippingList,
+    ShippingDetailsModel? currentShipping,
+    int? loadingShpId,
+    String? message,
+  }) {
+    return ShippingSuccessState(
+      shippingList: shippingList ?? this.shippingList,
+      currentShipping: currentShipping ?? this.currentShipping,
+      loadingShpId: loadingShpId ?? this.loadingShpId,
+      message: message ?? this.message,
+    );
+  }
+
+  @override
   List<Object?> get props => [...super.props, message];
 }
-

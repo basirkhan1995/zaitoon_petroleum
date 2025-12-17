@@ -6,7 +6,6 @@ import 'package:zaitoon_petroleum/Features/Other/alert_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
@@ -56,14 +55,9 @@ class _DesktopState extends State<_Desktop> {
   @override
   void initState() {
     super.initState();
-    if (widget.shippingId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.read<ShippingBloc>().add(
-          LoadShippingDetailEvent(widget.shippingId!),
-        );
         currentLocale = context.read<LocalizationBloc>().state.languageCode;
       });
-    }
   }
 
   final productId = TextEditingController();
@@ -98,7 +92,6 @@ class _DesktopState extends State<_Desktop> {
 
   // Add these for expense management
   ShippingExpenseModel? _selectedExpenseForEdit;
-  bool _isExpenseFormLoading = false;
 
   @override
   void dispose() {
@@ -256,7 +249,6 @@ class _DesktopState extends State<_Desktop> {
                 noResultsText: tr.noDataFound,
                 showClearButton: true,
               ),
-
               Row(
                 spacing: 10,
                 children: [
@@ -508,7 +500,7 @@ class _DesktopState extends State<_Desktop> {
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,
       content: SizedBox(
-        width: MediaQuery.sizeOf(context).width * .7,
+        width: MediaQuery.sizeOf(context).width * .6,
         child: Container(
           padding: const EdgeInsets.all(10.0),
           child: CustomStepper(
@@ -588,7 +580,6 @@ class _DesktopState extends State<_Desktop> {
   }
 
   Widget _buildFinishShipping() {
-    final tr = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
@@ -718,7 +709,7 @@ class _DesktopState extends State<_Desktop> {
                               width: 100,
                               height: 30,
                               isActive: true,
-                              label: state is ShippingLoadingState
+                              label: state is ShippingListLoadingState
                                   ? SizedBox(
                                 width: 20,
                                 height: 20,
@@ -880,14 +871,8 @@ class _DesktopState extends State<_Desktop> {
                         child: Row(
                           children: [
                             SizedBox(
-                                width: 180,
+                                width: 300,
                                 child: Text(tr.referenceNumber,style: textTheme.titleSmall)),
-                            SizedBox(
-                                width: 100,
-                                child: Text(tr.accountNumber,style: textTheme.titleSmall)),
-                            SizedBox(
-                                width: 150,
-                                child: Text(tr.accountName,style: textTheme.titleSmall)),
                             Expanded(
                                 child: Text(tr.narration,style: textTheme.titleSmall)),
                             SizedBox(
@@ -911,46 +896,66 @@ class _DesktopState extends State<_Desktop> {
                           itemBuilder: (context, index) {
                             final expense = expenses[index];
                             return SingleChildScrollView(
-                              child: InkWell(
-                                onTap: ()=> _loadExpenseForEdit(expense),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 8,vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: _selectedExpenseForEdit?.trdReference == expense.trdReference
-                                        ? color.primary.withValues(alpha: .1)
-                                        : index.isEven
-                                        ? color.primary.withValues(alpha: .05)
-                                        : Colors.transparent,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                          width: 180,
-                                          child: Text(expense.trdReference??"")),
-                                      SizedBox(
-                                          width: 100,
-                                          child: Text(expense.accNumber.toString())),
-                                      SizedBox(
-                                          width: 150,
-                                          child: Text(expense.accName??"")),
-                                      Expanded(child: Text(expense.narration??"")),
-                                      SizedBox(
-                                        width: 100,
-                                        child: Text("${expense.amount?.toAmount()} ${expense.currency}",
-                                        style: Theme.of(context).textTheme.titleSmall?.copyWith(),
+                              child: Material(
+                                child: InkWell(
+                                  hoverColor: color.primary.withValues(alpha: .06),
+                                  highlightColor: color.primary.withValues(alpha: .06),
+                                  onTap: ()=> _loadExpenseForEdit(expense),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 8,vertical: 8),
+                                    decoration: BoxDecoration(
+                                      color: _selectedExpenseForEdit?.trdReference == expense.trdReference
+                                          ? color.primary.withValues(alpha: .1)
+                                          : index.isEven
+                                          ? color.outline.withValues(alpha: .05)
+                                          : Colors.transparent,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 300,
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(expense.trdReference??"",
+                                              style: textTheme.titleSmall,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  SizedBox(
+                                                      width: 70,
+                                                      child: Text(expense.accNumber.toString(),style: TextStyle(color: color.primary),)),
+                                                  SizedBox(
+                                                      width: 150,
+                                                      child: Text(expense.accName??"")),
+                                                ],
+                                              )
+                                            ],
+                                          ),
                                         ),
-                                      ),
-
-                                      SizedBox(
-                                        width: 50,
-                                        child: InkWell(
-                                            onTap: ()=> _showDeleteConfirmationDialog(expense),
-                                            child: Icon(Icons.delete,color: color.error)),
-                                      )
-
-
-                                    ],
-                                  )
+                                
+                                        Expanded(child: Text(expense.narration??"")),
+                                        SizedBox(
+                                          width: 100,
+                                          child: Text("${expense.amount?.toAmount()} ${expense.currency}",
+                                          style: Theme.of(context).textTheme.titleSmall?.copyWith(),
+                                          ),
+                                        ),
+                                
+                                        SizedBox(
+                                          width: 50,
+                                          child: InkWell(
+                                              onTap: ()=> _showDeleteConfirmationDialog(expense),
+                                              child: Icon(Icons.delete,color: color.error)),
+                                        )
+                                
+                                
+                                      ],
+                                    )
+                                  ),
                                 ),
                               ),
                             );

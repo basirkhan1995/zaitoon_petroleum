@@ -1,4 +1,3 @@
-
 part of 'shipping_bloc.dart';
 
 abstract class ShippingEvent extends Equatable {
@@ -36,12 +35,10 @@ class LoadShippingDetailEvent extends ShippingEvent {
   List<Object> get props => [shpId];
 }
 
-class UpdateShippingDetailEvent extends ShippingEvent {
-  final ShippingDetailsModel shipping;
-  const UpdateShippingDetailEvent(this.shipping);
-
+// Clear loading state
+class ClearDetailLoadingEvent extends ShippingEvent {
   @override
-  List<Object> get props => [shipping];
+  List<Object> get props => [];
 }
 
 // Stepper operations
@@ -53,11 +50,12 @@ class UpdateStepperStepEvent extends ShippingEvent {
   List<Object> get props => [step];
 }
 
-// This was missing - ADD THIS
 class ClearShippingDetailEvent extends ShippingEvent {
+  @override
   List<Object> get props => [];
 }
 
+// Expense operations
 class AddShippingExpenseEvent extends ShippingEvent {
   final int shpId;
   final int accNumber;
@@ -92,6 +90,7 @@ class UpdateShippingExpenseEvent extends ShippingEvent {
     required this.usrName,
   });
 
+  @override
   List<Object> get props => [shpId, trnReference, amount, narration, usrName];
 }
 
@@ -108,5 +107,4 @@ class DeleteShippingExpenseEvent extends ShippingEvent {
 
   @override
   List<Object> get props => [shpId, trnReference, usrName];
-
 }
