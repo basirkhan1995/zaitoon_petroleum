@@ -273,14 +273,14 @@ class _DesktopState extends State<_Desktop> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Total Amount',
+                                AppLocalizations.of(context)!.amount,
                                 style: textTheme.titleSmall?.copyWith(
                                   color: color.onSurface.withValues(alpha: .7),
                                 ),
                               ),
                               const SizedBox(height: 3),
                               Text(
-                                "${trpt.total?.toAmount() ?? "0.00"} ${transaction?.purchaseCurrency ?? ""}",
+                                "${trpt.transaction?.amount?.toAmount() ?? "0.00"} ${transaction?.currency ?? ""}",
                                 style: textTheme.headlineMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: color.primary,
@@ -361,7 +361,7 @@ class _DesktopState extends State<_Desktop> {
                                 const Divider(height: 20, thickness: 1),
                                 _buildDetailRow('Load Size', '${trpt.shpLoadSize?.toAmount()} ${trpt.shpUnit}'),
                                 _buildDetailRow('Unload Size', '${trpt.shpUnloadSize?.toAmount()} ${trpt.shpUnit}'),
-                                _buildDetailRow('Rent', '${trpt.shpRent?.toAmount()} ${transaction?.purchaseCurrency}'),
+                                _buildDetailRow('Rent', '${trpt.shpRent?.toAmount()} ${transaction?.currency}'),
                                 _buildDetailRow('Moving Date', _formatDate(trpt.shpMovingDate)),
                                 _buildDetailRow('Arrival Date', _formatDate(trpt.shpArriveDate)),
                               ],
@@ -404,7 +404,7 @@ class _DesktopState extends State<_Desktop> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       _buildDetailRow('Reference', transaction.trnReference ?? "-"),
-                                      _buildDetailRow('Amount', '${transaction.purchaseAmount?.toAmount()} ${transaction.purchaseCurrency}'),
+                                      _buildDetailRow('Amount', '${transaction.amount?.toAmount()} ${transaction.currency}'),
                                       _buildDetailRow('Debit Account', transaction.debitAccount?.toString() ?? "-"),
                                     ],
                                   ),

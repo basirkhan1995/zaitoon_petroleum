@@ -123,8 +123,8 @@ class TrptModel {
 
 class TrtpTransaction {
   final String? trnReference;
-  final String? purchaseAmount;
-  final String? purchaseCurrency;
+  final String? amount;
+  final String? currency;
   final int? debitAccount;
   final int? creditAccount;
   final String? maker;
@@ -135,8 +135,8 @@ class TrtpTransaction {
 
   TrtpTransaction({
     this.trnReference,
-    this.purchaseAmount,
-    this.purchaseCurrency,
+    this.amount,
+    this.currency,
     this.debitAccount,
     this.creditAccount,
     this.maker,
@@ -160,8 +160,8 @@ class TrtpTransaction {
   }) =>
       TrtpTransaction(
         trnReference: trnReference ?? this.trnReference,
-        purchaseAmount: purchaseAmount ?? this.purchaseAmount,
-        purchaseCurrency: purchaseCurrency ?? this.purchaseCurrency,
+        amount: purchaseAmount ?? this.amount,
+        currency: purchaseCurrency ?? this.currency,
         debitAccount: debitAccount ?? this.debitAccount,
         creditAccount: creditAccount ?? this.creditAccount,
         maker: maker ?? this.maker,
@@ -173,8 +173,8 @@ class TrtpTransaction {
 
   factory TrtpTransaction.fromMap(Map<String, dynamic> json) => TrtpTransaction(
     trnReference: json["trnReference"],
-    purchaseAmount: json["purchaseAmount"],
-    purchaseCurrency: json["purchaseCurrency"],
+    amount: json["amount"],
+    currency: json["currency"],
     debitAccount: json["debitAccount"],
     creditAccount: json["creditAccount"],
     maker: json["maker"],
@@ -186,8 +186,8 @@ class TrtpTransaction {
 
   Map<String, dynamic> toMap() => {
     "trnReference": trnReference,
-    "purchaseAmount": purchaseAmount,
-    "purchaseCurrency": purchaseCurrency,
+    "amount": amount,
+    "currency": currency,
     "debitAccount": debitAccount,
     "creditAccount": creditAccount,
     "maker": maker,

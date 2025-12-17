@@ -467,11 +467,11 @@ class _DesktopState extends State<_Desktop> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           const CircularProgressIndicator(),
           const SizedBox(height: 16),
           Text('Loading shipping details'),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
         ],
       ),
     );
@@ -506,7 +506,7 @@ class _DesktopState extends State<_Desktop> {
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,
       content: SizedBox(
-        width: MediaQuery.sizeOf(context).width * .6,
+        width: MediaQuery.sizeOf(context).width * .7,
         child: Container(
           padding: const EdgeInsets.all(10.0),
           child: CustomStepper(
@@ -537,9 +537,7 @@ class _DesktopState extends State<_Desktop> {
                 icon: Icons.check_circle,
               ),
             ],
-            onFinish: () {
-              Navigator.of(context).pop();
-            },
+            onFinish: onSubmit
           ),
         ),
       ),
@@ -609,35 +607,13 @@ class _DesktopState extends State<_Desktop> {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          SizedBox(height: 30),
-          BlocBuilder<ShippingBloc, ShippingState>(
-            builder: (context, state) {
-              final isLoading = state is ShippingLoadingState;
-              return ZOutlineButton(
-                width: 200,
-                height: 40,
-                label: isLoading
-                    ? SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 3,
-                    color: Theme.of(context).colorScheme.surface,
-                  ),
-                )
-                    : Text(tr.finish),
-                onPressed: isLoading ? null : onSubmit,
-              );
-            },
-          ),
         ],
       ),
     );
   }
 
   void onSubmit() {
-    if (!formKey.currentState!.validate()) return;
-
+   // if (!formKey.currentState!.validate()) return;
     final data = ShippingModel(
       shpLoadSize: loadingSize.text,
       shpUnloadSize: unloadingSize.text,
@@ -698,6 +674,8 @@ class _DesktopState extends State<_Desktop> {
   Widget _buildExpensesView(ShippingDetailsModel shipping) {
     final tr = AppLocalizations.of(context)!;
     final expenses = shipping.expenses ?? [];
+    final color = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return BlocBuilder<ShippingBloc, ShippingState>(
       builder: (context, state) {
@@ -717,17 +695,43 @@ class _DesktopState extends State<_Desktop> {
                           _selectedExpenseForEdit != null ? tr.edit : tr.newKeyword,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        if (_selectedExpenseForEdit != null)
-                          IconButton(
-                            icon: Icon(Icons.cancel),
-                            onPressed: () {
-                              setState(() {
-                                _selectedExpenseForEdit = null;
-                                _clearExpenseForm();
-                              });
-                            },
-                            tooltip: tr.cancel,
-                          ),
+                        // Expense Action Buttons
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            if (_selectedExpenseForEdit != null)
+                              ZOutlineButton(
+                                width: 100,
+                                height: 30,
+                                label: Text(tr.cancel),
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedExpenseForEdit = null;
+                                    _clearExpenseForm();
+                                  });
+                                },
+                              ),
+                            const SizedBox(width: 10),
+                            ZOutlineButton(
+                              width: 100,
+                              height: 30,
+                              isActive: true,
+                              label: state is ShippingLoadingState
+                                  ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                  color: Theme.of(context).colorScheme.surface,
+                                ),
+                              )
+                                  : Text(_selectedExpenseForEdit != null ? tr.update : tr.create),
+                              onPressed: () {
+                                _handleExpenseAction();
+                              },
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                     Divider(),
@@ -844,149 +848,114 @@ class _DesktopState extends State<_Desktop> {
                       controller: expenseNarration,
                       title: tr.narration,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 5),
 
-                    // Expense Action Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        if (_selectedExpenseForEdit != null)
-                          ZOutlineButton(
-                            width: 100,
-                            height: 30,
-                            label: Text(tr.cancel),
-                            onPressed: () {
-                              setState(() {
-                                _selectedExpenseForEdit = null;
-                                _clearExpenseForm();
-                              });
-                            },
-                          ),
-                        const SizedBox(width: 10),
-                        ZOutlineButton(
-                          width: 100,
-                          height: 30,
-                          label: state is ShippingLoadingState
-                              ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 3,
-                              color: Theme.of(context).colorScheme.surface,
-                            ),
-                          )
-                              : Text(_selectedExpenseForEdit != null ? tr.update : tr.create),
-                          onPressed: () {
-                            _handleExpenseAction();
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
                   ],
                 ),
 
                 // Expenses List
-                Text(
-                  '${AppLocalizations.of(context)!.expense} (${expenses.length})',
-                  style: Theme.of(context).textTheme.titleMedium,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    '${tr.expense} (${expenses.length})',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ),
-                const SizedBox(height: 8),
 
                 if (expenses.isEmpty)
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: Text(
                       AppLocalizations.of(context)!.noExpenseRecorded,
                       textAlign: TextAlign.center,
                     ),
                   )
                 else
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Theme.of(context).dividerColor),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: expenses.length,
-                      itemBuilder: (context, index) {
-                        final expense = expenses[index];
-                        return SingleChildScrollView(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: _selectedExpenseForEdit?.trdReference == expense.trdReference
-                                  ? Theme.of(context).primaryColor.withValues(alpha: .1)
-                                  : index.isEven
-                                  ? Theme.of(context).colorScheme.surface.withValues(alpha: .3)
-                                  : Colors.transparent,
-                            ),
-                            child: ListTile(
-                              onTap: () => _loadExpenseForEdit(expense),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,vertical: 0
-                              ),
-                          
-                              title: Text(
-                                expense.accName ?? 'Unknown Account',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (expense.narration?.isNotEmpty ?? false)
-                                    Text(
-                                      expense.narration!,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Ref: ${expense.trdReference ?? 'N/A'}',
-                                    style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                    ),
+                  Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(vertical: 8,horizontal: 8),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                                width: 180,
+                                child: Text(tr.referenceNumber,style: textTheme.titleSmall)),
+                            SizedBox(
+                                width: 100,
+                                child: Text(tr.accountNumber,style: textTheme.titleSmall)),
+                            SizedBox(
+                                width: 150,
+                                child: Text(tr.accountName,style: textTheme.titleSmall)),
+                            Expanded(
+                                child: Text(tr.narration,style: textTheme.titleSmall)),
+                            SizedBox(
+                              width: 100,
+                                child: Text(tr.amount,style: textTheme.titleSmall)),
+                            SizedBox(
+                              width: 50,
+                            )
+                          ],
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: color.outline.withValues(alpha: .3)),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: expenses.length,
+                          itemBuilder: (context, index) {
+                            final expense = expenses[index];
+                            return SingleChildScrollView(
+                              child: InkWell(
+                                onTap: ()=> _loadExpenseForEdit(expense),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 8,vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: _selectedExpenseForEdit?.trdReference == expense.trdReference
+                                        ? color.primary.withValues(alpha: .1)
+                                        : index.isEven
+                                        ? color.primary.withValues(alpha: .05)
+                                        : Colors.transparent,
                                   ),
-                                ],
-                              ),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                  child: Row(
                                     children: [
-                                      Text(
-                                        '${expense.amount?.toAmount()} ${expense.currency ?? 'USD'}',
-                                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(context).primaryColor,
+                                      SizedBox(
+                                          width: 180,
+                                          child: Text(expense.trdReference??"")),
+                                      SizedBox(
+                                          width: 100,
+                                          child: Text(expense.accNumber.toString())),
+                                      SizedBox(
+                                          width: 150,
+                                          child: Text(expense.accName??"")),
+                                      Expanded(child: Text(expense.narration??"")),
+                                      SizedBox(
+                                        width: 100,
+                                        child: Text("${expense.amount?.toAmount()} ${expense.currency}",
+                                        style: Theme.of(context).textTheme.titleSmall?.copyWith(),
                                         ),
                                       ),
-                                      Text(
-                                        'Acc#: ${expense.accNumber ?? 'N/A'}',
-                                        style: Theme.of(context).textTheme.labelSmall,
-                                      ),
+
+                                      SizedBox(
+                                        width: 50,
+                                        child: InkWell(
+                                            onTap: ()=> _showDeleteConfirmationDialog(expense),
+                                            child: Icon(Icons.delete,color: color.error)),
+                                      )
+
+
                                     ],
-                                  ),
-                                  const SizedBox(width: 8),
-                                  IconButton(
-                                    icon: Icon(
-                                      Icons.delete_outline,
-                                      color: Colors.red,
-                                      size: 20,
-                                    ),
-                                    onPressed: () => _showDeleteConfirmationDialog(context, expense),
-                                    tooltip: tr.delete,
-                                  ),
-                                ],
+                                  )
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
               ],
             ),
@@ -1052,9 +1021,8 @@ class _DesktopState extends State<_Desktop> {
     }
   }
 
-  Future<void> _showDeleteConfirmationDialog(BuildContext context, ShippingExpenseModel expense) async {
+  Future<void> _showDeleteConfirmationDialog(ShippingExpenseModel expense) async {
     final tr = AppLocalizations.of(context)!;
-
     return showDialog<void>(
       context: context,
       barrierDismissible: true,
