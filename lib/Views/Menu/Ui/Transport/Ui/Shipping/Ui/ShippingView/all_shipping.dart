@@ -347,6 +347,7 @@ class _DesktopState extends State<_Desktop> {
   }
 
   void onAdd() {
+    context.read<ShippingBloc>().add(ClearShippingDetailEvent());
     showDialog(
       context: context,
       builder: (context) => const ShippingScreen(),

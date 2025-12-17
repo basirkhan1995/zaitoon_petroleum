@@ -57,6 +57,12 @@ class _DesktopState extends State<_Desktop> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       currentLocale = context.read<LocalizationBloc>().state.languageCode;
+      if (widget.shippingId != null) {
+        final state = context.read<ShippingBloc>().state;
+        if (state.currentShipping == null || state.currentShipping!.shpId != widget.shippingId) {
+          context.read<ShippingBloc>().add(LoadShippingDetailEvent(widget.shippingId!));
+        }
+      }
     });
   }
 
@@ -75,7 +81,6 @@ class _DesktopState extends State<_Desktop> {
   final expenseNarration = TextEditingController();
   int? expenseAccNumber;
 
-  ShippingDetailsModel? loadedShippingDetails;
   String shpFromGregorian = DateTime.now().toFormattedDate();
   Jalali shpFromShamsi = DateTime.now().toAfghanShamsi;
 
@@ -120,13 +125,18 @@ class _DesktopState extends State<_Desktop> {
     return BlocConsumer<ShippingBloc, ShippingState>(
       listener: (context, state) {
         if (state is ShippingSuccessState) {
-          // Clear the expense form after success
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _clearExpenseForm();
-            setState(() {
-              _selectedExpenseForEdit = null;
+          if (state.message.contains('Shipping')) {
+            Navigator.of(context).pop();
+          } else {
+
+            // Clear the expense form after success
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _clearExpenseForm();
+              setState(() {
+                _selectedExpenseForEdit = null;
+              });
             });
-          });
+          }
         }
         if (state is ShippingErrorState) {
           Utils.showOverlayMessage(context, message: state.error, isError: true);
@@ -137,12 +147,11 @@ class _DesktopState extends State<_Desktop> {
         ShippingDetailsModel? currentShipping;
 
         if (blocState is ShippingDetailLoadingState) {
-          loadedShippingDetails = blocState.currentShipping;
-          return _buildLoadingDialog();
+          return _buildLoadingContent();
         }
 
         if (blocState is ShippingErrorState) {
-          return _buildErrorDialog(blocState.error, context);
+          return _buildErrorContent(blocState.error, context);
         }
 
         // Extract shipping from various states
@@ -156,16 +165,7 @@ class _DesktopState extends State<_Desktop> {
 
         // If we have shipping details, show the stepper
         if (currentShipping != null) {
-          // Update loaded details
-          if (loadedShippingDetails?.shpId != currentShipping.shpId) {
-            loadedShippingDetails = currentShipping;
-          }
           return _buildStepperWithData(currentShipping, tr, context);
-        }
-
-        // If we're in the process of loading details
-        if (blocState is ShippingDetailLoadingState) {
-          return _buildLoadingDialog();
         }
 
         // Default: new shipping
@@ -466,48 +466,39 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget _buildLoadingDialog() {
-    return AlertDialog(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      content: Column(
+  Widget _buildLoadingContent() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(height: 10),
+        const CircularProgressIndicator(),
+        const SizedBox(height: 16),
+        Text('Loading shipping details'),
+        const SizedBox(height: 10),
+      ],
+    );
+  }
+
+  Widget _buildErrorContent(String error, BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 10),
-          const CircularProgressIndicator(),
+          const Icon(Icons.error, color: Colors.red, size: 48),
           const SizedBox(height: 16),
-          Text('Loading shipping details'),
-          const SizedBox(height: 10),
+          Text(error, textAlign: TextAlign.center),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildErrorDialog(String error, BuildContext context) {
-    return AlertDialog(
-      content: Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.error, color: Colors.red, size: 48),
-            const SizedBox(height: 16),
-            Text(error, textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildStepperWithData(ShippingDetailsModel shipping, AppLocalizations tr, BuildContext context) {
-    // Update loaded details
-    loadedShippingDetails = shipping;
-
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
@@ -635,7 +626,7 @@ class _DesktopState extends State<_Desktop> {
       usrName: usrName ?? "",
       advanceAmount: advanceAmount.text.cleanAmount,
       remark: remark.text,
-      shpId: loadedShippingDetails?.shpId,
+      shpId: widget.shippingId,
       shpUnit: unit ?? "TN",
     );
 
