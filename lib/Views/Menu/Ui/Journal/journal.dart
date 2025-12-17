@@ -616,8 +616,7 @@ class _DesktopState extends State<_Desktop> {
                           strokeWidth: 3,
                           color: Theme.of(context).colorScheme.surface,
                         ),
-                      )
-                    : Text(locale.create),
+                      ) : Text(locale.create),
                 child: SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),

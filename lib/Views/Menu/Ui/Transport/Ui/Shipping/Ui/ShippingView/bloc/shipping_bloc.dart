@@ -238,12 +238,8 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
     }
   }
 
-  Future<void> _onAddShippingExpense(
-      AddShippingExpenseEvent event,
-      Emitter<ShippingState> emit,
-      ) async {
+  Future<void> _onAddShippingExpense(AddShippingExpenseEvent event, Emitter<ShippingState> emit) async {
     if (state.currentShipping == null) return;
-
     try {
       final res = await _repo.addShippingExpense(
         shpId: event.shpId,
@@ -256,13 +252,6 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       if (res['msg'] == "success") {
         // Reload the shipping details to get updated expenses
         add(LoadShippingDetailEvent(event.shpId));
-
-        // Show success message
-        emit(ShippingSuccessState(
-          shippingList: state.shippingList,
-          currentShipping: state.currentShipping,
-          message: 'Expense added successfully',
-        ));
       } else if (res['msg'] == "delivered") {
         // Shipping is already delivered, can't add expenses
         emit(ShippingErrorState(

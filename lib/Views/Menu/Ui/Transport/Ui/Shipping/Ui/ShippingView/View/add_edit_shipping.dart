@@ -450,7 +450,7 @@ class _DesktopState extends State<_Desktop> {
     if (widget.model == null) {
       bloc.add(AddShippingEvent(data));
     } else {
-      //bloc.add(UpdateShippingEvent(data));
+      bloc.add(UpdateShippingEvent(data));
     }
   }
 }

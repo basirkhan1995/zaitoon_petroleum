@@ -25,8 +25,8 @@ class ShippingDetailsModel {
   final String? shpRent;
   final String? total;
   final int? shpStatus;
-  final List<Expense>? income;
-  final List<Expense>? expenses;
+  final List<ShippingExpenseModel>? income;
+  final List<ShippingExpenseModel>? expenses;
 
   ShippingDetailsModel({
     this.shpId,
@@ -66,8 +66,8 @@ class ShippingDetailsModel {
     String? shpRent,
     String? total,
     int? shpStatus,
-    List<Expense>? income,
-    List<Expense>? expenses,
+    List<ShippingExpenseModel>? income,
+    List<ShippingExpenseModel>? expenses,
   }) =>
       ShippingDetailsModel(
         shpId: shpId ?? this.shpId,
@@ -107,8 +107,8 @@ class ShippingDetailsModel {
     shpRent: json["shpRent"],
     total: json["total"],
     shpStatus: json["shpStatus"],
-    income: json["income"] == null ? [] : List<Expense>.from(json["income"]!.map((x) => Expense.fromMap(x))),
-    expenses: json["expenses"] == null ? [] : List<Expense>.from(json["expenses"]!.map((x) => Expense.fromMap(x))),
+    income: json["income"] == null ? [] : List<ShippingExpenseModel>.from(json["income"]!.map((x) => ShippingExpenseModel.fromMap(x))),
+    expenses: json["expenses"] == null ? [] : List<ShippingExpenseModel>.from(json["expenses"]!.map((x) => ShippingExpenseModel.fromMap(x))),
   );
 
   Map<String, dynamic> toMap() => {
@@ -133,7 +133,7 @@ class ShippingDetailsModel {
   };
 }
 
-class Expense {
+class ShippingExpenseModel {
   final String? trdReference;
   final int? accNumber;
   final String? accName;
@@ -141,7 +141,7 @@ class Expense {
   final String? currency;
   final String? narration;
 
-  Expense({
+  ShippingExpenseModel({
     this.trdReference,
     this.accNumber,
     this.accName,
@@ -150,7 +150,7 @@ class Expense {
     this.narration,
   });
 
-  Expense copyWith({
+  ShippingExpenseModel copyWith({
     String? trdReference,
     int? accNumber,
     String? accName,
@@ -158,7 +158,7 @@ class Expense {
     String? currency,
     String? narration,
   }) =>
-      Expense(
+      ShippingExpenseModel(
         trdReference: trdReference ?? this.trdReference,
         accNumber: accNumber ?? this.accNumber,
         accName: accName ?? this.accName,
@@ -167,7 +167,7 @@ class Expense {
         narration: narration ?? this.narration,
       );
 
-  factory Expense.fromMap(Map<String, dynamic> json) => Expense(
+  factory ShippingExpenseModel.fromMap(Map<String, dynamic> json) => ShippingExpenseModel(
     trdReference: json["trdReference"],
     accNumber: json["accNumber"],
     accName: json["accName"],

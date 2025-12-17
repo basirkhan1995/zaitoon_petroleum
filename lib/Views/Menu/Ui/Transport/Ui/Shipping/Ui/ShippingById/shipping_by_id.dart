@@ -5,6 +5,8 @@ import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
+import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../../../../Features/Date/zdate_picker.dart';
 import '../../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
@@ -12,6 +14,8 @@ import '../../../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../../../Features/Widgets/stepper.dart';
 import '../../../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
+import '../../../../../Finance/Ui/GlAccounts/model/gl_model.dart';
 import '../../../../../Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import '../../../../../Stakeholders/Ui/Individuals/individual_model.dart';
 import '../../../Vehicles/bloc/vehicle_bloc.dart';
@@ -52,10 +56,10 @@ class _DesktopState extends State<_Desktop> {
     super.initState();
     if (widget.shippingId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        // Use context.read directly since bloc is already available from parent
         context.read<ShippingBloc>().add(
           LoadShippingDetailEvent(widget.shippingId!),
         );
+        currentLocale = context.read<LocalizationBloc>().state.languageCode;
       });
     }
   }
@@ -70,7 +74,12 @@ class _DesktopState extends State<_Desktop> {
   final vehicleCtrl = TextEditingController();
   final remark = TextEditingController();
   final advanceAmount = TextEditingController();
+  final accountController = TextEditingController();
+  final expenseAmount = TextEditingController();
+  final expenseNarration = TextEditingController();
+  int? expenseAccNumber;
 
+  ShippingDetailsModel? loadedShippingDetails;
   String shpFromGregorian = DateTime.now().toFormattedDate();
   Jalali shpFromShamsi = DateTime.now().toAfghanShamsi;
 
@@ -79,10 +88,16 @@ class _DesktopState extends State<_Desktop> {
   Jalali shpToShamsi = DateTime.now().toAfghanShamsi;
 
   final formKey = GlobalKey<FormState>();
+  String? currentLocale;
 
   int? customerId;
   int? vehicleId;
   String? unit;
+
+  // Add these for expense management
+  ShippingExpenseModel? _selectedExpenseForEdit;
+  bool _isExpenseFormLoading = false;
+
   @override
   void dispose() {
     shippingRent.dispose();
@@ -110,11 +125,26 @@ class _DesktopState extends State<_Desktop> {
     return BlocConsumer<ShippingBloc, ShippingState>(
       listener: (context, state) {
         if (state is ShippingSuccessState) {
-          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.green,
+            ),
+          );
+          _clearExpenseForm();
+        }
+        if (state is ShippingErrorState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.error),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       },
       builder: (context, state) {
         if (state is ShippingDetailLoadingState) {
+          loadedShippingDetails = state.currentShipping;
           return _buildLoadingDialog();
         }
 
@@ -155,6 +185,7 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
+
   Widget _order(){
     final tr = AppLocalizations.of(context)!;
     return SingleChildScrollView(
@@ -235,13 +266,13 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ],
               ),
-
             ],
           ),
         ),
       ),
     );
   }
+
   Widget _shipping(){
     final tr = AppLocalizations.of(context)!;
     return SingleChildScrollView(
@@ -419,7 +450,6 @@ class _DesktopState extends State<_Desktop> {
                       title: tr.shippingRent,
                     ),
                   ),
-
                 ],
               ),
               ZTextFieldEntitled(controller: remark, title: tr.remark,keyboardInputType: TextInputType.multiline,),
@@ -429,6 +459,7 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
+
   Widget _buildLoadingDialog() {
     return AlertDialog(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -436,13 +467,16 @@ class _DesktopState extends State<_Desktop> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          const SizedBox(height: 16),
           const CircularProgressIndicator(),
           const SizedBox(height: 16),
           Text('Loading shipping details'),
+          const SizedBox(height: 16),
         ],
       ),
     );
   }
+
   Widget _buildErrorDialog(String error, BuildContext context) {
     return AlertDialog(
       content: Container(
@@ -463,6 +497,7 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
+
   Widget _buildStepperWithData(ShippingDetailLoadedState state, AppLocalizations tr, BuildContext context) {
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
@@ -510,10 +545,11 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
+
   Widget _buildNewShippingStepper(AppLocalizations tr, BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8)
+          borderRadius: BorderRadius.circular(8)
       ),
       contentPadding: EdgeInsets.zero,
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -540,18 +576,94 @@ class _DesktopState extends State<_Desktop> {
               ),
               StepItem(
                 title: 'Delivered',
-                content: const Text('Delivered confirmation'),
+                content: _buildFinishShipping(),
                 icon: Icons.check_circle,
               ),
             ],
-            onFinish: () {
-              Navigator.of(context).pop();
-            },
+            onFinish: onSubmit,
           ),
         ),
       ),
     );
   }
+
+  Widget _buildFinishShipping() {
+    final tr = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        children: [
+          Icon(
+            Icons.check_circle_outline,
+            size: 80,
+            color: Colors.green,
+          ),
+          SizedBox(height: 20),
+          Text(
+            "ready to submit",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          SizedBox(height: 10),
+          Text(
+            "Review",
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          SizedBox(height: 30),
+          BlocBuilder<ShippingBloc, ShippingState>(
+            builder: (context, state) {
+              final isLoading = state is ShippingLoadingState;
+              return ZOutlineButton(
+                width: 200,
+                height: 40,
+                label: isLoading
+                    ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    color: Theme.of(context).colorScheme.surface,
+                  ),
+                )
+                    : Text(tr.finish),
+                onPressed: isLoading ? null : onSubmit,
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void onSubmit() {
+    if (!formKey.currentState!.validate()) return;
+
+    final data = ShippingModel(
+      shpLoadSize: loadingSize.text,
+      shpUnloadSize: unloadingSize.text,
+      shpTo: shpTo.text,
+      shpFrom: shpFrom.text,
+      shpRent: shippingRent.text.cleanAmount,
+      productId: int.tryParse(productId.text),
+      vehicleId: vehicleId,
+      customerId: customerId,
+      shpArriveDate: DateTime.tryParse(shpToGregorian),
+      shpMovingDate: DateTime.tryParse(shpFromGregorian),
+      usrName: usrName ?? "",
+      advanceAmount: advanceAmount.text.cleanAmount,
+      remark: remark.text,
+      shpId: loadedShippingDetails?.shpId,
+      shpUnit: unit ?? "TN",
+    );
+
+    final bloc = context.read<ShippingBloc>();
+    if (widget.shippingId == null) {
+      bloc.add(AddShippingEvent(data));
+    } else {
+      bloc.add(UpdateShippingEvent(data));
+    }
+  }
+
   Widget _buildIncomeView(ShippingDetailsModel shipping) {
     return Container(
       padding: const EdgeInsets.all(8),
@@ -582,38 +694,408 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
+
   Widget _buildExpensesView(ShippingDetailsModel shipping) {
-    return SingleChildScrollView(
-      child: Container(
-        padding: const EdgeInsets.all(5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppLocalizations.of(context)!.expense,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 5),
-            if (shipping.expenses != null && shipping.expenses!.isNotEmpty)
-              ...shipping.expenses!.map((expense) => Cover(
-                child: ListTile(
-                  visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                  title: Text(expense.accName ?? ''),
-                  subtitle: Text(expense.narration ?? ''),
-                  trailing: Text(
-                    '${expense.amount?.toAmount()} ${expense.currency}',
-                    style: const TextStyle(fontSize: 15),
-                  ),
+    final tr = AppLocalizations.of(context)!;
+    final expenses = shipping.expenses ?? [];
+
+    return BlocBuilder<ShippingBloc, ShippingState>(
+      builder: (context, state) {
+        return SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Expense Form
+                Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _selectedExpenseForEdit != null ? tr.edit : tr.newKeyword,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        if (_selectedExpenseForEdit != null)
+                          IconButton(
+                            icon: Icon(Icons.cancel),
+                            onPressed: () {
+                              setState(() {
+                                _selectedExpenseForEdit = null;
+                                _clearExpenseForm();
+                              });
+                            },
+                            tooltip: tr.cancel,
+                          ),
+                      ],
+                    ),
+                    Divider(),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
+                            showAllOnFocus: true,
+                            controller: accountController,
+                            title: tr.accounts,
+                            hintText: tr.accNameOrNumber,
+                            isRequired: true,
+                            bloc: context.read<GlAccountsBloc>(),
+                            fetchAllFunction: (bloc) => bloc.add(
+                              LoadGlAccountEvent(
+                                local: currentLocale ?? "en",
+                                categories: [4],
+                              ),
+                            ),
+                            searchFunction: (bloc, query) => bloc.add(
+                              LoadGlAccountEvent(
+                                local: currentLocale ?? "en",
+                                categories: [4],
+                                search: query,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return tr.required(tr.accounts);
+                              }
+                              return null;
+                            },
+                            itemBuilder: (context, account) => Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5,
+                                vertical: 5,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "${account.accNumber} | ${account.accName}",
+                                        style: Theme.of(context).textTheme.bodyLarge,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
+                            stateToLoading: (state) => state is GlAccountsLoadingState,
+                            loadingBuilder: (context) => const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 3),
+                            ),
+                            stateToItems: (state) {
+                              if (state is GlAccountLoadedState) {
+                                return state.gl;
+                              }
+                              return [];
+                            },
+                            onSelected: (value) {
+                              setState(() {
+                                expenseAccNumber = value.accNumber;
+                              });
+                            },
+                            noResultsText: tr.noDataFound,
+                            showClearButton: true,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: ZTextFieldEntitled(
+                            isRequired: true,
+                            keyboardInputType: TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            inputFormat: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'[0-9.,]*'),
+                              ),
+                              SmartThousandsDecimalFormatter(),
+                            ],
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return tr.required(tr.amount);
+                              }
+
+                              final clean = value.replaceAll(
+                                RegExp(r'[^\d.]'),
+                                '',
+                              );
+                              final amount = double.tryParse(clean);
+
+                              if (amount == null || amount <= 0.0) {
+                                return tr.amountGreaterZero;
+                              }
+
+                              return null;
+                            },
+                            controller: expenseAmount,
+                            title: tr.amount,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    ZTextFieldEntitled(
+                      keyboardInputType: TextInputType.multiline,
+                      controller: expenseNarration,
+                      title: tr.narration,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Expense Action Buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        if (_selectedExpenseForEdit != null)
+                          ZOutlineButton(
+                            width: 100,
+                            height: 30,
+                            label: Text(tr.cancel),
+                            onPressed: () {
+                              setState(() {
+                                _selectedExpenseForEdit = null;
+                                _clearExpenseForm();
+                              });
+                            },
+                          ),
+                        const SizedBox(width: 10),
+                        ZOutlineButton(
+                          width: 100,
+                          height: 30,
+                          label: state is ShippingLoadingState
+                              ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              color: Theme.of(context).colorScheme.surface,
+                            ),
+                          )
+                              : Text(_selectedExpenseForEdit != null ? tr.update : tr.create),
+                          onPressed: () {
+                            _handleExpenseAction();
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                  ],
                 ),
-              ))
-            else
-              Text(AppLocalizations.of(context)!.noExpenseRecorded),
-          ],
-        ),
-      ),
+
+                // Expenses List
+                Text(
+                  '${AppLocalizations.of(context)!.expense} (${expenses.length})',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 8),
+
+                if (expenses.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      AppLocalizations.of(context)!.noExpenseRecorded,
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                else
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Theme.of(context).dividerColor),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: expenses.length,
+                      itemBuilder: (context, index) {
+                        final expense = expenses[index];
+                        return SingleChildScrollView(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: _selectedExpenseForEdit?.trdReference == expense.trdReference
+                                  ? Theme.of(context).primaryColor.withValues(alpha: .1)
+                                  : index.isEven
+                                  ? Theme.of(context).colorScheme.surface.withValues(alpha: .3)
+                                  : Colors.transparent,
+                            ),
+                            child: ListTile(
+                              onTap: () => _loadExpenseForEdit(expense),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,vertical: 0
+                              ),
+                          
+                              title: Text(
+                                expense.accName ?? 'Unknown Account',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (expense.narration?.isNotEmpty ?? false)
+                                    Text(
+                                      expense.narration!,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Ref: ${expense.trdReference ?? 'N/A'}',
+                                    style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '${expense.amount?.toAmount()} ${expense.currency ?? 'USD'}',
+                                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Acc#: ${expense.accNumber ?? 'N/A'}',
+                                        style: Theme.of(context).textTheme.labelSmall,
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(width: 8),
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.red,
+                                      size: 20,
+                                    ),
+                                    onPressed: () => _showDeleteConfirmationDialog(context, expense),
+                                    tooltip: tr.delete,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
+
+  void _clearExpenseForm() {
+    expenseAmount.clear();
+    expenseNarration.clear();
+    accountController.clear();
+    expenseAccNumber = null;
+    _selectedExpenseForEdit = null;
+  }
+
+  void _loadExpenseForEdit(ShippingExpenseModel expense) {
+    setState(() {
+      _selectedExpenseForEdit = expense;
+      expenseAmount.text = expense.amount ?? '';
+      expenseNarration.text = expense.narration ?? '';
+
+      if (expense.accNumber != null && expense.accName != null) {
+        accountController.text = '${expense.accNumber} | ${expense.accName}';
+        expenseAccNumber = expense.accNumber;
+      }
+    });
+  }
+
+  void _handleExpenseAction() {
+    if (expenseAccNumber == null || expenseAmount.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.required("Fields")),
+        ),
+      );
+      return;
+    }
+
+    if (_selectedExpenseForEdit != null) {
+      // Update existing expense
+      context.read<ShippingBloc>().add(
+        UpdateShippingExpenseEvent(
+          shpId: widget.shippingId!,
+          trnReference: _selectedExpenseForEdit!.trdReference!,
+          amount: expenseAmount.text,
+          narration: expenseNarration.text,
+          usrName: usrName ?? "",
+        ),
+      );
+    } else {
+      // Add new expense
+      context.read<ShippingBloc>().add(
+        AddShippingExpenseEvent(
+          shpId: widget.shippingId!,
+          accNumber: expenseAccNumber!,
+          amount: expenseAmount.text,
+          narration: expenseNarration.text,
+          usrName: usrName ?? "",
+        ),
+      );
+    }
+  }
+
+  Future<void> _showDeleteConfirmationDialog(BuildContext context, ShippingExpenseModel expense) async {
+    final tr = AppLocalizations.of(context)!;
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(tr.delete),
+          content: Text(
+            '${tr.areYouSure}\n\n'
+                'Account: ${expense.accName}\n'
+                'Amount: ${expense.amount} ${expense.currency}\n'
+                'Reference: ${expense.trdReference}',
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(tr.cancel),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text(
+                tr.delete,
+                style: TextStyle(color: Colors.red),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.read<ShippingBloc>().add(
+                  DeleteShippingExpenseEvent(
+                    shpId: widget.shippingId!,
+                    trnReference: expense.trdReference!,
+                    usrName: usrName ?? "",
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildDeliveryView(ShippingDetailsModel shipping) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -637,26 +1119,7 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-  ShippingModel _convertToShippingModel(ShippingDetailsModel details) {
-    return ShippingModel(
-      shpId: details.shpId,
-      vehicle: details.vehicle,
-      vehicleId: details.vclId,
-      proName: details.proName,
-      productId: details.proId,
-      customer: details.customer,
-      shpFrom: details.shpFrom,
-      shpMovingDate: details.shpMovingDate,
-      shpLoadSize: details.shpLoadSize,
-      shpUnit: details.shpUnit,
-      shpTo: details.shpTo,
-      shpArriveDate: details.shpArriveDate,
-      shpUnloadSize: details.shpUnloadSize,
-      shpRent: details.shpRent,
-      total: details.total,
-      shpStatus: details.shpStatus,
-    );
-  }
+
   Widget datePicker({required String date, required String title}) {
     return GenericDatePicker(
       label: title,
