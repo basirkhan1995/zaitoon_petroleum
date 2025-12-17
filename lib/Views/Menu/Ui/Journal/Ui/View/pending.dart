@@ -71,9 +71,7 @@ class _DesktopState extends State<_Desktop> {
     });
     super.initState();
   }
-
   final TextEditingController searchController = TextEditingController();
-
   @override
   void dispose() {
     searchController.dispose();

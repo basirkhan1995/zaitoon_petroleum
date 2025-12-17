@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/alert_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
@@ -1027,39 +1029,18 @@ class _DesktopState extends State<_Desktop> {
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(tr.delete),
-          content: Text(
-            '${tr.areYouSure}\n\n'
-                'Account: ${expense.accName}\n'
-                'Amount: ${expense.amount} ${expense.currency}\n'
-                'Reference: ${expense.trdReference}',
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(tr.cancel),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text(
-                tr.delete,
-                style: TextStyle(color: Colors.red),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-                context.read<ShippingBloc>().add(
-                  DeleteShippingExpenseEvent(
-                    shpId: widget.shippingId!,
-                    trnReference: expense.trdReference!,
-                    usrName: usrName ?? "",
-                  ),
-                );
-              },
-            ),
-          ],
-        );
+        return ZAlertDialog(
+            title: tr.areYouSure,
+            content: "${tr.delete}? ${expense.amount?.toAmount()} ${expense.currency}",
+            onYes: (){
+              context.read<ShippingBloc>().add(
+                DeleteShippingExpenseEvent(
+                  shpId: widget.shippingId!,
+                  trnReference: expense.trdReference!,
+                  usrName: usrName ?? "",
+                ),
+              );
+            });
       },
     );
   }

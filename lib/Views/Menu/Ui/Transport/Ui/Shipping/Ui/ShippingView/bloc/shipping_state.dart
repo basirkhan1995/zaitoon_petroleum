@@ -95,3 +95,4 @@ class ShippingSuccessState extends ShippingState {
   @override
   List<Object?> get props => [...super.props, message];
 }
+

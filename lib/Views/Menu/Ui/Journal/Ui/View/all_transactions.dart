@@ -335,9 +335,7 @@ class _DesktopState extends State<_Desktop> {
                             itemCount: filteredList.length,
                             itemBuilder: (context, index) {
                               final txn = filteredList[index];
-                              final isLoadingThisItem = _isLoadingDialog &&
-                                  _loadingRef == txn.trnReference;
-
+                              final isLoadingThisItem = _isLoadingDialog && _loadingRef == txn.trnReference;
                               return Material(
                                 child: InkWell(
                                   onTap: isLoadingThisItem

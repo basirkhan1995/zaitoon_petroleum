@@ -62,31 +62,32 @@ class _CustomStepperState extends State<CustomStepper> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Step headers
-          isHorizontal
-              ? Row(
+          isHorizontal ? Row(
             textDirection: Directionality.of(context),
             children: _buildSteps(context),
-          )
-              : Column(children: _buildSteps(context)),
+            ) : Column(children: _buildSteps(context)),
           const SizedBox(height: 8),
+
           // Current step content
-          widget.steps[currentStep].content,
+          Expanded(child: widget.steps[currentStep].content),
           const SizedBox(height: 8),
           // Navigation buttons
-          Padding(
+          Container(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ZOutlineButton(
                   width: 120,
-                  height: 35,
+                  height: 40,
+                  isActive: true,
                   onPressed: currentStep > 0 ? _goPrevious : null,
                   label: Text(tr.previous),
                 ),
                 ZOutlineButton(
                   width: 120,
-                  height: 35,
+                  height: 40,
+                  isActive: true,
                   onPressed: _goNext,
                   label: Text(
                       currentStep < widget.steps.length - 1 ? tr.next : tr.finish),
