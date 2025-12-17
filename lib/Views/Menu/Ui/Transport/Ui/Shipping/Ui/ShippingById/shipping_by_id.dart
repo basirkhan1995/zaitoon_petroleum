@@ -32,7 +32,6 @@ class ShippingScreen extends StatelessWidget {
   final int? shippingId;
 
   const ShippingScreen({super.key, this.shippingId});
-
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
