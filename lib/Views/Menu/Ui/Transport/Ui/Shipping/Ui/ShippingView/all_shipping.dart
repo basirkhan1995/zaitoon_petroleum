@@ -105,10 +105,7 @@ class _DesktopState extends State<_Desktop> {
                   builder: (context) => ShippingScreen(
                     shippingId: state.currentShipping!.shpId,
                   ),
-                ).then((_) {
-                  // Clear the detail loading state when dialog is closed
-                  context.read<ShippingBloc>().add(ClearDetailLoadingEvent());
-                });
+                );
               });
             }
 
@@ -243,7 +240,7 @@ class _DesktopState extends State<_Desktop> {
     }
 
     // Handle empty list
-    if (shippingList.isEmpty && !(state is ShippingListLoadingState)) {
+    if (shippingList.isEmpty && state is! ShippingListLoadingState) {
       return NoDataWidget(
         message: tr.noDataFound,
         onRefresh: onRefresh,
