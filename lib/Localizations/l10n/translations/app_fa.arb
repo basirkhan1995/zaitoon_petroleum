@@ -472,5 +472,6 @@
   "glTypes": "گتگوری تراکنش",
   "productName": "نام کالا",
   "productCode": "کد کالا",
-  "transactionType": "نوع معاملات"
+  "transactionType": "نوع معاملات",
+  "deactive": "غیرفعال"
 }

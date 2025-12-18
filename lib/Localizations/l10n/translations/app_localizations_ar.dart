@@ -1416,4 +1416,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get transactionType => 'نوع معاملات';
+
+  @override
+  String get deactive => 'غیرفعال';
 }

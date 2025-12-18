@@ -1642,7 +1642,7 @@ class Repositories {
   }
   Future<Map<String, dynamic>> updateProCategory({required ProCategoryModel newCategory}) async {
     try {
-      final response = await api.post(
+      final response = await api.put(
           endpoint: "/setting/productCategory.php",
           data: newCategory.toMap()
       );
@@ -1720,7 +1720,7 @@ class Repositories {
       final response = await api.delete(
           endpoint: "/setting/trnType.php",
           data: {
-            "trnCode": trnCode
+            "trntCode": trnCode
           }
       );
       return response.data;

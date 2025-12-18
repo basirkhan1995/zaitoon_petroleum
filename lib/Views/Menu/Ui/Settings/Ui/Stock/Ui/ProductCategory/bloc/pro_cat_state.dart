@@ -27,8 +27,9 @@ final class ProCatLoadingState extends ProCatState {
   List<Object> get props => [];
 }
 
-
 final class ProCatLoadedState extends ProCatState {
+  final List<ProCategoryModel> proCategory;
+  const ProCatLoadedState(this.proCategory);
   @override
-  List<Object> get props => [];
+  List<Object> get props => [proCategory];
 }

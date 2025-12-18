@@ -2859,6 +2859,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Transaction Types'**
   String get transactionType;
+
+  /// No description provided for @deactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get deactive;
 }
 
 class _AppLocalizationsDelegate

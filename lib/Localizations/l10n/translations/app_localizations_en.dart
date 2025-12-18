@@ -1422,4 +1422,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transactionType => 'Transaction Types';
+
+  @override
+  String get deactive => 'Inactive';
 }

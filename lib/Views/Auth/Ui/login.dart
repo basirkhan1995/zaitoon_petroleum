@@ -131,7 +131,11 @@ class _MobileState extends State<_Mobile> {
             ZButton(
               onPressed: () {
                 if (formKey.currentState!.validate()) {
-                  Utils.gotoReplacement(context, HomeView());
+                  context.read<AuthBloc>().add(
+                      LoginEvent(
+                          usrName: _emailController.text,
+                          usrPassword: _passwordController.text,
+                          rememberMe: isRememberMe));
                 }
               },
               label: Text(AppLocalizations.of(context)!.login),

@@ -472,5 +472,6 @@
   "glTypes": "TXN Types",
   "productName": "Product name",
   "productCode": "Product code",
-  "transactionType": "Transaction Types"
+  "transactionType": "Transaction Types",
+  "deactive": "Inactive"
 }

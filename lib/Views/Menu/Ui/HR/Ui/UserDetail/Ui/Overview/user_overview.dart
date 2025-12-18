@@ -97,7 +97,7 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final themeCtrl = Theme.of(context);
@@ -124,9 +124,9 @@ class _DesktopState extends State<_Desktop> {
           crossFadeState: isEditMode
               ? CrossFadeState.showFirst
               : CrossFadeState.showSecond,
-          firstChild: _editView(locale: locale, isLoading: isLoading),
+          firstChild: _editView(locale: tr, isLoading: isLoading),
           secondChild: _overView(
-            locale: locale,
+            tr: tr,
             textTheme: themeCtrl,
             myStyle: myStyle,
             myStyleBody: myStyleBody,
@@ -138,7 +138,7 @@ class _DesktopState extends State<_Desktop> {
   }
 
   Widget _overView({
-    required AppLocalizations locale,
+    required AppLocalizations tr,
     required ThemeData textTheme,
     TextStyle? myStyle,
     TextStyle? myStyleBody,
@@ -163,7 +163,7 @@ class _DesktopState extends State<_Desktop> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                locale.userInformation,
+                tr.userInformation,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
 
@@ -208,32 +208,32 @@ class _DesktopState extends State<_Desktop> {
                 children: [
                   SizedBox(
                     width: 120,
-                    child: Text(locale.userOwner, style: myStyle),
+                    child: Text(tr.userOwner, style: myStyle),
                   ),
                   SizedBox(height: 5),
                   SizedBox(
                     width: 120,
-                    child: Text(locale.username, style: myStyle),
+                    child: Text(tr.username, style: myStyle),
                   ),
                   SizedBox(height: 5),
                   SizedBox(
                     width: 120,
-                    child: Text(locale.usrRole, style: myStyle),
+                    child: Text(tr.usrRole, style: myStyle),
                   ),
                   SizedBox(height: 5),
                   SizedBox(
                     width: 120,
-                    child: Text(locale.branch, style: myStyle),
+                    child: Text(tr.branch, style: myStyle),
                   ),
                   SizedBox(height: 5),
                   SizedBox(
                     width: 120,
-                    child: Text(locale.createdAt, style: myStyle),
+                    child: Text(tr.createdAt, style: myStyle),
                   ),
                   SizedBox(height: 5),
                   SizedBox(
                     width: 120,
-                    child: Text(locale.status, style: myStyle),
+                    child: Text(tr.status, style: myStyle),
                   ),
                 ],
               ),
@@ -255,7 +255,7 @@ class _DesktopState extends State<_Desktop> {
                     style: myStyleBody,
                   ),
                   SizedBox(height: 5),
-                  Switch(value: widget.user.usrStatus == 1, onChanged: (e) {}),
+                  Text(widget.user.usrStatus == 1? tr.active : tr.blocked)
                 ],
               ),
             ],
@@ -280,6 +280,7 @@ class _DesktopState extends State<_Desktop> {
         key: formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          spacing: 5,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
