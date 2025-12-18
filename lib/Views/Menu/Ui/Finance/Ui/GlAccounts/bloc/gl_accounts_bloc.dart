@@ -27,6 +27,7 @@ class GlAccountsBloc extends Bloc<GlAccountsEvent, GlAccountsState> {
         final msg = response["msg"];
         switch(msg){
           case "success" :
+            emit(GlSuccessState());
             add(LoadGlAccountEvent());
             return;
           case "exist" :
@@ -52,6 +53,7 @@ class GlAccountsBloc extends Bloc<GlAccountsEvent, GlAccountsState> {
         final msg = response["msg"];
         switch(msg){
           case "success" :
+            emit(GlSuccessState());
             add(LoadGlAccountEvent());
             return;
           case "exist" :
@@ -77,6 +79,7 @@ class GlAccountsBloc extends Bloc<GlAccountsEvent, GlAccountsState> {
         final msg = response["msg"];
         switch(msg){
           case "success" :
+            emit(GlSuccessState());
             add(LoadGlAccountEvent());
             return;
           case "dependent" :

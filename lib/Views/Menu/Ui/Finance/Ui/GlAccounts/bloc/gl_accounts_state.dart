@@ -9,6 +9,11 @@ final class GlAccountsInitial extends GlAccountsState {
   List<Object> get props => [];
 }
 
+final class GlSuccessState extends GlAccountsState {
+  @override
+  List<Object> get props => [];
+}
+
 final class GlAccountsLoadingState extends GlAccountsState {
   @override
   List<Object> get props => [];

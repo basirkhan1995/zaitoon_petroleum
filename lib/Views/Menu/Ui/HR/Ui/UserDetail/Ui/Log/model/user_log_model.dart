@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final userLogModel = userLogModelFromMap(jsonString);
-
 import 'dart:convert';
 
 List<UserLogModel> userLogModelFromMap(String str) => List<UserLogModel>.from(json.decode(str).map((x) => UserLogModel.fromMap(x)));

@@ -7,6 +7,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencie
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/model/rate_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/model/emp_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/UserDetail/Ui/Log/model/user_log_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/model/fetch_atat_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchTRPT/model/trtp_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/txn_ref_model.dart';
@@ -434,7 +435,6 @@ class Repositories {
           endpoint: "/finance/glAccount.php",
           data: newAccount.toMap()
       );
-      print(response.data);
       return response.data;
     } on DioException catch (e) {
       throw '${e.message}';
@@ -447,7 +447,7 @@ class Repositories {
       final response = await api.delete(
           endpoint: "/finance/glAccount.php",
           data: {
-            "gl":accNumber
+            "acc":accNumber
           }
       );
       return response.data;
@@ -1765,8 +1765,46 @@ class Repositories {
     }
   }
 
+  /// User Log .................................................................
+  Future<List<UserLogModel>> getUserLog({String? usrName, String? fromDate, String? toDate}) async {
+    try {
+      final queryParams = {
+        'usrName': usrName,
+        'fromDate': fromDate,
+        'toDate': toDate
+      };
+      // Fetch data from API
+      final response = await api.post(
+          endpoint: "/reports/userLogs.php",
+          data: queryParams
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => UserLogModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
   ///Reports ...................................................................
-  // In your API service method
   Future<AccountStatementModel> getAccountStatement({required int account, required String fromDate, required String toDate,}) async {
     try {
       final response = await api.post(
@@ -1800,5 +1838,4 @@ class Repositories {
       throw e.toString();
     }
   }
-
 }

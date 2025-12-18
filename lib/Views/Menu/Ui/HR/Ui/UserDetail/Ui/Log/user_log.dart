@@ -1,15 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
+import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/UserDetail/Ui/Log/bloc/user_log_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shamsi_date/shamsi_date.dart';
+import '../../../../../../../../Features/Date/zdate_picker.dart';
+
 
 class UserLogView extends StatelessWidget {
-  const UserLogView({super.key});
+  final String? usrName;
+  const UserLogView({super.key, this.usrName});
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-        mobile: _Mobile(),
-        tablet: _Tablet(),
-        desktop: _Desktop());
+      mobile: _Mobile(),
+      desktop: _Desktop(usrName),
+      tablet: _Tablet(),
+    );
+  }
+}
+
+class _Tablet extends StatelessWidget {
+  const _Tablet();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }
 
@@ -21,20 +40,107 @@ class _Mobile extends StatelessWidget {
     return const Placeholder();
   }
 }
-class _Tablet extends StatelessWidget {
-  const _Tablet();
+
+class _Desktop extends StatefulWidget {
+  final String? usrName;
+  const _Desktop(this.usrName);
+
+  @override
+  State<_Desktop> createState() => _DesktopState();
+}
+
+class _DesktopState extends State<_Desktop> {
+
+  String fromDate = DateTime.now().toFormattedDate();
+  String toDate = DateTime.now().toFormattedDate();
+  Jalali shamsiFromDate = DateTime.now().toAfghanShamsi;
+  Jalali shamsiToDate = DateTime.now().toAfghanShamsi;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserLogBloc>().add(
+        LoadUserLogEvent(
+            usrName: widget.usrName,
+            fromDate: fromDate,
+            toDate: toDate,
+        ),
+      );
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final color = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context)!;
+    return Scaffold(
+      backgroundColor: color.surface,
+      body: BlocBuilder<UserLogBloc, UserLogState>(
+        builder: (context, state) {
+          if (state is UserLogLoadingState) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (state is UserLogErrorState) {
+            return NoDataWidget(
+              message: state.error,
+              onRefresh: () {
+                context.read<UserLogBloc>().add(
+                  LoadUserLogEvent(usrName: widget.usrName),
+                );
+              },
+            );
+          }
+          if (state is UserLogLoadedState) {
+            if(state.log.isEmpty){
+              return NoDataWidget(
+                message: tr.noDataFound,
+              );
+            }
+            return ListView.builder(
+              itemCount: state.log.length,
+              itemBuilder: (context, index) {
+                final log = state.log[index];
+                return Container(
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                  decoration: BoxDecoration(
+                    color: index.isEven
+                        ? color.primary.withValues(alpha: .05)
+                        : Colors.transparent,
+                  ),
+                  child: Row(children: [
+                    SizedBox(
+                        width: 100,
+                        child: Text(log.ualDevice??"")),
+                    SizedBox(
+                        width: 100,
+                        child: Text(log.ualType??"")),
+                    Expanded(
+                        child: Text(log.ualDetails??"")),
+                    SizedBox(
+                        width: 100,
+                        child: Text(log.ualTiming?.toFullDateTime??"")),
+
+                  ]),
+                );
+              },
+            );
+          }
+          return const SizedBox();
+        },
+      ),
+    );
+  }
+  Widget datePicker() {
+    String date = DateTime.now().toFormattedDate();
+    return GenericDatePicker(
+      label: AppLocalizations.of(context)!.date,
+      initialGregorianDate: date,
+      onDateChanged: (newDate) {
+        setState(() {
+          date = newDate;
+        });
+      },
+    );
   }
 }
-class _Desktop extends StatelessWidget {
-  const _Desktop();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-

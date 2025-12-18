@@ -34,7 +34,7 @@ class UserDetailsTabView extends StatelessWidget {
             TabDefinition(
               value: UserDetailsTabNames.usrLog,
               label: locale.userLog,
-              screen: const UserLogView(),
+              screen: UserLogView(usrName: user.usrName),
             ),
           ];
 
