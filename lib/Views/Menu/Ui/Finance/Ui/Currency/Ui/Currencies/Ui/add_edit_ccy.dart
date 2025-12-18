@@ -144,6 +144,7 @@ class _AddEditCurrencyViewState extends State<AddEditCurrencyView> {
                   key: formKey,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
+                    spacing: 10,
                     children: [
                       ZTextFieldEntitled(
                         title: locale.ccyName,

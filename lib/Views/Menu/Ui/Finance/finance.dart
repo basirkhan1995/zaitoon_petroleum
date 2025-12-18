@@ -53,7 +53,6 @@ class FinanceView extends StatelessWidget {
               ),
             ];
 
-            // ✅ ADD THIS CHECK HERE
             if (tabs.isEmpty) {
               return Center(
                 child: Column(

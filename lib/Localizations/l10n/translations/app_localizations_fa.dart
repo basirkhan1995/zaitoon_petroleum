@@ -1402,4 +1402,16 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get glDependentMsg => 'این حساب قابل حذف نیست';
+
+  @override
+  String get glTypes => 'گتگوری تراکنش';
+
+  @override
+  String get productName => 'نام کالا';
+
+  @override
+  String get productCode => 'کد کالا';
+
+  @override
+  String get transactionType => 'نوع معاملات';
 }

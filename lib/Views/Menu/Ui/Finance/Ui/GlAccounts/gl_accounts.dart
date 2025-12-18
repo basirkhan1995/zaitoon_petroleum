@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/add_edit_gl.dart';
+import '../../../../../../Features/Other/alert_dialog.dart';
 import '../../../../../../Features/Other/utils.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../Localizations/l10n/translations/app_localizations.dart';
@@ -58,15 +59,15 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final currentLocale = Localizations.localeOf(context).languageCode;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 10),
             child: Row(
               spacing: 8,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -115,14 +116,12 @@ class _DesktopState extends State<_Desktop> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 5),
             child: Row(
               children: [
-                Text(locale.accountNumber,style: textTheme.titleMedium),
-                SizedBox(width: currentLocale == "en"? 55 : 35),
-                Text(locale.accountName,style: textTheme.titleMedium),
-                Spacer(),
-                Text(locale.accountCategory,style: textTheme.titleMedium,textAlign: TextAlign.center,),
+                Text(tr.accountNumber,style: textTheme.titleMedium),
+                SizedBox(width: 55),
+                Expanded(child: Text(tr.accountName,style: textTheme.titleMedium)),
               ],
             ),
           ),
@@ -161,22 +160,35 @@ class _DesktopState extends State<_Desktop> {
                             });
                           },
                           child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 5,horizontal: 10),
-                            margin: EdgeInsets.symmetric(horizontal: 12),
+                            padding: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
                             decoration: BoxDecoration(
-                              color: index.isEven ? Theme.of(context).colorScheme.primary.withValues(alpha: .09) : Colors.transparent,
+                              color: index.isEven ? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent,
                             ),
                             child: Row(
                               spacing: 10,
                               children: [
                                 Text(gl.accNumber.toString(),style: Theme.of(context).textTheme.titleMedium),
                                  myLocale == "en"? SizedBox(width: 50) : SizedBox(width: 20),
-                                Text(gl.accName??"",style: Theme.of(context).textTheme.titleMedium),
-                                Spacer(),
-                                Text(
-                                    Utils.glCategories(category: gl.accCategory!,locale: locale),
-                                    style: Theme.of(context).textTheme.bodyMedium,
-                                    textAlign: TextAlign.center),
+                                Expanded(child: Text(gl.accName??"",style: Theme.of(context).textTheme.titleMedium)),
+                                SizedBox(
+                                  width: 150,
+                                  child: Text(
+                                      Utils.glCategories(category: gl.accCategory!,locale: tr),
+                                      style: Theme.of(context).textTheme.bodyMedium,
+                                      textAlign: TextAlign.center),
+                                ),
+
+                                IconButton(
+                                    onPressed: (){
+                                      showDialog(context: context, builder: (context){
+                                        return ZAlertDialog(title: tr.areYouSure,
+                                            content: "Do wanna delete this code?",
+                                            onYes: (){
+                                              context.read<GlAccountsBloc>().add(DeleteGlEvent(gl.accNumber!));
+                                            });
+                                      });
+                                    },
+                                    icon: Icon(Icons.delete,color: color.error)),
                               ],
                             ),
                           ),

@@ -2835,6 +2835,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This account is not deleted.'**
   String get glDependentMsg;
+
+  /// No description provided for @glTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'TXN Types'**
+  String get glTypes;
+
+  /// No description provided for @productName.
+  ///
+  /// In en, this message translates to:
+  /// **'Product name'**
+  String get productName;
+
+  /// No description provided for @productCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Product code'**
+  String get productCode;
+
+  /// No description provided for @transactionType.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Types'**
+  String get transactionType;
 }
 
 class _AppLocalizationsDelegate

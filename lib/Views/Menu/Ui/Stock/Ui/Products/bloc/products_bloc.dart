@@ -20,6 +20,88 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
      }
     });
 
+    on<AddProductEvent>((event, emit) async{
+      emit(ProductsLoadingState());
+      try{
+        final response = await _repo.addProduct(newProduct: event.newProduct);
+        final msg = response["msg"];
+        switch(msg){
+          case "success":
+          emit(ProductsSuccessState());
+          add(LoadProductsEvent());
+          return;
+
+          case "exist":
+            emit(ProductsErrorState(msg));
+            return;
+
+          case "failed":
+            emit(ProductsErrorState(msg));
+            return;
+
+          default: emit(ProductsErrorState(msg));
+          return;
+        }
+      }catch(e){
+        emit(ProductsErrorState(e.toString()));
+      }
+    });
+
+    on<UpdateProductEvent>((event, emit) async{
+      emit(ProductsLoadingState());
+      try{
+        final response = await _repo.updateProduct(newProduct: event.newProduct);
+        final msg = response["msg"];
+        switch(msg){
+          case "success":
+            emit(ProductsSuccessState());
+            add(LoadProductsEvent());
+            return;
+
+          case "empty":
+            emit(ProductsErrorState(msg));
+            return;
+
+          case "failed":
+            emit(ProductsErrorState(msg));
+            return;
+
+          default: emit(ProductsErrorState(msg));
+          return;
+        }
+      }catch(e){
+        emit(ProductsErrorState(e.toString()));
+      }
+    });
+
+    on<DeleteProductEvent>((event, emit) async{
+      emit(ProductsLoadingState());
+      try{
+        final response = await _repo.deleteProduct(proId: event.proId);
+        final msg = response["msg"];
+        switch(msg){
+          case "success":
+            emit(ProductsSuccessState());
+            add(LoadProductsEvent());
+            return;
+
+          case "dependent":
+            emit(ProductsErrorState(msg));
+            return;
+
+          case "failed":
+            emit(ProductsErrorState(msg));
+            return;
+
+          default: emit(ProductsErrorState(msg));
+          return;
+        }
+      }catch(e){
+        emit(ProductsErrorState(e.toString()));
+      }
+    });
+
+
 
   }
 }

@@ -468,5 +468,9 @@
   "noExpenseRecorded": "تاکتون مصرف ثبت نشده است",
   "allShipping": "حمل نقل",
   "accountExist": "حساب به این نام از قبل موجود است",
-  "glDependentMsg": "این حساب قابل حذف نیست"
+  "glDependentMsg": "این حساب قابل حذف نیست",
+  "glTypes": "گتگوری تراکنش",
+  "productName": "کالا نوم",
+  "productCode": "کالا کد",
+  "transactionType": "نوع معاملات"
 }

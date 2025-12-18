@@ -31,11 +31,13 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/bloc/
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/bloc/storage_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/bloc/company_settings_menu_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/TxnTypes/bloc/txn_types_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualByID/bloc/stakeholder_by_id_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualDetails/bloc/ind_detail_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/bloc/stk_tab_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Products/bloc/products_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/bloc/stock_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/bloc/driver_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/bloc/vehicle_bloc.dart';
@@ -122,9 +124,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => StorageBloc(Repositories(ApiServices()))..add(LoadStorageEvent())),
         BlocProvider(create: (context) => DriverBloc(Repositories(ApiServices()))..add(LoadDriverEvent())),
         BlocProvider(create: (context) => VehicleBloc(Repositories(ApiServices()))..add(LoadVehicleEvent())),
-
+        BlocProvider(create: (context) => TxnTypesBloc(Repositories(ApiServices()))..add(LoadTxnTypesEvent())),
+        BlocProvider(create: (context) => ProductsBloc(Repositories(ApiServices()))..add(LoadProductsEvent())),
       ],
-
       child: BlocBuilder<LocalizationBloc, Locale>(
         builder: (context, locale) {
           return BlocBuilder<ThemeBloc, ThemeMode>(

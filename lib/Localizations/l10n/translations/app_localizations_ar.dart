@@ -1404,4 +1404,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get glDependentMsg => 'این حساب قابل حذف نیست';
+
+  @override
+  String get glTypes => 'گتگوری تراکنش';
+
+  @override
+  String get productName => 'کالا نوم';
+
+  @override
+  String get productCode => 'کالا کد';
+
+  @override
+  String get transactionType => 'نوع معاملات';
 }

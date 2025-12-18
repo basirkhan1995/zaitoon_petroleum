@@ -468,5 +468,9 @@
   "noExpenseRecorded": "No expenses recorded",
   "allShipping": "All Shipping",
   "accountExist": "Account already exists.",
-  "glDependentMsg": "This account is not deleted."
+  "glDependentMsg": "This account is not deleted.",
+  "glTypes": "TXN Types",
+  "productName": "Product name",
+  "productCode": "Product code",
+  "transactionType": "Transaction Types"
 }

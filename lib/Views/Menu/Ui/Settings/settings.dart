@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/company_tab.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/stock_settings.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/TxnTypes/txn_types_view.dart';
 import '../../../../Features/Generic/rounded_tab.dart';
 import '../../../../Features/Other/responsive.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
@@ -52,6 +53,12 @@ class _Desktop extends StatelessWidget {
                 value: SettingsTabName.company,
                 label: AppLocalizations.of(context)!.company,
                 screen: const CompanyTabsView(),
+              ),
+
+              TabDefinition(
+                value: SettingsTabName.txnTypes,
+                label: AppLocalizations.of(context)!.transactionType,
+                screen: const TxnTypesView(),
               ),
 
               TabDefinition(

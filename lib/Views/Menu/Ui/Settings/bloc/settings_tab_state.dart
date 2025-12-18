@@ -1,6 +1,6 @@
 part of 'settings_tab_bloc.dart';
 
-enum SettingsTabName {general, company, stock, about}
+enum SettingsTabName {general, company, txnTypes, stock, about}
 
 final class SettingsTabState extends Equatable {
   final SettingsTabName tabs;

@@ -1704,7 +1704,7 @@ class Repositories {
   }
   Future<Map<String, dynamic>> updateTxnType({required TxnTypeModel newType}) async {
     try {
-      final response = await api.post(
+      final response = await api.put(
           endpoint: "/setting/trnType.php",
           data: newType.toMap()
       );
@@ -1715,7 +1715,22 @@ class Repositories {
       throw e.toString();
     }
   }
-  Future<List<TxnTypeModel>> getTxnTypes({int? trnCode}) async {
+  Future<Map<String, dynamic>> deleteTxnType({required String trnCode}) async {
+    try {
+      final response = await api.delete(
+          endpoint: "/setting/trnType.php",
+          data: {
+            "trnCode": trnCode
+          }
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<List<TxnTypeModel>> getTxnTypes({String? trnCode}) async {
     try {
       final queryParams = {'trntCode': trnCode};
       // Fetch data from API

@@ -1410,4 +1410,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get glDependentMsg => 'This account is not deleted.';
+
+  @override
+  String get glTypes => 'TXN Types';
+
+  @override
+  String get productName => 'Product name';
+
+  @override
+  String get productCode => 'Product code';
+
+  @override
+  String get transactionType => 'Transaction Types';
 }
