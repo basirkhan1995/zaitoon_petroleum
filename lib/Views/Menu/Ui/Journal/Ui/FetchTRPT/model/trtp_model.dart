@@ -160,8 +160,8 @@ class TrtpTransaction {
   }) =>
       TrtpTransaction(
         trnReference: trnReference ?? this.trnReference,
-        amount: purchaseAmount ?? this.amount,
-        currency: purchaseCurrency ?? this.currency,
+        amount: purchaseAmount ?? amount,
+        currency: purchaseCurrency ?? currency,
         debitAccount: debitAccount ?? this.debitAccount,
         creditAccount: creditAccount ?? this.creditAccount,
         maker: maker ?? this.maker,

@@ -465,5 +465,8 @@
   "order": "فرمایش",
   "advancePayment": "پیش پرداخت",
   "payment": "پرداخت",
-  "noExpenseRecorded": "تاکتون مصرف ثبت نشده است"
+  "noExpenseRecorded": "تاکتون مصرف ثبت نشده است",
+  "allShipping": "حمل نقل",
+  "accountExist": "حساب به این نام از قبل موجود است",
+  "glDependentMsg": "این حساب قابل حذف نیست"
 }

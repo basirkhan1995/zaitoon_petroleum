@@ -2817,6 +2817,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No expenses recorded'**
   String get noExpenseRecorded;
+
+  /// No description provided for @allShipping.
+  ///
+  /// In en, this message translates to:
+  /// **'All Shipping'**
+  String get allShipping;
+
+  /// No description provided for @accountExist.
+  ///
+  /// In en, this message translates to:
+  /// **'Account already exists.'**
+  String get accountExist;
+
+  /// No description provided for @glDependentMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'This account is not deleted.'**
+  String get glDependentMsg;
 }
 
 class _AppLocalizationsDelegate

@@ -10,14 +10,14 @@ import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import '../../../../../../../../Features/Date/zdate_picker.dart';
 import '../../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../../../Features/Widgets/stepper.dart';
 import '../../../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../../../Auth/bloc/auth_bloc.dart';
-import '../../../../../Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
-import '../../../../../Finance/Ui/GlAccounts/model/gl_model.dart';
 import '../../../../../Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import '../../../../../Stakeholders/Ui/Individuals/individual_model.dart';
 import '../../../Vehicles/bloc/vehicle_bloc.dart';
@@ -125,7 +125,7 @@ class _DesktopState extends State<_Desktop> {
       listener: (context, state) {
         if (state is ShippingSuccessState) {
           if (state.message.contains('Shipping')) {
-            Navigator.of(context).pop();
+           // Navigator.of(context).pop();
           } else {
 
             // Clear the expense form after success
@@ -741,25 +741,20 @@ class _DesktopState extends State<_Desktop> {
                     Row(
                       children: [
                         Expanded(
-                          child: GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
+                          child: GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
                             showAllOnFocus: true,
                             controller: accountController,
                             title: tr.accounts,
                             hintText: tr.accNameOrNumber,
                             isRequired: true,
-                            bloc: context.read<GlAccountsBloc>(),
+                            bloc: context.read<AccountsBloc>(),
                             fetchAllFunction: (bloc) => bloc.add(
-                              LoadGlAccountEvent(
-                                local: currentLocale ?? "en",
-                                categories: [4],
-                              ),
+                              LoadAccountsFilterEvent(
+                                start: 4, end: 4),
                             ),
                             searchFunction: (bloc, query) => bloc.add(
-                              LoadGlAccountEvent(
-                                local: currentLocale ?? "en",
-                                categories: [4],
-                                search: query,
-                              ),
+                              LoadAccountsFilterEvent(
+                                  start: 4, end: 4, input: query),
                             ),
                             validator: (value) {
                               if (value.isEmpty) {
@@ -788,15 +783,15 @@ class _DesktopState extends State<_Desktop> {
                               ),
                             ),
                             itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
-                            stateToLoading: (state) => state is GlAccountsLoadingState,
+                            stateToLoading: (state) => state is AccountLoadingState,
                             loadingBuilder: (context) => const SizedBox(
                               width: 16,
                               height: 16,
                               child: CircularProgressIndicator(strokeWidth: 3),
                             ),
                             stateToItems: (state) {
-                              if (state is GlAccountLoadedState) {
-                                return state.gl;
+                              if (state is AccountLoadedState) {
+                                return state.accounts;
                               }
                               return [];
                             },

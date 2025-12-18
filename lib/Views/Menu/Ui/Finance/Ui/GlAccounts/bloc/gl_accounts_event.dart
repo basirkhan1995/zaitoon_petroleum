@@ -4,20 +4,29 @@ sealed class GlAccountsEvent extends Equatable {
   const GlAccountsEvent();
 }
 
-class LoadAllGlAccountEvent extends GlAccountsEvent{
-  final String local;
-  const LoadAllGlAccountEvent(this.local);
+class LoadGlAccountEvent extends GlAccountsEvent{
+  const LoadGlAccountEvent();
   @override
-  List<Object?> get props => [local];
+  List<Object?> get props => [];
 }
 
-class LoadGlAccountEvent extends GlAccountsEvent{
-  final String local;
-  final List<int>? categories;
-  final List<int>? excludeAccounts;
-  final String? search;
-
-  const LoadGlAccountEvent({required this.local, this.categories, this.excludeAccounts, this.search});
+class AddGlEvent extends GlAccountsEvent{
+  final GlAccountsModel newGl;
+  const AddGlEvent(this.newGl);
   @override
-  List<Object?> get props => [local, categories, excludeAccounts, search];
+  List<Object?> get props => [newGl];
+}
+
+class UpdateGlEvent extends GlAccountsEvent{
+  final GlAccountsModel newGl;
+  const UpdateGlEvent(this.newGl);
+  @override
+  List<Object?> get props => [newGl];
+}
+
+class DeleteGlEvent extends GlAccountsEvent{
+  final int accNumber;
+  const DeleteGlEvent(this.accNumber);
+  @override
+  List<Object?> get props => [accNumber];
 }

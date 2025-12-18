@@ -465,5 +465,8 @@
   "order": "Order",
   "advancePayment": "Advance Payment",
   "payment": "Payment",
-  "noExpenseRecorded": "No expenses recorded"
+  "noExpenseRecorded": "No expenses recorded",
+  "allShipping": "All Shipping",
+  "accountExist": "Account already exists.",
+  "glDependentMsg": "This account is not deleted."
 }

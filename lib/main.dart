@@ -100,7 +100,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => AccountsBloc(Repositories(ApiServices()))..add(LoadAccountsEvent())),
         BlocProvider(create: (context) => UsersBloc(Repositories(ApiServices()))..add(LoadUsersEvent())),
         BlocProvider(create: (context) => CurrenciesBloc(Repositories(ApiServices()))..add(LoadCurrenciesEvent())),
-        BlocProvider(create: (context) => GlAccountsBloc(Repositories(ApiServices()))..add(LoadAllGlAccountEvent('en'))),
+        BlocProvider(create: (context) => GlAccountsBloc(Repositories(ApiServices()))..add(LoadGlAccountEvent())),
         BlocProvider(create: (context) => StakeholderByIdBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => PermissionsBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => AuthBloc(Repositories(ApiServices()))),

@@ -10,16 +10,16 @@ import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import '../../../../../../../Features/Date/gregorian_date_picker.dart';
 import '../../../../../../../Features/Date/shamsi_date_picker.dart';
 import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../../../../Features/Other/utils.dart';
 import '../../../../../../../Features/PrintSettings/print_preview.dart';
 import '../../../../../../../Features/PrintSettings/report_model.dart';
-import '../../../../Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
-import '../../../../Finance/Ui/GlAccounts/model/gl_model.dart';
 import '../../../../Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import '../../../../Journal/Ui/TxnByReference/txn_reference.dart';
+import '../../../../Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
 import 'PDF/pdf.dart';
 import 'bloc/acc_statement_bloc.dart';
 import 'model/stmt_model.dart';
@@ -250,24 +250,19 @@ class _DesktopState extends State<_Desktop> {
                         SizedBox(
                           width: 500,
                           child:
-                              GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
+                              GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
                                 showAllOnFocus: true,
                                 controller: accountController,
                                 title: locale.accounts,
                                 hintText: locale.accNameOrNumber,
                                 isRequired: true,
-                                bloc: context.read<GlAccountsBloc>(),
+                                bloc: context.read<AccountsBloc>(),
                                 fetchAllFunction: (bloc) => bloc.add(
-                                  LoadGlAccountEvent(
-                                    local: myLocale ?? "en",
-                                    categories: [5],
-                                  ),
+                                  LoadStkAccountsEvent(),
                                 ),
                                 searchFunction: (bloc, query) => bloc.add(
-                                  LoadGlAccountEvent(
-                                    local: myLocale ?? "en",
-                                    categories: [5],
-                                    search: query,
+                                  LoadStkAccountsEvent(
+                                    search: query
                                   ),
                                 ),
                                 validator: (value) {
@@ -289,7 +284,7 @@ class _DesktopState extends State<_Desktop> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            "${account.accNumber} | ${account.accName}",
+                                            "${account.accnumber} | ${account.accName}",
                                             style: Theme.of(
                                               context,
                                             ).textTheme.bodyLarge,
@@ -300,9 +295,9 @@ class _DesktopState extends State<_Desktop> {
                                   ),
                                 ),
                                 itemToString: (acc) =>
-                                    "${acc.accNumber} | ${acc.accName}",
+                                    "${acc.accnumber} | ${acc.accName}",
                                 stateToLoading: (state) =>
-                                    state is GlAccountsLoadingState,
+                                    state is AccountLoadingState,
                                 loadingBuilder: (context) => const SizedBox(
                                   width: 16,
                                   height: 16,
@@ -311,14 +306,14 @@ class _DesktopState extends State<_Desktop> {
                                   ),
                                 ),
                                 stateToItems: (state) {
-                                  if (state is GlAccountLoadedState) {
-                                    return state.gl;
+                                  if (state is StkAccountLoadedState) {
+                                    return state.accounts;
                                   }
                                   return [];
                                 },
                                 onSelected: (value) {
                                   setState(() {
-                                    accNumber = value.accNumber;
+                                    accNumber = value.accnumber;
                                   });
                                 },
                                 noResultsText: locale.noDataFound,

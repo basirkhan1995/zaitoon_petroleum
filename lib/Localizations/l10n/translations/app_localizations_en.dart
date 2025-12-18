@@ -1401,4 +1401,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noExpenseRecorded => 'No expenses recorded';
+
+  @override
+  String get allShipping => 'All Shipping';
+
+  @override
+  String get accountExist => 'Account already exists.';
+
+  @override
+  String get glDependentMsg => 'This account is not deleted.';
 }

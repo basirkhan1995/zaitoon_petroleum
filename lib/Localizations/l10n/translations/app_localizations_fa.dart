@@ -1393,4 +1393,13 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get noExpenseRecorded => 'تاکتون مصرف ثبت نشده است';
+
+  @override
+  String get allShipping => 'حمل نقل';
+
+  @override
+  String get accountExist => 'حساب به این نام از قبل موجود است';
+
+  @override
+  String get glDependentMsg => 'این حساب قابل حذف نیست';
 }

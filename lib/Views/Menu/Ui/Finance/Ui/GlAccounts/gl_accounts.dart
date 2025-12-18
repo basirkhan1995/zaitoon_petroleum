@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/add_edit_gl.dart';
 import '../../../../../../Features/Other/utils.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../Localizations/l10n/translations/app_localizations.dart';
@@ -48,7 +49,7 @@ class _DesktopState extends State<_Desktop> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_){
       myLocale = Localizations.localeOf(context).languageCode;
-      context.read<GlAccountsBloc>().add(LoadAllGlAccountEvent(myLocale??"en"));
+      context.read<GlAccountsBloc>().add(LoadGlAccountEvent());
     });
     super.initState();
   }
@@ -105,9 +106,9 @@ class _DesktopState extends State<_Desktop> {
                     isActive: true,
                     icon: Icons.add,
                     onPressed: (){
-                      // showDialog(context: context, builder: (context){
-                      //   return GlActionView();
-                      // });
+                      showDialog(context: context, builder: (context){
+                        return AddEditGl();
+                      });
                     },
                     label: Text(AppLocalizations.of(context)!.newKeyword)),
               ],
@@ -155,9 +156,9 @@ class _DesktopState extends State<_Desktop> {
                         final gl = filteredList[index];
                         return InkWell(
                           onTap: (){
-                            // showDialog(context: context, builder: (context){
-                            //   return GlActionView(gl: gl);
-                            // });
+                            showDialog(context: context, builder: (context){
+                              return AddEditGl(model: gl);
+                            });
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 5,horizontal: 10),
@@ -192,7 +193,7 @@ class _DesktopState extends State<_Desktop> {
   }
 
   void onRefresh(){
-    context.read<GlAccountsBloc>().add(LoadAllGlAccountEvent(myLocale??"en"));
+    context.read<GlAccountsBloc>().add(LoadGlAccountEvent());
   }
 }
 

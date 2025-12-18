@@ -131,6 +131,10 @@ class _DesktopState extends State<_Desktop> {
                   spacing: 8,
                   children: [
                     Expanded(
+                        flex: 5,
+                        child: Text(tr.allShipping,style: Theme.of(context).textTheme.titleMedium)),
+                    Expanded(
+                      flex: 3,
                       child: ZSearchField(
                         icon: FontAwesomeIcons.magnifyingGlass,
                         controller: searchController,
@@ -182,7 +186,7 @@ class _DesktopState extends State<_Desktop> {
       padding: const EdgeInsets.symmetric(horizontal: 15.0),
       child: Row(
         children: [
-          SizedBox(width: 40, child: Text(tr.id)),
+          SizedBox(width: 40, child: Text(tr.id,style: titleStyle)),
           SizedBox(width: 90, child: Text(tr.date, style: titleStyle)),
           Expanded(child: Text(tr.vehicles, style: titleStyle)),
           SizedBox(width: 130, child: Text(tr.products, style: titleStyle)),

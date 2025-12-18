@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:zaitoon_petroleum/Services/localization_services.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
 
@@ -9,26 +10,89 @@ part 'gl_accounts_state.dart';
 class GlAccountsBloc extends Bloc<GlAccountsEvent, GlAccountsState> {
   final Repositories _repo;
   GlAccountsBloc(this._repo) : super(GlAccountsInitial()) {
-
-    on<LoadAllGlAccountEvent>((event, emit) async{
-      emit(GlAccountsLoadingState());
-      try{
-       final gl = await _repo.getAllGlAccounts(local: event.local);
-       emit(GlAccountLoadedState(gl));
-      }catch(e){
-        emit(GlAccountsErrorState(e.toString()));
-      }
-    });
-
     on<LoadGlAccountEvent>((event, emit) async{
       emit(GlAccountsLoadingState());
       try{
-        final gl = await _repo.getGlAccountsByOptions(local: event.local,categories: event.categories,excludeAccounts: event.excludeAccounts,search: event.search);
+        final gl = await _repo.getGl();
         emit(GlAccountLoadedState(gl));
       }catch(e){
         emit(GlAccountsErrorState(e.toString()));
       }
     });
+    on<AddGlEvent>((event, emit) async{
+      final tr = localizationService.loc;
+      emit(GlAccountsLoadingState());
+      try{
+        final response = await _repo.addGl(newAccount: event.newGl);
+        final msg = response["msg"];
+        switch(msg){
+          case "success" :
+            add(LoadGlAccountEvent());
+            return;
+          case "exist" :
+            emit(GlAccountsErrorState(tr.accountExist));
+            return;
+          case "failed" :
+          emit(GlAccountsErrorState(tr.operationFailedMessage));
+          return;
+          default:
+            emit(GlAccountsErrorState(msg));
+            return;
+        }
 
+      }catch(e){
+        emit(GlAccountsErrorState(e.toString()));
+      }
+    });
+    on<UpdateGlEvent>((event, emit) async{
+      final tr = localizationService.loc;
+      emit(GlAccountsLoadingState());
+      try{
+        final response = await _repo.editGl(newAccount: event.newGl);
+        final msg = response["msg"];
+        switch(msg){
+          case "success" :
+            add(LoadGlAccountEvent());
+            return;
+          case "exist" :
+            emit(GlAccountsErrorState(tr.accountExist));
+            return;
+          case "failed" :
+            emit(GlAccountsErrorState(tr.operationFailedMessage));
+            return;
+          default:
+            emit(GlAccountsErrorState(msg));
+            return;
+        }
+
+      }catch(e){
+        emit(GlAccountsErrorState(e.toString()));
+      }
+    });
+    on<DeleteGlEvent>((event, emit) async{
+      final tr = localizationService.loc;
+      emit(GlAccountsLoadingState());
+      try{
+        final response = await _repo.deleteGl(accNumber: event.accNumber);
+        final msg = response["msg"];
+        switch(msg){
+          case "success" :
+            add(LoadGlAccountEvent());
+            return;
+          case "dependent" :
+            emit(GlAccountsErrorState(tr.glDependentMsg));
+            return;
+          case "failed" :
+            emit(GlAccountsErrorState(tr.operationFailedMessage));
+            return;
+          default:
+            emit(GlAccountsErrorState(msg));
+            return;
+        }
+
+      }catch(e){
+        emit(GlAccountsErrorState(e.toString()));
+      }
+    });
   }
 }
