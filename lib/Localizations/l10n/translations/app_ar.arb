@@ -473,5 +473,6 @@
   "productName": "کالا نوم",
   "productCode": "کالا کد",
   "transactionType": "نوع معاملات",
-  "deactive": "غیرفعال"
+  "deactive": "غیرفعال",
+  "userLogActivity": "فعالیت های کاربران"
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
 
 // Font Scaler based on screen size
 extension FontScaler on BuildContext {
@@ -91,4 +91,67 @@ extension CurrencyRateFormatter on Object? {
     // If we removed all decimals, add .0 to indicate it's a rate
     return trimmed.contains('.') ? trimmed : '$trimmed.0';
   }
+}
+
+extension TimeAgoDateTime on DateTime {
+  String toTimeAgo() {
+    final now = DateTime.now();
+    final diff = now.difference(this);
+
+    if (diff.inSeconds < 10) {
+      return 'just now';
+    }
+
+    if (diff.inMinutes < 1) {
+      return '${diff.inSeconds} seconds ago';
+    }
+
+    if (diff.inMinutes < 60) {
+      return _plural(diff.inMinutes, 'minute');
+    }
+
+    if (diff.inHours < 24) {
+      return _plural(diff.inHours, 'hour');
+    }
+
+    if (diff.inDays == 1) {
+      return 'yesterday';
+    }
+
+    if (diff.inDays < 7) {
+      return _plural(diff.inDays, 'day');
+    }
+
+    final weeks = (diff.inDays / 7).floor();
+    if (weeks < 4) {
+      return _plural(weeks, 'week');
+    }
+
+    final months = (diff.inDays / 30).floor();
+    if (months < 12) {
+      return _plural(months, 'month');
+    }
+
+    final years = (diff.inDays / 365).floor();
+    return _plural(years, 'year');
+  }
+}
+
+extension TimeAgoString on String {
+  String toTimeAgo({
+    String pattern = 'yyyy-MM-dd HH:mm:ss',
+  }) {
+    try {
+      final date = DateFormat(pattern).parse(this);
+      return date.toTimeAgo();
+    } catch (_) {
+      return this;
+    }
+  }
+}
+
+String _plural(int value, String unit) {
+  return value == 1
+      ? '1 $unit ago'
+      : '$value ${unit}s ago';
 }

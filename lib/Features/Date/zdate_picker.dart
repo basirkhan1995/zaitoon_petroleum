@@ -5,6 +5,7 @@ import 'gregorian_date_picker.dart';
 
 class GenericDatePicker extends StatefulWidget {
   final String label;
+  final double? height;
   final String? initialGregorianDate;
   final ValueChanged<String> onDateChanged;
   final EdgeInsetsGeometry? padding;
@@ -18,6 +19,7 @@ class GenericDatePicker extends StatefulWidget {
     required this.onDateChanged,
     this.initialGregorianDate,
     this.padding,
+    this.height,
     this.labelStyle,
     this.gregorianTextStyle,
     this.shamsiTextStyle,
@@ -53,7 +55,7 @@ class _GenericDatePickerState extends State<GenericDatePicker> {
         const SizedBox(height: 4),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          height: 40,
+          height: widget.height ?? 40,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3),
             border: Border.all(

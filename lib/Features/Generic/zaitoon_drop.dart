@@ -17,7 +17,7 @@ class ZDropdown<T> extends StatefulWidget {
   final Function(List<T>)? onMultiSelectChanged;
   final bool multiSelect;
   final bool isLoading;
-  final Widget? customTitle; // Add this line
+  final Widget? customTitle;
 
   const ZDropdown({
     super.key,

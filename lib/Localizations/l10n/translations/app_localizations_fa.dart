@@ -1417,4 +1417,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get deactive => 'غیرفعال';
+
+  @override
+  String get userLogActivity => 'فعالیت های کاربران';
 }

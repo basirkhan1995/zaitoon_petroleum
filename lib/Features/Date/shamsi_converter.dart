@@ -125,7 +125,7 @@ extension DateTimeFormatExtensions on DateTime {
 
   /// Returns full date-time in 'yyyy-MM-dd HH:mm:ss' format
   String get toFullDateTime => DateFormat('yyyy-MM-dd HH:mm:ss').format(this);
-
+  String get toDateTime => DateFormat('dd/MM/yyyy, hh:mma').format(this);
   /// Returns localized readable format (e.g., Friday, Oct 31, 2025 – 10:29 PM)
   String get toReadable => DateFormat('EEEE, MMM d, yyyy – h:mm a').format(this);
 }

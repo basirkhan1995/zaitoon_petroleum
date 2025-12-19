@@ -8,6 +8,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/BalanceSh
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/GeneralReport/general_report.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/IncomeStatement/income_statement.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/TransactionRef/transaction_ref.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/UserLogReport/user_log_report.dart';
 import '../../../../Features/Other/utils.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'Ui/Finance/AccountStatement/acc_statement.dart';
@@ -37,6 +38,8 @@ enum ActionKey {
   products,
   purchase,
   sale,
+
+  userLog
 }
 class ReportView extends StatelessWidget {
   const ReportView({super.key});
@@ -102,6 +105,10 @@ class _DesktopState extends State<_Desktop> {
       {"title": locale.glReport, "icon": Icons.add_chart_rounded, "action": ActionKey.sale},
     ];
 
+    final List<Map<String, dynamic>> activitiesButtons = [
+      {"title": locale.userLog, "icon": Icons.scale_rounded, "action": ActionKey.userLog},
+    ];
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -123,6 +130,11 @@ class _DesktopState extends State<_Desktop> {
 
               _buildSectionTitle(title: locale.transactions,icon: Icons.ssid_chart),
               _buildButtonGroup(transactionsButtons, color),
+
+              const SizedBox(height: 15),
+
+              _buildSectionTitle(title: locale.activities,icon: Icons.access_time),
+              _buildButtonGroup(activitiesButtons, color),
             ],
           ),
         ),
@@ -213,6 +225,7 @@ class _DesktopState extends State<_Desktop> {
   }
   void reportAction(ActionKey action) {
     switch (action) {
+
       //Finance
       case ActionKey.accStatement: Utils.goto(context, AccountStatementView());
       case ActionKey.glStatement: throw GlStatementView();
@@ -229,10 +242,13 @@ class _DesktopState extends State<_Desktop> {
       case ActionKey.activities:  Utils.goto(context, ActivitiesView());
       case ActionKey.transactionByRef:  Utils.goto(context, TransactionByReferenceView());
 
-      //Stock
+      // Stock
       case ActionKey.products: throw UnimplementedError();
       case ActionKey.purchase: throw UnimplementedError();
       case ActionKey.sale: throw UnimplementedError();
+
+      // Activity
+      case ActionKey.userLog: Utils.goto(context, UserLogReportView());
     }
   }
 }

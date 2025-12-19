@@ -1425,4 +1425,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deactive => 'Inactive';
+
+  @override
+  String get userLogActivity => 'Users Log Activity';
 }

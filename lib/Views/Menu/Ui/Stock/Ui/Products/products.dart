@@ -154,7 +154,6 @@ class _DesktopState extends State<_Desktop> {
                           ),
                           child: Row(
                             children: [
-
                               Text(product.proName??""),
                             ],
                           ),

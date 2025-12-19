@@ -2865,6 +2865,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Inactive'**
   String get deactive;
+
+  /// No description provided for @userLogActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Users Log Activity'**
+  String get userLogActivity;
 }
 
 class _AppLocalizationsDelegate

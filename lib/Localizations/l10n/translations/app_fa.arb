@@ -473,5 +473,6 @@
   "productName": "نام کالا",
   "productCode": "کد کالا",
   "transactionType": "نوع معاملات",
-  "deactive": "غیرفعال"
+  "deactive": "غیرفعال",
+  "userLogActivity": "فعالیت های کاربران"
 }
