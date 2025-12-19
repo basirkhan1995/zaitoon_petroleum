@@ -248,6 +248,16 @@ class _DesktopState extends State<_Desktop> {
                                                   color: color.outline,
                                                 ),
                                           ),
+
+                                          Text(
+                                            log.ualDevice ?? "",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall
+                                                ?.copyWith(
+                                              color: color.primary,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                       Text(
@@ -257,53 +267,54 @@ class _DesktopState extends State<_Desktop> {
                                     ],
                                   ),
                                 ),
-                                Wrap(
-                                  spacing: 5,
-                                  children: [
-                                    Icon(Icons.access_time, size: 15),
-                                    Text(
-                                      log.ualTiming?.toTimeAgo() ?? "",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(color: color.outline),
-                                    ),
-                                  ],
+                                Text(
+                                  log.fullName?? "",
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: color.outline),
                                 ),
                               ],
                             ),
                             SizedBox(height: 5),
-                            Text(
-                              log.ualType ?? "",
-                              style: Theme.of(
-                                context,
-                              ).textTheme.titleSmall?.copyWith(fontSize: 12),
-                            ),
-                            Text(
-                              log.ualDetails ?? "",
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
+                            Row(
+                              spacing: 5,
+                              children: [
+                                Text(
+                                  log.ualType ?? "",
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleSmall?.copyWith(fontSize: 12),
+                                ),
+                                Text(
+                                  log.ualDetails ?? "",
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
                                     color: color.outline.withValues(alpha: .8),
                                   ),
+                                ),
+                              ],
                             ),
+
                             Row(
                               children: [
                                 Expanded(
-                                  child: Text(
-                                    log.ualTiming?.toDateTime ?? "",
-                                    style: Theme.of(context).textTheme.bodySmall
-                                        ?.copyWith(color: color.outline),
+                                  child: Row(
+                                    spacing: 5,
+                                    children: [
+                                      Text(
+                                        log.ualTiming?.toDateTime ?? "",
+                                        style: Theme.of(context).textTheme.bodySmall
+                                            ?.copyWith(color: color.primary),
+                                      ),
+                                      Text(
+                                        log.ualTiming!.toTimeAgo(),
+                                        style: Theme.of(context).textTheme.bodySmall
+                                            ?.copyWith(color: color.outline),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 Row(
                                   spacing: 5,
                                   children: [
-                                    Text(
-                                      tr.branch,
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodySmall,
-                                    ),
                                     Text(
                                       log.usrBranch.toString(),
                                       style: Theme.of(context)

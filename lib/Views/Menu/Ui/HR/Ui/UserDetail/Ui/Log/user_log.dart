@@ -102,26 +102,23 @@ class _DesktopState extends State<_Desktop> {
               itemBuilder: (context, index) {
                 final log = state.log[index];
                 return Container(
-                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                  margin: EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(
                     color: index.isEven
                         ? color.primary.withValues(alpha: .05)
                         : Colors.transparent,
                   ),
-                  child: Row(children: [
-                    SizedBox(
-                        width: 100,
-                        child: Text(log.ualDevice??"")),
-                    SizedBox(
-                        width: 100,
-                        child: Text(log.ualType??"")),
-                    Expanded(
-                        child: Text(log.ualDetails??"")),
-                    SizedBox(
-                        width: 100,
-                        child: Text(log.ualTiming?.toFullDateTime??"")),
-
-                  ]),
+                  child: ListTile(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 5,vertical: 0),
+                    visualDensity: VisualDensity(horizontal: -4,vertical: -4),
+                    title: Text(log.ualType??"",style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontSize: 13
+                    )),
+                    subtitle: Text(log.ualDetails??"",style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: color.outline,
+                      fontSize: 11
+                    ),),
+                  )
                 );
               },
             );
