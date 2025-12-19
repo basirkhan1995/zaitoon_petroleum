@@ -4,20 +4,23 @@ abstract class ShippingState extends Equatable {
   final List<ShippingModel> shippingList;
   final ShippingDetailsModel? currentShipping;
   final int? loadingShpId;
+  final bool shouldOpenDialog;
 
   const ShippingState({
     this.shippingList = const [],
     this.currentShipping,
     this.loadingShpId,
+    this.shouldOpenDialog = false,
   });
 
   @override
-  List<Object?> get props => [shippingList, currentShipping, loadingShpId];
+  List<Object?> get props => [shippingList, currentShipping, loadingShpId, shouldOpenDialog];
 
   ShippingState copyWith({
     List<ShippingModel>? shippingList,
     ShippingDetailsModel? currentShipping,
     int? loadingShpId,
+    bool? shouldOpenDialog,
   });
 }
 
@@ -29,18 +32,20 @@ class ShippingInitial extends ShippingState {
     List<ShippingModel>? shippingList,
     ShippingDetailsModel? currentShipping,
     int? loadingShpId,
+    bool? shouldOpenDialog,
   }) {
-    // Return new instance with updated values
-    // Since ShippingInitial is just initial state, we can return a new one
     return ShippingInitial();
   }
 }
 
 class ShippingListLoadingState extends ShippingState {
+  final bool isLoading;
+
   const ShippingListLoadingState({
     required super.shippingList,
     super.currentShipping,
     super.loadingShpId,
+    this.isLoading = false,
   });
 
   @override
@@ -48,13 +53,19 @@ class ShippingListLoadingState extends ShippingState {
     List<ShippingModel>? shippingList,
     ShippingDetailsModel? currentShipping,
     int? loadingShpId,
+    bool? isLoading,
+    bool? shouldOpenDialog,
   }) {
     return ShippingListLoadingState(
       shippingList: shippingList ?? this.shippingList,
       currentShipping: currentShipping ?? this.currentShipping,
       loadingShpId: loadingShpId ?? this.loadingShpId,
+      isLoading: isLoading ?? this.isLoading,
     );
   }
+
+  @override
+  List<Object?> get props => [...super.props, isLoading];
 }
 
 class ShippingDetailLoadingState extends ShippingState {
@@ -69,6 +80,7 @@ class ShippingDetailLoadingState extends ShippingState {
     List<ShippingModel>? shippingList,
     ShippingDetailsModel? currentShipping,
     int? loadingShpId,
+    bool? shouldOpenDialog,
   }) {
     return ShippingDetailLoadingState(
       shippingList: shippingList ?? this.shippingList,
@@ -90,6 +102,7 @@ class ShippingListLoadedState extends ShippingState {
     List<ShippingModel>? shippingList,
     ShippingDetailsModel? currentShipping,
     int? loadingShpId,
+    bool? shouldOpenDialog,
   }) {
     return ShippingListLoadedState(
       shippingList: shippingList ?? this.shippingList,
@@ -104,6 +117,7 @@ class ShippingDetailLoadedState extends ShippingState {
     required super.shippingList,
     required super.currentShipping,
     super.loadingShpId,
+    super.shouldOpenDialog = true,
   });
 
   @override
@@ -111,11 +125,13 @@ class ShippingDetailLoadedState extends ShippingState {
     List<ShippingModel>? shippingList,
     ShippingDetailsModel? currentShipping,
     int? loadingShpId,
+    bool? shouldOpenDialog,
   }) {
     return ShippingDetailLoadedState(
       shippingList: shippingList ?? this.shippingList,
       currentShipping: currentShipping ?? this.currentShipping,
       loadingShpId: loadingShpId ?? this.loadingShpId,
+      shouldOpenDialog: shouldOpenDialog ?? this.shouldOpenDialog,
     );
   }
 }
@@ -136,6 +152,7 @@ class ShippingErrorState extends ShippingState {
     ShippingDetailsModel? currentShipping,
     int? loadingShpId,
     String? error,
+    bool? shouldOpenDialog,
   }) {
     return ShippingErrorState(
       shippingList: shippingList ?? this.shippingList,
@@ -165,6 +182,7 @@ class ShippingSuccessState extends ShippingState {
     ShippingDetailsModel? currentShipping,
     int? loadingShpId,
     String? message,
+    bool? shouldOpenDialog,
   }) {
     return ShippingSuccessState(
       shippingList: shippingList ?? this.shippingList,

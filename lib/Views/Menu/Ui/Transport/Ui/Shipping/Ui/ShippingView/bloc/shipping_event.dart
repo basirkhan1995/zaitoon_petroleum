@@ -55,6 +55,11 @@ class ClearShippingDetailEvent extends ShippingEvent {
   List<Object> get props => [];
 }
 
+class ClearShippingSuccessEvent extends ShippingEvent {
+  @override
+  List<Object> get props => [];
+}
+
 // Expense operations
 class AddShippingExpenseEvent extends ShippingEvent {
   final int shpId;

@@ -20,6 +20,7 @@ class CustomStepper extends StatefulWidget {
   final Color? activeColor;
   final Color? inactiveColor;
   final VoidCallback? onFinish;
+  final Function(int)? onStepChanged; // Added this callback
 
   const CustomStepper({
     super.key,
@@ -28,6 +29,7 @@ class CustomStepper extends StatefulWidget {
     this.activeColor,
     this.inactiveColor,
     this.onFinish,
+    this.onStepChanged, // Added this parameter
   });
 
   @override
@@ -39,7 +41,12 @@ class _CustomStepperState extends State<CustomStepper> {
 
   void _goNext() {
     if (currentStep < widget.steps.length - 1) {
-      setState(() => currentStep++);
+      // Call onStepChanged before changing step
+      final allowNavigation = widget.onStepChanged?.call(currentStep + 1) ?? true;
+
+      if (allowNavigation) {
+        setState(() => currentStep++);
+      }
     } else {
       widget.onFinish?.call();
     }
@@ -47,7 +54,23 @@ class _CustomStepperState extends State<CustomStepper> {
 
   void _goPrevious() {
     if (currentStep > 0) {
-      setState(() => currentStep--);
+      // Call onStepChanged before changing step
+      final allowNavigation = widget.onStepChanged?.call(currentStep - 1) ?? true;
+
+      if (allowNavigation) {
+        setState(() => currentStep--);
+      }
+    }
+  }
+
+  void _goToStep(int step) {
+    if (step >= 0 && step < widget.steps.length) {
+      // Call onStepChanged before changing step
+      final allowNavigation = widget.onStepChanged?.call(step) ?? true;
+
+      if (allowNavigation) {
+        setState(() => currentStep = step);
+      }
     }
   }
 
@@ -62,15 +85,18 @@ class _CustomStepperState extends State<CustomStepper> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Step headers
-          isHorizontal ? Row(
+          isHorizontal
+              ? Row(
             textDirection: Directionality.of(context),
             children: _buildSteps(context),
-            ) : Column(children: _buildSteps(context)),
+          )
+              : Column(children: _buildSteps(context)),
           const SizedBox(height: 8),
 
           // Current step content
           Expanded(child: widget.steps[currentStep].content),
           const SizedBox(height: 8),
+
           // Navigation buttons
           Container(
             padding: const EdgeInsets.all(8.0),
@@ -90,7 +116,8 @@ class _CustomStepperState extends State<CustomStepper> {
                   isActive: true,
                   onPressed: _goNext,
                   label: Text(
-                      currentStep < widget.steps.length - 1 ? tr.next : tr.finish),
+                    currentStep < widget.steps.length - 1 ? tr.next : tr.finish,
+                  ),
                 ),
               ],
             ),
@@ -113,7 +140,7 @@ class _CustomStepperState extends State<CustomStepper> {
           borderRadius: BorderRadius.circular(8),
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
-          onTap: () => setState(() => currentStep = i),
+          onTap: () => _goToStep(i), // Use the new method
           child: Padding(
             padding: const EdgeInsets.all(6),
             child: Column(

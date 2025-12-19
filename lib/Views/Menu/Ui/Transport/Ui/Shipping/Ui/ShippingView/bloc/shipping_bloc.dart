@@ -17,6 +17,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
     on<AddShippingEvent>(_onAddShipping);
     on<UpdateShippingEvent>(_onUpdateShipping);
     on<ClearShippingDetailEvent>(_onClearShippingDetail);
+    on<ClearShippingSuccessEvent>(_onClearShippingSuccess);
     on<AddShippingExpenseEvent>(_onAddShippingExpense);
     on<UpdateShippingExpenseEvent>(_onUpdateShippingExpense);
     on<DeleteShippingExpenseEvent>(_onDeleteShippingExpense);
@@ -32,6 +33,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
         shippingList: state.shippingList,
         currentShipping: state.currentShipping,
         loadingShpId: state.loadingShpId,
+        isLoading: true,
       ));
     }
 
@@ -56,6 +58,12 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       LoadShippingDetailEvent event,
       Emitter<ShippingState> emit,
       ) async {
+    // If already loading this shipping or already showing it, do nothing
+    if (state.loadingShpId == event.shpId ||
+        (state.currentShipping?.shpId == event.shpId && state is! ShippingDetailLoadedState)) {
+      return;
+    }
+
     // Start loading for this specific shipping
     emit(ShippingDetailLoadingState(
       shippingList: state.shippingList,
@@ -82,6 +90,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
         shippingList: updatedList,
         currentShipping: shippingDetail,
         loadingShpId: null, // Clear loading after success
+        shouldOpenDialog: true, // Flag to indicate dialog should open
       ));
     } catch (e) {
       // Keep the existing data but show error
@@ -113,6 +122,18 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
     emit(ShippingListLoadedState(
       shippingList: state.shippingList,
       currentShipping: null,
+      loadingShpId: null, // Also clear loading ID
+    ));
+  }
+
+  void _onClearShippingSuccess(
+      ClearShippingSuccessEvent event,
+      Emitter<ShippingState> emit,
+      ) {
+    // Clear success state and go back to loaded state
+    emit(ShippingListLoadedState(
+      shippingList: state.shippingList,
+      currentShipping: state.currentShipping,
       loadingShpId: state.loadingShpId,
     ));
   }
@@ -121,10 +142,9 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       UpdateStepperStepEvent event,
       Emitter<ShippingState> emit,
       ) {
-    if (state is ShippingDetailLoadedState) {
-      final currentState = state as ShippingDetailLoadedState;
-      // Re-emit the same state
-      emit(currentState);
+    // If we have current shipping, maintain the state
+    if (state.currentShipping != null) {
+      emit(state.copyWith());
     }
   }
 
@@ -136,6 +156,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       shippingList: state.shippingList,
       currentShipping: state.currentShipping,
       loadingShpId: state.loadingShpId,
+      isLoading: true,
     ));
 
     try {
@@ -145,22 +166,21 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
         final updatedList = await _repo.getAllShipping();
         final shpId = res['shpID'];
 
+        ShippingDetailsModel? shippingDetail;
         if (shpId != null) {
-          final shippingDetail = await _repo.getShippingById(shpId: shpId);
-          emit(ShippingSuccessState(
-            shippingList: updatedList,
-            currentShipping: shippingDetail,
-            loadingShpId: null,
-            message: 'Shipping added successfully',
-          ));
-        } else {
-          emit(ShippingSuccessState(
-            shippingList: updatedList,
-            currentShipping: state.currentShipping,
-            loadingShpId: null,
-            message: 'Shipping added successfully',
-          ));
+          try {
+            shippingDetail = await _repo.getShippingById(shpId: shpId);
+          } catch (e) {
+            // If can't get detail, continue with null
+          }
         }
+
+        emit(ShippingSuccessState(
+          shippingList: updatedList,
+          currentShipping: shippingDetail,
+          loadingShpId: null,
+          message: 'Shipping added successfully',
+        ));
       } else {
         throw Exception(res['msg'] ?? 'Failed to add shipping');
       }
@@ -168,7 +188,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       emit(ShippingErrorState(
         shippingList: state.shippingList,
         currentShipping: state.currentShipping,
-        loadingShpId: state.loadingShpId,
+        loadingShpId: null,
         error: 'Failed to add shipping: $e',
       ));
     }
@@ -182,6 +202,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       shippingList: state.shippingList,
       currentShipping: state.currentShipping,
       loadingShpId: state.loadingShpId,
+      isLoading: true,
     ));
 
     try {
@@ -227,7 +248,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       emit(ShippingErrorState(
         shippingList: state.shippingList,
         currentShipping: state.currentShipping,
-        loadingShpId: state.loadingShpId,
+        loadingShpId: null,
         error: 'Failed to update shipping: $e',
       ));
     }
@@ -241,8 +262,6 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
 
     // Show loading for this specific operation
     emit(state.copyWith(
-      shippingList: state.shippingList,
-      currentShipping: state.currentShipping,
       loadingShpId: event.shpId,
     ));
 
@@ -260,18 +279,11 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
         final updatedShipping = await _repo.getShippingById(shpId: event.shpId);
 
         // Update the current state with new shipping details
-        emit(state.copyWith(
+        emit(ShippingDetailLoadedState(
           shippingList: state.shippingList,
           currentShipping: updatedShipping,
           loadingShpId: null, // Clear loading
-        ));
-
-        // Show success state (optional)
-        emit(ShippingSuccessState(
-          shippingList: state.shippingList,
-          currentShipping: updatedShipping,
-          loadingShpId: null,
-          message: 'Expense added successfully',
+          shouldOpenDialog: false, // Don't reopen dialog
         ));
       } else if (res['msg'] == "delivered") {
         emit(ShippingErrorState(
@@ -301,8 +313,6 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
 
     // Show loading for this specific operation
     emit(state.copyWith(
-      shippingList: state.shippingList,
-      currentShipping: state.currentShipping,
       loadingShpId: event.shpId,
     ));
 
@@ -320,18 +330,11 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
         final updatedShipping = await _repo.getShippingById(shpId: event.shpId);
 
         // Update the current state
-        emit(state.copyWith(
+        emit(ShippingDetailLoadedState(
           shippingList: state.shippingList,
           currentShipping: updatedShipping,
           loadingShpId: null,
-        ));
-
-        // Show success state
-        emit(ShippingSuccessState(
-          shippingList: state.shippingList,
-          currentShipping: updatedShipping,
-          loadingShpId: null,
-          message: 'Expense updated successfully',
+          shouldOpenDialog: false, // Don't reopen dialog
         ));
       } else if (res['msg'] == "delivered") {
         emit(ShippingErrorState(
@@ -361,8 +364,6 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
 
     // Show loading for this specific operation
     emit(state.copyWith(
-      shippingList: state.shippingList,
-      currentShipping: state.currentShipping,
       loadingShpId: event.shpId,
     ));
 
@@ -378,18 +379,11 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
         final updatedShipping = await _repo.getShippingById(shpId: event.shpId);
 
         // Update the current state
-        emit(state.copyWith(
+        emit(ShippingDetailLoadedState(
           shippingList: state.shippingList,
           currentShipping: updatedShipping,
           loadingShpId: null,
-        ));
-
-        // Show success state
-        emit(ShippingSuccessState(
-          shippingList: state.shippingList,
-          currentShipping: updatedShipping,
-          loadingShpId: null,
-          message: 'Expense deleted successfully',
+          shouldOpenDialog: false, // Don't reopen dialog
         ));
       } else if (res['msg'] == "delivered") {
         emit(ShippingErrorState(
