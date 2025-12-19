@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
@@ -312,17 +313,48 @@ class _DesktopState extends State<_Desktop> {
                                     ],
                                   ),
                                 ),
-                                Row(
-                                  spacing: 5,
-                                  children: [
-                                    Text(
-                                      log.usrBranch.toString(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(color: color.outline),
-                                    ),
-                                  ],
+                                Cover(
+                                  radius: 3,
+                                  padding: EdgeInsets.all(2),
+                                  color: color.surface,
+                                  child: Row(
+                                    spacing: 5,
+                                    children: [
+                                      Text(
+                                        tr.usrId,
+                                        style: Theme.of(context).textTheme.bodySmall,
+                                      ),
+                                      Text(
+                                        log.usrId.toString(),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(color: color.outline),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(width: 5),
+                                Cover(
+                                  radius: 3,
+                                  padding: EdgeInsets.all(2),
+                                  color: color.surface,
+                                  child: Row(
+                                    spacing: 5,
+                                    children: [
+                                      Text(
+                                        tr.branch,
+                                        style: Theme.of(context).textTheme.bodySmall,
+                                      ),
+                                      Text(
+                                        log.usrBranch.toString(),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(color: color.outline),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
