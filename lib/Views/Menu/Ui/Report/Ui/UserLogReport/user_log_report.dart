@@ -9,6 +9,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/UserDetail/Ui/Log/bloc/use
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 import '../../../../../../../../Features/Date/zdate_picker.dart';
+import '../../../HR/Ui/Users/features/date_range_string.dart';
 import '../../../HR/Ui/Users/features/users_drop.dart';
 
 class UserLogReportView extends StatelessWidget {
@@ -75,40 +76,67 @@ class _DesktopState extends State<_Desktop> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.end,
               spacing: 8,
               children: [
                 InkWell(
-                  onTap:(){
+                  onTap: () {
                     Navigator.of(context).pop();
                   },
                   highlightColor: Colors.transparent,
                   hoverColor: Colors.transparent,
                   child: CircleAvatar(
                     radius: 18,
-                     backgroundColor: color.surface,
-                      child: Icon(Icons.arrow_back_ios_new_rounded,size: 16,color: color.outline.withValues(alpha: .9),),
+                    backgroundColor: color.surface,
+                    child: Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      size: 16,
+                      color: color.outline.withValues(alpha: .9),
+                    ),
                   ),
                 ),
                 Expanded(
                   child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(tr.userLog,style: Theme.of(context).textTheme.titleMedium),
-                    Text(tr.userLogActivity,style: Theme.of(context).textTheme.bodySmall),
-                  ],
-                )),
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        tr.userLog,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Text(
+                        tr.userLogActivity,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
                 SizedBox(
-                  width: 250,
+                  width: 200,
                   child: UserDropdown(
+                    title: tr.users,
                     isMulti: false,
                     onMultiChanged: (_) {},
                     onSingleChanged: (user) {
                       usrName = user?.usrName ?? "";
+                    },
+                  ),
+                ),
+
+                SizedBox(
+                  width: 200,
+                  child: DateRangeDropdown(
+                    onChanged: (fromDate, toDate) {
+                      context.read<UserLogBloc>().add(
+                        LoadUserLogEvent(
+                          usrName: usrName,
+                          fromDate: fromDate,
+                          toDate: toDate,
+                        ),
+                      );
                     },
                   ),
                 ),
@@ -124,7 +152,7 @@ class _DesktopState extends State<_Desktop> {
                 ),
 
                 ZOutlineButton(
-                  height: 45,
+                  height: 40,
                   width: 100,
                   icon: Icons.folder_open_rounded,
                   isActive: true,
@@ -189,10 +217,16 @@ class _DesktopState extends State<_Desktop> {
                             Row(
                               spacing: 8,
                               children: [
-                                CircleAvatar(radius: 18,child: Text(log.usrName?.getFirstLetter??""),),
+                                CircleAvatar(
+                                  radius: 18,
+                                  child: Text(
+                                    log.usrName?.getFirstLetter ?? "",
+                                  ),
+                                ),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Row(
@@ -200,40 +234,50 @@ class _DesktopState extends State<_Desktop> {
                                         children: [
                                           Text(
                                             log.usrName ?? "",
-                                            style: Theme.of(context).textTheme.titleSmall,
+                                            style: Theme.of(
+                                              context,
+                                            ).textTheme.titleSmall,
                                           ),
 
                                           Text(
                                             log.ualIp ?? "",
-                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                              color: color.outline,
-                                            ),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall
+                                                ?.copyWith(
+                                                  color: color.outline,
+                                                ),
                                           ),
                                         ],
                                       ),
-                                      Text(log.usrRole??"",style: TextStyle(fontSize: 10),)
+                                      Text(
+                                        log.usrRole ?? "",
+                                        style: TextStyle(fontSize: 10),
+                                      ),
                                     ],
                                   ),
                                 ),
                                 Wrap(
                                   spacing: 5,
                                   children: [
-                                    Icon(Icons.access_time,size: 15),
-                                    Text(log.ualTiming?.toTimeAgo() ?? "", style: Theme.of(context).textTheme.bodySmall
-                                        ?.copyWith(
-                                      color: color.outline,
-                                    )),
+                                    Icon(Icons.access_time, size: 15),
+                                    Text(
+                                      log.ualTiming?.toTimeAgo() ?? "",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(color: color.outline),
+                                    ),
                                   ],
-                                )
+                                ),
                               ],
                             ),
                             SizedBox(height: 5),
                             Text(
                               log.ualType ?? "",
-                              style: Theme.of(context).textTheme.titleSmall
-                                  ?.copyWith(
-                                  fontSize: 12
-                              ),
+                              style: Theme.of(
+                                context,
+                              ).textTheme.titleSmall?.copyWith(fontSize: 12),
                             ),
                             Text(
                               log.ualDetails ?? "",
@@ -247,9 +291,8 @@ class _DesktopState extends State<_Desktop> {
                                 Expanded(
                                   child: Text(
                                     log.ualTiming?.toDateTime ?? "",
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: color.outline
-                                    ),
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(color: color.outline),
                                   ),
                                 ),
                                 Row(
@@ -257,13 +300,16 @@ class _DesktopState extends State<_Desktop> {
                                   children: [
                                     Text(
                                       tr.branch,
-                                      style: Theme.of(context).textTheme.bodySmall
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall,
                                     ),
                                     Text(
                                       log.usrBranch.toString(),
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                          color: color.outline
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(color: color.outline),
                                     ),
                                   ],
                                 ),
@@ -287,7 +333,7 @@ class _DesktopState extends State<_Desktop> {
   Widget datePicker({required String date, String? title}) {
     date = DateTime.now().toFormattedDate();
     return GenericDatePicker(
-      height: 45,
+      height: 40,
       label: title ?? AppLocalizations.of(context)!.date,
       initialGregorianDate: date,
       onDateChanged: (newDate) {

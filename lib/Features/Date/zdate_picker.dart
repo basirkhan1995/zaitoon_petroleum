@@ -52,7 +52,7 @@ class _GenericDatePickerState extends State<GenericDatePicker> {
           style: widget.labelStyle ??
               Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 12),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 3),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           height: widget.height ?? 40,

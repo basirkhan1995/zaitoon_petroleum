@@ -1428,4 +1428,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userLogActivity => 'Users Log Activity';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get lastWeek => 'Last week';
+
+  @override
+  String get last30Days => 'Last 30 days';
+
+  @override
+  String get lastMonth => 'Last month';
+
+  @override
+  String get dateRange => 'Date range';
 }

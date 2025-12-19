@@ -1422,4 +1422,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get userLogActivity => 'فعالیت های کاربران';
+
+  @override
+  String get yesterday => 'پرون';
+
+  @override
+  String get lastWeek => 'تېره اونۍ';
+
+  @override
+  String get last30Days => 'تېرو ۳۰ ورځو';
+
+  @override
+  String get lastMonth => 'تېره میاشت';
+
+  @override
+  String get dateRange => 'د نېټې موده';
 }

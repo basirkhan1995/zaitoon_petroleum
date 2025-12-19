@@ -22,7 +22,7 @@ class UserDropdown extends StatefulWidget {
     required this.isMulti,
     required this.onMultiChanged,
     this.onSingleChanged,
-    this.height = 45,
+    this.height = 40,
     this.disableAction = false,
     this.title,
     this.initiallySelected,

@@ -474,5 +474,10 @@
   "productCode": "Product code",
   "transactionType": "Transaction Types",
   "deactive": "Inactive",
-  "userLogActivity": "Users Log Activity"
+  "userLogActivity": "Users Log Activity",
+  "yesterday": "Yesterday",
+  "lastWeek": "Last week",
+  "last30Days": "Last 30 days",
+  "lastMonth": "Last month",
+  "dateRange": "Date range"
 }

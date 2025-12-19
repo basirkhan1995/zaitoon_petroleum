@@ -146,7 +146,7 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
 
           // Only add spacing if title is present
           if ((widget.customTitle != null && widget.customTitle is! SizedBox) || widget.title.isNotEmpty)
-            const SizedBox(height: 5),
+            const SizedBox(height: 3),
 
           GestureDetector(
             onTap: widget.disableAction

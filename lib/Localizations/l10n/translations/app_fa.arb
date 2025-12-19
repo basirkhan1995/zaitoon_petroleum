@@ -474,5 +474,11 @@
   "productCode": "کد کالا",
   "transactionType": "نوع معاملات",
   "deactive": "غیرفعال",
-  "userLogActivity": "فعالیت های کاربران"
+  "userLogActivity": "فعالیت های کاربران",
+  "yesterday": "دیروز",
+  "lastWeek": "هفته گذشته",
+  "last30Days": "۳۰ روز گذشته",
+  "lastMonth": "ماه گذشته",
+  "dateRange": "بازه زمانی"
+
 }

@@ -1420,4 +1420,19 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get userLogActivity => 'فعالیت های کاربران';
+
+  @override
+  String get yesterday => 'دیروز';
+
+  @override
+  String get lastWeek => 'هفته گذشته';
+
+  @override
+  String get last30Days => '۳۰ روز گذشته';
+
+  @override
+  String get lastMonth => 'ماه گذشته';
+
+  @override
+  String get dateRange => 'بازه زمانی';
 }

@@ -7,6 +7,7 @@ String userLogModelToMap(List<UserLogModel> data) => json.encode(List<dynamic>.f
 class UserLogModel {
   final int? ualId;
   final int? usrId;
+  final String? userProfile;
   final String? usrName;
   final String? fullName;
   final String? usrRole;
@@ -20,6 +21,7 @@ class UserLogModel {
   UserLogModel({
     this.ualId,
     this.usrId,
+    this.userProfile,
     this.usrName,
     this.fullName,
     this.usrRole,
@@ -43,6 +45,7 @@ class UserLogModel {
     String? ualIp,
     String? ualDevice,
     DateTime? ualTiming,
+    String? userProfile,
   }) =>
       UserLogModel(
         ualId: ualId ?? this.ualId,
@@ -56,6 +59,7 @@ class UserLogModel {
         ualIp: ualIp ?? this.ualIp,
         ualDevice: ualDevice ?? this.ualDevice,
         ualTiming: ualTiming ?? this.ualTiming,
+        userProfile: userProfile ?? this.userProfile
       );
 
   factory UserLogModel.fromMap(Map<String, dynamic> json) => UserLogModel(
@@ -70,6 +74,7 @@ class UserLogModel {
     ualIp: json["ualIP"],
     ualDevice: json["ualDevice"],
     ualTiming: json["ualTiming"] == null ? null : DateTime.parse(json["ualTiming"]),
+    userProfile: json["perPhoto"],
   );
 
   Map<String, dynamic> toMap() => {

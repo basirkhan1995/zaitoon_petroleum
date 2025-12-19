@@ -474,5 +474,10 @@
   "productCode": "کالا کد",
   "transactionType": "نوع معاملات",
   "deactive": "غیرفعال",
-  "userLogActivity": "فعالیت های کاربران"
+  "userLogActivity": "فعالیت های کاربران",
+  "yesterday": "پرون",
+  "lastWeek": "تېره اونۍ",
+  "last30Days": "تېرو ۳۰ ورځو",
+  "lastMonth": "تېره میاشت",
+  "dateRange": "د نېټې موده"
 }
