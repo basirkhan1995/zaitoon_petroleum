@@ -997,7 +997,9 @@ class _DesktopState extends State<_Desktop> {
 
     print('All validations passed! Submitting...');
 
+    final bloc = context.read<ShippingBloc>();
     final data = ShippingModel(
+      shpId: widget.shippingId,
       shpLoadSize: loadingSize.text,
       shpUnloadSize: unloadingSize.text,
       shpTo: shpTo.text,
@@ -1011,12 +1013,17 @@ class _DesktopState extends State<_Desktop> {
       usrName: usrName ?? "",
       advanceAmount: advanceAmount.text.cleanAmount,
       remark: remark.text,
+      shpStatus: 1,
       shpUnit: unit ?? "TN",
     );
 
     print('Dispatching AddShippingEvent...');
 
-    context.read<ShippingBloc>().add(AddShippingEvent(data));
+    if(widget.shippingId !=null){
+      bloc.add(UpdateShippingEvent(data));
+    }else{
+      bloc.add(AddShippingEvent(data));
+    }
   }
 
   Widget _buildIncomeView(ShippingDetailsModel shipping) {

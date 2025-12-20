@@ -892,7 +892,7 @@ class Repositories {
   }
   Future<Map<String, dynamic>> updateShipping({required ShippingModel newShipping}) async {
     try {
-      final response = await api.post(
+      final response = await api.put(
           endpoint: "/transport/shipping.php",
           data: newShipping.toMap()
       );

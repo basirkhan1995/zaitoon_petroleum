@@ -348,29 +348,38 @@ class _DesktopState extends State<_Desktop> {
                 SizedBox(
                   width: 40,
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       if (isLoadingThisItem)
-                        Container(
-                          width: 16,
-                          height: 16,
-                          margin: const EdgeInsets.only(right: 4),
-                          child: const CircularProgressIndicator(strokeWidth: 2),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 4),
+                          child: SizedBox(
+                            width: 14,
+                            height: 14,
+                            child: const CircularProgressIndicator(strokeWidth: 2),
+                          ),
                         ),
+
                       if (isCurrentlyViewing)
-                        Container(
-                          width: 16,
-                          height: 16,
-                          margin: const EdgeInsets.only(right: 4),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 4),
                           child: Icon(
                             Icons.visibility,
                             size: 14,
                             color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
-                      Text(shp.shpId.toString()),
+
+                      Flexible(
+                        child: Text(
+                          shp.shpId.toString(),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
                   ),
                 ),
+
 
                 // Other columns
                 SizedBox(
