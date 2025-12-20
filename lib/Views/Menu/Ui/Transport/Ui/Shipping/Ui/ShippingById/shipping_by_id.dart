@@ -233,6 +233,10 @@ class _DesktopState extends State<_Desktop> {
         if (state is ShippingSuccessState) {
           if (state.message.contains('Shipping')) {
             // Shipping added/updated successfully
+            // Close the dialog after successful submission
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.of(context).pop();
+            });
           }
           // Clear expense form after success
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -768,19 +772,24 @@ class _DesktopState extends State<_Desktop> {
             ],
             onFinish: onSubmit,
             // Add this callback for step change validation
-            onStepChanged: (currentStep) {
+            onStepChanged: (newStep) {
+              // Validate BEFORE moving forward
+              if (newStep > _currentStep) {
+                if (_currentStep == 0 && !_validateOrderStep()) {
+                  return false;
+                }
+                if (_currentStep == 1 && !_validateShippingStep()) {
+                  return false;
+                }
+              }
+
               setState(() {
-                _currentStep = currentStep;
+                _currentStep = newStep;
               });
 
-              // Validate before moving to next step
-              if (currentStep == 0 && !_validateOrderStep()) {
-                return false; // Prevent moving to next step
-              } else if (currentStep == 1 && !_validateShippingStep()) {
-                return false; // Prevent moving to next step
-              }
               return true;
             },
+
           ),
         ),
       ),
@@ -823,19 +832,24 @@ class _DesktopState extends State<_Desktop> {
             ],
             onFinish: onSubmit,
             // Add this callback for step change validation
-            onStepChanged: (currentStep) {
+            onStepChanged: (newStep) {
+              // Validate BEFORE moving forward
+              if (newStep > _currentStep) {
+                if (_currentStep == 0 && !_validateOrderStep()) {
+                  return false;
+                }
+                if (_currentStep == 1 && !_validateShippingStep()) {
+                  return false;
+                }
+              }
+
               setState(() {
-                _currentStep = currentStep;
+                _currentStep = newStep;
               });
 
-              // Validate before moving to next step
-              if (currentStep == 0 && !_validateOrderStep()) {
-                return false; // Prevent moving to next step
-              } else if (currentStep == 1 && !_validateShippingStep()) {
-                return false; // Prevent moving to next step
-              }
               return true;
             },
+
           ),
         ),
       ),
@@ -871,18 +885,117 @@ class _DesktopState extends State<_Desktop> {
   }
 
   void onSubmit() {
-    // Validate all steps before submission
-    bool isOrderValid = _validateOrderStep();
-    bool isShippingValid = _validateShippingStep();
+    print('onSubmit called!');
+    print('Current step: $_currentStep');
 
-    if (!isOrderValid || !isShippingValid) {
+    // Skip form validation in onSubmit since we already validated when moving steps
+    // Just check required IDs and fields
+    if (customerId == null) {
       Utils.showOverlayMessage(
           context,
-          message: "Please fix all validation errors before submitting",
+          message: "Please select a customer",
           isError: true
       );
+      setState(() {
+        _currentStep = 0;
+      });
       return;
     }
+
+    if (productId == null) {
+      Utils.showOverlayMessage(
+          context,
+          message: "Please select a product",
+          isError: true
+      );
+      setState(() {
+        _currentStep = 0;
+      });
+      return;
+    }
+
+    if (vehicleId == null) {
+      Utils.showOverlayMessage(
+          context,
+          message: "Please select a vehicle",
+          isError: true
+      );
+      setState(() {
+        _currentStep = 1;
+      });
+      return;
+    }
+
+    // Validate required fields from shipping step
+    if (shpFrom.text.isEmpty || shpTo.text.isEmpty) {
+      Utils.showOverlayMessage(
+          context,
+          message: "Please fill in shipping locations",
+          isError: true
+      );
+      setState(() {
+        _currentStep = 1;
+      });
+      return;
+    }
+
+    if (loadingSize.text.isEmpty || unloadingSize.text.isEmpty) {
+      Utils.showOverlayMessage(
+          context,
+          message: "Please fill in loading/unloading sizes",
+          isError: true
+      );
+      setState(() {
+        _currentStep = 1;
+      });
+      return;
+    }
+
+    if (shippingRent.text.isEmpty) {
+      Utils.showOverlayMessage(
+          context,
+          message: "Please enter shipping rent",
+          isError: true
+      );
+      setState(() {
+        _currentStep = 1;
+      });
+      return;
+    }
+
+    // Validate shipping rent amount
+    final cleanRent = shippingRent.text.cleanAmount;
+    final rentValue = double.tryParse(cleanRent);
+    if (rentValue == null || rentValue <= 0) {
+      Utils.showOverlayMessage(
+          context,
+          message: "Invalid shipping rent amount",
+          isError: true
+      );
+      setState(() {
+        _currentStep = 1;
+      });
+      return;
+    }
+
+    // Validate advance amount if provided
+    if (advanceAmount.text.isNotEmpty) {
+      final cleanAdvance = advanceAmount.text.cleanAmount;
+      final advanceValue = double.tryParse(cleanAdvance);
+      if (advanceValue == null || advanceValue <= 0) {
+        Utils.showOverlayMessage(
+            context,
+            message: "Invalid advance amount",
+            isError: true
+        );
+        setState(() {
+          _currentStep = 2;
+        });
+        return;
+      }
+    }
+
+    print('All validations passed! Submitting...');
 
     final data = ShippingModel(
       shpLoadSize: loadingSize.text,
@@ -890,24 +1003,20 @@ class _DesktopState extends State<_Desktop> {
       shpTo: shpTo.text,
       shpFrom: shpFrom.text,
       shpRent: shippingRent.text.cleanAmount,
-      productId: productId,
-      vehicleId: vehicleId,
-      customerId: customerId,
+      productId: productId!,
+      vehicleId: vehicleId!,
+      customerId: customerId!,
       shpArriveDate: DateTime.tryParse(shpToGregorian),
       shpMovingDate: DateTime.tryParse(shpFromGregorian),
       usrName: usrName ?? "",
       advanceAmount: advanceAmount.text.cleanAmount,
       remark: remark.text,
-      shpId: widget.shippingId,
       shpUnit: unit ?? "TN",
     );
 
-    final bloc = context.read<ShippingBloc>();
-    if (widget.shippingId == null) {
-      bloc.add(AddShippingEvent(data));
-    } else {
-      bloc.add(UpdateShippingEvent(data));
-    }
+    print('Dispatching AddShippingEvent...');
+
+    context.read<ShippingBloc>().add(AddShippingEvent(data));
   }
 
   Widget _buildIncomeView(ShippingDetailsModel shipping) {
