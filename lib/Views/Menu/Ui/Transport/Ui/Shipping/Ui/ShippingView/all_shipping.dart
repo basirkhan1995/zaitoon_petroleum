@@ -191,6 +191,13 @@ class _DesktopState extends State<_Desktop> {
                     ZOutlineButton(
                       toolTip: "F5",
                       width: 120,
+                      icon: FontAwesomeIcons.solidFilePdf,
+                      onPressed: null,
+                      label: Text("PDF"),
+                    ),
+                    ZOutlineButton(
+                      toolTip: "F5",
+                      width: 120,
                       icon: Icons.refresh,
                       onPressed: onRefresh,
                       label: Text(tr.refresh),
@@ -240,7 +247,7 @@ class _DesktopState extends State<_Desktop> {
           SizedBox(width: 110, child: Text(tr.loadingSize, style: titleStyle)),
           SizedBox(width: 110, child: Text(tr.unloadingSize, style: titleStyle)),
           SizedBox(width: 120, child: Text(tr.totalTitle, style: titleStyle)),
-          SizedBox(width: 70, child: Text(tr.status, style: titleStyle)),
+          SizedBox(width: 105, child: Text(tr.status, style: titleStyle)),
         ],
       ),
     );
@@ -396,12 +403,11 @@ class _DesktopState extends State<_Desktop> {
                   width: 120,
                   child: Text("${shp.total?.toAmount()} $_baseCurrency"),
                 ),
-                SizedBox(
-                  width: 70,
-                  child: Text(
-                    shp.shpStatus == 1 ? tr.completedTitle : tr.pendingTitle,
-                  ),
-                ),
+                ShippingStatusBadge(
+                  status: shp.shpStatus ?? 0,
+                  tr: tr,
+                )
+
               ],
             ),
           ),
@@ -428,5 +434,56 @@ class _DesktopState extends State<_Desktop> {
 
   void onRefresh() {
     context.read<ShippingBloc>().add(LoadShippingEvent());
+  }
+}
+
+class ShippingStatusBadge extends StatelessWidget {
+  final int status;
+  final AppLocalizations tr;
+
+  const ShippingStatusBadge({
+    super.key,
+    required this.status,
+    required this.tr,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isCompleted = status == 1;
+
+    final Color bgColor =
+    isCompleted ? const Color(0xFFE8F5E9) : const Color(0xFFFFF3E0);
+
+    final Color textColor =
+    isCompleted ? const Color(0xFF2E7D32) : const Color(0xFFEF6C00);
+
+    final IconData icon =
+    isCompleted ? Icons.check_circle_rounded : Icons.schedule_rounded;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: textColor.withValues(alpha: .4),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: textColor),
+          const SizedBox(width: 6),
+          Text(
+            isCompleted ? tr.completedTitle : tr.pendingTitle,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

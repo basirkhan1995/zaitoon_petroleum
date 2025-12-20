@@ -1435,4 +1435,91 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get dateRange => 'بازه زمانی';
+
+  @override
+  String get delivered => 'تکمیل شده';
+
+  @override
+  String get shippingSummary => 'خلاص بارگیری';
+
+  @override
+  String get shippingDetails => 'جزئیات بارگیری';
+
+  @override
+  String get fromTo => 'از - به';
+
+  @override
+  String get selectCustomer => 'لطفاً مشتری را انتخاب کنید';
+
+  @override
+  String get selectProduct => 'لطفاً محصول را انتخاب کنید';
+
+  @override
+  String get selectVehicle => 'لطفاً وسیله نقلیه را انتخاب کنید';
+
+  @override
+  String get fillShippingLocations => 'لطفاً محل بارگیری و تخلیه را وارد کنید';
+
+  @override
+  String get fillLoadingSize => 'لطفاً مقدار بارگیری را وارد کنید';
+
+  @override
+  String get fillShippingRent => 'لطفاً کرایه حمل را وارد کنید';
+
+  @override
+  String get invalidShippingRent => 'مقدار کرایه حمل نامعتبر است';
+
+  @override
+  String get invalidAdvanceAmount => 'مقدار پیش‌پرداخت نامعتبر است';
+
+  @override
+  String get unloadingSizeRequired => 'مقدار تخلیه برای تحویل الزامی است';
+
+  @override
+  String get invalidUnloadingSize => 'مقدار تخلیه نامعتبر است';
+
+  @override
+  String get setUnloadingDate =>
+      'لطفاً تاریخ واقعی تخلیه را برای تحویل مشخص کنید';
+
+  @override
+  String get unloadingBeforeLoading =>
+      'تاریخ تخلیه نمی‌تواند قبل از تاریخ بارگیری باشد';
+
+  @override
+  String get invalidDateFormat => 'فرمت تاریخ نامعتبر است';
+
+  @override
+  String get deliveryRequiredFields => 'فیلدهای زیر برای تحویل الزامی هستند:';
+
+  @override
+  String get unloadingSizeWarning => 'هشدار وزن تخلیه';
+
+  @override
+  String get summary => 'خلاصه';
+
+  @override
+  String get unloadingSizeWarningMessage =>
+      'به‌ طور قابل‌ توجهی با اندازه بارگیری تفاوت دارد';
+
+  @override
+  String get unloadingSizeProceedMessage =>
+      ' آیا مطمئن هستید که می‌خواهید با تحویل ادامه دهید؟';
+
+  @override
+  String get proceed => 'تایید';
+
+  @override
+  String get createNewShipping => 'ثبت بارگیری جدید';
+
+  @override
+  String get newShippingHint =>
+      'لطفاً فیلدهای الزامی را تکمیل کرده و مراحل را دنبال کنید تا محموله جدید ایجاد شود';
+
+  @override
+  String get updateShipping => 'بروزرسانی بارگیری';
+
+  @override
+  String get updateShippingHint =>
+      'فیلد های الزامی را تکمیل کرده و مراحل را دنبال کنید تا محموله تکمیل شود';
 }

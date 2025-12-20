@@ -41,14 +41,13 @@ enum UnitType {
 
 class UnitTranslator {
   static String getTranslatedUnit(BuildContext context, UnitType unit) {
-    final t = AppLocalizations.of(context)!;
 
     switch (unit) {
-      case UnitType.tn: return "t.tn";
-      case UnitType.kg: return "t.kg";
-      case UnitType.m3: return "t.m3";
-      case UnitType.lb: return "t.lb";
-      case UnitType.f3: return "t.f3";
+      case UnitType.tn: return "TN";
+      case UnitType.kg: return "KG";
+      case UnitType.m3: return "M3";
+      case UnitType.lb: return "LB";
+      case UnitType.f3: return "F3";
     }
   }
 

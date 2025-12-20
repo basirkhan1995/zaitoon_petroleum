@@ -1437,4 +1437,91 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dateRange => 'د نېټې موده';
+
+  @override
+  String get delivered => 'تکمیل شده';
+
+  @override
+  String get shippingSummary => 'خلاص بارگیری';
+
+  @override
+  String get shippingDetails => 'جزئیات بارگیری';
+
+  @override
+  String get fromTo => 'از - به';
+
+  @override
+  String get selectCustomer => 'مهرباني وکړئ یو پېرېدونکی وټاکئ';
+
+  @override
+  String get selectProduct => 'مهرباني وکړئ یو محصول وټاکئ';
+
+  @override
+  String get selectVehicle => 'مهرباني وکړئ یو موټر وټاکئ';
+
+  @override
+  String get fillShippingLocations => 'مهرباني وکړئ د لېږد ځایونه ډک کړئ';
+
+  @override
+  String get fillLoadingSize => 'مهرباني وکړئ د بار اندازه داخل کړئ';
+
+  @override
+  String get fillShippingRent => 'مهرباني وکړئ د لېږد کرایه داخل کړئ';
+
+  @override
+  String get invalidShippingRent => 'د لېږد کرایه ناسمه ده';
+
+  @override
+  String get invalidAdvanceAmount => 'د مخکینۍ تادیې اندازه ناسمه ده';
+
+  @override
+  String get unloadingSizeRequired => 'د تحویل لپاره د تخلیې اندازه اړینه ده';
+
+  @override
+  String get invalidUnloadingSize => 'د تخلیې اندازه ناسمه ده';
+
+  @override
+  String get setUnloadingDate =>
+      'مهرباني وکړئ د تحویل لپاره د تخلیې اصلي نېټه وټاکئ';
+
+  @override
+  String get unloadingBeforeLoading =>
+      'د تخلیې نېټه د بارولو له نېټې مخکې نشي کېدای';
+
+  @override
+  String get invalidDateFormat => 'د نېټې بڼه ناسمه ده';
+
+  @override
+  String get deliveryRequiredFields => 'لاندې برخې د تحویل لپاره اړینې دي:';
+
+  @override
+  String get unloadingSizeWarning => 'د تخلیې اندازه هشدار';
+
+  @override
+  String get summary => 'خلاصه';
+
+  @override
+  String get unloadingSizeWarningMessage =>
+      'د بارولو له اندازې سره په څرګند ډول توپیر لري';
+
+  @override
+  String get unloadingSizeProceedMessage =>
+      'تاسې ډاډه یاست چې غواړئ د سپارلو پروسه پرمخ یوسئ؟';
+
+  @override
+  String get proceed => 'تایید';
+
+  @override
+  String get createNewShipping => 'ثبت بارگیری جدید';
+
+  @override
+  String get newShippingHint =>
+      'مهرباني وکړئ اړین ځایونه ډک کړئ او ګامونه تعقیب کړئ ترڅو نوې بارونه جوړ کړئ';
+
+  @override
+  String get updateShipping => 'بروزرسانی بارگیری';
+
+  @override
+  String get updateShippingHint =>
+      'اړین ځایونه ډک کړئ او ګامونه تعقیب کړئ ترڅو بار بشپړ شي';
 }

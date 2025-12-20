@@ -14,6 +14,7 @@ class ShippingDetailsModel {
   final int? vclId;
   final String? proName;
   final int? proId;
+  final int? perId;
   final String? customer;
   final String? shpFrom;
   final DateTime? shpMovingDate;
@@ -25,6 +26,7 @@ class ShippingDetailsModel {
   final String? shpRent;
   final String? total;
   final int? shpStatus;
+  final String? shpRemark;
   final List<ShippingExpenseModel>? income;
   final List<ShippingExpenseModel>? expenses;
 
@@ -33,8 +35,10 @@ class ShippingDetailsModel {
     this.vehicle,
     this.vclId,
     this.proName,
+    this.shpRemark,
     this.proId,
     this.customer,
+    this.perId,
     this.shpFrom,
     this.shpMovingDate,
     this.shpLoadSize,
@@ -55,12 +59,14 @@ class ShippingDetailsModel {
     int? vclId,
     String? proName,
     int? proId,
+    String? shpRemark,
     String? customer,
     String? shpFrom,
     DateTime? shpMovingDate,
     String? shpLoadSize,
     String? shpUnit,
     String? shpTo,
+    int? perId,
     DateTime? shpArriveDate,
     String? shpUnloadSize,
     String? shpRent,
@@ -77,9 +83,11 @@ class ShippingDetailsModel {
         proId: proId ?? this.proId,
         customer: customer ?? this.customer,
         shpFrom: shpFrom ?? this.shpFrom,
+        perId: perId ?? this.perId,
         shpMovingDate: shpMovingDate ?? this.shpMovingDate,
         shpLoadSize: shpLoadSize ?? this.shpLoadSize,
         shpUnit: shpUnit ?? this.shpUnit,
+        shpRemark: shpRemark ?? this.shpRemark,
         shpTo: shpTo ?? this.shpTo,
         shpArriveDate: shpArriveDate ?? this.shpArriveDate,
         shpUnloadSize: shpUnloadSize ?? this.shpUnloadSize,
@@ -98,10 +106,12 @@ class ShippingDetailsModel {
     proId: json["proID"],
     customer: json["customer"],
     shpFrom: json["shpFrom"],
+    perId: json["perID"],
     shpMovingDate: json["shpMovingDate"] == null ? null : DateTime.parse(json["shpMovingDate"]),
     shpLoadSize: json["shpLoadSize"],
     shpUnit: json["shpUnit"],
     shpTo: json["shpTo"],
+    shpRemark: json["shpRemark"],
     shpArriveDate: json["shpArriveDate"] == null ? null : DateTime.parse(json["shpArriveDate"]),
     shpUnloadSize: json["shpUnloadSize"],
     shpRent: json["shpRent"],
@@ -119,6 +129,7 @@ class ShippingDetailsModel {
     "proID": proId,
     "customer": customer,
     "shpFrom": shpFrom,
+    "shpRemark":shpRemark,
     "shpMovingDate": shpMovingDate?.toIso8601String(),
     "shpLoadSize": shpLoadSize,
     "shpUnit": shpUnit,

@@ -1443,4 +1443,92 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dateRange => 'Date range';
+
+  @override
+  String get delivered => 'Delivered';
+
+  @override
+  String get shippingSummary => 'Shipping Summary';
+
+  @override
+  String get shippingDetails => 'Shipping Details';
+
+  @override
+  String get fromTo => 'From - To';
+
+  @override
+  String get selectCustomer => 'Please select a customer';
+
+  @override
+  String get selectProduct => 'Please select a product';
+
+  @override
+  String get selectVehicle => 'Please select a vehicle';
+
+  @override
+  String get fillShippingLocations => 'Please fill in shipping locations';
+
+  @override
+  String get fillLoadingSize => 'Please fill in loading size';
+
+  @override
+  String get fillShippingRent => 'Please enter shipping rent';
+
+  @override
+  String get invalidShippingRent => 'Invalid shipping rent amount';
+
+  @override
+  String get invalidAdvanceAmount => 'Invalid advance amount';
+
+  @override
+  String get unloadingSizeRequired => 'Unloading size is required for delivery';
+
+  @override
+  String get invalidUnloadingSize => 'Invalid unloading size amount';
+
+  @override
+  String get setUnloadingDate =>
+      'Please set the actual unloading date for delivery';
+
+  @override
+  String get unloadingBeforeLoading =>
+      'Unloading date cannot be before loading date';
+
+  @override
+  String get invalidDateFormat => 'Invalid date format';
+
+  @override
+  String get deliveryRequiredFields =>
+      'The following fields are required for delivery:';
+
+  @override
+  String get unloadingSizeWarning => 'Unloading Size Warning';
+
+  @override
+  String get summary => 'Summary';
+
+  @override
+  String get unloadingSizeWarningMessage =>
+      'differs significantly from loading size';
+
+  @override
+  String get unloadingSizeProceedMessage =>
+      'Are you sure you want to proceed with delivery?';
+
+  @override
+  String get proceed => 'Proceed';
+
+  @override
+  String get createNewShipping => 'CREATE NEW SHIPPING';
+
+  @override
+  String get newShippingHint =>
+      'Complete the required fields and follow the steps for new shipment.';
+
+  @override
+  String get updateShipping => 'UPDATE SHIPPING';
+
+  @override
+  String get updateShippingHint =>
+      'Complete the required fields and follow the steps to complete shipment.';
 }

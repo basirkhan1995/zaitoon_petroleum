@@ -20,8 +20,10 @@ class CustomStepper extends StatefulWidget {
   final Color? activeColor;
   final Color? inactiveColor;
   final VoidCallback? onFinish;
-  final Function(int)? onStepChanged;
-  final int initialStep;
+  final bool Function(int currentStep, int requestedStep)? onStepChanged;
+  final int currentStep;
+  final ValueChanged<int>? onStepTapped;
+  final bool isLoading; // Add this
 
   const CustomStepper({
     super.key,
@@ -31,7 +33,9 @@ class CustomStepper extends StatefulWidget {
     this.inactiveColor,
     this.onFinish,
     this.onStepChanged,
-    this.initialStep = 0
+    required this.currentStep,
+    this.onStepTapped,
+    this.isLoading = false
   });
 
   @override
@@ -39,57 +43,18 @@ class CustomStepper extends StatefulWidget {
 }
 
 class _CustomStepperState extends State<CustomStepper> {
-  int currentStep = 0;
-
-  void _goNext() {
-    if (currentStep < widget.steps.length - 1) {
-      // Call onStepChanged before changing step
-      final allowNavigation = widget.onStepChanged?.call(currentStep + 1) ?? true;
-
-      if (allowNavigation) {
-        setState(() => currentStep++);
-      }
-    } else {
-      widget.onFinish?.call();
-    }
-  }
-
-  void _goPrevious() {
-    if (currentStep > 0) {
-      // Call onStepChanged before changing step
-      final allowNavigation = widget.onStepChanged?.call(currentStep - 1) ?? true;
-
-      if (allowNavigation) {
-        setState(() => currentStep--);
-      }
-    }
-  }
-
-  void _goToStep(int step) {
-    if (step >= 0 && step < widget.steps.length) {
-      // Call onStepChanged before changing step
-      final allowNavigation = widget.onStepChanged?.call(step) ?? true;
-
-      if (allowNavigation) {
-        setState(() => currentStep = step);
-      }
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant CustomStepper oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    // Reset step if the number of steps changes
-    if (widget.steps.length != oldWidget.steps.length) {
-      currentStep = 0;
-    }
+  // Helper method to get safe current step (within bounds)
+  int get _safeCurrentStep {
+    if (widget.steps.isEmpty) return 0;
+    return widget.currentStep.clamp(0, widget.steps.length - 1);
   }
 
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final isHorizontal = widget.direction == Axis.horizontal;
+    final currentStep = _safeCurrentStep; // Use safe current step
+    final isLoading = widget.isLoading; // Get loading state
 
     return Container(
       color: Theme.of(context).colorScheme.surface,
@@ -97,16 +62,23 @@ class _CustomStepperState extends State<CustomStepper> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Step headers
-          isHorizontal
-              ? Row(
+          isHorizontal ? Row(
             textDirection: Directionality.of(context),
             children: _buildSteps(context),
-          )
-              : Column(children: _buildSteps(context)),
+          ) : Column(children: _buildSteps(context)),
           const SizedBox(height: 8),
 
           // Current step content
-          Expanded(child: widget.steps[currentStep].content),
+          Expanded(
+            child: widget.steps.isNotEmpty
+                ? widget.steps[currentStep].content
+                : Center(
+              child: Text(
+                tr.noDataFound,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+          ),
           const SizedBox(height: 8),
 
           // Navigation buttons
@@ -119,15 +91,24 @@ class _CustomStepperState extends State<CustomStepper> {
                   width: 120,
                   height: 40,
                   isActive: true,
-                  onPressed: currentStep > 0 ? _goPrevious : null,
+                  onPressed: currentStep > 0 && !isLoading ? _goPrevious : null,
                   label: Text(tr.previous),
                 ),
                 ZOutlineButton(
                   width: 120,
                   height: 40,
                   isActive: true,
-                  onPressed: _goNext,
-                  label: Text(
+                  onPressed: !isLoading ? _goNext : null,
+                  label: isLoading
+                      ? SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Theme.of(context).colorScheme.surface,
+                    ),
+                  )
+                      : Text(
                     currentStep < widget.steps.length - 1 ? tr.next : tr.finish,
                   ),
                 ),
@@ -139,9 +120,42 @@ class _CustomStepperState extends State<CustomStepper> {
     );
   }
 
+  void _goNext() {
+    if (widget.steps.isEmpty || widget.isLoading) return; // Don't allow if loading
+
+    final currentStep = _safeCurrentStep;
+
+    if (currentStep < widget.steps.length - 1) {
+      final nextStep = currentStep + 1;
+      final allowNavigation = widget.onStepChanged?.call(currentStep, nextStep) ?? true;
+
+      if (allowNavigation) {
+        widget.onStepTapped?.call(nextStep);
+      }
+    } else {
+      widget.onFinish?.call();
+    }
+  }
+
+  void _goPrevious() {
+    if (widget.steps.isEmpty || widget.isLoading) return; // Don't allow if loading
+
+    final currentStep = _safeCurrentStep;
+
+    if (currentStep > 0) {
+      final prevStep = currentStep - 1;
+      final allowNavigation = widget.onStepChanged?.call(currentStep, prevStep) ?? true;
+
+      if (allowNavigation) {
+        widget.onStepTapped?.call(prevStep);
+      }
+    }
+  }
+
   List<Widget> _buildSteps(BuildContext context) {
     final theme = Theme.of(context);
     final items = <Widget>[];
+    final currentStep = _safeCurrentStep;
 
     for (int i = 0; i < widget.steps.length; i++) {
       final isActive = i <= currentStep;
@@ -152,7 +166,12 @@ class _CustomStepperState extends State<CustomStepper> {
           borderRadius: BorderRadius.circular(8),
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
-          onTap: () => _goToStep(i), // Use the new method
+          onTap: () {
+            final allowNavigation = widget.onStepChanged?.call(currentStep, i) ?? true;
+            if (allowNavigation) {
+              widget.onStepTapped?.call(i);
+            }
+          },
           child: Padding(
             padding: const EdgeInsets.all(6),
             child: Column(
@@ -216,5 +235,15 @@ class _CustomStepperState extends State<CustomStepper> {
       }
     }
     return items;
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomStepper oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Reset if steps changed and current step is out of bounds
+    if (widget.steps.length != oldWidget.steps.length) {
+      // This could trigger a rebuild, but that's okay
+    }
   }
 }

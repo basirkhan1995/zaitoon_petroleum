@@ -2901,6 +2901,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Date range'**
   String get dateRange;
+
+  /// No description provided for @delivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get delivered;
+
+  /// No description provided for @shippingSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping Summary'**
+  String get shippingSummary;
+
+  /// No description provided for @shippingDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping Details'**
+  String get shippingDetails;
+
+  /// No description provided for @fromTo.
+  ///
+  /// In en, this message translates to:
+  /// **'From - To'**
+  String get fromTo;
+
+  /// No description provided for @selectCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a customer'**
+  String get selectCustomer;
+
+  /// No description provided for @selectProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a product'**
+  String get selectProduct;
+
+  /// No description provided for @selectVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a vehicle'**
+  String get selectVehicle;
+
+  /// No description provided for @fillShippingLocations.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in shipping locations'**
+  String get fillShippingLocations;
+
+  /// No description provided for @fillLoadingSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in loading size'**
+  String get fillLoadingSize;
+
+  /// No description provided for @fillShippingRent.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter shipping rent'**
+  String get fillShippingRent;
+
+  /// No description provided for @invalidShippingRent.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid shipping rent amount'**
+  String get invalidShippingRent;
+
+  /// No description provided for @invalidAdvanceAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid advance amount'**
+  String get invalidAdvanceAmount;
+
+  /// No description provided for @unloadingSizeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Unloading size is required for delivery'**
+  String get unloadingSizeRequired;
+
+  /// No description provided for @invalidUnloadingSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid unloading size amount'**
+  String get invalidUnloadingSize;
+
+  /// No description provided for @setUnloadingDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Please set the actual unloading date for delivery'**
+  String get setUnloadingDate;
+
+  /// No description provided for @unloadingBeforeLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Unloading date cannot be before loading date'**
+  String get unloadingBeforeLoading;
+
+  /// No description provided for @invalidDateFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid date format'**
+  String get invalidDateFormat;
+
+  /// No description provided for @deliveryRequiredFields.
+  ///
+  /// In en, this message translates to:
+  /// **'The following fields are required for delivery:'**
+  String get deliveryRequiredFields;
+
+  /// No description provided for @unloadingSizeWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Unloading Size Warning'**
+  String get unloadingSizeWarning;
+
+  /// No description provided for @summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get summary;
+
+  /// No description provided for @unloadingSizeWarningMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'differs significantly from loading size'**
+  String get unloadingSizeWarningMessage;
+
+  /// No description provided for @unloadingSizeProceedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to proceed with delivery?'**
+  String get unloadingSizeProceedMessage;
+
+  /// No description provided for @proceed.
+  ///
+  /// In en, this message translates to:
+  /// **'Proceed'**
+  String get proceed;
+
+  /// No description provided for @createNewShipping.
+  ///
+  /// In en, this message translates to:
+  /// **'CREATE NEW SHIPPING'**
+  String get createNewShipping;
+
+  /// No description provided for @newShippingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete the required fields and follow the steps for new shipment.'**
+  String get newShippingHint;
+
+  /// No description provided for @updateShipping.
+  ///
+  /// In en, this message translates to:
+  /// **'UPDATE SHIPPING'**
+  String get updateShipping;
+
+  /// No description provided for @updateShippingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete the required fields and follow the steps to complete shipment.'**
+  String get updateShippingHint;
 }
 
 class _AppLocalizationsDelegate

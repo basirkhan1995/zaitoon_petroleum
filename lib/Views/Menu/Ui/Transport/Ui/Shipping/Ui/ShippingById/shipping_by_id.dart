@@ -52,7 +52,6 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
-  // Form controllers
   final shpFrom = TextEditingController();
   final shpTo = TextEditingController();
   final shippingRent = TextEditingController();
@@ -73,6 +72,7 @@ class _DesktopState extends State<_Desktop> {
   int? productId;
   int? vehicleId;
   String? unit;
+  int? shpStatus;
 
   // Date variables
   String shpFromGregorian = DateTime.now().toFormattedDate();
@@ -97,91 +97,55 @@ class _DesktopState extends State<_Desktop> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       currentLocale = context.read<LocalizationBloc>().state.languageCode;
       if (widget.shippingId != null) {
+        // Reset to first step when loading existing shipping
+        _currentStep = 0;
         context.read<ShippingBloc>().add(LoadShippingDetailEvent(widget.shippingId!));
       }
     });
   }
 
-  // In _DesktopState class:
   @override
   void didUpdateWidget(covariant _Desktop oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Reset current step when shippingId changes (e.g., from existing to new)
+    // Reset current step when shippingId changes
     if (widget.shippingId != oldWidget.shippingId) {
       _currentStep = 0;
     }
   }
-  // Method to prefill form with shipping data
+
   void _prefillForm(ShippingDetailsModel shipping) {
-    // Clear all controllers first
-    _clearAllControllers();
+    if (!mounted) return;
+    setState(() {
+      _currentStep = 0;
+    });
 
-    // Customer information
-    if (shipping.customer != null && shipping.customer!.isNotEmpty) {
-      customerCtrl.text = shipping.customer!;
-    }
+      _clearAllControllers();
 
-    // Product information
-    if (shipping.proName != null && shipping.proName!.isNotEmpty) {
-      productCtrl.text = shipping.proName!;
-    }
+      customerId = shipping.perId;
+      productId  = shipping.proId;
+      vehicleId  = shipping.vclId;
 
-    // Vehicle information
-    if (shipping.vehicle != null && shipping.vehicle!.isNotEmpty) {
-      vehicleCtrl.text = shipping.vehicle!;
-    }
+      customerCtrl.text = shipping.customer ?? '';
+      productCtrl.text  = shipping.proName ?? '';
+      vehicleCtrl.text  = shipping.vehicle ?? '';
 
-    // Location information
-    if (shipping.shpFrom != null && shipping.shpFrom!.isNotEmpty) {
-      shpFrom.text = shipping.shpFrom!;
-    }
+      shpFrom.text = shipping.shpFrom ?? '';
+      shpTo.text   = shipping.shpTo ?? '';
 
-    if (shipping.shpTo != null && shipping.shpTo!.isNotEmpty) {
-      shpTo.text = shipping.shpTo!;
-    }
+      shpFromGregorian =
+          shipping.shpMovingDate?.toFormattedDate()??"";
+      shpToGregorian =
+          shipping.shpArriveDate?.toFormattedDate()??"";
 
-    // Date information
-    if (shipping.shpMovingDate != null) {
-      shpFromGregorian = shipping.shpMovingDate!.toFormattedDate();
-    }
+      loadingSize.text   = shipping.shpLoadSize ?? '';
+      unloadingSize.text = shipping.shpUnloadSize ?? '';
 
-    if (shipping.shpArriveDate != null) {
-      shpToGregorian = shipping.shpArriveDate!.toFormattedDate();
-    }
-
-    // Size information
-    if (shipping.shpLoadSize != null && shipping.shpLoadSize!.isNotEmpty) {
-      loadingSize.text = shipping.shpLoadSize!;
-    }
-
-    if (shipping.shpUnloadSize != null && shipping.shpUnloadSize!.isNotEmpty) {
-      unloadingSize.text = shipping.shpUnloadSize!;
-    }
-
-    // Unit
-    if (shipping.shpUnit != null && shipping.shpUnit!.isNotEmpty) {
       unit = shipping.shpUnit;
-    }
+      shippingRent.text = shipping.shpRent ?? '';
+      remark.text       = shipping.shpRemark ?? '';
+      shpStatus         = shipping.shpStatus ?? 0;
 
-    // Rent
-    if (shipping.shpRent != null && shipping.shpRent!.isNotEmpty) {
-      shippingRent.text = shipping.shpRent!;
-    }
-
-    // Set IDs from the response
-    if (shipping.vclId != null) {
-      vehicleId = shipping.vclId;
-    }
-
-    if (shipping.proId != null) {
-      productId = shipping.proId;
-    }
-
-    // Update state to reflect changes
-    if (mounted) {
-      setState(() {});
-    }
   }
 
   // Method to clear all controllers
@@ -208,6 +172,7 @@ class _DesktopState extends State<_Desktop> {
     _selectedExpenseForEdit = null;
   }
 
+
   @override
   void dispose() {
     // Dispose all controllers
@@ -227,27 +192,37 @@ class _DesktopState extends State<_Desktop> {
     super.dispose();
   }
 
-  // Add this helper method to _DesktopState:
-  bool _validateStepChange(int newStep) {
-    // For simplicity, always validate when moving to step 1 or 2
-    if (newStep == 1 && !_validateOrderStep()) {
-      Utils.showOverlayMessage(
-          context,
-          message: "Please fill all required fields in Order step",
-          isError: true
-      );
-      return false;
-    }
+  // Updated validation method that knows about current step
+  bool _validateStepChange(int currentStep, int requestedStep) {
+    // Only validate when moving forward
+    if (requestedStep > currentStep) {
+      if (requestedStep == 1) {
+        // Validate order step - check if fields are actually filled
+        if (customerCtrl.text.isEmpty || productCtrl.text.isEmpty) {
+          Utils.showOverlayMessage(
+              context,
+              message: "Please fill all required fields in Order step",
+              isError: true
+          );
+          return false;
+        }
+      }
 
-    if (newStep == 2 && !_validateShippingStep()) {
-      Utils.showOverlayMessage(
-          context,
-          message: "Please fill all required fields in Shipping step",
-          isError: true
-      );
-      return false;
+      if (requestedStep == 2) {
+        // Validate shipping step - check if fields are actually filled
+        if (vehicleCtrl.text.isEmpty ||
+            shpFrom.text.isEmpty ||
+            shpTo.text.isEmpty ||
+            shippingRent.text.isEmpty) {
+          Utils.showOverlayMessage(
+              context,
+              message: "Please fill all required fields in Shipping step",
+              isError: true
+          );
+          return false;
+        }
+      }
     }
-
     return true;
   }
 
@@ -262,14 +237,11 @@ class _DesktopState extends State<_Desktop> {
     final login = state.loginData;
     usrName = login.usrName ?? "";
 
-
-
     return BlocConsumer<ShippingBloc, ShippingState>(
       listener: (context, state) {
         if (state is ShippingSuccessState) {
           if (state.message.contains('Shipping')) {
             // Shipping added/updated successfully
-            // Close the dialog after successful submission
             WidgetsBinding.instance.addPostFrameCallback((_) {
               Navigator.of(context).pop();
             });
@@ -298,6 +270,9 @@ class _DesktopState extends State<_Desktop> {
         // Get current shipping from any state
         ShippingDetailsModel? currentShipping;
 
+        if (blocState is ShippingDetailLoadingState) {
+          return _buildLoadingContent();
+        }
         if (blocState is ShippingDetailLoadingState) {
           return _buildLoadingContent();
         }
@@ -440,9 +415,6 @@ class _DesktopState extends State<_Desktop> {
                   if (value == null || value.isEmpty) {
                     return tr.required(tr.products);
                   }
-                  if (productId == null) {
-                    return tr.required(tr.products);
-                  }
                   return null;
                 },
                 itemBuilder: (context, product) => Padding(
@@ -519,9 +491,6 @@ class _DesktopState extends State<_Desktop> {
                 searchFunction: (bloc, query) => bloc.add(LoadVehicleEvent()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return tr.required(tr.vehicle);
-                  }
-                  if (vehicleId == null) {
                     return tr.required(tr.vehicle);
                   }
                   return null;
@@ -734,8 +703,8 @@ class _DesktopState extends State<_Desktop> {
       child: Container(
         padding: EdgeInsets.all(35),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(8)
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(8)
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -772,6 +741,13 @@ class _DesktopState extends State<_Desktop> {
   }
 
   Widget _buildStepperWithData(ShippingDetailsModel shipping, AppLocalizations tr, BuildContext context) {
+    // Get loading state from bloc
+    final blocState = context.watch<ShippingBloc>().state;
+    final isLoading = blocState is ShippingListLoadingState && blocState.isLoading;
+    final textTheme = Theme.of(context).textTheme;
+    final color = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context)!;
+
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
@@ -780,60 +756,92 @@ class _DesktopState extends State<_Desktop> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       content: SizedBox(
         width: MediaQuery.of(context).size.width * 0.6,
-        child: Container(
-          padding: const EdgeInsets.all(10.0),
-          child: CustomStepper(
-            key: ValueKey('existing-shipping-${shipping.shpId}'),
-            initialStep: 0,
-            steps: [
-              StepItem(
-                title: tr.order,
-                content: _order(),
-                icon: Icons.shopping_cart,
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: ListTile(
+                    visualDensity: VisualDensity(vertical: -4),
+                    minVerticalPadding: 0,
+                    title: Text(tr.updateShipping,style: textTheme.titleMedium?.copyWith(
+                      color: color.primary,
+                    )),
+                    subtitle: Text(tr.updateShippingHint,style: textTheme.bodySmall?.copyWith(
+                        color: color.outline
+                    ),),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(onPressed: popUp, icon: Icon(Icons.clear)),
+                )
+              ],
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(10.0),
+                child: CustomStepper(
+                  key: ValueKey('existing-shipping-${shipping.shpId}'),
+                  currentStep: _currentStep,
+                  onStepTapped: (step) {
+                    // Don't allow step change during loading
+                    if (!isLoading) {
+                      setState(() {
+                        _currentStep = step;
+                      });
+                    }
+                  },
+                  onStepChanged: (currentStep, requestedStep) {
+                    // Don't allow validation during loading
+                    if (isLoading) return false;
+                    return _validateStepChange(currentStep, requestedStep);
+                  },
+                  steps: [
+                    StepItem(
+                      title: tr.order,
+                      content: _order(),
+                      icon: Icons.shopping_cart,
+                    ),
+                    StepItem(
+                      title: tr.shipping,
+                      content: _shipping(),
+                      icon: Icons.local_shipping,
+                    ),
+                    StepItem(
+                      title: tr.expense,
+                      content: _buildExpensesView(shipping),
+                      icon: Icons.data_exploration,
+                    ),
+                    StepItem(
+                      title: tr.income,
+                      content: _buildIncomeView(shipping),
+                      icon: Icons.data_exploration,
+                    ),
+                    StepItem(
+                      title: tr.summary,
+                      content: _buildSummaryView(shipping),
+                      icon: Icons.summarize,
+                    ),
+                  ],
+                  onFinish: shipping.shpStatus != 1 ? onSubmit : popUp,
+                  isLoading: isLoading, // Pass loading state to stepper
+                ),
               ),
-              StepItem(
-                title: tr.shipping,
-                content: _shipping(),
-                icon: Icons.local_shipping,
-              ),
-              StepItem(
-                title: tr.expense,
-                content: _buildExpensesView(shipping),
-                icon: Icons.data_exploration,
-              ),
-              StepItem(
-                title: tr.income,
-                content: _buildIncomeView(shipping),
-                icon: Icons.data_exploration,
-              ),
-              StepItem(
-                title: 'Summary',
-                content: _buildSummaryView(shipping),
-                icon: Icons.summarize,
-              ),
-            ],
-            onFinish: shipping.shpStatus !=1 ? onSubmit : popUp,
-            // Add this callback for step change validation
-            onStepChanged: (newStep) {
-              // We can't track currentStep here anymore, but we can still validate
-              // based on the step we're moving FROM (which is the step index before clicking)
-              // However, this is tricky without knowing the current step
-
-              // Better approach: Pass validation functions for each step
-              return _validateStepChange(newStep);
-            },
-
-          ),
+            ),
+          ],
         ),
       ),
     );
-  }
-
-  void popUp(){
-    Navigator.of(context).pop();
   }
 
   Widget _buildNewShippingStepper(AppLocalizations tr, BuildContext context) {
+    // Get loading state from bloc
+    final blocState = context.watch<ShippingBloc>().state;
+    final isLoading = blocState is ShippingListLoadingState && blocState.isLoading;
+    final textTheme = Theme.of(context).textTheme;
+    final color = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context)!;
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
@@ -842,212 +850,78 @@ class _DesktopState extends State<_Desktop> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       content: SizedBox(
         width: MediaQuery.of(context).size.width * 0.6,
-        child: Container(
-          padding: const EdgeInsets.all(10.0),
-          child: CustomStepper(
-            key: const ValueKey('new-shipping'), // Add this
-            steps: [
-              StepItem(
-                title: tr.order,
-                content: _order(),
-                icon: Icons.shopping_cart,
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: ListTile(
+                    visualDensity: VisualDensity(vertical: -4),
+                    minVerticalPadding: 0,
+                    title: Text(tr.createNewShipping,style: textTheme.titleMedium?.copyWith(
+                      color: color.primary,
+                    )),
+                    subtitle: Text(tr.newShippingHint,style: textTheme.bodySmall?.copyWith(
+                      color: color.outline
+                    ),),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(onPressed: popUp, icon: Icon(Icons.clear)),
+                )
+              ],
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(10.0),
+                child: CustomStepper(
+                  key: const ValueKey('new-shipping'),
+                  currentStep: _currentStep,
+                  onStepTapped: (step) {
+                    // Don't allow step change during loading
+                    if (!isLoading) {
+                      setState(() {
+                        _currentStep = step;
+                      });
+                    }
+                  },
+                  onStepChanged: (currentStep, requestedStep) {
+                    // Don't allow validation during loading
+                    if (isLoading) return false;
+                    return _validateStepChange(currentStep, requestedStep);
+                  },
+                  steps: [
+                    StepItem(
+                      title: tr.order,
+                      content: _order(),
+                      icon: Icons.shopping_cart,
+                    ),
+                    StepItem(
+                      title: tr.shipping,
+                      content: _shipping(),
+                      icon: Icons.local_shipping,
+                    ),
+                    StepItem(
+                      title: tr.advancePayment,
+                      content: _advancePayment(),
+                      icon: Icons.attach_money_outlined,
+                    ),
+                    StepItem(
+                      title: 'Summary',
+                      content: _buildSummaryView(null),
+                      icon: Icons.summarize,
+                    ),
+                  ],
+                  onFinish: onSubmit,
+                  isLoading: isLoading, // Pass loading state to stepper
+                ),
               ),
-              StepItem(
-                title: tr.shipping,
-                content: _shipping(),
-                icon: Icons.local_shipping,
-              ),
-              StepItem(
-                title: tr.advancePayment,
-                content: _advancePayment(),
-                icon: Icons.attach_money_outlined,
-              ),
-              StepItem(
-                title: 'Summary',
-                content: _buildSummaryView(null),
-                icon: Icons.summarize,
-              ),
-            ],
-            onFinish: onSubmit,
-            // Add this callback for step change validation
-            onStepChanged: (newStep) {
-              // We can't track currentStep here anymore, but we can still validate
-              // based on the step we're moving FROM (which is the step index before clicking)
-              // However, this is tricky without knowing the current step
-
-              // Better approach: Pass validation functions for each step
-              return _validateStepChange(newStep);
-            },
-
-          ),
+            ),
+          ],
         ),
       ),
     );
-  }
-
-  bool _validateOrderStep() {
-    if (orderFormKey.currentState == null) return false;
-
-    final isValid = orderFormKey.currentState!.validate();
-    if (!isValid) {
-      Utils.showOverlayMessage(
-          context,
-          message: "Please fill all required fields in Order step",
-          isError: true
-      );
-    }
-    return isValid;
-  }
-
-  bool _validateShippingStep() {
-    if (shippingFormKey.currentState == null) return false;
-
-    final isValid = shippingFormKey.currentState!.validate();
-    if (!isValid) {
-      Utils.showOverlayMessage(
-          context,
-          message: "Please fill all required fields in Shipping step",
-          isError: true
-      );
-    }
-    return isValid;
-  }
-
-  void onSubmit() {
-    print('Current step: $_currentStep');
-
-    // Skip form validation in onSubmit since we already validated when moving steps
-    // Just check required IDs and fields
-    if (customerId == null) {
-      Utils.showOverlayMessage(
-          context,
-          message: "Please select a customer",
-          isError: true
-      );
-      setState(() {
-        _currentStep = 0;
-      });
-      return;
-    }
-
-    if (productId == null) {
-      Utils.showOverlayMessage(
-          context,
-          message: "Please select a product",
-          isError: true
-      );
-      setState(() {
-        _currentStep = 0;
-      });
-      return;
-    }
-
-    if (vehicleId == null) {
-      Utils.showOverlayMessage(
-          context,
-          message: "Please select a vehicle",
-          isError: true
-      );
-      setState(() {
-        _currentStep = 1;
-      });
-      return;
-    }
-
-    // Validate required fields from shipping step
-    if (shpFrom.text.isEmpty || shpTo.text.isEmpty) {
-      Utils.showOverlayMessage(
-          context,
-          message: "Please fill in shipping locations",
-          isError: true
-      );
-      setState(() {
-        _currentStep = 1;
-      });
-      return;
-    }
-
-    if (loadingSize.text.isEmpty || unloadingSize.text.isEmpty) {
-      Utils.showOverlayMessage(
-          context,
-          message: "Please fill in loading/unloading sizes",
-          isError: true
-      );
-      setState(() {
-        _currentStep = 1;
-      });
-      return;
-    }
-
-    if (shippingRent.text.isEmpty) {
-      Utils.showOverlayMessage(
-          context,
-          message: "Please enter shipping rent",
-          isError: true
-      );
-      setState(() {
-        _currentStep = 1;
-      });
-      return;
-    }
-
-    // Validate shipping rent amount
-    final cleanRent = shippingRent.text.cleanAmount;
-    final rentValue = double.tryParse(cleanRent);
-    if (rentValue == null || rentValue <= 0) {
-      Utils.showOverlayMessage(
-          context,
-          message: "Invalid shipping rent amount",
-          isError: true
-      );
-      setState(() {
-        _currentStep = 1;
-      });
-      return;
-    }
-
-    // Validate advance amount if provided
-    if (advanceAmount.text.isNotEmpty) {
-      final cleanAdvance = advanceAmount.text.cleanAmount;
-      final advanceValue = double.tryParse(cleanAdvance);
-      if (advanceValue == null || advanceValue <= 0) {
-        Utils.showOverlayMessage(
-            context,
-            message: "Invalid advance amount",
-            isError: true
-        );
-        setState(() {
-          _currentStep = 2;
-        });
-        return;
-      }
-    }
-
-    final bloc = context.read<ShippingBloc>();
-    final data = ShippingModel(
-      shpId: widget.shippingId,
-      shpLoadSize: loadingSize.text,
-      shpUnloadSize: unloadingSize.text,
-      shpTo: shpTo.text,
-      shpFrom: shpFrom.text,
-      shpRent: shippingRent.text.cleanAmount,
-      productId: productId!,
-      vehicleId: vehicleId!,
-      customerId: customerId!,
-      shpArriveDate: DateTime.tryParse(shpToGregorian),
-      shpMovingDate: DateTime.tryParse(shpFromGregorian),
-      usrName: usrName ?? "",
-      advanceAmount: advanceAmount.text.cleanAmount,
-      remark: remark.text,
-      shpStatus: 1,
-      shpUnit: unit ?? "TN",
-    );
-
-    if(widget.shippingId !=null){
-      bloc.add(UpdateShippingEvent(data));
-    }else{
-      bloc.add(AddShippingEvent(data));
-    }
   }
 
   Widget _buildIncomeView(ShippingDetailsModel shipping) {
@@ -1101,55 +975,7 @@ class _DesktopState extends State<_Desktop> {
                 // Expense Form
                 Column(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          _selectedExpenseForEdit != null ? tr.edit : tr.newKeyword,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        // Expense Action Buttons
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            if (_selectedExpenseForEdit != null)
-                              ZOutlineButton(
-                                width: 100,
-                                height: 30,
-                                label: Text(tr.cancel),
-                                onPressed: () {
-                                  setState(() {
-                                    _selectedExpenseForEdit = null;
-                                    _clearExpenseForm();
-                                  });
-                                },
-                              ),
-                            const SizedBox(width: 10),
-                            ZOutlineButton(
-                              width: 100,
-                              height: 30,
-                              isActive: true,
-                              label: isLoading
-                                  ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 3,
-                                  color: Theme.of(context).colorScheme.surface,
-                                ),
-                              )
-                                  : Text(_selectedExpenseForEdit != null ? tr.update : tr.create),
-                              onPressed: isLoading
-                                  ? null // Disable button when loading
-                                  : () {
-                                _handleExpenseAction();
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const Divider(),
+
                     Form(
                       key: expenseFormKey,
                       child: Column(
@@ -1166,10 +992,10 @@ class _DesktopState extends State<_Desktop> {
                                   bloc: context.read<AccountsBloc>(),
                                   fetchAllFunction: (bloc) => bloc.add(
                                     LoadAccountsFilterEvent(
-                                      start: 4,
-                                      end: 4,
-                                      ccy: "USD",
-                                      exclude: ""
+                                        start: 4,
+                                        end: 4,
+                                        ccy: "USD",
+                                        exclude: ""
                                     ),
                                   ),
                                   searchFunction: (bloc, query) => bloc.add(
@@ -1282,7 +1108,48 @@ class _DesktopState extends State<_Desktop> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 5),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 3.0,vertical: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          if (_selectedExpenseForEdit != null)
+                            ZOutlineButton(
+                              width: 100,
+                              height: 35,
+                              label: Text(tr.cancel),
+                              onPressed: () {
+                                setState(() {
+                                  _selectedExpenseForEdit = null;
+                                  _clearExpenseForm();
+                                });
+                              },
+                            ),
+                          if (_selectedExpenseForEdit != null)
+                          const SizedBox(width: 10),
+                          ZOutlineButton(
+                            width: 100,
+                            height: 35,
+                            isActive: true,
+                            label: isLoading
+                                ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                                color: Theme.of(context).colorScheme.surface,
+                              ),
+                            )
+                                : Text(_selectedExpenseForEdit != null ? tr.update : tr.create),
+                            onPressed: isLoading
+                                ? null // Disable button when loading
+                                : () {
+                              _handleExpenseAction();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
 
@@ -1433,7 +1300,6 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  // Add this helper method to your _DesktopState class
   Map<String, String> _getSummaryData(ShippingDetailsModel? shipping) {
     if (shipping != null) {
       // Return data from ShippingDetailsModel
@@ -1443,8 +1309,8 @@ class _DesktopState extends State<_Desktop> {
         'vehicle': shipping.vehicle ?? vehicleCtrl.text,
         'from': shipping.shpFrom ?? shpFrom.text,
         'to': shipping.shpTo ?? shpTo.text,
-        'loadingSize': "${shipping.shpLoadSize ?? loadingSize.text} ${shipping.shpUnit ?? unit ?? 'TN'}",
-        'unloadingSize': "${shipping.shpUnloadSize ?? unloadingSize.text} ${shipping.shpUnit ?? unit ?? 'TN'}",
+        'loadingSize': "${shipping.shpLoadSize ?? loadingSize.text} ${shipping.shpUnit ?? unit ?? ''}",
+        'unloadingSize': "${shipping.shpUnloadSize ?? unloadingSize.text} ${shipping.shpUnit ?? unit ?? ''}",
         'rent': shipping.shpRent ?? shippingRent.text,
         'total': shipping.total ?? "",
         'status': shipping.shpStatus?.toString() ?? "",
@@ -1467,11 +1333,10 @@ class _DesktopState extends State<_Desktop> {
     }
   }
 
-  // Then update _buildSummaryView to use this helper
   Widget _buildSummaryView(ShippingDetailsModel? shipping) {
     final summaryData = _getSummaryData(shipping);
     final hasShippingDetails = shipping != null;
-
+    final tr = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -1496,19 +1361,29 @@ class _DesktopState extends State<_Desktop> {
                       color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
                     ),
                     const SizedBox(width: 10),
-                    Text(
-                      summaryData['status'] == "1" ? 'Delivered' : 'Pending',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
+                    Expanded(
+                      child: Text(
+                        summaryData['status'] == "1" ? tr.delivered : tr.pendingTitle,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
+                        ),
                       ),
                     ),
+
+                    if(shipping?.shpStatus == 0)
+                    Switch(value: shpStatus == 1,
+                        onChanged: (e){
+                      setState(() {
+                        shpStatus = e ? 1 : 0;
+                      });
+                    })
                   ],
                 ),
               ),
             SizedBox(height: 8),
             Text(
-              'Shipping Summary',
+              tr.shippingSummary,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -1516,12 +1391,12 @@ class _DesktopState extends State<_Desktop> {
             const SizedBox(height: 5),
 
             // Customer Information
-            _buildSummaryItem('Customer', summaryData['customer'] ?? ''),
-            _buildSummaryItem('Product', summaryData['product'] ?? ''),
+            _buildSummaryItem(tr.customer, summaryData['customer'] ?? ''),
+            _buildSummaryItem(tr.productName, summaryData['product'] ?? ''),
 
             const SizedBox(height: 5),
             Text(
-              'Shipping Details',
+              tr.shippingDetails,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -1529,17 +1404,17 @@ class _DesktopState extends State<_Desktop> {
             const SizedBox(height: 10),
 
             // Shipping Details
-            _buildSummaryItem('Vehicle', summaryData['vehicle'] ?? ''),
-            _buildSummaryItem('From - To', "${summaryData['from']} - ${summaryData['to']}"),
-            _buildSummaryItem('Loading Date', shpFromGregorian),
-            _buildSummaryItem('Unloading Date', shpToGregorian),
-            _buildSummaryItem('Loading Size', summaryData['loadingSize'] ?? ''),
-            _buildSummaryItem('Unloading Size', summaryData['unloadingSize'] ?? ''),
-            _buildSummaryItem('Shipping Rent', summaryData['rent']?.toAmount() ?? ''),
+            _buildSummaryItem(tr.vehicle, summaryData['vehicle'] ?? ''),
+            _buildSummaryItem(tr.fromTo, "${summaryData['from']} - ${summaryData['to']}"),
+            _buildSummaryItem(tr.loadingDate, shpFromGregorian),
+            _buildSummaryItem(tr.unloadingDate, shpToGregorian),
+            _buildSummaryItem(tr.loadingSize, summaryData['loadingSize'] ?? ''),
+            _buildSummaryItem(tr.unloadingSize, summaryData['unloadingSize'] ?? ''),
+            _buildSummaryItem(tr.shippingRent, summaryData['rent']?.toAmount() ?? ''),
 
             // Financial Summary
             if (summaryData['total'] != null && summaryData['total']!.isNotEmpty)
-              _buildSummaryItem('Total', "${summaryData['total']?.toAmount()}", isHighlighted: true),
+              _buildSummaryItem(tr.totalTitle, "${summaryData['total']?.toAmount()}", isHighlighted: true),
 
             // Expenses Summary - Only for ShippingDetailsModel
             if (hasShippingDetails && shipping.expenses != null && shipping.expenses!.isNotEmpty)
@@ -1548,8 +1423,8 @@ class _DesktopState extends State<_Desktop> {
                 children: [
                   const SizedBox(height: 20),
                   Text(
-                    'Expenses',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    tr.expense,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -1571,8 +1446,8 @@ class _DesktopState extends State<_Desktop> {
                 children: [
                   const SizedBox(height: 20),
                   Text(
-                    'Income',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    tr.income,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -1588,8 +1463,6 @@ class _DesktopState extends State<_Desktop> {
               ),
 
             const SizedBox(height: 30),
-
-
           ],
         ),
       ),
@@ -1607,8 +1480,8 @@ class _DesktopState extends State<_Desktop> {
             child: Text(
               title,
               style: isSubItem
-                  ? Theme.of(context).textTheme.bodySmall
-                  : Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  ? Theme.of(context).textTheme.bodyMedium
+                  : Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -1618,8 +1491,8 @@ class _DesktopState extends State<_Desktop> {
             child: Text(
               value,
               style: isSubItem
-                  ? Theme.of(context).textTheme.bodySmall
-                  : Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  ? Theme.of(context).textTheme.bodyMedium
+                  : Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: isHighlighted ? Theme.of(context).colorScheme.primary : null,
                 fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
               ),
@@ -1661,7 +1534,263 @@ class _DesktopState extends State<_Desktop> {
       expenseFormKey.currentState!.reset();
     }
   }
+  void popUp(){
+    Navigator.of(context).pop();
+  }
+  void onSubmit() async {
+    final tr = AppLocalizations.of(context)!;
+    final bloc = context.read<ShippingBloc>();
+    // ================= COMMON VALIDATION =================
 
+    if (customerId == null) {
+      Utils.showOverlayMessage(
+        context,
+        message: tr.selectCustomer,
+        isError: true,
+      );
+      setState(() => _currentStep = 0);
+      return;
+    }
+
+    if (productId == null) {
+      Utils.showOverlayMessage(
+        context,
+        message: tr.selectProduct,
+        isError: true,
+      );
+      setState(() => _currentStep = 0);
+      return;
+    }
+
+    if (vehicleId == null) {
+      Utils.showOverlayMessage(
+        context,
+        message: tr.selectVehicle,
+        isError: true,
+      );
+      setState(() => _currentStep = 1);
+      return;
+    }
+
+    if (shpFrom.text.isEmpty || shpTo.text.isEmpty) {
+      Utils.showOverlayMessage(
+        context,
+        message: tr.fillShippingLocations,
+        isError: true,
+      );
+      setState(() => _currentStep = 1);
+      return;
+    }
+
+    if (loadingSize.text.isEmpty) {
+      Utils.showOverlayMessage(
+        context,
+        message: tr.fillLoadingSize,
+        isError: true,
+      );
+      setState(() => _currentStep = 1);
+      return;
+    }
+
+    if (shippingRent.text.isEmpty) {
+      Utils.showOverlayMessage(
+        context,
+        message: tr.fillShippingRent,
+        isError: true,
+      );
+      setState(() => _currentStep = 1);
+      return;
+    }
+
+    final rentValue = double.tryParse(shippingRent.text.cleanAmount);
+    if (rentValue == null || rentValue <= 0) {
+      Utils.showOverlayMessage(
+        context,
+        message: tr.invalidShippingRent,
+        isError: true,
+      );
+      setState(() => _currentStep = 1);
+      return;
+    }
+
+    if (advanceAmount.text.isNotEmpty) {
+      final advanceValue =
+      double.tryParse(advanceAmount.text.cleanAmount);
+      if (advanceValue == null || advanceValue <= 0) {
+        Utils.showOverlayMessage(
+          context,
+          message: tr.invalidAdvanceAmount,
+          isError: true,
+        );
+        setState(() => _currentStep = 2);
+        return;
+      }
+    }
+
+    // ================= DELIVERY VALIDATION =================
+
+    if (shpStatus == 1) {
+      if (unloadingSize.text.isEmpty) {
+        Utils.showOverlayMessage(
+          context,
+          message: tr.unloadingSizeRequired,
+          isError: true,
+        );
+        setState(() => _currentStep = 1);
+        return;
+      }
+
+      final unloadingValue =
+      double.tryParse(unloadingSize.text.cleanAmount);
+      if (unloadingValue == null || unloadingValue <= 0) {
+        Utils.showOverlayMessage(
+          context,
+          message: tr.invalidUnloadingSize,
+          isError: true,
+        );
+        setState(() => _currentStep = 1);
+        return;
+      }
+
+      if (shpToGregorian.isEmpty ||
+          shpToGregorian == DateTime.now().toFormattedDate()) {
+        Utils.showOverlayMessage(
+          context,
+          message: tr.setUnloadingDate,
+          isError: true,
+        );
+        setState(() => _currentStep = 1);
+        return;
+      }
+
+      try {
+        final loadingDate = DateTime.parse(shpFromGregorian);
+        final unloadingDate = DateTime.parse(shpToGregorian);
+
+        if (unloadingDate.isBefore(loadingDate)) {
+          Utils.showOverlayMessage(
+            context,
+            message: tr.unloadingBeforeLoading,
+            isError: true,
+          );
+          setState(() => _currentStep = 1);
+          return;
+        }
+      } catch (_) {
+        Utils.showOverlayMessage(
+          context,
+          message: tr.invalidDateFormat,
+          isError: true,
+        );
+        setState(() => _currentStep = 1);
+        return;
+      }
+
+      final missingFields = <String>[];
+      if (shpFrom.text.isEmpty) missingFields.add(tr.shpFrom);
+      if (shpTo.text.isEmpty) missingFields.add(tr.shpTo);
+      if (loadingSize.text.isEmpty) missingFields.add(tr.loadingSize);
+      if (unloadingSize.text.isEmpty) missingFields.add(tr.unloadingSize);
+      if (shippingRent.text.isEmpty) missingFields.add(tr.shippingRent);
+      if (unit == null || unit!.isEmpty) missingFields.add(tr.unit);
+
+      if (missingFields.isNotEmpty) {
+        Utils.showOverlayMessage(
+          context,
+          message:
+          "${tr.deliveryRequiredFields}\n${missingFields.join(', ')}",
+          isError: true,
+        );
+        setState(() => _currentStep = 1);
+        return;
+      }
+
+      final loadingValue =
+      double.tryParse(loadingSize.text.cleanAmount);
+      if (loadingValue != null &&
+          ((unloadingValue - loadingValue).abs() / loadingValue) * 100 >
+              20) {
+        final shouldContinue =
+        await _showUnloadingSizeWarningDialog(
+            context, loadingValue, unloadingValue);
+
+        if (!shouldContinue) {
+          setState(() => _currentStep = 1);
+          return;
+        }
+      }
+    }
+
+    // ================= SUBMIT =================
+
+    final data = ShippingModel(
+      shpId: widget.shippingId,
+      shpLoadSize: loadingSize.text,
+      shpUnloadSize: unloadingSize.text,
+      shpTo: shpTo.text,
+      shpFrom: shpFrom.text,
+      shpRent: shippingRent.text.cleanAmount,
+      productId: productId!,
+      vehicleId: vehicleId!,
+      customerId: customerId!,
+      shpArriveDate: DateTime.tryParse(shpToGregorian),
+      shpMovingDate: DateTime.tryParse(shpFromGregorian),
+      usrName: usrName ?? "",
+      advanceAmount: advanceAmount.text.cleanAmount,
+      remark: remark.text,
+      shpStatus: shpStatus ?? 0,
+      shpUnit: unit ?? "TN",
+    );
+
+    widget.shippingId != null
+        ? bloc.add(UpdateShippingEvent(data))
+        : bloc.add(AddShippingEvent(data));
+  }
+
+// Helper method to show warning dialog for unloading size difference
+  Future<bool> _showUnloadingSizeWarningDialog(BuildContext context, double loadingSize, double unloadingSize) async {
+    final difference = unloadingSize - loadingSize;
+    final percentage = ((difference.abs()) / loadingSize) * 100;
+    final tr = AppLocalizations.of(context)!;
+    return await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8)
+          ),
+          title: Text(tr.unloadingSizeWarning),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("${tr.unloadingSize} (${unloadingSize.toStringAsFixed(2)}) ${tr.unloadingSizeWarningMessage} (${loadingSize.toStringAsFixed(2)})."),
+              const SizedBox(height: 8),
+              Text("${tr.difference}: ${difference > 0 ? '+' : ''}${difference.toStringAsFixed(2)} (${percentage.toStringAsFixed(1)}%)",
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+              const SizedBox(height: 12),
+              Text(tr.unloadingSizeProceedMessage),
+            ],
+          ),
+          actions: [
+            ZOutlineButton(
+              width: 100,
+              onPressed: () => Navigator.of(context).pop(false),
+              label: Text(tr.cancel),
+            ),
+            ZOutlineButton(
+              width: 100,
+              isActive: true,
+              onPressed: () => Navigator.of(context).pop(true),
+              label: Text(tr.proceed),
+            ),
+          ],
+        );
+      },
+    ) ?? false;
+  }
   void _loadExpenseForEdit(ShippingExpenseModel expense) {
     setState(() {
       _selectedExpenseForEdit = expense;
@@ -1674,7 +1803,6 @@ class _DesktopState extends State<_Desktop> {
       }
     });
   }
-
   void _handleExpenseAction() {
     if (expenseFormKey.currentState == null || !expenseFormKey.currentState!.validate()) {
       Utils.showOverlayMessage(context, message: "Please fill all required fields", isError: true);
@@ -1726,7 +1854,6 @@ class _DesktopState extends State<_Desktop> {
       },
     );
   }
-
   Widget _datePicker({required String date, required String title}) {
     return GenericDatePicker(
       label: title,
