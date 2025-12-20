@@ -73,7 +73,6 @@ class _DesktopState extends State<_Desktop> {
         start: 1,
         end: 5,
         ccy: baseCurrency,
-        locale: "en",
         exclude: '',
         input: ''
       ),

@@ -1042,8 +1042,8 @@ class _DesktopState extends State<_Desktop> {
                                        hintText: tr.accNameOrNumber,
                                        isRequired: true,
                                        bloc: context.read<AccountsBloc>(),
-                                       fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 1,end: 5,exclude: "10101010,10101011",ccy: baseCurrency, locale: currentLocale ?? 'en')),
-                                       searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(input: query, start: 1,end: 5, exclude: "10101010,10101011",ccy:  baseCurrency,locale: currentLocale ?? 'en')),
+                                       fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 1,end: 5,exclude: "10101010,10101011",ccy: baseCurrency)),
+                                       searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(input: query, start: 1,end: 5, exclude: "10101010,10101011",ccy:  baseCurrency)),
                                        validator: (value) {
                                          if (value.isEmpty) {
                                            return tr.required(tr.accounts);
@@ -1188,8 +1188,8 @@ class _DesktopState extends State<_Desktop> {
                                         hintText: tr.accNameOrNumber,
                                         isRequired: true,
                                         bloc: context.read<AccountsBloc>(),
-                                        fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 1,end: 5,exclude: "10101010,10101011",ccy: baseCurrency, locale: currentLocale ?? 'en')),
-                                        searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(input: query, start: 1,end: 5, exclude: "10101010,10101011",ccy:  baseCurrency,locale: currentLocale ?? 'en')),
+                                        fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 1,end: 5,exclude: "10101010,10101011",ccy: baseCurrency, )),
+                                        searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(input: query, start: 1,end: 5, exclude: "10101010,10101011",ccy:  baseCurrency)),
 
                                         validator: (value) {
                                           if (value.isEmpty) {

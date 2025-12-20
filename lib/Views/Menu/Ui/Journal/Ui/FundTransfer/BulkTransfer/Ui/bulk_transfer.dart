@@ -609,8 +609,8 @@ class __TransferEntryRowState extends State<_TransferEntryRow> {
                 hintText: AppLocalizations.of(context)!.accounts,
                 isRequired: true,
                 bloc: context.read<AccountsBloc>(),
-                fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 1,end: 5,exclude: "10101010,10101011",ccy: widget.selectedCurrency ?? baseCurrency, locale: currentLocale ?? 'en')),
-                searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(input: query, start: 1,end: 5, exclude: "10101010,10101011",ccy: widget.selectedCurrency ?? baseCurrency,locale: currentLocale ?? 'en')),
+                fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 1,end: 5,exclude: "10101010,10101011",ccy: widget.selectedCurrency ?? baseCurrency,)),
+                searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(input: query, start: 1,end: 5, exclude: "10101010,10101011",ccy: widget.selectedCurrency ?? baseCurrency)),
                 itemBuilder: (context, account) => Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,

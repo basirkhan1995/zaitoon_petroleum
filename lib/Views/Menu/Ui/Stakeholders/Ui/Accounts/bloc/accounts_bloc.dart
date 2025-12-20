@@ -14,7 +14,7 @@ class AccountsBloc extends Bloc<AccountsEvent, AccountsState> {
     on<LoadAccountsFilterEvent>((event, emit) async{
       emit(AccountLoadingState());
       try{
-        final acc = await _repo.getAccountFilter(ccy: event.ccy,locale: event.locale,end: event.end,start: event.start,exclude: event.exclude,input: event.input);
+        final acc = await _repo.getAccountFilter(ccy: event.ccy,end: event.end,start: event.start,exclude: event.exclude,input: event.input);
         emit(AccountLoadedState(acc));
       }catch(e){
         emit(AccountErrorState(e.toString()));

@@ -1169,6 +1169,7 @@ class _DesktopState extends State<_Desktop> {
                                       start: 4,
                                       end: 4,
                                       ccy: "USD",
+                                      exclude: ""
                                     ),
                                   ),
                                   searchFunction: (bloc, query) => bloc.add(
@@ -1176,6 +1177,7 @@ class _DesktopState extends State<_Desktop> {
                                         start: 4,
                                         end: 4,
                                         ccy: "USD",
+                                        exclude: "",
                                         input: query
                                     ),
                                   ),

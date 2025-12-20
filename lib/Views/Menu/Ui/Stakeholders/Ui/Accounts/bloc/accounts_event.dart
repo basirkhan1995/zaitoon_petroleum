@@ -22,13 +22,13 @@ class LoadAccountsFilterEvent extends AccountsEvent{
   final int? start;
   final int? end;
   final String? input;
-  final String? locale;
+
   final String? exclude;
   final String? ccy;
 
-  const LoadAccountsFilterEvent({this.start, this.end, this.input, this.locale, this.exclude, this.ccy});
+  const LoadAccountsFilterEvent({this.start, this.end, this.input, this.exclude, this.ccy});
   @override
-  List<Object?> get props => [start,end,input, locale, exclude, ccy];
+  List<Object?> get props => [start,end,input,exclude, ccy];
 }
 
 class AddAccountEvent extends AccountsEvent{

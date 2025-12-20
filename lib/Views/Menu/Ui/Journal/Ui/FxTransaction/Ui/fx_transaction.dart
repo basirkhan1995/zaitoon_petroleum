@@ -1216,7 +1216,6 @@ class __EntryRowState extends State<_EntryRow> {
                     start: 1,
                     end: 5,
                     exclude: "10101011",
-                    locale: currentLocale ?? 'en',
                   ),
                 ),
                 searchFunction: (bloc, query) => bloc.add(
@@ -1225,7 +1224,6 @@ class __EntryRowState extends State<_EntryRow> {
                     start: 1,
                     end: 5,
                     exclude: "10101011",
-                    locale: currentLocale ?? 'en',
                   ),
                 ),
                 itemBuilder: (context, account) => Padding(
