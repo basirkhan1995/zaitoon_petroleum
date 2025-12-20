@@ -102,6 +102,16 @@ class _DesktopState extends State<_Desktop> {
     });
   }
 
+  // In _DesktopState class:
+  @override
+  void didUpdateWidget(covariant _Desktop oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Reset current step when shippingId changes (e.g., from existing to new)
+    if (widget.shippingId != oldWidget.shippingId) {
+      _currentStep = 0;
+    }
+  }
   // Method to prefill form with shipping data
   void _prefillForm(ShippingDetailsModel shipping) {
     // Clear all controllers first
@@ -217,6 +227,30 @@ class _DesktopState extends State<_Desktop> {
     super.dispose();
   }
 
+  // Add this helper method to _DesktopState:
+  bool _validateStepChange(int newStep) {
+    // For simplicity, always validate when moving to step 1 or 2
+    if (newStep == 1 && !_validateOrderStep()) {
+      Utils.showOverlayMessage(
+          context,
+          message: "Please fill all required fields in Order step",
+          isError: true
+      );
+      return false;
+    }
+
+    if (newStep == 2 && !_validateShippingStep()) {
+      Utils.showOverlayMessage(
+          context,
+          message: "Please fill all required fields in Shipping step",
+          isError: true
+      );
+      return false;
+    }
+
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
@@ -227,6 +261,8 @@ class _DesktopState extends State<_Desktop> {
     }
     final login = state.loginData;
     usrName = login.usrName ?? "";
+
+
 
     return BlocConsumer<ShippingBloc, ShippingState>(
       listener: (context, state) {
@@ -340,9 +376,6 @@ class _DesktopState extends State<_Desktop> {
                 searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return tr.required(tr.customer);
-                  }
-                  if (customerId == null) {
                     return tr.required(tr.customer);
                   }
                   return null;
@@ -743,6 +776,8 @@ class _DesktopState extends State<_Desktop> {
         child: Container(
           padding: const EdgeInsets.all(10.0),
           child: CustomStepper(
+            key: ValueKey('existing-shipping-${shipping.shpId}'),
+            initialStep: 0,
             steps: [
               StepItem(
                 title: tr.order,
@@ -770,30 +805,25 @@ class _DesktopState extends State<_Desktop> {
                 icon: Icons.summarize,
               ),
             ],
-            onFinish: onSubmit,
+            onFinish: shipping.shpStatus !=1 ? onSubmit : popUp,
             // Add this callback for step change validation
             onStepChanged: (newStep) {
-              // Validate BEFORE moving forward
-              if (newStep > _currentStep) {
-                if (_currentStep == 0 && !_validateOrderStep()) {
-                  return false;
-                }
-                if (_currentStep == 1 && !_validateShippingStep()) {
-                  return false;
-                }
-              }
+              // We can't track currentStep here anymore, but we can still validate
+              // based on the step we're moving FROM (which is the step index before clicking)
+              // However, this is tricky without knowing the current step
 
-              setState(() {
-                _currentStep = newStep;
-              });
-
-              return true;
+              // Better approach: Pass validation functions for each step
+              return _validateStepChange(newStep);
             },
 
           ),
         ),
       ),
     );
+  }
+
+  void popUp(){
+    Navigator.of(context).pop();
   }
 
   Widget _buildNewShippingStepper(AppLocalizations tr, BuildContext context) {
@@ -808,6 +838,7 @@ class _DesktopState extends State<_Desktop> {
         child: Container(
           padding: const EdgeInsets.all(10.0),
           child: CustomStepper(
+            key: const ValueKey('new-shipping'), // Add this
             steps: [
               StepItem(
                 title: tr.order,
@@ -833,21 +864,12 @@ class _DesktopState extends State<_Desktop> {
             onFinish: onSubmit,
             // Add this callback for step change validation
             onStepChanged: (newStep) {
-              // Validate BEFORE moving forward
-              if (newStep > _currentStep) {
-                if (_currentStep == 0 && !_validateOrderStep()) {
-                  return false;
-                }
-                if (_currentStep == 1 && !_validateShippingStep()) {
-                  return false;
-                }
-              }
+              // We can't track currentStep here anymore, but we can still validate
+              // based on the step we're moving FROM (which is the step index before clicking)
+              // However, this is tricky without knowing the current step
 
-              setState(() {
-                _currentStep = newStep;
-              });
-
-              return true;
+              // Better approach: Pass validation functions for each step
+              return _validateStepChange(newStep);
             },
 
           ),
@@ -1410,7 +1432,7 @@ class _DesktopState extends State<_Desktop> {
         'to': shipping.shpTo ?? shpTo.text,
         'loadingSize': "${shipping.shpLoadSize ?? loadingSize.text} ${shipping.shpUnit ?? unit ?? 'TN'}",
         'unloadingSize': "${shipping.shpUnloadSize ?? unloadingSize.text} ${shipping.shpUnit ?? unit ?? 'TN'}",
-        'rent': "${shipping.shpRent ?? shippingRent.text} USD",
+        'rent': shipping.shpRent ?? shippingRent.text,
         'total': shipping.total ?? "",
         'status': shipping.shpStatus?.toString() ?? "",
       };
@@ -1425,7 +1447,7 @@ class _DesktopState extends State<_Desktop> {
         'to': formData.shpTo ?? shpTo.text,
         'loadingSize': "${formData.shpLoadSize ?? loadingSize.text} ${formData.shpUnit ?? unit ?? 'TN'}",
         'unloadingSize': "${formData.shpUnloadSize ?? unloadingSize.text} ${formData.shpUnit ?? unit ?? 'TN'}",
-        'rent': "${formData.shpRent ?? shippingRent.text} USD",
+        'rent': formData.shpRent ?? shippingRent.text,
         'total': formData.total ?? "",
         'status': formData.shpStatus?.toString() ?? "",
       };
@@ -1443,6 +1465,35 @@ class _DesktopState extends State<_Desktop> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Status
+            if (summaryData['status'] != null && summaryData['status']!.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: summaryData['status'] == "1" ? Colors.green.shade50 : Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(
+                    color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      summaryData['status'] == "1" ? Icons.check_circle : Icons.schedule,
+                      color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      summaryData['status'] == "1" ? 'Delivered' : 'Pending',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            SizedBox(height: 8),
             Text(
               'Shipping Summary',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -1466,17 +1517,16 @@ class _DesktopState extends State<_Desktop> {
 
             // Shipping Details
             _buildSummaryItem('Vehicle', summaryData['vehicle'] ?? ''),
-            _buildSummaryItem('From', summaryData['from'] ?? ''),
-            _buildSummaryItem('To', summaryData['to'] ?? ''),
+            _buildSummaryItem('From - To', "${summaryData['from']} - ${summaryData['to']}"),
             _buildSummaryItem('Loading Date', shpFromGregorian),
             _buildSummaryItem('Unloading Date', shpToGregorian),
             _buildSummaryItem('Loading Size', summaryData['loadingSize'] ?? ''),
             _buildSummaryItem('Unloading Size', summaryData['unloadingSize'] ?? ''),
-            _buildSummaryItem('Shipping Rent', summaryData['rent'] ?? ''),
+            _buildSummaryItem('Shipping Rent', summaryData['rent']?.toAmount() ?? ''),
 
             // Financial Summary
             if (summaryData['total'] != null && summaryData['total']!.isNotEmpty)
-              _buildSummaryItem('Total', "${summaryData['total']} USD", isHighlighted: true),
+              _buildSummaryItem('Total', "${summaryData['total']?.toAmount()}", isHighlighted: true),
 
             // Expenses Summary - Only for ShippingDetailsModel
             if (hasShippingDetails && shipping.expenses != null && shipping.expenses!.isNotEmpty)
@@ -1494,7 +1544,7 @@ class _DesktopState extends State<_Desktop> {
                   ...shipping.expenses!.map(
                         (expense) => _buildSummaryItem(
                       "${expense.accName} (${expense.accNumber})",
-                      "${expense.amount} ${expense.currency}",
+                      "${expense.amount?.toAmount()} ${expense.currency}",
                       isSubItem: true,
                     ),
                   ),
@@ -1517,7 +1567,7 @@ class _DesktopState extends State<_Desktop> {
                   ...shipping.income!.map(
                         (income) => _buildSummaryItem(
                       "${income.accName} (${income.accNumber})",
-                      "${income.amount} ${income.currency}",
+                      "${income.amount?.toAmount()} ${income.currency}",
                       isSubItem: true,
                     ),
                   ),
@@ -1525,34 +1575,8 @@ class _DesktopState extends State<_Desktop> {
               ),
 
             const SizedBox(height: 30),
-            // Status
-            if (summaryData['status'] != null && summaryData['status']!.isNotEmpty)
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: summaryData['status'] == "1" ? Colors.green.shade50 : Colors.orange.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      summaryData['status'] == "1" ? Icons.check_circle : Icons.schedule,
-                      color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      summaryData['status'] == "1" ? 'Delivered' : 'Pending',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+
+
           ],
         ),
       ),

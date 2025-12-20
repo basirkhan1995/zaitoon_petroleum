@@ -21,6 +21,7 @@ class CustomStepper extends StatefulWidget {
   final Color? inactiveColor;
   final VoidCallback? onFinish;
   final Function(int)? onStepChanged; // Added this callback
+  final int initialStep; // Add this
 
   const CustomStepper({
     super.key,
@@ -30,6 +31,7 @@ class CustomStepper extends StatefulWidget {
     this.inactiveColor,
     this.onFinish,
     this.onStepChanged, // Added this parameter
+    this.initialStep = 0
   });
 
   @override
@@ -71,6 +73,16 @@ class _CustomStepperState extends State<CustomStepper> {
       if (allowNavigation) {
         setState(() => currentStep = step);
       }
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomStepper oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Reset step if the number of steps changes
+    if (widget.steps.length != oldWidget.steps.length) {
+      currentStep = 0;
     }
   }
 
