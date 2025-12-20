@@ -10,6 +10,7 @@ import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingById/shipping_by_id.dart';
 import '../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../../Features/Widgets/search_field.dart';
+import '../../../../../../../../Localizations/Bloc/localizations_bloc.dart';
 import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import 'bloc/shipping_bloc.dart';
@@ -57,6 +58,7 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   final TextEditingController searchController = TextEditingController();
   String? _baseCurrency;
+  String? myLocale;
   bool _isDialogOpen = false;
   int? _currentlyViewingShpId;
 
@@ -72,7 +74,7 @@ class _DesktopState extends State<_Desktop> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ShippingBloc>().add(LoadShippingEvent());
-
+      myLocale = context.read<LocalizationBloc>().state.languageCode;
       final comState = context.read<CompanyProfileBloc>().state;
       if (comState is CompanyProfileLoadedState) {
         _baseCurrency = comState.company.comLocalCcy;
@@ -329,7 +331,9 @@ class _DesktopState extends State<_Desktop> {
           onTap: (isLoadingThisItem || isCurrentlyViewing) ? null : () => _handleShippingTap(shp),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            margin: const EdgeInsets.symmetric(horizontal: 8),
             decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
               color: isCurrentlyViewing
                   ? Theme.of(context).colorScheme.primary.withValues(alpha: .1)
                   : index.isEven
@@ -351,25 +355,12 @@ class _DesktopState extends State<_Desktop> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (isLoadingThisItem)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 4),
-                          child: SizedBox(
-                            width: 14,
-                            height: 14,
-                            child: const CircularProgressIndicator(strokeWidth: 2),
-                          ),
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: const CircularProgressIndicator(strokeWidth: 2),
                         ),
-
-                      if (isCurrentlyViewing)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 4),
-                          child: Icon(
-                            Icons.visibility,
-                            size: 14,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-
+                      if (!isLoadingThisItem)
                       Flexible(
                         child: Text(
                           shp.shpId.toString(),

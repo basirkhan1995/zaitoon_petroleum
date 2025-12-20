@@ -731,13 +731,20 @@ class _DesktopState extends State<_Desktop> {
 
   Widget _buildLoadingContent() {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const CircularProgressIndicator(),
-          const SizedBox(height: 16),
-          const Text('Loading shipping details...'),
-        ],
+      child: Container(
+        padding: EdgeInsets.all(35),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(8)
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            const Text('Loading please wait...'),
+          ],
+        ),
       ),
     );
   }
@@ -907,7 +914,6 @@ class _DesktopState extends State<_Desktop> {
   }
 
   void onSubmit() {
-    print('onSubmit called!');
     print('Current step: $_currentStep');
 
     // Skip form validation in onSubmit since we already validated when moving steps
@@ -1017,8 +1023,6 @@ class _DesktopState extends State<_Desktop> {
       }
     }
 
-    print('All validations passed! Submitting...');
-
     final bloc = context.read<ShippingBloc>();
     final data = ShippingModel(
       shpId: widget.shippingId,
@@ -1038,8 +1042,6 @@ class _DesktopState extends State<_Desktop> {
       shpStatus: 1,
       shpUnit: unit ?? "TN",
     );
-
-    print('Dispatching AddShippingEvent...');
 
     if(widget.shippingId !=null){
       bloc.add(UpdateShippingEvent(data));
@@ -1163,10 +1165,19 @@ class _DesktopState extends State<_Desktop> {
                                   isRequired: true,
                                   bloc: context.read<AccountsBloc>(),
                                   fetchAllFunction: (bloc) => bloc.add(
-                                    LoadAccountsFilterEvent(start: 4, end: 4),
+                                    LoadAccountsFilterEvent(
+                                      start: 4,
+                                      end: 4,
+                                      ccy: "USD",
+                                    ),
                                   ),
                                   searchFunction: (bloc, query) => bloc.add(
-                                    LoadAccountsFilterEvent(start: 4, end: 4, input: query),
+                                    LoadAccountsFilterEvent(
+                                        start: 4,
+                                        end: 4,
+                                        ccy: "USD",
+                                        input: query
+                                    ),
                                   ),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {

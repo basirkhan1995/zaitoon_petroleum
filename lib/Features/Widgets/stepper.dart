@@ -20,8 +20,8 @@ class CustomStepper extends StatefulWidget {
   final Color? activeColor;
   final Color? inactiveColor;
   final VoidCallback? onFinish;
-  final Function(int)? onStepChanged; // Added this callback
-  final int initialStep; // Add this
+  final Function(int)? onStepChanged;
+  final int initialStep;
 
   const CustomStepper({
     super.key,
@@ -30,7 +30,7 @@ class CustomStepper extends StatefulWidget {
     this.activeColor,
     this.inactiveColor,
     this.onFinish,
-    this.onStepChanged, // Added this parameter
+    this.onStepChanged,
     this.initialStep = 0
   });
 

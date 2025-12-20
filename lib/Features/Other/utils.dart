@@ -40,67 +40,47 @@ class Utils{
     return null;
   }
 
+
+
   static void showOverlayMessage(
-      BuildContext context, {required String message, String? title, required bool isError, Duration duration = const Duration(seconds: 3)}) {
+      BuildContext context, {
+        required String message,
+        String? title,
+        required bool isError,
+        Duration duration = const Duration(seconds: 3),
+      }) {
     final overlay = Overlay.of(context, rootOverlay: true);
 
-    final color = isError ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primary;
-    final icon = isError ? Icons.error_outline_rounded : Icons.check_circle_outline_rounded;
+    final mediaQuery = MediaQuery.of(context);
+    final width = mediaQuery.size.width;
+
+    final color = isError
+        ? Theme.of(context).colorScheme.error
+        : Theme.of(context).colorScheme.primary;
+
+    final icon = isError
+        ? Icons.error_outline_rounded
+        : Icons.check_circle_outline_rounded;
 
     final entry = OverlayEntry(
       builder: (_) => Positioned(
         top: 10,
-        left: MediaQuery.of(context).size.width * 0.1,
-        right: MediaQuery.of(context).size.width * 0.1,
-        child: Material(
-          color: Colors.transparent,
-          child: TweenAnimationBuilder<double>(
-            duration: const Duration(milliseconds: 300),
-            tween: Tween(begin: -30, end: 0),
-            builder: (context, value, child) =>
-                Transform.translate(offset: Offset(0, value), child: child),
-            child: Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
+        left: width * 0.1,
+        right: width * 0.1,
+        child: MediaQuery(
+          data: mediaQuery, // 🔥 FIX
+          child: Material(
+            color: Colors.transparent,
+            child: TweenAnimationBuilder<double>(
+              duration: const Duration(milliseconds: 300),
+              tween: Tween(begin: -30, end: 0),
+              builder: (context, value, child) =>
+                  Transform.translate(offset: Offset(0, value), child: child),
+              child: _OverlayContent(
+                title: title,
+                message: message,
                 color: color,
-                borderRadius: BorderRadius.circular(5),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 1,
-                    offset: Offset(0, 1),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Icon(icon, color: Theme.of(context).colorScheme.surface, size: 35),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (title != null)
-                          Text(
-                            title,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.surface,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                        Text(
-                          message,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.surface,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                icon: icon,
               ),
             ),
           ),
@@ -109,8 +89,9 @@ class Utils{
     );
 
     overlay.insert(entry);
-    Future.delayed(duration, () => entry.remove());
+    Future.delayed(duration, entry.remove);
   }
+
 
   //Goto
   static goto(context, Widget route) {
@@ -294,4 +275,63 @@ class Utils{
     }
   }
 
+}
+
+
+class _OverlayContent extends StatelessWidget {
+  final String? title;
+  final String message;
+  final Color color;
+  final IconData icon;
+
+  const _OverlayContent({
+    this.title,
+    required this.message,
+    required this.color,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(5),
+        boxShadow: const [
+          BoxShadow(color: Colors.black26, blurRadius: 1, offset: Offset(0, 1)),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Theme.of(context).colorScheme.surface, size: 35),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (title != null)
+                  Text(
+                    title!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.surface,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                Text(
+                  message,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.surface,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
