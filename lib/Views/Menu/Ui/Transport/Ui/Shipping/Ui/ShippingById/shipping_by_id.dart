@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
-import 'package:zaitoon_petroleum/Features/Other/alert_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
@@ -1161,7 +1160,7 @@ class _DesktopState extends State<_Desktop> {
                             )
                                 : Text(_selectedExpenseForEdit != null ? tr.update : tr.create),
                             onPressed: isLoading
-                                ? null // Disable button when loading
+                                ? null
                                 : () {
                               _handleExpenseAction();
                             },
@@ -1284,21 +1283,6 @@ class _DesktopState extends State<_Desktop> {
                                         child: Text(
                                           "${expense.amount?.toAmount()} ${expense.currency}",
                                           style: Theme.of(context).textTheme.titleSmall?.copyWith(),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 50,
-                                        child: isLoading
-                                            ? const SizedBox(
-                                          width: 16,
-                                          height: 16,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                          ),
-                                        )
-                                            : InkWell(
-                                          onTap: () => _showDeleteConfirmationDialog(expense),
-                                          child: Icon(Icons.delete, color: color.error),
                                         ),
                                       ),
                                     ],
@@ -1828,6 +1812,10 @@ class _DesktopState extends State<_Desktop> {
     }
 
     if (_selectedExpenseForEdit != null) {
+      print(_selectedExpenseForEdit?.trdReference);
+      print(_selectedExpenseForEdit?.amount);
+      print(usrName);
+      print(widget.shippingId);
       context.read<ShippingBloc>().add(
         UpdateShippingExpenseEvent(
           shpId: widget.shippingId!,
@@ -1850,28 +1838,6 @@ class _DesktopState extends State<_Desktop> {
     }
   }
 
-  Future<void> _showDeleteConfirmationDialog(ShippingExpenseModel expense) async {
-    final tr = AppLocalizations.of(context)!;
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        return ZAlertDialog(
-          title: tr.areYouSure,
-          content: "${tr.delete}? ${expense.amount?.toAmount()} ${expense.currency}",
-          onYes: () {
-            context.read<ShippingBloc>().add(
-              DeleteShippingExpenseEvent(
-                shpId: widget.shippingId!,
-                trnReference: expense.trdReference!,
-                usrName: usrName ?? "",
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
   Widget _datePicker({required String date, required String title}) {
     return GenericDatePicker(
       label: title,

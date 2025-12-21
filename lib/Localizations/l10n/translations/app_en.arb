@@ -506,5 +506,6 @@
   "createNewShipping": "CREATE NEW SHIPPING",
   "newShippingHint": "Complete the required fields and follow the steps for new shipment.",
   "updateShipping": "UPDATE SHIPPING",
-  "updateShippingHint": "Complete the required fields and follow the steps to complete shipment."
+  "updateShippingHint": "Complete the required fields and follow the steps to complete shipment.",
+  "copied": "Copied"
 }

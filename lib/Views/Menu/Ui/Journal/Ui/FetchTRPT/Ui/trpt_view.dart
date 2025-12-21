@@ -204,8 +204,8 @@ class _DesktopState extends State<_Desktop> {
     final color = Theme.of(context).colorScheme;
 
     // Check if any buttons should be shown
-    final bool showAuthorizeButton = trpt.shpStatus == 1 && (transaction?.trnStatus == 0 && login.usrName != transaction?.maker);
-    final bool showDeleteButton = trpt.shpStatus == 1 && (trpt.transaction?.trnStatus == 0 && transaction?.maker == login.usrName);
+    final bool showAuthorizeButton = trpt.shpStatus == 0 && (transaction?.trnStatus == 0 && login.usrName != transaction?.maker);
+    final bool showDeleteButton = trpt.shpStatus == 0 && (trpt.transaction?.trnStatus == 0 && transaction?.maker == login.usrName);
     final bool showAnyButton = showAuthorizeButton || showDeleteButton;
     return Column(
       mainAxisSize: MainAxisSize.min,

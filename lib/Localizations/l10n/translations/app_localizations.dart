@@ -3063,6 +3063,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Complete the required fields and follow the steps to complete shipment.'**
   String get updateShippingHint;
+
+  /// No description provided for @copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get copied;
 }
 
 class _AppLocalizationsDelegate

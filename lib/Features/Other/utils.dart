@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:typed_data';
@@ -227,6 +228,12 @@ class Utils{
     }
   }
 
+  // Add this to your Utils class
+  static Future<void> copyToClipboard(String text) async {
+    if (text.isNotEmpty) {
+      await Clipboard.setData(ClipboardData(text: text));
+    }
+  }
   static String genderType({required String gender, AppLocalizations? locale}) {
     if (gender == "Male") {
       return locale!.male;

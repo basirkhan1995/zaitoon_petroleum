@@ -63,6 +63,10 @@ class _DesktopState extends State<_Desktop> {
   bool _isLoadingDialog = false;
   String? _loadingRef;
   String? myLocale;
+
+  // Track copied state for each reference
+  final Map<String, bool> _copiedStates = {};
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -71,7 +75,9 @@ class _DesktopState extends State<_Desktop> {
     });
     super.initState();
   }
+
   final TextEditingController searchController = TextEditingController();
+
   @override
   void dispose() {
     searchController.dispose();
@@ -109,6 +115,25 @@ class _DesktopState extends State<_Desktop> {
         _loadingRef = null;
       });
     }
+  }
+
+  // Method to copy reference to clipboard
+  Future<void> _copyToClipboard(String reference, BuildContext context) async {
+    await Utils.copyToClipboard(reference);
+
+    // Set copied state to true
+    setState(() {
+      _copiedStates[reference] = true;
+    });
+
+    // Reset after 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _copiedStates.remove(reference);
+        });
+      }
+    });
   }
 
   @override
@@ -343,9 +368,19 @@ class _DesktopState extends State<_Desktop> {
                       ),
                       const SizedBox(width: 20),
                       Expanded(
-                        child: Text(
-                          locale.referenceNumber,
-                          style: textTheme.titleSmall,
+                        child: Row(
+                          children: [
+                            Text(
+                              locale.referenceNumber,
+                              style: textTheme.titleSmall,
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.content_copy,
+                              size: 14,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ],
                         ),
                       ),
                       SizedBox(
@@ -434,10 +469,10 @@ class _DesktopState extends State<_Desktop> {
                           itemCount: filteredList.length,
                           itemBuilder: (context, index) {
                             final txn = filteredList[index];
-                            final isSelected = _selectedRefs.contains(
-                              txn.trnReference,
-                            );
-                            final isLoadingThisItem = _isLoadingDialog && _loadingRef == txn.trnReference;
+                            final reference = txn.trnReference ?? "";
+                            final isSelected = _selectedRefs.contains(reference);
+                            final isLoadingThisItem = _isLoadingDialog && _loadingRef == reference;
+                            final isCopied = _copiedStates[reference] ?? false;
 
                             return InkWell(
                               onTap: isLoadingThisItem ? null : () => _handleTransactionTap(txn),
@@ -456,6 +491,7 @@ class _DesktopState extends State<_Desktop> {
                                   vertical: 8,
                                 ),
                                 child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     if (_selectionMode)
                                     // CHECKBOX
@@ -478,22 +514,93 @@ class _DesktopState extends State<_Desktop> {
                                             Container(
                                               width: 16,
                                               height: 16,
-                                              margin: EdgeInsets.only(right: myLocale == "en"? 8 : 0, left: myLocale == "en"? 0 : 8),
+                                              margin: EdgeInsets.only(
+                                                  right: myLocale == "en" ? 8 : 0,
+                                                  left: myLocale == "en" ? 0 : 8),
                                               child: const CircularProgressIndicator(
                                                 strokeWidth: 2,
                                               ),
                                             ),
-                                          Text(
-                                            txn.trnEntryDate!.toFullDateTime,
+                                          Flexible(
+                                            child: Text(
+                                              txn.trnEntryDate!.toFullDateTime,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ),
                                         ],
                                       ),
                                     ),
                                     const SizedBox(width: 20),
 
+                                    // Reference column with copy button on the left
                                     Expanded(
-                                      child: Text(
-                                        txn.trnReference.toString(),
+                                      child: Row(
+                                        children: [
+                                          // Copy Button - Fixed width container
+                                          SizedBox(
+                                            width: isCopied ? 100 : 32,
+                                            child: AnimatedContainer(
+                                              duration: const Duration(milliseconds: 300),
+                                              height: 30,
+                                              decoration: BoxDecoration(
+                                                color: isCopied
+                                                    ? Theme.of(context).colorScheme.primary.withAlpha(25)
+                                                    : Colors.transparent,
+                                                border: Border.all(
+                                                  color: isCopied
+                                                      ? Theme.of(context).colorScheme.primary
+                                                      : Theme.of(context).dividerColor,
+                                                  width: 1,
+                                                ),
+                                                borderRadius: BorderRadius.circular(6),
+                                              ),
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                child: InkWell(
+                                                  onTap: () => _copyToClipboard(reference, context),
+                                                  borderRadius: BorderRadius.circular(6),
+                                                  hoverColor: Theme.of(context).colorScheme.primary.withAlpha(13),
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      Icon(
+                                                        isCopied ? Icons.check : Icons.content_copy,
+                                                        size: 16,
+                                                        color: isCopied
+                                                            ? Theme.of(context).colorScheme.primary
+                                                            : Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
+                                                      ),
+                                                      if (isCopied)
+                                                        AnimatedOpacity(
+                                                          duration: const Duration(milliseconds: 200),
+                                                          opacity: isCopied ? 1 : 0,
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.only(left: 4),
+                                                            child: Text(
+                                                              locale.copied,
+                                                              style: TextStyle(
+                                                                fontSize: 12,
+                                                                color: Theme.of(context).colorScheme.primary,
+                                                                fontWeight: FontWeight.w500,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          // Reference text that takes remaining space
+                                          Expanded(
+                                            child: Text(
+                                              reference,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
 
@@ -504,13 +611,17 @@ class _DesktopState extends State<_Desktop> {
                                           txn: txn.trnType ?? "",
                                           context: context,
                                         ),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
 
                                     const SizedBox(width: 20),
                                     SizedBox(
                                       width: 110,
-                                      child: Text(txn.maker ?? ""),
+                                      child: Text(
+                                        txn.maker ?? "",
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ],
                                 ),

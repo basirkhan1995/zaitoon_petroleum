@@ -1522,4 +1522,7 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get updateShippingHint =>
       'فیلد های الزامی را تکمیل کرده و مراحل را دنبال کنید تا محموله تکمیل شود';
+
+  @override
+  String get copied => 'کپی شد';
 }

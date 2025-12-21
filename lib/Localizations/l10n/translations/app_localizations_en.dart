@@ -1531,4 +1531,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get updateShippingHint =>
       'Complete the required fields and follow the steps to complete shipment.';
+
+  @override
+  String get copied => 'Copied';
 }

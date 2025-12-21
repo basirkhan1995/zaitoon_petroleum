@@ -1044,7 +1044,7 @@ class Repositories {
           data: {
             "usrName": usrName,
             "shpID": shpId,
-            "accNumber": reference,
+            "trnReference": reference,
             "amount": amount,
             "narration": narration
           }

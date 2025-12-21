@@ -1524,4 +1524,7 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get updateShippingHint =>
       'اړین ځایونه ډک کړئ او ګامونه تعقیب کړئ ترڅو بار بشپړ شي';
+
+  @override
+  String get copied => 'کپی شد';
 }
