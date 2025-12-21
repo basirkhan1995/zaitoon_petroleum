@@ -7,6 +7,7 @@ class GenericDatePicker extends StatefulWidget {
   final String label;
   final double? height;
   final String? initialGregorianDate;
+  final bool isActive;
   final ValueChanged<String> onDateChanged;
   final EdgeInsetsGeometry? padding;
   final TextStyle? labelStyle;
@@ -19,6 +20,7 @@ class GenericDatePicker extends StatefulWidget {
     required this.onDateChanged,
     this.initialGregorianDate,
     this.padding,
+    this.isActive = false,
     this.height,
     this.labelStyle,
     this.gregorianTextStyle,
@@ -73,7 +75,7 @@ class _GenericDatePickerState extends State<GenericDatePicker> {
                   children: [
                     // Gregorian Date
                     GestureDetector(
-                      onTap: _showGregorianDatePicker,
+                      onTap: widget.isActive ? null : _showGregorianDatePicker,
                       child: Text(
                         selectedGregorianDate,
                         style: widget.gregorianTextStyle ??
@@ -82,7 +84,7 @@ class _GenericDatePickerState extends State<GenericDatePicker> {
                     ),
                     // Shamsi Date
                     GestureDetector(
-                      onTap: _showShamsiDatePicker,
+                      onTap: widget.isActive ? null : _showShamsiDatePicker,
                       child: Text(
                         selectedGregorianDate.shamsiDateFormatted,
                         style: widget.shamsiTextStyle ??

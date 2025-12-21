@@ -124,6 +124,10 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
   }
 
   void _onFocusChange() {
+    if (widget.readOnly) {
+      _removeOverlay();
+      return;
+    }
     if (_focusNode.hasFocus) {
       if (widget.showAllOnFocus && _firstFocus && widget.bloc != null && widget.fetchAllFunction != null) {
         widget.fetchAllFunction!(widget.bloc!);
@@ -310,9 +314,12 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
                 link: _layerLink,
                 child: TextFormField(
                   focusNode: _focusNode,
+
                   key: _fieldKey,
                   controller: widget.controller,
                   onChanged: (value) {
+                    if (widget.readOnly) return;
+
                     setState(() {
                       _showClear = value.isNotEmpty;
                     });
@@ -402,8 +409,10 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
               if (widget.end != null) widget.end!,
               if (widget.bloc != null)
                 BlocListener<B, S>(
+
                   bloc: widget.bloc,
                   listener: (context, state) {
+                    if (widget.readOnly) return;
                     final items = widget.stateToItems(state);
                     setState(() {
                       _currentSuggestions = items;

@@ -583,6 +583,7 @@ class _DesktopState extends State<_Desktop> {
                 children: [
                   Expanded(
                     child: _datePicker(
+                      isActive: isDelivered,
                       date: shpFromGregorian,
                       title: tr.loadingDate,
                     ),
@@ -590,6 +591,7 @@ class _DesktopState extends State<_Desktop> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: _datePicker(
+                      isActive: isDelivered,
                       date: shpToGregorian,
                       title: tr.unloadingDate,
                     ),
@@ -661,6 +663,7 @@ class _DesktopState extends State<_Desktop> {
                   const SizedBox(width: 7),
                   Expanded(
                     child: UnitDropdown(
+                      isActive: isDelivered,
                       selectedUnit: UnitType.fromDatabaseValue(shipping?.shpUnit??""),
                       onUnitSelected: (e) {
                         setState(() {
@@ -1843,8 +1846,9 @@ class _DesktopState extends State<_Desktop> {
     }
   }
 
-  Widget _datePicker({required String date, required String title}) {
+  Widget _datePicker({required String date, required String title, bool? isActive}) {
     return GenericDatePicker(
+      isActive: isActive ?? false,
       label: title,
       initialGregorianDate: date,
       onDateChanged: (newDate) {

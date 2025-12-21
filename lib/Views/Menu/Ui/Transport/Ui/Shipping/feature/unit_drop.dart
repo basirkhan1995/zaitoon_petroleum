@@ -73,10 +73,12 @@ class UnitTranslator {
 
 class UnitDropdown extends StatefulWidget {
   final UnitType? selectedUnit;
+  final bool? isActive;
   final Function(UnitType) onUnitSelected;
 
   const UnitDropdown({
     super.key,
+    this.isActive,
     this.selectedUnit,
     required this.onUnitSelected,
   });
@@ -115,6 +117,7 @@ class _UnitDropdownState extends State<UnitDropdown> {
   @override
   Widget build(BuildContext context) {
     return ZDropdown<UnitType>(
+      disableAction: widget.isActive ?? false,
       title: AppLocalizations.of(context)!.unit,
       items: UnitType.values.toList(),
       itemLabel: (unit) => UnitTranslator.getTranslatedUnit(context, unit),
