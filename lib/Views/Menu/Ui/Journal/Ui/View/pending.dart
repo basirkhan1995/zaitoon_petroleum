@@ -538,7 +538,7 @@ class _DesktopState extends State<_Desktop> {
                                         children: [
                                           // Copy Button - Fixed width container
                                           SizedBox(
-                                            width: isCopied ? 100 : 32,
+                                            width: isCopied ? 100 : 30,
                                             child: AnimatedContainer(
                                               duration: const Duration(milliseconds: 300),
                                               height: 30,
