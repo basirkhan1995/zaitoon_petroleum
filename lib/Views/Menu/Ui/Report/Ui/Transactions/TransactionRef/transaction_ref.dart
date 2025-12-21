@@ -54,9 +54,7 @@ class _DesktopState extends State<_Desktop> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context
-          .read<TxnRefReportBloc>()
-          .add(ResetTxnReportByReferenceEvent());
+      context.read<TxnRefReportBloc>().add(ResetTxnReportByReferenceEvent());
     });
   }
 
@@ -101,11 +99,11 @@ class _DesktopState extends State<_Desktop> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        tr.userLog,
+                        tr.transactionDetails,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(
-                        tr.userLogActivity,
+                        tr.transactionRef,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
@@ -160,13 +158,13 @@ class _DesktopState extends State<_Desktop> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(tr.date),
-                                  Text(tr.referenceNumber),
-                                  Text(tr.transactionType),
-                                  Text(tr.maker),
-                                  Text(tr.checker),
-                                  Text(tr.status),
-                                  Text(tr.txnType),
+                                  Text(tr.date,style: titleStyle),
+                                  Text(tr.referenceNumber,style: titleStyle),
+                                  Text(tr.transactionType,style: titleStyle),
+                                  Text(tr.maker,style: titleStyle),
+                                  Text(tr.checker,style: titleStyle),
+                                  Text(tr.status,style: titleStyle),
+                                  Text(tr.txnType,style: titleStyle),
                                 ],
                               ),
                             ),
@@ -208,8 +206,7 @@ class _DesktopState extends State<_Desktop> {
                             final records = state.txn.records![index];
 
                             return Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 15, vertical: 5),
+                              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                               decoration: BoxDecoration(
                                 color: index.isEven
                                     ? color.primary.withValues(alpha: .05)
@@ -221,10 +218,7 @@ class _DesktopState extends State<_Desktop> {
                                   children: [
                                     SizedBox(
                                       width: 160,
-                                      child: Text(
-                                          records.trdEntryDate?.toDateTime ??
-                                              ""),
-                                    ),
+                                      child: Text(records.trdEntryDate?.toDateTime ?? ""),),
                                     SizedBox(
                                       width: 85,
                                       child: Text(
