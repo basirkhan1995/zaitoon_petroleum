@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
@@ -983,7 +984,7 @@ class _DesktopState extends State<_Desktop> {
               style: textTheme.bodySmall?.copyWith(color: color.outline),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
 
             // Cash Payment Section
             Cover(
@@ -1023,7 +1024,7 @@ class _DesktopState extends State<_Desktop> {
                     ),
 
                     if (_isCashPaymentEnabled) ...[
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
                       ZTextFieldEntitled(
                         controller: cashCtrl,
                         title: tr.cashTitle,
@@ -1077,7 +1078,7 @@ class _DesktopState extends State<_Desktop> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.account_balance, color: color.primary),
+                        Icon(FontAwesomeIcons.buildingColumns,size: 18, color: color.primary),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
@@ -1106,15 +1107,15 @@ class _DesktopState extends State<_Desktop> {
                     ),
 
                     if (_isAccountPaymentEnabled) ...[
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
 
                       // Remaining Balance Display
                       if (_remainingBalance > 0)
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: color.surfaceContainerHighest.withValues(alpha: .2),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(4),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1131,7 +1132,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         ),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
 
                       // Account Selection
                       GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
@@ -1284,18 +1285,9 @@ class _DesktopState extends State<_Desktop> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.account_balance, size: 16, color: color.primary),
+                                  Icon(FontAwesomeIcons.buildingColumns, size: 15, color: color.primary),
                                   const SizedBox(width: 8),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(tr.toAccount, style: textTheme.bodyMedium),
-                                      Text(
-                                        accountController.text.split('|').first.trim(),
-                                        style: textTheme.bodySmall?.copyWith(color: color.outline),
-                                      ),
-                                    ],
-                                  ),
+                                  Text(tr.toAccount, style: textTheme.bodyMedium),
                                 ],
                               ),
                               Text(
