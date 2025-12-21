@@ -14,6 +14,8 @@ import '../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../Localizations/Bloc/localizations_bloc.dart';
 import '../FetchATAT/bloc/fetch_atat_bloc.dart';
 import '../FetchATAT/fetch_atat.dart';
+import '../FetchTRPT/Ui/trpt_view.dart';
+import '../FetchTRPT/bloc/trpt_bloc.dart';
 import '../TxnByReference/bloc/txn_reference_bloc.dart';
 import '../TxnByReference/txn_reference.dart';
 
@@ -87,6 +89,8 @@ class _DesktopState extends State<_Desktop> {
       context.read<FetchAtatBloc>().add(
         FetchAccToAccEvent(txn.trnReference ?? ""),
       );
+    }else if(txn.trnType == "TRPT"){
+      context.read<TrptBloc>().add(LoadTrptEvent(txn.trnReference ?? ""));
     } else if (txn.trnType == "GLAT") {
       context.read<GlatBloc>().add(LoadGlatEvent(txn.trnReference ?? ""));
     } else {
@@ -103,6 +107,31 @@ class _DesktopState extends State<_Desktop> {
 
     return MultiBlocListener(
       listeners: [
+        BlocListener<TrptBloc, TrptState>(
+          listener: (context, state) {
+            if (state is TrptLoadedState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              showDialog(
+                context: context,
+                builder: (context) => TrptView(reference: state.trpt.shdTrnRef ?? ""),
+              );
+            } else if (state is TrptErrorState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              Utils.showOverlayMessage(
+                context,
+                title: locale.noData,
+                message: state.error,
+                isError: true,
+              );
+            }
+          },
+        ),
         BlocListener<GlatBloc, GlatState>(
           listener: (context, state) {
             if (state is GlatLoadedState) {

@@ -330,8 +330,9 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget _order() {
+  Widget _order({ShippingDetailsModel? shipping}) {
     final tr = AppLocalizations.of(context)!;
+    bool isDelivered = shipping?.shpStatus == 1;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -341,6 +342,7 @@ class _DesktopState extends State<_Desktop> {
             children: [
               const SizedBox(height: 13),
               GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
+                readOnly: isDelivered,
                 showAllOnFocus: true,
                 controller: customerCtrl,
                 title: tr.customer,
@@ -403,6 +405,7 @@ class _DesktopState extends State<_Desktop> {
               ),
               const SizedBox(height: 13),
               GenericTextfield<ProductsModel, ProductsBloc, ProductsState>(
+                readOnly: isDelivered,
                 showAllOnFocus: true,
                 controller: productCtrl,
                 title: tr.products,
@@ -470,8 +473,9 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget _shipping() {
+  Widget _shipping({ShippingDetailsModel? shipping}) {
     final tr = AppLocalizations.of(context)!;
+    bool isDelivered = shipping?.shpStatus == 1;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -482,6 +486,7 @@ class _DesktopState extends State<_Desktop> {
               const SizedBox(height: 13),
               GenericTextfield<VehicleModel, VehicleBloc, VehicleState>(
                 showAllOnFocus: true,
+                readOnly: isDelivered,
                 controller: vehicleCtrl,
                 title: tr.vehicles,
                 hintText: tr.vehicles,
@@ -546,6 +551,7 @@ class _DesktopState extends State<_Desktop> {
                 children: [
                   Expanded(
                     child: ZTextFieldEntitled(
+                      readOnly: isDelivered,
                       controller: shpFrom,
                       title: tr.shpFrom,
                       validator: (value) {
@@ -556,9 +562,10 @@ class _DesktopState extends State<_Desktop> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 5),
+                  const SizedBox(width: 6),
                   Expanded(
                     child: ZTextFieldEntitled(
+                      readOnly: isDelivered,
                       controller: shpTo,
                       title: tr.shpTo,
                       validator: (value) {
@@ -580,7 +587,7 @@ class _DesktopState extends State<_Desktop> {
                       title: tr.loadingDate,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: _datePicker(
                       date: shpToGregorian,
@@ -594,8 +601,12 @@ class _DesktopState extends State<_Desktop> {
                 children: [
                   Expanded(
                     child: ZTextFieldEntitled(
+                      readOnly: isDelivered,
                       controller: loadingSize,
                       title: tr.loadingSize,
+                      inputFormat: [
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return tr.required(tr.loadingSize);
@@ -616,8 +627,12 @@ class _DesktopState extends State<_Desktop> {
                   const SizedBox(width: 5),
                   Expanded(
                     child: ZTextFieldEntitled(
+                      readOnly: isDelivered,
                       controller: unloadingSize,
                       title: tr.unloadingSize,
+                      inputFormat: [
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return tr.required(tr.unloadingSize);
@@ -635,9 +650,10 @@ class _DesktopState extends State<_Desktop> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 5),
+                  const SizedBox(width: 7),
                   Expanded(
                     child: UnitDropdown(
+                      selectedUnit: UnitType.fromDatabaseValue(shipping?.shpUnit??""),
                       onUnitSelected: (e) {
                         setState(() {
                           unit = e.name;
@@ -652,6 +668,7 @@ class _DesktopState extends State<_Desktop> {
                 children: [
                   Expanded(
                     child: ZTextFieldEntitled(
+                      readOnly: isDelivered,
                       isRequired: true,
                       keyboardInputType: TextInputType.numberWithOptions(
                         decimal: true,
@@ -687,6 +704,7 @@ class _DesktopState extends State<_Desktop> {
               ),
               const SizedBox(height: 13),
               ZTextFieldEntitled(
+                readOnly: isDelivered,
                 controller: remark,
                 title: tr.remark,
                 keyboardInputType: TextInputType.multiline,
@@ -747,7 +765,6 @@ class _DesktopState extends State<_Desktop> {
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
-
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
@@ -800,12 +817,12 @@ class _DesktopState extends State<_Desktop> {
                   steps: [
                     StepItem(
                       title: tr.order,
-                      content: _order(),
+                      content: _order(shipping: shipping),
                       icon: Icons.shopping_cart,
                     ),
                     StepItem(
                       title: tr.shipping,
-                      content: _shipping(),
+                      content: _shipping(shipping: shipping),
                       icon: Icons.local_shipping,
                     ),
                     StepItem(
@@ -824,8 +841,8 @@ class _DesktopState extends State<_Desktop> {
                       icon: Icons.summarize,
                     ),
                   ],
-                  onFinish: shipping.shpStatus != 1 ? onSubmit : popUp,
-                  isLoading: isLoading, // Pass loading state to stepper
+                  onFinish: onSubmit,
+                  isLoading: isLoading,
                 ),
               ),
             ),
@@ -976,6 +993,7 @@ class _DesktopState extends State<_Desktop> {
                 Column(
                   children: [
 
+                    if(shipping.shpStatus != 1)
                     Form(
                       key: expenseFormKey,
                       child: Column(
@@ -1108,6 +1126,7 @@ class _DesktopState extends State<_Desktop> {
                         ],
                       ),
                     ),
+                    if(shipping.shpStatus != 1)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 3.0,vertical: 12),
                       child: Row(
@@ -1371,7 +1390,6 @@ class _DesktopState extends State<_Desktop> {
                       ),
                     ),
 
-                    if(shipping?.shpStatus == 0)
                     Switch(value: shpStatus == 1,
                         onChanged: (e){
                       setState(() {

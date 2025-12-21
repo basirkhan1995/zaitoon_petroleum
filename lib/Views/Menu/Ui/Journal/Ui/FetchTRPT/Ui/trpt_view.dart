@@ -205,9 +205,8 @@ class _DesktopState extends State<_Desktop> {
 
     // Check if any buttons should be shown
     final bool showAuthorizeButton = transaction?.trnStatus == 0 && login.usrName != transaction?.maker;
-    final bool showDeleteButton = trpt.shpStatus == 0 && transaction?.maker == login.usrName;
+    final bool showDeleteButton = trpt.transaction?.trnStatus == 0 && transaction?.maker == login.usrName;
     final bool showAnyButton = showAuthorizeButton || showDeleteButton;
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [

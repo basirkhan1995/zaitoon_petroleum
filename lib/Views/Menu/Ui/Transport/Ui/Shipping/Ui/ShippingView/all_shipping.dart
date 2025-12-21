@@ -128,6 +128,7 @@ class _DesktopState extends State<_Desktop> {
     final tr = AppLocalizations.of(context)!;
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): onAdd,
+      const SingleActivator(LogicalKeyboardKey.f6): onPDF,
       const SingleActivator(LogicalKeyboardKey.f5): onRefresh,
     };
 
@@ -189,10 +190,10 @@ class _DesktopState extends State<_Desktop> {
                       ),
                     ),
                     ZOutlineButton(
-                      toolTip: "F5",
+                      toolTip: "F6",
                       width: 120,
                       icon: FontAwesomeIcons.solidFilePdf,
-                      onPressed: null,
+                      onPressed: onPDF,
                       label: Text("PDF"),
                     ),
                     ZOutlineButton(
@@ -239,7 +240,7 @@ class _DesktopState extends State<_Desktop> {
       child: Row(
         children: [
           SizedBox(width: 40, child: Text(tr.id,style: titleStyle)),
-          SizedBox(width: 90, child: Text(tr.date, style: titleStyle)),
+          SizedBox(width: 100, child: Text(tr.date, style: titleStyle)),
           Expanded(child: Text(tr.vehicles, style: titleStyle)),
           SizedBox(width: 130, child: Text(tr.products, style: titleStyle)),
           SizedBox(width: 130, child: Text(tr.customer, style: titleStyle)),
@@ -247,7 +248,7 @@ class _DesktopState extends State<_Desktop> {
           SizedBox(width: 110, child: Text(tr.loadingSize, style: titleStyle)),
           SizedBox(width: 110, child: Text(tr.unloadingSize, style: titleStyle)),
           SizedBox(width: 120, child: Text(tr.totalTitle, style: titleStyle)),
-          SizedBox(width: 105, child: Text(tr.status, style: titleStyle)),
+          SizedBox(width: 100, child: Text(tr.status, style: titleStyle)),
         ],
       ),
     );
@@ -337,10 +338,8 @@ class _DesktopState extends State<_Desktop> {
         return InkWell(
           onTap: (isLoadingThisItem || isCurrentlyViewing) ? null : () => _handleShippingTap(shp),
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            margin: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
               color: isCurrentlyViewing
                   ? Theme.of(context).colorScheme.primary.withValues(alpha: .1)
                   : index.isEven
@@ -381,7 +380,7 @@ class _DesktopState extends State<_Desktop> {
 
                 // Other columns
                 SizedBox(
-                  width: 90,
+                  width: 100,
                   child: Text(shp.shpMovingDate.toFormattedDate()),
                 ),
                 Expanded(child: Text(shp.vehicle ?? "")),
@@ -403,9 +402,12 @@ class _DesktopState extends State<_Desktop> {
                   width: 120,
                   child: Text("${shp.total?.toAmount()} $_baseCurrency"),
                 ),
-                ShippingStatusBadge(
-                  status: shp.shpStatus ?? 0,
-                  tr: tr,
+                SizedBox(
+                  width: 100,
+                  child: ShippingStatusBadge(
+                    status: shp.shpStatus ?? 0,
+                    tr: tr,
+                  ),
                 )
 
               ],
@@ -414,6 +416,10 @@ class _DesktopState extends State<_Desktop> {
         );
       },
     );
+  }
+
+  void onPDF(){
+
   }
 
   void onAdd() {

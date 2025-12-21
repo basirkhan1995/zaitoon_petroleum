@@ -96,7 +96,7 @@ class _DesktopState extends State<_Desktop> {
         );
       } else if (txn.trnType == "GLAT") {
         context.read<GlatBloc>().add(LoadGlatEvent(txn.trnReference ?? ""));
-      }else if(txn.trnType == "TRPT"){
+      } else if(txn.trnType == "TRPT"){
         context.read<TrptBloc>().add(LoadTrptEvent(txn.trnReference ?? ""));
       } else {
         context.read<TxnReferenceBloc>().add(
