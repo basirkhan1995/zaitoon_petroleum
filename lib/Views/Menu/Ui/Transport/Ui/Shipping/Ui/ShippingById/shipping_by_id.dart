@@ -1364,11 +1364,10 @@ class _DesktopState extends State<_Desktop> {
     if (_isAccountPaymentEnabled && paymentAccNumber != null) {
       return 0.0; // Account will cover remaining
     }
-
     return totalAmount - cashAmount;
   }
 
-// Submit payment method
+  // Submit payment method
   void _submitPayment() {
     final cashAmount = double.tryParse(cashCtrl.text.cleanAmount) ?? 0;
     final accountNumber = paymentAccNumber;
@@ -1403,125 +1402,6 @@ class _DesktopState extends State<_Desktop> {
       // );
     }
   }
-  // Widget _buildPaymentView(ShippingDetailsModel shipping) {
-  //   final tr = AppLocalizations.of(context)!;
-  //   return Container(
-  //     padding: const EdgeInsets.all(8),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Text(
-  //           AppLocalizations.of(context)!.payment,
-  //           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-  //         ),
-  //
-  //         SizedBox(height: 10),
-  //
-  //         ZTextFieldEntitled(
-  //             title: AppLocalizations.of(context)!.cashTitle,
-  //           keyboardInputType: TextInputType.numberWithOptions(
-  //             decimal: true,
-  //           ),
-  //           inputFormat: [
-  //             FilteringTextInputFormatter.allow(
-  //               RegExp(r'[0-9.,]*'),
-  //             ),
-  //             SmartThousandsDecimalFormatter(),
-  //           ],
-  //         ),
-  //         SizedBox(height: 10),
-  //         GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
-  //           showAllOnFocus: true,
-  //           controller: accountController,
-  //           title: tr.accounts,
-  //           hintText: tr.accNameOrNumber,
-  //           bloc: context.read<AccountsBloc>(),
-  //           fetchAllFunction: (bloc) => bloc.add(
-  //             LoadStkAccountsEvent(),
-  //           ),
-  //           searchFunction: (bloc, query) => bloc.add(
-  //             LoadStkAccountsEvent(
-  //                 search: query
-  //             ),
-  //           ),
-  //           validator: (value) {
-  //             if (value.isEmpty) {
-  //               return tr.required(tr.accounts);
-  //             }
-  //             return null;
-  //           },
-  //           itemBuilder: (context, account) => Padding(
-  //             padding: const EdgeInsets.symmetric(
-  //               horizontal: 8,
-  //               vertical: 5,
-  //             ),
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //                 Row(
-  //                   mainAxisAlignment:
-  //                   MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     Text(
-  //                       "${account.accnumber} | ${account.accName}",
-  //                       style: Theme.of(
-  //                         context,
-  //                       ).textTheme.bodyLarge,
-  //                     ),
-  //                     Text(
-  //                       "${account.avilBalance?.toAmount()} ${account.ccySymbol}",
-  //                       style: Theme.of(
-  //                         context,
-  //                       ).textTheme.bodyLarge,
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //           itemToString: (acc) =>
-  //           "${acc.accnumber} | ${acc.accName}",
-  //           stateToLoading: (state) =>
-  //           state is AccountLoadingState,
-  //           loadingBuilder: (context) => const SizedBox(
-  //             width: 16,
-  //             height: 16,
-  //             child: CircularProgressIndicator(
-  //               strokeWidth: 3,
-  //             ),
-  //           ),
-  //           stateToItems: (state) {
-  //             if (state is StkAccountLoadedState) {
-  //               return state.accounts;
-  //             }
-  //             return [];
-  //           },
-  //           onSelected: (value) {
-  //             setState(() {
-  //               paymentAccNumber = value.accnumber;
-  //             });
-  //           },
-  //           noResultsText: tr.noDataFound,
-  //           showClearButton: true,
-  //         ),
-  //         SizedBox(height: 10),
-  //
-  //         ZTextFieldEntitled(
-  //           title: AppLocalizations.of(context)!.amount,
-  //           keyboardInputType: TextInputType.numberWithOptions(
-  //             decimal: true,
-  //           ),
-  //           inputFormat: [
-  //             FilteringTextInputFormatter.allow(
-  //               RegExp(r'[0-9.,]*'),
-  //             ),
-  //             SmartThousandsDecimalFormatter(),
-  //           ],
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _buildExpensesView(ShippingDetailsModel shipping) {
     final tr = AppLocalizations.of(context)!;
