@@ -482,7 +482,6 @@ class _DesktopState extends State<_Desktop> {
           key: shippingFormKey,
           child: Column(
             children: [
-              const SizedBox(height: 13),
               GenericTextfield<VehicleModel, VehicleBloc, VehicleState>(
                 showAllOnFocus: true,
                 readOnly: isDelivered,
@@ -551,6 +550,7 @@ class _DesktopState extends State<_Desktop> {
                   Expanded(
                     child: ZTextFieldEntitled(
                       readOnly: isDelivered,
+                      isRequired: true,
                       controller: shpFrom,
                       title: tr.shpFrom,
                       validator: (value) {
@@ -564,6 +564,7 @@ class _DesktopState extends State<_Desktop> {
                   const SizedBox(width: 6),
                   Expanded(
                     child: ZTextFieldEntitled(
+                      isRequired: true,
                       readOnly: isDelivered,
                       controller: shpTo,
                       title: tr.shpTo,
@@ -601,10 +602,14 @@ class _DesktopState extends State<_Desktop> {
                   Expanded(
                     child: ZTextFieldEntitled(
                       readOnly: isDelivered,
+                      isRequired: true,
                       controller: loadingSize,
                       title: tr.loadingSize,
                       inputFormat: [
-                        FilteringTextInputFormatter.digitsOnly
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'[0-9.,]*'),
+                        ),
+                        SmartThousandsDecimalFormatter(),
                       ],
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -627,10 +632,14 @@ class _DesktopState extends State<_Desktop> {
                   Expanded(
                     child: ZTextFieldEntitled(
                       readOnly: isDelivered,
+                      isRequired: true,
                       controller: unloadingSize,
                       title: tr.unloadingSize,
                       inputFormat: [
-                        FilteringTextInputFormatter.digitsOnly
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'[0-9.,]*'),
+                        ),
+                        SmartThousandsDecimalFormatter(),
                       ],
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -711,48 +720,6 @@ class _DesktopState extends State<_Desktop> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildLoadingContent() {
-    return Center(
-      child: Container(
-        padding: EdgeInsets.all(35),
-        decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(8)
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            const Text('Loading please wait...'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildErrorContent(String error, BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.error, color: Colors.red, size: 48),
-          const SizedBox(height: 16),
-          Text(
-            error,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.red),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
       ),
     );
   }
@@ -1505,6 +1472,48 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
+  Widget _buildLoadingContent() {
+    return Center(
+      child: Container(
+        padding: EdgeInsets.all(35),
+        decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(8)
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            const Text('Loading please wait...'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorContent(String error, BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.error, color: Colors.red, size: 48),
+          const SizedBox(height: 16),
+          Text(
+            error,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.red),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
   // Helper method to get form data as ShippingModel
   ShippingModel _getFormDataAsShippingModel() {
     return ShippingModel(
@@ -1727,8 +1736,8 @@ class _DesktopState extends State<_Desktop> {
 
     final data = ShippingModel(
       shpId: widget.shippingId,
-      shpLoadSize: loadingSize.text,
-      shpUnloadSize: unloadingSize.text,
+      shpLoadSize: loadingSize.text.cleanAmount,
+      shpUnloadSize: unloadingSize.text.cleanAmount,
       shpTo: shpTo.text,
       shpFrom: shpFrom.text,
       shpRent: shippingRent.text.cleanAmount,
@@ -1812,10 +1821,6 @@ class _DesktopState extends State<_Desktop> {
     }
 
     if (_selectedExpenseForEdit != null) {
-      print(_selectedExpenseForEdit?.trdReference);
-      print(_selectedExpenseForEdit?.amount);
-      print(usrName);
-      print(widget.shippingId);
       context.read<ShippingBloc>().add(
         UpdateShippingExpenseEvent(
           shpId: widget.shippingId!,

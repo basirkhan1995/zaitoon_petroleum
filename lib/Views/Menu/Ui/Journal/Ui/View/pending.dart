@@ -538,10 +538,10 @@ class _DesktopState extends State<_Desktop> {
                                         children: [
                                           // Copy Button - Fixed width container
                                           SizedBox(
-                                            width: isCopied ? 100 : 30,
+                                            width: isCopied ? 70 : 28,
                                             child: AnimatedContainer(
-                                              duration: const Duration(milliseconds: 300),
-                                              height: 30,
+                                              duration: const Duration(milliseconds: 100),
+                                              height: 28,
                                               decoration: BoxDecoration(
                                                 color: isCopied
                                                     ? Theme.of(context).colorScheme.primary.withAlpha(25)
@@ -552,20 +552,20 @@ class _DesktopState extends State<_Desktop> {
                                                       : Theme.of(context).dividerColor,
                                                   width: 1,
                                                 ),
-                                                borderRadius: BorderRadius.circular(6),
+                                                borderRadius: BorderRadius.circular(4),
                                               ),
                                               child: Material(
                                                 color: Colors.transparent,
                                                 child: InkWell(
                                                   onTap: () => _copyToClipboard(reference, context),
-                                                  borderRadius: BorderRadius.circular(6),
+                                                  borderRadius: BorderRadius.circular(4),
                                                   hoverColor: Theme.of(context).colorScheme.primary.withAlpha(13),
                                                   child: Row(
                                                     mainAxisAlignment: MainAxisAlignment.center,
                                                     children: [
                                                       Icon(
                                                         isCopied ? Icons.check : Icons.content_copy,
-                                                        size: 16,
+                                                        size: 15,
                                                         color: isCopied
                                                             ? Theme.of(context).colorScheme.primary
                                                             : Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),

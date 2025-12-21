@@ -140,18 +140,6 @@ class _DesktopState extends State<_Desktop> {
                           if (value == null || value.isEmpty) {
                             return locale.required(locale.amount);
                           }
-
-                          // Remove formatting (e.g. commas)
-                          final clean = value.replaceAll(
-                            RegExp(r'[^\d.]'),
-                            '',
-                          );
-                          final amount = double.tryParse(clean);
-
-                          if (amount == null || amount <= 0.0) {
-                            return locale.amountGreaterZero;
-                          }
-
                           return null;
                         },
                         controller: amountLimit,

@@ -13,6 +13,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchTRPT/model/trtp_
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/txn_ref_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/model/stmt_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/TransactionRef/model/txn_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/ProductCategory/model/pro_cat_model.dart';
@@ -1804,7 +1805,8 @@ class Repositories {
     }
   }
   ///Reports ...................................................................
-  Future<AccountStatementModel> getAccountStatement({required int account, required String fromDate, required String toDate,}) async {
+  // Account Statement
+  Future<AccountStatementModel> getAccountStatement({required int account, required String fromDate, required String toDate}) async {
     try {
       final response = await api.post(
           endpoint: "/reports/accountStatement.php",
@@ -1837,4 +1839,38 @@ class Repositories {
       throw e.toString();
     }
   }
+
+  //Get Transaction Details By Ref
+  Future<TxnReportByRefModel> getTransactionByRefReport({required String ref}) async {
+    try {
+      final response = await api.get(
+          endpoint: "/reports/referenceHistory.php",
+          queryParams: {
+            "ref": ref,
+          }
+      );
+
+      // Handle message response
+      if (response.data is Map && response.data['msg'] != null) {
+        throw response.data['msg'];
+      }
+
+      // Handle empty response
+      if (response.data == null || response.data.isEmpty) {
+        throw "No data received";
+      }
+
+      // Convert response to string and back to ensure proper typing
+      final jsonString = json.encode(response.data);
+      final decodedData = json.decode(jsonString) as dynamic;
+
+      return TxnReportByRefModel.fromMap(decodedData);
+
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
 }

@@ -27,6 +27,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/t
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/bloc/transaction_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/bloc/acc_statement_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/TransactionRef/bloc/txn_ref_report_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/bloc/branch_limit_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/bloc/brc_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
@@ -115,7 +116,6 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => BranchBloc(Repositories(ApiServices()))..add(LoadBranchesEvent())),
         BlocProvider(create: (context) => BranchLimitBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => TxnReferenceBloc(Repositories(ApiServices()))),
-        BlocProvider(create: (context) => AccStatementBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => EmployeeBloc(Repositories(ApiServices()))..add(LoadEmployeeEvent())),
         BlocProvider(create: (context) => FetchAtatBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => TransferBloc(Repositories(ApiServices()))),
@@ -130,6 +130,10 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ProductsBloc(Repositories(ApiServices()))..add(LoadProductsEvent())),
         BlocProvider(create: (context) => ProCatBloc(Repositories(ApiServices()))..add(LoadProCatEvent())),
         BlocProvider(create: (context) => UserLogBloc(Repositories(ApiServices()))),
+
+        ///Report Bloc
+        BlocProvider(create: (context) => AccStatementBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => TxnRefReportBloc(Repositories(ApiServices()))),
       ],
       child: BlocBuilder<LocalizationBloc, Locale>(
         builder: (context, locale) {

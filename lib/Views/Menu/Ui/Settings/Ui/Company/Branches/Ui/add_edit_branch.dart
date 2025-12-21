@@ -127,8 +127,7 @@ class _DesktopState extends State<_Desktop> {
           strokeWidth: 3,
           color: theme.surface,
         ),
-      )
-          : Text(isEdit ? locale.update : locale.create),
+      ) : Text(isEdit ? locale.update : locale.create),
 
       onAction: onSubmit,
 
