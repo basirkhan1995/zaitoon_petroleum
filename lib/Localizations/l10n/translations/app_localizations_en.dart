@@ -1534,4 +1534,74 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get copied => 'Copied';
+
+  @override
+  String get cashTitle => 'Cash Payment';
+
+  @override
+  String get paymentDescription => 'Finalize payment for this shipping';
+
+  @override
+  String get totalAmount => 'Total Amount';
+
+  @override
+  String get totalShippingRent => 'Total shipping rent';
+
+  @override
+  String get paymentOptions => 'Payment Options';
+
+  @override
+  String get selectPaymentMethod => 'Select payment method';
+
+  @override
+  String get cashPayment => 'Cash Payment';
+
+  @override
+  String get cashAmount => 'Cash Amount';
+
+  @override
+  String get enterCashAmount => 'Enter cash amount';
+
+  @override
+  String get cashPaidNow => 'Paid now in cash';
+
+  @override
+  String get accountPayment => 'Account Payment';
+
+  @override
+  String get remainingBalance => 'Remaining Balance';
+
+  @override
+  String get selectAccount => 'Select Account';
+
+  @override
+  String get selectReceivableAccount => 'Select receivable account';
+
+  @override
+  String get selectAccountRequired => 'Please select an account';
+
+  @override
+  String get selectValidAccount => 'Please select a valid account';
+
+  @override
+  String get remainingWillBeAddedToAccount =>
+      'Remaining amount will be added to selected account';
+
+  @override
+  String get paymentSummary => 'Payment Summary';
+
+  @override
+  String get cashPaid => 'Cash Paid';
+
+  @override
+  String get toAccount => 'To Account';
+
+  @override
+  String get fullyPaid => 'Fully Paid';
+
+  @override
+  String get cashExceedsTotal => 'Cash amount cannot exceed total';
+
+  @override
+  String get noAccountsFound => 'No accounts found';
 }

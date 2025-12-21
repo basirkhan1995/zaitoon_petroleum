@@ -19,6 +19,7 @@ import '../../../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../../../Features/Widgets/stepper.dart';
 import '../../../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
 import '../../../../../Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import '../../../../../Stakeholders/Ui/Individuals/individual_model.dart';
 import '../../../Vehicles/bloc/vehicle_bloc.dart';
@@ -64,6 +65,8 @@ class _DesktopState extends State<_Desktop> {
   final accountController = TextEditingController();
   final expenseAmount = TextEditingController();
   final expenseNarration = TextEditingController();
+  final paymentAccountCtrl = TextEditingController();
+  final cashCtrl = TextEditingController();
 
   int? expenseAccNumber;
   String? currentLocale;
@@ -72,13 +75,17 @@ class _DesktopState extends State<_Desktop> {
   int? vehicleId;
   String? unit;
   int? shpStatus;
+  int? paymentAccNumber;
 
   // Date variables
   String shpFromGregorian = DateTime.now().toFormattedDate();
   String shpToGregorian = DateTime.now().toFormattedDate();
 
   String? usrName;
-
+// State variables
+  bool _isCashPaymentEnabled = false;
+  bool _isAccountPaymentEnabled = false;
+  double _remainingBalance = 0.0;
   // Form keys for each step
   final GlobalKey<FormState> orderFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> shippingFormKey = GlobalKey<FormState>();
@@ -324,6 +331,189 @@ class _DesktopState extends State<_Desktop> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStepperWithData(ShippingDetailsModel shipping, AppLocalizations tr, BuildContext context) {
+    // Get loading state from bloc
+    final blocState = context.watch<ShippingBloc>().state;
+    final isLoading = blocState is ShippingListLoadingState && blocState.isLoading;
+    final textTheme = Theme.of(context).textTheme;
+    final color = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context)!;
+    return AlertDialog(
+      contentPadding: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      content: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.6,
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: ListTile(
+                    visualDensity: VisualDensity(vertical: -4),
+                    minVerticalPadding: 0,
+                    title: Text(tr.updateShipping,style: textTheme.titleMedium?.copyWith(
+                      color: color.primary,
+                    )),
+                    subtitle: Text(tr.updateShippingHint,style: textTheme.bodySmall?.copyWith(
+                        color: color.outline
+                    ),),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(onPressed: popUp, icon: Icon(Icons.clear)),
+                )
+              ],
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(10.0),
+                child: CustomStepper(
+                  key: ValueKey('existing-shipping-${shipping.shpId}'),
+                  currentStep: _currentStep,
+                  onStepTapped: (step) {
+                    // Don't allow step change during loading
+                    if (!isLoading) {
+                      setState(() {
+                        _currentStep = step;
+                      });
+                    }
+                  },
+                  onStepChanged: (currentStep, requestedStep) {
+                    // Don't allow validation during loading
+                    if (isLoading) return false;
+                    return _validateStepChange(currentStep, requestedStep);
+                  },
+                  steps: [
+                    StepItem(
+                      title: tr.order,
+                      content: _order(shipping: shipping),
+                      icon: Icons.shopping_cart,
+                    ),
+                    StepItem(
+                      title: tr.shipping,
+                      content: _shipping(shipping: shipping),
+                      icon: Icons.local_shipping,
+                    ),
+                    StepItem(
+                      title: tr.expense,
+                      content: _buildExpensesView(shipping),
+                      icon: Icons.data_exploration,
+                    ),
+                    StepItem(
+                      title: tr.payment,
+                      content: _buildPaymentView(shipping),
+                      icon: Icons.payment_rounded,
+                    ),
+                    StepItem(
+                      title: tr.summary,
+                      content: _buildSummaryView(shipping),
+                      icon: Icons.summarize,
+                    ),
+                  ],
+                  onFinish: onSubmit,
+                  isLoading: isLoading,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNewShippingStepper(AppLocalizations tr, BuildContext context) {
+    // Get loading state from bloc
+    final blocState = context.watch<ShippingBloc>().state;
+    final isLoading = blocState is ShippingListLoadingState && blocState.isLoading;
+    final textTheme = Theme.of(context).textTheme;
+    final color = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context)!;
+    return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      contentPadding: EdgeInsets.zero,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      content: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.6,
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: ListTile(
+                    visualDensity: VisualDensity(vertical: -4),
+                    minVerticalPadding: 0,
+                    title: Text(tr.createNewShipping,style: textTheme.titleMedium?.copyWith(
+                      color: color.primary,
+                    )),
+                    subtitle: Text(tr.newShippingHint,style: textTheme.bodySmall?.copyWith(
+                        color: color.outline
+                    ),),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(onPressed: popUp, icon: Icon(Icons.clear)),
+                )
+              ],
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(10.0),
+                child: CustomStepper(
+                  key: const ValueKey('new-shipping'),
+                  currentStep: _currentStep,
+                  onStepTapped: (step) {
+                    // Don't allow step change during loading
+                    if (!isLoading) {
+                      setState(() {
+                        _currentStep = step;
+                      });
+                    }
+                  },
+                  onStepChanged: (currentStep, requestedStep) {
+                    // Don't allow validation during loading
+                    if (isLoading) return false;
+                    return _validateStepChange(currentStep, requestedStep);
+                  },
+                  steps: [
+                    StepItem(
+                      title: tr.order,
+                      content: _order(),
+                      icon: Icons.shopping_cart,
+                    ),
+                    StepItem(
+                      title: tr.shipping,
+                      content: _shipping(),
+                      icon: Icons.local_shipping,
+                    ),
+                    StepItem(
+                      title: tr.advancePayment,
+                      content: _advancePayment(),
+                      icon: Icons.attach_money_outlined,
+                    ),
+                    StepItem(
+                      title: 'Summary',
+                      content: _buildSummaryView(null),
+                      icon: Icons.summarize,
+                    ),
+                  ],
+                  onFinish: onSubmit,
+                  isLoading: isLoading, // Pass loading state to stepper
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -727,219 +917,619 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget _buildStepperWithData(ShippingDetailsModel shipping, AppLocalizations tr, BuildContext context) {
-    // Get loading state from bloc
-    final blocState = context.watch<ShippingBloc>().state;
-    final isLoading = blocState is ShippingListLoadingState && blocState.isLoading;
+  Widget _buildPaymentView(ShippingDetailsModel shipping) {
+    final tr = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
-    final tr = AppLocalizations.of(context)!;
-    return AlertDialog(
-      contentPadding: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      content: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.6,
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: ListTile(
-                    visualDensity: VisualDensity(vertical: -4),
-                    minVerticalPadding: 0,
-                    title: Text(tr.updateShipping,style: textTheme.titleMedium?.copyWith(
-                      color: color.primary,
-                    )),
-                    subtitle: Text(tr.updateShippingHint,style: textTheme.bodySmall?.copyWith(
-                        color: color.outline
-                    ),),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: IconButton(onPressed: popUp, icon: Icon(Icons.clear)),
-                )
-              ],
+            // Header
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.payment, color: color.primary),
+              title: Text(
+                tr.payment,
+                style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                tr.paymentDescription,
+                style: textTheme.bodyMedium?.copyWith(color: color.outline),
+              ),
             ),
-            Expanded(
-              child: Container(
+
+            const SizedBox(height: 5),
+
+            // Total Amount Card
+            Cover(
+              radius: 6,
+              color: color.surfaceContainerHighest.withValues(alpha: .3),
+              child: Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: CustomStepper(
-                  key: ValueKey('existing-shipping-${shipping.shpId}'),
-                  currentStep: _currentStep,
-                  onStepTapped: (step) {
-                    // Don't allow step change during loading
-                    if (!isLoading) {
-                      setState(() {
-                        _currentStep = step;
-                      });
-                    }
-                  },
-                  onStepChanged: (currentStep, requestedStep) {
-                    // Don't allow validation during loading
-                    if (isLoading) return false;
-                    return _validateStepChange(currentStep, requestedStep);
-                  },
-                  steps: [
-                    StepItem(
-                      title: tr.order,
-                      content: _order(shipping: shipping),
-                      icon: Icons.shopping_cart,
-                    ),
-                    StepItem(
-                      title: tr.shipping,
-                      content: _shipping(shipping: shipping),
-                      icon: Icons.local_shipping,
-                    ),
-                    StepItem(
-                      title: tr.expense,
-                      content: _buildExpensesView(shipping),
-                      icon: Icons.data_exploration,
-                    ),
-                    StepItem(
-                      title: tr.income,
-                      content: _buildIncomeView(shipping),
-                      icon: Icons.data_exploration,
-                    ),
-                    StepItem(
-                      title: tr.summary,
-                      content: _buildSummaryView(shipping),
-                      icon: Icons.summarize,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(tr.totalAmount, style: textTheme.titleMedium),
+                        Text(
+                          "${shipping.total?.toAmount()} USD",
+                          style: textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: color.primary,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
-                  onFinish: onSubmit,
-                  isLoading: isLoading,
                 ),
               ),
             ),
+
+            const SizedBox(height: 12),
+
+            // Payment Options Section
+            Text(
+              tr.paymentOptions,
+              style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              tr.selectPaymentMethod,
+              style: textTheme.bodySmall?.copyWith(color: color.outline),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Cash Payment Section
+            Cover(
+              radius: 6,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.money, color: Colors.green),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            tr.cashTitle,
+                            style: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Transform.scale(
+                          scale: 0.8,
+                          child: Switch(
+                            value: _isCashPaymentEnabled,
+                            onChanged: (value) {
+                              setState(() {
+                                _isCashPaymentEnabled = value;
+                                if (!value) {
+                                  cashCtrl.clear();
+                                }
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    if (_isCashPaymentEnabled) ...[
+                      const SizedBox(height: 16),
+                      ZTextFieldEntitled(
+                        controller: cashCtrl,
+                        title: tr.cashTitle,
+                        hint: tr.enterCashAmount,
+                        keyboardInputType: TextInputType.numberWithOptions(decimal: true),
+                        inputFormat: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
+                          SmartThousandsDecimalFormatter(),
+                        ],
+                        validator: (value) {
+                          if (_isCashPaymentEnabled && value.isNotEmpty) {
+                            final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
+                            final cashAmount = double.tryParse(clean) ?? 0;
+                            final totalAmount = double.tryParse(shipping.shpRent?.cleanAmount ?? '0') ?? 0;
+
+                            if (cashAmount <= 0) {
+                              return tr.amountGreaterZero;
+                            }
+                            if (cashAmount > totalAmount) {
+                              return tr.cashExceedsTotal;
+                            }
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          _calculateRemainingBalance(shipping);
+                        },
+                      ),
+
+                      const SizedBox(height: 8),
+                      if (cashCtrl.text.isNotEmpty)
+                        Text(
+                          tr.cashPaidNow,
+                          style: textTheme.bodySmall?.copyWith(color: Colors.green),
+                        ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 5),
+
+            // Account Payment Section (for remaining balance)
+            Cover(
+              radius: 6,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.account_balance, color: color.primary),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            tr.accountPayment,
+                            style: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Transform.scale(
+                          scale: 0.8,
+                          child: Switch(
+                            value: _isAccountPaymentEnabled,
+                            onChanged: (value) {
+                              setState(() {
+                                _isAccountPaymentEnabled = value;
+                                if (!value) {
+                                  accountController.clear();
+                                  paymentAccNumber = null;
+                                }
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    if (_isAccountPaymentEnabled) ...[
+                      const SizedBox(height: 16),
+
+                      // Remaining Balance Display
+                      if (_remainingBalance > 0)
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: color.surfaceContainerHighest.withValues(alpha: .2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(tr.remainingBalance, style: textTheme.titleSmall),
+                              Text(
+                                "${_remainingBalance.toStringAsFixed(2)} USD",
+                                style: textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: color.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      const SizedBox(height: 16),
+
+                      // Account Selection
+                      GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
+                        showAllOnFocus: true,
+                        controller: accountController,
+                        title: tr.selectAccount,
+                        hintText: tr.selectReceivableAccount,
+                        isRequired: _isAccountPaymentEnabled && _remainingBalance > 0,
+                        bloc: context.read<AccountsBloc>(),
+                        fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
+                        searchFunction: (bloc, query) => bloc.add(
+                            LoadStkAccountsEvent(search: query)
+                        ),
+                        validator: (value) {
+                          if (_isAccountPaymentEnabled && _remainingBalance > 0) {
+                            if (value.isEmpty) {
+                              return tr.selectAccountRequired;
+                            }
+                            if (paymentAccNumber == null) {
+                              return tr.selectValidAccount;
+                            }
+                          }
+                          return null;
+                        },
+                        itemBuilder: (context, account) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          account.accName ?? "",
+                                          style: textTheme.bodyLarge,
+                                        ),
+                                        Text(
+                                          account.accnumber?.toString() ?? "",
+                                          style: textTheme.bodySmall?.copyWith(color: color.outline),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        "${account.avilBalance?.toAmount()} ${account.ccySymbol}",
+                                        style: textTheme.bodyLarge,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        itemToString: (acc) => "${acc.accnumber} | ${acc.accName}",
+                        stateToLoading: (state) => state is AccountLoadingState,
+                        loadingBuilder: (context) => const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 3),
+                        ),
+                        stateToItems: (state) {
+                          if (state is StkAccountLoadedState) {
+                            return state.accounts;
+                          }
+                          return [];
+                        },
+                        onSelected: (value) {
+                          setState(() {
+                            paymentAccNumber = value.accnumber;
+                            accountController.text = "${value.accnumber} | ${value.accName}";
+                          });
+                        },
+                        noResultsText: tr.noAccountsFound,
+                        showClearButton: true,
+                      ),
+
+                      const SizedBox(height: 8),
+                      Text(
+                        tr.remainingWillBeAddedToAccount,
+                        style: textTheme.bodySmall?.copyWith(color: color.outline),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 5),
+
+            // Payment Summary
+            if (cashCtrl.text.isNotEmpty || _isAccountPaymentEnabled)
+              Cover(
+                radius: 6,
+                color: color.surfaceContainerHighest.withValues(alpha: .2),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        tr.paymentSummary,
+                        style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(tr.totalAmount, style: textTheme.bodyMedium),
+                          Text(
+                            "${shipping.total?.toAmount()} USD",
+                            style: textTheme.bodyLarge,
+                          ),
+                        ],
+                      ),
+
+                      const Divider(height: 24),
+
+                      if (cashCtrl.text.isNotEmpty)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.money, size: 16, color: Colors.green),
+                                const SizedBox(width: 8),
+                                Text(tr.cashPaid, style: textTheme.bodyMedium),
+                              ],
+                            ),
+                            Text(
+                              "${cashCtrl.text} USD",
+                              style: textTheme.bodyLarge?.copyWith(color: Colors.green),
+                            ),
+                          ],
+                        ),
+
+                      if (_isAccountPaymentEnabled && paymentAccNumber != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.account_balance, size: 16, color: color.primary),
+                                  const SizedBox(width: 8),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(tr.toAccount, style: textTheme.bodyMedium),
+                                      Text(
+                                        accountController.text.split('|').first.trim(),
+                                        style: textTheme.bodySmall?.copyWith(color: color.outline),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "${_remainingBalance.toStringAsFixed(2)} USD",
+                                style: textTheme.bodyLarge?.copyWith(color: color.primary),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      const Divider(height: 24),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(tr.balance, style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                          Text(
+                            "${_calculateBalance(shipping).toStringAsFixed(2)} USD",
+                            style: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: _calculateBalance(shipping) == 0 ? Colors.green : color.error,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      if (_calculateBalance(shipping) == 0)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Row(
+                            children: [
+                              Icon(Icons.check_circle, size: 16, color: Colors.green),
+                              const SizedBox(width: 8),
+                              Text(
+                                tr.fullyPaid,
+                                style: textTheme.bodyMedium?.copyWith(color: Colors.green),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
           ],
         ),
       ),
     );
   }
+// Calculate remaining balance
+  void _calculateRemainingBalance(ShippingDetailsModel shipping) {
+    final cashAmount = double.tryParse(cashCtrl.text.cleanAmount) ?? 0;
+    final totalAmount = double.tryParse(shipping.total?.toAmount()?? '0') ?? 0;
 
-  Widget _buildNewShippingStepper(AppLocalizations tr, BuildContext context) {
-    // Get loading state from bloc
-    final blocState = context.watch<ShippingBloc>().state;
-    final isLoading = blocState is ShippingListLoadingState && blocState.isLoading;
-    final textTheme = Theme.of(context).textTheme;
-    final color = Theme.of(context).colorScheme;
-    final tr = AppLocalizations.of(context)!;
-    return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      contentPadding: EdgeInsets.zero,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      content: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.6,
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: ListTile(
-                    visualDensity: VisualDensity(vertical: -4),
-                    minVerticalPadding: 0,
-                    title: Text(tr.createNewShipping,style: textTheme.titleMedium?.copyWith(
-                      color: color.primary,
-                    )),
-                    subtitle: Text(tr.newShippingHint,style: textTheme.bodySmall?.copyWith(
-                      color: color.outline
-                    ),),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: IconButton(onPressed: popUp, icon: Icon(Icons.clear)),
-                )
-              ],
-            ),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(10.0),
-                child: CustomStepper(
-                  key: const ValueKey('new-shipping'),
-                  currentStep: _currentStep,
-                  onStepTapped: (step) {
-                    // Don't allow step change during loading
-                    if (!isLoading) {
-                      setState(() {
-                        _currentStep = step;
-                      });
-                    }
-                  },
-                  onStepChanged: (currentStep, requestedStep) {
-                    // Don't allow validation during loading
-                    if (isLoading) return false;
-                    return _validateStepChange(currentStep, requestedStep);
-                  },
-                  steps: [
-                    StepItem(
-                      title: tr.order,
-                      content: _order(),
-                      icon: Icons.shopping_cart,
-                    ),
-                    StepItem(
-                      title: tr.shipping,
-                      content: _shipping(),
-                      icon: Icons.local_shipping,
-                    ),
-                    StepItem(
-                      title: tr.advancePayment,
-                      content: _advancePayment(),
-                      icon: Icons.attach_money_outlined,
-                    ),
-                    StepItem(
-                      title: 'Summary',
-                      content: _buildSummaryView(null),
-                      icon: Icons.summarize,
-                    ),
-                  ],
-                  onFinish: onSubmit,
-                  isLoading: isLoading, // Pass loading state to stepper
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    setState(() {
+      _remainingBalance = totalAmount - cashAmount;
+
+      // Auto-enable account payment if there's remaining balance
+      if (_remainingBalance > 0) {
+        _isAccountPaymentEnabled = true;
+      } else {
+        _isAccountPaymentEnabled = false;
+        accountController.clear();
+        paymentAccNumber = null;
+      }
+    });
   }
 
-  Widget _buildIncomeView(ShippingDetailsModel shipping) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            AppLocalizations.of(context)!.income,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          if (shipping.income != null && shipping.income!.isNotEmpty)
-            ...shipping.income!.map((income) => Cover(
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-                leading: const Icon(Icons.attach_money, color: Colors.green),
-                title: Text(income.accName ?? ''),
-                subtitle: Text(income.narration ?? ''),
-                trailing: Text(
-                  '${income.amount?.toAmount()} ${income.currency}',
-                  style: const TextStyle(fontSize: 15),
-                ),
-              ),
-            ))
-          else
-            const Text('No income recorded'),
-        ],
-      ),
-    );
+// Calculate final balance
+  double _calculateBalance(ShippingDetailsModel shipping) {
+    final cashAmount = double.tryParse(cashCtrl.text.cleanAmount) ?? 0;
+    final totalAmount = double.tryParse(shipping.total?.toAmount() ?? '0') ?? 0;
+
+    if (_isAccountPaymentEnabled && paymentAccNumber != null) {
+      return 0.0; // Account will cover remaining
+    }
+
+    return totalAmount - cashAmount;
   }
+
+// Submit payment method
+  void _submitPayment() {
+    final cashAmount = double.tryParse(cashCtrl.text.cleanAmount) ?? 0;
+    final accountNumber = paymentAccNumber;
+
+    if (cashAmount > 0 && accountNumber != null) {
+      // Mixed payment: cash + account
+      // context.read<ShippingBloc>().add(
+      //     ProcessMixedPaymentEvent(
+      //       shpId: widget.shippingId!,
+      //       cashAmount: cashAmount,
+      //       accountNumber: accountNumber,
+      //       usrName: usrName ?? "",
+      //     )
+      // );
+    } else if (cashAmount > 0) {
+      // Full cash payment
+      // context.read<ShippingBloc>().add(
+      //     ProcessCashPaymentEvent(
+      //       shpId: widget.shippingId!,
+      //       cashAmount: cashAmount,
+      //       usrName: usrName ?? "",
+      //     )
+      // );
+    } else if (accountNumber != null) {
+      // Full account payment
+      // context.read<ShippingBloc>().add(
+      //     ProcessAccountPaymentEvent(
+      //       shpId: widget.shippingId!,
+      //       accountNumber: accountNumber,
+      //       usrName: usrName ?? "",
+      //     )
+      // );
+    }
+  }
+  // Widget _buildPaymentView(ShippingDetailsModel shipping) {
+  //   final tr = AppLocalizations.of(context)!;
+  //   return Container(
+  //     padding: const EdgeInsets.all(8),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Text(
+  //           AppLocalizations.of(context)!.payment,
+  //           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  //         ),
+  //
+  //         SizedBox(height: 10),
+  //
+  //         ZTextFieldEntitled(
+  //             title: AppLocalizations.of(context)!.cashTitle,
+  //           keyboardInputType: TextInputType.numberWithOptions(
+  //             decimal: true,
+  //           ),
+  //           inputFormat: [
+  //             FilteringTextInputFormatter.allow(
+  //               RegExp(r'[0-9.,]*'),
+  //             ),
+  //             SmartThousandsDecimalFormatter(),
+  //           ],
+  //         ),
+  //         SizedBox(height: 10),
+  //         GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
+  //           showAllOnFocus: true,
+  //           controller: accountController,
+  //           title: tr.accounts,
+  //           hintText: tr.accNameOrNumber,
+  //           bloc: context.read<AccountsBloc>(),
+  //           fetchAllFunction: (bloc) => bloc.add(
+  //             LoadStkAccountsEvent(),
+  //           ),
+  //           searchFunction: (bloc, query) => bloc.add(
+  //             LoadStkAccountsEvent(
+  //                 search: query
+  //             ),
+  //           ),
+  //           validator: (value) {
+  //             if (value.isEmpty) {
+  //               return tr.required(tr.accounts);
+  //             }
+  //             return null;
+  //           },
+  //           itemBuilder: (context, account) => Padding(
+  //             padding: const EdgeInsets.symmetric(
+  //               horizontal: 8,
+  //               vertical: 5,
+  //             ),
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 Row(
+  //                   mainAxisAlignment:
+  //                   MainAxisAlignment.spaceBetween,
+  //                   children: [
+  //                     Text(
+  //                       "${account.accnumber} | ${account.accName}",
+  //                       style: Theme.of(
+  //                         context,
+  //                       ).textTheme.bodyLarge,
+  //                     ),
+  //                     Text(
+  //                       "${account.avilBalance?.toAmount()} ${account.ccySymbol}",
+  //                       style: Theme.of(
+  //                         context,
+  //                       ).textTheme.bodyLarge,
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //           itemToString: (acc) =>
+  //           "${acc.accnumber} | ${acc.accName}",
+  //           stateToLoading: (state) =>
+  //           state is AccountLoadingState,
+  //           loadingBuilder: (context) => const SizedBox(
+  //             width: 16,
+  //             height: 16,
+  //             child: CircularProgressIndicator(
+  //               strokeWidth: 3,
+  //             ),
+  //           ),
+  //           stateToItems: (state) {
+  //             if (state is StkAccountLoadedState) {
+  //               return state.accounts;
+  //             }
+  //             return [];
+  //           },
+  //           onSelected: (value) {
+  //             setState(() {
+  //               paymentAccNumber = value.accnumber;
+  //             });
+  //           },
+  //           noResultsText: tr.noDataFound,
+  //           showClearButton: true,
+  //         ),
+  //         SizedBox(height: 10),
+  //
+  //         ZTextFieldEntitled(
+  //           title: AppLocalizations.of(context)!.amount,
+  //           keyboardInputType: TextInputType.numberWithOptions(
+  //             decimal: true,
+  //           ),
+  //           inputFormat: [
+  //             FilteringTextInputFormatter.allow(
+  //               RegExp(r'[0-9.,]*'),
+  //             ),
+  //             SmartThousandsDecimalFormatter(),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildExpensesView(ShippingDetailsModel shipping) {
     final tr = AppLocalizations.of(context)!;

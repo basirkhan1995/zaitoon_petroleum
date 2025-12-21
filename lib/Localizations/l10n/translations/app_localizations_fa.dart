@@ -1525,4 +1525,74 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get copied => 'کپی شد';
+
+  @override
+  String get cashTitle => 'پرداخت نقدی';
+
+  @override
+  String get paymentDescription => 'نهایی کردن پرداخت برای این حمل و نقل';
+
+  @override
+  String get totalAmount => 'مبلغ کل';
+
+  @override
+  String get totalShippingRent => 'کرایه کل حمل و نقل';
+
+  @override
+  String get paymentOptions => 'گزینه های پرداخت';
+
+  @override
+  String get selectPaymentMethod => 'روش پرداخت را انتخاب کنید';
+
+  @override
+  String get cashPayment => 'پرداخت نقدی';
+
+  @override
+  String get cashAmount => 'مقدار نقدی';
+
+  @override
+  String get enterCashAmount => 'مبلغ نقدی را وارد کنید';
+
+  @override
+  String get cashPaidNow => 'الآن به صورت نقدی پرداخت شد';
+
+  @override
+  String get accountPayment => 'پرداخت حسابی';
+
+  @override
+  String get remainingBalance => 'موجودی باقیمانده';
+
+  @override
+  String get selectAccount => 'انتخاب حساب';
+
+  @override
+  String get selectReceivableAccount => 'حساب دریافتی را انتخاب کنید';
+
+  @override
+  String get selectAccountRequired => 'لطفاً یک حساب انتخاب کنید';
+
+  @override
+  String get selectValidAccount => 'لطفاً یک حساب معتبر انتخاب کنید';
+
+  @override
+  String get remainingWillBeAddedToAccount =>
+      'مبلغ باقیمانده به حساب انتخاب شده اضافه خواهد شد';
+
+  @override
+  String get paymentSummary => 'خلاصه پرداخت';
+
+  @override
+  String get cashPaid => 'پرداخت نقدی';
+
+  @override
+  String get toAccount => 'به حساب';
+
+  @override
+  String get fullyPaid => 'کاملاً پرداخت شده';
+
+  @override
+  String get cashExceedsTotal => 'مبلغ نقدی نمی‌تواند از کل بیشتر شود';
+
+  @override
+  String get noAccountsFound => 'هیچ حسابی یافت نشد';
 }

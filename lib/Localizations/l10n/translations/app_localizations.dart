@@ -3069,6 +3069,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Copied'**
   String get copied;
+
+  /// No description provided for @cashTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash Payment'**
+  String get cashTitle;
+
+  /// No description provided for @paymentDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Finalize payment for this shipping'**
+  String get paymentDescription;
+
+  /// No description provided for @totalAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Amount'**
+  String get totalAmount;
+
+  /// No description provided for @totalShippingRent.
+  ///
+  /// In en, this message translates to:
+  /// **'Total shipping rent'**
+  String get totalShippingRent;
+
+  /// No description provided for @paymentOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Options'**
+  String get paymentOptions;
+
+  /// No description provided for @selectPaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Select payment method'**
+  String get selectPaymentMethod;
+
+  /// No description provided for @cashPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash Payment'**
+  String get cashPayment;
+
+  /// No description provided for @cashAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash Amount'**
+  String get cashAmount;
+
+  /// No description provided for @enterCashAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter cash amount'**
+  String get enterCashAmount;
+
+  /// No description provided for @cashPaidNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid now in cash'**
+  String get cashPaidNow;
+
+  /// No description provided for @accountPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Payment'**
+  String get accountPayment;
+
+  /// No description provided for @remainingBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining Balance'**
+  String get remainingBalance;
+
+  /// No description provided for @selectAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Account'**
+  String get selectAccount;
+
+  /// No description provided for @selectReceivableAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Select receivable account'**
+  String get selectReceivableAccount;
+
+  /// No description provided for @selectAccountRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an account'**
+  String get selectAccountRequired;
+
+  /// No description provided for @selectValidAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a valid account'**
+  String get selectValidAccount;
+
+  /// No description provided for @remainingWillBeAddedToAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining amount will be added to selected account'**
+  String get remainingWillBeAddedToAccount;
+
+  /// No description provided for @paymentSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Summary'**
+  String get paymentSummary;
+
+  /// No description provided for @cashPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash Paid'**
+  String get cashPaid;
+
+  /// No description provided for @toAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'To Account'**
+  String get toAccount;
+
+  /// No description provided for @fullyPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Fully Paid'**
+  String get fullyPaid;
+
+  /// No description provided for @cashExceedsTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash amount cannot exceed total'**
+  String get cashExceedsTotal;
+
+  /// No description provided for @noAccountsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No accounts found'**
+  String get noAccountsFound;
 }
 
 class _AppLocalizationsDelegate

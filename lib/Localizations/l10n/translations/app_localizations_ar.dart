@@ -1527,4 +1527,74 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get copied => 'کپی شد';
+
+  @override
+  String get cashTitle => 'پرداخت نقدی';
+
+  @override
+  String get paymentDescription => 'د دې لېږد لپاره پیسې پای ته رسول';
+
+  @override
+  String get totalAmount => 'ټوله پیسې';
+
+  @override
+  String get totalShippingRent => 'د لېږد ټوله کرایه';
+
+  @override
+  String get paymentOptions => 'د پیسو ورکړې اختیارونه';
+
+  @override
+  String get selectPaymentMethod => 'د پیسو ورکړې طریقه وټاکئ';
+
+  @override
+  String get cashPayment => 'نغدي پیسې ورکول';
+
+  @override
+  String get cashAmount => 'د نغدو پیسو اندازه';
+
+  @override
+  String get enterCashAmount => 'د نغدو پیسو اندازه دننه کړئ';
+
+  @override
+  String get cashPaidNow => 'اوس په نغدو پیسو ورکړل شو';
+
+  @override
+  String get accountPayment => 'د حساب پیسې ورکول';
+
+  @override
+  String get remainingBalance => 'پاتې شوې پانګه';
+
+  @override
+  String get selectAccount => 'حاسبه وټاکئ';
+
+  @override
+  String get selectReceivableAccount => 'د ترلاسه کیدونکې حساب غوره کړئ';
+
+  @override
+  String get selectAccountRequired => 'مهرباني وکړئ یو حساب وټاکئ';
+
+  @override
+  String get selectValidAccount => 'مهرباني وکړئ یو باوري حساب وټاکئ';
+
+  @override
+  String get remainingWillBeAddedToAccount =>
+      'پاتې پیسې به ټاکل شوي حساب ته اضافه شي';
+
+  @override
+  String get paymentSummary => 'د پیسو ورکړې لنډیز';
+
+  @override
+  String get cashPaid => 'نغدي پیسې ورکړل شوي';
+
+  @override
+  String get toAccount => 'حاسبه ته';
+
+  @override
+  String get fullyPaid => 'بشپړه پیسې ورکړل شوي';
+
+  @override
+  String get cashExceedsTotal => 'د نغدو پیسو اندازه ټولې ته نه شي رسیدلی';
+
+  @override
+  String get noAccountsFound => 'هیڅ حسابونه ونه موندل شول';
 }
