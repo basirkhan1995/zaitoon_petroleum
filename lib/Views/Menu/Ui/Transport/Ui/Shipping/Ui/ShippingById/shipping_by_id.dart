@@ -921,11 +921,6 @@ class _DesktopState extends State<_Desktop> {
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
 
-    // DEBUG: Print the raw total value
-    print('Raw total from API: ${shipping.total}');
-    print('Total after toAmount(): ${shipping.total?.toAmount()}');
-
-    // Get total amount from shipping - parse it manually to avoid issues
     double totalAmount = 0.0;
 
     if (shipping.total != null && shipping.total!.isNotEmpty) {
@@ -934,7 +929,6 @@ class _DesktopState extends State<_Desktop> {
       if (cleanedTotal.isNotEmpty) {
         totalAmount = double.tryParse(cleanedTotal) ?? 0.0;
       }
-      print('Parsed total amount: $totalAmount');
     }
 
     // If still 0, try parsing from shpRent and shpUnloadSize
@@ -942,14 +936,8 @@ class _DesktopState extends State<_Desktop> {
       double rent = double.tryParse(shipping.shpRent!.replaceAll(RegExp(r'[^\d.-]'), '')) ?? 0;
       double unloadSize = double.tryParse(shipping.shpUnloadSize!.replaceAll(RegExp(r'[^\d.-]'), '')) ?? 0;
       totalAmount = rent * unloadSize;
-      print('Calculated total from rent and unload size: $totalAmount (rent: $rent * unload: $unloadSize)');
+
     }
-
-    print('Final total amount: $totalAmount');
-
-    // Get total amount
-   // double totalAmount = double.tryParse(shipping.total?.toAmount() ?? '0') ?? 0;
-
     // Check if shipping has existing payments
     bool hasExistingPayments = shipping.pyment != null && shipping.pyment!.isNotEmpty;
     double existingCash = 0;
@@ -983,14 +971,13 @@ class _DesktopState extends State<_Desktop> {
               // Header
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: Icon(Icons.payment, color: color.primary),
                 title: Text(
                   tr.payment,
-                  style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(
                   hasExistingPayments ? "Update payment for this shipping" : "Add payment for this shipping",
-                  style: textTheme.bodyMedium?.copyWith(color: color.outline),
+                  style: textTheme.bodySmall?.copyWith(color: color.outline),
                 ),
               ),
 
@@ -1001,7 +988,7 @@ class _DesktopState extends State<_Desktop> {
                 radius: 6,
                 color: color.surfaceContainerHighest.withValues(alpha: .3),
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -1040,13 +1027,13 @@ class _DesktopState extends State<_Desktop> {
 
                       // Show remaining/amount to pay
                       Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
+                        padding: EdgeInsets.zero,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               hasExistingPayments ? tr.remainingBalance : "Amount to Pay",
-                              style: textTheme.bodyMedium,
+                              style: textTheme.bodyMedium?.copyWith(color: color.outline),
                             ),
                             Text(
                               "${displayRemainingBalance.toAmount()} USD",
@@ -1063,7 +1050,7 @@ class _DesktopState extends State<_Desktop> {
                 ),
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 15),
 
               // ONLY SHOW PAYMENT OPTIONS IF shipping is not delivered AND there's amount to pay
               if (showPaymentOptions) ...[
@@ -1226,9 +1213,13 @@ class _DesktopState extends State<_Desktop> {
                                   ],
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
-                                  tr.remainingWillBeAddedToAccount,
-                                  style: textTheme.bodySmall?.copyWith(color: color.outline),
+                                Row(
+                                  children: [
+                                    Text(
+                                      tr.remainingWillBeAddedToAccount,
+                                      style: textTheme.bodySmall?.copyWith(color: color.outline),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -1318,12 +1309,8 @@ class _DesktopState extends State<_Desktop> {
                             noResultsText: tr.noAccountsFound,
                             showClearButton: true,
                           ),
+                          const SizedBox(height: 10),
 
-                          const SizedBox(height: 8),
-                          Text(
-                            tr.remainingWillBeAddedToAccount,
-                            style: textTheme.bodySmall?.copyWith(color: color.outline),
-                          ),
                         ],
                       ],
                     ),
@@ -1572,7 +1559,6 @@ class _DesktopState extends State<_Desktop> {
       print('Final state - Cash enabled: $_isCashPaymentEnabled, Account enabled: $_isAccountPaymentEnabled');
     });
   }
-
   double _calculateBalanceAfterPayments(ShippingDetailsModel shipping) {
     double cashAmount = _parseAmount(cashCtrl.text);
     double totalAmount = _parseAmount(shipping.total);
@@ -1598,21 +1584,6 @@ class _DesktopState extends State<_Desktop> {
     double remaining = remainingBeforeNew - cashAmount;
     return remaining > 0 ? remaining : 0.0;
   }
-  // Submit payment method
-  void onPaymentSubmit() async {
-    final tr = AppLocalizations.of(context)!;
-    final bloc = context.read<ShippingBloc>();
-
-    // ================= PAYMENT SPECIFIC VALIDATION =================
-    // Check if we're in payment step (step index 3 for existing shipping)
-    if (widget.shippingId != null && _currentStep == 3) {
-      return _handlePaymentSubmission(tr, bloc);
-    }
-
-    // ... rest of your existing validation and shipping submission ...
-  }
-
-// Separate method for handling payment submission
   void _handlePaymentSubmission(AppLocalizations tr, ShippingBloc bloc) {
     // Access shipping state from widget context
     final shippingState = bloc.state;
@@ -1699,8 +1670,6 @@ class _DesktopState extends State<_Desktop> {
       paymentType,
     );
   }
-
-// Confirmation dialog for payment
   void _showPaymentConfirmationDialog(AppLocalizations tr, ShippingBloc bloc, double cashAmount, double accountAmount, String paymentType,) {
     showDialog(
       context: context,
@@ -1776,8 +1745,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
-// Actual payment submission
   void _submitPayment(ShippingBloc bloc, double cashAmount, double accountAmount, String paymentType) {
     final event = AddShippingPaymentEvent(
       shpId: widget.shippingId!,
@@ -1789,224 +1756,6 @@ class _DesktopState extends State<_Desktop> {
     );
 
     bloc.add(event);
-  }
-
-// Also update the onSubmit method to call _handlePaymentSubmission
-  void onSubmit() async {
-    final tr = AppLocalizations.of(context)!;
-    final bloc = context.read<ShippingBloc>();
-
-    // ================= PAYMENT SPECIFIC VALIDATION =================
-    // Check if we're in payment step (step index 3 for existing shipping)
-    if (widget.shippingId != null && _currentStep == 3) {
-      return _handlePaymentSubmission(tr, bloc);
-    }
-
-    // ================= COMMON VALIDATION =================
-
-    if (customerId == null) {
-      Utils.showOverlayMessage(
-        context,
-        message: tr.selectCustomer,
-        isError: true,
-      );
-      setState(() => _currentStep = 0);
-      return;
-    }
-
-    if (productId == null) {
-      Utils.showOverlayMessage(
-        context,
-        message: tr.selectProduct,
-        isError: true,
-      );
-      setState(() => _currentStep = 0);
-      return;
-    }
-
-    if (vehicleId == null) {
-      Utils.showOverlayMessage(
-        context,
-        message: tr.selectVehicle,
-        isError: true,
-      );
-      setState(() => _currentStep = 1);
-      return;
-    }
-
-    if (shpFrom.text.isEmpty || shpTo.text.isEmpty) {
-      Utils.showOverlayMessage(
-        context,
-        message: tr.fillShippingLocations,
-        isError: true,
-      );
-      setState(() => _currentStep = 1);
-      return;
-    }
-
-    if (loadingSize.text.isEmpty) {
-      Utils.showOverlayMessage(
-        context,
-        message: tr.fillLoadingSize,
-        isError: true,
-      );
-      setState(() => _currentStep = 1);
-      return;
-    }
-
-    if (shippingRent.text.isEmpty) {
-      Utils.showOverlayMessage(
-        context,
-        message: tr.fillShippingRent,
-        isError: true,
-      );
-      setState(() => _currentStep = 1);
-      return;
-    }
-
-    final rentValue = double.tryParse(shippingRent.text.cleanAmount);
-    if (rentValue == null || rentValue <= 0) {
-      Utils.showOverlayMessage(
-        context,
-        message: tr.invalidShippingRent,
-        isError: true,
-      );
-      setState(() => _currentStep = 1);
-      return;
-    }
-
-    if (advanceAmount.text.isNotEmpty) {
-      final advanceValue =
-      double.tryParse(advanceAmount.text.cleanAmount);
-      if (advanceValue == null || advanceValue <= 0) {
-        Utils.showOverlayMessage(
-          context,
-          message: tr.invalidAdvanceAmount,
-          isError: true,
-        );
-        setState(() => _currentStep = 2);
-        return;
-      }
-    }
-
-    // ================= DELIVERY VALIDATION =================
-
-    if (shpStatus == 1) {
-      if (unloadingSize.text.isEmpty) {
-        Utils.showOverlayMessage(
-          context,
-          message: tr.unloadingSizeRequired,
-          isError: true,
-        );
-        setState(() => _currentStep = 1);
-        return;
-      }
-
-      final unloadingValue =
-      double.tryParse(unloadingSize.text.cleanAmount);
-      if (unloadingValue == null || unloadingValue <= 0) {
-        Utils.showOverlayMessage(
-          context,
-          message: tr.invalidUnloadingSize,
-          isError: true,
-        );
-        setState(() => _currentStep = 1);
-        return;
-      }
-
-      if (shpToGregorian.isEmpty ||
-          shpToGregorian == DateTime.now().toFormattedDate()) {
-        Utils.showOverlayMessage(
-          context,
-          message: tr.setUnloadingDate,
-          isError: true,
-        );
-        setState(() => _currentStep = 1);
-        return;
-      }
-
-      try {
-        final loadingDate = DateTime.parse(shpFromGregorian);
-        final unloadingDate = DateTime.parse(shpToGregorian);
-
-        if (unloadingDate.isBefore(loadingDate)) {
-          Utils.showOverlayMessage(
-            context,
-            message: tr.unloadingBeforeLoading,
-            isError: true,
-          );
-          setState(() => _currentStep = 1);
-          return;
-        }
-      } catch (_) {
-        Utils.showOverlayMessage(
-          context,
-          message: tr.invalidDateFormat,
-          isError: true,
-        );
-        setState(() => _currentStep = 1);
-        return;
-      }
-
-      final missingFields = <String>[];
-      if (shpFrom.text.isEmpty) missingFields.add(tr.shpFrom);
-      if (shpTo.text.isEmpty) missingFields.add(tr.shpTo);
-      if (loadingSize.text.isEmpty) missingFields.add(tr.loadingSize);
-      if (unloadingSize.text.isEmpty) missingFields.add(tr.unloadingSize);
-      if (shippingRent.text.isEmpty) missingFields.add(tr.shippingRent);
-      if (unit == null || unit!.isEmpty) missingFields.add(tr.unit);
-
-      if (missingFields.isNotEmpty) {
-        Utils.showOverlayMessage(
-          context,
-          message:
-          "${tr.deliveryRequiredFields}\n${missingFields.join(', ')}",
-          isError: true,
-        );
-        setState(() => _currentStep = 1);
-        return;
-      }
-
-      final loadingValue =
-      double.tryParse(loadingSize.text.cleanAmount);
-      if (loadingValue != null &&
-          ((unloadingValue - loadingValue).abs() / loadingValue) * 100 >
-              20) {
-        final shouldContinue =
-        await _showUnloadingSizeWarningDialog(
-            context, loadingValue, unloadingValue);
-
-        if (!shouldContinue) {
-          setState(() => _currentStep = 1);
-          return;
-        }
-      }
-    }
-
-    // ================= SUBMIT =================
-
-    final data = ShippingModel(
-      shpId: widget.shippingId,
-      shpLoadSize: loadingSize.text.cleanAmount,
-      shpUnloadSize: unloadingSize.text.cleanAmount,
-      shpTo: shpTo.text,
-      shpFrom: shpFrom.text,
-      shpRent: shippingRent.text.cleanAmount,
-      productId: productId!,
-      vehicleId: vehicleId!,
-      customerId: customerId!,
-      shpArriveDate: DateTime.tryParse(shpToGregorian),
-      shpMovingDate: DateTime.tryParse(shpFromGregorian),
-      usrName: usrName ?? "",
-      advanceAmount: advanceAmount.text.cleanAmount,
-      remark: remark.text,
-      shpStatus: shpStatus ?? 0,
-      shpUnit: unit ?? "TN",
-    );
-
-    widget.shippingId != null
-        ? bloc.add(UpdateShippingEvent(data))
-        : bloc.add(AddShippingEvent(data));
   }
 
   Widget _buildExpensesView(ShippingDetailsModel shipping) {
@@ -2340,7 +2089,6 @@ class _DesktopState extends State<_Desktop> {
       },
     );
   }
-
   Map<String, String> _getSummaryData(ShippingDetailsModel? shipping) {
     if (shipping != null) {
       // Return data from ShippingDetailsModel
@@ -2373,7 +2121,6 @@ class _DesktopState extends State<_Desktop> {
       };
     }
   }
-
   Widget _buildSummaryView(ShippingDetailsModel? shipping) {
     final summaryData = _getSummaryData(shipping);
     final hasShippingDetails = shipping != null;
@@ -2515,7 +2262,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   Widget _buildSummaryItem(String title, String value, {bool isHighlighted = false, bool isSubItem = false}) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: isSubItem ? 4.0 : 5.0),
@@ -2549,7 +2295,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   Widget _buildLoadingContent() {
     return Center(
       child: Container(
@@ -2569,7 +2314,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   Widget _buildErrorContent(String error, BuildContext context) {
     return Center(
       child: Column(
