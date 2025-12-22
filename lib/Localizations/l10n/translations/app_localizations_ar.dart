@@ -1621,4 +1621,28 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get paymentConfirmationMessage =>
       'آیا تاسو ډاډه یاست چې غواړئ دا تادیه ترسره کړئ؟';
+
+  @override
+  String get addPayment => 'پېسې اضافه کړئ';
+
+  @override
+  String get editPayment => 'پېسې سمول';
+
+  @override
+  String get updatePayment => 'پېسې تازه کول';
+
+  @override
+  String get savePayment => 'پېسې خوندي کول';
+
+  @override
+  String get paymentDetails => 'د پېسو جزئیات';
+
+  @override
+  String get paymentTypeDisplayDual => 'نقدی او حساب';
+
+  @override
+  String get paymentTypeDisplayCash => 'یوازې نقدی';
+
+  @override
+  String get paymentTypeDisplayCard => 'یوازې حساب';
 }

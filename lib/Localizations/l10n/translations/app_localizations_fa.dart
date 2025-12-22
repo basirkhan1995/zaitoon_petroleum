@@ -1618,4 +1618,28 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get paymentConfirmationMessage =>
       'آیا مطمئن هستید که می‌خواهید این پرداخت را انجام دهید؟';
+
+  @override
+  String get addPayment => 'افزودن پرداخت';
+
+  @override
+  String get editPayment => 'ویرایش پرداخت';
+
+  @override
+  String get updatePayment => 'بروزرسانی پرداخت';
+
+  @override
+  String get savePayment => 'ذخیره پرداخت';
+
+  @override
+  String get paymentDetails => 'جزئیات پرداخت';
+
+  @override
+  String get paymentTypeDisplayDual => 'نقدی و حسابی';
+
+  @override
+  String get paymentTypeDisplayCash => 'فقط نقدی';
+
+  @override
+  String get paymentTypeDisplayCard => 'فقط حسابی';
 }

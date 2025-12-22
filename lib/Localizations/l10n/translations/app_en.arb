@@ -539,7 +539,15 @@
   "thisAmountWillBeAddedToAccount": "This amount will be added to the selected account",
   "enterValidCashAmount": "Please enter a valid cash amount",
   "confirmPayment": "Confirm Payment",
-  "paymentConfirmationMessage": "Are you sure you want to process this payment?"
+  "paymentConfirmationMessage": "Are you sure you want to process this payment?",
 
+  "addPayment": "Add Payment",
+  "editPayment": "Edit Payment",
+  "updatePayment": "Update Payment",
+  "savePayment": "Save Payment",
+  "paymentDetails": "Payment Details",
+  "paymentTypeDisplayDual": "Cash & Account",
+  "paymentTypeDisplayCash": "Cash Only",
+  "paymentTypeDisplayCard": "Account Only"
 
 }

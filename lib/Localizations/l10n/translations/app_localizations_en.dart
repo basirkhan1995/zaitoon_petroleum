@@ -1627,4 +1627,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get paymentConfirmationMessage =>
       'Are you sure you want to process this payment?';
+
+  @override
+  String get addPayment => 'Add Payment';
+
+  @override
+  String get editPayment => 'Edit Payment';
+
+  @override
+  String get updatePayment => 'Update Payment';
+
+  @override
+  String get savePayment => 'Save Payment';
+
+  @override
+  String get paymentDetails => 'Payment Details';
+
+  @override
+  String get paymentTypeDisplayDual => 'Cash & Account';
+
+  @override
+  String get paymentTypeDisplayCash => 'Cash Only';
+
+  @override
+  String get paymentTypeDisplayCard => 'Account Only';
 }

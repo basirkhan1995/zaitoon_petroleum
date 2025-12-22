@@ -538,5 +538,16 @@
   "thisAmountWillBeAddedToAccount": "دا مقدار به ټاکل شوي حساب ته زیات شي",
   "enterValidCashAmount": "مهرباني وکړئ یو باوري نغدي مقدار دننه کړئ",
   "confirmPayment": "تادیې تایید کړئ",
-  "paymentConfirmationMessage": "آیا تاسو ډاډه یاست چې غواړئ دا تادیه ترسره کړئ؟"
+  "paymentConfirmationMessage": "آیا تاسو ډاډه یاست چې غواړئ دا تادیه ترسره کړئ؟",
+
+  "addPayment": "پېسې اضافه کړئ",
+  "editPayment": "پېسې سمول",
+  "updatePayment": "پېسې تازه کول",
+  "savePayment": "پېسې خوندي کول",
+  "paymentDetails": "د پېسو جزئیات",
+
+  "paymentTypeDisplayDual": "نقدی او حساب",
+  "paymentTypeDisplayCash": "یوازې نقدی",
+  "paymentTypeDisplayCard": "یوازې حساب"
+
 }

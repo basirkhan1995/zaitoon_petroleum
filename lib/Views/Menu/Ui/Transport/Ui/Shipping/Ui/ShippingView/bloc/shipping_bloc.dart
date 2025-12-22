@@ -306,10 +306,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
     }
   }
 
-  Future<void> _onAddShippingPayment(
-      AddShippingPaymentEvent event,
-      Emitter<ShippingState> emit,
-      ) async {
+  Future<void> _onAddShippingPayment(AddShippingPaymentEvent event, Emitter<ShippingState> emit) async {
     final tr = localizationService.loc;
     if (state.currentShipping == null) return;
 
@@ -361,17 +358,18 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
           error: tr.blockedAccountMessage,
         ));
       } else {
-        throw Exception(res['msg'] ?? 'Failed to add expense');
+        throw Exception(res['msg'] ?? 'Failed to add payment');
       }
     } catch (e) {
       emit(ShippingErrorState(
         shippingList: state.shippingList,
         currentShipping: state.currentShipping,
         loadingShpId: null,
-        error: 'Failed to add expense: $e',
+        error: 'Failed to add payment: $e',
       ));
     }
   }
+
 
   Future<void> _onUpdateShippingExpense(
       UpdateShippingExpenseEvent event,

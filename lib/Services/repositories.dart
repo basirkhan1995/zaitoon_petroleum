@@ -1060,7 +1060,7 @@ class Repositories {
       throw e.toString();
     }
   }
-  Future<Map<String, dynamic>> shippingPayment({required String? usrName, required String paymentType, required int shpId, String? cashAmount, String? accountAmount, int? accNumber}) async {
+  Future<Map<String, dynamic>> shippingPayment({required String? usrName, required String paymentType, required int shpId, double? cashAmount, double? accountAmount, int? accNumber}) async {
     try {
       final response = await api.post(
           endpoint: "/transport/shippingPayment.php",

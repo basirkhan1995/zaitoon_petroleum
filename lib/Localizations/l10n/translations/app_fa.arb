@@ -538,5 +538,17 @@
   "thisAmountWillBeAddedToAccount": "این مبلغ به حساب انتخاب شده اضافه خواهد شد",
   "enterValidCashAmount": "لطفا یک مبلغ نقدی معتبر وارد کنید",
   "confirmPayment": "تایید پرداخت",
-  "paymentConfirmationMessage": "آیا مطمئن هستید که می‌خواهید این پرداخت را انجام دهید؟"
+  "paymentConfirmationMessage": "آیا مطمئن هستید که می‌خواهید این پرداخت را انجام دهید؟",
+
+
+  "addPayment": "افزودن پرداخت",
+  "editPayment": "ویرایش پرداخت",
+  "updatePayment": "بروزرسانی پرداخت",
+  "savePayment": "ذخیره پرداخت",
+  "paymentDetails": "جزئیات پرداخت",
+
+  "paymentTypeDisplayDual": "نقدی و حسابی",
+  "paymentTypeDisplayCash": "فقط نقدی",
+  "paymentTypeDisplayCard": "فقط حسابی"
+
 }

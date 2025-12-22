@@ -3249,6 +3249,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to process this payment?'**
   String get paymentConfirmationMessage;
+
+  /// No description provided for @addPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Payment'**
+  String get addPayment;
+
+  /// No description provided for @editPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Payment'**
+  String get editPayment;
+
+  /// No description provided for @updatePayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Payment'**
+  String get updatePayment;
+
+  /// No description provided for @savePayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Payment'**
+  String get savePayment;
+
+  /// No description provided for @paymentDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Details'**
+  String get paymentDetails;
+
+  /// No description provided for @paymentTypeDisplayDual.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash & Account'**
+  String get paymentTypeDisplayDual;
+
+  /// No description provided for @paymentTypeDisplayCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash Only'**
+  String get paymentTypeDisplayCash;
+
+  /// No description provided for @paymentTypeDisplayCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Only'**
+  String get paymentTypeDisplayCard;
 }
 
 class _AppLocalizationsDelegate

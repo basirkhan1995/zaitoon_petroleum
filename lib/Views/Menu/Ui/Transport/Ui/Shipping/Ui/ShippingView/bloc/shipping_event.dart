@@ -45,8 +45,8 @@ class AddShippingPaymentEvent extends ShippingEvent{
   final String usrName;
   final int shpId;
   final String paymentType;
-  final String? cashAmount;
-  final String? accountAmount;
+  final double? cashAmount;
+  final double? accountAmount;
   final int? accNumber;
 
   const AddShippingPaymentEvent({required this. usrName, required this.shpId, required this. paymentType, this.cashAmount,  this.accountAmount,  this.accNumber});
