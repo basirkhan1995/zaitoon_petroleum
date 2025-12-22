@@ -531,5 +531,12 @@
   "toAccount": "حاسبه ته",
   "fullyPaid": "بشپړه پیسې ورکړل شوي",
   "cashExceedsTotal": "د نغدو پیسو اندازه ټولې ته نه شي رسیدلی",
-  "noAccountsFound": "هیڅ حسابونه ونه موندل شول"
+  "noAccountsFound": "هیڅ حسابونه ونه موندل شول",
+  "cash": "نغدي",
+  "totalPaid": "ټوله تادیه شوې",
+  "remainingToPay": "پاتې تادیې",
+  "thisAmountWillBeAddedToAccount": "دا مقدار به ټاکل شوي حساب ته زیات شي",
+  "enterValidCashAmount": "مهرباني وکړئ یو باوري نغدي مقدار دننه کړئ",
+  "confirmPayment": "تادیې تایید کړئ",
+  "paymentConfirmationMessage": "آیا تاسو ډاډه یاست چې غواړئ دا تادیه ترسره کړئ؟"
 }

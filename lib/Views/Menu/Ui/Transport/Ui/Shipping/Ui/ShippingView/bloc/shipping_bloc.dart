@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/model/shp_details_model.dart';
+import '../../../../../../../../../Services/localization_services.dart';
 import '../model/shipping_model.dart';
 part 'shipping_event.dart';
 part 'shipping_state.dart';
@@ -20,7 +21,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
     on<ClearShippingSuccessEvent>(_onClearShippingSuccess);
     on<AddShippingExpenseEvent>(_onAddShippingExpense);
     on<UpdateShippingExpenseEvent>(_onUpdateShippingExpense);
-    on<DeleteShippingExpenseEvent>(_onDeleteShippingExpense);
+    on<AddShippingPaymentEvent>(_onAddShippingPayment);
   }
 
   Future<void> _onLoadShipping(
@@ -230,7 +231,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
             shpRent: event.updatedShipping.shpRent,
             total: event.updatedShipping.total,
             shpStatus: event.updatedShipping.shpStatus,
-            income: state.currentShipping?.income ?? [],
+            pyment: state.currentShipping?.pyment ?? [],
             expenses: state.currentShipping?.expenses ?? [],
           );
         }
@@ -305,6 +306,73 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
     }
   }
 
+  Future<void> _onAddShippingPayment(
+      AddShippingPaymentEvent event,
+      Emitter<ShippingState> emit,
+      ) async {
+    final tr = localizationService.loc;
+    if (state.currentShipping == null) return;
+
+    // Show loading for this specific operation
+    emit(state.copyWith(
+      loadingShpId: event.shpId,
+    ));
+
+    try {
+      final res = await _repo.shippingPayment(
+        shpId: event.shpId,
+        accNumber: event.accNumber,
+        paymentType: event.paymentType,
+        cashAmount: event.cashAmount,
+        accountAmount: event.accountAmount,
+        usrName: event.usrName,
+      );
+
+      if (res['msg'] == "success") {
+        // Get ONLY the updated expenses for this shipping
+        final updatedShipping = await _repo.getShippingById(shpId: event.shpId);
+
+        // Update the current state with new shipping details
+        emit(ShippingDetailLoadedState(
+          shippingList: state.shippingList,
+          currentShipping: updatedShipping,
+          loadingShpId: null, // Clear loading
+          shouldOpenDialog: false, // Don't reopen dialog
+        ));
+      } else if (res['msg'] == "delivered") {
+        emit(ShippingErrorState(
+          shippingList: state.shippingList,
+          currentShipping: state.currentShipping,
+          loadingShpId: null,
+          error: 'Cannot add payment to delivered shipping',
+        ));
+      }else if (res['msg'] == "over limit") {
+        emit(ShippingErrorState(
+          shippingList: state.shippingList,
+          currentShipping: state.currentShipping,
+          loadingShpId: null,
+          error: tr.overLimitMessage,
+        ));
+      }else if (res['msg'] == "blocked") {
+        emit(ShippingErrorState(
+          shippingList: state.shippingList,
+          currentShipping: state.currentShipping,
+          loadingShpId: null,
+          error: tr.blockedAccountMessage,
+        ));
+      } else {
+        throw Exception(res['msg'] ?? 'Failed to add expense');
+      }
+    } catch (e) {
+      emit(ShippingErrorState(
+        shippingList: state.shippingList,
+        currentShipping: state.currentShipping,
+        loadingShpId: null,
+        error: 'Failed to add expense: $e',
+      ));
+    }
+  }
+
   Future<void> _onUpdateShippingExpense(
       UpdateShippingExpenseEvent event,
       Emitter<ShippingState> emit,
@@ -356,52 +424,5 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
     }
   }
 
-  Future<void> _onDeleteShippingExpense(
-      DeleteShippingExpenseEvent event,
-      Emitter<ShippingState> emit,
-      ) async {
-    if (state.currentShipping == null) return;
 
-    // Show loading for this specific operation
-    emit(state.copyWith(
-      loadingShpId: event.shpId,
-    ));
-
-    try {
-      final res = await _repo.deleteShippingExpense(
-        shpId: event.shpId,
-        trnReference: event.trnReference,
-        usrName: event.usrName,
-      );
-
-      if (res['msg'] == "success") {
-        // Get ONLY the updated expenses
-        final updatedShipping = await _repo.getShippingById(shpId: event.shpId);
-
-        // Update the current state
-        emit(ShippingDetailLoadedState(
-          shippingList: state.shippingList,
-          currentShipping: updatedShipping,
-          loadingShpId: null,
-          shouldOpenDialog: false, // Don't reopen dialog
-        ));
-      } else if (res['msg'] == "delivered") {
-        emit(ShippingErrorState(
-          shippingList: state.shippingList,
-          currentShipping: state.currentShipping,
-          loadingShpId: null,
-          error: 'Cannot delete expense from delivered shipping',
-        ));
-      } else {
-        throw Exception(res['msg'] ?? 'Failed to delete expense');
-      }
-    } catch (e) {
-      emit(ShippingErrorState(
-        shippingList: state.shippingList,
-        currentShipping: state.currentShipping,
-        loadingShpId: null,
-        error: 'Failed to delete expense: $e',
-      ));
-    }
-  }
 }

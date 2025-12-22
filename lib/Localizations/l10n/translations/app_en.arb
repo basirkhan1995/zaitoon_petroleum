@@ -531,5 +531,15 @@
   "toAccount": "To Account",
   "fullyPaid": "Fully Paid",
   "cashExceedsTotal": "Cash amount cannot exceed total",
-  "noAccountsFound": "No accounts found"
+  "noAccountsFound": "No accounts found",
+
+  "cash": "Cash",
+  "totalPaid": "Total Paid",
+  "remainingToPay": "Remaining to Pay",
+  "thisAmountWillBeAddedToAccount": "This amount will be added to the selected account",
+  "enterValidCashAmount": "Please enter a valid cash amount",
+  "confirmPayment": "Confirm Payment",
+  "paymentConfirmationMessage": "Are you sure you want to process this payment?"
+
+
 }

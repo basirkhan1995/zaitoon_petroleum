@@ -1021,23 +1021,7 @@ class Repositories {
       throw e.toString();
     }
   }
-  Future<Map<String, dynamic>> deleteShippingExpense({required String? usrName, required int shpId, required String? trnReference}) async {
-    try {
-      final response = await api.delete(
-          endpoint: "/transport/shippingTransaction.php",
-          data: {
-            "usrName":usrName,
-            "trnReference": trnReference,
-            "shpID": shpId,
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
+
   Future<Map<String, dynamic>> updateShippingExpense({required String? usrName, required int shpId, required String amount, required String reference, required String narration}) async {
     try {
       final response = await api.put(
@@ -1067,6 +1051,26 @@ class Repositories {
             "accNumber": accNumber,
             "amount": amount,
             "narration": narration
+          }
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> shippingPayment({required String? usrName, required String paymentType, required int shpId, String? cashAmount, String? accountAmount, int? accNumber}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/transport/shippingPayment.php",
+          data: {
+            "usrName": usrName,
+            "shpID": shpId,
+            "pType": paymentType,
+            "cashAmount": cashAmount,
+            "cardAmount": accountAmount,
+            "account": accNumber
           }
       );
       return response.data;

@@ -1597,4 +1597,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noAccountsFound => 'هیڅ حسابونه ونه موندل شول';
+
+  @override
+  String get cash => 'نغدي';
+
+  @override
+  String get totalPaid => 'ټوله تادیه شوې';
+
+  @override
+  String get remainingToPay => 'پاتې تادیې';
+
+  @override
+  String get thisAmountWillBeAddedToAccount =>
+      'دا مقدار به ټاکل شوي حساب ته زیات شي';
+
+  @override
+  String get enterValidCashAmount =>
+      'مهرباني وکړئ یو باوري نغدي مقدار دننه کړئ';
+
+  @override
+  String get confirmPayment => 'تادیې تایید کړئ';
+
+  @override
+  String get paymentConfirmationMessage =>
+      'آیا تاسو ډاډه یاست چې غواړئ دا تادیه ترسره کړئ؟';
 }

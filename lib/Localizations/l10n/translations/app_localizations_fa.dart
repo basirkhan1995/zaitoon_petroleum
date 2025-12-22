@@ -1595,4 +1595,27 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get noAccountsFound => 'هیچ حسابی یافت نشد';
+
+  @override
+  String get cash => 'نقدی';
+
+  @override
+  String get totalPaid => 'مجموع پرداختی';
+
+  @override
+  String get remainingToPay => 'مانده قابل پرداخت';
+
+  @override
+  String get thisAmountWillBeAddedToAccount =>
+      'این مبلغ به حساب انتخاب شده اضافه خواهد شد';
+
+  @override
+  String get enterValidCashAmount => 'لطفا یک مبلغ نقدی معتبر وارد کنید';
+
+  @override
+  String get confirmPayment => 'تایید پرداخت';
+
+  @override
+  String get paymentConfirmationMessage =>
+      'آیا مطمئن هستید که می‌خواهید این پرداخت را انجام دهید؟';
 }

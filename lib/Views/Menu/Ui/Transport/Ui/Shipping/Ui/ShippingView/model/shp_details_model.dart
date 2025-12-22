@@ -27,18 +27,17 @@ class ShippingDetailsModel {
   final String? total;
   final int? shpStatus;
   final String? shpRemark;
-  final List<ShippingExpenseModel>? income;
-  final List<ShippingExpenseModel>? expenses;
+  final List<Pyment>? pyment;
+  final List<Expense>? expenses;
 
   ShippingDetailsModel({
     this.shpId,
     this.vehicle,
     this.vclId,
     this.proName,
-    this.shpRemark,
     this.proId,
-    this.customer,
     this.perId,
+    this.customer,
     this.shpFrom,
     this.shpMovingDate,
     this.shpLoadSize,
@@ -49,7 +48,8 @@ class ShippingDetailsModel {
     this.shpRent,
     this.total,
     this.shpStatus,
-    this.income,
+    this.shpRemark,
+    this.pyment,
     this.expenses,
   });
 
@@ -59,21 +59,21 @@ class ShippingDetailsModel {
     int? vclId,
     String? proName,
     int? proId,
-    String? shpRemark,
+    int? perId,
     String? customer,
     String? shpFrom,
     DateTime? shpMovingDate,
     String? shpLoadSize,
     String? shpUnit,
     String? shpTo,
-    int? perId,
     DateTime? shpArriveDate,
     String? shpUnloadSize,
     String? shpRent,
     String? total,
     int? shpStatus,
-    List<ShippingExpenseModel>? income,
-    List<ShippingExpenseModel>? expenses,
+    String? shpRemark,
+    List<Pyment>? pyment,
+    List<Expense>? expenses,
   }) =>
       ShippingDetailsModel(
         shpId: shpId ?? this.shpId,
@@ -81,20 +81,20 @@ class ShippingDetailsModel {
         vclId: vclId ?? this.vclId,
         proName: proName ?? this.proName,
         proId: proId ?? this.proId,
+        perId: perId ?? this.perId,
         customer: customer ?? this.customer,
         shpFrom: shpFrom ?? this.shpFrom,
-        perId: perId ?? this.perId,
         shpMovingDate: shpMovingDate ?? this.shpMovingDate,
         shpLoadSize: shpLoadSize ?? this.shpLoadSize,
         shpUnit: shpUnit ?? this.shpUnit,
-        shpRemark: shpRemark ?? this.shpRemark,
         shpTo: shpTo ?? this.shpTo,
         shpArriveDate: shpArriveDate ?? this.shpArriveDate,
         shpUnloadSize: shpUnloadSize ?? this.shpUnloadSize,
         shpRent: shpRent ?? this.shpRent,
         total: total ?? this.total,
         shpStatus: shpStatus ?? this.shpStatus,
-        income: income ?? this.income,
+        shpRemark: shpRemark ?? this.shpRemark,
+        pyment: pyment ?? this.pyment,
         expenses: expenses ?? this.expenses,
       );
 
@@ -104,21 +104,21 @@ class ShippingDetailsModel {
     vclId: json["vclID"],
     proName: json["proName"],
     proId: json["proID"],
+    perId: json["perID"],
     customer: json["customer"],
     shpFrom: json["shpFrom"],
-    perId: json["perID"],
     shpMovingDate: json["shpMovingDate"] == null ? null : DateTime.parse(json["shpMovingDate"]),
     shpLoadSize: json["shpLoadSize"],
     shpUnit: json["shpUnit"],
     shpTo: json["shpTo"],
-    shpRemark: json["shpRemark"],
     shpArriveDate: json["shpArriveDate"] == null ? null : DateTime.parse(json["shpArriveDate"]),
     shpUnloadSize: json["shpUnloadSize"],
     shpRent: json["shpRent"],
     total: json["total"],
     shpStatus: json["shpStatus"],
-    income: json["income"] == null ? [] : List<ShippingExpenseModel>.from(json["income"]!.map((x) => ShippingExpenseModel.fromMap(x))),
-    expenses: json["expenses"] == null ? [] : List<ShippingExpenseModel>.from(json["expenses"]!.map((x) => ShippingExpenseModel.fromMap(x))),
+    shpRemark: json["shpRemark"],
+    pyment: json["pyment"] == null ? [] : List<Pyment>.from(json["pyment"]!.map((x) => Pyment.fromMap(x))),
+    expenses: json["expenses"] == null ? [] : List<Expense>.from(json["expenses"]!.map((x) => Expense.fromMap(x))),
   );
 
   Map<String, dynamic> toMap() => {
@@ -127,9 +127,9 @@ class ShippingDetailsModel {
     "vclID": vclId,
     "proName": proName,
     "proID": proId,
+    "perID": perId,
     "customer": customer,
     "shpFrom": shpFrom,
-    "shpRemark":shpRemark,
     "shpMovingDate": shpMovingDate?.toIso8601String(),
     "shpLoadSize": shpLoadSize,
     "shpUnit": shpUnit,
@@ -139,12 +139,13 @@ class ShippingDetailsModel {
     "shpRent": shpRent,
     "total": total,
     "shpStatus": shpStatus,
-    "income": income == null ? [] : List<dynamic>.from(income!.map((x) => x.toMap())),
+    "shpRemark": shpRemark,
+    "pyment": pyment == null ? [] : List<dynamic>.from(pyment!.map((x) => x.toMap())),
     "expenses": expenses == null ? [] : List<dynamic>.from(expenses!.map((x) => x.toMap())),
   };
 }
 
-class ShippingExpenseModel {
+class Expense {
   final String? trdReference;
   final int? accNumber;
   final String? accName;
@@ -152,7 +153,7 @@ class ShippingExpenseModel {
   final String? currency;
   final String? narration;
 
-  ShippingExpenseModel({
+  Expense({
     this.trdReference,
     this.accNumber,
     this.accName,
@@ -161,7 +162,7 @@ class ShippingExpenseModel {
     this.narration,
   });
 
-  ShippingExpenseModel copyWith({
+  Expense copyWith({
     String? trdReference,
     int? accNumber,
     String? accName,
@@ -169,7 +170,7 @@ class ShippingExpenseModel {
     String? currency,
     String? narration,
   }) =>
-      ShippingExpenseModel(
+      Expense(
         trdReference: trdReference ?? this.trdReference,
         accNumber: accNumber ?? this.accNumber,
         accName: accName ?? this.accName,
@@ -178,7 +179,7 @@ class ShippingExpenseModel {
         narration: narration ?? this.narration,
       );
 
-  factory ShippingExpenseModel.fromMap(Map<String, dynamic> json) => ShippingExpenseModel(
+  factory Expense.fromMap(Map<String, dynamic> json) => Expense(
     trdReference: json["trdReference"],
     accNumber: json["accNumber"],
     accName: json["accName"],
@@ -194,5 +195,46 @@ class ShippingExpenseModel {
     "amount": amount,
     "currency": currency,
     "narration": narration,
+  };
+}
+
+class Pyment {
+  final String? trdReference;
+  final String? cashAmount;
+  final String? cardAmount;
+  final int? accountCustomer;
+
+  Pyment({
+    this.trdReference,
+    this.cashAmount,
+    this.cardAmount,
+    this.accountCustomer,
+  });
+
+  Pyment copyWith({
+    String? trdReference,
+    String? cashAmount,
+    String? cardAmount,
+    int? accountCustomer,
+  }) =>
+      Pyment(
+        trdReference: trdReference ?? this.trdReference,
+        cashAmount: cashAmount ?? this.cashAmount,
+        cardAmount: cardAmount ?? this.cardAmount,
+        accountCustomer: accountCustomer ?? this.accountCustomer,
+      );
+
+  factory Pyment.fromMap(Map<String, dynamic> json) => Pyment(
+    trdReference: json["trdReference"],
+    cashAmount: json["cashAmount"],
+    cardAmount: json["cardAmount"],
+    accountCustomer: json["account_customer"],
+  );
+
+  Map<String, dynamic> toMap() => {
+    "trdReference": trdReference,
+    "cashAmount": cashAmount,
+    "cardAmount": cardAmount,
+    "account_customer": accountCustomer,
   };
 }

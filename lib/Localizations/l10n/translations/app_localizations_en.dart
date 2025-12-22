@@ -1604,4 +1604,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noAccountsFound => 'No accounts found';
+
+  @override
+  String get cash => 'Cash';
+
+  @override
+  String get totalPaid => 'Total Paid';
+
+  @override
+  String get remainingToPay => 'Remaining to Pay';
+
+  @override
+  String get thisAmountWillBeAddedToAccount =>
+      'This amount will be added to the selected account';
+
+  @override
+  String get enterValidCashAmount => 'Please enter a valid cash amount';
+
+  @override
+  String get confirmPayment => 'Confirm Payment';
+
+  @override
+  String get paymentConfirmationMessage =>
+      'Are you sure you want to process this payment?';
 }

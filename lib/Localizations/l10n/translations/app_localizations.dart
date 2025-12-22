@@ -3207,6 +3207,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No accounts found'**
   String get noAccountsFound;
+
+  /// No description provided for @cash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get cash;
+
+  /// No description provided for @totalPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Paid'**
+  String get totalPaid;
+
+  /// No description provided for @remainingToPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining to Pay'**
+  String get remainingToPay;
+
+  /// No description provided for @thisAmountWillBeAddedToAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'This amount will be added to the selected account'**
+  String get thisAmountWillBeAddedToAccount;
+
+  /// No description provided for @enterValidCashAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid cash amount'**
+  String get enterValidCashAmount;
+
+  /// No description provided for @confirmPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Payment'**
+  String get confirmPayment;
+
+  /// No description provided for @paymentConfirmationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to process this payment?'**
+  String get paymentConfirmationMessage;
 }
 
 class _AppLocalizationsDelegate

@@ -531,5 +531,12 @@
   "toAccount": "به حساب",
   "fullyPaid": "کاملاً پرداخت شده",
   "cashExceedsTotal": "مبلغ نقدی نمی‌تواند از کل بیشتر شود",
-  "noAccountsFound": "هیچ حسابی یافت نشد"
+  "noAccountsFound": "هیچ حسابی یافت نشد",
+  "cash": "نقدی",
+  "totalPaid": "مجموع پرداختی",
+  "remainingToPay": "مانده قابل پرداخت",
+  "thisAmountWillBeAddedToAccount": "این مبلغ به حساب انتخاب شده اضافه خواهد شد",
+  "enterValidCashAmount": "لطفا یک مبلغ نقدی معتبر وارد کنید",
+  "confirmPayment": "تایید پرداخت",
+  "paymentConfirmationMessage": "آیا مطمئن هستید که می‌خواهید این پرداخت را انجام دهید؟"
 }
