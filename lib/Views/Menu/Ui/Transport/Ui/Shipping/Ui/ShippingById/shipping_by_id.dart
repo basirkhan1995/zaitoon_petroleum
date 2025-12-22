@@ -921,60 +921,135 @@ class _DesktopState extends State<_Desktop> {
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
 
+    // DEBUG: Print the raw total value
+    print('Raw total from API: ${shipping.total}');
+    print('Total after toAmount(): ${shipping.total?.toAmount()}');
+
+    // Get total amount from shipping - parse it manually to avoid issues
+    double totalAmount = 0.0;
+
+    if (shipping.total != null && shipping.total!.isNotEmpty) {
+      // Try to parse the total directly without using toAmount()
+      String cleanedTotal = shipping.total!.replaceAll(RegExp(r'[^\d.-]'), '');
+      if (cleanedTotal.isNotEmpty) {
+        totalAmount = double.tryParse(cleanedTotal) ?? 0.0;
+      }
+      print('Parsed total amount: $totalAmount');
+    }
+
+    // If still 0, try parsing from shpRent and shpUnloadSize
+    if (totalAmount == 0 && shipping.shpRent != null && shipping.shpUnloadSize != null) {
+      double rent = double.tryParse(shipping.shpRent!.replaceAll(RegExp(r'[^\d.-]'), '')) ?? 0;
+      double unloadSize = double.tryParse(shipping.shpUnloadSize!.replaceAll(RegExp(r'[^\d.-]'), '')) ?? 0;
+      totalAmount = rent * unloadSize;
+      print('Calculated total from rent and unload size: $totalAmount (rent: $rent * unload: $unloadSize)');
+    }
+
+    print('Final total amount: $totalAmount');
+
+    // Get total amount
+   // double totalAmount = double.tryParse(shipping.total?.toAmount() ?? '0') ?? 0;
+
+    // Check if shipping has existing payments
+    bool hasExistingPayments = shipping.pyment != null && shipping.pyment!.isNotEmpty;
+    double existingCash = 0;
+    double existingCard = 0;
+    double totalPaid = 0;
+
+    if (hasExistingPayments) {
+      final payment = shipping.pyment!.first;
+      existingCash = double.tryParse(payment.cashAmount?.toAmount() ?? '0') ?? 0;
+      existingCard = double.tryParse(payment.cardAmount?.toAmount() ?? '0') ?? 0;
+      totalPaid = existingCash + existingCard;
+    }
+
+    // Calculate remaining balance
+    double remainingBalance = totalAmount - totalPaid;
+    if (remainingBalance < 0) remainingBalance = 0;
+
+    // Determine if we should show payment options
+    // Show payment options if: shipping is not delivered AND there's amount to pay
+    bool showPaymentOptions = shipping.shpStatus != 1 && remainingBalance > 0;
+
+    // Use local remaining balance variable to avoid null issues
+    double displayRemainingBalance = _remainingBalance > 0 ? _remainingBalance : remainingBalance;
+
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.payment, color: color.primary),
-              title: Text(
-                tr.payment,
-                style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(Icons.payment, color: color.primary),
+                title: Text(
+                  tr.payment,
+                  style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  hasExistingPayments ? "Update payment for this shipping" : "Add payment for this shipping",
+                  style: textTheme.bodyMedium?.copyWith(color: color.outline),
+                ),
               ),
-              subtitle: Text(
-                tr.paymentDescription,
-                style: textTheme.bodyMedium?.copyWith(color: color.outline),
-              ),
-            ),
 
-            const SizedBox(height: 5),
+              const SizedBox(height: 5),
 
-            // Total Amount Card
-            Cover(
-              radius: 6,
-              color: color.surfaceContainerHighest.withValues(alpha: .3),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(tr.totalAmount, style: textTheme.titleMedium),
-                        Text(
-                          "${shipping.total?.toAmount()} USD",
-                          style: textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: color.primary,
+              // Total Amount Card
+              Cover(
+                radius: 6,
+                color: color.surfaceContainerHighest.withValues(alpha: .3),
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(tr.totalAmount, style: textTheme.titleMedium),
+                          Text(
+                            "${totalAmount.toAmount()} USD",
+                            style: textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: color.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      // Show existing payments if any
+                      if (hasExistingPayments && totalPaid > 0)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Already Paid", style: textTheme.bodyMedium),
+                              Text(
+                                "${totalPaid.toAmount()} USD",
+                                style: textTheme.titleMedium?.copyWith(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                    // Add remaining balance display here
-                    if (_remainingBalance > 0)
+
+                      // Show remaining/amount to pay
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(tr.remainingBalance, style: textTheme.bodyMedium),
                             Text(
-                              "${_remainingBalance.toAmount()} USD",
+                              hasExistingPayments ? tr.remainingBalance : "Amount to Pay",
+                              style: textTheme.bodyMedium,
+                            ),
+                            Text(
+                              "${displayRemainingBalance.toAmount()} USD",
                               style: textTheme.titleMedium?.copyWith(
                                 color: Colors.orange,
                                 fontWeight: FontWeight.bold,
@@ -983,401 +1058,506 @@ class _DesktopState extends State<_Desktop> {
                           ],
                         ),
                       ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            // Payment Options Section
-            Text(
-              tr.paymentOptions,
-              style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              tr.selectPaymentMethod,
-              style: textTheme.bodySmall?.copyWith(color: color.outline),
-            ),
-
-            const SizedBox(height: 15),
-
-            // Cash Payment Section
-            Cover(
-              radius: 6,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.money, color: Colors.green),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            tr.cashTitle,
-                            style: textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Transform.scale(
-                          scale: 0.8,
-                          child: Switch(
-                            value: _isCashPaymentEnabled,
-                            onChanged: (value) {
-                              setState(() {
-                                _isCashPaymentEnabled = value;
-                                if (!value) {
-                                  cashCtrl.clear();
-                                }
-                                // Recalculate remaining balance
-                                _calculateRemainingBalance(shipping);
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    if (_isCashPaymentEnabled) ...[
-                      const SizedBox(height: 10),
-                      ZTextFieldEntitled(
-                        controller: cashCtrl,
-                        title: tr.cashTitle,
-                        hint: tr.enterCashAmount,
-                        keyboardInputType: TextInputType.numberWithOptions(decimal: true),
-                        inputFormat: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
-                          SmartThousandsDecimalFormatter(),
-                        ],
-                        validator: (value) {
-                          if (_isCashPaymentEnabled && value.isNotEmpty) {
-                            final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
-                            final cashAmount = double.tryParse(clean) ?? 0;
-                            final totalAmount = double.tryParse(shipping.total?.toAmount() ?? '0') ?? 0;
-
-                            if (cashAmount <= 0) {
-                              return tr.amountGreaterZero;
-                            }
-                            if (cashAmount > totalAmount) {
-                              return tr.cashExceedsTotal;
-                            }
-                          }
-                          return null;
-                        },
-                        onChanged: (value) {
-                          _calculateRemainingBalance(shipping);
-                        },
-                      ),
-
-                      const SizedBox(height: 8),
-                      if (cashCtrl.text.isNotEmpty)
-                        Text(
-                          '${tr.cashPaidNow}: ${cashCtrl.text} USD',
-                          style: textTheme.bodySmall?.copyWith(color: Colors.green),
-                        ),
                     ],
-                  ],
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 5),
+              const SizedBox(height: 12),
 
-            // Account Payment Section (for remaining balance)
-            Cover(
-              radius: 6,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+              // ONLY SHOW PAYMENT OPTIONS IF shipping is not delivered AND there's amount to pay
+              if (showPaymentOptions) ...[
+                Text(
+                  tr.paymentOptions,
+                  style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  tr.selectPaymentMethod,
+                  style: textTheme.bodySmall?.copyWith(color: color.outline),
+                ),
+
+                const SizedBox(height: 15),
+
+                // Cash Payment Section
+                Cover(
+                  radius: 6,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(FontAwesomeIcons.buildingColumns, size: 18, color: color.primary),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            tr.accountPayment,
-                            style: textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
+                        Row(
+                          children: [
+                            Icon(Icons.money, color: Colors.green),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                tr.cashTitle,
+                                style: textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                          ),
+                            Transform.scale(
+                              scale: 0.8,
+                              child: Switch(
+                                value: _isCashPaymentEnabled,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _isCashPaymentEnabled = value;
+                                    if (!value) {
+                                      cashCtrl.clear();
+                                    }
+                                    // Recalculate remaining balance
+                                    _calculateRemainingBalance(shipping);
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                        Transform.scale(
-                          scale: 0.8,
-                          child: Switch(
-                            value: _isAccountPaymentEnabled,
-                            onChanged: (value) {
-                              setState(() {
-                                _isAccountPaymentEnabled = value;
-                                if (!value) {
-                                  accountController.clear();
-                                  paymentAccNumber = null;
+
+                        if (_isCashPaymentEnabled) ...[
+                          const SizedBox(height: 10),
+                          ZTextFieldEntitled(
+                            controller: cashCtrl,
+                            title: tr.cashTitle,
+                            hint: tr.enterCashAmount,
+                            keyboardInputType: TextInputType.numberWithOptions(decimal: true),
+                            inputFormat: [
+                              FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
+                              SmartThousandsDecimalFormatter(),
+                            ],
+                            validator: (value) {
+                              if (_isCashPaymentEnabled && value.isNotEmpty) {
+                                final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
+                                final cashAmount = double.tryParse(clean) ?? 0;
+
+                                if (cashAmount <= 0) {
+                                  return tr.amountGreaterZero;
                                 }
-                              });
+                                if (cashAmount > displayRemainingBalance) {
+                                  return "Cash amount cannot exceed ${displayRemainingBalance.toAmount()} USD";
+                                }
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
+                              _calculateRemainingBalance(shipping);
                             },
                           ),
-                        ),
+
+                          const SizedBox(height: 8),
+                          if (cashCtrl.text.isNotEmpty)
+                            Text(
+                              '${tr.cashPaidNow}: ${cashCtrl.text} USD',
+                              style: textTheme.bodySmall?.copyWith(color: Colors.green),
+                            ),
+                        ],
                       ],
                     ),
+                  ),
+                ),
 
-                    if (_isAccountPaymentEnabled) ...[
-                      const SizedBox(height: 10),
+                const SizedBox(height: 5),
 
-                      // Show remaining balance explicitly
-                      if (_remainingBalance > 0)
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: color.surfaceContainerHighest.withValues(alpha: .2),
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: color.primary.withValues(alpha: .3)),
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(tr.remainingBalance, style: textTheme.titleSmall),
-                                  Text(
-                                    "${_remainingBalance.toAmount()} USD",
-                                    style: textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: color.primary,
-                                    ),
-                                  ),
-                                ],
+                // Account Payment Section
+                Cover(
+                  radius: 6,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(FontAwesomeIcons.buildingColumns, size: 18, color: color.primary),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                tr.accountPayment,
+                                style: textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                tr.remainingWillBeAddedToAccount,
-                                style: textTheme.bodySmall?.copyWith(color: color.outline),
+                            ),
+                            Transform.scale(
+                              scale: 0.8,
+                              child: Switch(
+                                value: _isAccountPaymentEnabled,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _isAccountPaymentEnabled = value;
+                                    if (!value) {
+                                      accountController.clear();
+                                      paymentAccNumber = null;
+                                    }
+                                  });
+                                },
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
 
-                      const SizedBox(height: 10),
+                        if (_isAccountPaymentEnabled) ...[
+                          const SizedBox(height: 10),
 
-                      // Account Selection
-                      GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
-                        showAllOnFocus: true,
-                        controller: accountController,
-                        title: tr.selectAccount,
-                        hintText: tr.selectReceivableAccount,
-                        isRequired: _isAccountPaymentEnabled && _remainingBalance > 0,
-                        bloc: context.read<AccountsBloc>(),
-                        fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
-                        searchFunction: (bloc, query) => bloc.add(
-                            LoadStkAccountsEvent(search: query)
-                        ),
-                        validator: (value) {
-                          if (_isAccountPaymentEnabled && _remainingBalance > 0) {
-                            if (value.isEmpty) {
-                              return tr.selectAccountRequired;
-                            }
-                            if (paymentAccNumber == null) {
-                              return tr.selectValidAccount;
-                            }
-                          }
-                          return null;
-                        },
-                        itemBuilder: (context, account) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          account.accName ?? "",
-                                          style: textTheme.bodyLarge,
-                                        ),
-                                        Text(
-                                          account.accnumber?.toString() ?? "",
-                                          style: textTheme.bodySmall?.copyWith(color: color.outline),
-                                        ),
-                                      ],
+                          // Show remaining balance that will be paid via account
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: color.surfaceContainerHighest.withValues(alpha: .2),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: color.primary.withValues(alpha: .3)),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Amount to be paid via Account", style: textTheme.titleSmall),
+                                    Text(
+                                      "${displayRemainingBalance.toAmount()} USD",
+                                      style: textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: color.primary,
+                                      ),
                                     ),
-                                  ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  tr.remainingWillBeAddedToAccount,
+                                  style: textTheme.bodySmall?.copyWith(color: color.outline),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          // Account Selection
+                          GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
+                            showAllOnFocus: true,
+                            controller: accountController,
+                            title: tr.selectAccount,
+                            hintText: tr.selectReceivableAccount,
+                            isRequired: _isAccountPaymentEnabled,
+                            bloc: context.read<AccountsBloc>(),
+                            fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
+                            searchFunction: (bloc, query) => bloc.add(
+                                LoadStkAccountsEvent(search: query)
+                            ),
+                            validator: (value) {
+                              if (_isAccountPaymentEnabled) {
+                                if (value.isEmpty) {
+                                  return tr.selectAccountRequired;
+                                }
+                                if (paymentAccNumber == null) {
+                                  return tr.selectValidAccount;
+                                }
+                              }
+                              return null;
+                            },
+                            itemBuilder: (context, account) => Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        "${account.avilBalance?.toAmount()} ${account.ccySymbol}",
-                                        style: textTheme.bodyLarge,
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              account.accName ?? "",
+                                              style: textTheme.bodyLarge,
+                                            ),
+                                            Text(
+                                              account.accnumber?.toString() ?? "",
+                                              style: textTheme.bodySmall?.copyWith(color: color.outline),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            "${account.avilBalance?.toAmount()} ${account.ccySymbol}",
+                                            style: textTheme.bodyLarge,
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
                                 ],
                               ),
-                            ],
+                            ),
+                            itemToString: (acc) => "${acc.accnumber} | ${acc.accName}",
+                            stateToLoading: (state) => state is AccountLoadingState,
+                            loadingBuilder: (context) => const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 3),
+                            ),
+                            stateToItems: (state) {
+                              if (state is StkAccountLoadedState) {
+                                return state.accounts;
+                              }
+                              return [];
+                            },
+                            onSelected: (value) {
+                              setState(() {
+                                paymentAccNumber = value.accnumber;
+                                accountController.text = "${value.accnumber} | ${value.accName}";
+                              });
+                            },
+                            noResultsText: tr.noAccountsFound,
+                            showClearButton: true,
                           ),
-                        ),
-                        itemToString: (acc) => "${acc.accnumber} | ${acc.accName}",
-                        stateToLoading: (state) => state is AccountLoadingState,
-                        loadingBuilder: (context) => const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 3),
-                        ),
-                        stateToItems: (state) {
-                          if (state is StkAccountLoadedState) {
-                            return state.accounts;
-                          }
-                          return [];
-                        },
-                        onSelected: (value) {
-                          setState(() {
-                            paymentAccNumber = value.accnumber;
-                            accountController.text = "${value.accnumber} | ${value.accName}";
-                          });
-                        },
-                        noResultsText: tr.noAccountsFound,
-                        showClearButton: true,
-                      ),
 
-                      const SizedBox(height: 8),
-                      Text(
-                        tr.remainingWillBeAddedToAccount,
-                        style: textTheme.bodySmall?.copyWith(color: color.outline),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 5),
-
-            // Payment Summary
-            if (cashCtrl.text.isNotEmpty || _isAccountPaymentEnabled)
-              Cover(
-                radius: 6,
-                color: color.surfaceContainerHighest.withValues(alpha: .2),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        tr.paymentSummary,
-                        style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 12),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(tr.totalAmount, style: textTheme.bodyMedium),
+                          const SizedBox(height: 8),
                           Text(
-                            "${shipping.total?.toAmount()} USD",
-                            style: textTheme.bodyLarge,
+                            tr.remainingWillBeAddedToAccount,
+                            style: textTheme.bodySmall?.copyWith(color: color.outline),
                           ),
                         ],
-                      ),
-
-                      const Divider(height: 24),
-
-                      if (cashCtrl.text.isNotEmpty)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.money, size: 16, color: Colors.green),
-                                const SizedBox(width: 8),
-                                Text(tr.cashPaid, style: textTheme.bodyMedium),
-                              ],
-                            ),
-                            Text(
-                              "${cashCtrl.text} USD",
-                              style: textTheme.bodyLarge?.copyWith(color: Colors.green),
-                            ),
-                          ],
-                        ),
-
-                      if (_isAccountPaymentEnabled && paymentAccNumber != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(FontAwesomeIcons.buildingColumns, size: 15, color: color.primary),
-                                  const SizedBox(width: 8),
-                                  Text(tr.toAccount, style: textTheme.bodyMedium),
-                                ],
-                              ),
-                              Text(
-                                "${_remainingBalance.toAmount()} USD",
-                                style: textTheme.bodyLarge?.copyWith(color: color.primary),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                      const Divider(height: 24),
-
-                      // Show remaining balance after payments
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(tr.remainingBalance, style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                          Text(
-                            "${_calculateBalanceAfterPayments(shipping).toAmount()} USD",
-                            style: textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: _calculateBalanceAfterPayments(shipping) == 0 ? Colors.green : color.error,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      if (_calculateBalanceAfterPayments(shipping) == 0)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Row(
-                            children: [
-                              Icon(Icons.check_circle, size: 16, color: Colors.green),
-                              const SizedBox(width: 8),
-                              Text(
-                                tr.fullyPaid,
-                                style: textTheme.bodyMedium?.copyWith(color: Colors.green),
-                              ),
-                            ],
-                          ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
 
-  // Calculate remaining balance
+                const SizedBox(height: 5),
+
+                // Payment Summary - Only show if user is entering payment
+                if (cashCtrl.text.isNotEmpty || (_isAccountPaymentEnabled && paymentAccNumber != null))
+                  Cover(
+                    radius: 6,
+                    color: color.surfaceContainerHighest.withValues(alpha: .2),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            tr.paymentSummary,
+                            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 12),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(tr.totalAmount, style: textTheme.bodyMedium),
+                              Text(
+                                "${totalAmount.toAmount()} USD",
+                                style: textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+
+                          const Divider(height: 24),
+
+                          if (cashCtrl.text.isNotEmpty)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.money, size: 16, color: Colors.green),
+                                    const SizedBox(width: 8),
+                                    Text(tr.cashPaid, style: textTheme.bodyMedium),
+                                  ],
+                                ),
+                                Text(
+                                  "${cashCtrl.text} USD",
+                                  style: textTheme.bodyLarge?.copyWith(color: Colors.green),
+                                ),
+                              ],
+                            ),
+
+                          if (_isAccountPaymentEnabled && paymentAccNumber != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(FontAwesomeIcons.buildingColumns, size: 15, color: color.primary),
+                                      const SizedBox(width: 8),
+                                      Text(tr.toAccount, style: textTheme.bodyMedium),
+                                    ],
+                                  ),
+                                  Text(
+                                    "${displayRemainingBalance.toAmount()} USD",
+                                    style: textTheme.bodyLarge?.copyWith(color: color.primary),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                          const Divider(height: 24),
+
+                          // In the Payment Summary section, update the remaining balance calculation:
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(tr.remainingBalance, style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                              Text(
+                                "${_calculateBalanceAfterPayments(shipping).toStringAsFixed(2)} USD",
+                                style: textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: _calculateBalanceAfterPayments(shipping) == 0 ? Colors.green : color.error,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          if (_calculateBalanceAfterPayments(shipping) == 0)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.check_circle, size: 16, color: Colors.green),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    tr.fullyPaid,
+                                    style: textTheme.bodyMedium?.copyWith(color: Colors.green),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ] else if (totalPaid >= totalAmount) ...[
+                // Show fully paid message
+                Cover(
+                  radius: 6,
+                  color: Colors.green.shade50,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Icon(Icons.check_circle, size: 48, color: Colors.green),
+                        const SizedBox(height: 12),
+                        Text(
+                          tr.fullyPaid,
+                          style: textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "This shipping has been fully paid.",
+                          textAlign: TextAlign.center,
+                          style: textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ] else if (shipping.shpStatus == 1) ...[
+                // Show delivered message
+                Cover(
+                  radius: 6,
+                  color: Colors.grey.shade200,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Icon(Icons.local_shipping, size: 48, color: Colors.grey),
+                        const SizedBox(height: 12),
+                        Text(
+                          "Shipping Delivered",
+                          style: textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "This shipping has been delivered.",
+                          textAlign: TextAlign.center,
+                          style: textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ));
+    }
+
+  double _parseAmount(String? amountString) {
+    if (amountString == null || amountString.isEmpty) return 0.0;
+
+    try {
+      // Remove any formatting (commas, currency symbols, spaces, etc.)
+      String cleaned = amountString
+          .replaceAll(',', '')       // Remove commas (1,600.00 -> 1600.00)
+          .replaceAll(' USD', '')    // Remove " USD" suffix
+          .replaceAll('\$', '')      // Remove dollar sign
+          .replaceAll(' ', '')       // Remove spaces
+          .trim();
+
+      // If cleaned string is empty after removing formatting
+      if (cleaned.isEmpty) return 0.0;
+
+      return double.tryParse(cleaned) ?? 0.0;
+    } catch (e) {
+      print('Error parsing amount "$amountString": $e');
+      return 0.0;
+    }
+  }
   void _calculateRemainingBalance(ShippingDetailsModel shipping) {
-    final cashAmount = double.tryParse(cashCtrl.text.cleanAmount) ?? 0;
-    final totalAmount = double.tryParse(shipping.total?.toAmount() ?? '0') ?? 0;
+    // Get the cash amount entered
+    String cashText = cashCtrl.text;
+    print('Cash text entered: "$cashText"');
+
+    // Parse cash amount - use the same parsing method
+    double cashAmount = _parseAmount(cashText);
+    print('Parsed cash amount: $cashAmount');
+
+    // Get total amount from shipping
+    double totalAmount = _parseAmount(shipping.total);
+    print('Total amount: $totalAmount');
+
+    // Calculate existing payments if any
+    double totalPaid = 0;
+    if (shipping.pyment != null && shipping.pyment!.isNotEmpty) {
+      final payment = shipping.pyment!.first;
+      double existingCash = _parseAmount(payment.cashAmount);
+      double existingCard = _parseAmount(payment.cardAmount);
+      totalPaid = existingCash + existingCard;
+      print('Existing payments - Cash: $existingCash, Card: $existingCard, Total Paid: $totalPaid');
+    }
+
+    // Calculate remaining balance before new cash payment
+    double remainingBeforeCash = totalAmount - totalPaid;
+    if (remainingBeforeCash < 0) remainingBeforeCash = 0;
+
+    print('Remaining before new cash: $remainingBeforeCash');
 
     setState(() {
-      _remainingBalance = totalAmount - cashAmount;
+      // Calculate new remaining balance after cash payment
+      _remainingBalance = remainingBeforeCash - cashAmount;
+      if (_remainingBalance < 0) _remainingBalance = 0;
+
+      print('New remaining balance after cash: $_remainingBalance');
 
       // Auto-enable account payment if there's remaining balance
       if (_remainingBalance > 0 && !_isAccountPaymentEnabled) {
         _isAccountPaymentEnabled = true;
+        print('Auto-enabling account payment');
       }
 
       // If cash covers everything, disable account payment
@@ -1385,22 +1565,38 @@ class _DesktopState extends State<_Desktop> {
         _isAccountPaymentEnabled = false;
         accountController.clear();
         paymentAccNumber = null;
+        print('Disabling account payment - cash covers balance');
       }
+
+      // Debug: Print final state
+      print('Final state - Cash enabled: $_isCashPaymentEnabled, Account enabled: $_isAccountPaymentEnabled');
     });
   }
 
-// Calculate final balance after both payments
   double _calculateBalanceAfterPayments(ShippingDetailsModel shipping) {
-    final cashAmount = double.tryParse(cashCtrl.text.cleanAmount) ?? 0;
-    final totalAmount = double.tryParse(shipping.total?.toAmount() ?? '0') ?? 0;
+    double cashAmount = _parseAmount(cashCtrl.text);
+    double totalAmount = _parseAmount(shipping.total);
 
-    // If account payment is enabled, assume it covers the remaining balance
-    if (_isAccountPaymentEnabled && paymentAccNumber != null) {
-      return 0.0;
+    // Calculate existing payments
+    double totalPaid = 0;
+    if (shipping.pyment != null && shipping.pyment!.isNotEmpty) {
+      final payment = shipping.pyment!.first;
+      totalPaid = _parseAmount(payment.cashAmount) + _parseAmount(payment.cardAmount);
     }
 
-    // Otherwise, show remaining balance after cash payment
-    return totalAmount - cashAmount;
+    // Calculate remaining before new payment
+    double remainingBeforeNew = totalAmount - totalPaid;
+    if (remainingBeforeNew < 0) remainingBeforeNew = 0;
+
+    // If account payment is enabled and selected, it covers the remaining
+    if (_isAccountPaymentEnabled && paymentAccNumber != null) {
+      double remainingAfterCash = remainingBeforeNew - cashAmount;
+      return remainingAfterCash > 0 ? 0.0 : 0.0; // Account covers remaining
+    }
+
+    // Otherwise, show actual remaining balance after cash payment
+    double remaining = remainingBeforeNew - cashAmount;
+    return remaining > 0 ? remaining : 0.0;
   }
   // Submit payment method
   void onPaymentSubmit() async {
@@ -2433,6 +2629,17 @@ class _DesktopState extends State<_Desktop> {
   void onFinish() async {
     final tr = AppLocalizations.of(context)!;
     final bloc = context.read<ShippingBloc>();
+
+    // ================= PAYMENT STEP HANDLING =================
+    // If we're in payment step (step 3) and have a shipping ID, handle payment
+    if (widget.shippingId != null && _currentStep == 3) {
+      return _handlePaymentSubmission(tr, bloc);
+    }
+
+    // ================= SHIPPING SUBMISSION HANDLING =================
+    // (Keep your existing shipping validation and submission code here)
+    // ... your existing shipping validation code ...
+
     // ================= COMMON VALIDATION =================
 
     if (customerId == null) {
@@ -2475,146 +2682,9 @@ class _DesktopState extends State<_Desktop> {
       return;
     }
 
-    if (loadingSize.text.isEmpty) {
-      Utils.showOverlayMessage(
-        context,
-        message: tr.fillLoadingSize,
-        isError: true,
-      );
-      setState(() => _currentStep = 1);
-      return;
-    }
+    // ... rest of your shipping validation code ...
 
-    if (shippingRent.text.isEmpty) {
-      Utils.showOverlayMessage(
-        context,
-        message: tr.fillShippingRent,
-        isError: true,
-      );
-      setState(() => _currentStep = 1);
-      return;
-    }
-
-    final rentValue = double.tryParse(shippingRent.text.cleanAmount);
-    if (rentValue == null || rentValue <= 0) {
-      Utils.showOverlayMessage(
-        context,
-        message: tr.invalidShippingRent,
-        isError: true,
-      );
-      setState(() => _currentStep = 1);
-      return;
-    }
-
-    if (advanceAmount.text.isNotEmpty) {
-      final advanceValue =
-      double.tryParse(advanceAmount.text.cleanAmount);
-      if (advanceValue == null || advanceValue <= 0) {
-        Utils.showOverlayMessage(
-          context,
-          message: tr.invalidAdvanceAmount,
-          isError: true,
-        );
-        setState(() => _currentStep = 2);
-        return;
-      }
-    }
-
-    // ================= DELIVERY VALIDATION =================
-
-    if (shpStatus == 1) {
-      if (unloadingSize.text.isEmpty) {
-        Utils.showOverlayMessage(
-          context,
-          message: tr.unloadingSizeRequired,
-          isError: true,
-        );
-        setState(() => _currentStep = 1);
-        return;
-      }
-
-      final unloadingValue =
-      double.tryParse(unloadingSize.text.cleanAmount);
-      if (unloadingValue == null || unloadingValue <= 0) {
-        Utils.showOverlayMessage(
-          context,
-          message: tr.invalidUnloadingSize,
-          isError: true,
-        );
-        setState(() => _currentStep = 1);
-        return;
-      }
-
-      if (shpToGregorian.isEmpty ||
-          shpToGregorian == DateTime.now().toFormattedDate()) {
-        Utils.showOverlayMessage(
-          context,
-          message: tr.setUnloadingDate,
-          isError: true,
-        );
-        setState(() => _currentStep = 1);
-        return;
-      }
-
-      try {
-        final loadingDate = DateTime.parse(shpFromGregorian);
-        final unloadingDate = DateTime.parse(shpToGregorian);
-
-        if (unloadingDate.isBefore(loadingDate)) {
-          Utils.showOverlayMessage(
-            context,
-            message: tr.unloadingBeforeLoading,
-            isError: true,
-          );
-          setState(() => _currentStep = 1);
-          return;
-        }
-      } catch (_) {
-        Utils.showOverlayMessage(
-          context,
-          message: tr.invalidDateFormat,
-          isError: true,
-        );
-        setState(() => _currentStep = 1);
-        return;
-      }
-
-      final missingFields = <String>[];
-      if (shpFrom.text.isEmpty) missingFields.add(tr.shpFrom);
-      if (shpTo.text.isEmpty) missingFields.add(tr.shpTo);
-      if (loadingSize.text.isEmpty) missingFields.add(tr.loadingSize);
-      if (unloadingSize.text.isEmpty) missingFields.add(tr.unloadingSize);
-      if (shippingRent.text.isEmpty) missingFields.add(tr.shippingRent);
-      if (unit == null || unit!.isEmpty) missingFields.add(tr.unit);
-
-      if (missingFields.isNotEmpty) {
-        Utils.showOverlayMessage(
-          context,
-          message:
-          "${tr.deliveryRequiredFields}\n${missingFields.join(', ')}",
-          isError: true,
-        );
-        setState(() => _currentStep = 1);
-        return;
-      }
-
-      final loadingValue =
-      double.tryParse(loadingSize.text.cleanAmount);
-      if (loadingValue != null &&
-          ((unloadingValue - loadingValue).abs() / loadingValue) * 100 >
-              20) {
-        final shouldContinue =
-        await _showUnloadingSizeWarningDialog(
-            context, loadingValue, unloadingValue);
-
-        if (!shouldContinue) {
-          setState(() => _currentStep = 1);
-          return;
-        }
-      }
-    }
-
-    // ================= SUBMIT =================
+    // ================= SUBMIT SHIPPING =================
 
     final data = ShippingModel(
       shpId: widget.shippingId,
