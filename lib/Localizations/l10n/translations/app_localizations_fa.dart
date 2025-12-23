@@ -1672,4 +1672,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get amountToChargeTitle => 'مبلغ قابل دریافت';
+
+  @override
+  String get accountDetails => 'جزئیات حساب';
 }

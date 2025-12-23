@@ -1060,11 +1060,32 @@ class Repositories {
       throw e.toString();
     }
   }
-  Future<Map<String, dynamic>> shippingPayment({required String? usrName, required String paymentType, required int shpId, double? cashAmount, double? accountAmount, int? accNumber}) async {
+  Future<Map<String, dynamic>> addShippingPayment({required String? usrName, required String paymentType, required int shpId, double? cashAmount, double? accountAmount, int? accNumber}) async {
     try {
       final response = await api.post(
           endpoint: "/transport/shippingPayment.php",
           data: {
+            "usrName": usrName,
+            "shpID": shpId,
+            "pType": paymentType,
+            "cashAmount": cashAmount,
+            "cardAmount": accountAmount,
+            "account": accNumber
+          }
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> editShippingPayment({required String? reference, required String? usrName, required String paymentType, required int shpId, double? cashAmount, double? accountAmount, int? accNumber}) async {
+    try {
+      final response = await api.put(
+          endpoint: "/transport/shippingPayment.php",
+          data: {
+            "trdReference":reference,
             "usrName": usrName,
             "shpID": shpId,
             "pType": paymentType,

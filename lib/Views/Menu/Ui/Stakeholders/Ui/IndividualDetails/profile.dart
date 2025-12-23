@@ -43,9 +43,7 @@ class IndividualsDetailsTabView extends StatelessWidget {
             selectedValue: selected,
 
             /// Bloc update
-            onChanged: (val) => context
-                .read<IndividualDetailTabBloc>()
-                .add(IndOnChangedEvent(val)),
+            onChanged: (val) => context.read<IndividualDetailTabBloc>().add(IndOnChangedEvent(val)),
 
             /// Colors for underline style
             style: ZTabStyle.underline,

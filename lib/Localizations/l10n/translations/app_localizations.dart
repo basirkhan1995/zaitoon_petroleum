@@ -3357,6 +3357,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Amount to charge'**
   String get amountToChargeTitle;
+
+  /// No description provided for @accountDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Details'**
+  String get accountDetails;
 }
 
 class _AppLocalizationsDelegate

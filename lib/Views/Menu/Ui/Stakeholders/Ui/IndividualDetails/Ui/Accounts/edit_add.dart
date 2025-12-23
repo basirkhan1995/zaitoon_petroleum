@@ -14,14 +14,14 @@ import '../../../../../Finance/Ui/Currency/features/currency_drop.dart';
 
 class AccountsAddEditView extends StatelessWidget {
   final AccountsModel? model;
-  final int? signatory;
-  const AccountsAddEditView({super.key, this.model, this.signatory});
+  final int? perId;
+  const AccountsAddEditView({super.key, this.model,this.perId});
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobile: _Mobile(model: model),
       tablet: _Tablet(model: model),
-      desktop: _Desktop(model: model,signatory: signatory),
+      desktop: _Desktop(model: model,perId: perId),
     );
   }
 }
@@ -48,9 +48,9 @@ class _Tablet extends StatelessWidget {
 
 class _Desktop extends StatefulWidget {
   final AccountsModel? model;
-  final int? signatory;
+  final int? perId;
 
-  const _Desktop({this.model,this.signatory});
+  const _Desktop({this.model,this.perId});
 
   @override
   State<_Desktop> createState() => _DesktopState();
@@ -175,24 +175,6 @@ class _DesktopState extends State<_Desktop> {
                   ],
                   title: locale.accountLimit,
                   controller: accountLimit,
-                  // validator: (value) {
-                  //   if (value == null || value.isEmpty) {
-                  //     return locale.required(locale.accountLimit);
-                  //   }
-                  //
-                  //   // Remove formatting (e.g. commas)
-                  //   final clean = value.replaceAll(
-                  //     RegExp(r'[^\d.]'),
-                  //     '',
-                  //   );
-                  //   final amount = double.tryParse(clean);
-                  //
-                  //   if (amount == null || amount <= 0.0) {
-                  //     return "Amount greater than zero";
-                  //   }
-                  //
-                  //   return null;
-                  // },
                 ),
 
                 Row(
@@ -223,13 +205,21 @@ class _DesktopState extends State<_Desktop> {
     if (!formKey.currentState!.validate()) return;
 
     final data = AccountsModel(
+
       accName: accName.text,
       actCurrency: ccyCode?.ccyCode ??"USD",
       accStatus: statusValue,
       accCreditLimit: accountLimit.text,
-      actSignatory: widget.signatory ?? widget.model?.actSignatory,
+      actSignatory: widget.perId,
       accNumber: widget.model?.accNumber,
     );
+
+    print(accName.text);
+    print(ccyCode?.ccyCode);
+    print(statusValue);
+    print(accountLimit.text);
+    print(widget.perId);
+    print(widget.model?.accNumber);
 
     final bloc = context.read<AccountsBloc>();
 

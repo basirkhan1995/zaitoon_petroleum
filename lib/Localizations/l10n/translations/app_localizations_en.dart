@@ -1681,4 +1681,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get amountToChargeTitle => 'Amount to charge';
+
+  @override
+  String get accountDetails => 'Account Details';
 }

@@ -60,6 +60,27 @@ class AddShippingPaymentEvent extends ShippingEvent{
     accNumber,
   ];
 }
+class EditShippingPaymentEvent extends ShippingEvent{
+  final String? reference;
+  final String usrName;
+  final int shpId;
+  final String paymentType;
+  final double? cashAmount;
+  final double? accountAmount;
+  final int? accNumber;
+
+  const EditShippingPaymentEvent({required this.reference, required this. usrName, required this.shpId, required this. paymentType, this.cashAmount,  this.accountAmount,  this.accNumber});
+  @override
+  List<Object?> get props => [
+    reference,
+    usrName,
+    shpId,
+    paymentType,
+    cashAmount,
+    accountAmount,
+    accNumber,
+  ];
+}
 
 // Stepper operations
 class UpdateStepperStepEvent extends ShippingEvent {

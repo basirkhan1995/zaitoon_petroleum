@@ -22,6 +22,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
     on<AddShippingExpenseEvent>(_onAddShippingExpense);
     on<UpdateShippingExpenseEvent>(_onUpdateShippingExpense);
     on<AddShippingPaymentEvent>(_onAddShippingPayment);
+    on<EditShippingPaymentEvent>(_onEditShippingPayment);
   }
 
   Future<void> _onLoadShipping(
@@ -316,7 +317,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
     ));
 
     try {
-      final res = await _repo.shippingPayment(
+      final res = await _repo.addShippingPayment(
         shpId: event.shpId,
         accNumber: event.accNumber,
         paymentType: event.paymentType,
@@ -369,7 +370,70 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       ));
     }
   }
+  Future<void> _onEditShippingPayment(EditShippingPaymentEvent event, Emitter<ShippingState> emit) async {
+    final tr = localizationService.loc;
+    if (state.currentShipping == null) return;
 
+    // Show loading for this specific operation
+    emit(state.copyWith(
+      loadingShpId: event.shpId,
+    ));
+
+    try {
+      final res = await _repo.editShippingPayment(
+        reference: event.reference,
+        shpId: event.shpId,
+        accNumber: event.accNumber,
+        paymentType: event.paymentType,
+        cashAmount: event.cashAmount,
+        accountAmount: event.accountAmount,
+        usrName: event.usrName,
+      );
+
+      if (res['msg'] == "success") {
+        // Get ONLY the updated expenses for this shipping
+        final updatedShipping = await _repo.getShippingById(shpId: event.shpId);
+
+        // Update the current state with new shipping details
+        emit(ShippingDetailLoadedState(
+          shippingList: state.shippingList,
+          currentShipping: updatedShipping,
+          loadingShpId: null, // Clear loading
+          shouldOpenDialog: false, // Don't reopen dialog
+        ));
+      } else if (res['msg'] == "delivered") {
+        emit(ShippingErrorState(
+          shippingList: state.shippingList,
+          currentShipping: state.currentShipping,
+          loadingShpId: null,
+          error: 'Cannot add payment to delivered shipping',
+        ));
+      }else if (res['msg'] == "over limit") {
+        emit(ShippingErrorState(
+          shippingList: state.shippingList,
+          currentShipping: state.currentShipping,
+          loadingShpId: null,
+          error: tr.overLimitMessage,
+        ));
+      }else if (res['msg'] == "blocked") {
+        emit(ShippingErrorState(
+          shippingList: state.shippingList,
+          currentShipping: state.currentShipping,
+          loadingShpId: null,
+          error: tr.blockedAccountMessage,
+        ));
+      } else {
+        throw Exception(res['msg'] ?? 'Failed to add payment');
+      }
+    } catch (e) {
+      emit(ShippingErrorState(
+        shippingList: state.shippingList,
+        currentShipping: state.currentShipping,
+        loadingShpId: null,
+        error: 'Failed to add payment: $e',
+      ));
+    }
+  }
 
   Future<void> _onUpdateShippingExpense(
       UpdateShippingExpenseEvent event,

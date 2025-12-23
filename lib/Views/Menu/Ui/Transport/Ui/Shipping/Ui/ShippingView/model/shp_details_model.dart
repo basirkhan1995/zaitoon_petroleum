@@ -203,12 +203,14 @@ class Pyment {
   final String? cashAmount;
   final String? cardAmount;
   final int? accountCustomer;
+  final String? accName;
 
   Pyment({
     this.trdReference,
     this.cashAmount,
     this.cardAmount,
     this.accountCustomer,
+    this.accName,
   });
 
   Pyment copyWith({
@@ -216,12 +218,14 @@ class Pyment {
     String? cashAmount,
     String? cardAmount,
     int? accountCustomer,
+    String? accName,
   }) =>
       Pyment(
         trdReference: trdReference ?? this.trdReference,
         cashAmount: cashAmount ?? this.cashAmount,
         cardAmount: cardAmount ?? this.cardAmount,
         accountCustomer: accountCustomer ?? this.accountCustomer,
+        accName: accName ?? this.accName,
       );
 
   factory Pyment.fromMap(Map<String, dynamic> json) => Pyment(
@@ -229,6 +233,7 @@ class Pyment {
     cashAmount: json["cashAmount"],
     cardAmount: json["cardAmount"],
     accountCustomer: json["account_customer"],
+    accName: json["accName"],
   );
 
   Map<String, dynamic> toMap() => {
@@ -236,5 +241,6 @@ class Pyment {
     "cashAmount": cashAmount,
     "cardAmount": cardAmount,
     "account_customer": accountCustomer,
+    "accName": accName,
   };
 }

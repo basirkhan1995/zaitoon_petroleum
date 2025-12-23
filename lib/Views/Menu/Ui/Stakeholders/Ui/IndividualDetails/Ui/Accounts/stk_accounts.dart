@@ -105,7 +105,7 @@ class _DesktopState extends State<_Desktop> {
                     icon: Icons.add,
                     onPressed: (){
                       showDialog(context: context, builder: (context){
-                        return AccountsAddEditView(signatory: widget.ind.perId);
+                        return AccountsAddEditView();
                       });
                     },
                     label: Text(locale.newKeyword)),
@@ -148,8 +148,7 @@ class _DesktopState extends State<_Desktop> {
                   return NoDataWidget(
                     message: state.message,
                     onRefresh: () {
-                      context.read<AccountsBloc>().add(
-                        LoadAccountsEvent(ownerId: widget.ind.perId),
+                      context.read<AccountsBloc>().add(LoadAccountsEvent(ownerId: widget.ind.perId),
                       );
                     },
                   );
@@ -181,7 +180,7 @@ class _DesktopState extends State<_Desktop> {
                         hoverColor: color.primary.withValues(alpha: .06),
                         onTap: () {
                            showDialog(context: context, builder: (context){
-                             return AccountsAddEditView(model: acc);
+                             return AccountsAddEditView(model: acc,perId: widget.ind.perId);
                            });
                         },
                         child: Container(
@@ -209,7 +208,6 @@ class _DesktopState extends State<_Desktop> {
                                 ),
 
                                 const SizedBox(width: 10),
-
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,

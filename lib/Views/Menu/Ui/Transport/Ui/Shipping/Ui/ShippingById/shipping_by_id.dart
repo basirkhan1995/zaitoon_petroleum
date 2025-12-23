@@ -29,10 +29,8 @@ import '../../feature/unit_drop.dart';
 import '../ShippingView/bloc/shipping_bloc.dart';
 import '../ShippingView/model/shipping_model.dart';
 import '../ShippingView/model/shp_details_model.dart';
-
 class ShippingByIdView extends StatelessWidget {
   final int? shippingId;
-
   const ShippingByIdView({super.key, this.shippingId});
   @override
   Widget build(BuildContext context) {
@@ -43,15 +41,12 @@ class ShippingByIdView extends StatelessWidget {
     );
   }
 }
-
 class _Desktop extends StatefulWidget {
   final int? shippingId;
   const _Desktop({this.shippingId});
-
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> {
   final shpFrom = TextEditingController();
   final shpTo = TextEditingController();
@@ -68,7 +63,6 @@ class _DesktopState extends State<_Desktop> {
   final expenseNarration = TextEditingController();
   final paymentAccountCtrl = TextEditingController();
   final cashCtrl = TextEditingController();
-
   int? expenseAccNumber;
   String? currentLocale;
   int? customerId;
@@ -77,32 +71,24 @@ class _DesktopState extends State<_Desktop> {
   String? unit;
   int? shpStatus;
   int? paymentAccNumber;
-
   // Date variables
   String shpFromGregorian = DateTime.now().toFormattedDate();
   String shpToGregorian = DateTime.now().toFormattedDate();
-
   String? usrName;
   // State variables
   bool _isCashPaymentEnabled = false;
   bool _isAccountPaymentEnabled = false;
-
-
   // Form keys for each step
   final GlobalKey<FormState> orderFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> shippingFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> advanceFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> expenseFormKey = GlobalKey<FormState>();
-
   Expense? _selectedExpenseForEdit;
-
   // Payment validation
   bool _paymentFormValid = false;
   String? _paymentError;
-
   // Add current step tracking
   int _currentStep = 0;
-
   @override
   void initState() {
     super.initState();
@@ -115,80 +101,65 @@ class _DesktopState extends State<_Desktop> {
       }
     });
   }
-
   @override
   void didUpdateWidget(covariant _Desktop oldWidget) {
     super.didUpdateWidget(oldWidget);
-
     // Reset current step when shippingId changes
     if (widget.shippingId != oldWidget.shippingId) {
       _currentStep = 0;
     }
   }
-
   void _prefillForm(ShippingDetailsModel shipping) {
     if (!mounted) return;
     setState(() {
       _currentStep = 0;
       _paymentError = null; // Clear payment error
     });
-
     _clearAllControllers();
-
     customerId = shipping.perId;
     productId = shipping.proId;
     vehicleId = shipping.vclId;
-
     customerCtrl.text = shipping.customer ?? '';
     productCtrl.text = shipping.proName ?? '';
     vehicleCtrl.text = shipping.vehicle ?? '';
-
     shpFrom.text = shipping.shpFrom ?? '';
     shpTo.text = shipping.shpTo ?? '';
-
     shpFromGregorian = shipping.shpMovingDate?.toFormattedDate() ?? "";
     shpToGregorian = shipping.shpArriveDate?.toFormattedDate() ?? "";
-
     loadingSize.text = shipping.shpLoadSize ?? '';
     unloadingSize.text = shipping.shpUnloadSize ?? '';
-
     unit = shipping.shpUnit;
     shippingRent.text = shipping.shpRent ?? '';
     remark.text = shipping.shpRemark ?? '';
     shpStatus = shipping.shpStatus ?? 0;
-
     // Prefill payment data if exists
     _prefillPaymentData(shipping);
   }
-
   // Prefill payment data from shipping
   void _prefillPaymentData(ShippingDetailsModel shipping) {
     if (shipping.pyment != null && shipping.pyment!.isNotEmpty) {
       final payment = shipping.pyment!.first;
-
       // Fill cash amount
       double cashAmount = _parseAmount(payment.cashAmount);
       if (cashAmount > 0) {
         cashCtrl.text = cashAmount.toAmount();
         _isCashPaymentEnabled = true;
       }
-
       // Fill account amount if exists
       double cardAmount = _parseAmount(payment.cardAmount);
       if (cardAmount > 0) {
         _isAccountPaymentEnabled = true;
         paymentAccNumber = payment.accountCustomer;
+        paymentAccountCtrl.text = payment.accName??"";
         // Try to load account details based on accountCustomer number
         if (payment.accountCustomer != null) {
           _loadAccountDetails(payment.accountCustomer!);
         }
       }
-
       // Recalculate remaining balance
       _calculateRemainingBalance(shipping);
     }
   }
-
   // Helper method to load account details
   void _loadAccountDetails(int accountNumber) {
     // This would typically involve fetching account details from your API
@@ -196,7 +167,6 @@ class _DesktopState extends State<_Desktop> {
     paymentAccNumber = accountNumber;
     // You might want to fetch the account name from your AccountsBloc
   }
-
   // Method to clear all controllers
   void _clearAllControllers() {
     productCtrl.clear();
@@ -214,7 +184,6 @@ class _DesktopState extends State<_Desktop> {
     expenseNarration.clear();
     cashCtrl.clear();
     paymentAccountCtrl.clear();
-
     customerId = null;
     vehicleId = null;
     productId = null;
@@ -224,11 +193,9 @@ class _DesktopState extends State<_Desktop> {
     _selectedExpenseForEdit = null;
     _isCashPaymentEnabled = false;
     _isAccountPaymentEnabled = false;
-
     _paymentFormValid = false;
     _paymentError = null;
   }
-
   @override
   void dispose() {
     // Dispose all controllers
@@ -249,11 +216,9 @@ class _DesktopState extends State<_Desktop> {
     paymentAccountCtrl.dispose();
     super.dispose();
   }
-
   // ==================== AMOUNT PARSING AND VALIDATION ====================
   double _parseAmount(String? amountString) {
     if (amountString == null || amountString.isEmpty) return 0.0;
-
     try {
       // Use your cleanAmount extension
       String cleaned = amountString.cleanAmount;
@@ -262,27 +227,21 @@ class _DesktopState extends State<_Desktop> {
       return 0.0;
     }
   }
-
   double _getControllerAmount(TextEditingController controller) {
     return _parseAmount(controller.text);
   }
-
   double _safeMax(double value, double minValue) => value > minValue ? value.toDouble() : minValue;
-
   // ==================== PAYMENT VALIDATION ====================
   void _validatePaymentAmounts(ShippingDetailsModel shipping) {
     final cashAmount = _getControllerAmount(cashCtrl);
     final totalAmount = _parseAmount(shipping.total);
-
     // Calculate existing payments
     double existingPaid = 0.0;
     if (shipping.pyment != null && shipping.pyment!.isNotEmpty) {
       final payment = shipping.pyment!.first;
       existingPaid = _parseAmount(payment.cashAmount) + _parseAmount(payment.cardAmount);
     }
-
     final remainingBalance = _safeMax(totalAmount - existingPaid, 0);
-
     // Only validate if we're in payment dialog (cashCtrl is being edited)
     // and there's actually a remaining balance
     if (remainingBalance == 0) {
@@ -292,14 +251,11 @@ class _DesktopState extends State<_Desktop> {
       });
       return;
     }
-
     // Calculate current payment based on selected payment methods
     double currentPayment = 0;
-
     if (_isCashPaymentEnabled && cashAmount > 0) {
       currentPayment += cashAmount;
     }
-
     if (_isAccountPaymentEnabled && paymentAccNumber != null) {
       // If account payment is enabled, it covers the remaining balance after cash
       double remainingAfterCash = remainingBalance - cashAmount;
@@ -307,7 +263,6 @@ class _DesktopState extends State<_Desktop> {
         currentPayment += remainingAfterCash;
       }
     }
-
     // Check if payment matches remaining balance exactly
     if (currentPayment == remainingBalance && currentPayment > 0) {
       setState(() {
@@ -326,26 +281,20 @@ class _DesktopState extends State<_Desktop> {
       });
     }
   }
-
   void _calculateRemainingBalance(ShippingDetailsModel shipping) {
-
-
     // Revalidate payment form
     _validatePaymentAmounts(shipping);
   }
-
   // ==================== BUILD METHOD ====================
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final state = context.watch<AuthBloc>().state;
-
     if (state is! AuthenticatedState) {
       return const SizedBox();
     }
     final login = state.loginData;
     usrName = login.usrName ?? "";
-
     return BlocConsumer<ShippingBloc, ShippingState>(
       listener: (context, state) {
         if (state is ShippingSuccessState) {
@@ -362,27 +311,23 @@ class _DesktopState extends State<_Desktop> {
               _selectedExpenseForEdit = null;
             });
           });
-
           // Clear payment error after successful payment
           if (state.message.contains('Payment')) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               _clearPaymentError();
             });
           }
-
           // Reload shipping details if payment was added/updated
           if (state.message.contains('Payment') && widget.shippingId != null) {
             context.read<ShippingBloc>().add(LoadShippingDetailEvent(widget.shippingId!));
           }
         }
-
         // Prefill form when shipping details are loaded
         if (state is ShippingDetailLoadedState) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _prefillForm(state.currentShipping!);
           });
         }
-
         if (state is ShippingErrorState) {
           Utils.showOverlayMessage(context, message: state.error, isError: true);
         }
@@ -391,7 +336,6 @@ class _DesktopState extends State<_Desktop> {
         if (blocState is ShippingDetailLoadingState) {
           return _buildLoadingContent();
         }
-
         // Extract shipping from various states
         ShippingDetailsModel? currentShipping;
         if (blocState is ShippingDetailLoadedState) {
@@ -401,12 +345,10 @@ class _DesktopState extends State<_Desktop> {
         } else if (blocState is ShippingListLoadedState && blocState.currentShipping != null) {
           currentShipping = blocState.currentShipping;
         }
-
         // If we have shipping details, show the stepper with data
         if (currentShipping != null) {
           return _buildStepperWithData(currentShipping, tr, context);
         }
-
         // Default: new shipping
         return _buildNewShippingStepper(tr, context);
       },
@@ -417,16 +359,13 @@ class _DesktopState extends State<_Desktop> {
       _paymentError = null;
     });
   }
-
   bool _canMarkAsDelivered(ShippingDetailsModel shipping) {
     final totalAmount = _parseAmount(shipping.total);
     double existingPaid = 0.0;
-
     if (shipping.pyment != null && shipping.pyment!.isNotEmpty) {
       final payment = shipping.pyment!.first;
       existingPaid = _parseAmount(payment.cashAmount) + _parseAmount(payment.cardAmount);
     }
-
     // Shipping can only be delivered if fully paid
     return existingPaid >= totalAmount;
   }
@@ -435,23 +374,18 @@ class _DesktopState extends State<_Desktop> {
     final tr = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
-
     // Calculate amounts
     final totalAmount = _parseAmount(shipping.total);
     double existingPaid = 0.0;
     Pyment? existingPayment;
-
     if (shipping.pyment != null && shipping.pyment!.isNotEmpty) {
       existingPayment = shipping.pyment!.first;
       existingPaid = _parseAmount(existingPayment.cashAmount) + _parseAmount(existingPayment.cardAmount);
     }
-
     final remainingBalance = _safeMax(totalAmount - existingPaid, 0);
     final isFullyPaid = existingPaid >= totalAmount || remainingBalance == 0;
-
     // FIXED: Allow editing payment if shipping is not delivered
     final canEditPayment = shipping.shpStatus != 1;
-
     return SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(10.0),
@@ -477,69 +411,61 @@ class _DesktopState extends State<_Desktop> {
                       ),
                     ],
                   ),
-
-                  // Action Buttons - FIXED: Show buttons even when fully paid
-                  if (canEditPayment)
-                    Row(
-                      children: [
-                        // Add Payment button - show when no payment exists
-                        if (existingPayment == null || existingPaid == 0)
-                          ZOutlineButton(
-                            width: 120,
-                            isActive: true,
-                            label: Text(tr.addPayment),
-                            onPressed: () => _showPaymentDialog(shipping, false),
-                          ),
-
-                        // Edit Payment button - show when payment exists and shipping not delivered
-                        if (existingPayment != null && existingPaid > 0)
-                          ZOutlineButton(
-                            width: 120,
-                            isActive: true,
-                            label: Text(tr.editPayment),
-                            onPressed: () => _showPaymentDialog(shipping, true),
-                          ),
-                      ],
-                    ),
                 ],
               ),
-
               const SizedBox(height: 10),
-
               // Amount Summary Card
               _buildAmountSummaryCard(totalAmount, existingPaid, remainingBalance, tr),
-
               const SizedBox(height: 10),
-
-              // Payment History
-              if (existingPayment != null)
+              // Payment History if not editing or always
+              if (existingPayment != null && !canEditPayment)
                 _buildPaymentHistory(existingPayment, tr),
-
-              // Show payment error if any
-              if (_paymentError != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: color.errorContainer,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.error, color: color.error),
-                        SizedBox(width: 8),
-                        Expanded(child: Text(_paymentError!)),
-                      ],
+              // Show inline payment form if can edit
+              if (canEditPayment) ...[
+                const SizedBox(height: 10),
+                _buildPaymentForm(shipping, isEditing: existingPayment != null),
+                if (_paymentError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: color.errorContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.error, color: color.error),
+                          SizedBox(width: 8),
+                          Expanded(child: Text(_paymentError!)),
+                        ],
+                      ),
                     ),
                   ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    ZOutlineButton(
+                      width: 130,
+                      isActive: _paymentFormValid,
+                      onPressed: _paymentFormValid
+                          ? () => _processPayment(shipping, existingPayment != null)
+                          : null,
+                      label: Text(existingPayment != null ? tr.updatePayment : tr.addPayment),
+                    ),
+                  ],
                 ),
+              ],
+              // Show payment history below form if editing
+              if (canEditPayment && existingPayment != null) ...[
+                const SizedBox(height: 20),
+                _buildPaymentHistory(existingPayment, tr),
+              ],
             ],
           ),
         ));
-    }
-
-
+  }
   Widget _buildAmountSummaryCard(double totalAmount, double paidAmount, double remaining, AppLocalizations tr) {
     return Cover(
       radius: 8,
@@ -563,7 +489,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   Widget _buildAmountRow(String label, double amount, bool isTotal, {bool isPaid = false, bool isRemaining = false, bool isZero = false}) {
     final color = Theme.of(context).colorScheme;
     return Row(
@@ -593,14 +518,12 @@ class _DesktopState extends State<_Desktop> {
       ],
     );
   }
-
   Widget _buildPaymentHistory(Pyment payment, AppLocalizations tr) {
     final textTheme = Theme.of(context).textTheme;
     final cashAmount = _parseAmount(payment.cashAmount);
     final cardAmount = _parseAmount(payment.cardAmount);
-
     return Cover(
-        radius: 8,
+      radius: 8,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
@@ -613,8 +536,6 @@ class _DesktopState extends State<_Desktop> {
             const SizedBox(height: 5),
             Divider(),
             const SizedBox(height: 5),
-
-
             _buildPaymentDetailRow(
               tr.totalPaid,
               "${(cashAmount + cardAmount).toAmount()} USD",
@@ -622,8 +543,6 @@ class _DesktopState extends State<_Desktop> {
               Theme.of(context).colorScheme.primary,
               isBold: true,
             ),
-
-
             if (payment.trdReference != null)
               Padding(
                 padding: const EdgeInsets.only(top: 3.0),
@@ -634,7 +553,6 @@ class _DesktopState extends State<_Desktop> {
                   Theme.of(context).colorScheme.outline,
                 ),
               ),
-
             Padding(
               padding: const EdgeInsets.only(top: 3.0),
               child: _buildPaymentDetailRow(
@@ -653,12 +571,13 @@ class _DesktopState extends State<_Desktop> {
                 Theme.of(context).colorScheme.outline,
               ),
             ),
-              Padding(
+            Padding(
               padding: const EdgeInsets.only(top: 3.0),
               child: _buildPaymentDetailRow(
-                tr.accountNumber,
-                payment.accountCustomer.toString(),
-                Icons.account_circle,
+                tr.accountDetails,
+                "${payment.accName} (${payment.accountCustomer.toString()})",
+                FontAwesomeIcons.buildingColumns,
+                iconSize: 17,
                 Theme.of(context).colorScheme.outline,
               ),
             ),
@@ -667,7 +586,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   Widget _buildPaymentDetailRow(String label, String value, IconData icon, Color color, {bool isBold = false,double iconSize = 20}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -694,90 +612,14 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
-  // ==================== PAYMENT DIALOG ====================
-  void _showPaymentDialog(ShippingDetailsModel shipping, bool isEditing) {
-    final tr = AppLocalizations.of(context)!;
-
-    // Reset payment form
-    _resetPaymentForm();
-
-    // Prefill if editing
-    if (isEditing && shipping.pyment != null && shipping.pyment!.isNotEmpty) {
-      final payment = shipping.pyment!.first;
-
-      // FIXED: Prefill with the actual payment amounts, not remaining balance
-      final cashAmount = _parseAmount(payment.cashAmount);
-      final cardAmount = _parseAmount(payment.cardAmount);
-
-      if (cashAmount > 0) {
-        cashCtrl.text = cashAmount.toAmount();
-        _isCashPaymentEnabled = true;
-      }
-
-      if (cardAmount > 0) {
-        _isAccountPaymentEnabled = true;
-        paymentAccNumber = payment.accountCustomer;
-
-        // Load account details if needed
-        if (payment.accountCustomer != null) {
-          _loadAccountDetails(payment.accountCustomer!);
-        }
-      }
-    }
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadiusGeometry.circular(8)
-              ),
-              title: Text(isEditing ? tr.editPayment : tr.addPayment,style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-              content: SizedBox(
-                width: MediaQuery.of(context).size.width *.5,
-                child: _buildPaymentDialogContent(shipping, isEditing, setState),
-              ),
-              actions: [
-                ZOutlineButton(
-                  width: 100,
-                  isActive: true,
-                  onPressed: () => Navigator.of(context).pop(),
-                  label: Text(tr.cancel),
-                ),
-                ZOutlineButton(
-                  width: 130,
-                  isActive: _paymentFormValid,
-                  onPressed: _paymentFormValid
-                      ? () => _processPaymentDialog(shipping, isEditing)
-                      : null,
-                  label: Text(isEditing ? tr.updatePayment : tr.savePayment),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildPaymentDialogContent(
-      ShippingDetailsModel shipping,
-      bool isEditing,
-      StateSetter setState,
-      ) {
+  // ==================== PAYMENT FORM ====================
+  Widget _buildPaymentForm(ShippingDetailsModel shipping, {required bool isEditing}) {
     final tr = AppLocalizations.of(context)!;
     final totalAmount = _parseAmount(shipping.total);
-
-    // FIXED: When editing, remaining balance is 0
+    // FIXED: Set remainingBalance to totalAmount when editing to allow full payment validation
     double remainingBalance;
     if (isEditing) {
-      // When editing, we're modifying an existing payment
-      remainingBalance = 0.0;
+      remainingBalance = totalAmount;
     } else {
       // Calculate existing payments for new payment
       double existingPaid = 0.0;
@@ -787,9 +629,7 @@ class _DesktopState extends State<_Desktop> {
       }
       remainingBalance = _safeMax(totalAmount - existingPaid, 0);
     }
-
     final cashAmount = _getControllerAmount(cashCtrl);
-
     return SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -797,68 +637,41 @@ class _DesktopState extends State<_Desktop> {
         children: [
           // Remaining balance info
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outline.withValues(alpha: .09),
-              borderRadius: BorderRadius.circular(8),
+              color: Theme.of(context).colorScheme.outline.withValues(alpha: .05),
+              borderRadius: BorderRadius.circular(5),
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              spacing: 8,
               children: [
+                Icon(Icons.add_card_rounded),
                 Text(
-                  isEditing ? tr.totalTitle : tr.totalCharge,
-                  style: Theme.of(context).textTheme.titleMedium
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      isEditing ? "${totalAmount.toAmount()} USD" : "${remainingBalance.toAmount()} USD",
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    if (isEditing)
-                      Text(
-                        tr.adjustAmount,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
-                      ),
-                  ],
+                    isEditing ? tr.editPayment : tr.addPayment,
+                    style: Theme.of(context).textTheme.titleMedium
                 ),
               ],
             ),
           ),
-
           const SizedBox(height: 10),
-
           // Cash Payment Section
-          _buildCashPaymentSection(setState, isEditing ? totalAmount : remainingBalance, tr),
-
+          _buildCashPaymentSection(remainingBalance, tr),
           const SizedBox(height: 10),
-
           // Account Payment Section
-          _buildAccountPaymentSection(setState, isEditing ? totalAmount : remainingBalance, cashAmount, tr),
-
+          _buildAccountPaymentSection(remainingBalance, cashAmount, tr),
           const SizedBox(height: 10),
-
           // Quick amount buttons - only for new payments
           if (!isEditing && remainingBalance > 0)
-
-
           // Payment Summary
-          if (cashAmount > 0 || (_isAccountPaymentEnabled && paymentAccNumber != null))
-            _buildPaymentDialogSummary(isEditing ? totalAmount : remainingBalance, cashAmount, tr, isEditing: isEditing),
+            if (cashAmount > 0 || (_isAccountPaymentEnabled && paymentAccNumber != null))
+              _buildPaymentDialogSummary(remainingBalance, cashAmount, tr, isEditing: isEditing),
         ],
       ),
     );
   }
-
-  Widget _buildCashPaymentSection(StateSetter setState, double remainingBalance, AppLocalizations tr) {
+  Widget _buildCashPaymentSection(double remainingBalance, AppLocalizations tr) {
     return Cover(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.all(8.0),
       radius: 8,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -873,7 +686,7 @@ class _DesktopState extends State<_Desktop> {
                     if (!_isCashPaymentEnabled) {
                       cashCtrl.clear();
                     }
-                    _validatePaymentDialog();
+                    _validatePaymentForm();
                   });
                 },
               ),
@@ -883,7 +696,6 @@ class _DesktopState extends State<_Desktop> {
               ),
             ],
           ),
-
           if (_isCashPaymentEnabled) ...[
             const SizedBox(height: 12),
             ZTextFieldEntitled(
@@ -907,22 +719,21 @@ class _DesktopState extends State<_Desktop> {
               },
               onChanged: (value) {
                 setState(() {
-                  _validatePaymentDialog();
+                  _validatePaymentForm();
                 });
               },
             ),
+            const SizedBox(height: 12),
           ],
         ],
       ),
     );
   }
-
-  Widget _buildAccountPaymentSection(StateSetter setState, double remainingBalance, double cashAmount, AppLocalizations tr) {
+  Widget _buildAccountPaymentSection(double remainingBalance, double cashAmount, AppLocalizations tr) {
     final availableForAccount = _safeMax(remainingBalance - cashAmount, 0);
-
     return Cover(
       radius: 8,
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.all(8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -937,7 +748,7 @@ class _DesktopState extends State<_Desktop> {
                       paymentAccountCtrl.clear();
                       paymentAccNumber = null;
                     }
-                    _validatePaymentDialog();
+                    _validatePaymentForm();
                   });
                 },
               ),
@@ -947,10 +758,8 @@ class _DesktopState extends State<_Desktop> {
               ),
             ],
           ),
-
           if (_isAccountPaymentEnabled) ...[
             const SizedBox(height: 12),
-
             // Show amount that will be paid via account
             if (availableForAccount > 0)
               Container(
@@ -973,9 +782,7 @@ class _DesktopState extends State<_Desktop> {
                   ],
                 ),
               ),
-
             const SizedBox(height: 12),
-
             // Account selection
             GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
               showAllOnFocus: true,
@@ -1046,29 +853,25 @@ class _DesktopState extends State<_Desktop> {
                 setState(() {
                   paymentAccNumber = value.accnumber;
                   paymentAccountCtrl.text = "${value.accnumber} | ${value.accName}";
+                  _validatePaymentForm();
                 });
-                _validatePaymentDialog();
               },
               noResultsText: tr.noAccountsFound,
               showClearButton: true,
             ),
+            const SizedBox(height: 12),
           ],
         ],
       ),
     );
   }
-
   Widget _buildPaymentDialogSummary(double targetAmount, double cashAmount, AppLocalizations tr, {bool isEditing = false}) {
     final accountAmount = _isAccountPaymentEnabled && paymentAccNumber != null
         ? _safeMax(targetAmount - cashAmount, 0)
         : 0.0;
     final totalPayment = cashAmount + accountAmount;
-
     // FIXED: Different validation for editing
-    final isValid = isEditing
-        ? totalPayment == targetAmount  // When editing, must match total shipping amount
-        : totalPayment == targetAmount; // When adding, must match remaining balance
-
+    final isValid = totalPayment == targetAmount; // Must match target (remaining or total)
     return Card(
       color: isValid ? Colors.green.shade50 : Colors.orange.shade50,
       child: Padding(
@@ -1082,17 +885,12 @@ class _DesktopState extends State<_Desktop> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 12),
-
             if (cashAmount > 0)
               _buildSummaryRow(tr.cashPayment, cashAmount, Icons.money),
-
             if (accountAmount > 0)
               _buildSummaryRow(tr.accountPayment, accountAmount, Icons.account_balance),
-
             const Divider(),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -1105,9 +903,7 @@ class _DesktopState extends State<_Desktop> {
                 ),
               ],
             ),
-
             const SizedBox(height: 8),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -1124,7 +920,6 @@ class _DesktopState extends State<_Desktop> {
                 ),
               ],
             ),
-
             if (isValid)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
@@ -1159,19 +954,16 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-  void _validatePaymentDialog() {
+  void _validatePaymentForm() {
     final shippingState = context.read<ShippingBloc>().state;
     ShippingDetailsModel? currentShipping;
-
     if (shippingState is ShippingDetailLoadedState) {
       currentShipping = shippingState.currentShipping;
     } else if (shippingState is ShippingSuccessState) {
       currentShipping = shippingState.currentShipping;
     }
-
     if (currentShipping != null) {
       final cashAmount = _getControllerAmount(cashCtrl);
-
       // Validate that at least one payment method is selected
       if (!_isCashPaymentEnabled && !_isAccountPaymentEnabled) {
         setState(() {
@@ -1180,7 +972,6 @@ class _DesktopState extends State<_Desktop> {
         });
         return;
       }
-
       // Validate that cash amount is entered if cash payment is enabled
       if (_isCashPaymentEnabled && cashAmount <= 0) {
         setState(() {
@@ -1189,7 +980,6 @@ class _DesktopState extends State<_Desktop> {
         });
         return;
       }
-
       // Validate that account is selected if account payment is enabled
       if (_isAccountPaymentEnabled && paymentAccNumber == null) {
         setState(() {
@@ -1198,79 +988,27 @@ class _DesktopState extends State<_Desktop> {
         });
         return;
       }
-
       _validatePaymentAmounts(currentShipping);
     }
   }
-  void _resetPaymentForm() {
-    cashCtrl.clear();
-    paymentAccountCtrl.clear();
-    _isCashPaymentEnabled = false;
-    _isAccountPaymentEnabled = false;
-    paymentAccNumber = null;
-    _paymentFormValid = false;
-    _paymentError = null;
-  }
-
-  void _prefillPaymentForEdit(Pyment payment) {
-    // Clear existing
-    _resetPaymentForm();
-
-    // Fill cash
-    final cashAmount = _parseAmount(payment.cashAmount);
-    if (cashAmount > 0) {
-      cashCtrl.text = cashAmount.toAmount();
-      _isCashPaymentEnabled = true;
-    }
-
-    // Fill account payment
-    final cardAmount = _parseAmount(payment.cardAmount);
-    if (cardAmount > 0) {
-      _isAccountPaymentEnabled = true;
-      paymentAccNumber = payment.accountCustomer;
-
-      // Try to find and set account name
-      if (payment.accountCustomer != null) {
-        final accountsBloc = context.read<AccountsBloc>();
-        final accountsState = accountsBloc.state;
-
-        if (accountsState is StkAccountLoadedState) {
-          final account = accountsState.accounts.firstWhere(
-                (acc) => acc.accnumber == payment.accountCustomer,
-            orElse: () => StakeholdersAccountsModel(),
-          );
-
-          if (account.accName != null) {
-            paymentAccountCtrl.text = "${account.accnumber} | ${account.accName}";
-          }
-        }
-      }
-    }
-  }
-
-  void _processPaymentDialog(ShippingDetailsModel shipping, bool isEditing) {
+  void _processPayment(ShippingDetailsModel shipping, bool isEditing) {
     final tr = AppLocalizations.of(context)!;
     final bloc = context.read<ShippingBloc>();
-
     // Get amounts
     final cashAmount = _getControllerAmount(cashCtrl);
     final totalAmount = _parseAmount(shipping.total);
-
     // Calculate existing payments if editing
     double existingPaid = 0.0;
     if (isEditing && shipping.pyment != null && shipping.pyment!.isNotEmpty) {
       final payment = shipping.pyment!.first;
       existingPaid = _parseAmount(payment.cashAmount) + _parseAmount(payment.cardAmount);
     }
-
     // FIXED: When editing, remaining balance should be 0
-    final remainingBalance = isEditing ? 0.0 : _safeMax(totalAmount - existingPaid, 0);
-
+    final remainingBalance = isEditing ? totalAmount : _safeMax(totalAmount - existingPaid, 0);
     // Calculate account amount correctly
     double accountAmount = 0.0;
     if (_isAccountPaymentEnabled && paymentAccNumber != null) {
       // User has selected account payment, need to check what amount they want
-
       // If both cash and account are enabled (dual payment)
       if (_isCashPaymentEnabled) {
         // Dual payment: cash covers some, account covers the rest
@@ -1280,9 +1018,7 @@ class _DesktopState extends State<_Desktop> {
         accountAmount = remainingBalance;
       }
     }
-
     final totalPayment = cashAmount + accountAmount;
-
     // FIXED: Different validation for editing vs adding
     if (isEditing) {
       // When editing, total payment must match the original total amount paid
@@ -1308,7 +1044,6 @@ class _DesktopState extends State<_Desktop> {
         return;
       }
     }
-
     // Determine payment type correctly
     String paymentType;
     if (cashAmount > 0 && accountAmount > 0) {
@@ -1325,7 +1060,6 @@ class _DesktopState extends State<_Desktop> {
       );
       return;
     }
-
     // Validate that account number is provided for account payments
     if ((paymentType == "card" || paymentType == "dual") && paymentAccNumber == null) {
       Utils.showOverlayMessage(
@@ -1335,7 +1069,6 @@ class _DesktopState extends State<_Desktop> {
       );
       return;
     }
-
     // Validate that cash is provided for cash payments
     if ((paymentType == "cash" || paymentType == "dual") && cashAmount <= 0) {
       Utils.showOverlayMessage(
@@ -1345,13 +1078,12 @@ class _DesktopState extends State<_Desktop> {
       );
       return;
     }
-
     // Show confirmation dialog
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadiusGeometry.circular(8)
+            borderRadius: BorderRadius.circular(8)
         ),
         title: Text(isEditing ? tr.editPayment : tr.addPayment),
         content: Column(
@@ -1464,19 +1196,18 @@ class _DesktopState extends State<_Desktop> {
                 ? null
                 : () {
               Navigator.of(context).pop(); // Close confirmation dialog
-              Navigator.of(context).pop(); // Close payment dialog
-
               // Dispatch the event
               if (isEditing) {
                 // Update existing payment
-                // bloc.add(UpdateShippingPaymentEvent(
-                //   shpId: shipping.shpId!,
-                //   cashAmount: cashAmount, // Pass as number
-                //   accNumber: paymentAccNumber,
-                //   accountAmount: accountAmount, // Pass as number
-                //   paymentType: paymentType,
-                //   usrName: usrName ?? "",
-                // ));
+                bloc.add(EditShippingPaymentEvent(
+                  reference: shipping.pyment?.first.trdReference,
+                  shpId: shipping.shpId!,
+                  cashAmount: cashAmount,
+                  accNumber: paymentAccNumber,
+                  accountAmount: accountAmount,
+                  paymentType: paymentType,
+                  usrName: usrName ?? "",
+                ));
               } else {
                 // Add new payment
                 bloc.add(AddShippingPaymentEvent(
@@ -1495,7 +1226,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
 // Helper method to get display name for payment type
   String _getPaymentTypeDisplayName(String paymentType) {
     final tr = AppLocalizations.of(context)!;
@@ -1510,7 +1240,6 @@ class _DesktopState extends State<_Desktop> {
         return paymentType;
     }
   }
-
   // ==================== OTHER METHODS ====================
   Widget _advancePayment() {
     final tr = AppLocalizations.of(context)!;
@@ -1540,13 +1269,11 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   Widget _buildStepperWithData(ShippingDetailsModel shipping, AppLocalizations tr, BuildContext context) {
     final blocState = context.watch<ShippingBloc>().state;
     final isLoading = blocState is ShippingListLoadingState && blocState.isLoading;
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
-
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
@@ -1631,13 +1358,11 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   Widget _buildNewShippingStepper(AppLocalizations tr, BuildContext context) {
     final blocState = context.watch<ShippingBloc>().state;
     final isLoading = blocState is ShippingListLoadingState && blocState.isLoading;
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
-
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
@@ -1717,7 +1442,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   bool _validateStepChange(int currentStep, int requestedStep) {
     // Only validate when moving forward
     if (requestedStep > currentStep) {
@@ -1731,7 +1455,6 @@ class _DesktopState extends State<_Desktop> {
           return false;
         }
       }
-
       if (requestedStep == 2) {
         if (vehicleCtrl.text.isEmpty ||
             shpFrom.text.isEmpty ||
@@ -1748,7 +1471,6 @@ class _DesktopState extends State<_Desktop> {
     }
     return true;
   }
-
   // ==================== OTHER WIDGETS ====================
   Widget _order({ShippingDetailsModel? shipping}) {
     final tr = AppLocalizations.of(context)!;
@@ -1892,7 +1614,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   Widget _shipping({ShippingDetailsModel? shipping}) {
     final tr = AppLocalizations.of(context)!;
     bool isDelivered = shipping?.shpStatus == 1;
@@ -2038,15 +1759,12 @@ class _DesktopState extends State<_Desktop> {
                         if (value == null || value.isEmpty) {
                           return tr.required(tr.loadingSize);
                         }
-
                         // Convert to number and check if valid
                         final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
                         final amount = double.tryParse(clean);
-
                         if (amount == null || amount <= 0) {
                           return tr.amountGreaterZero;
                         }
-
                         return null;
                       },
                     ),
@@ -2068,15 +1786,12 @@ class _DesktopState extends State<_Desktop> {
                         if (value == null || value.isEmpty) {
                           return tr.required(tr.unloadingSize);
                         }
-
                         // Convert to number and check if valid
                         final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
                         final amount = double.tryParse(clean);
-
                         if (amount == null || amount <= 0) {
                           return tr.amountGreaterZero;
                         }
-
                         return null;
                       },
                     ),
@@ -2115,17 +1830,14 @@ class _DesktopState extends State<_Desktop> {
                         if (value == null || value.isEmpty) {
                           return tr.required(tr.shippingRent);
                         }
-
                         final clean = value.replaceAll(
                           RegExp(r'[^\d.]'),
                           '',
                         );
                         final amount = double.tryParse(clean);
-
                         if (amount == null || amount <= 0.0) {
                           return tr.amountGreaterZero;
                         }
-
                         return null;
                       },
                       controller: shippingRent,
@@ -2147,18 +1859,15 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   Widget _buildExpensesView(ShippingDetailsModel shipping) {
     final tr = AppLocalizations.of(context)!;
     final expenses = shipping.expenses ?? [];
     final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-
     return BlocSelector<ShippingBloc, ShippingState, int?>(
       selector: (state) => state.loadingShpId,
       builder: (context, loadingShpId) {
         final isLoading = loadingShpId == widget.shippingId;
-
         return SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(5),
@@ -2168,7 +1877,6 @@ class _DesktopState extends State<_Desktop> {
                 // Expense Form
                 Column(
                   children: [
-
                     if(shipping.shpStatus != 1)
                       Form(
                         key: expenseFormKey,
@@ -2274,17 +1982,14 @@ class _DesktopState extends State<_Desktop> {
                                       if (value == null || value.isEmpty) {
                                         return tr.required(tr.amount);
                                       }
-
                                       final clean = value.replaceAll(
                                         RegExp(r'[^\d.]'),
                                         '',
                                       );
                                       final amount = double.tryParse(clean);
-
                                       if (amount == null || amount <= 0.0) {
                                         return tr.amountGreaterZero;
                                       }
-
                                       return null;
                                     },
                                     controller: expenseAmount,
@@ -2347,7 +2052,6 @@ class _DesktopState extends State<_Desktop> {
                       ),
                   ],
                 ),
-
                 // Expenses List
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -2356,7 +2060,6 @@ class _DesktopState extends State<_Desktop> {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
-
                 if (expenses.isEmpty)
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -2407,7 +2110,6 @@ class _DesktopState extends State<_Desktop> {
                           itemCount: expenses.length,
                           itemBuilder: (context, index) {
                             final expense = expenses[index];
-
                             return Material(
                               child: InkWell(
                                 hoverColor: color.primary.withValues(alpha: .06),
@@ -2479,7 +2181,6 @@ class _DesktopState extends State<_Desktop> {
       },
     );
   }
-
   Widget _buildSummaryView(ShippingDetailsModel? shipping) {
     final summaryData = _getSummaryData(shipping);
     final hasShippingDetails = shipping != null;
@@ -2487,7 +2188,7 @@ class _DesktopState extends State<_Desktop> {
     // Check if shipping can be marked as delivered
     // bool canBeDelivered = true;
     // if (hasShippingDetails) {
-    //   canBeDelivered = _canMarkAsDelivered(shipping);
+    // canBeDelivered = _canMarkAsDelivered(shipping);
     // }
     return SingleChildScrollView(
       child: Padding(
@@ -2522,7 +2223,6 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ),
                     ),
-
                     Switch(
                         value: shpStatus == 1,
                         onChanged: (e) {
@@ -2550,11 +2250,9 @@ class _DesktopState extends State<_Desktop> {
               ),
             ),
             const SizedBox(height: 5),
-
             // Customer Information
             _buildSummaryItem(tr.customer, summaryData['customer'] ?? ''),
             _buildSummaryItem(tr.productName, summaryData['product'] ?? ''),
-
             const SizedBox(height: 5),
             Text(
               tr.shippingDetails,
@@ -2563,7 +2261,6 @@ class _DesktopState extends State<_Desktop> {
               ),
             ),
             const SizedBox(height: 10),
-
             // Shipping Details
             _buildSummaryItem(tr.vehicle, summaryData['vehicle'] ?? ''),
             _buildSummaryItem(tr.fromTo, "${summaryData['from']} - ${summaryData['to']}"),
@@ -2572,11 +2269,9 @@ class _DesktopState extends State<_Desktop> {
             _buildSummaryItem(tr.loadingSize, summaryData['loadingSize'] ?? ''),
             _buildSummaryItem(tr.unloadingSize, summaryData['unloadingSize'] ?? ''),
             _buildSummaryItem(tr.shippingRent, summaryData['rent']?.toAmount() ?? ''),
-
             // Financial Summary
             if (summaryData['total'] != null && summaryData['total']!.isNotEmpty)
               _buildSummaryItem(tr.totalTitle, "${summaryData['total']?.toAmount()}", isHighlighted: true),
-
             // Expenses Summary - Only for ShippingDetailsModel
             if (hasShippingDetails && shipping.expenses != null && shipping.expenses!.isNotEmpty)
               Column(
@@ -2599,7 +2294,6 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ],
               ),
-
             // payment Summary - Only for ShippingDetailsModel
             if (hasShippingDetails && shipping.pyment != null && shipping.pyment!.isNotEmpty)
               Column(
@@ -2634,26 +2328,21 @@ class _DesktopState extends State<_Desktop> {
                       isSubItem: false,
                     ),
                   ),
-
                   ...shipping.pyment!.map(
                         (payment) => _buildSummaryItem(
                       tr.referenceNumber,
                       "${payment.trdReference}",
                       isSubItem: false,
                     ),
-
-
                   ),
                 ],
               ),
-
             const SizedBox(height: 30),
           ],
         ),
       ),
     );
   }
-
   Widget _buildSummaryItem(String title, String value, {bool isHighlighted = false, bool isSubItem = false}) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: isSubItem ? 4.0 : 5.0),
@@ -2687,7 +2376,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   Widget _buildLoadingContent() {
     return Center(
       child: Container(
@@ -2701,13 +2389,12 @@ class _DesktopState extends State<_Desktop> {
           children: [
             const CircularProgressIndicator(),
             const SizedBox(height: 16),
-             Text(AppLocalizations.of(context)!.loadingTitle,style: Theme.of(context).textTheme.titleMedium),
+            Text(AppLocalizations.of(context)!.loadingTitle,style: Theme.of(context).textTheme.titleMedium),
           ],
         ),
       ),
     );
   }
-
   ShippingModel _getFormDataAsShippingModel() {
     return ShippingModel(
       shpLoadSize: loadingSize.text,
@@ -2727,7 +2414,6 @@ class _DesktopState extends State<_Desktop> {
       shpUnit: unit ?? "TN",
     );
   }
-
   void _clearExpenseForm() {
     expenseAmount.clear();
     expenseNarration.clear();
@@ -2738,15 +2424,12 @@ class _DesktopState extends State<_Desktop> {
       expenseFormKey.currentState!.reset();
     }
   }
-
   void popUp() {
     Navigator.of(context).pop();
   }
-
   void onFinish() async {
     final tr = AppLocalizations.of(context)!;
     final bloc = context.read<ShippingBloc>();
-
     // Shipping submission handling
     if (customerId == null) {
       Utils.showOverlayMessage(
@@ -2757,7 +2440,6 @@ class _DesktopState extends State<_Desktop> {
       setState(() => _currentStep = 0);
       return;
     }
-
     if (productId == null) {
       Utils.showOverlayMessage(
         context,
@@ -2767,7 +2449,6 @@ class _DesktopState extends State<_Desktop> {
       setState(() => _currentStep = 0);
       return;
     }
-
     if (vehicleId == null) {
       Utils.showOverlayMessage(
         context,
@@ -2777,7 +2458,6 @@ class _DesktopState extends State<_Desktop> {
       setState(() => _currentStep = 1);
       return;
     }
-
     if (shpFrom.text.isEmpty || shpTo.text.isEmpty) {
       Utils.showOverlayMessage(
         context,
@@ -2787,30 +2467,42 @@ class _DesktopState extends State<_Desktop> {
       setState(() => _currentStep = 1);
       return;
     }
-
     // VALIDATION: Check if trying to deliver without full payment
     if (shpStatus == 1 && widget.shippingId != null) {
       // Get current shipping from state to check payment
       final shippingState = bloc.state;
       ShippingDetailsModel? currentShipping;
-
       if (shippingState is ShippingDetailLoadedState) {
         currentShipping = shippingState.currentShipping;
       } else if (shippingState is ShippingSuccessState) {
         currentShipping = shippingState.currentShipping;
       }
+      if (currentShipping != null) {
+        // Calculate potential new total assuming total = rent + expenses
+        double newTotal = _parseAmount(shippingRent.text);
+        double expensesSum = 0.0;
+        if (currentShipping.expenses != null) {
+          expensesSum = currentShipping.expenses!.fold(0.0, (sum, e) => sum + _parseAmount(e.amount));
+        }
+        newTotal += expensesSum;
 
-      if (currentShipping != null && !_canMarkAsDelivered(currentShipping)) {
-        Utils.showOverlayMessage(
-          context,
-          message: "Cannot mark as delivered. Payment is not complete.",
-          isError: true,
-        );
-        setState(() => _currentStep = 4); // Go to payment step
-        return;
+        double existingPaid = 0.0;
+        if (currentShipping.pyment != null && currentShipping.pyment!.isNotEmpty) {
+          final payment = currentShipping.pyment!.first;
+          existingPaid = _parseAmount(payment.cashAmount) + _parseAmount(payment.cardAmount);
+        }
+
+        if (existingPaid < newTotal) {
+          Utils.showOverlayMessage(
+            context,
+            message: "Cannot mark as delivered. Payment (${existingPaid.toAmount()}) is less than total (${newTotal.toAmount()})",
+            isError: true,
+          );
+          setState(() => _currentStep = 3); // Go to payment step
+          return;
+        }
       }
     }
-
     // Submit shipping
     final data = ShippingModel(
       shpId: widget.shippingId,
@@ -2830,12 +2522,10 @@ class _DesktopState extends State<_Desktop> {
       shpStatus: shpStatus ?? 0,
       shpUnit: unit ?? "TN",
     );
-
     widget.shippingId != null
         ? bloc.add(UpdateShippingEvent(data))
         : bloc.add(AddShippingEvent(data));
   }
-
   Map<String, String> _getSummaryData(ShippingDetailsModel? shipping) {
     if (shipping != null) {
       // Return data from ShippingDetailsModel
@@ -2868,70 +2558,22 @@ class _DesktopState extends State<_Desktop> {
       };
     }
   }
-
-  Future<bool> _showUnloadingSizeWarningDialog(BuildContext context, double loadingSize, double unloadingSize) async {
-    final difference = unloadingSize - loadingSize;
-    final percentage = ((difference.abs()) / loadingSize) * 100;
-    final tr = AppLocalizations.of(context)!;
-    return await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8)
-          ),
-          title: Text(tr.unloadingSizeWarning),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("${tr.unloadingSize} (${unloadingSize.toStringAsFixed(2)}) ${tr.unloadingSizeWarningMessage} (${loadingSize.toStringAsFixed(2)})."),
-              const SizedBox(height: 8),
-              Text("${tr.difference}: ${difference > 0 ? '+' : ''}${difference.toStringAsFixed(2)} (${percentage.toStringAsFixed(1)}%)",
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
-              const SizedBox(height: 12),
-              Text(tr.unloadingSizeProceedMessage),
-            ],
-          ),
-          actions: [
-            ZOutlineButton(
-              width: 100,
-              onPressed: () => Navigator.of(context).pop(false),
-              label: Text(tr.cancel),
-            ),
-            ZOutlineButton(
-              width: 100,
-              isActive: true,
-              onPressed: () => Navigator.of(context).pop(true),
-              label: Text(tr.proceed),
-            ),
-          ],
-        );
-      },
-    ) ?? false;
-  }
-
   void _loadExpenseForEdit(Expense expense) {
     setState(() {
       _selectedExpenseForEdit = expense;
       expenseAmount.text = expense.amount ?? '';
       expenseNarration.text = expense.narration ?? '';
-
       if (expense.accNumber != null && expense.accName != null) {
         accountController.text = '${expense.accNumber} | ${expense.accName}';
         expenseAccNumber = expense.accNumber;
       }
     });
   }
-
   void _handleExpenseAction() {
     if (expenseFormKey.currentState == null || !expenseFormKey.currentState!.validate()) {
       Utils.showOverlayMessage(context, message: "Please fill all required fields", isError: true);
       return;
     }
-
     if (_selectedExpenseForEdit != null) {
       context.read<ShippingBloc>().add(
         UpdateShippingExpenseEvent(
@@ -2954,7 +2596,6 @@ class _DesktopState extends State<_Desktop> {
       );
     }
   }
-
   Widget _datePicker({required String date, required String title, bool? isActive}) {
     return GenericDatePicker(
       isActive: isActive ?? false,
@@ -2972,28 +2613,23 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 }
-
 // Mobile and Tablet remain as Placeholder
 class _Mobile extends StatelessWidget {
   final int? shippingId;
   const _Mobile({this.shippingId});
-
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
   }
 }
-
 class _Tablet extends StatelessWidget {
   final int? shippingId;
   const _Tablet({this.shippingId});
-
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
   }
 }
-
 class PaymentValidator {
   static String? validatePaymentAmount({
     required double enteredAmount,
@@ -3005,18 +2641,14 @@ class PaymentValidator {
     if (enteredAmount <= 0) {
       return tr.amountGreaterZero;
     }
-
     if (!allowPartial && enteredAmount > remainingBalance) {
       return "$fieldName cannot exceed ${remainingBalance.toAmount()} USD";
     }
-
     if (enteredAmount < 0) {
       return "$fieldName cannot be negative";
     }
-
     return null;
   }
-
   static String? validateTotalPayment({
     required double cashAmount,
     required double accountAmount,
@@ -3024,13 +2656,11 @@ class PaymentValidator {
     required AppLocalizations tr,
   }) {
     final totalPayment = cashAmount + accountAmount;
-
     // For exact match validation
     if (totalPayment != remainingBalance) {
       return "Total payment (${totalPayment.toAmount()}) must exactly match "
           "remaining balance (${remainingBalance.toAmount()})";
     }
-
     return null;
   }
 }

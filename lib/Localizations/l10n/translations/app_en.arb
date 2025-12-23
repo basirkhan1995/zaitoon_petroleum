@@ -555,5 +555,6 @@
   "amountToChargeAccount": "Amount due to account",
   "enterAmount": "Enter amount",
   "adjustAmount": "Adjust amount",
-  "amountToChargeTitle": "Amount to charge"
+  "amountToChargeTitle": "Amount to charge",
+  "accountDetails": "Account Details"
 }

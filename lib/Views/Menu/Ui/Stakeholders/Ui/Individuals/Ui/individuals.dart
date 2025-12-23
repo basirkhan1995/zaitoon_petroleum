@@ -71,7 +71,6 @@ class _DesktopState extends State<_Desktop> {
   }
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme;
     final locale = AppLocalizations.of(context)!;
 
     final shortcuts = {
@@ -227,8 +226,6 @@ class _DesktopState extends State<_Desktop> {
                           );
                         },
                       );
-
-
                     }
                     return const SizedBox();
                   },
