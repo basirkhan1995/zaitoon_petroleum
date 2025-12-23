@@ -1645,4 +1645,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get paymentTypeDisplayCard => 'یوازې حساب';
+
+  @override
+  String get fee => 'هزینه';
 }

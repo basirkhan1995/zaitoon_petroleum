@@ -509,7 +509,6 @@
   "updateShippingHint": "اړین ځایونه ډک کړئ او ګامونه تعقیب کړئ ترڅو بار بشپړ شي",
   "copied": "کپی شد",
   "cashTitle": "پرداخت نقدی",
-
   "paymentDescription": "د دې لېږد لپاره پیسې پای ته رسول",
   "totalAmount": "ټوله پیسې",
   "totalShippingRent": "د لېږد ټوله کرایه",
@@ -539,15 +538,13 @@
   "enterValidCashAmount": "مهرباني وکړئ یو باوري نغدي مقدار دننه کړئ",
   "confirmPayment": "تادیې تایید کړئ",
   "paymentConfirmationMessage": "آیا تاسو ډاډه یاست چې غواړئ دا تادیه ترسره کړئ؟",
-
   "addPayment": "پېسې اضافه کړئ",
   "editPayment": "پېسې سمول",
   "updatePayment": "پېسې تازه کول",
   "savePayment": "پېسې خوندي کول",
   "paymentDetails": "د پېسو جزئیات",
-
   "paymentTypeDisplayDual": "نقدی او حساب",
   "paymentTypeDisplayCash": "یوازې نقدی",
-  "paymentTypeDisplayCard": "یوازې حساب"
-
+  "paymentTypeDisplayCard": "یوازې حساب",
+  "fee": "هزینه"
 }

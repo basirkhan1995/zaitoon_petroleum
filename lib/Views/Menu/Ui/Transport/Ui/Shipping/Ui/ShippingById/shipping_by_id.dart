@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
@@ -390,10 +392,6 @@ class _DesktopState extends State<_Desktop> {
           return _buildLoadingContent();
         }
 
-        if (blocState is ShippingErrorState) {
-          return _buildErrorContent(blocState.error, context);
-        }
-
         // Extract shipping from various states
         ShippingDetailsModel? currentShipping;
         if (blocState is ShippingDetailLoadedState) {
@@ -456,7 +454,7 @@ class _DesktopState extends State<_Desktop> {
 
     return SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -468,11 +466,11 @@ class _DesktopState extends State<_Desktop> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        tr.payment,
+                        tr.fee,
                         style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        isFullyPaid ? tr.fullyPaid : "Balance: ${remainingBalance.toAmount()} USD",
+                        isFullyPaid ? tr.fullyPaid : "${tr.balance}: ${remainingBalance.toAmount()} USD",
                         style: textTheme.bodyMedium?.copyWith(
                           color: isFullyPaid ? Colors.green : color.error,
                         ),
@@ -506,12 +504,12 @@ class _DesktopState extends State<_Desktop> {
                 ],
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 10),
 
               // Amount Summary Card
               _buildAmountSummaryCard(totalAmount, existingPaid, remainingBalance, tr),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 10),
 
               // Payment History
               if (existingPayment != null)
@@ -543,13 +541,13 @@ class _DesktopState extends State<_Desktop> {
 
 
   Widget _buildAmountSummaryCard(double totalAmount, double paidAmount, double remaining, AppLocalizations tr) {
-    return Card(
-      elevation: 2,
+    return Cover(
+      radius: 8,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
-            _buildAmountRow("Total Shipping Amount", totalAmount, true),
+            _buildAmountRow("Total Delivery Fee", totalAmount, true),
             const Divider(),
             _buildAmountRow("Amount Paid", paidAmount, false, isPaid: true),
             const Divider(),
@@ -568,35 +566,31 @@ class _DesktopState extends State<_Desktop> {
 
   Widget _buildAmountRow(String label, double amount, bool isTotal, {bool isPaid = false, bool isRemaining = false, bool isZero = false}) {
     final color = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-              fontSize: isTotal ? 16 : 14,
-            ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+            fontSize: isTotal ? 16 : 14,
           ),
-          Text(
-            "${amount.toAmount()} USD",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: isTotal ? 18 : 16,
-              color: isTotal
-                  ? color.primary
-                  : isPaid
-                  ? Colors.green
-                  : isRemaining
-                  ? (isZero ? Colors.green : color.error)
-                  : color.onSurface,
-            ),
+        ),
+        Text(
+          "${amount.toAmount()} USD",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: isTotal ? 18 : 16,
+            color: isTotal
+                ? color.primary
+                : isPaid
+                ? Colors.green
+                : isRemaining
+                ? (isZero ? Colors.green : color.error)
+                : color.onSurface,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -605,9 +599,10 @@ class _DesktopState extends State<_Desktop> {
     final cashAmount = _parseAmount(payment.cashAmount);
     final cardAmount = _parseAmount(payment.cardAmount);
 
-    return Card(
+    return Cover(
+        radius: 8,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -615,7 +610,7 @@ class _DesktopState extends State<_Desktop> {
               tr.paymentDetails,
               style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
 
             if (cashAmount > 0)
               _buildPaymentDetailRow(
@@ -629,13 +624,14 @@ class _DesktopState extends State<_Desktop> {
               _buildPaymentDetailRow(
                 tr.accountPayment,
                 "${cardAmount.toAmount()} USD",
-                Icons.account_balance,
+                FontAwesomeIcons.buildingColumns,
+                iconSize: 17,
                 Theme.of(context).colorScheme.primary,
               ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 5),
             Divider(),
-            const SizedBox(height: 12),
+            const SizedBox(height: 5),
 
             _buildPaymentDetailRow(
               "Total Paid",
@@ -647,7 +643,7 @@ class _DesktopState extends State<_Desktop> {
 
             if (payment.trdReference != null)
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 3.0),
                 child: _buildPaymentDetailRow(
                   "Transaction Reference",
                   payment.trdReference!,
@@ -661,12 +657,12 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget _buildPaymentDetailRow(String label, String value, IconData icon, Color color, {bool isBold = false,}) {
+  Widget _buildPaymentDetailRow(String label, String value, IconData icon, Color color, {bool isBold = false,double iconSize = 20}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: color),
+          Icon(icon, size: iconSize, color: color),
           SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -1615,7 +1611,7 @@ class _DesktopState extends State<_Desktop> {
                       icon: Icons.data_exploration,
                     ),
                     StepItem(
-                      title: tr.payment,
+                      title: tr.fee,
                       content: _buildPaymentView(shipping),
                       icon: Icons.payment_rounded,
                     ),
@@ -2489,10 +2485,10 @@ class _DesktopState extends State<_Desktop> {
     final hasShippingDetails = shipping != null;
     final tr = AppLocalizations.of(context)!;
     // Check if shipping can be marked as delivered
-    bool canBeDelivered = true;
-    if (hasShippingDetails) {
-      canBeDelivered = _canMarkAsDelivered(shipping);
-    }
+    // bool canBeDelivered = true;
+    // if (hasShippingDetails) {
+    //   canBeDelivered = _canMarkAsDelivered(shipping);
+    // }
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -2611,7 +2607,7 @@ class _DesktopState extends State<_Desktop> {
                 children: [
                   const SizedBox(height: 20),
                   Text(
-                    tr.payment,
+                    "Delivery Fee",
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -2621,15 +2617,32 @@ class _DesktopState extends State<_Desktop> {
                         (payment) => _buildSummaryItem(
                       tr.cashAmount,
                       "${payment.cashAmount?.toAmount()}",
-                      isSubItem: true,
+                      isSubItem: false,
                     ),
                   ),
                   ...shipping.pyment!.map(
                         (payment) => _buildSummaryItem(
                       tr.accountPayment,
                       "${payment.cardAmount?.toAmount()}",
-                      isSubItem: true,
+                      isSubItem: false,
                     ),
+                  ),
+                  ...shipping.pyment!.map(
+                        (payment) => _buildSummaryItem(
+                      tr.accountNumber,
+                      "${payment.accountCustomer}",
+                      isSubItem: false,
+                    ),
+                  ),
+
+                  ...shipping.pyment!.map(
+                        (payment) => _buildSummaryItem(
+                      tr.referenceNumber,
+                      "${payment.trdReference}",
+                      isSubItem: false,
+                    ),
+
+
                   ),
                 ],
               ),
@@ -2695,27 +2708,7 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget _buildErrorContent(String error, BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.error, color: Colors.red, size: 48),
-          const SizedBox(height: 16),
-          Text(
-            error,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.red),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   ShippingModel _getFormDataAsShippingModel() {
     return ShippingModel(

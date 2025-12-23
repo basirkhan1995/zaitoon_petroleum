@@ -509,7 +509,6 @@
   "updateShippingHint": "فیلد های الزامی را تکمیل کرده و مراحل را دنبال کنید تا محموله تکمیل شود",
   "copied": "کپی شد",
   "cashTitle": "پرداخت نقدی",
-
   "paymentDescription": "نهایی کردن پرداخت برای این حمل و نقل",
   "totalAmount": "مبلغ کل",
   "totalShippingRent": "کرایه کل حمل و نقل",
@@ -539,16 +538,13 @@
   "enterValidCashAmount": "لطفا یک مبلغ نقدی معتبر وارد کنید",
   "confirmPayment": "تایید پرداخت",
   "paymentConfirmationMessage": "آیا مطمئن هستید که می‌خواهید این پرداخت را انجام دهید؟",
-
-
   "addPayment": "افزودن پرداخت",
   "editPayment": "ویرایش پرداخت",
   "updatePayment": "بروزرسانی پرداخت",
   "savePayment": "ذخیره پرداخت",
   "paymentDetails": "جزئیات پرداخت",
-
   "paymentTypeDisplayDual": "نقدی و حسابی",
   "paymentTypeDisplayCash": "فقط نقدی",
-  "paymentTypeDisplayCard": "فقط حسابی"
-
+  "paymentTypeDisplayCard": "فقط حسابی",
+  "fee": "هزینه"
 }

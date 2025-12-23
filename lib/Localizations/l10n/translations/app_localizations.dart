@@ -3297,6 +3297,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account Only'**
   String get paymentTypeDisplayCard;
+
+  /// No description provided for @fee.
+  ///
+  /// In en, this message translates to:
+  /// **'Fee'**
+  String get fee;
 }
 
 class _AppLocalizationsDelegate

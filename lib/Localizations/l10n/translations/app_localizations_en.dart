@@ -1651,4 +1651,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentTypeDisplayCard => 'Account Only';
+
+  @override
+  String get fee => 'Fee';
 }

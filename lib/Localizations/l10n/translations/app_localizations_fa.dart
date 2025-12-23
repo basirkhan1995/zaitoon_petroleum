@@ -1642,4 +1642,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get paymentTypeDisplayCard => 'فقط حسابی';
+
+  @override
+  String get fee => 'هزینه';
 }

@@ -509,7 +509,6 @@
   "updateShippingHint": "Complete the required fields and follow the steps to complete shipment.",
   "copied": "Copied",
   "cashTitle": "Cash Payment",
-
   "paymentDescription": "Finalize payment for this shipping",
   "totalAmount": "Total Amount",
   "totalShippingRent": "Total shipping rent",
@@ -532,7 +531,6 @@
   "fullyPaid": "Fully Paid",
   "cashExceedsTotal": "Cash amount cannot exceed total",
   "noAccountsFound": "No accounts found",
-
   "cash": "Cash",
   "totalPaid": "Total Paid",
   "remainingToPay": "Remaining to Pay",
@@ -540,7 +538,6 @@
   "enterValidCashAmount": "Please enter a valid cash amount",
   "confirmPayment": "Confirm Payment",
   "paymentConfirmationMessage": "Are you sure you want to process this payment?",
-
   "addPayment": "Add Payment",
   "editPayment": "Edit Payment",
   "updatePayment": "Update Payment",
@@ -548,6 +545,6 @@
   "paymentDetails": "Payment Details",
   "paymentTypeDisplayDual": "Cash & Account",
   "paymentTypeDisplayCash": "Cash Only",
-  "paymentTypeDisplayCard": "Account Only"
-
+  "paymentTypeDisplayCard": "Account Only",
+  "fee": "Fee"
 }
