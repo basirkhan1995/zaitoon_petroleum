@@ -1159,7 +1159,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
   void _validatePaymentDialog() {
     final shippingState = context.read<ShippingBloc>().state;
     ShippingDetailsModel? currentShipping;
@@ -1203,7 +1202,6 @@ class _DesktopState extends State<_Desktop> {
       _validatePaymentAmounts(currentShipping);
     }
   }
-
   void _resetPaymentForm() {
     cashCtrl.clear();
     paymentAccountCtrl.clear();
