@@ -546,5 +546,9 @@
   "paymentTypeDisplayDual": "Cash & Account",
   "paymentTypeDisplayCash": "Cash Only",
   "paymentTypeDisplayCard": "Account Only",
-  "fee": "Fee"
+  "fee": "Fee",
+  "totalPayment": "Total Payment",
+  "totalCharge": "Total Charge",
+  "paymentType": "Payment Method",
+  "loadingTitle": "Please wait…"
 }

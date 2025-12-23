@@ -18,10 +18,11 @@ class GregorianDatePicker extends StatefulWidget {
   });
 
   @override
-  _GregorianDatePickerState createState() => _GregorianDatePickerState();
+  @override
+  GregorianDatePickerState createState() => GregorianDatePickerState();
 }
 
-class _GregorianDatePickerState extends State<GregorianDatePicker> {
+class GregorianDatePickerState extends State<GregorianDatePicker> {
   late DateTime _selectedDate;
   late DateTime _currentMonth;
   late DateTime _today;
@@ -39,7 +40,6 @@ class _GregorianDatePickerState extends State<GregorianDatePicker> {
     _selectedDate = widget.initialDate ?? _today;
     _currentMonth = DateTime(_selectedDate.year, _selectedDate.month, 1);
     _selectedYear = _selectedDate.year;
-
     _yearScrollController = ScrollController();
   }
 

@@ -3303,6 +3303,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fee'**
   String get fee;
+
+  /// No description provided for @totalPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Payment'**
+  String get totalPayment;
+
+  /// No description provided for @totalCharge.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Charge'**
+  String get totalCharge;
+
+  /// No description provided for @paymentType.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Method'**
+  String get paymentType;
+
+  /// No description provided for @loadingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait…'**
+  String get loadingTitle;
 }
 
 class _AppLocalizationsDelegate

@@ -547,12 +547,12 @@ class _DesktopState extends State<_Desktop> {
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
-            _buildAmountRow("Total Delivery Fee", totalAmount, true),
+            _buildAmountRow(tr.totalCharge, totalAmount, true),
             const Divider(),
-            _buildAmountRow("Amount Paid", paidAmount, false, isPaid: true),
+            _buildAmountRow(tr.totalPaid, paidAmount, false, isPaid: true),
             const Divider(),
             _buildAmountRow(
-              "Remaining Balance",
+              tr.remainingBalance,
               remaining,
               false,
               isRemaining: true,
@@ -610,47 +610,58 @@ class _DesktopState extends State<_Desktop> {
               tr.paymentDetails,
               style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
-
-            if (cashAmount > 0)
-              _buildPaymentDetailRow(
-                tr.cashPayment,
-                "${cashAmount.toAmount()} USD",
-                Icons.money,
-                Colors.green,
-              ),
-
-            if (cardAmount > 0)
-              _buildPaymentDetailRow(
-                tr.accountPayment,
-                "${cardAmount.toAmount()} USD",
-                FontAwesomeIcons.buildingColumns,
-                iconSize: 17,
-                Theme.of(context).colorScheme.primary,
-              ),
-
             const SizedBox(height: 5),
             Divider(),
             const SizedBox(height: 5),
 
+
             _buildPaymentDetailRow(
-              "Total Paid",
+              tr.totalPaid,
               "${(cashAmount + cardAmount).toAmount()} USD",
               Icons.check_circle,
               Theme.of(context).colorScheme.primary,
               isBold: true,
             ),
 
+
             if (payment.trdReference != null)
               Padding(
                 padding: const EdgeInsets.only(top: 3.0),
                 child: _buildPaymentDetailRow(
-                  "Transaction Reference",
+                  tr.transactionRef,
                   payment.trdReference!,
                   Icons.receipt,
                   Theme.of(context).colorScheme.outline,
                 ),
               ),
+
+            Padding(
+              padding: const EdgeInsets.only(top: 3.0),
+              child: _buildPaymentDetailRow(
+                tr.cashPaid,
+                payment.cashAmount?.toAmount() ?? "0.00",
+                Icons.money,
+                Theme.of(context).colorScheme.outline,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 3.0),
+              child: _buildPaymentDetailRow(
+                tr.accountPayment,
+                payment.cardAmount?.toAmount() ?? "0.00",
+                Icons.credit_card,
+                Theme.of(context).colorScheme.outline,
+              ),
+            ),
+              Padding(
+              padding: const EdgeInsets.only(top: 3.0),
+              child: _buildPaymentDetailRow(
+                tr.accountNumber,
+                payment.accountCustomer.toString(),
+                Icons.account_circle,
+                Theme.of(context).colorScheme.outline,
+              ),
+            ),
           ],
         ),
       ),
@@ -1397,7 +1408,7 @@ class _DesktopState extends State<_Desktop> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Payment Type", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(tr.paymentMethod, style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(
                   _getPaymentTypeDisplayName(paymentType),
                   style: TextStyle(
@@ -1411,7 +1422,7 @@ class _DesktopState extends State<_Desktop> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Total Payment", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(tr.totalPayment, style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(
                   "${totalPayment.toAmount()} USD",
                   style: TextStyle(
@@ -1425,7 +1436,7 @@ class _DesktopState extends State<_Desktop> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Shipping Total", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(tr.totalCharge, style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(
                   "${totalAmount.toAmount()} USD",
                   style: TextStyle(
@@ -2699,7 +2710,7 @@ class _DesktopState extends State<_Desktop> {
           children: [
             const CircularProgressIndicator(),
             const SizedBox(height: 16),
-            const Text('Loading please wait...'),
+             Text(AppLocalizations.of(context)!.loadingTitle,style: Theme.of(context).textTheme.titleMedium),
           ],
         ),
       ),

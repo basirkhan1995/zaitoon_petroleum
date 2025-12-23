@@ -546,5 +546,9 @@
   "paymentTypeDisplayDual": "نقدی او حساب",
   "paymentTypeDisplayCash": "یوازې نقدی",
   "paymentTypeDisplayCard": "یوازې حساب",
-  "fee": "هزینه"
+  "fee": "هزینه",
+  "totalPayment": "کل پرداخت",
+  "totalCharge": "د تادیې ټول مبلغ",
+  "paymentType": "د تادیې طریقه",
+  "loadingTitle": "مهرباني وکړئ انتظار وکړئ…"
 }

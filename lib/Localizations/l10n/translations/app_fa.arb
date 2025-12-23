@@ -546,5 +546,9 @@
   "paymentTypeDisplayDual": "نقدی و حسابی",
   "paymentTypeDisplayCash": "فقط نقدی",
   "paymentTypeDisplayCard": "فقط حسابی",
-  "fee": "هزینه"
+  "fee": "هزینه",
+  "totalPayment": "کل پرداخت",
+  "totalCharge": "کل مبلغ قابل پرداخت",
+  "paymentType": "روش پرداخت",
+  "loadingTitle": "لطفاً منتظر بمانید…"
 }

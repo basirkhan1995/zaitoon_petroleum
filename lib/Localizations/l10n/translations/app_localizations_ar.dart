@@ -1648,4 +1648,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get fee => 'هزینه';
+
+  @override
+  String get totalPayment => 'کل پرداخت';
+
+  @override
+  String get totalCharge => 'د تادیې ټول مبلغ';
+
+  @override
+  String get paymentType => 'د تادیې طریقه';
+
+  @override
+  String get loadingTitle => 'مهرباني وکړئ انتظار وکړئ…';
 }

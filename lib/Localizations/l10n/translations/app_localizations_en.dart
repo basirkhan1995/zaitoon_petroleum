@@ -1654,4 +1654,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fee => 'Fee';
+
+  @override
+  String get totalPayment => 'Total Payment';
+
+  @override
+  String get totalCharge => 'Total Charge';
+
+  @override
+  String get paymentType => 'Payment Method';
+
+  @override
+  String get loadingTitle => 'Please wait…';
 }

@@ -1645,4 +1645,16 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get fee => 'هزینه';
+
+  @override
+  String get totalPayment => 'کل پرداخت';
+
+  @override
+  String get totalCharge => 'کل مبلغ قابل پرداخت';
+
+  @override
+  String get paymentType => 'روش پرداخت';
+
+  @override
+  String get loadingTitle => 'لطفاً منتظر بمانید…';
 }
