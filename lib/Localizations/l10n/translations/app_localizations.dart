@@ -3327,6 +3327,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please wait…'**
   String get loadingTitle;
+
+  /// No description provided for @payCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay with physical cash'**
+  String get payCash;
+
+  /// No description provided for @amountToChargeAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount due to account'**
+  String get amountToChargeAccount;
+
+  /// No description provided for @enterAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter amount'**
+  String get enterAmount;
+
+  /// No description provided for @adjustAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust amount'**
+  String get adjustAmount;
+
+  /// No description provided for @amountToChargeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount to charge'**
+  String get amountToChargeTitle;
 }
 
 class _AppLocalizationsDelegate

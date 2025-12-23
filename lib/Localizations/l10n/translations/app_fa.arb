@@ -550,5 +550,10 @@
   "totalPayment": "کل پرداخت",
   "totalCharge": "کل مبلغ قابل پرداخت",
   "paymentType": "روش پرداخت",
-  "loadingTitle": "لطفاً منتظر بمانید…"
+  "loadingTitle": "لطفاً منتظر بمانید…",
+  "payCash": "پرداخت با پول نقد",
+  "amountToChargeAccount": "اضافه مبلغ به حساب",
+  "enterAmount": "مبلغ را وارید نمایید",
+  "adjustAmount": "تنظیم مبلغ",
+  "amountToChargeTitle": "مبلغ قابل دریافت"
 }

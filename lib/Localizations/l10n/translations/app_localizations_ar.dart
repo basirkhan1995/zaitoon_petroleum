@@ -1660,4 +1660,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get loadingTitle => 'مهرباني وکړئ انتظار وکړئ…';
+
+  @override
+  String get payCash => 'په نغدو پیسو تادیه کول';
+
+  @override
+  String get amountToChargeAccount => 'مبلغ حساب ته اضافه کول';
+
+  @override
+  String get enterAmount => 'مبلغ را وارید نمایید';
+
+  @override
+  String get adjustAmount => 'تنظیم مبلغ';
+
+  @override
+  String get amountToChargeTitle => 'مبلغ قابل دریافت';
 }

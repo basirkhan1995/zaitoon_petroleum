@@ -550,5 +550,10 @@
   "totalPayment": "کل پرداخت",
   "totalCharge": "د تادیې ټول مبلغ",
   "paymentType": "د تادیې طریقه",
-  "loadingTitle": "مهرباني وکړئ انتظار وکړئ…"
+  "loadingTitle": "مهرباني وکړئ انتظار وکړئ…",
+  "payCash": "په نغدو پیسو تادیه کول",
+  "amountToChargeAccount": "مبلغ حساب ته اضافه کول",
+  "enterAmount": "مبلغ را وارید نمایید",
+  "adjustAmount": "تنظیم مبلغ",
+  "amountToChargeTitle": "مبلغ قابل دریافت"
 }

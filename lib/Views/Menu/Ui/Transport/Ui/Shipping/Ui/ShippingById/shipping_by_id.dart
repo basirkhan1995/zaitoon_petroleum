@@ -737,17 +737,20 @@ class _DesktopState extends State<_Desktop> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadiusGeometry.circular(8)
               ),
-              title: Text(isEditing ? tr.editPayment : tr.addPayment),
+              title: Text(isEditing ? tr.editPayment : tr.addPayment,style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
               content: SizedBox(
                 width: MediaQuery.of(context).size.width *.5,
                 child: _buildPaymentDialogContent(shipping, isEditing, setState),
               ),
               actions: [
                 ZOutlineButton(
+                  width: 100,
+                  isActive: true,
                   onPressed: () => Navigator.of(context).pop(),
                   label: Text(tr.cancel),
                 ),
                 ZOutlineButton(
+                  width: 130,
                   isActive: _paymentFormValid,
                   onPressed: _paymentFormValid
                       ? () => _processPaymentDialog(shipping, isEditing)
@@ -796,21 +799,21 @@ class _DesktopState extends State<_Desktop> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              color: Theme.of(context).colorScheme.outline.withValues(alpha: .09),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  isEditing ? "Editing Payment" : "Amount to Pay:",
-                  style: Theme.of(context).textTheme.titleMedium,
+                  isEditing ? tr.totalTitle : tr.totalCharge,
+                  style: Theme.of(context).textTheme.titleMedium
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      isEditing ? "Total: ${totalAmount.toAmount()} USD" : "${remainingBalance.toAmount()} USD",
+                      isEditing ? "${totalAmount.toAmount()} USD" : "${remainingBalance.toAmount()} USD",
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
@@ -818,7 +821,7 @@ class _DesktopState extends State<_Desktop> {
                     ),
                     if (isEditing)
                       Text(
-                        "Adjust amounts below",
+                        tr.adjustAmount,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.outline,
                         ),
@@ -876,13 +879,7 @@ class _DesktopState extends State<_Desktop> {
               ),
               SizedBox(width: 8),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(tr.cashPayment, style: Theme.of(context).textTheme.titleMedium),
-                    Text("Pay with physical cash", style: Theme.of(context).textTheme.bodySmall),
-                  ],
-                ),
+                child: Text(tr.cashPayment, style: Theme.of(context).textTheme.titleMedium),
               ),
             ],
           ),
@@ -892,7 +889,7 @@ class _DesktopState extends State<_Desktop> {
             ZTextFieldEntitled(
               controller: cashCtrl,
               title: tr.cashAmount,
-              hint: "Enter cash amount",
+              hint: tr.enterAmount,
               keyboardInputType: TextInputType.numberWithOptions(decimal: true),
               inputFormat: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
@@ -946,13 +943,7 @@ class _DesktopState extends State<_Desktop> {
               ),
               SizedBox(width: 8),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(tr.accountPayment, style: Theme.of(context).textTheme.titleMedium),
-                    Text("Pay via bank account", style: Theme.of(context).textTheme.bodySmall),
-                  ],
-                ),
+                child: Text(tr.accountPayment, style: Theme.of(context).textTheme.titleMedium),
               ),
             ],
           ),
@@ -971,7 +962,7 @@ class _DesktopState extends State<_Desktop> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Amount to charge to account:"),
+                    Text(tr.amountToChargeAccount),
                     Text(
                       "${availableForAccount.toAmount()} USD",
                       style: TextStyle(
@@ -1464,10 +1455,12 @@ class _DesktopState extends State<_Desktop> {
         ),
         actions: [
           ZOutlineButton(
+            width: 120,
             onPressed: () => Navigator.of(context).pop(),
             label: Text(tr.cancel),
           ),
           ZOutlineButton(
+            width: 120,
             isActive: isEditing ? (totalPayment == totalAmount) : (totalPayment == remainingBalance),
             onPressed: (isEditing && totalPayment != totalAmount) || (!isEditing && totalPayment != remainingBalance)
                 ? null

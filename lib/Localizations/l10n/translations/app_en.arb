@@ -550,5 +550,10 @@
   "totalPayment": "Total Payment",
   "totalCharge": "Total Charge",
   "paymentType": "Payment Method",
-  "loadingTitle": "Please wait…"
+  "loadingTitle": "Please wait…",
+  "payCash": "Pay with physical cash",
+  "amountToChargeAccount": "Amount due to account",
+  "enterAmount": "Enter amount",
+  "adjustAmount": "Adjust amount",
+  "amountToChargeTitle": "Amount to charge"
 }

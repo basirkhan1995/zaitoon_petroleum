@@ -1657,4 +1657,19 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get loadingTitle => 'لطفاً منتظر بمانید…';
+
+  @override
+  String get payCash => 'پرداخت با پول نقد';
+
+  @override
+  String get amountToChargeAccount => 'اضافه مبلغ به حساب';
+
+  @override
+  String get enterAmount => 'مبلغ را وارید نمایید';
+
+  @override
+  String get adjustAmount => 'تنظیم مبلغ';
+
+  @override
+  String get amountToChargeTitle => 'مبلغ قابل دریافت';
 }

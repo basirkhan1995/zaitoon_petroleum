@@ -1666,4 +1666,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loadingTitle => 'Please wait…';
+
+  @override
+  String get payCash => 'Pay with physical cash';
+
+  @override
+  String get amountToChargeAccount => 'Amount due to account';
+
+  @override
+  String get enterAmount => 'Enter amount';
+
+  @override
+  String get adjustAmount => 'Adjust amount';
+
+  @override
+  String get amountToChargeTitle => 'Amount to charge';
 }
