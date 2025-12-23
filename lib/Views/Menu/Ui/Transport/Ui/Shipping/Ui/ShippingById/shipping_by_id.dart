@@ -722,12 +722,13 @@ class _DesktopState extends State<_Desktop> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
+              backgroundColor: Theme.of(context).colorScheme.surface,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadiusGeometry.circular(8)
               ),
               title: Text(isEditing ? tr.editPayment : tr.addPayment),
               content: SizedBox(
-                width: 500,
+                width: MediaQuery.of(context).size.width *.5,
                 child: _buildPaymentDialogContent(shipping, isEditing, setState),
               ),
               actions: [
@@ -817,17 +818,17 @@ class _DesktopState extends State<_Desktop> {
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
 
           // Cash Payment Section
           _buildCashPaymentSection(setState, isEditing ? totalAmount : remainingBalance, tr),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
 
           // Account Payment Section
           _buildAccountPaymentSection(setState, isEditing ? totalAmount : remainingBalance, cashAmount, tr),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
 
           // Quick amount buttons - only for new payments
           if (!isEditing && remainingBalance > 0)
@@ -842,69 +843,68 @@ class _DesktopState extends State<_Desktop> {
   }
 
   Widget _buildCashPaymentSection(StateSetter setState, double remainingBalance, AppLocalizations tr) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Checkbox(
-                  value: _isCashPaymentEnabled,
-                  onChanged: (value) {
-                    setState(() {
-                      _isCashPaymentEnabled = value ?? false;
-                      if (!_isCashPaymentEnabled) {
-                        cashCtrl.clear();
-                      }
-                      _validatePaymentDialog();
-                    });
-                  },
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(tr.cashPayment, style: Theme.of(context).textTheme.titleMedium),
-                      Text("Pay with physical cash", style: Theme.of(context).textTheme.bodySmall),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            if (_isCashPaymentEnabled) ...[
-              const SizedBox(height: 12),
-              ZTextFieldEntitled(
-                controller: cashCtrl,
-                title: tr.cashAmount,
-                hint: "Enter cash amount",
-                keyboardInputType: TextInputType.numberWithOptions(decimal: true),
-                inputFormat: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
-                  SmartThousandsDecimalFormatter(),
-                ],
-                validator: (value) {
-                  if (_isCashPaymentEnabled) {
-                    final amount = _parseAmount(value);
-                    if (amount <= 0) return tr.amountGreaterZero;
-                    if (amount > remainingBalance) {
-                      return "Cash amount cannot exceed ${remainingBalance.toAmount()} USD";
-                    }
-                  }
-                  return null;
-                },
+    return Cover(
+      padding: const EdgeInsets.all(12.0),
+      radius: 8,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Checkbox(
+                value: _isCashPaymentEnabled,
                 onChanged: (value) {
                   setState(() {
+                    _isCashPaymentEnabled = value ?? false;
+                    if (!_isCashPaymentEnabled) {
+                      cashCtrl.clear();
+                    }
                     _validatePaymentDialog();
                   });
                 },
               ),
+              SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(tr.cashPayment, style: Theme.of(context).textTheme.titleMedium),
+                    Text("Pay with physical cash", style: Theme.of(context).textTheme.bodySmall),
+                  ],
+                ),
+              ),
             ],
+          ),
+
+          if (_isCashPaymentEnabled) ...[
+            const SizedBox(height: 12),
+            ZTextFieldEntitled(
+              controller: cashCtrl,
+              title: tr.cashAmount,
+              hint: "Enter cash amount",
+              keyboardInputType: TextInputType.numberWithOptions(decimal: true),
+              inputFormat: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
+                SmartThousandsDecimalFormatter(),
+              ],
+              validator: (value) {
+                if (_isCashPaymentEnabled) {
+                  final amount = _parseAmount(value);
+                  if (amount <= 0) return tr.amountGreaterZero;
+                  if (amount > remainingBalance) {
+                    return "Cash amount cannot exceed ${remainingBalance.toAmount()} USD";
+                  }
+                }
+                return null;
+              },
+              onChanged: (value) {
+                setState(() {
+                  _validatePaymentDialog();
+                });
+              },
+            ),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -912,151 +912,149 @@ class _DesktopState extends State<_Desktop> {
   Widget _buildAccountPaymentSection(StateSetter setState, double remainingBalance, double cashAmount, AppLocalizations tr) {
     final availableForAccount = _safeMax(remainingBalance - cashAmount, 0);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Checkbox(
-                  value: _isAccountPaymentEnabled,
-                  onChanged: (value) {
-                    setState(() {
-                      _isAccountPaymentEnabled = value ?? false;
-                      if (!_isAccountPaymentEnabled) {
-                        paymentAccountCtrl.clear();
-                        paymentAccNumber = null;
-                      }
-                      _validatePaymentDialog();
-                    });
-                  },
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(tr.accountPayment, style: Theme.of(context).textTheme.titleMedium),
-                      Text("Pay via bank account", style: Theme.of(context).textTheme.bodySmall),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            if (_isAccountPaymentEnabled) ...[
-              const SizedBox(height: 12),
-
-              // Show amount that will be paid via account
-              if (availableForAccount > 0)
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: .1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Amount to charge to account:"),
-                      Text(
-                        "${availableForAccount.toAmount()} USD",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-              const SizedBox(height: 12),
-
-              // Account selection
-              GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
-                showAllOnFocus: true,
-                controller: paymentAccountCtrl,
-                title: tr.selectAccount,
-                hintText: tr.selectReceivableAccount,
-                isRequired: _isAccountPaymentEnabled,
-                bloc: context.read<AccountsBloc>(),
-                fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
-                searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
-                validator: (value) {
-                  if (_isAccountPaymentEnabled && paymentAccNumber == null) {
-                    return tr.selectValidAccount;
-                  }
-                  return null;
+    return Cover(
+      radius: 8,
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Checkbox(
+                value: _isAccountPaymentEnabled,
+                onChanged: (value) {
+                  setState(() {
+                    _isAccountPaymentEnabled = value ?? false;
+                    if (!_isAccountPaymentEnabled) {
+                      paymentAccountCtrl.clear();
+                      paymentAccNumber = null;
+                    }
+                    _validatePaymentDialog();
+                  });
                 },
-                itemBuilder: (context, account) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  account.accName ?? "",
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                                Text(
-                                  account.accnumber?.toString() ?? "",
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.outline,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
+              ),
+              SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(tr.accountPayment, style: Theme.of(context).textTheme.titleMedium),
+                    Text("Pay via bank account", style: Theme.of(context).textTheme.bodySmall),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          if (_isAccountPaymentEnabled) ...[
+            const SizedBox(height: 12),
+
+            // Show amount that will be paid via account
+            if (availableForAccount > 0)
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: .1),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Amount to charge to account:"),
+                    Text(
+                      "${availableForAccount.toAmount()} USD",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+            const SizedBox(height: 12),
+
+            // Account selection
+            GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
+              showAllOnFocus: true,
+              controller: paymentAccountCtrl,
+              title: tr.selectAccount,
+              hintText: tr.selectReceivableAccount,
+              isRequired: _isAccountPaymentEnabled,
+              bloc: context.read<AccountsBloc>(),
+              fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
+              searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
+              validator: (value) {
+                if (_isAccountPaymentEnabled && paymentAccNumber == null) {
+                  return tr.selectValidAccount;
+                }
+                return null;
+              },
+              itemBuilder: (context, account) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "${account.avilBalance?.toAmount()} ${account.ccySymbol}",
+                                account.accName ?? "",
                                 style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              Text(
+                                account.accnumber?.toString() ?? "",
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.outline,
+                                ),
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              "${account.avilBalance?.toAmount()} ${account.ccySymbol}",
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                itemToString: (acc) => "${acc.accnumber} | ${acc.accName}",
-                stateToLoading: (state) => state is AccountLoadingState,
-                loadingBuilder: (context) => SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 3),
-                ),
-                stateToItems: (state) {
-                  if (state is StkAccountLoadedState) return state.accounts;
-                  return [];
-                },
-                onSelected: (value) {
-                  setState(() {
-                    paymentAccNumber = value.accnumber;
-                    paymentAccountCtrl.text = "${value.accnumber} | ${value.accName}";
-                  });
-                  _validatePaymentDialog();
-                },
-                noResultsText: tr.noAccountsFound,
-                showClearButton: true,
               ),
-            ],
+              itemToString: (acc) => "${acc.accnumber} | ${acc.accName}",
+              stateToLoading: (state) => state is AccountLoadingState,
+              loadingBuilder: (context) => SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 3),
+              ),
+              stateToItems: (state) {
+                if (state is StkAccountLoadedState) return state.accounts;
+                return [];
+              },
+              onSelected: (value) {
+                setState(() {
+                  paymentAccNumber = value.accnumber;
+                  paymentAccountCtrl.text = "${value.accnumber} | ${value.accName}";
+                });
+                _validatePaymentDialog();
+              },
+              noResultsText: tr.noAccountsFound,
+              showClearButton: true,
+            ),
           ],
-        ),
+        ],
       ),
     );
   }
-
 
   Widget _buildPaymentDialogSummary(double targetAmount, double cashAmount, AppLocalizations tr, {bool isEditing = false}) {
     final accountAmount = _isAccountPaymentEnabled && paymentAccNumber != null
@@ -2707,8 +2705,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
-
 
   ShippingModel _getFormDataAsShippingModel() {
     return ShippingModel(

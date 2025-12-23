@@ -536,57 +536,41 @@ class _DesktopState extends State<_Desktop> {
                                     Expanded(
                                       child: Row(
                                         children: [
-                                          // Copy Button - Fixed width container
                                           SizedBox(
-                                            width: isCopied ? 70 : 28,
-                                            child: AnimatedContainer(
-                                              duration: const Duration(milliseconds: 100),
-                                              height: 28,
-                                              decoration: BoxDecoration(
-                                                color: isCopied
-                                                    ? Theme.of(context).colorScheme.primary.withAlpha(25)
-                                                    : Colors.transparent,
-                                                border: Border.all(
-                                                  color: isCopied
-                                                      ? Theme.of(context).colorScheme.primary
-                                                      : Theme.of(context).dividerColor,
-                                                  width: 1,
-                                                ),
+                                            width: 28, // Fixed width
+                                            height: 28, // Fixed height
+                                            child: Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                onTap: () => _copyToClipboard(reference, context),
                                                 borderRadius: BorderRadius.circular(4),
-                                              ),
-                                              child: Material(
-                                                color: Colors.transparent,
-                                                child: InkWell(
-                                                  onTap: () => _copyToClipboard(reference, context),
-                                                  borderRadius: BorderRadius.circular(4),
-                                                  hoverColor: Theme.of(context).colorScheme.primary.withAlpha(13),
-                                                  child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    children: [
-                                                      Icon(
+                                                hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
+                                                child: AnimatedContainer(
+                                                  duration: const Duration(milliseconds: 100),
+                                                  decoration: BoxDecoration(
+                                                    color: isCopied
+                                                        ? Theme.of(context).colorScheme.primary.withAlpha(25)
+                                                        : Colors.transparent,
+                                                    border: Border.all(
+                                                      color: isCopied
+                                                          ? Theme.of(context).colorScheme.primary
+                                                          : Theme.of(context).colorScheme.outline.withValues(alpha: .3),
+                                                      width: 1,
+                                                    ),
+                                                    borderRadius: BorderRadius.circular(4),
+                                                  ),
+                                                  child: Center(
+                                                    child: AnimatedSwitcher(
+                                                      duration: const Duration(milliseconds: 300),
+                                                      child: Icon(
                                                         isCopied ? Icons.check : Icons.content_copy,
+                                                        key: ValueKey<bool>(isCopied), // Important for AnimatedSwitcher
                                                         size: 15,
                                                         color: isCopied
                                                             ? Theme.of(context).colorScheme.primary
-                                                            : Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
+                                                            : Theme.of(context).colorScheme.outline.withValues(alpha: .6),
                                                       ),
-                                                      if (isCopied)
-                                                        AnimatedOpacity(
-                                                          duration: const Duration(milliseconds: 200),
-                                                          opacity: isCopied ? 1 : 0,
-                                                          child: Padding(
-                                                            padding: const EdgeInsets.only(left: 4),
-                                                            child: Text(
-                                                              locale.copied,
-                                                              style: TextStyle(
-                                                                fontSize: 12,
-                                                                color: Theme.of(context).colorScheme.primary,
-                                                                fontWeight: FontWeight.w500,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                    ],
+                                                    ),
                                                   ),
                                                 ),
                                               ),

@@ -260,14 +260,15 @@ class _DesktopState extends State<_Desktop> {
               children: [
                 // Main Amount Card
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.only(bottom: 8),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Cover(
                         color: color.surface,
                         child: Padding(
-                          padding: const EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(5),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -277,7 +278,6 @@ class _DesktopState extends State<_Desktop> {
                                   color: color.onSurface.withValues(alpha: .7),
                                 ),
                               ),
-                              const SizedBox(height: 3),
                               Text(
                                 "${trpt.transaction?.amount?.toAmount() ?? "0.00"} ${transaction?.currency ?? ""}",
                                 style: textTheme.headlineMedium?.copyWith(
@@ -289,8 +289,20 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         ),
                       ),
-                      if (transaction != null)
-                        _buildTransactionStatusBadge(context, transaction.trnStatus),
+
+                     Row(
+                       spacing: 8,
+                       children: [
+                         IconButton(
+                           isSelected: true,
+                           onPressed: (){},
+                           icon: Icon(Icons.print),),
+
+                         if (transaction != null)
+                           _buildTransactionStatusBadge(context, transaction.trnStatus),
+
+                       ],
+                     )
                     ],
                   ),
                 ),
@@ -373,7 +385,7 @@ class _DesktopState extends State<_Desktop> {
                 ),
 
                 // Transaction Details Card
-                if (transaction != null)
+                if (transaction != null)...[
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Cover(
@@ -388,7 +400,7 @@ class _DesktopState extends State<_Desktop> {
                                 Icon(Icons.receipt_long, size: 20, color: color.primary),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Transaction Details',
+                                  AppLocalizations.of(context)!.transactionDetails,
                                   style: textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -402,9 +414,9 @@ class _DesktopState extends State<_Desktop> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      _buildDetailRow('Reference', transaction.trnReference ?? "-"),
-                                      _buildDetailRow('Amount', '${transaction.amount?.toAmount()} ${transaction.currency}'),
-                                      _buildDetailRow('Debit Account', transaction.debitAccount?.toString() ?? "-"),
+                                      _buildDetailRow(AppLocalizations.of(context)!.referenceNumber, transaction.trnReference ?? "-"),
+                                      _buildDetailRow(AppLocalizations.of(context)!.amount, '${transaction.amount?.toAmount()} ${transaction.currency}'),
+                                      _buildDetailRow(AppLocalizations.of(context)!.debitAccount, transaction.debitAccount?.toString() ?? "-"),
                                     ],
                                   ),
                                 ),
@@ -412,9 +424,9 @@ class _DesktopState extends State<_Desktop> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      _buildDetailRow('Credit Account', transaction.creditAccount?.toString() ?? "-"),
-                                      _buildDetailRow('Maker', transaction.maker ?? "-"),
-                                      _buildDetailRow('Checker', transaction.checker ?? "Not Checked",
+                                      _buildDetailRow(AppLocalizations.of(context)!.creditAccount, transaction.creditAccount?.toString() ?? "-"),
+                                      _buildDetailRow(AppLocalizations.of(context)!.maker, transaction.maker ?? "-"),
+                                      _buildDetailRow(AppLocalizations.of(context)!.checker, transaction.checker ?? "Not Checked",
                                           isHighlighted: transaction.checker == null),
                                     ],
                                   ),
@@ -426,6 +438,7 @@ class _DesktopState extends State<_Desktop> {
                       ),
                     ),
                   ),
+                ],
 
                 // Narration Card
                 if (transaction?.narration?.isNotEmpty == true)
@@ -443,7 +456,7 @@ class _DesktopState extends State<_Desktop> {
                                 Icon(Icons.description, size: 20, color: color.primary),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Narration',
+                                  AppLocalizations.of(context)!.narration,
                                   style: textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -463,19 +476,10 @@ class _DesktopState extends State<_Desktop> {
 
                 // Action Buttons
                 if (showAnyButton) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      locale.actions,
-                      style: textTheme.titleMedium?.copyWith(
-                        color: color.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+
                   const Divider(),
                   Padding(
-                    padding: const EdgeInsets.only(top: 8),
+                    padding: const EdgeInsets.only(top: 5),
                     child: Row(
                       spacing: 12,
                       children: [
@@ -531,7 +535,7 @@ class _DesktopState extends State<_Desktop> {
                                 color: color.surface,
                               ),
                             )
-                                : Text('Authorize'),
+                                : Text(AppLocalizations.of(context)!.authorize),
                           ),
                       ],
                     ),
