@@ -33,7 +33,6 @@ import '../ShippingView/model/shp_details_model.dart';
 class ShippingByIdView extends StatelessWidget {
   final int? shippingId;
   final int? perId;
-
   const ShippingByIdView({super.key, this.shippingId,this.perId});
   @override
   Widget build(BuildContext context) {
