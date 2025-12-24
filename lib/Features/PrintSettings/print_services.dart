@@ -978,10 +978,15 @@ abstract class PrintServices {
         'fa': 'کرایه کل',
         'ar': 'الإيجار الكلي',
       },
+      'avgUnLoadSize': {
+        'en': 'Avg Unload',
+        'fa': 'میانگین بارگیری',
+        'ar': 'میانگین بارگیری',
+      },
       'avgLoadSize': {
-        'en': 'Avg Load Size',
-        'fa': 'میانگین اندازه بار',
-        'ar': 'متوسط حجم التحميل',
+        'en': 'Avg Load',
+        'fa': 'میانگین تلخیه',
+        'ar': 'میانگین تخلیه',
       },
       'vehicles': {
         'en': 'Vehicle',
@@ -999,12 +1004,12 @@ abstract class PrintServices {
         'ar': 'إيجار',
       },
       'loadingSize': {
-        'en': 'Load Size',
+        'en': 'LD Weight',
         'fa': 'اندازه بارگیری',
         'ar': 'حجم التحميل',
       },
       'unloadingSize': {
-        'en': 'Unload Size',
+        'en': 'ULD Weight',
         'fa': 'اندازه تخلیه',
         'ar': 'حجم التفريغ',
       },

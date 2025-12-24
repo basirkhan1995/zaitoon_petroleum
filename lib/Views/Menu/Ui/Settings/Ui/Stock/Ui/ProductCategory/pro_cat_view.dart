@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/status_badge.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/ProductCategory/add_edit_cat.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/ProductCategory/bloc/pro_cat_bloc.dart';
@@ -158,13 +159,7 @@ class _DesktopState extends State<_Desktop> {
                         leading: Text(cat.pcId.toString()),
                         title: Text(cat.pcName ??""),
                         subtitle: Text(cat.pcDescription??""),
-                        trailing: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: cat.pcStatus == 1? Colors.green.withValues(alpha: .3) : Colors.red.withValues(alpha: .3)
-                            ),
-                            child: Text(cat.pcStatus == 1? tr.active : tr.deactive)),
+                        trailing: StatusBadge(status: cat.pcStatus!, trueValue: tr.active, falseValue: tr.inactive,)
                       );
                   });
                 }

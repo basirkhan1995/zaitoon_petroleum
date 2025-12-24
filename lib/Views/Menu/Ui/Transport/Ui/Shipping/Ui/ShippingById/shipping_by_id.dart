@@ -2652,7 +2652,7 @@ class _DesktopState extends State<_Desktop> {
                       ),
                     ),
 
-                    if (hasShippingDetails && shipping.shpStatus != 1)
+                  //  if (hasShippingDetails && shipping.shpStatus != 1)
                       Switch(
                           value: shpStatus == 1,
                           onChanged: (e) {
@@ -2677,14 +2677,14 @@ class _DesktopState extends State<_Desktop> {
                             });
                           }
                       )
-                    else if (hasShippingDetails && shipping.shpStatus == 1)
-                      Text(
-                        tr.delivered,
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                    // else if (hasShippingDetails && shipping.shpStatus == 1)
+                    //   Text(
+                    //     tr.delivered,
+                    //     style: TextStyle(
+                    //       color: Colors.green,
+                    //       fontWeight: FontWeight.bold,
+                    //     ),
+                    //   ),
                   ],
                 ),
               ),

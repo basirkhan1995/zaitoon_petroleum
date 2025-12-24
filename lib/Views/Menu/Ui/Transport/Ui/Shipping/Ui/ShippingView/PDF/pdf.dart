@@ -116,7 +116,6 @@ class AllShippingPdfServices extends PrintServices {
         textDirection: documentLanguage(language: language),
         orientation: orientation,
         build: (context) => [
-          shippingHeaderWidget(language: language, reportInfo: report),
           pw.SizedBox(height: 5),
           horizontalDivider(),
           pw.SizedBox(height: 10),
@@ -235,34 +234,6 @@ class AllShippingPdfServices extends PrintServices {
     );
   }
 
-  pw.Widget shippingHeaderWidget({
-    required String language,
-    required ReportModel reportInfo,
-  }) {
-    return pw.Container(
-      padding: pw.EdgeInsets.symmetric(vertical: 5),
-      child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          buildTextWidget(
-            text: getTranslation(locale: 'allShipping', language: language),
-            fontSize: 20,
-            fontWeight: pw.FontWeight.bold,
-          ),
-          pw.SizedBox(height: 5),
-          pw.Row(
-            children: [
-              buildTextWidget(
-                text: "${reportInfo.startDate} ${getTranslation(locale: 'to', language: language)} ${reportInfo.endDate}",
-                fontSize: 10,
-                color: pw.PdfColors.grey600,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
   pw.Widget shippingSummaryWidget({
     required String language,
     required List<ShippingModel> shippingList,
@@ -274,7 +245,7 @@ class AllShippingPdfServices extends PrintServices {
     int pendingShipments = 0;
 
     double totalRevenue = 0.0;
-    double totalRent = 0.0;
+
     double totalLoadingSize = 0.0;
     double totalUnloadingSize = 0.0;
 
@@ -300,7 +271,6 @@ class AllShippingPdfServices extends PrintServices {
 
       // Parse string values to double before adding
       totalRevenue += parseStringToDouble(shp.total);
-      totalRent += parseStringToDouble(shp.shpRent);
       totalLoadingSize += parseStringToDouble(shp.shpLoadSize);
       totalUnloadingSize += parseStringToDouble(shp.shpUnloadSize);
 
@@ -314,7 +284,7 @@ class AllShippingPdfServices extends PrintServices {
 
     return pw.Container(
       decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: pw.PdfColors.grey300, width: 0.5),
+        border: pw.Border.all(color: pw.PdfColors.grey300, width: 0.7),
         borderRadius: pw.BorderRadius.circular(5),
       ),
       padding: pw.EdgeInsets.all(10),
@@ -347,25 +317,21 @@ class AllShippingPdfServices extends PrintServices {
                 value: pendingShipments.toString(),
                 language: language,
               ),
-            ],
-          ),
-          pw.SizedBox(height: 8),
-          pw.Row(
-            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-            children: [
+
               _buildSummaryItem(
-                label: getTranslation(locale: 'totalRevenue', language: language),
-                value: "${totalRevenue.toAmount()} $baseCurrency",
-                language: language,
-              ),
-              _buildSummaryItem(
-                label: getTranslation(locale: 'totalRent', language: language),
-                value: "${totalRent.toAmount()} $baseCurrency",
+                label: getTranslation(locale: 'avgUnLoadSize', language: language),
+                value: "${avgUnloadingSize.toStringAsFixed(2)} $unit",
                 language: language,
               ),
               _buildSummaryItem(
                 label: getTranslation(locale: 'avgLoadSize', language: language),
-                value: "${avgLoadingSize.toStringAsFixed(2)} $unit",
+                value: "${avgUnloadingSize.toStringAsFixed(2)} $unit",
+                language: language,
+              ),
+
+              _buildSummaryItem(
+                label: getTranslation(locale: 'totalRevenue', language: language),
+                value: "${totalRevenue.toAmount()} $baseCurrency",
                 language: language,
               ),
             ],
@@ -404,14 +370,11 @@ class AllShippingPdfServices extends PrintServices {
   }) {
     const idWidth = 30.0;
     const dateWidth = 60.0;
-    const vehicleWidth = 80.0;
-    const productWidth = 100.0;
-    const customerWidth = 80.0;
+    const productWidth = 90.0;
+    const customerWidth = 65.0;
     const rentWidth = 60.0;
-    const loadWidth = 60.0;
     const unloadWidth = 60.0;
-    const totalWidth = 70.0;
-    const statusWidth = 50.0;
+    const totalWidth = 80.0;
 
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -445,8 +408,7 @@ class AllShippingPdfServices extends PrintServices {
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
-              pw.SizedBox(
-                width: vehicleWidth,
+              pw.Expanded(
                 child: buildTextWidget(
                   text: getTranslation(locale: "vehicles", language: language),
                   fontSize: 9,
@@ -478,15 +440,15 @@ class AllShippingPdfServices extends PrintServices {
                   textAlign: pw.TextAlign.right,
                 ),
               ),
-              pw.SizedBox(
-                width: loadWidth,
-                child: buildTextWidget(
-                  text: getTranslation(locale: "loadingSize", language: language),
-                  fontSize: 9,
-                  fontWeight: pw.FontWeight.bold,
-                  textAlign: pw.TextAlign.right,
-                ),
-              ),
+              // pw.SizedBox(
+              //   width: loadWidth,
+              //   child: buildTextWidget(
+              //     text: getTranslation(locale: "loadingSize", language: language),
+              //     fontSize: 9,
+              //     fontWeight: pw.FontWeight.bold,
+              //     textAlign: pw.TextAlign.right,
+              //   ),
+              // ),
               pw.SizedBox(
                 width: unloadWidth,
                 child: buildTextWidget(
@@ -499,21 +461,21 @@ class AllShippingPdfServices extends PrintServices {
               pw.SizedBox(
                 width: totalWidth,
                 child: buildTextWidget(
-                  text: getTranslation(locale: "totalTitle", language: language),
+                  text: getTranslation(locale: "total", language: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.right,
                 ),
               ),
-              pw.SizedBox(
-                width: statusWidth,
-                child: buildTextWidget(
-                  text: getTranslation(locale: "status", language: language),
-                  fontSize: 9,
-                  fontWeight: pw.FontWeight.bold,
-                  textAlign: pw.TextAlign.center,
-                ),
-              ),
+              // pw.SizedBox(
+              //   width: statusWidth,
+              //   child: buildTextWidget(
+              //     text: getTranslation(locale: "status", language: language),
+              //     fontSize: 9,
+              //     fontWeight: pw.FontWeight.bold,
+              //     textAlign: pw.TextAlign.center,
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -551,8 +513,8 @@ class AllShippingPdfServices extends PrintServices {
                 ),
 
                 // Vehicle
-                pw.SizedBox(
-                  width: vehicleWidth,
+                pw.Expanded(
+
                   child: buildTextWidget(
                     text: shippingList[i].vehicle ?? "-",
                     fontSize: 8,
@@ -588,14 +550,14 @@ class AllShippingPdfServices extends PrintServices {
                 ),
 
                 // Load Size
-                pw.SizedBox(
-                  width: loadWidth,
-                  child: buildTextWidget(
-                    text: "${shippingList[i].shpLoadSize?.toAmount()} ${shippingList[i].shpUnit ?? ""}",
-                    fontSize: 8,
-                    textAlign: pw.TextAlign.right,
-                  ),
-                ),
+                // pw.SizedBox(
+                //   width: loadWidth,
+                //   child: buildTextWidget(
+                //     text: "${shippingList[i].shpLoadSize?.toAmount()} ${shippingList[i].shpUnit ?? ""}",
+                //     fontSize: 8,
+                //     textAlign: pw.TextAlign.right,
+                //   ),
+                // ),
 
                 // Unload Size
                 pw.SizedBox(
@@ -619,47 +581,17 @@ class AllShippingPdfServices extends PrintServices {
                 ),
 
                 // Status
-                pw.SizedBox(
-                  width: statusWidth,
-                  child: _buildStatusBadge(
-                    status: shippingList[i].shpStatus ?? 0,
-                    language: language,
-                  ),
-                ),
+                // pw.SizedBox(
+                //   width: statusWidth,
+                //   child: _buildStatusBadge(
+                //     status: shippingList[i].shpStatus ?? 0,
+                //     language: language,
+                //   ),
+                // ),
               ],
             ),
           ),
       ],
     );
   }
-
-  pw.Widget _buildStatusBadge({
-    required int status,
-    required String language,
-  }) {
-    final bool isCompleted = status == 1;
-    final String statusText = isCompleted
-        ? getTranslation(locale: 'completedTitle', language: language)
-        : getTranslation(locale: 'pendingTitle', language: language);
-
-    final pw.PdfColor bgColor = isCompleted ? pw.PdfColors.green100 : pw.PdfColors.orange100;
-    final pw.PdfColor textColor = isCompleted ? pw.PdfColors.green800 : pw.PdfColors.orange800;
-
-    return pw.Container(
-      padding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-      decoration: pw.BoxDecoration(
-        color: bgColor,
-        borderRadius: pw.BorderRadius.circular(3),
-        border: pw.Border.all(color: textColor, width: 0.5),
-      ),
-      child: buildTextWidget(
-        text: statusText,
-        fontSize: 7,
-        color: textColor,
-        fontWeight: pw.FontWeight.bold,
-        textAlign: pw.TextAlign.center,
-      ),
-    );
-  }
-
 }

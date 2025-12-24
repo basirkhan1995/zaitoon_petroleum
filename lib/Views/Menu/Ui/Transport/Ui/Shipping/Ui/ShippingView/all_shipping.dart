@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -84,6 +86,21 @@ class _DesktopState extends State<_Desktop> {
       final comState = context.read<CompanyProfileBloc>().state;
       if (comState is CompanyProfileLoadedState) {
         _baseCurrency = comState.company.comLocalCcy;
+        company.comName = comState.company.comName??"";
+        company.statementDate =DateTime.now().toDateTime;
+        company.comEmail = comState.company.comEmail??"";
+        company.comAddress = comState.company.addName??"";
+        company.compPhone = comState.company.comPhone??"";
+        company.comLogo = _companyLogo;
+        final base64Logo = comState.company.comLogo;
+        if (base64Logo != null && base64Logo.isNotEmpty) {
+          try {
+            _companyLogo = base64Decode(base64Logo);
+            company.comLogo = _companyLogo;
+          } catch (e) {
+            _companyLogo = Uint8List(0);
+          }
+        }
       }
     });
   }
@@ -205,7 +222,15 @@ class _DesktopState extends State<_Desktop> {
                   children: [
                     Expanded(
                         flex: 5,
-                        child: Text(tr.allShipping,style: Theme.of(context).textTheme.titleMedium)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(tr.allShipping,style: Theme.of(context).textTheme.titleLarge),
+                            Text("Last month shipments",style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.outline)),
+
+                          ],
+                        )),
                     Expanded(
                       flex: 3,
                       child: ZSearchField(
@@ -474,7 +499,7 @@ class _DesktopState extends State<_Desktop> {
       context: context,
       builder: (_) => PrintPreviewDialog<List<ShippingModel>>(
         data: shippingList,
-        company: company, // You'll need to get company info
+        company: company,
         buildPreview: ({
           required data,
           required language,

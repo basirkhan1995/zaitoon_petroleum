@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
+import '../../../../../../Features/Widgets/status_badge.dart';
 import '../FetchATAT/bloc/fetch_atat_bloc.dart';
 import '../FetchATAT/fetch_atat.dart';
 import '../FetchGLAT/bloc/glat_bloc.dart';
@@ -101,7 +102,7 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
 
     return MultiBlocListener(
@@ -124,7 +125,7 @@ class _DesktopState extends State<_Desktop> {
               });
               Utils.showOverlayMessage(
                 context,
-                title: locale.noData,
+                title: tr.noData,
                 message: state.error,
                 isError: true,
               );
@@ -149,7 +150,7 @@ class _DesktopState extends State<_Desktop> {
               });
               Utils.showOverlayMessage(
                 context,
-                title: locale.noData,
+                title: tr.noData,
                 message: state.message,
                 isError: true,
               );
@@ -178,7 +179,7 @@ class _DesktopState extends State<_Desktop> {
               });
               Utils.showOverlayMessage(
                 context,
-                title: locale.noData,
+                title: tr.noData,
                 message: state.message,
                 isError: true,
               );
@@ -207,7 +208,7 @@ class _DesktopState extends State<_Desktop> {
               });
               Utils.showOverlayMessage(
                 context,
-                title: locale.noData,
+                title: tr.noData,
                 message: state.error,
                 isError: true,
               );
@@ -238,7 +239,7 @@ class _DesktopState extends State<_Desktop> {
                           child: ListTile(
                             contentPadding: EdgeInsets.zero,
                             visualDensity: VisualDensity(vertical: -4, horizontal: -4),
-                            title: Text(locale.todayTransaction,style: Theme.of(context).textTheme.titleMedium),
+                            title: Text(tr.todayTransaction,style: Theme.of(context).textTheme.titleMedium),
                             subtitle: Text(DateTime.now().toFormattedDate()),
                           )),
                       Expanded(
@@ -262,7 +263,7 @@ class _DesktopState extends State<_Desktop> {
                             LoadAllTransactionsEvent('all'),
                           );
                         },
-                        label: Text(locale.refresh),
+                        label: Text(tr.refresh),
                       ),
                     ],
                   ),
@@ -274,30 +275,30 @@ class _DesktopState extends State<_Desktop> {
                     children: [
                       SizedBox(
                           width: 162,
-                          child: Text(locale.txnDate,
+                          child: Text(tr.txnDate,
                               style: textTheme.titleSmall)),
                       SizedBox(width: 20),
                       Expanded(
-                          child: Text(locale.referenceNumber,
+                          child: Text(tr.referenceNumber,
                               style: textTheme.titleSmall)),
                       SizedBox(
                           width: 110,
-                          child: Text(locale.txnType,
-                              style: textTheme.titleSmall)),
-                      SizedBox(width: 20),
-                      SizedBox(
-                          width: 110,
-                          child: Text(locale.createdBy,
+                          child: Text(tr.txnType,
                               style: textTheme.titleSmall)),
                       SizedBox(width: 20),
                       SizedBox(
                           width: 110,
-                          child: Text(locale.checker,
+                          child: Text(tr.createdBy,
+                              style: textTheme.titleSmall)),
+                      SizedBox(width: 20),
+                      SizedBox(
+                          width: 110,
+                          child: Text(tr.checker,
                               style: textTheme.titleSmall)),
                       SizedBox(width: 20),
                       SizedBox(
                           width: 90,
-                          child: Text(locale.status,
+                          child: Text(tr.status,
                               style: textTheme.titleSmall)),
                     ],
                   ),
@@ -351,7 +352,7 @@ class _DesktopState extends State<_Desktop> {
                         }).toList();
                         if (state.txn.isEmpty) {
                           return NoDataWidget(
-                            message: locale.noDataFound,
+                            message: tr.noDataFound,
                             onRefresh: () {
                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                 context.read<TransactionsBloc>().add(
@@ -480,9 +481,7 @@ class _DesktopState extends State<_Desktop> {
                                           SizedBox(width: 20),
                                           SizedBox(
                                               width: 90,
-                                              child: Text(Utils.getTxnName(
-                                                  txn: txn.trnStateText ?? "",
-                                                  context: context))),
+                                              child: StatusBadge(status: txn.trnStatus!, trueValue: tr.active, falseValue: tr.inactive,)),
                                         ],
                                       ),
                                     ),
