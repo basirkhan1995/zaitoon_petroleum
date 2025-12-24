@@ -297,7 +297,7 @@ class _DesktopState extends State<_Desktop> {
                               style: textTheme.titleSmall)),
                       SizedBox(width: 20),
                       SizedBox(
-                          width: 90,
+                          width: 110,
                           child: Text(tr.status,
                               style: textTheme.titleSmall)),
                     ],
@@ -409,7 +409,7 @@ class _DesktopState extends State<_Desktop> {
                                                       strokeWidth: 2,
                                                     ),
                                                   ),
-                                                Text(txn.trnEntryDate?.toFullDateTime ?? ""),
+                                                Text(txn.trnEntryDate?.toDateTime ?? ""),
                                               ],
                                             ),
                                           ),
@@ -480,8 +480,9 @@ class _DesktopState extends State<_Desktop> {
                                               child: Text(txn.checker ?? "")),
                                           SizedBox(width: 20),
                                           SizedBox(
-                                              width: 90,
-                                              child: StatusBadge(status: txn.trnStatus!, trueValue: tr.active, falseValue: tr.inactive,)),
+                                              width: 110,
+                                              child: StatusBadge(status: txn.trnStatus!, trueValue: tr.authorizedTitle, falseValue: tr.pendingTitle,)),
+
                                         ],
                                       ),
                                     ),

@@ -555,7 +555,7 @@ class _DesktopState extends State<_Desktop> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        tr.fee,
+                        tr.shippingCharges,
                         style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -1652,7 +1652,7 @@ class _DesktopState extends State<_Desktop> {
             ),
             Expanded(
               child: Container(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(5.0),
                 child: CustomStepper(
                   key: ValueKey('existing-shipping-${shipping.shpId}'),
                   currentStep: _currentStep,
@@ -1684,7 +1684,7 @@ class _DesktopState extends State<_Desktop> {
                       icon: Icons.data_exploration,
                     ),
                     StepItem(
-                      title: tr.fee,
+                      title: tr.shippingCharges,
                       content: _buildPaymentView(shipping),
                       icon: Icons.payment_rounded,
                     ),
@@ -2320,6 +2320,7 @@ class _DesktopState extends State<_Desktop> {
                                       setState(() {
                                         expenseAccNumber = value.accNumber;
                                         accountController.text = "${value.accNumber} | ${value.accName}";
+                                        print(value.actCurrency);
                                       });
                                       // Trigger validation
                                       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -2592,6 +2593,63 @@ class _DesktopState extends State<_Desktop> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
+            // Status
+            if (shipping !=null)
+              if (summaryData['status'] != null && summaryData['status']!.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  margin: EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: summaryData['status'] == "1" ? Colors.green.shade50 : Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        summaryData['status'] == "1" ? Icons.check_circle : Icons.schedule,
+                        color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          summaryData['status'] == "1" ? tr.delivered : tr.pendingTitle,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
+                          ),
+                        ),
+                      ),
+                      Switch(
+                          value: shpStatus == 1,
+                          onChanged: (e) {
+                            if (e && !canBeDelivered) {
+                              Utils.showOverlayMessage(
+                                context,
+                                message: tr.paymentIsNotComplete,
+                                isError: true,
+                              );
+                              return;
+                            }
+                            if (e && paymentNeedsUpdate) {
+                              Utils.showOverlayMessage(
+                                context,
+                                message: tr.paymentNeedsUpdate,
+                                isError: true,
+                              );
+                              return;
+                            }
+                            setState(() {
+                              shpStatus = e ? 1 : 0;
+                            });
+                          }
+                      )
+                    ],
+                  ),
+                ),
             // Payment status warning
             if (paymentStatusMessage.isNotEmpty)
               Container(
@@ -2623,72 +2681,6 @@ class _DesktopState extends State<_Desktop> {
               ),
 
             const SizedBox(height: 8),
-
-            // Status
-            if (summaryData['status'] != null && summaryData['status']!.isNotEmpty)
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: summaryData['status'] == "1" ? Colors.green.shade50 : Colors.orange.shade50,
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(
-                    color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      summaryData['status'] == "1" ? Icons.check_circle : Icons.schedule,
-                      color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        summaryData['status'] == "1" ? tr.delivered : tr.pendingTitle,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
-                        ),
-                      ),
-                    ),
-
-                  //  if (hasShippingDetails && shipping.shpStatus != 1)
-                      Switch(
-                          value: shpStatus == 1,
-                          onChanged: (e) {
-                            if (e && !canBeDelivered) {
-                              Utils.showOverlayMessage(
-                                context,
-                                message: tr.paymentIsNotComplete,
-                                isError: true,
-                              );
-                              return;
-                            }
-                            if (e && paymentNeedsUpdate) {
-                              Utils.showOverlayMessage(
-                                context,
-                                message: tr.paymentNeedsUpdate,
-                                isError: true,
-                              );
-                              return;
-                            }
-                            setState(() {
-                              shpStatus = e ? 1 : 0;
-                            });
-                          }
-                      )
-                    // else if (hasShippingDetails && shipping.shpStatus == 1)
-                    //   Text(
-                    //     tr.delivered,
-                    //     style: TextStyle(
-                    //       color: Colors.green,
-                    //       fontWeight: FontWeight.bold,
-                    //     ),
-                    //   ),
-                  ],
-                ),
-              ),
-            SizedBox(height: 8),
             Text(
               tr.shippingSummary,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -2728,7 +2720,7 @@ class _DesktopState extends State<_Desktop> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   Text(
                     tr.expense,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -2753,7 +2745,7 @@ class _DesktopState extends State<_Desktop> {
                 children: [
                   const SizedBox(height: 20),
                   Text(
-                    "Delivery Fee",
+                    tr.shippingCharges,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),

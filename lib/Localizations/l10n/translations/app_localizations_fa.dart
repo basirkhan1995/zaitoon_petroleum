@@ -1734,4 +1734,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get editExistingPayment => 'ویرایش پرداخت موجود';
+
+  @override
+  String get lastMonthShipments => 'حمل‌ ونقل‌ های ماه گذشته';
+
+  @override
+  String get shippingCharges => 'هزینه ارسال کالا';
 }

@@ -1408,7 +1408,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noExpenseRecorded => 'No expenses recorded';
 
   @override
-  String get allShipping => 'All Shipping';
+  String get allShipping => 'All Shipments';
 
   @override
   String get accountExist => 'Account already exists.';
@@ -1742,4 +1742,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editExistingPayment => 'Editing existing payment';
+
+  @override
+  String get lastMonthShipments => 'Last month shipments';
+
+  @override
+  String get shippingCharges => 'Shipping Charges';
 }

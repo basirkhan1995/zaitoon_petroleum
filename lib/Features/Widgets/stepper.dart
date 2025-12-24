@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 
@@ -67,7 +68,6 @@ class _CustomStepperState extends State<CustomStepper> {
             children: _buildSteps(context),
           ) : Column(children: _buildSteps(context)),
           const SizedBox(height: 8),
-
           // Current step content
           Expanded(
             child: widget.steps.isNotEmpty
@@ -173,7 +173,7 @@ class _CustomStepperState extends State<CustomStepper> {
             }
           },
           child: Padding(
-            padding: const EdgeInsets.all(6),
+            padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -226,8 +226,8 @@ class _CustomStepperState extends State<CustomStepper> {
                 color: isCompleted
                     ? widget.activeColor ?? theme.colorScheme.primary
                     : widget.inactiveColor ??
-                    theme.colorScheme.outline.withValues(alpha: .3),
-                borderRadius: BorderRadius.circular(8),
+                    theme.colorScheme.outline.withValues(alpha: .2),
+
               ),
             ),
           ),

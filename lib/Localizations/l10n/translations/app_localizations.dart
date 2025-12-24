@@ -2827,7 +2827,7 @@ abstract class AppLocalizations {
   /// No description provided for @allShipping.
   ///
   /// In en, this message translates to:
-  /// **'All Shipping'**
+  /// **'All Shipments'**
   String get allShipping;
 
   /// No description provided for @accountExist.
@@ -3465,6 +3465,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Editing existing payment'**
   String get editExistingPayment;
+
+  /// No description provided for @lastMonthShipments.
+  ///
+  /// In en, this message translates to:
+  /// **'Last month shipments'**
+  String get lastMonthShipments;
+
+  /// No description provided for @shippingCharges.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping Charges'**
+  String get shippingCharges;
 }
 
 class _AppLocalizationsDelegate

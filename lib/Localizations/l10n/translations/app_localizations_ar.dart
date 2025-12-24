@@ -1737,4 +1737,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get editExistingPayment => 'د موجوده تادیې ترمیم کول';
+
+  @override
+  String get lastMonthShipments => 'د تېرې میاشتې لېږدونه';
+
+  @override
+  String get shippingCharges => 'د لېږد لګښتونه';
 }

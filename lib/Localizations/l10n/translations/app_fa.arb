@@ -580,5 +580,7 @@
   "paymentMatches": "پرداخت با مانده حساب مطابقت دارد",
   "paymentMatchesShippingTotal": "پرداخت با کل هزینه ارسال مطابقت دارد.",
   "cashAmountCannotExceed": "مبلغ نقدی نمی‌ تواند بیشتر از",
-  "editExistingPayment": "ویرایش پرداخت موجود"
+  "editExistingPayment": "ویرایش پرداخت موجود",
+  "lastMonthShipments": "حمل‌ ونقل‌ های ماه گذشته",
+  "shippingCharges": "هزینه ارسال کالا"
 }

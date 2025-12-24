@@ -580,5 +580,7 @@
   "paymentMatches": "تادیه د پاتې توازن سره سمون خوري",
   "paymentMatchesShippingTotal": "تادیه د بار وړلو ټولټال سره سمون خوري.",
   "cashAmountCannotExceed": "د نغدو پیسو اندازه نشي زیاتیدلی",
-  "editExistingPayment": "د موجوده تادیې ترمیم کول"
+  "editExistingPayment": "د موجوده تادیې ترمیم کول",
+  "lastMonthShipments": "د تېرې میاشتې لېږدونه",
+  "shippingCharges": "د لېږد لګښتونه"
 }

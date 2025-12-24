@@ -226,9 +226,8 @@ class _DesktopState extends State<_Desktop> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(tr.allShipping,style: Theme.of(context).textTheme.titleLarge),
-                            Text("Last month shipments",style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.outline)),
-
+                            Text(tr.allShipping,style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                            Text(tr.lastMonthShipments,style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.outline)),
                           ],
                         )),
                     Expanded(
