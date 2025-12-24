@@ -2319,7 +2319,6 @@ class _DesktopState extends State<_Desktop> {
                                       setState(() {
                                         expenseAccNumber = value.accNumber;
                                         accountController.text = "${value.accNumber} | ${value.accName}";
-                                        print(value.actCurrency);
                                       });
                                       // Trigger validation
                                       WidgetsBinding.instance.addPostFrameCallback((_) {
