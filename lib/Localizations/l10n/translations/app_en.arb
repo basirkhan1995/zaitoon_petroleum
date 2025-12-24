@@ -15,6 +15,14 @@
       }
     }
   },
+  "requiredField": "Please fill all required fields in {name}",
+  "@requiredField": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "lightMode": "Light",
   "darkMode": "Dark",
   "theme": "Theme",
@@ -556,5 +564,21 @@
   "enterAmount": "Enter amount",
   "adjustAmount": "Adjust amount",
   "amountToChargeTitle": "Amount to charge",
-  "accountDetails": "Account Details"
+  "accountDetails": "Account Details",
+  "targetAmount": "Target amount",
+  "editPaymentValidation": "Edited payment amount must match the current shipping total of",
+  "paymentMustMatchRemaining": "Payment must match remaining balance of",
+  "paymentMustMatchTotalShipping": "Payment must match shipping total of",
+  "confirmMethodPayment": "Please confirm the payment details",
+  "existingPayment": "Existing Payment",
+  "orderStep": "Order Step",
+  "shippingStep": "Shipping Step",
+  "paymentIsNotComplete": "Payment is not complete or doesn't match shipping total.",
+  "paymentNeedsUpdate": "Cannot mark as delivered. Payment needs to be updated first.",
+  "paymentNeedsUpdateTitle": " Payment needs update! Current:",
+  "requiredTitle": "Required",
+  "paymentMatches": "ayment matches remaining balance",
+  "paymentMatchesShippingTotal": "Payment matches shipping total.",
+  "cashAmountCannotExceed": "Cash amount cannot exceed",
+  "editExistingPayment": "Editing existing payment"
 }

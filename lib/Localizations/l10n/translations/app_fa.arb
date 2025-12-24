@@ -15,6 +15,14 @@
       }
     }
   },
+  "requiredField": "لطفا تمام فیلدهای مورد نیاز {name} را پر کنید",
+  "@requiredField": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "lightMode": "روشن",
   "darkMode": "تاریکی",
   "theme": "تم",
@@ -556,5 +564,21 @@
   "enterAmount": "مبلغ را وارید نمایید",
   "adjustAmount": "تنظیم مبلغ",
   "amountToChargeTitle": "مبلغ قابل دریافت",
-  "accountDetails": "جزئیات حساب"
+  "accountDetails": "جزئیات حساب",
+  "targetAmount": "مبلغ قابل تادیه",
+  "editPaymentValidation": "مبلغ پرداختی ویرایش شده باید با کل هزینه ارسال فعلی مطابقت داشته باشد.",
+  "paymentMustMatchRemaining": "پرداخت باید با مانده حساب مطابقت داشته باشد",
+  "paymentMustMatchTotalShipping": "مبلغ پرداختی باید با کل مبلغ ارسال مطابقت داشته باشد",
+  "confirmMethodPayment": "لطفا جزئیات پرداخت را تایید کنید",
+  "existingPayment": "پرداخت موجود",
+  "orderStep": "مرحله فرمایش",
+  "shippingStep": "مرحله بارگیری",
+  "paymentIsNotComplete": "پرداخت کامل نشده یا با جمع کل هزینه ارسال مطابقت ندارد.",
+  "paymentNeedsUpdate": "نمی‌ توان آن را به عنوان تحویل‌ شده علامت‌گذاری کرد. ابتدا باید پرداخت به‌روزرسانی شود.",
+  "paymentNeedsUpdateTitle": "پرداخت نیاز به بروزرسانی دارد! فعلی:",
+  "requiredTitle": "مورد نیاز",
+  "paymentMatches": "پرداخت با مانده حساب مطابقت دارد",
+  "paymentMatchesShippingTotal": "پرداخت با کل هزینه ارسال مطابقت دارد.",
+  "cashAmountCannotExceed": "مبلغ نقدی نمی‌ تواند بیشتر از",
+  "editExistingPayment": "ویرایش پرداخت موجود"
 }

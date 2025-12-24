@@ -7,6 +7,7 @@ String shippingModelToMap(List<ShippingModel> data) => json.encode(List<dynamic>
 class ShippingModel {
   final int? shpId;
   final String? vehicle;
+  final int? perId;
   final String? proName;
   final int? productId;
   final int? customerId;
@@ -29,6 +30,7 @@ class ShippingModel {
     this.shpId,
     this.vehicle,
     this.proName,
+    this.perId,
     this.customer,
     this.shpFrom,
     this.shpMovingDate,
@@ -65,6 +67,7 @@ class ShippingModel {
     int? shpStatus,
     int? productId,
     int? customerId,
+    int? perId,
     int? vehicleId,
     String? remark,
     String? advanceAmount,
@@ -76,6 +79,7 @@ class ShippingModel {
         proName: proName ?? this.proName,
         customer: customer ?? this.customer,
         shpFrom: shpFrom ?? this.shpFrom,
+        perId: perId ?? this.perId,
         shpMovingDate: shpMovingDate ?? this.shpMovingDate,
         shpLoadSize: shpLoadSize ?? this.shpLoadSize,
         shpUnit: shpUnit ?? this.shpUnit,
@@ -107,6 +111,7 @@ class ShippingModel {
     shpUnloadSize: json["shpUnloadSize"],
     shpRent: json["shpRent"],
     total: json["total"],
+    perId: json["perID"],
     shpStatus: json["shpStatus"],
   );
 

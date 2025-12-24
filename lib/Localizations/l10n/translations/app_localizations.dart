@@ -112,6 +112,12 @@ abstract class AppLocalizations {
   /// **'{name} is required'**
   String required(String name);
 
+  /// No description provided for @requiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all required fields in {name}'**
+  String requiredField(String name);
+
   /// No description provided for @lightMode.
   ///
   /// In en, this message translates to:
@@ -3363,6 +3369,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account Details'**
   String get accountDetails;
+
+  /// No description provided for @targetAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Target amount'**
+  String get targetAmount;
+
+  /// No description provided for @editPaymentValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'Edited payment amount must match the current shipping total of'**
+  String get editPaymentValidation;
+
+  /// No description provided for @paymentMustMatchRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment must match remaining balance of'**
+  String get paymentMustMatchRemaining;
+
+  /// No description provided for @paymentMustMatchTotalShipping.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment must match shipping total of'**
+  String get paymentMustMatchTotalShipping;
+
+  /// No description provided for @confirmMethodPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm the payment details'**
+  String get confirmMethodPayment;
+
+  /// No description provided for @existingPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing Payment'**
+  String get existingPayment;
+
+  /// No description provided for @orderStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Step'**
+  String get orderStep;
+
+  /// No description provided for @shippingStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping Step'**
+  String get shippingStep;
+
+  /// No description provided for @paymentIsNotComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment is not complete or doesn\'t match shipping total.'**
+  String get paymentIsNotComplete;
+
+  /// No description provided for @paymentNeedsUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot mark as delivered. Payment needs to be updated first.'**
+  String get paymentNeedsUpdate;
+
+  /// No description provided for @paymentNeedsUpdateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **' Payment needs update! Current:'**
+  String get paymentNeedsUpdateTitle;
+
+  /// No description provided for @requiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get requiredTitle;
+
+  /// No description provided for @paymentMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'ayment matches remaining balance'**
+  String get paymentMatches;
+
+  /// No description provided for @paymentMatchesShippingTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment matches shipping total.'**
+  String get paymentMatchesShippingTotal;
+
+  /// No description provided for @cashAmountCannotExceed.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash amount cannot exceed'**
+  String get cashAmountCannotExceed;
+
+  /// No description provided for @editExistingPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing existing payment'**
+  String get editExistingPayment;
 }
 
 class _AppLocalizationsDelegate

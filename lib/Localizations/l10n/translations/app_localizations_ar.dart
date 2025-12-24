@@ -19,6 +19,11 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String requiredField(String name) {
+    return 'مهرباني وکړئ ټول اړین ځایونه $name ډک کړئ';
+  }
+
+  @override
   String get lightMode => 'روشنایی';
 
   @override
@@ -1678,4 +1683,58 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get accountDetails => 'جزئیات حساب';
+
+  @override
+  String get targetAmount => 'مبلغ قابل تادیه';
+
+  @override
+  String get editPaymentValidation =>
+      'د تادیې تعدیل شوی مقدار باید د اوسني بار وړلو مجموعي سره سمون ولري';
+
+  @override
+  String get paymentMustMatchRemaining =>
+      'تادیه باید د پاتې توازن سره سمون ولري';
+
+  @override
+  String get paymentMustMatchTotalShipping =>
+      'تادیه باید د بار وړلو ټولټال سره سمون ولري';
+
+  @override
+  String get confirmMethodPayment => 'مهرباني وکړئ د تادیې توضیحات تایید کړئ';
+
+  @override
+  String get existingPayment => 'موجوده تادیه';
+
+  @override
+  String get orderStep => 'مرحله فرمایش';
+
+  @override
+  String get shippingStep => 'مرحله بارگیری';
+
+  @override
+  String get paymentIsNotComplete =>
+      'تادیه بشپړه نه ده یا د بار وړلو ټولټال سره سمون نه خوري.';
+
+  @override
+  String get paymentNeedsUpdate =>
+      'د سپارل شوي په توګه نشي نښه کیدی. تادیه باید لومړی تازه شي.';
+
+  @override
+  String get paymentNeedsUpdateTitle => 'تادیه تازه کولو ته اړتیا لري! اوسنی:';
+
+  @override
+  String get requiredTitle => 'اړین';
+
+  @override
+  String get paymentMatches => 'تادیه د پاتې توازن سره سمون خوري';
+
+  @override
+  String get paymentMatchesShippingTotal =>
+      'تادیه د بار وړلو ټولټال سره سمون خوري.';
+
+  @override
+  String get cashAmountCannotExceed => 'د نغدو پیسو اندازه نشي زیاتیدلی';
+
+  @override
+  String get editExistingPayment => 'د موجوده تادیې ترمیم کول';
 }

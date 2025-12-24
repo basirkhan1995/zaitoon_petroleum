@@ -19,6 +19,11 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
+  String requiredField(String name) {
+    return 'لطفا تمام فیلدهای مورد نیاز $name را پر کنید';
+  }
+
+  @override
   String get lightMode => 'روشن';
 
   @override
@@ -1675,4 +1680,58 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get accountDetails => 'جزئیات حساب';
+
+  @override
+  String get targetAmount => 'مبلغ قابل تادیه';
+
+  @override
+  String get editPaymentValidation =>
+      'مبلغ پرداختی ویرایش شده باید با کل هزینه ارسال فعلی مطابقت داشته باشد.';
+
+  @override
+  String get paymentMustMatchRemaining =>
+      'پرداخت باید با مانده حساب مطابقت داشته باشد';
+
+  @override
+  String get paymentMustMatchTotalShipping =>
+      'مبلغ پرداختی باید با کل مبلغ ارسال مطابقت داشته باشد';
+
+  @override
+  String get confirmMethodPayment => 'لطفا جزئیات پرداخت را تایید کنید';
+
+  @override
+  String get existingPayment => 'پرداخت موجود';
+
+  @override
+  String get orderStep => 'مرحله فرمایش';
+
+  @override
+  String get shippingStep => 'مرحله بارگیری';
+
+  @override
+  String get paymentIsNotComplete =>
+      'پرداخت کامل نشده یا با جمع کل هزینه ارسال مطابقت ندارد.';
+
+  @override
+  String get paymentNeedsUpdate =>
+      'نمی‌ توان آن را به عنوان تحویل‌ شده علامت‌گذاری کرد. ابتدا باید پرداخت به‌روزرسانی شود.';
+
+  @override
+  String get paymentNeedsUpdateTitle => 'پرداخت نیاز به بروزرسانی دارد! فعلی:';
+
+  @override
+  String get requiredTitle => 'مورد نیاز';
+
+  @override
+  String get paymentMatches => 'پرداخت با مانده حساب مطابقت دارد';
+
+  @override
+  String get paymentMatchesShippingTotal =>
+      'پرداخت با کل هزینه ارسال مطابقت دارد.';
+
+  @override
+  String get cashAmountCannotExceed => 'مبلغ نقدی نمی‌ تواند بیشتر از';
+
+  @override
+  String get editExistingPayment => 'ویرایش پرداخت موجود';
 }

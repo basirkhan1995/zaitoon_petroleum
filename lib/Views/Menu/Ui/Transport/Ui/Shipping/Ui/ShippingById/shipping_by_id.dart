@@ -20,7 +20,7 @@ import '../../../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../../../Features/Widgets/stepper.dart';
 import '../../../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../../../Auth/bloc/auth_bloc.dart';
-import '../../../../../Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
+import '../../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import '../../../../../Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import '../../../../../Stakeholders/Ui/Individuals/individual_model.dart';
 import '../../../Vehicles/bloc/vehicle_bloc.dart';
@@ -32,13 +32,14 @@ import '../ShippingView/model/shp_details_model.dart';
 
 class ShippingByIdView extends StatelessWidget {
   final int? shippingId;
+  final int? perId;
 
-  const ShippingByIdView({super.key, this.shippingId});
+  const ShippingByIdView({super.key, this.shippingId,this.perId});
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobile: _Mobile(shippingId: shippingId),
-      desktop: _Desktop(shippingId: shippingId),
+      desktop: _Desktop(shippingId: shippingId, perId: perId),
       tablet: _Tablet(shippingId: shippingId),
     );
   }
@@ -46,7 +47,8 @@ class ShippingByIdView extends StatelessWidget {
 
 class _Desktop extends StatefulWidget {
   final int? shippingId;
-  const _Desktop({this.shippingId});
+  final int? perId;
+  const _Desktop({this.shippingId,this.perId});
 
   @override
   State<_Desktop> createState() => _DesktopState();
@@ -104,13 +106,18 @@ class _DesktopState extends State<_Desktop> {
 
   // Add current step tracking
   int _currentStep = 0;
-
+  String? baseCurrency;
   // Track original shipping total for comparison
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = context.read<CompanyProfileBloc>().state;
+      if(state is CompanyProfileLoadedState){
+        baseCurrency = state.company.comLocalCcy;
+
+      }
       currentLocale = context.read<LocalizationBloc>().state.languageCode;
       if (widget.shippingId != null) {
         // Reset to first step when loading existing shipping
@@ -552,7 +559,7 @@ class _DesktopState extends State<_Desktop> {
                         style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        isFullyPaid ? tr.fullyPaid : "${tr.balance}: ${remainingBalance.toAmount()} USD",
+                        isFullyPaid ? tr.fullyPaid : "${tr.balance}: ${remainingBalance.toAmount()} $baseCurrency",
                         style: textTheme.bodyMedium?.copyWith(
                           color: isFullyPaid ? Colors.green : color.error,
                         ),
@@ -561,7 +568,7 @@ class _DesktopState extends State<_Desktop> {
                         Padding(
                           padding: const EdgeInsets.only(top: 4.0),
                           child: Text(
-                            "Payment needs update! Current: ${existingPaid.toAmount()}, Required: ${totalAmount.toAmount()}",
+                            "${AppLocalizations.of(context)!.paymentNeedsUpdateTitle} ${existingPaid.toAmount()}, ${AppLocalizations.of(context)!.requiredTitle}: ${totalAmount.toAmount()}",
                             style: textTheme.bodySmall?.copyWith(
                               color: Colors.orange,
                               fontWeight: FontWeight.bold,
@@ -671,7 +678,7 @@ class _DesktopState extends State<_Desktop> {
           ),
         ),
         Text(
-          "${amount.toAmount()} USD",
+          "${amount.toAmount()} $baseCurrency",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: isTotal ? 18 : 16,
@@ -711,7 +718,7 @@ class _DesktopState extends State<_Desktop> {
 
             _buildPaymentDetailRow(
               tr.totalPaid,
-              "${(cashAmount + cardAmount).toAmount()} USD",
+              "${(cashAmount + cardAmount).toAmount()} $baseCurrency",
               Icons.check_circle,
               Theme.of(context).colorScheme.primary,
               isBold: true,
@@ -832,13 +839,19 @@ class _DesktopState extends State<_Desktop> {
 
           const SizedBox(height: 10),
 
-          // Cash Payment Section
-          _buildCashPaymentSection(isEditing ? totalAmount : remainingBalance, tr),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Cash Payment Section
+              Expanded(child: _buildCashPaymentSection(isEditing ? totalAmount : remainingBalance, tr)),
 
-          const SizedBox(height: 10),
+              const SizedBox(width: 10),
 
-          // Account Payment Section
-          _buildAccountPaymentSection(isEditing ? totalAmount : remainingBalance, cashAmount, tr, isEditing),
+              // Account Payment Section
+              Expanded(child: _buildAccountPaymentSection(isEditing ? totalAmount : remainingBalance, cashAmount, tr, isEditing)),
+            ],
+          ),
 
           const SizedBox(height: 10),
 
@@ -862,7 +875,7 @@ class _DesktopState extends State<_Desktop> {
   Widget _buildCashPaymentSection(double targetAmount, AppLocalizations tr) {
     return Cover(
       padding: const EdgeInsets.all(8.0),
-      radius: 8,
+      radius: 5,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -903,7 +916,7 @@ class _DesktopState extends State<_Desktop> {
                   final amount = _parseAmount(value);
                   if (amount <= 0) return tr.amountGreaterZero;
                   if (amount > targetAmount) {
-                    return "Cash amount cannot exceed ${targetAmount.toAmount()} USD";
+                    return "${tr.cashAmountCannotExceed} ${targetAmount.toAmount()} $baseCurrency";
                   }
                 }
                 return null;
@@ -914,7 +927,7 @@ class _DesktopState extends State<_Desktop> {
                 });
               },
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 5),
           ],
 
         ],
@@ -927,7 +940,7 @@ class _DesktopState extends State<_Desktop> {
         : targetAmount - cashAmount;
 
     return Cover(
-      radius: 8,
+      radius: 5,
       padding: const EdgeInsets.all(8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -970,7 +983,7 @@ class _DesktopState extends State<_Desktop> {
                   children: [
                     Text(tr.amountToChargeAccount),
                     Text(
-                      "${availableForAccount.toAmount()} USD",
+                      "${availableForAccount.toAmount()} $baseCurrency",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
@@ -983,15 +996,15 @@ class _DesktopState extends State<_Desktop> {
             const SizedBox(height: 12),
 
             // Account selection
-            GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
+            GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
               showAllOnFocus: true,
               controller: paymentAccountCtrl,
               title: tr.selectAccount,
               hintText: tr.selectReceivableAccount,
               isRequired: _isAccountPaymentEnabled,
               bloc: context.read<AccountsBloc>(),
-              fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
-              searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
+              fetchAllFunction: (bloc) => bloc.add(LoadAccountsEvent(ownerId: widget.perId)),
+              searchFunction: (bloc, query) => bloc.add(LoadAccountsEvent(ownerId: widget.perId)),
               validator: (value) {
                 if (_isAccountPaymentEnabled && paymentAccNumber == null) {
                   return tr.selectValidAccount;
@@ -1015,7 +1028,7 @@ class _DesktopState extends State<_Desktop> {
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
                               Text(
-                                account.accnumber?.toString() ?? "",
+                                account.accNumber?.toString() ?? "",
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Theme.of(context).colorScheme.outline,
                                 ),
@@ -1027,7 +1040,7 @@ class _DesktopState extends State<_Desktop> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              "${account.avilBalance?.toAmount()} ${account.ccySymbol}",
+                              "${account.accAvailBalance?.toAmount()} ${account.actCurrency}",
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
                           ],
@@ -1037,7 +1050,7 @@ class _DesktopState extends State<_Desktop> {
                   ],
                 ),
               ),
-              itemToString: (acc) => "${acc.accnumber} | ${acc.accName}",
+              itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
               stateToLoading: (state) => state is AccountLoadingState,
               loadingBuilder: (context) => SizedBox(
                 width: 16,
@@ -1045,20 +1058,20 @@ class _DesktopState extends State<_Desktop> {
                 child: CircularProgressIndicator(strokeWidth: 3),
               ),
               stateToItems: (state) {
-                if (state is StkAccountLoadedState) return state.accounts;
+                if (state is AccountLoadedState) return state.accounts;
                 return [];
               },
               onSelected: (value) {
                 setState(() {
-                  paymentAccNumber = value.accnumber;
-                  paymentAccountCtrl.text = "${value.accnumber} | ${value.accName}";
+                  paymentAccNumber = value.accNumber;
+                  paymentAccountCtrl.text = "${value.accNumber} | ${value.accName}";
                   _validatePaymentForm();
                 });
               },
               noResultsText: tr.noAccountsFound,
               showClearButton: true,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 5),
           ],
         ],
       ),
@@ -1122,9 +1135,9 @@ class _DesktopState extends State<_Desktop> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Total Payment:", style: Theme.of(context).textTheme.titleMedium),
+                Text(tr.totalPayment, style: Theme.of(context).textTheme.titleMedium),
                 Text(
-                  "${totalPayment.toAmount()} USD",
+                  "${totalPayment.toAmount()} $baseCurrency",
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -1138,11 +1151,11 @@ class _DesktopState extends State<_Desktop> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  isEditing ? "Shipping Total:" : "Target Amount:",
+                  isEditing ? "${tr.totalShippingRent}:" : "${tr.targetAmount}:",
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Text(
-                  "${targetAmount.toAmount()} USD",
+                  "${targetAmount.toAmount()} $baseCurrency",
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: isValid ? Colors.green : Theme.of(context).colorScheme.error,
@@ -1165,12 +1178,12 @@ class _DesktopState extends State<_Desktop> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Editing existing payment",
+                        tr.editExistingPayment,
                         style: TextStyle(color: Colors.blue.shade800, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 4),
                       Text(
-                        "Reference: ${existingPayment.trdReference}",
+                        "${tr.referenceNumber}: ${existingPayment.trdReference}",
                         style: TextStyle(color: Colors.blue.shade800, fontSize: 12),
                       ),
                     ],
@@ -1187,8 +1200,8 @@ class _DesktopState extends State<_Desktop> {
                     SizedBox(width: 8),
                     Text(
                       isEditing
-                          ? "Payment matches shipping total"
-                          : "Payment matches remaining balance",
+                          ? tr.paymentMatchesShippingTotal
+                          : tr.paymentMatches,
                       style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -1207,7 +1220,7 @@ class _DesktopState extends State<_Desktop> {
           Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
           SizedBox(width: 12),
           Expanded(child: Text(label)),
-          Text("${amount.toAmount()} USD"),
+          Text("${amount.toAmount()} $baseCurrency"),
         ],
       ),
     );
@@ -1237,7 +1250,7 @@ class _DesktopState extends State<_Desktop> {
       if (!_isCashPaymentEnabled && !_isAccountPaymentEnabled) {
         setState(() {
           _paymentFormValid = false;
-          _paymentError = "Please select at least one payment method";
+          _paymentError = AppLocalizations.of(context)!.selectPaymentMethod;
         });
         return;
       }
@@ -1246,7 +1259,7 @@ class _DesktopState extends State<_Desktop> {
       if (_isCashPaymentEnabled && cashAmount <= 0) {
         setState(() {
           _paymentFormValid = false;
-          _paymentError = "Please enter a valid cash amount";
+          _paymentError = AppLocalizations.of(context)!.enterCashAmount;
         });
         return;
       }
@@ -1255,7 +1268,7 @@ class _DesktopState extends State<_Desktop> {
       if (_isAccountPaymentEnabled && paymentAccNumber == null) {
         setState(() {
           _paymentFormValid = false;
-          _paymentError = "Please select an account for account payment";
+          _paymentError = AppLocalizations.of(context)!.selectAccountRequired;
         });
         return;
       }
@@ -1309,7 +1322,7 @@ class _DesktopState extends State<_Desktop> {
       if (!isValid) {
         Utils.showOverlayMessage(
           context,
-          message: "Edited payment must match the current shipping total of ${totalAmount.toAmount()} USD",
+          message: "${tr.editPaymentValidation} ${totalAmount.toAmount()} $baseCurrency",
           isError: true,
         );
         return;
@@ -1320,7 +1333,7 @@ class _DesktopState extends State<_Desktop> {
       if (!isValid) {
         Utils.showOverlayMessage(
           context,
-          message: "Payment must match remaining balance of ${remainingBalance.toAmount()} USD",
+          message: "${tr.paymentMustMatchRemaining} ${remainingBalance.toAmount()} $baseCurrency",
           isError: true,
         );
         return;
@@ -1331,7 +1344,7 @@ class _DesktopState extends State<_Desktop> {
       if (!isValid) {
         Utils.showOverlayMessage(
           context,
-          message: "Payment must match shipping total of ${totalAmount.toAmount()} USD",
+          message: "${tr.paymentMustMatchTotalShipping} ${totalAmount.toAmount()} $baseCurrency",
           isError: true,
         );
         return;
@@ -1349,7 +1362,7 @@ class _DesktopState extends State<_Desktop> {
     } else {
       Utils.showOverlayMessage(
         context,
-        message: "Please select a payment method",
+        message: tr.selectPaymentMethod,
         isError: true,
       );
       return;
@@ -1359,7 +1372,7 @@ class _DesktopState extends State<_Desktop> {
     if ((paymentType == "card" || paymentType == "dual") && paymentAccNumber == null) {
       Utils.showOverlayMessage(
         context,
-        message: "Please select an account for account payment",
+        message: tr.selectAccountRequired,
         isError: true,
       );
       return;
@@ -1377,7 +1390,7 @@ class _DesktopState extends State<_Desktop> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Please confirm the payment details"),
+            Text(tr.confirmMethodPayment),
             SizedBox(height: 16),
             if (hasExistingPayment && _isEditingExistingPayment)
               Container(
@@ -1388,7 +1401,7 @@ class _DesktopState extends State<_Desktop> {
                   border: Border.all(color: Colors.blue.shade200),
                 ),
                 child: Text(
-                  "Editing existing payment. Total must match shipping total of ${totalAmount.toAmount()} USD",
+                  "${tr.paymentMustMatchTotalShipping} ${totalAmount.toAmount()} $baseCurrency",
                   style: TextStyle(color: Colors.blue.shade800),
                 ),
               ),
@@ -1401,7 +1414,7 @@ class _DesktopState extends State<_Desktop> {
                   border: Border.all(color: Colors.orange.shade200),
                 ),
                 child: Text(
-                  "Adding to existing payment. Payment must match remaining balance of ${remainingBalance.toAmount()} USD",
+                  "${tr.paymentMustMatchRemaining} ${remainingBalance.toAmount()} $baseCurrency",
                   style: TextStyle(color: Colors.orange.shade800),
                 ),
               ),
@@ -1411,7 +1424,7 @@ class _DesktopState extends State<_Desktop> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(tr.cashPayment),
-                  Text("${cashAmount.toAmount()} USD"),
+                  Text("${cashAmount.toAmount()} $baseCurrency"),
                 ],
               ),
             if (accountAmount > 0)
@@ -1421,7 +1434,7 @@ class _DesktopState extends State<_Desktop> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(tr.accountPayment),
-                    Text("${accountAmount.toAmount()} USD"),
+                    Text("${accountAmount.toAmount()} $baseCurrency"),
                   ],
                 ),
               ),
@@ -1445,7 +1458,7 @@ class _DesktopState extends State<_Desktop> {
               children: [
                 Text(tr.totalPayment, style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(
-                  "${totalPayment.toAmount()} USD",
+                  "${totalPayment.toAmount()} $baseCurrency",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary,
@@ -1459,7 +1472,7 @@ class _DesktopState extends State<_Desktop> {
               children: [
                 Text(tr.totalCharge, style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(
-                  "${totalAmount.toAmount()} USD",
+                  "${totalAmount.toAmount()} $baseCurrency",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary,
@@ -1473,9 +1486,9 @@ class _DesktopState extends State<_Desktop> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Existing Payment", style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text(tr.existingPayment, style: TextStyle(fontWeight: FontWeight.bold)),
                   Text(
-                    "${existingPaid.toAmount()} USD",
+                    "${existingPaid.toAmount()} $baseCurrency",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.outline,
@@ -1491,7 +1504,7 @@ class _DesktopState extends State<_Desktop> {
                 children: [
                   Text(tr.remainingBalance, style: TextStyle(fontWeight: FontWeight.bold)),
                   Text(
-                    "${remainingBalance.toAmount()} USD",
+                    "${remainingBalance.toAmount()} $baseCurrency",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.error,
@@ -1761,7 +1774,7 @@ class _DesktopState extends State<_Desktop> {
                       icon: Icons.attach_money_outlined,
                     ),
                     StepItem(
-                      title: 'Summary',
+                      title: tr.summary,
                       content: _buildSummaryView(null),
                       icon: Icons.summarize,
                     ),
@@ -1779,12 +1792,13 @@ class _DesktopState extends State<_Desktop> {
 
   bool _validateStepChange(int currentStep, int requestedStep) {
     // Only validate when moving forward
+    final tr = AppLocalizations.of(context)!;
     if (requestedStep > currentStep) {
       if (requestedStep == 1) {
         if (customerCtrl.text.isEmpty || productCtrl.text.isEmpty) {
           Utils.showOverlayMessage(
             context,
-            message: "Please fill all required fields in Order step",
+            message: tr.requiredField(tr.orderStep),
             isError: true,
           );
           return false;
@@ -1798,7 +1812,7 @@ class _DesktopState extends State<_Desktop> {
             shippingRent.text.isEmpty) {
           Utils.showOverlayMessage(
             context,
-            message: "Please fill all required fields in Shipping step",
+            message: tr.requiredField(tr.shippingStep),
             isError: true,
           );
           return false;
@@ -2247,7 +2261,7 @@ class _DesktopState extends State<_Desktop> {
                                       LoadAccountsFilterEvent(
                                           start: 4,
                                           end: 4,
-                                          ccy: "USD",
+                                          ccy: "$baseCurrency",
                                           exclude: ""
                                       ),
                                     ),
@@ -2255,7 +2269,7 @@ class _DesktopState extends State<_Desktop> {
                                       LoadAccountsFilterEvent(
                                           start: 4,
                                           end: 4,
-                                          ccy: "USD",
+                                          ccy: "$baseCurrency",
                                           exclude: "",
                                           input: query
                                       ),
@@ -2560,7 +2574,7 @@ class _DesktopState extends State<_Desktop> {
           final payment = shipping.pyment!.first;
           existingPaid = _parseAmount(payment.cashAmount) + _parseAmount(payment.cardAmount);
         }
-        paymentStatusMessage = "⚠️ Payment needs update! Current payment (${existingPaid.toAmount()}) doesn't match shipping total (${totalAmount.toAmount()})";
+        paymentStatusMessage = "Payment needs update! Current payment (${existingPaid.toAmount()}) doesn't match shipping total (${totalAmount.toAmount()})";
       } else if (!canBeDelivered && shipping.shpStatus != 1) {
         final totalAmount = _parseAmount(shipping.total);
         double existingPaid = 0.0;
@@ -2568,7 +2582,7 @@ class _DesktopState extends State<_Desktop> {
           final payment = shipping.pyment!.first;
           existingPaid = _parseAmount(payment.cashAmount) + _parseAmount(payment.cardAmount);
         }
-        paymentStatusMessage = "❌ Cannot mark as delivered. Payment incomplete. Paid: ${existingPaid.toAmount()}, Required: ${totalAmount.toAmount()}";
+        paymentStatusMessage = "Cannot mark as delivered. Payment incomplete. Paid: ${existingPaid.toAmount()}, Required: ${totalAmount.toAmount()}";
       }
     }
 
@@ -2645,7 +2659,7 @@ class _DesktopState extends State<_Desktop> {
                             if (e && !canBeDelivered) {
                               Utils.showOverlayMessage(
                                 context,
-                                message: "Cannot mark as delivered. Payment is not complete or doesn't match shipping total.",
+                                message: tr.paymentIsNotComplete,
                                 isError: true,
                               );
                               return;
@@ -2653,7 +2667,7 @@ class _DesktopState extends State<_Desktop> {
                             if (e && paymentNeedsUpdate) {
                               Utils.showOverlayMessage(
                                 context,
-                                message: "Cannot mark as delivered. Payment needs to be updated first.",
+                                message: tr.paymentNeedsUpdate,
                                 isError: true,
                               );
                               return;
@@ -2665,7 +2679,7 @@ class _DesktopState extends State<_Desktop> {
                       )
                     else if (hasShippingDetails && shipping.shpStatus == 1)
                       Text(
-                        "Delivered",
+                        tr.delivered,
                         style: TextStyle(
                           color: Colors.green,
                           fontWeight: FontWeight.bold,
@@ -2927,7 +2941,7 @@ class _DesktopState extends State<_Desktop> {
       if (!_canMarkAsDelivered(existingShipping)) {
         Utils.showOverlayMessage(
           context,
-          message: "Cannot mark as delivered. Payment is not complete or doesn't match shipping total.",
+          message: tr.paymentIsNotComplete,
           isError: true,
         );
         setState(() => _currentStep = 3); // Go to payment step
@@ -2938,7 +2952,7 @@ class _DesktopState extends State<_Desktop> {
       if (_paymentNeedsUpdate(existingShipping)) {
         Utils.showOverlayMessage(
           context,
-          message: "Cannot mark as delivered. Payment needs to be updated first.",
+          message: tr.paymentNeedsUpdate,
           isError: true,
         );
         setState(() => _currentStep = 3); // Go to payment step
@@ -3021,7 +3035,7 @@ class _DesktopState extends State<_Desktop> {
 
   void _handleExpenseAction() {
     if (expenseFormKey.currentState == null || !expenseFormKey.currentState!.validate()) {
-      Utils.showOverlayMessage(context, message: "Please fill all required fields", isError: true);
+      Utils.showOverlayMessage(context, message: AppLocalizations.of(context)!.requiredField(''), isError: true);
       return;
     }
 

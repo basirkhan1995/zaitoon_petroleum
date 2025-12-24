@@ -19,6 +19,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String requiredField(String name) {
+    return 'Please fill all required fields in $name';
+  }
+
+  @override
   String get lightMode => 'Light';
 
   @override
@@ -1684,4 +1689,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountDetails => 'Account Details';
+
+  @override
+  String get targetAmount => 'Target amount';
+
+  @override
+  String get editPaymentValidation =>
+      'Edited payment amount must match the current shipping total of';
+
+  @override
+  String get paymentMustMatchRemaining =>
+      'Payment must match remaining balance of';
+
+  @override
+  String get paymentMustMatchTotalShipping =>
+      'Payment must match shipping total of';
+
+  @override
+  String get confirmMethodPayment => 'Please confirm the payment details';
+
+  @override
+  String get existingPayment => 'Existing Payment';
+
+  @override
+  String get orderStep => 'Order Step';
+
+  @override
+  String get shippingStep => 'Shipping Step';
+
+  @override
+  String get paymentIsNotComplete =>
+      'Payment is not complete or doesn\'t match shipping total.';
+
+  @override
+  String get paymentNeedsUpdate =>
+      'Cannot mark as delivered. Payment needs to be updated first.';
+
+  @override
+  String get paymentNeedsUpdateTitle => ' Payment needs update! Current:';
+
+  @override
+  String get requiredTitle => 'Required';
+
+  @override
+  String get paymentMatches => 'ayment matches remaining balance';
+
+  @override
+  String get paymentMatchesShippingTotal => 'Payment matches shipping total.';
+
+  @override
+  String get cashAmountCannotExceed => 'Cash amount cannot exceed';
+
+  @override
+  String get editExistingPayment => 'Editing existing payment';
 }

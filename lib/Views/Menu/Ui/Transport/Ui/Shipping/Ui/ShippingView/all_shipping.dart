@@ -8,11 +8,15 @@ import 'package:flutter/services.dart';
 import 'package:zaitoon_petroleum/Features/Other/shortcut.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingById/shipping_by_id.dart';
+import '../../../../../../../../Features/Other/utils.dart';
+import '../../../../../../../../Features/PrintSettings/print_preview.dart';
+import '../../../../../../../../Features/PrintSettings/report_model.dart';
 import '../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../../../Localizations/Bloc/localizations_bloc.dart';
 import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import 'PDF/pdf.dart';
 import 'bloc/shipping_bloc.dart';
 import 'model/shipping_model.dart';
 import 'model/shp_details_model.dart';
@@ -60,8 +64,10 @@ class _DesktopState extends State<_Desktop> {
   String? _baseCurrency;
   String? myLocale;
   bool _isDialogOpen = false;
-  int? _currentlyViewingShpId;
-
+  int? _loadingShpId;
+  int? _perId;
+  Uint8List _companyLogo = Uint8List(0);
+  final company = ReportModel();
   @override
   void dispose() {
     searchController.dispose();
@@ -86,18 +92,27 @@ class _DesktopState extends State<_Desktop> {
     if (shp.shpId == null) return;
 
     // If already viewing this shipping, don't dispatch again
-    if (_currentlyViewingShpId == shp.shpId && _isDialogOpen) {
+    if (_isDialogOpen && _loadingShpId == shp.shpId) {
       return;
     }
+
+    // If another shipping is loading, cancel it and load new one
+    if (_loadingShpId != null && _loadingShpId != shp.shpId) {
+      // Clear previous loading state
+      _loadingShpId = null;
+    }
+
+    // Set current loading ID
+    _loadingShpId = shp.shpId;
 
     // Clear previous state first
     context.read<ShippingBloc>().add(ClearShippingDetailEvent());
 
-    // Set current viewing ID
-    _currentlyViewingShpId = shp.shpId;
-
     // Dispatch event to load shipping details
     context.read<ShippingBloc>().add(LoadShippingDetailEvent(shp.shpId!));
+    setState(() {
+      _perId = shp.perId;
+    });
   }
 
   void _showShippingDetailDialog(BuildContext context, ShippingDetailsModel shipping) {
@@ -110,11 +125,12 @@ class _DesktopState extends State<_Desktop> {
       barrierDismissible: true,
       builder: (context) => ShippingByIdView(
         shippingId: shipping.shpId,
+        perId: _perId,
       ),
     ).then((value) {
       // Dialog closed - reset flags
       _isDialogOpen = false;
-      _currentlyViewingShpId = null;
+      _loadingShpId = null;
 
       // Clear the shipping detail from state
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -136,14 +152,25 @@ class _DesktopState extends State<_Desktop> {
       listeners: [
         BlocListener<ShippingBloc, ShippingState>(
           listener: (context, state) {
-            // Handle detail loaded - show dialog ONLY when flag is true
+            // Handle detail loaded - show dialog
             if (state is ShippingDetailLoadedState &&
                 state.currentShipping != null &&
                 state.shouldOpenDialog) {
-              // Only show if not already open and this is the shipping we're trying to view
-              if (!_isDialogOpen && _currentlyViewingShpId == state.currentShipping!.shpId) {
+              // Only show if not already open and this is the shipping we're loading
+              if (!_isDialogOpen && _loadingShpId == state.currentShipping!.shpId) {
                 _showShippingDetailDialog(context, state.currentShipping!);
               }
+            }
+
+            // When detail loading starts, track the loading ID
+            if (state is ShippingDetailLoadingState) {
+              _loadingShpId = state.loadingShpId;
+            }
+
+            // When detail is cleared or error occurs, reset loading ID
+            if (state is ShippingErrorState ||
+                state is ShippingListLoadedState && state.currentShipping == null) {
+              _loadingShpId = null;
             }
 
             // Handle success states
@@ -157,7 +184,7 @@ class _DesktopState extends State<_Desktop> {
             // Reset flags when detail is cleared
             if (state is ShippingListLoadedState && state.currentShipping == null) {
               _isDialogOpen = false;
-              _currentlyViewingShpId = null;
+              _loadingShpId = null;
             }
           },
         ),
@@ -242,7 +269,7 @@ class _DesktopState extends State<_Desktop> {
           SizedBox(width: 40, child: Text(tr.id,style: titleStyle)),
           SizedBox(width: 100, child: Text(tr.date, style: titleStyle)),
           Expanded(child: Text(tr.vehicles, style: titleStyle)),
-          SizedBox(width: 130, child: Text(tr.products, style: titleStyle)),
+          SizedBox(width: 200, child: Text(tr.products, style: titleStyle)),
           SizedBox(width: 130, child: Text(tr.customer, style: titleStyle)),
           SizedBox(width: 110, child: Text(tr.shippingRent, style: titleStyle)),
           SizedBox(width: 110, child: Text(tr.loadingSize, style: titleStyle)),
@@ -333,7 +360,7 @@ class _DesktopState extends State<_Desktop> {
       itemBuilder: (context, index) {
         final shp = filteredList[index];
         final isLoadingThisItem = loadingShpId == shp.shpId;
-        final isCurrentlyViewing = _currentlyViewingShpId == shp.shpId && _isDialogOpen;
+        final isCurrentlyViewing = _loadingShpId == shp.shpId && _isDialogOpen;
 
         return InkWell(
           onTap: (isLoadingThisItem || isCurrentlyViewing) ? null : () => _handleShippingTap(shp),
@@ -367,12 +394,12 @@ class _DesktopState extends State<_Desktop> {
                           child: const CircularProgressIndicator(strokeWidth: 2),
                         ),
                       if (!isLoadingThisItem)
-                      Flexible(
-                        child: Text(
-                          shp.shpId.toString(),
-                          overflow: TextOverflow.ellipsis,
+                        Flexible(
+                          child: Text(
+                            shp.shpId.toString(),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -384,7 +411,7 @@ class _DesktopState extends State<_Desktop> {
                   child: Text(shp.shpMovingDate.toFormattedDate()),
                 ),
                 Expanded(child: Text(shp.vehicle ?? "")),
-                SizedBox(width: 130, child: Text(shp.proName ?? "")),
+                SizedBox(width: 200, child: Text(shp.proName ?? "")),
                 SizedBox(width: 130, child: Text(shp.customer ?? "")),
                 SizedBox(
                   width: 110,
@@ -418,15 +445,93 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  void onPDF(){
+  void onPDF() {
+    final locale = AppLocalizations.of(context)!;
+    final state = context.read<ShippingBloc>().state;
 
+    List<ShippingModel> shippingList = [];
+
+    // Extract shipping list from state based on current state type
+    if (state is ShippingListLoadedState) {
+      shippingList = state.shippingList;
+    } else if (state is ShippingDetailLoadedState) {
+      shippingList = state.shippingList;
+    } else if (state is ShippingListLoadingState) {
+      shippingList = state.shippingList;
+    } else if (state is ShippingSuccessState) {
+      shippingList = state.shippingList;
+    }
+
+    if (shippingList.isEmpty) {
+      Utils.showOverlayMessage(context,
+          message: locale.noData,
+          isError: true
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (_) => PrintPreviewDialog<List<ShippingModel>>(
+        data: shippingList,
+        company: company, // You'll need to get company info
+        buildPreview: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+        }) {
+          return AllShippingPdfServices().printPreview(
+            company: company,
+            language: language,
+            orientation: orientation,
+            pageFormat: pageFormat,
+            shippingList: data,
+          );
+        },
+        onPrint: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+          required selectedPrinter,
+          required copies,
+          required pages,
+        }) {
+          return AllShippingPdfServices().printDocument(
+            company: company,
+            language: language,
+            orientation: orientation,
+            pageFormat: pageFormat,
+            selectedPrinter: selectedPrinter,
+            shippingList: data,
+            copies: copies,
+            pages: pages,
+          );
+        },
+        onSave: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+        }) {
+          return AllShippingPdfServices().createDocument(
+            company: company,
+            language: language,
+            orientation: orientation,
+            pageFormat: pageFormat,
+            shippingList: data,
+          );
+        },
+      ),
+    );
   }
 
   void onAdd() {
     // Clear any existing detail and flags
     context.read<ShippingBloc>().add(ClearShippingDetailEvent());
     _isDialogOpen = false;
-    _currentlyViewingShpId = null;
+    _loadingShpId = null;
 
     showDialog(
       context: context,
@@ -434,7 +539,7 @@ class _DesktopState extends State<_Desktop> {
     ).then((value) {
       // Reset flags when dialog closes
       _isDialogOpen = false;
-      _currentlyViewingShpId = null;
+      _loadingShpId = null;
     });
   }
 
@@ -467,10 +572,10 @@ class ShippingStatusBadge extends StatelessWidget {
     isCompleted ? Icons.check_circle_rounded : Icons.schedule_rounded;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(5),
         border: Border.all(
           color: textColor.withValues(alpha: .4),
         ),
@@ -492,4 +597,5 @@ class ShippingStatusBadge extends StatelessWidget {
       ),
     );
   }
+
 }

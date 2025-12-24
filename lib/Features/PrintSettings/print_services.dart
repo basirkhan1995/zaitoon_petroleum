@@ -952,6 +952,73 @@ abstract class PrintServices {
         'ar': 'نامعلوم',
       },
 
+      // Add these to your translation map
+      'allShipping': {
+        'en': 'All Shipping Records',
+        'fa': 'همه سوابق حمل و نقل',
+        'ar': 'جميع سجلات الشحن',
+      },
+      'shippingSummary': {
+        'en': 'Shipping Summary',
+        'fa': 'خلاصه حمل و نقل',
+        'ar': 'ملخص الشحن',
+      },
+      'totalShipments': {
+        'en': 'Total Shipments',
+        'fa': 'کل حمل و نقل',
+        'ar': 'إجمالي الشحنات',
+      },
+      'completed': {
+        'en': 'Completed',
+        'fa': 'تکمیل شده',
+        'ar': 'مكتمل',
+      },
+      'totalRent': {
+        'en': 'Total Rent',
+        'fa': 'کرایه کل',
+        'ar': 'الإيجار الكلي',
+      },
+      'avgLoadSize': {
+        'en': 'Avg Load Size',
+        'fa': 'میانگین اندازه بار',
+        'ar': 'متوسط حجم التحميل',
+      },
+      'vehicles': {
+        'en': 'Vehicle',
+        'fa': 'وسیله نقلیه',
+        'ar': 'مركبة',
+      },
+      'customer': {
+        'en': 'Customer',
+        'fa': 'مشتری',
+        'ar': 'عميل',
+      },
+      'shippingRent': {
+        'en': 'Rent',
+        'fa': 'کرایه',
+        'ar': 'إيجار',
+      },
+      'loadingSize': {
+        'en': 'Load Size',
+        'fa': 'اندازه بارگیری',
+        'ar': 'حجم التحميل',
+      },
+      'unloadingSize': {
+        'en': 'Unload Size',
+        'fa': 'اندازه تخلیه',
+        'ar': 'حجم التفريغ',
+      },
+      'completedTitle': {
+        'en': 'Completed',
+        'fa': 'تکمیل',
+        'ar': 'مكتمل',
+      },
+      'pendingTitle': {
+        'en': 'Pending',
+        'fa': 'در انتظار',
+        'ar': 'قيد الانتظار',
+      },
+
     };
 
     // Default to English if language not found

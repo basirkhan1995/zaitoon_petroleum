@@ -15,6 +15,14 @@
       }
     }
   },
+  "requiredField": "مهرباني وکړئ ټول اړین ځایونه {name} ډک کړئ",
+  "@requiredField": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "lightMode": "روشنایی",
   "darkMode": "تیاره",
   "theme": "تم",
@@ -556,5 +564,21 @@
   "enterAmount": "مبلغ را وارید نمایید",
   "adjustAmount": "تنظیم مبلغ",
   "amountToChargeTitle": "مبلغ قابل دریافت",
-  "accountDetails": "جزئیات حساب"
+  "accountDetails": "جزئیات حساب",
+  "targetAmount": "مبلغ قابل تادیه",
+  "editPaymentValidation": "د تادیې تعدیل شوی مقدار باید د اوسني بار وړلو مجموعي سره سمون ولري",
+  "paymentMustMatchRemaining": "تادیه باید د پاتې توازن سره سمون ولري",
+  "paymentMustMatchTotalShipping": "تادیه باید د بار وړلو ټولټال سره سمون ولري",
+  "confirmMethodPayment": "مهرباني وکړئ د تادیې توضیحات تایید کړئ",
+  "existingPayment": "موجوده تادیه",
+  "orderStep": "مرحله فرمایش",
+  "shippingStep": "مرحله بارگیری",
+  "paymentIsNotComplete": "تادیه بشپړه نه ده یا د بار وړلو ټولټال سره سمون نه خوري.",
+  "paymentNeedsUpdate": "د سپارل شوي په توګه نشي نښه کیدی. تادیه باید لومړی تازه شي.",
+  "paymentNeedsUpdateTitle": "تادیه تازه کولو ته اړتیا لري! اوسنی:",
+  "requiredTitle": "اړین",
+  "paymentMatches": "تادیه د پاتې توازن سره سمون خوري",
+  "paymentMatchesShippingTotal": "تادیه د بار وړلو ټولټال سره سمون خوري.",
+  "cashAmountCannotExceed": "د نغدو پیسو اندازه نشي زیاتیدلی",
+  "editExistingPayment": "د موجوده تادیې ترمیم کول"
 }
