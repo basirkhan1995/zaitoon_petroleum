@@ -1519,7 +1519,7 @@ class _DesktopState extends State<_Desktop> {
                         ),
                         if (login.hasPermission(19) ?? false)
                           ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .3),
+                            backgroundColor: color.primary.withValues(alpha: .2),
                             toolTip: "F1",
                             label: Text(locale.deposit),
                             icon: Icons.arrow_circle_down_rounded,
@@ -1529,7 +1529,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         if (login.hasPermission(18) ?? false)
                           ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .3),
+                            backgroundColor: color.primary.withValues(alpha: .2),
                             toolTip: "F2",
                             label: Text(locale.withdraw),
                             icon: Icons.arrow_circle_up_rounded,
@@ -1538,7 +1538,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         if (login.hasPermission(22) ?? false)
                           ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .3),
+                            backgroundColor: color.primary.withValues(alpha: .2),
                             toolTip: "F3",
                             label: Text(locale.income),
                             icon: Icons.arrow_circle_down_rounded,
@@ -1547,7 +1547,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         if (login.hasPermission(23) ?? false)
                           ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .3),
+                            backgroundColor: color.primary.withValues(alpha: .2),
                             toolTip: "F4",
                             label: Text(locale.expense),
                             icon: Icons.arrow_circle_up_rounded,
@@ -1567,7 +1567,7 @@ class _DesktopState extends State<_Desktop> {
                         ),
                         if (login.hasPermission(24) ?? false)
                           ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .3),
+                            backgroundColor: color.primary.withValues(alpha: .2),
                             toolTip: "F5",
                             label: Text(locale.singleAccount),
                             icon: Icons.swap_horiz_rounded,
@@ -1576,7 +1576,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         if (login.hasPermission(24) ?? false)
                           ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .3),
+                            backgroundColor: color.primary.withValues(alpha: .2),
                             toolTip: "F5",
                             label: Text(locale.multiAccount),
                             icon: Icons.swap_horiz_rounded,
@@ -1589,7 +1589,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         if (login.hasPermission(24) ?? false)
                           ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .3),
+                            backgroundColor: color.primary.withValues(alpha: .2),
                             toolTip: "F5",
                             label: Text(locale.fxTransaction),
                             icon: Icons.swap_horiz_rounded,
@@ -1614,7 +1614,7 @@ class _DesktopState extends State<_Desktop> {
 
                         if (login.hasPermission(21) ?? false)
                           ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .3),
+                            backgroundColor: color.primary.withValues(alpha: .2),
                             toolTip: "F6",
                             label: Text(locale.glCreditTitle),
                             width: double.infinity,
@@ -1623,7 +1623,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         if (login.hasPermission(20) ?? false)
                           ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .3),
+                            backgroundColor: color.primary.withValues(alpha: .2),
                             toolTip: "F7",
                             label: Text(locale.glDebitTitle),
                             width: double.infinity,
