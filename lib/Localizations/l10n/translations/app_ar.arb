@@ -584,5 +584,11 @@
   "lastMonthShipments": "د تېرې میاشتې لېږدونه",
   "shippingCharges": "د لېږد لګښتونه",
   "singleAccount": "تک حساب",
-  "multiAccount": " چندگانه"
+  "multiAccount": " چندگانه",
+  "productCategoryTitle": "د محصولاتو کټګورۍ جوړول او سمول.",
+  "manageProductTitle": "په دې برخه کې محصولات وګورئ او تنظیم یې کړئ.",
+  "estimateTitle": "د بیې اټکل",
+  "orderTitle": "فرمایشونه",
+  "purchaseTitle": "خرید",
+  "invoiceTitle": "خرید و فروش"
 }

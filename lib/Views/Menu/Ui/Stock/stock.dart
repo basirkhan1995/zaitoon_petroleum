@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Purchase/purchase.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Returns/returns.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Sales/sales.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/estimate.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Orders/Ui/orders.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Shift/shift.dart';
 import '../../../../Features/Generic/tab_bar.dart';
+import '../../../../Features/Widgets/outline_button.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../Auth/bloc/auth_bloc.dart';
-import 'Ui/Products/products.dart';
 import 'bloc/stock_tab_bloc.dart';
 
 class StockView extends StatelessWidget {
@@ -16,6 +15,7 @@ class StockView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
     final locale = AppLocalizations.of(context)!;
     final state = context.watch<AuthBloc>().state;
 
@@ -24,63 +24,149 @@ class StockView extends StatelessWidget {
     }
     final login = state.loginData;
     return Scaffold(
-      body: BlocBuilder<StockTabBloc, StockTabState>(
-        builder: (context, state) {
-          final tabs = <ZTabItem<StockTabsName>>[
-            if (login.hasPermission(11) ?? false)
-              ZTabItem(
-                value: StockTabsName.products,
-                label: locale.products,
-                screen: const ProductsView(),
-              ),
-            if (login.hasPermission(12) ?? false)
-              ZTabItem(
-                value: StockTabsName.purchase,
-                label: locale.buyTitle,
-                screen: const TodayPurchasedView(),
-              ),
-            if (login.hasPermission(13) ?? false)
-              ZTabItem(
-                value: StockTabsName.sell,
-                label: locale.sales,
-                screen: const TodaySalesView(),
-              ),
+      body: Row(
+        children: [
+          Expanded(
+            child: BlocBuilder<StockTabBloc, StockTabState>(
+              builder: (context, state) {
+                final tabs = <ZTabItem<StockTabsName>>[
 
-            ZTabItem(
-              value: StockTabsName.returnedGoods,
-              label: locale.returnGoods,
-              screen: const TodayReturnGoodsView(),
+                  if (login.hasPermission(12) ?? false)
+                    ZTabItem(
+                      value: StockTabsName.orders,
+                      label: locale.orderTitle,
+                      screen: const OrdersView(),
+                    ),
+
+                  ZTabItem(
+                    value: StockTabsName.estimates,
+                    label: locale.estimateTitle,
+                    screen: const EstimateView(),
+                  ),
+                  ZTabItem(
+                    value: StockTabsName.shift,
+                    label: locale.shift,
+                    screen: const TodayShiftView(),
+                  ),
+                ];
+
+                final available = tabs.map((t) => t.value).toList();
+                final selected = available.contains(state.tabs)
+                    ? state.tabs
+                    : available.first;
+                return ZTabContainer<StockTabsName>(
+                  margin: EdgeInsets.only(top: 6),
+                  title: AppLocalizations.of(context)!.stock,
+
+                  /// Tab data
+                  tabs: tabs,
+                  selectedValue: selected,
+
+                  /// Bloc update
+                  onChanged: (val) => context.read<StockTabBloc>().add(StockOnChangeEvent(val)),
+
+                  /// Colors for underline style
+                  style: ZTabStyle.underline,
+                  selectedColor: Theme.of(context).colorScheme.primary,
+                  unselectedTextColor: Theme.of(context).colorScheme.secondary,
+                  selectedTextColor: Theme.of(context).colorScheme.surface,
+                  tabContainerColor: Theme.of(context).colorScheme.surface,
+                );
+              },
             ),
-            ZTabItem(
-              value: StockTabsName.shift,
-              label: locale.shift,
-              screen: const TodayShiftView(),
+          ),
+
+          const SizedBox(width: 3),
+
+          // RIGHT SIDE — SHORTCUT BUTTONS PANEL
+          Container(
+            width: 190,
+            margin: EdgeInsets.symmetric(horizontal: 3,vertical: 5),
+            height: double.infinity,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(5),
             ),
-          ];
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 12,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 10,
+                children: [
+                  Wrap(
+                    spacing: 5,
+                    children: [
+                      const Icon(Icons.cached_rounded, size: 20),
+                      Text(
+                        locale.invoiceTitle,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ],
+                  ),
+                  if (login.hasPermission(19) ?? false)
+                    ZOutlineButton(
+                      backgroundColor: color.primary.withValues(alpha: .1),
+                      toolTip: "F1",
+                      label: Text(locale.purchaseTitle),
+                      icon: Icons.shopping_bag,
+                      width: double.infinity,
+                    //  onPressed: () => onCashDepositWithdraw(trnType: "CHDP"),
+                    ),
+                  if (login.hasPermission(18) ?? false)
+                    ZOutlineButton(
+                      backgroundColor: color.primary.withValues(alpha: .1),
+                      toolTip: "F2",
+                      label: Text(locale.sellTitle),
+                      icon: Icons.shopping_bag,
+                      width: double.infinity,
+                     // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
+                    ),
 
-          final available = tabs.map((t) => t.value).toList();
-          final selected = available.contains(state.tabs)
-              ? state.tabs
-              : available.first;
-          return ZTabContainer<StockTabsName>(
-            margin: EdgeInsets.only(top: 6),
-            title: AppLocalizations.of(context)!.stock,
+                  ZOutlineButton(
+                    backgroundColor: color.primary.withValues(alpha: .1),
+                    toolTip: "F2",
+                    label: Text(locale.estimateTitle),
+                    icon: Icons.real_estate_agent_outlined,
+                    width: double.infinity,
+                    // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
+                  ),
+                  ZOutlineButton(
+                    backgroundColor: color.primary.withValues(alpha: .1),
+                    toolTip: "F2",
+                    label: Text(locale.returnGoods),
+                    icon: Icons.read_more_outlined,
+                    width: double.infinity,
+                    // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
+                  ),
+                  SizedBox(height: 3),
+                  Wrap(
+                    spacing: 5,
+                    children: [
+                      const Icon(Icons.reset_tv, size: 20),
+                      Text(
+                        locale.operation,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ],
+                  ),
 
-            /// Tab data
-            tabs: tabs,
-            selectedValue: selected,
+                  ZOutlineButton(
+                    backgroundColor: color.primary.withValues(alpha: .1),
+                    toolTip: "F2",
+                    label: Text(locale.shift),
+                    icon: Icons.filter_tilt_shift,
+                    width: double.infinity,
+                    // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
+                  ),
 
-            /// Bloc update
-            onChanged: (val) => context.read<StockTabBloc>().add(StockOnChangeEvent(val)),
-
-            /// Colors for underline style
-            style: ZTabStyle.underline,
-            selectedColor: Theme.of(context).colorScheme.primary,
-            unselectedTextColor: Theme.of(context).colorScheme.secondary,
-            selectedTextColor: Theme.of(context).colorScheme.surface,
-            tabContainerColor: Theme.of(context).colorScheme.surface,
-          );
-        },
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

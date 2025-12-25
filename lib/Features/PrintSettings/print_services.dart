@@ -804,7 +804,7 @@ abstract class PrintServices {
         'ar':'بل نوع',
       },
       'PUR':{
-        'en':'Purchase',
+        'en':'Orders',
         'fa':'خرید',
         'ar':'خرید',
       },
@@ -900,7 +900,7 @@ abstract class PrintServices {
         'ar': 'د ګزاریچې شمار',
       },
       'purchaseAmount': {
-        'en': 'Purchase Amount',
+        'en': 'Orders Amount',
         'fa': 'مبلغ خرید',
         'ar': 'د پیرود مقدار',
       },

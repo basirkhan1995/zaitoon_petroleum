@@ -584,5 +584,11 @@
   "lastMonthShipments": "Last month shipments",
   "shippingCharges": "Shipping Charges",
   "singleAccount": "Single Account",
-  "multiAccount": "Multi Account"
+  "multiAccount": "Multi Account",
+  "productCategoryTitle": "Create and manage product categories.",
+  "manageProductTitle": "View, add, and manage product details here.",
+  "estimateTitle": "Estimate",
+  "orderTitle": "Orders",
+  "purchaseTitle": "Purchase",
+  "invoiceTitle": "Invoice"
 }

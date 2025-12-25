@@ -1746,4 +1746,24 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get multiAccount => ' چندگانه';
+
+  @override
+  String get productCategoryTitle =>
+      'در این بخش دسته‌ بندی محصولات را مدیریت کنید.';
+
+  @override
+  String get manageProductTitle =>
+      'در این بخش محصولات را مشاهده و مدیریت کنید.';
+
+  @override
+  String get estimateTitle => 'پیش‌ بل';
+
+  @override
+  String get orderTitle => 'سفارشات';
+
+  @override
+  String get purchaseTitle => 'خرید';
+
+  @override
+  String get invoiceTitle => 'خرید و فروش';
 }

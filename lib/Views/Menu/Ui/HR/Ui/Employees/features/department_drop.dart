@@ -29,7 +29,7 @@ enum EmpDepartment {
       case EmpDepartment.audit: return "Audit";
       case EmpDepartment.procurement: return "Procurement";
       case EmpDepartment.marketing: return "Marketing";
-      case EmpDepartment.sales: return "Sales";
+      case EmpDepartment.sales: return "Estimate";
       case EmpDepartment.customerService: return "Customer Service";
       case EmpDepartment.legal: return "Legal";
     }
@@ -45,7 +45,7 @@ enum EmpDepartment {
       case "Audit": return EmpDepartment.audit;
       case "Procurement": return EmpDepartment.procurement;
       case "Marketing": return EmpDepartment.marketing;
-      case "Sales": return EmpDepartment.sales;
+      case "Estimate": return EmpDepartment.sales;
       case "Customer Service": return EmpDepartment.customerService;
       case "Legal": return EmpDepartment.legal;
       default: return EmpDepartment.operation;

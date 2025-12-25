@@ -74,6 +74,17 @@ class _DesktopState extends State<_Desktop> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
+                    flex: 3,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(tr.categoryTitle,style: Theme.of(context).textTheme.titleLarge),
+                        Text(tr.productCategoryTitle,style: Theme.of(context).textTheme.bodySmall?.copyWith(color: color.outline)),
+                      ],
+                    )),
+                Expanded(
+                  flex: 2,
                   child: ZSearchField(
                     controller: searchController,
                     hint: AppLocalizations.of(context)!.accNameOrNumber,

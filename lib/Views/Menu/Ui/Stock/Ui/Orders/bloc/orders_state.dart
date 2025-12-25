@@ -1,0 +1,35 @@
+part of 'orders_bloc.dart';
+
+sealed class OrdersState extends Equatable {
+  const OrdersState();
+}
+
+final class OrdersInitial extends OrdersState {
+  @override
+  List<Object> get props => [];
+}
+
+final class OrdersLoadingState extends OrdersState {
+  @override
+  List<Object> get props => [];
+}
+
+final class OrdersSuccessState extends OrdersState {
+  @override
+  List<Object> get props => [];
+}
+
+final class OrdersErrorState extends OrdersState {
+  final String message;
+  const OrdersErrorState(this.message);
+  @override
+  List<Object> get props => [message];
+}
+
+
+final class OrdersLoadedState extends OrdersState {
+  final List<OrdersModel> order;
+  const OrdersLoadedState(this.order);
+  @override
+  List<Object> get props => [order];
+}

@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/status_badge.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Products/add_edit_product.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Products/bloc/products_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../../../../Features/Widgets/outline_button.dart';
+import '../../../../../../../../Features/Widgets/search_field.dart';
+import 'add_edit_product.dart';
+import 'bloc/products_bloc.dart';
 
-import '../../../../../../Features/Widgets/outline_button.dart';
-import '../../../../../../Features/Widgets/search_field.dart';
 
 class ProductsView extends StatelessWidget {
   const ProductsView({super.key});
@@ -72,7 +73,15 @@ class _DesktopState extends State<_Desktop> {
               children: [
                 Expanded(
                     flex: 3,
-                    child: Text(tr.products,style: textTheme.titleMedium)),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(tr.products,style: textTheme.titleLarge),
+                        Text(tr.manageProductTitle,style: Theme.of(context).textTheme.bodySmall?.copyWith(color: color.outline)),
+
+                      ],
+                    )),
                 Expanded(
                   flex: 2,
                   child: ZSearchField(
@@ -117,6 +126,28 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 0),
+            child: Row(
+              children: [
+                SizedBox(
+                    width: 200,
+                    child: Text(tr.productName,style: textTheme.titleMedium)),
+                Expanded(
+                    child: Text(tr.details,style: textTheme.titleMedium)),
+                SizedBox(
+                    width: 150,
+                    child: Text(tr.productCode,style: textTheme.titleMedium)),
+                SizedBox(
+                    width: 150,
+                    child: Text("Made in",style: textTheme.titleMedium)),
+                SizedBox(
+                    width: 90,
+                    child: Text(tr.status,style: textTheme.titleMedium)),
+              ],
+            ),
+          ),
+          Divider(endIndent: 15,indent: 15),
           Expanded(
             child: BlocBuilder<ProductsBloc, ProductsState>(
               builder: (context, state) {
@@ -132,10 +163,10 @@ class _DesktopState extends State<_Desktop> {
                   final query = searchController.text.toLowerCase().trim();
 
                   final filteredList = state.products.where((item) {
-                    final name = item.proCode?.toLowerCase() ?? '';
-                    final number = item.proName?.toString() ?? '';
+                    final code = item.proCode?.toLowerCase() ?? '';
+                    final productName = item.proName?.toString() ?? '';
 
-                    return name.contains(query.toLowerCase()) || number.contains(query);
+                    return code.contains(query.toLowerCase()) || productName.contains(query.toLowerCase());
                   }).toList();
                   return ListView.builder(
                       itemCount: filteredList.length,
@@ -154,7 +185,20 @@ class _DesktopState extends State<_Desktop> {
                           ),
                           child: Row(
                             children: [
-                              Text(product.proName??""),
+                              SizedBox(
+                                  width: 200,
+                                  child: Text(product.proName??"")),
+                              Expanded(
+                                  child: Text(product.proDetails??"")),
+                              SizedBox(
+                                  width: 150,
+                                  child: Text(product.proCode??"")),
+                              SizedBox(
+                                  width: 150,
+                                  child: Text(product.proMadeIn??"")),
+                              SizedBox(
+                                  width: 90,
+                                  child: StatusBadge( status: product.proStatus!,trueValue: tr.active, falseValue: tr.inactive,))
                             ],
                           ),
                         ),

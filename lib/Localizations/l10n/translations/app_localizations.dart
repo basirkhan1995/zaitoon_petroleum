@@ -3489,6 +3489,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Multi Account'**
   String get multiAccount;
+
+  /// No description provided for @productCategoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create and manage product categories.'**
+  String get productCategoryTitle;
+
+  /// No description provided for @manageProductTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View, add, and manage product details here.'**
+  String get manageProductTitle;
+
+  /// No description provided for @estimateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate'**
+  String get estimateTitle;
+
+  /// No description provided for @orderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get orderTitle;
+
+  /// No description provided for @purchaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase'**
+  String get purchaseTitle;
+
+  /// No description provided for @invoiceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice'**
+  String get invoiceTitle;
 }
 
 class _AppLocalizationsDelegate

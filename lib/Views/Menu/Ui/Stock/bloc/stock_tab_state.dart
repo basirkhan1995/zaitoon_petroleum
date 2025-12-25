@@ -1,10 +1,10 @@
 part of 'stock_tab_bloc.dart';
 
-enum StockTabsName {products, purchase, sell, returnedGoods, shift}
+enum StockTabsName {estimates, orders, shift}
 
 class StockTabState extends Equatable {
   final StockTabsName tabs;
-   const StockTabState({this.tabs = StockTabsName.products});
+   const StockTabState({this.tabs = StockTabsName.estimates});
   @override
   List<Object> get props => [tabs];
 }

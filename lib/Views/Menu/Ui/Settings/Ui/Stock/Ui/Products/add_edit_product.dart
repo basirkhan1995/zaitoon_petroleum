@@ -3,9 +3,10 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Products/bloc/products_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Products/model/product_model.dart';
+
+import 'bloc/products_bloc.dart';
+import 'model/product_model.dart';
 
 class AddEditProductView extends StatelessWidget {
   final ProductsModel? model;
@@ -57,7 +58,6 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
-    TextStyle? titleStyle = Theme.of(context).textTheme.titleMedium;
     bool isEdit = widget.model != null;
     return BlocBuilder<ProductsBloc, ProductsState>(
       builder: (context, state) {

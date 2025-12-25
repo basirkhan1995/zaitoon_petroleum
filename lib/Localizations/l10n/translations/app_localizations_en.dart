@@ -1754,4 +1754,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get multiAccount => 'Multi Account';
+
+  @override
+  String get productCategoryTitle => 'Create and manage product categories.';
+
+  @override
+  String get manageProductTitle =>
+      'View, add, and manage product details here.';
+
+  @override
+  String get estimateTitle => 'Estimate';
+
+  @override
+  String get orderTitle => 'Orders';
+
+  @override
+  String get purchaseTitle => 'Purchase';
+
+  @override
+  String get invoiceTitle => 'Invoice';
 }

@@ -1749,4 +1749,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get multiAccount => ' چندگانه';
+
+  @override
+  String get productCategoryTitle => 'د محصولاتو کټګورۍ جوړول او سمول.';
+
+  @override
+  String get manageProductTitle =>
+      'په دې برخه کې محصولات وګورئ او تنظیم یې کړئ.';
+
+  @override
+  String get estimateTitle => 'د بیې اټکل';
+
+  @override
+  String get orderTitle => 'فرمایشونه';
+
+  @override
+  String get purchaseTitle => 'خرید';
+
+  @override
+  String get invoiceTitle => 'خرید و فروش';
 }

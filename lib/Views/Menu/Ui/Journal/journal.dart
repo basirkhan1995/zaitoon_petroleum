@@ -55,6 +55,7 @@ class _Mobile extends StatelessWidget {
     return const Placeholder();
   }
 }
+
 class _Tablet extends StatelessWidget {
   const _Tablet();
 
@@ -112,9 +113,15 @@ class _DesktopState extends State<_Desktop> {
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
     final state = context.watch<AuthBloc>().state;
-    TextStyle? headerStyle = textTheme.titleMedium?.copyWith(color: color.primary);
-    TextStyle? amountStyle = textTheme.titleSmall?.copyWith(color: color.primary);
-    TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.outline.withValues(alpha: .7));
+    TextStyle? headerStyle = textTheme.titleMedium?.copyWith(
+      color: color.primary,
+    );
+    TextStyle? amountStyle = textTheme.titleSmall?.copyWith(
+      color: color.primary,
+    );
+    TextStyle? titleStyle = textTheme.titleSmall?.copyWith(
+      color: color.outline.withValues(alpha: .7),
+    );
     TextStyle? bodyStyle = textTheme.titleSmall;
 
     if (state is! AuthenticatedState) {
@@ -128,7 +135,7 @@ class _DesktopState extends State<_Desktop> {
       final TextEditingController amount = TextEditingController();
       final TextEditingController narration = TextEditingController();
 
-      String? currentBalance ;
+      String? currentBalance;
       String? availableBalance;
       String? accName;
       int? accNumber;
@@ -145,7 +152,9 @@ class _DesktopState extends State<_Desktop> {
                 builder: (context, setState) {
                   return ZFormDialog(
                     width: 600,
-                    icon: trnType == "CHDP" ? Icons.arrow_circle_down_rounded : Icons.arrow_circle_up_rounded,
+                    icon: trnType == "CHDP"
+                        ? Icons.arrow_circle_down_rounded
+                        : Icons.arrow_circle_up_rounded,
                     title: trnType == "CHDP" ? locale.deposit : locale.withdraw,
                     onAction: () {
                       context.read<TransactionsBloc>().add(
@@ -178,15 +187,21 @@ class _DesktopState extends State<_Desktop> {
                           mainAxisSize: MainAxisSize.min,
                           spacing: 12,
                           children: [
-                            GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
+                            GenericTextfield<
+                              StakeholdersAccountsModel,
+                              AccountsBloc,
+                              AccountsState
+                            >(
                               showAllOnFocus: true,
                               controller: accountController,
                               title: locale.accounts,
                               hintText: locale.accNameOrNumber,
                               isRequired: true,
                               bloc: context.read<AccountsBloc>(),
-                              fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
-                              searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
+                              fetchAllFunction: (bloc) =>
+                                  bloc.add(LoadStkAccountsEvent()),
+                              searchFunction: (bloc, query) =>
+                                  bloc.add(LoadStkAccountsEvent(search: query)),
                               validator: (value) {
                                 if (value.isEmpty) {
                                   return locale.required(locale.accounts);
@@ -202,11 +217,14 @@ class _DesktopState extends State<_Desktop> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                           "${account.accnumber} | ${account.accName}",
-                                          style: Theme.of(context).textTheme.bodyLarge,
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyLarge,
                                         ),
                                       ],
                                     ),
@@ -214,13 +232,15 @@ class _DesktopState extends State<_Desktop> {
                                 ),
                               ),
                               itemToString: (acc) =>
-                              "${acc.accnumber} | ${acc.accName}",
+                                  "${acc.accnumber} | ${acc.accName}",
                               stateToLoading: (state) =>
-                              state is AccountLoadingState,
+                                  state is AccountLoadingState,
                               loadingBuilder: (context) => const SizedBox(
                                 width: 16,
                                 height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 3),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                ),
                               ),
                               stateToItems: (state) {
                                 if (state is StkAccountLoadedState) {
@@ -243,85 +263,148 @@ class _DesktopState extends State<_Desktop> {
                               noResultsText: locale.noDataFound,
                               showClearButton: true,
                             ),
-                            if(accName !=null && accName!.isNotEmpty)
-                            Cover(
-                              color: color.surface,
-                              padding: EdgeInsets.symmetric(horizontal: 5,vertical: 8),
-                              child: Column(
-                                children: [
-                                  if(accName !=null && accName!.isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                                      child: Row(
-                                        children: [
-                                          Text(locale.details,style: headerStyle)
-                                        ],
+                            if (accName != null && accName!.isNotEmpty)
+                              Cover(
+                                color: color.surface,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 8,
+                                ),
+                                child: Column(
+                                  children: [
+                                    if (accName != null && accName!.isNotEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 5.0,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              locale.details,
+                                              style: headerStyle,
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  if(accName !=null && accName!.isNotEmpty)
-                                    Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
-                                      width: double.infinity,
-                                      child: Row(
-                                        spacing: 5,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            spacing: 5,
-                                            children: [
-                                              SizedBox(
+                                    if (accName != null && accName!.isNotEmpty)
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 5,
+                                          vertical: 5,
+                                        ),
+                                        width: double.infinity,
+                                        child: Row(
+                                          spacing: 5,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              spacing: 5,
+                                              children: [
+                                                SizedBox(
                                                   width: 170,
-                                                  child: Text("${locale.accountNumber}:",style: titleStyle)),
-                                              SizedBox(
+                                                  child: Text(
+                                                    "${locale.accountNumber}:",
+                                                    style: titleStyle,
+                                                  ),
+                                                ),
+                                                SizedBox(
                                                   width: 170,
-                                                  child: Text("${locale.accountName}:",style: titleStyle)),
-                                              SizedBox(
+                                                  child: Text(
+                                                    "${locale.accountName}:",
+                                                    style: titleStyle,
+                                                  ),
+                                                ),
+                                                SizedBox(
                                                   width: 170,
-                                                  child: Text("${locale.currencyTitle}:",style: titleStyle)),
-                                              SizedBox(
+                                                  child: Text(
+                                                    "${locale.currencyTitle}:",
+                                                    style: titleStyle,
+                                                  ),
+                                                ),
+                                                SizedBox(
                                                   width: 170,
-                                                  child: Text("${locale.accountLimit}:",style: titleStyle)),
-                                              SizedBox(
+                                                  child: Text(
+                                                    "${locale.accountLimit}:",
+                                                    style: titleStyle,
+                                                  ),
+                                                ),
+                                                SizedBox(
                                                   width: 170,
-                                                  child: Text("${locale.status}:",style: titleStyle)),
-                                              SizedBox(
+                                                  child: Text(
+                                                    "${locale.status}:",
+                                                    style: titleStyle,
+                                                  ),
+                                                ),
+                                                SizedBox(
                                                   width: 170,
-                                                  child: Text("${locale.currentBalance}:",style: titleStyle)),
-                                              SizedBox(
+                                                  child: Text(
+                                                    "${locale.currentBalance}:",
+                                                    style: titleStyle,
+                                                  ),
+                                                ),
+                                                SizedBox(
                                                   width: 170,
-                                                  child: Text("${locale.availableBalance}:",style: titleStyle)),
-                                            ],
-                                          ),
-                                          Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            spacing: 5,
-                                            children: [
-                                              Text(accNumber.toString(),style: bodyStyle),
-                                              Text(accName??""),
-                                              Text(accCurrency??""),
-                                              Text("$ccySymbol${accountLimit?.toAmount()}",style: bodyStyle),
-                                              Text(status == 1? locale.active : locale.blocked,style: bodyStyle),
-                                              Text("$ccySymbol${currentBalance?.toAmount()}",style: bodyStyle),
-                                              Text("$ccySymbol${availableBalance?.toAmount()}",style: bodyStyle),
-                                            ],
-                                          ),
-                                        ],
+                                                  child: Text(
+                                                    "${locale.availableBalance}:",
+                                                    style: titleStyle,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              spacing: 5,
+                                              children: [
+                                                Text(
+                                                  accNumber.toString(),
+                                                  style: bodyStyle,
+                                                ),
+                                                Text(accName ?? ""),
+                                                Text(accCurrency ?? ""),
+                                                Text(
+                                                  "$ccySymbol${accountLimit?.toAmount()}",
+                                                  style: bodyStyle,
+                                                ),
+                                                Text(
+                                                  status == 1
+                                                      ? locale.active
+                                                      : locale.blocked,
+                                                  style: bodyStyle,
+                                                ),
+                                                Text(
+                                                  "$ccySymbol${currentBalance?.toAmount()}",
+                                                  style: bodyStyle,
+                                                ),
+                                                Text(
+                                                  "$ccySymbol${availableBalance?.toAmount()}",
+                                                  style: bodyStyle,
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            if(accName !=null && accName!.isNotEmpty)
-                            SizedBox(height: 5),
+                            if (accName != null && accName!.isNotEmpty)
+                              SizedBox(height: 5),
                             ZTextFieldEntitled(
                               isRequired: true,
-                              keyboardInputType: TextInputType.numberWithOptions(
-                                decimal: true,
-                              ),
+                              keyboardInputType:
+                                  TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
                               inputFormat: [
                                 FilteringTextInputFormatter.allow(
                                   RegExp(r'[0-9.,]*'),
@@ -358,36 +441,43 @@ class _DesktopState extends State<_Desktop> {
                               spacing: 5,
                               children: [
                                 Checkbox(
-                                    visualDensity: VisualDensity(horizontal: -4),
-                                    value: isPrint,
-                                    onChanged: (e){
-                                      setState((){
-                                        isPrint = e ?? true;
-                                      });
-                                }),
-                                Text(locale.print)
+                                  visualDensity: VisualDensity(horizontal: -4),
+                                  value: isPrint,
+                                  onChanged: (e) {
+                                    setState(() {
+                                      isPrint = e ?? true;
+                                    });
+                                  },
+                                ),
+                                Text(locale.print),
                               ],
                             ),
 
-                            if(trState is TransactionErrorState)
-                            SizedBox(height: 10),
+                            if (trState is TransactionErrorState)
+                              SizedBox(height: 10),
                             Row(
                               children: [
-                                trState is TransactionErrorState? Text(trState.message,style: TextStyle(color: color.error),) : SizedBox()
+                                trState is TransactionErrorState
+                                    ? Text(
+                                        trState.message,
+                                        style: TextStyle(color: color.error),
+                                      )
+                                    : SizedBox(),
                               ],
-                            )
+                            ),
                           ],
                         ),
                       ),
                     ),
                   );
-                }
+                },
               );
             },
           );
         },
       );
     }
+
     void onCashIncome({String? trnType}) {
       final locale = AppLocalizations.of(context)!;
       final accountController = TextEditingController();
@@ -435,7 +525,11 @@ class _DesktopState extends State<_Desktop> {
                       mainAxisSize: MainAxisSize.min,
                       spacing: 12,
                       children: [
-                        GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
+                        GenericTextfield<
+                          AccountsModel,
+                          AccountsBloc,
+                          AccountsState
+                        >(
                           showAllOnFocus: true,
                           controller: accountController,
                           title: locale.accounts,
@@ -443,10 +537,7 @@ class _DesktopState extends State<_Desktop> {
                           isRequired: true,
                           bloc: context.read<AccountsBloc>(),
                           fetchAllFunction: (bloc) => bloc.add(
-                            LoadAccountsFilterEvent(
-                              start: 3,
-                              end: 3,
-                            ),
+                            LoadAccountsFilterEvent(start: 3, end: 3),
                           ),
                           searchFunction: (bloc, query) => bloc.add(
                             LoadAccountsFilterEvent(
@@ -501,7 +592,7 @@ class _DesktopState extends State<_Desktop> {
                           },
                           onSelected: (value) {
                             setState(() {
-                               accNumber = value.accNumber;
+                              accNumber = value.accNumber;
                             });
                           },
                           noResultsText: locale.noDataFound,
@@ -550,23 +641,29 @@ class _DesktopState extends State<_Desktop> {
                           spacing: 5,
                           children: [
                             Checkbox(
-                                visualDensity: VisualDensity(horizontal: -4),
-                                value: isPrint,
-                                onChanged: (e){
-                                  setState((){
-                                    isPrint = e ?? true;
-                                  });
-                                }),
-                            Text(locale.print)
+                              visualDensity: VisualDensity(horizontal: -4),
+                              value: isPrint,
+                              onChanged: (e) {
+                                setState(() {
+                                  isPrint = e ?? true;
+                                });
+                              },
+                            ),
+                            Text(locale.print),
                           ],
                         ),
-                        if(trState is TransactionErrorState)
+                        if (trState is TransactionErrorState)
                           SizedBox(height: 10),
                         Row(
                           children: [
-                            trState is TransactionErrorState? Text(trState.message,style: TextStyle(color: color.error),) : SizedBox()
+                            trState is TransactionErrorState
+                                ? Text(
+                                    trState.message,
+                                    style: TextStyle(color: color.error),
+                                  )
+                                : SizedBox(),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -577,6 +674,7 @@ class _DesktopState extends State<_Desktop> {
         },
       );
     }
+
     void onCashExpense({String? trnType}) {
       final locale = AppLocalizations.of(context)!;
       final accountController = TextEditingController();
@@ -615,7 +713,8 @@ class _DesktopState extends State<_Desktop> {
                           strokeWidth: 3,
                           color: Theme.of(context).colorScheme.surface,
                         ),
-                      ) : Text(locale.create),
+                      )
+                    : Text(locale.create),
                 child: SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -623,7 +722,11 @@ class _DesktopState extends State<_Desktop> {
                       mainAxisSize: MainAxisSize.min,
                       spacing: 12,
                       children: [
-                        GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
+                        GenericTextfield<
+                          AccountsModel,
+                          AccountsBloc,
+                          AccountsState
+                        >(
                           showAllOnFocus: true,
                           controller: accountController,
                           title: locale.accounts,
@@ -631,16 +734,13 @@ class _DesktopState extends State<_Desktop> {
                           isRequired: true,
                           bloc: context.read<AccountsBloc>(),
                           fetchAllFunction: (bloc) => bloc.add(
-                            LoadAccountsFilterEvent(
-                             start: 4,
-                              end: 4,
-                            ),
+                            LoadAccountsFilterEvent(start: 4, end: 4),
                           ),
                           searchFunction: (bloc, query) => bloc.add(
                             LoadAccountsFilterEvent(
                               start: 4,
                               end: 4,
-                              input: query
+                              input: query,
                             ),
                           ),
                           validator: (value) {
@@ -737,23 +837,29 @@ class _DesktopState extends State<_Desktop> {
                           spacing: 5,
                           children: [
                             Checkbox(
-                                visualDensity: VisualDensity(horizontal: -4),
-                                value: isPrint,
-                                onChanged: (e){
-                                  setState((){
-                                    isPrint = e ?? true;
-                                  });
-                                }),
-                            Text(locale.print)
+                              visualDensity: VisualDensity(horizontal: -4),
+                              value: isPrint,
+                              onChanged: (e) {
+                                setState(() {
+                                  isPrint = e ?? true;
+                                });
+                              },
+                            ),
+                            Text(locale.print),
                           ],
                         ),
-                        if(trState is TransactionErrorState)
+                        if (trState is TransactionErrorState)
                           SizedBox(height: 10),
                         Row(
                           children: [
-                            trState is TransactionErrorState? Text(trState.message,style: TextStyle(color: color.error),) : SizedBox()
+                            trState is TransactionErrorState
+                                ? Text(
+                                    trState.message,
+                                    style: TextStyle(color: color.error),
+                                  )
+                                : SizedBox(),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -764,6 +870,7 @@ class _DesktopState extends State<_Desktop> {
         },
       );
     }
+
     void onGL({String? trnType}) {
       final locale = AppLocalizations.of(context)!;
       final accountController = TextEditingController();
@@ -868,7 +975,8 @@ class _DesktopState extends State<_Desktop> {
                               ],
                             ),
                           ),
-                          itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
+                          itemToString: (acc) =>
+                              "${acc.accNumber} | ${acc.accName}",
                           stateToLoading: (state) =>
                               state is GlAccountsLoadingState,
                           loadingBuilder: (context) => const SizedBox(
@@ -932,23 +1040,26 @@ class _DesktopState extends State<_Desktop> {
                           spacing: 5,
                           children: [
                             Checkbox(
-                                visualDensity: VisualDensity(horizontal: -4),
-                                value: isPrint,
-                                onChanged: (e){
-                                  setState((){
-                                    isPrint = e ?? true;
-                                  });
-                                }),
-                            Text(locale.print)
+                              visualDensity: VisualDensity(horizontal: -4),
+                              value: isPrint,
+                              onChanged: (e) {
+                                setState(() {
+                                  isPrint = e ?? true;
+                                });
+                              },
+                            ),
+                            Text(locale.print),
                           ],
                         ),
-                        if(trState is TransactionErrorState)
+                        if (trState is TransactionErrorState)
                           SizedBox(height: 10),
                         Row(
                           children: [
-                            trState is TransactionErrorState? Text(trState.message) : SizedBox()
+                            trState is TransactionErrorState
+                                ? Text(trState.message)
+                                : SizedBox(),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -959,8 +1070,9 @@ class _DesktopState extends State<_Desktop> {
         },
       );
     }
+
     void accountToAccount({String? trnType}) {
-    final tr = AppLocalizations.of(context)!;
+      final tr = AppLocalizations.of(context)!;
 
       /// Credit .......................................
       final creditAccountCtrl = TextEditingController();
@@ -993,21 +1105,25 @@ class _DesktopState extends State<_Desktop> {
           return BlocBuilder<TransactionsBloc, TransactionsState>(
             builder: (context, trState) {
               return StatefulBuilder(
-                builder: (context,setState) {
+                builder: (context, setState) {
                   return ZFormDialog(
                     width: 800,
                     icon: Icons.swap_horiz_rounded,
                     title: tr.fundTransferTitle,
-                    onAction: (){
-                      context.read<TransactionsBloc>().add(OnACTATTransactionEvent(TransactionsModel(
-                        usrName: login.usrName,
-                        fromAccount: debitAccNumber,
-                        fromAccCy: debitAccCurrency,
-                        toAccount: creditAccNumber,
-                        toAccCcy: creditAccCurrency,
-                        trdAmount: amount.text.cleanAmount,
-                        trdNarration: narration.text,
-                      )));
+                    onAction: () {
+                      context.read<TransactionsBloc>().add(
+                        OnACTATTransactionEvent(
+                          TransactionsModel(
+                            usrName: login.usrName,
+                            fromAccount: debitAccNumber,
+                            fromAccCy: debitAccCurrency,
+                            toAccount: creditAccNumber,
+                            toAccCcy: creditAccCurrency,
+                            trdAmount: amount.text.cleanAmount,
+                            trdNarration: narration.text,
+                          ),
+                        ),
+                      );
                     },
                     actionLabel: trState is TxnLoadingState
                         ? SizedBox(
@@ -1031,165 +1147,308 @@ class _DesktopState extends State<_Desktop> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                               ///Debit Section
-                               Expanded(
-                                 child: Column(
-                                   children: [
-                                     GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
-                                       showAllOnFocus: true,
-                                       controller: debitAccountCtrl,
-                                       title: tr.accounts,
-                                       hintText: tr.accNameOrNumber,
-                                       isRequired: true,
-                                       bloc: context.read<AccountsBloc>(),
-                                       fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 1,end: 5,exclude: "10101010,10101011",ccy: baseCurrency)),
-                                       searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(input: query, start: 1,end: 5, exclude: "10101010,10101011",ccy:  baseCurrency)),
-                                       validator: (value) {
-                                         if (value.isEmpty) {
-                                           return tr.required(tr.accounts);
-                                         }
-                                         return null;
-                                       },
-                                       itemBuilder: (context, account) => Padding(
-                                         padding: const EdgeInsets.symmetric(
-                                           horizontal: 5,
-                                           vertical: 5,
-                                         ),
-                                         child: Column(
-                                           crossAxisAlignment: CrossAxisAlignment.start,
-                                           children: [
-                                             Row(
-                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                               children: [
-                                                 Text(
-                                                   "${account.accNumber} | ${account.accName}",
-                                                   style: Theme.of(context).textTheme.bodyMedium,
-                                                 ),
-                                               ],
-                                             ),
-                                           ],
-                                         ),
-                                       ),
-                                       itemToString: (acc) =>
-                                       "${acc.accNumber} | ${acc.accName}",
-                                       stateToLoading: (state) =>
-                                       state is AccountLoadingState,
-                                       loadingBuilder: (context) => const SizedBox(
-                                         width: 16,
-                                         height: 16,
-                                         child: CircularProgressIndicator(strokeWidth: 3),
-                                       ),
-                                       stateToItems: (state) {
-                                         if (state is AccountLoadedState) {
-                                           return state.accounts;
-                                         }
-                                         return [];
-                                       },
-                                       onSelected: (value) {
-                                         setState(() {
-                                           debitAccNumber = value.accNumber;
-                                           debitCcySymbol = value.actCurrency;
-                                           debitAccCurrency = value.actCurrency;
-                                           debitAccName = value.accName ?? "";
-                                           debitAvailableBalance = value.accAvailBalance;
-                                           debitCurrentBalance = value.accBalance;
-                                           debitAccountLimit = value.accCreditLimit;
-                                           debitStatus = value.accStatus ?? 0;
-                                         });
-                                       },
-                                       noResultsText: tr.noDataFound,
-                                       showClearButton: true,
-                                     ),
-                                     if(debitAccName !=null && debitAccName!.isNotEmpty)
-                                     Cover(
-                                         color: color.surface,
-                                         margin: EdgeInsets.symmetric(vertical: 5),
-                                         child: Column(
-                                       children: [
-                                         if(debitAccName !=null && debitAccName!.isNotEmpty)
-                                           Padding(
-                                             padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 3),
-                                             child: Row(
-                                               children: [
-                                                 Text(tr.details,style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                   color: Theme.of(context).colorScheme.primary
-                                                 ))
-                                               ],
-                                             ),
-                                           ),
-                                         if(debitAccName !=null && debitAccName!.isNotEmpty)
-                                           Container(
-                                             padding: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
-                                             width: double.infinity,
-                                             child: Row(
-                                               spacing: 5,
-                                               mainAxisAlignment: MainAxisAlignment.start,
-                                               crossAxisAlignment: CrossAxisAlignment.start,
-                                               children: [
-                                                 Column(
-                                                   mainAxisAlignment: MainAxisAlignment.start,
-                                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                                   spacing: 5,
-                                                   children: [
-                                                     SizedBox(
-                                                         width: 170,
-                                                         child: Text(tr.accountNumber,style: titleStyle)),
-                                                     SizedBox(
-                                                         width: 170,
-                                                         child: Text(tr.accountName,style: titleStyle)),
-                                                     SizedBox(
-                                                         width: 170,
-                                                         child: Text(tr.currencyTitle,style: titleStyle)),
-                                                     SizedBox(
-                                                         width: 170,
-                                                         child: Text(tr.accountLimit,style: titleStyle)),
-                                                     SizedBox(
-                                                         width: 170,
-                                                         child: Text(tr.status,style: titleStyle)),
-                                                     SizedBox(
-                                                         width: 170,
-                                                         child: Text(locale.currentBalance,style: titleStyle)),
-                                                     SizedBox(
-                                                         width: 170,
-                                                         child: Text(tr.availableBalance,style: titleStyle)),
-                                                   ],
-                                                 ),
-                                                 Column(
-                                                   mainAxisAlignment: MainAxisAlignment.start,
-                                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                                   spacing: 5,
-                                                   children: [
-                                                     Text(debitAccNumber.toString()),
-                                                     Text(debitAccName??""),
-                                                     Text(debitAccCurrency??""),
-                                                     Text(debitAccountLimit?.toAmount() == unlimitedValue.toAmount()? tr.unlimited : debitAccountLimit?.toAmount() ??""),
-                                                     Text(debitStatus == 1? tr.active : tr.blocked),
-                                                     Text("${debitCurrentBalance?.toAmount()} $debitCcySymbol",style: amountStyle),
-                                                     Text("${debitAvailableBalance?.toAmount()} $debitCcySymbol",style: amountStyle),
-                                                   ],
-                                                 ),
-                                               ],
-                                             ),
-                                           ),
-                                       ],
-                                     ))
-                                   ],
-                                 ),
-                               ),
-
-                               ///Credit Section
-                               Expanded(
+                                ///Debit Section
+                                Expanded(
                                   child: Column(
                                     children: [
-                                      GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
+                                      GenericTextfield<
+                                        AccountsModel,
+                                        AccountsBloc,
+                                        AccountsState
+                                      >(
+                                        showAllOnFocus: true,
+                                        controller: debitAccountCtrl,
+                                        title: tr.accounts,
+                                        hintText: tr.accNameOrNumber,
+                                        isRequired: true,
+                                        bloc: context.read<AccountsBloc>(),
+                                        fetchAllFunction: (bloc) => bloc.add(
+                                          LoadAccountsFilterEvent(
+                                            start: 1,
+                                            end: 5,
+                                            exclude: "10101010,10101011",
+                                            ccy: baseCurrency,
+                                          ),
+                                        ),
+                                        searchFunction: (bloc, query) =>
+                                            bloc.add(
+                                              LoadAccountsFilterEvent(
+                                                input: query,
+                                                start: 1,
+                                                end: 5,
+                                                exclude: "10101010,10101011",
+                                                ccy: baseCurrency,
+                                              ),
+                                            ),
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return tr.required(tr.accounts);
+                                          }
+                                          return null;
+                                        },
+                                        itemBuilder: (context, account) => Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 5,
+                                            vertical: 5,
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    "${account.accNumber} | ${account.accName}",
+                                                    style: Theme.of(
+                                                      context,
+                                                    ).textTheme.bodyMedium,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        itemToString: (acc) =>
+                                            "${acc.accNumber} | ${acc.accName}",
+                                        stateToLoading: (state) =>
+                                            state is AccountLoadingState,
+                                        loadingBuilder: (context) =>
+                                            const SizedBox(
+                                              width: 16,
+                                              height: 16,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 3,
+                                              ),
+                                            ),
+                                        stateToItems: (state) {
+                                          if (state is AccountLoadedState) {
+                                            return state.accounts;
+                                          }
+                                          return [];
+                                        },
+                                        onSelected: (value) {
+                                          setState(() {
+                                            debitAccNumber = value.accNumber;
+                                            debitCcySymbol = value.actCurrency;
+                                            debitAccCurrency =
+                                                value.actCurrency;
+                                            debitAccName = value.accName ?? "";
+                                            debitAvailableBalance =
+                                                value.accAvailBalance;
+                                            debitCurrentBalance =
+                                                value.accBalance;
+                                            debitAccountLimit =
+                                                value.accCreditLimit;
+                                            debitStatus = value.accStatus ?? 0;
+                                          });
+                                        },
+                                        noResultsText: tr.noDataFound,
+                                        showClearButton: true,
+                                      ),
+                                      if (debitAccName != null &&
+                                          debitAccName!.isNotEmpty)
+                                        Cover(
+                                          color: color.surface,
+                                          margin: EdgeInsets.symmetric(
+                                            vertical: 5,
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              if (debitAccName != null &&
+                                                  debitAccName!.isNotEmpty)
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 5.0,
+                                                        vertical: 3,
+                                                      ),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        tr.details,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .titleMedium
+                                                            ?.copyWith(
+                                                              color:
+                                                                  Theme.of(
+                                                                        context,
+                                                                      )
+                                                                      .colorScheme
+                                                                      .primary,
+                                                            ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              if (debitAccName != null &&
+                                                  debitAccName!.isNotEmpty)
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal: 5,
+                                                    vertical: 5,
+                                                  ),
+                                                  width: double.infinity,
+                                                  child: Row(
+                                                    spacing: 5,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        spacing: 5,
+                                                        children: [
+                                                          SizedBox(
+                                                            width: 170,
+                                                            child: Text(
+                                                              tr.accountNumber,
+                                                              style: titleStyle,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            width: 170,
+                                                            child: Text(
+                                                              tr.accountName,
+                                                              style: titleStyle,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            width: 170,
+                                                            child: Text(
+                                                              tr.currencyTitle,
+                                                              style: titleStyle,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            width: 170,
+                                                            child: Text(
+                                                              tr.accountLimit,
+                                                              style: titleStyle,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            width: 170,
+                                                            child: Text(
+                                                              tr.status,
+                                                              style: titleStyle,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            width: 170,
+                                                            child: Text(
+                                                              locale
+                                                                  .currentBalance,
+                                                              style: titleStyle,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            width: 170,
+                                                            child: Text(
+                                                              tr.availableBalance,
+                                                              style: titleStyle,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        spacing: 5,
+                                                        children: [
+                                                          Text(
+                                                            debitAccNumber
+                                                                .toString(),
+                                                          ),
+                                                          Text(
+                                                            debitAccName ?? "",
+                                                          ),
+                                                          Text(
+                                                            debitAccCurrency ??
+                                                                "",
+                                                          ),
+                                                          Text(
+                                                            debitAccountLimit
+                                                                        ?.toAmount() ==
+                                                                    unlimitedValue
+                                                                        .toAmount()
+                                                                ? tr.unlimited
+                                                                : debitAccountLimit
+                                                                          ?.toAmount() ??
+                                                                      "",
+                                                          ),
+                                                          Text(
+                                                            debitStatus == 1
+                                                                ? tr.active
+                                                                : tr.blocked,
+                                                          ),
+                                                          Text(
+                                                            "${debitCurrentBalance?.toAmount()} $debitCcySymbol",
+                                                            style: amountStyle,
+                                                          ),
+                                                          Text(
+                                                            "${debitAvailableBalance?.toAmount()} $debitCcySymbol",
+                                                            style: amountStyle,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+
+                                ///Credit Section
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      GenericTextfield<
+                                        AccountsModel,
+                                        AccountsBloc,
+                                        AccountsState
+                                      >(
                                         showAllOnFocus: true,
                                         controller: creditAccountCtrl,
                                         title: tr.accounts,
                                         hintText: tr.accNameOrNumber,
                                         isRequired: true,
                                         bloc: context.read<AccountsBloc>(),
-                                        fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 1,end: 5,exclude: "10101010,10101011",ccy: baseCurrency, )),
-                                        searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(input: query, start: 1,end: 5, exclude: "10101010,10101011",ccy:  baseCurrency)),
+                                        fetchAllFunction: (bloc) => bloc.add(
+                                          LoadAccountsFilterEvent(
+                                            start: 1,
+                                            end: 5,
+                                            exclude: "10101010,10101011",
+                                            ccy: baseCurrency,
+                                          ),
+                                        ),
+                                        searchFunction: (bloc, query) =>
+                                            bloc.add(
+                                              LoadAccountsFilterEvent(
+                                                input: query,
+                                                start: 1,
+                                                end: 5,
+                                                exclude: "10101010,10101011",
+                                                ccy: baseCurrency,
+                                              ),
+                                            ),
 
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -1203,14 +1462,19 @@ class _DesktopState extends State<_Desktop> {
                                             vertical: 5,
                                           ),
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 children: [
                                                   Text(
                                                     "${account.accNumber} | ${account.accName}",
-                                                    style: Theme.of(context).textTheme.bodyLarge,
+                                                    style: Theme.of(
+                                                      context,
+                                                    ).textTheme.bodyLarge,
                                                   ),
                                                 ],
                                               ),
@@ -1218,14 +1482,17 @@ class _DesktopState extends State<_Desktop> {
                                           ),
                                         ),
                                         itemToString: (acc) =>
-                                        "${acc.accNumber} | ${acc.accName}",
+                                            "${acc.accNumber} | ${acc.accName}",
                                         stateToLoading: (state) =>
-                                        state is AccountLoadingState,
-                                        loadingBuilder: (context) => const SizedBox(
-                                          width: 16,
-                                          height: 16,
-                                          child: CircularProgressIndicator(strokeWidth: 3),
-                                        ),
+                                            state is AccountLoadingState,
+                                        loadingBuilder: (context) =>
+                                            const SizedBox(
+                                              width: 16,
+                                              height: 16,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 3,
+                                              ),
+                                            ),
                                         stateToItems: (state) {
                                           if (state is AccountLoadedState) {
                                             return state.accounts;
@@ -1236,91 +1503,187 @@ class _DesktopState extends State<_Desktop> {
                                           setState(() {
                                             creditAccNumber = value.accNumber;
                                             creditCcySymbol = value.actCurrency;
-                                            creditAccCurrency = value.actCurrency;
+                                            creditAccCurrency =
+                                                value.actCurrency;
                                             creditAccName = value.accName ?? "";
-                                            creditAvailableBalance = value.accAvailBalance;
-                                            creditCurrentBalance = value.accBalance;
-                                            creditAccountLimit = value.accCreditLimit;
+                                            creditAvailableBalance =
+                                                value.accAvailBalance;
+                                            creditCurrentBalance =
+                                                value.accBalance;
+                                            creditAccountLimit =
+                                                value.accCreditLimit;
                                             creditStatus = value.accStatus ?? 0;
                                           });
                                         },
                                         noResultsText: tr.noDataFound,
                                         showClearButton: true,
                                       ),
-                                      if(creditAccName !=null && creditAccName!.isNotEmpty)
-                                      Cover(
-                                        margin: EdgeInsets.symmetric(vertical: 5),
-                                        color: Theme.of(context).colorScheme.surface,
-                                        child: Column(
-                                          children: [
-                                            if(creditAccName !=null && creditAccName!.isNotEmpty)
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 3),
-                                                child: Row(
-                                                  children: [
-                                                    Text(tr.details,style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                      color: Theme.of(context).colorScheme.primary
-                                                    ))
-                                                  ],
+                                      if (creditAccName != null &&
+                                          creditAccName!.isNotEmpty)
+                                        Cover(
+                                          margin: EdgeInsets.symmetric(
+                                            vertical: 5,
+                                          ),
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.surface,
+                                          child: Column(
+                                            children: [
+                                              if (creditAccName != null &&
+                                                  creditAccName!.isNotEmpty)
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 5.0,
+                                                        vertical: 3,
+                                                      ),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        tr.details,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .titleMedium
+                                                            ?.copyWith(
+                                                              color:
+                                                                  Theme.of(
+                                                                        context,
+                                                                      )
+                                                                      .colorScheme
+                                                                      .primary,
+                                                            ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            if(creditAccName !=null && creditAccName!.isNotEmpty)
-                                              Container(
-                                                padding: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
-                                                width: double.infinity,
-                                                child: Row(
-                                                  spacing: 5,
-                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Column(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      spacing: 5,
-                                                      children: [
-                                                        SizedBox(
+                                              if (creditAccName != null &&
+                                                  creditAccName!.isNotEmpty)
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal: 5,
+                                                    vertical: 5,
+                                                  ),
+                                                  width: double.infinity,
+                                                  child: Row(
+                                                    spacing: 5,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        spacing: 5,
+                                                        children: [
+                                                          SizedBox(
                                                             width: 170,
-                                                            child: Text(tr.accountNumber,style: titleStyle)),
-                                                        SizedBox(
+                                                            child: Text(
+                                                              tr.accountNumber,
+                                                              style: titleStyle,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
                                                             width: 170,
-                                                            child: Text(tr.accountName,style: titleStyle)),
-                                                        SizedBox(
+                                                            child: Text(
+                                                              tr.accountName,
+                                                              style: titleStyle,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
                                                             width: 170,
-                                                            child: Text(tr.currencyTitle,style: titleStyle)),
-                                                        SizedBox(
+                                                            child: Text(
+                                                              tr.currencyTitle,
+                                                              style: titleStyle,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
                                                             width: 170,
-                                                            child: Text(tr.accountLimit,style: titleStyle)),
-                                                        SizedBox(
+                                                            child: Text(
+                                                              tr.accountLimit,
+                                                              style: titleStyle,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
                                                             width: 170,
-                                                            child: Text(tr.status,style: titleStyle)),
-                                                        SizedBox(
+                                                            child: Text(
+                                                              tr.status,
+                                                              style: titleStyle,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
                                                             width: 170,
-                                                            child: Text(locale.currentBalance,style: titleStyle)),
-                                                        SizedBox(
+                                                            child: Text(
+                                                              locale
+                                                                  .currentBalance,
+                                                              style: titleStyle,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
                                                             width: 170,
-                                                            child: Text(tr.availableBalance,style: titleStyle)),
-                                                      ],
-                                                    ),
-                                                    Column(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      spacing: 5,
-                                                      children: [
-                                                        Text(creditAccNumber.toString()),
-                                                        Text(creditAccName??""),
-                                                        Text(creditAccCurrency??""),
-                                                        Text(creditAccountLimit?.toAmount() == unlimitedValue.toAmount()? tr.unlimited : creditAccountLimit?.toAmount() ??""),
-                                                        Text(creditStatus == 1? tr.active : tr.blocked),
-                                                        Text("${creditCurrentBalance?.toAmount()} $creditCcySymbol",style: amountStyle),
-                                                        Text("${creditAvailableBalance?.toAmount()} $creditCcySymbol",style: amountStyle),
-                                                      ],
-                                                    ),
-                                                  ],
+                                                            child: Text(
+                                                              tr.availableBalance,
+                                                              style: titleStyle,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        spacing: 5,
+                                                        children: [
+                                                          Text(
+                                                            creditAccNumber
+                                                                .toString(),
+                                                          ),
+                                                          Text(
+                                                            creditAccName ?? "",
+                                                          ),
+                                                          Text(
+                                                            creditAccCurrency ??
+                                                                "",
+                                                          ),
+                                                          Text(
+                                                            creditAccountLimit
+                                                                        ?.toAmount() ==
+                                                                    unlimitedValue
+                                                                        .toAmount()
+                                                                ? tr.unlimited
+                                                                : creditAccountLimit
+                                                                          ?.toAmount() ??
+                                                                      "",
+                                                          ),
+                                                          Text(
+                                                            creditStatus == 1
+                                                                ? tr.active
+                                                                : tr.blocked,
+                                                          ),
+                                                          Text(
+                                                            "${creditCurrentBalance?.toAmount()} $creditCcySymbol",
+                                                            style: amountStyle,
+                                                          ),
+                                                          Text(
+                                                            "${creditAvailableBalance?.toAmount()} $creditCcySymbol",
+                                                            style: amountStyle,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      )
                                     ],
                                   ),
                                 ),
@@ -1329,9 +1692,10 @@ class _DesktopState extends State<_Desktop> {
                             SizedBox(height: 5),
                             ZTextFieldEntitled(
                               isRequired: true,
-                              keyboardInputType: TextInputType.numberWithOptions(
-                                decimal: true,
-                              ),
+                              keyboardInputType:
+                                  TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
                               inputFormat: [
                                 FilteringTextInputFormatter.allow(
                                   RegExp(r'[0-9.,]*'),
@@ -1364,19 +1728,26 @@ class _DesktopState extends State<_Desktop> {
                               controller: narration,
                               title: tr.narration,
                             ),
-                            if(trState is TransactionErrorState)
+                            if (trState is TransactionErrorState)
                               SizedBox(height: 10),
                             Row(
                               children: [
-                                trState is TransactionErrorState? Text(trState.message,style: textTheme.titleSmall?.copyWith(color: color.error)) : SizedBox()
+                                trState is TransactionErrorState
+                                    ? Text(
+                                        trState.message,
+                                        style: textTheme.titleSmall?.copyWith(
+                                          color: color.error,
+                                        ),
+                                      )
+                                    : SizedBox(),
                               ],
-                            )
+                            ),
                           ],
                         ),
                       ),
                     ),
                   );
-                }
+                },
               );
             },
           );
@@ -1396,311 +1767,361 @@ class _DesktopState extends State<_Desktop> {
 
     return Scaffold(
       body: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
-  builder: (context, state) {
-    if(state is CompanyProfileLoadedState){
-      company.comName = state.company.comName??"";
-      company.comAddress = state.company.addName??"";
-      company.compPhone = state.company.comPhone??"";
-      company.comEmail = state.company.comEmail??"";
-      company.statementDate = DateTime.now().toFullDateTime;
-      final base64Logo = state.company.comLogo;
-      if (base64Logo != null && base64Logo.isNotEmpty) {
-        try {
-          _companyLogo = base64Decode(base64Logo);
-          company.comLogo = _companyLogo;
-        } catch (e) {
-          _companyLogo = Uint8List(0);
-        }
-      }
-    }
-    return BlocListener<TransactionsBloc, TransactionsState>(
-  listener: (context, state) {
-    if (state is TransactionLoadedState && state.printTxn != null) {
-      getPrinted(data: state.printTxn!, company: company);
-    }
-  },
-  child: GlobalShortcuts(
-      shortcuts: shortcuts,
-      child: Column(
-        children: [
-          // -------------------- HEADER & TABS --------------------
-          Cover(
-            margin: const EdgeInsets.only(top: 6, bottom: 5),
-            radius: 5,
-            color: Theme.of(context).colorScheme.surface,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                    vertical: 7,
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        locale.journal,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.primary,
-                          fontSize: context.scaledFont(0.015),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                CustomUnderlineTabBar<JournalTabName>(
-                  tabs: [
-                    JournalTabName.allTransactions,
-                    JournalTabName.authorized,
-                    JournalTabName.pending,
-                  ],
-                  currentTab: context.watch<JournalTabBloc>().state.tab,
-                  onTabChanged: (tab) => context.read<JournalTabBloc>().add(
-                    JournalOnChangedEvent(tab),
-                  ),
-                  labelBuilder: (tab) {
-                    switch (tab) {
-                      case JournalTabName.allTransactions: return locale.allTransactions;
-                      case JournalTabName.authorized: return locale.authorizedTransactions;
-                      case JournalTabName.pending: return locale.pendingTransactions;
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-
-          // -------------------- MAIN CONTENT --------------------
-          Expanded(
-            child: Row(
-              children: [
-                // LEFT SIDE — TAB SCREENS
-                Expanded(
-                  child: BlocBuilder<JournalTabBloc, JournalTabState>(
-                    builder: (context, state) {
-                      switch (state.tab) {
-                        case JournalTabName.allTransactions: return const AllTransactionsView();
-                        case JournalTabName.authorized: return const AuthorizedTransactionsView();
-                        case JournalTabName.pending: return const PendingTransactionsView();
-                      }
-                    },
-                  ),
-                ),
-
-                const SizedBox(width: 3),
-
-                // RIGHT SIDE — SHORTCUT BUTTONS PANEL
-                Container(
-                  width: 190,
-                  margin: EdgeInsets.symmetric(horizontal: 3),
-                  height: double.infinity,
-                  decoration: BoxDecoration(
+        builder: (context, state) {
+          if (state is CompanyProfileLoadedState) {
+            company.comName = state.company.comName ?? "";
+            company.comAddress = state.company.addName ?? "";
+            company.compPhone = state.company.comPhone ?? "";
+            company.comEmail = state.company.comEmail ?? "";
+            company.statementDate = DateTime.now().toFullDateTime;
+            final base64Logo = state.company.comLogo;
+            if (base64Logo != null && base64Logo.isNotEmpty) {
+              try {
+                _companyLogo = base64Decode(base64Logo);
+                company.comLogo = _companyLogo;
+              } catch (e) {
+                _companyLogo = Uint8List(0);
+              }
+            }
+          }
+          return BlocListener<TransactionsBloc, TransactionsState>(
+            listener: (context, state) {
+              if (state is TransactionLoadedState && state.printTxn != null) {
+                getPrinted(data: state.printTxn!, company: company);
+              }
+            },
+            child: GlobalShortcuts(
+              shortcuts: shortcuts,
+              child: Column(
+                children: [
+                  // -------------------- HEADER & TABS --------------------
+                  Cover(
+                    margin: const EdgeInsets.only(top: 6, bottom: 5),
+                    radius: 5,
                     color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 12,
-                    ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 8,
                       children: [
-                        Wrap(
-                          spacing: 5,
-                          children: [
-                            const Icon(Icons.cached_rounded, size: 20),
-                            Text(
-                              locale.cashFlow,
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                          ],
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 7,
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                locale.journal,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontSize: context.scaledFont(0.015),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        if (login.hasPermission(19) ?? false)
-                          ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .1),
-                            toolTip: "F1",
-                            label: Text(locale.deposit),
-                            icon: Icons.arrow_circle_down_rounded,
-                            width: double.infinity,
-                            onPressed: () =>
-                                onCashDepositWithdraw(trnType: "CHDP"),
-                          ),
-                        if (login.hasPermission(18) ?? false)
-                          ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .1),
-                            toolTip: "F2",
-                            label: Text(locale.withdraw),
-                            icon: Icons.arrow_circle_up_rounded,
-                            width: double.infinity,
-                            onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
-                          ),
-                        if (login.hasPermission(22) ?? false)
-                          ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .1),
-                            toolTip: "F3",
-                            label: Text(locale.income),
-                            icon: Icons.arrow_circle_down_rounded,
-                            width: double.infinity,
-                            onPressed: () => onCashIncome(trnType: "INCM"),
-                          ),
-                        if (login.hasPermission(23) ?? false)
-                          ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .1),
-                            toolTip: "F4",
-                            label: Text(locale.expense),
-                            icon: Icons.arrow_circle_up_rounded,
-                            width: double.infinity,
-                            onPressed: () => onCashExpense(trnType: "XPNS"),
-                          ),
-                        SizedBox(height: 5),
-                        Wrap(
-                          spacing: 5,
-                          children: [
-                            const Icon(Icons.swap_horiz_rounded, size: 20),
-                            Text(
-                              locale.fundTransferTitle,
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
+                        CustomUnderlineTabBar<JournalTabName>(
+                          tabs: [
+                            JournalTabName.allTransactions,
+                            JournalTabName.authorized,
+                            JournalTabName.pending,
                           ],
+                          currentTab: context.watch<JournalTabBloc>().state.tab,
+                          onTabChanged: (tab) => context
+                              .read<JournalTabBloc>()
+                              .add(JournalOnChangedEvent(tab)),
+                          labelBuilder: (tab) {
+                            switch (tab) {
+                              case JournalTabName.allTransactions:
+                                return locale.allTransactions;
+                              case JournalTabName.authorized:
+                                return locale.authorizedTransactions;
+                              case JournalTabName.pending:
+                                return locale.pendingTransactions;
+                            }
+                          },
                         ),
-                        if (login.hasPermission(24) ?? false)
-                          ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .1),
-                            toolTip: "F5",
-                            label: Text(locale.singleAccount),
-                            icon: Icons.swap_horiz_rounded,
-                            width: double.infinity,
-                            onPressed: () => accountToAccount(trnType: "ATAT"),
-                          ),
-                        if (login.hasPermission(24) ?? false)
-                          ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .1),
-                            toolTip: "F5",
-                            label: Text(locale.multiAccount),
-                            icon: Icons.swap_horiz_rounded,
-                            width: double.infinity,
-                            onPressed: (){
-                              showDialog(context: context, builder: (context){
-                                return BulkTransferScreen();
-                              });
-                            },
-                          ),
-                        if (login.hasPermission(24) ?? false)
-                          ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .1),
-                            toolTip: "F5",
-                            label: Text(locale.fxTransaction),
-                            icon: Icons.swap_horiz_rounded,
-                            width: double.infinity,
-                            onPressed: (){
-                              showDialog(context: context, builder: (context){
-                                return FxTransactionScreen();
-                              });
-                            },
-                          ),
-                        SizedBox(height: 5),
-                        Wrap(
-                          spacing: 5,
-                          children: [
-                            const Icon(Icons.computer_rounded, size: 20),
-                            Text(
-                              locale.systemAction,
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                          ],
-                        ),
-
-                        if (login.hasPermission(21) ?? false)
-                          ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .1),
-                            toolTip: "F6",
-                            label: Text(locale.glCreditTitle),
-                            width: double.infinity,
-                            icon: Icons.call_to_action_outlined,
-                            onPressed: () => onGL(trnType: "GLCR"),
-                          ),
-                        if (login.hasPermission(20) ?? false)
-                          ZOutlineButton(
-                            backgroundColor: color.primary.withValues(alpha: .1),
-                            toolTip: "F7",
-                            label: Text(locale.glDebitTitle),
-                            width: double.infinity,
-                            icon: Icons.call_to_action_outlined,
-                            onPressed: () => onGL(trnType: "GLDR"),
-                          ),
                       ],
                     ),
                   ),
-                ),
-              ],
+
+                  // -------------------- MAIN CONTENT --------------------
+                  Expanded(
+                    child: Row(
+                      children: [
+                        // LEFT SIDE — TAB SCREENS
+                        Expanded(
+                          child: BlocBuilder<JournalTabBloc, JournalTabState>(
+                            builder: (context, state) {
+                              switch (state.tab) {
+                                case JournalTabName.allTransactions:
+                                  return const AllTransactionsView();
+                                case JournalTabName.authorized:
+                                  return const AuthorizedTransactionsView();
+                                case JournalTabName.pending:
+                                  return const PendingTransactionsView();
+                              }
+                            },
+                          ),
+                        ),
+
+                        const SizedBox(width: 3),
+
+                        // RIGHT SIDE — SHORTCUT BUTTONS PANEL
+                        Container(
+                          width: 190,
+                          margin: EdgeInsets.symmetric(horizontal: 3),
+                          height: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: 8,
+                              children: [
+                                Wrap(
+                                  spacing: 5,
+                                  children: [
+                                    const Icon(Icons.cached_rounded, size: 20),
+                                    Text(
+                                      locale.cashFlow,
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleSmall,
+                                    ),
+                                  ],
+                                ),
+                                if (login.hasPermission(19) ?? false)
+                                  ZOutlineButton(
+                                    backgroundColor: color.primary.withValues(
+                                      alpha: .1,
+                                    ),
+                                    toolTip: "F1",
+                                    label: Text(locale.deposit),
+                                    icon: Icons.arrow_circle_down_rounded,
+                                    width: double.infinity,
+                                    onPressed: () =>
+                                        onCashDepositWithdraw(trnType: "CHDP"),
+                                  ),
+                                if (login.hasPermission(18) ?? false)
+                                  ZOutlineButton(
+                                    backgroundColor: color.primary.withValues(
+                                      alpha: .1,
+                                    ),
+                                    toolTip: "F2",
+                                    label: Text(locale.withdraw),
+                                    icon: Icons.arrow_circle_up_rounded,
+                                    width: double.infinity,
+                                    onPressed: () =>
+                                        onCashDepositWithdraw(trnType: "CHWL"),
+                                  ),
+                                if (login.hasPermission(22) ?? false)
+                                  ZOutlineButton(
+                                    backgroundColor: color.primary.withValues(
+                                      alpha: .1,
+                                    ),
+                                    toolTip: "F3",
+                                    label: Text(locale.income),
+                                    icon: Icons.arrow_circle_down_rounded,
+                                    width: double.infinity,
+                                    onPressed: () =>
+                                        onCashIncome(trnType: "INCM"),
+                                  ),
+                                if (login.hasPermission(23) ?? false)
+                                  ZOutlineButton(
+                                    backgroundColor: color.primary.withValues(
+                                      alpha: .1,
+                                    ),
+                                    toolTip: "F4",
+                                    label: Text(locale.expense),
+                                    icon: Icons.arrow_circle_up_rounded,
+                                    width: double.infinity,
+                                    onPressed: () =>
+                                        onCashExpense(trnType: "XPNS"),
+                                  ),
+                                SizedBox(height: 5),
+                                Wrap(
+                                  spacing: 5,
+                                  children: [
+                                    const Icon(
+                                      Icons.swap_horiz_rounded,
+                                      size: 20,
+                                    ),
+                                    Text(
+                                      locale.fundTransferTitle,
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleSmall,
+                                    ),
+                                  ],
+                                ),
+                                if (login.hasPermission(24) ?? false)
+                                  ZOutlineButton(
+                                    backgroundColor: color.primary.withValues(
+                                      alpha: .1,
+                                    ),
+                                    toolTip: "F5",
+                                    label: Text(locale.singleAccount),
+                                    icon: Icons.swap_horiz_rounded,
+                                    width: double.infinity,
+                                    onPressed: () =>
+                                        accountToAccount(trnType: "ATAT"),
+                                  ),
+                                if (login.hasPermission(24) ?? false)
+                                  ZOutlineButton(
+                                    backgroundColor: color.primary.withValues(
+                                      alpha: .1,
+                                    ),
+                                    toolTip: "F5",
+                                    label: Text(locale.multiAccount),
+                                    icon: Icons.swap_horiz_rounded,
+                                    width: double.infinity,
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return BulkTransferScreen();
+                                        },
+                                      );
+                                    },
+                                  ),
+                                if (login.hasPermission(24) ?? false)
+                                  ZOutlineButton(
+                                    backgroundColor: color.primary.withValues(
+                                      alpha: .1,
+                                    ),
+                                    toolTip: "F5",
+                                    label: Text(locale.fxTransaction),
+                                    icon: Icons.swap_horiz_rounded,
+                                    width: double.infinity,
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return FxTransactionScreen();
+                                        },
+                                      );
+                                    },
+                                  ),
+                                SizedBox(height: 5),
+                                Wrap(
+                                  spacing: 5,
+                                  children: [
+                                    const Icon(
+                                      Icons.computer_rounded,
+                                      size: 20,
+                                    ),
+                                    Text(
+                                      locale.systemAction,
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleSmall,
+                                    ),
+                                  ],
+                                ),
+
+                                if (login.hasPermission(21) ?? false)
+                                  ZOutlineButton(
+                                    backgroundColor: color.primary.withValues(
+                                      alpha: .1,
+                                    ),
+                                    toolTip: "F6",
+                                    label: Text(locale.glCreditTitle),
+                                    width: double.infinity,
+                                    icon: Icons.call_to_action_outlined,
+                                    onPressed: () => onGL(trnType: "GLCR"),
+                                  ),
+                                if (login.hasPermission(20) ?? false)
+                                  ZOutlineButton(
+                                    backgroundColor: color.primary.withValues(
+                                      alpha: .1,
+                                    ),
+                                    toolTip: "F7",
+                                    label: Text(locale.glDebitTitle),
+                                    width: double.infinity,
+                                    icon: Icons.call_to_action_outlined,
+                                    onPressed: () => onGL(trnType: "GLDR"),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          );
+        },
       ),
-    ),
-);
-  },
-),
     );
   }
-  void getPrinted({required TransactionsModel data, required ReportModel company}){
-    if(isPrint) {
+
+  void getPrinted({required TransactionsModel data, required ReportModel company}) {
+    if (isPrint) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showDialog(
           context: context,
           builder: (_) => PrintPreviewDialog<TransactionsModel>(
             data: data,
             company: company,
-            buildPreview: ({
-              required data,
-              required language,
-              required orientation,
-              required pageFormat,
-            }) {
-              return CashFlowTransactionPrint().printPreview(
-                company: company,
-                language: language,
-                orientation: orientation,
-                pageFormat: pageFormat,
-                data: data,
-              );
-            },
-            onPrint: ({
-              required data,
-              required language,
-              required orientation,
-              required pageFormat,
-              required selectedPrinter,
-              required copies,
-              required pages,
-            }) {
-              return CashFlowTransactionPrint().printDocument(
-                company: company,
-                language: language,
-                orientation: orientation,
-                pageFormat: pageFormat,
-                selectedPrinter: selectedPrinter,
-                data: data,
-                copies: copies,
-                pages: pages,
-              );
-            },
-            onSave: ({
-              required data,
-              required language,
-              required orientation,
-              required pageFormat,
-            }) {
-              return CashFlowTransactionPrint().createDocument(
-                data: data,
-                company: company,
-                language: language,
-                orientation: orientation,
-                pageFormat: pageFormat,
-              );
-            },
+            buildPreview:
+                ({
+                  required data,
+                  required language,
+                  required orientation,
+                  required pageFormat,
+                }) {
+                  return CashFlowTransactionPrint().printPreview(
+                    company: company,
+                    language: language,
+                    orientation: orientation,
+                    pageFormat: pageFormat,
+                    data: data,
+                  );
+                },
+            onPrint:
+                ({
+                  required data,
+                  required language,
+                  required orientation,
+                  required pageFormat,
+                  required selectedPrinter,
+                  required copies,
+                  required pages,
+                }) {
+                  return CashFlowTransactionPrint().printDocument(
+                    company: company,
+                    language: language,
+                    orientation: orientation,
+                    pageFormat: pageFormat,
+                    selectedPrinter: selectedPrinter,
+                    data: data,
+                    copies: copies,
+                    pages: pages,
+                  );
+                },
+            onSave:
+                ({
+                  required data,
+                  required language,
+                  required orientation,
+                  required pageFormat,
+                }) {
+                  return CashFlowTransactionPrint().createDocument(
+                    data: data,
+                    company: company,
+                    language: language,
+                    orientation: orientation,
+                    pageFormat: pageFormat,
+                  );
+                },
           ),
         );
       });

@@ -12,8 +12,6 @@ import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Products/bloc/products_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Products/model/product_model.dart';
 import '../../../../../../../../Features/Date/zdate_picker.dart';
 import '../../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../../../../../Features/Other/thousand_separator.dart';
@@ -21,6 +19,8 @@ import '../../../../../../../../Features/Widgets/stepper.dart';
 import '../../../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import '../../../../../Settings/Ui/Stock/Ui/Products/bloc/products_bloc.dart';
+import '../../../../../Settings/Ui/Stock/Ui/Products/model/product_model.dart';
 import '../../../../../Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import '../../../../../Stakeholders/Ui/Individuals/individual_model.dart';
 import '../../../Vehicles/bloc/vehicle_bloc.dart';
@@ -108,6 +108,9 @@ class _DesktopState extends State<_Desktop> {
   String? baseCurrency;
   // Track original shipping total for comparison
 
+  // In your AppLocalizations.dart
+  String? _accountCurrency;
+  bool? isAccountCcyEqualBase;
   @override
   void initState() {
     super.initState();
@@ -993,8 +996,7 @@ class _DesktopState extends State<_Desktop> {
               ),
 
             const SizedBox(height: 12),
-
-            // Account selection
+            // Account selection for payment
             GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
               showAllOnFocus: true,
               controller: paymentAccountCtrl,
@@ -1064,6 +1066,8 @@ class _DesktopState extends State<_Desktop> {
                 setState(() {
                   paymentAccNumber = value.accNumber;
                   paymentAccountCtrl.text = "${value.accNumber} | ${value.accName}";
+                  _accountCurrency = value.actCurrency;
+                   isAccountCcyEqualBase = _accountCurrency == value.actCurrency;
                   _validatePaymentForm();
                 });
               },
@@ -1107,21 +1111,22 @@ class _DesktopState extends State<_Desktop> {
         ? totalPayment == targetAmount  // When editing, must match current shipping total
         : totalPayment == targetAmount; // When adding, must match remaining balance
 
-    return Card(
-      color: isValid ? Colors.green.shade50 : Colors.orange.shade50,
+    return Cover(
+      radius: 8,
+      color: isValid ? Theme.of(context).colorScheme.primary.withValues(alpha: .1) : Theme.of(context).colorScheme.error.withValues(alpha: .07),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isEditing ? tr.edit : tr.paymentSummary,
+              isEditing ? tr.editPayment : tr.paymentSummary,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
 
-            const SizedBox(height: 12),
+            Divider(),
 
             if (cashAmount > 0)
               _buildSummaryRow(tr.cashPayment, cashAmount, Icons.money),
@@ -1137,58 +1142,58 @@ class _DesktopState extends State<_Desktop> {
                 Text(tr.totalPayment, style: Theme.of(context).textTheme.titleMedium),
                 Text(
                   "${totalPayment.toAmount()} $baseCurrency",
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 0),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  isEditing ? "${tr.totalShippingRent}:" : "${tr.targetAmount}:",
+                  isEditing ? tr.totalShippingRent : "${tr.targetAmount}:",
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Text(
                   "${targetAmount.toAmount()} $baseCurrency",
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: isValid ? Colors.green : Theme.of(context).colorScheme.error,
+                    color: isValid ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.error,
                   ),
                 ),
               ],
             ),
 
-            if (isEditing && existingPayment != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: Colors.blue.shade200),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        tr.editExistingPayment,
-                        style: TextStyle(color: Colors.blue.shade800, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        "${tr.referenceNumber}: ${existingPayment.trdReference}",
-                        style: TextStyle(color: Colors.blue.shade800, fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            // if (isEditing && existingPayment != null)
+            //   Padding(
+            //     padding: const EdgeInsets.only(top: 8.0),
+            //     child: Container(
+            //       padding: const EdgeInsets.all(8),
+            //       decoration: BoxDecoration(
+            //         color: Colors.blue.shade50,
+            //         borderRadius: BorderRadius.circular(4),
+            //         border: Border.all(color: Colors.blue.shade200),
+            //       ),
+            //       child: Column(
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         children: [
+            //           Text(
+            //             tr.editExistingPayment,
+            //             style: TextStyle(color: Colors.blue.shade800, fontWeight: FontWeight.bold),
+            //           ),
+            //           SizedBox(height: 4),
+            //           Text(
+            //             "${tr.referenceNumber}: ${existingPayment.trdReference}",
+            //             style: TextStyle(color: Colors.blue.shade800, fontSize: 12),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //   ),
 
             if (isValid)
               Padding(
@@ -1268,6 +1273,15 @@ class _DesktopState extends State<_Desktop> {
         setState(() {
           _paymentFormValid = false;
           _paymentError = AppLocalizations.of(context)!.selectAccountRequired;
+        });
+        return;
+      }
+
+      // Validate that account is selected if account payment is enabled
+      if (_isAccountPaymentEnabled && paymentAccNumber != null && isAccountCcyEqualBase == false) {
+        setState(() {
+          _paymentFormValid = false;
+          _paymentError = "Select an account that matches your shipping currency ($baseCurrency)";
         });
         return;
       }

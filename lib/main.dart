@@ -34,13 +34,14 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfi
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/bloc/storage_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/bloc/company_settings_menu_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/ProductCategory/bloc/pro_cat_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/bloc/stock_settings_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/TxnTypes/bloc/txn_types_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualByID/bloc/stakeholder_by_id_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualDetails/bloc/ind_detail_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/bloc/stk_tab_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Products/bloc/products_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Orders/bloc/orders_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/bloc/stock_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/bloc/driver_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/bloc/vehicle_bloc.dart';
@@ -57,6 +58,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/bloc/permissions_bloc.dart';
 import 'Views/Menu/Ui/Settings/Ui/Company/Branches/bloc/branch_bloc.dart';
 import 'Views/Menu/Ui/Settings/Ui/General/bloc/general_tab_bloc.dart';
+import 'Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/bloc/products_bloc.dart';
 import 'Views/Menu/Ui/Settings/bloc/settings_tab_bloc.dart';
 import 'Views/Menu/Ui/Settings/features/Visibility/bloc/settings_visible_bloc.dart';
 import 'Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/bloc/shipping_bloc.dart';
@@ -93,7 +95,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => UserDetailsTabBloc()),
         BlocProvider(create: (context) => TransportTabBloc()),
         BlocProvider(create: (context) => BranchTabBloc()),
-        
+        BlocProvider(create: (context) => StockSettingsTabBloc()),
+
         ///Services ............................................................
         BlocProvider(create: (context) => PrintLanguageCubit()),
         BlocProvider(create: (context) => PageOrientationCubit()),
@@ -130,6 +133,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ProductsBloc(Repositories(ApiServices()))..add(LoadProductsEvent())),
         BlocProvider(create: (context) => ProCatBloc(Repositories(ApiServices()))..add(LoadProCatEvent())),
         BlocProvider(create: (context) => UserLogBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => OrdersBloc(Repositories(ApiServices()))),
 
         ///Report Bloc
         BlocProvider(create: (context) => AccStatementBloc(Repositories(ApiServices()))),

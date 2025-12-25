@@ -584,5 +584,11 @@
   "lastMonthShipments": "حمل‌ ونقل‌ های ماه گذشته",
   "shippingCharges": "هزینه ارسال کالا",
   "singleAccount": "تک حساب",
-  "multiAccount": " چندگانه"
+  "multiAccount": " چندگانه",
+  "productCategoryTitle": "در این بخش دسته‌ بندی محصولات را مدیریت کنید.",
+  "manageProductTitle": "در این بخش محصولات را مشاهده و مدیریت کنید.",
+  "estimateTitle": "پیش‌ بل",
+  "orderTitle": "سفارشات",
+  "purchaseTitle": "خرید",
+  "invoiceTitle": "خرید و فروش"
 }

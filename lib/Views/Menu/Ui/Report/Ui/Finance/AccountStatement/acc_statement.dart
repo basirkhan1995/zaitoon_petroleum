@@ -438,7 +438,7 @@ class _DesktopState extends State<_Desktop> {
                                 child: Container(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: 15,
-                                    vertical: 5,
+                                    vertical: 8,
                                   ),
                                   decoration: BoxDecoration(
                                     color: index.isOdd

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 
-class TodayReturnGoodsView extends StatelessWidget {
-  const TodayReturnGoodsView({super.key});
+class EstimateView extends StatelessWidget {
+  const EstimateView({super.key});
 
   @override
   Widget build(BuildContext context) {
