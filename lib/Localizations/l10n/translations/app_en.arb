@@ -591,5 +591,7 @@
   "orderTitle": "Orders",
   "purchaseTitle": "Purchase",
   "invoiceTitle": "Invoice",
-  "accountCcyNotMatchBaseCcy": "The selected account currency does not match the shipping currency."
+  "accountCcyNotMatchBaseCcy": "The selected account currency does not match the shipping currency.",
+  "billNo": "Bill No",
+  "madeIn": "Made In"
 }

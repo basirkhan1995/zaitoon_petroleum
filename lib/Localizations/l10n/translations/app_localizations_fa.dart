@@ -1770,4 +1770,10 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get accountCcyNotMatchBaseCcy =>
       'واحد پول حساب انتخاب‌شده با واحد پول باربری مطابقت ندارد.';
+
+  @override
+  String get billNo => 'نمبربل';
+
+  @override
+  String get madeIn => 'ساخت';
 }

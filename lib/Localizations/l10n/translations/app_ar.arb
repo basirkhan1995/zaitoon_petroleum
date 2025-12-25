@@ -591,5 +591,7 @@
   "orderTitle": "فرمایشونه",
   "purchaseTitle": "خرید",
   "invoiceTitle": "خرید و فروش",
-  "accountCcyNotMatchBaseCcy": "د ټاکل شوي حساب اسعار د بار وړلو له اسعارو سره سمون نه لري."
+  "accountCcyNotMatchBaseCcy": "د ټاکل شوي حساب اسعار د بار وړلو له اسعارو سره سمون نه لري.",
+  "billNo": "بل شمیره",
+  "madeIn": "ساخت"
 }

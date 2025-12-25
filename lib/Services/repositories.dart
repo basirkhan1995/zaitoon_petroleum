@@ -1749,7 +1749,40 @@ class Repositories {
       throw "$e";
     }
   }
+  Future<List<OrdersModel>> getOrderById({int? orderId}) async {
+    try {
+      final queryParams = {'ordID': orderId};
+      // Fetch data from API
+      final response = await api.get(
+          endpoint: "/inventory/ordersView.php",
+          queryParams: queryParams
+      );
 
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => OrdersModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
   /// Transaction Types ........................................................
   Future<Map<String, dynamic>> addTxnType({required TxnTypeModel newType}) async {
     try {

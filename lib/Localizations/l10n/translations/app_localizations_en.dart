@@ -1777,4 +1777,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get accountCcyNotMatchBaseCcy =>
       'The selected account currency does not match the shipping currency.';
+
+  @override
+  String get billNo => 'Bill No';
+
+  @override
+  String get madeIn => 'Made In';
 }

@@ -56,7 +56,9 @@ class StockView extends StatelessWidget {
                     : available.first;
                 return ZTabContainer<StockTabsName>(
                   margin: EdgeInsets.only(top: 6),
-                  title: AppLocalizations.of(context)!.stock,
+                  tabBarPadding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                  title: AppLocalizations.of(context)!.inventory,
+                  padding: EdgeInsets.zero,
 
                   /// Tab data
                   tabs: tabs,

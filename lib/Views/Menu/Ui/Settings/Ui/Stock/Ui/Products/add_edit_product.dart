@@ -5,6 +5,8 @@ import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../ProductCategory/features/pro_cat_drop.dart';
+import '../ProductCategory/model/pro_cat_model.dart';
 import 'bloc/products_bloc.dart';
 import 'model/product_model.dart';
 
@@ -53,6 +55,22 @@ class _DesktopState extends State<_Desktop> {
 
   final productName = TextEditingController();
   final productCode = TextEditingController();
+  final madeIn = TextEditingController();
+  final details = TextEditingController();
+  int? catId;
+  ProCategoryModel? _selectedCategory;
+
+  @override
+  void initState() {
+    if(widget.model !=null){
+      productName.text = widget.model?.proName??"";
+      productCode.text = widget.model?.proCode??"";
+      madeIn.text = widget.model?.proMadeIn??"";
+      details.text = widget.model?.proDetails??"";
+      catId = widget.model?.proCategory;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,28 +116,22 @@ class _DesktopState extends State<_Desktop> {
                         return null;
                       },
                   ),
-                  ZTextFieldEntitled(
-                    title: "Made in",
-                    controller: productName,
-                    isRequired: true,
-                    validator: (value){
-                      if(value.isEmpty){
-                        return tr.required(tr.productName);
-                      }
-                      return null;
+                  ProductCategoryDropdown(
+                    selectedCategoryId: catId,
+                    onCategorySelected: (cat) {
+                      _selectedCategory = cat;
                     },
                   ),
 
+
                   ZTextFieldEntitled(
-                    title: "Details",
-                    controller: productName,
-                    isRequired: true,
-                    validator: (value){
-                      if(value.isEmpty){
-                        return tr.required(tr.productName);
-                      }
-                      return null;
-                    },
+                    title: tr.madeIn,
+                    controller: madeIn,
+                  ),
+
+                  ZTextFieldEntitled(
+                    title: tr.details,
+                    controller: details,
                   ),
                 ],
               ),

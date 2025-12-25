@@ -1772,4 +1772,10 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get accountCcyNotMatchBaseCcy =>
       'د ټاکل شوي حساب اسعار د بار وړلو له اسعارو سره سمون نه لري.';
+
+  @override
+  String get billNo => 'بل شمیره';
+
+  @override
+  String get madeIn => 'ساخت';
 }

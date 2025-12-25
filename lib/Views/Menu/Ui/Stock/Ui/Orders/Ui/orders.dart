@@ -55,10 +55,10 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    TextStyle? titleStyle = textTheme.titleMedium;
+    TextStyle? titleStyle = textTheme.titleSmall;
     TextStyle? subtitleStyle = textTheme.bodySmall?.copyWith(color: color.outline);
-
     final tr = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: color.surface,
       body: Column(
@@ -72,7 +72,7 @@ class _DesktopState extends State<_Desktop> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Today's Orders",style: titleStyle),
+                Text("Today's Orders",style: textTheme.titleMedium),
                 Text("Purchases, Sales, Return Goods",style: subtitleStyle),
               ],
             ),
@@ -82,6 +82,9 @@ class _DesktopState extends State<_Desktop> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               children: [
+                SizedBox(
+                    width: 30,
+                    child: Text("#",style: titleStyle)),
                SizedBox(
                    width: 180,
                    child: Text(tr.referenceNumber,style: titleStyle)),
@@ -100,16 +103,11 @@ class _DesktopState extends State<_Desktop> {
 
                 SizedBox(
                     width: 100,
-                    child: Text(tr.date,style: titleStyle)),
+                    child: Text(tr.billNo,style: titleStyle)),
 
                 SizedBox(
                     width: 100,
                     child: Text(tr.totalTitle,style: titleStyle)),
-
-                SizedBox(
-                    width: 100,
-                    child: Text(tr.amount,style: titleStyle)),
-
               ],
             ),
           ),
@@ -142,6 +140,9 @@ class _DesktopState extends State<_Desktop> {
                          child: Row(
                            children: [
                              SizedBox(
+                                 width: 30,
+                                 child: Text(ord.ordId.toString())),
+                             SizedBox(
                                  width: 180,
                                  child: Text(ord.ordTrnRef??"")),
                              SizedBox(
@@ -162,9 +163,6 @@ class _DesktopState extends State<_Desktop> {
                              SizedBox(
                                  width: 100,
                                  child: Text(ord.totalBill?.toAmount()??"0.0")),
-                             SizedBox(
-                                 width: 100,
-                                 child: Text(ord.benifit?.toAmount()??"0.0")),
                            ],
                          ),
                        ),

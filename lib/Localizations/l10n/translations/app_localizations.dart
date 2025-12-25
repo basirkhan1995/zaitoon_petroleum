@@ -3531,6 +3531,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The selected account currency does not match the shipping currency.'**
   String get accountCcyNotMatchBaseCcy;
+
+  /// No description provided for @billNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill No'**
+  String get billNo;
+
+  /// No description provided for @madeIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Made In'**
+  String get madeIn;
 }
 
 class _AppLocalizationsDelegate

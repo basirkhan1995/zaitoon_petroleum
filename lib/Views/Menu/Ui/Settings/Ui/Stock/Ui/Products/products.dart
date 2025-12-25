@@ -61,6 +61,7 @@ class _DesktopState extends State<_Desktop> {
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
+    TextStyle? titleStyle = textTheme.titleSmall;
     return Scaffold(
       backgroundColor: color.surface,
       body: Column(
@@ -132,18 +133,18 @@ class _DesktopState extends State<_Desktop> {
               children: [
                 SizedBox(
                     width: 200,
-                    child: Text(tr.productName,style: textTheme.titleMedium)),
+                    child: Text(tr.productName,style: titleStyle)),
                 Expanded(
-                    child: Text(tr.details,style: textTheme.titleMedium)),
+                    child: Text(tr.details,style: titleStyle)),
                 SizedBox(
                     width: 150,
-                    child: Text(tr.productCode,style: textTheme.titleMedium)),
+                    child: Text(tr.productCode,style: titleStyle)),
                 SizedBox(
                     width: 150,
-                    child: Text("Made in",style: textTheme.titleMedium)),
+                    child: Text(tr.madeIn,style: titleStyle)),
                 SizedBox(
                     width: 90,
-                    child: Text(tr.status,style: textTheme.titleMedium)),
+                    child: Text(tr.status,style: titleStyle)),
               ],
             ),
           ),
