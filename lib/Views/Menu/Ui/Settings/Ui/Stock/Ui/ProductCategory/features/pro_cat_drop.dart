@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../../../../../../Features/Generic/zaitoon_drop.dart';
 import '../../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
-
 import '../bloc/pro_cat_bloc.dart';
 import '../model/pro_cat_model.dart';
 
