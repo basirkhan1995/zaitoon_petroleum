@@ -133,7 +133,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ProductsBloc(Repositories(ApiServices()))..add(LoadProductsEvent())),
         BlocProvider(create: (context) => ProCatBloc(Repositories(ApiServices()))..add(LoadProCatEvent())),
         BlocProvider(create: (context) => UserLogBloc(Repositories(ApiServices()))),
-        BlocProvider(create: (context) => OrdersBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => OrdersBloc(Repositories(ApiServices()))..add(LoadOrdersEvent())),
 
         ///Report Bloc
         BlocProvider(create: (context) => AccStatementBloc(Repositories(ApiServices()))),

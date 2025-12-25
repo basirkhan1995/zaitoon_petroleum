@@ -11,6 +11,7 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
   OrdersBloc(this._repo) : super(OrdersInitial()) {
 
     on<LoadOrdersEvent>((event, emit) async{
+       emit(OrdersLoadingState());
        try{
         final orders = await _repo.getOrders(orderId: event.orderId);
         emit(OrdersLoadedState(orders));

@@ -45,11 +45,12 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   @override
   void initState() {
-    WidgetsBinding.instance.addPersistentFrameCallback((_){
-      context.read<OrdersBloc>().add(LoadOrdersEvent());
-    });
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<OrdersBloc>().add(const LoadOrdersEvent());
+    });
   }
+
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
@@ -122,7 +123,7 @@ class _DesktopState extends State<_Desktop> {
                   );
                 }
                 if(state is OrdersLoadingState){
-                  return CircularProgressIndicator();
+                  return Center(child: CircularProgressIndicator());
                 }
                 if(state is OrdersLoadedState){
                   return ListView.builder(
