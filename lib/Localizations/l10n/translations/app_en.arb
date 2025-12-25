@@ -519,7 +519,7 @@
   "cashTitle": "Cash Payment",
   "paymentDescription": "Finalize payment for this shipping",
   "totalAmount": "Total Amount",
-  "totalShippingRent": "Total shipping rent",
+  "totalShippingRent": "Total shipping charges",
   "paymentOptions": "Payment Options",
   "selectPaymentMethod": "Select payment method",
   "cashPayment": "Cash Payment",
@@ -577,7 +577,7 @@
   "paymentNeedsUpdate": "Cannot mark as delivered. Payment needs to be updated first.",
   "paymentNeedsUpdateTitle": " Payment needs update! Current:",
   "requiredTitle": "Required",
-  "paymentMatches": "ayment matches remaining balance",
+  "paymentMatches": "Payment matches remaining balance",
   "paymentMatchesShippingTotal": "Payment matches shipping total.",
   "cashAmountCannotExceed": "Cash amount cannot exceed",
   "editExistingPayment": "Editing existing payment",
@@ -590,5 +590,6 @@
   "estimateTitle": "Estimate",
   "orderTitle": "Orders",
   "purchaseTitle": "Purchase",
-  "invoiceTitle": "Invoice"
+  "invoiceTitle": "Invoice",
+  "accountCcyNotMatchBaseCcy": "The selected account currency does not match the shipping currency."
 }

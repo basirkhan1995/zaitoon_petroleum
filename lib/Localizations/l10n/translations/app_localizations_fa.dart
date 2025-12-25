@@ -1541,7 +1541,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get totalAmount => 'مبلغ کل';
 
   @override
-  String get totalShippingRent => 'کرایه کل حمل و نقل';
+  String get totalShippingRent => 'مجموع هزینه باربری';
 
   @override
   String get paymentOptions => 'گزینه های پرداخت';
@@ -1766,4 +1766,8 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get invoiceTitle => 'خرید و فروش';
+
+  @override
+  String get accountCcyNotMatchBaseCcy =>
+      'واحد پول حساب انتخاب‌شده با واحد پول باربری مطابقت ندارد.';
 }

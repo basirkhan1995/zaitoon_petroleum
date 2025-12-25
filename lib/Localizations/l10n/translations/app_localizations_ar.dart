@@ -1768,4 +1768,8 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get invoiceTitle => 'خرید و فروش';
+
+  @override
+  String get accountCcyNotMatchBaseCcy =>
+      'د ټاکل شوي حساب اسعار د بار وړلو له اسعارو سره سمون نه لري.';
 }

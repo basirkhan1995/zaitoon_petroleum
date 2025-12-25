@@ -519,7 +519,7 @@
   "cashTitle": "پرداخت نقدی",
   "paymentDescription": "نهایی کردن پرداخت برای این حمل و نقل",
   "totalAmount": "مبلغ کل",
-  "totalShippingRent": "کرایه کل حمل و نقل",
+  "totalShippingRent": "مجموع هزینه باربری",
   "paymentOptions": "گزینه های پرداخت",
   "selectPaymentMethod": "روش پرداخت را انتخاب کنید",
   "cashPayment": "پرداخت نقدی",
@@ -590,5 +590,6 @@
   "estimateTitle": "پیش‌ بل",
   "orderTitle": "سفارشات",
   "purchaseTitle": "خرید",
-  "invoiceTitle": "خرید و فروش"
+  "invoiceTitle": "خرید و فروش",
+  "accountCcyNotMatchBaseCcy": "واحد پول حساب انتخاب‌شده با واحد پول باربری مطابقت ندارد."
 }

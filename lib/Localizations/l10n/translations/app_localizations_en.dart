@@ -1550,7 +1550,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get totalAmount => 'Total Amount';
 
   @override
-  String get totalShippingRent => 'Total shipping rent';
+  String get totalShippingRent => 'Total shipping charges';
 
   @override
   String get paymentOptions => 'Payment Options';
@@ -1732,7 +1732,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requiredTitle => 'Required';
 
   @override
-  String get paymentMatches => 'ayment matches remaining balance';
+  String get paymentMatches => 'Payment matches remaining balance';
 
   @override
   String get paymentMatchesShippingTotal => 'Payment matches shipping total.';
@@ -1773,4 +1773,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invoiceTitle => 'Invoice';
+
+  @override
+  String get accountCcyNotMatchBaseCcy =>
+      'The selected account currency does not match the shipping currency.';
 }

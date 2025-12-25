@@ -3097,7 +3097,7 @@ abstract class AppLocalizations {
   /// No description provided for @totalShippingRent.
   ///
   /// In en, this message translates to:
-  /// **'Total shipping rent'**
+  /// **'Total shipping charges'**
   String get totalShippingRent;
 
   /// No description provided for @paymentOptions.
@@ -3445,7 +3445,7 @@ abstract class AppLocalizations {
   /// No description provided for @paymentMatches.
   ///
   /// In en, this message translates to:
-  /// **'ayment matches remaining balance'**
+  /// **'Payment matches remaining balance'**
   String get paymentMatches;
 
   /// No description provided for @paymentMatchesShippingTotal.
@@ -3525,6 +3525,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invoice'**
   String get invoiceTitle;
+
+  /// No description provided for @accountCcyNotMatchBaseCcy.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected account currency does not match the shipping currency.'**
+  String get accountCcyNotMatchBaseCcy;
 }
 
 class _AppLocalizationsDelegate

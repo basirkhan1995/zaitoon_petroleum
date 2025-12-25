@@ -590,8 +590,7 @@ class _DesktopState extends State<_Desktop> {
               const SizedBox(height: 10),
 
               // Payment History if not editing or always
-              if (existingPayment != null && !canEditPayment)
-                _buildPaymentHistory(existingPayment, tr),
+              if (existingPayment != null && !canEditPayment)_buildPaymentHistory(existingPayment, tr),
 
               // Show inline payment form if can edit
               if (canEditPayment) ...[
@@ -599,12 +598,12 @@ class _DesktopState extends State<_Desktop> {
                 _buildPaymentForm(shipping, existingPayment: existingPayment),
                 if (_paymentError != null)
                   Padding(
-                    padding: const EdgeInsets.only(top: 16.0),
+                    padding: const EdgeInsets.only(top: 10.0),
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: color.errorContainer,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(5),
                       ),
                       child: Row(
                         children: [
@@ -645,6 +644,7 @@ class _DesktopState extends State<_Desktop> {
   Widget _buildAmountSummaryCard(double totalAmount, double paidAmount, double remaining, AppLocalizations tr, bool paymentNeedsUpdate) {
     return Cover(
       radius: 8,
+      color: Theme.of(context).colorScheme.primary.withValues(alpha: .03),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -821,19 +821,17 @@ class _DesktopState extends State<_Desktop> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Remaining balance info
-          Container(
+          Cover(
+            radius: 5,
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outline.withValues(alpha: .05),
-              borderRadius: BorderRadius.circular(5),
-            ),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: .8),
             child: Row(
               spacing: 8,
               children: [
-                Icon(Icons.add_card_rounded),
+                Icon(Icons.add_card_rounded, color: Theme.of(context).colorScheme.surface),
                 Text(
                     isEditing ? tr.editPayment : tr.addPayment,
-                    style: Theme.of(context).textTheme.titleMedium
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.surface)
                 ),
               ],
             ),
@@ -841,17 +839,17 @@ class _DesktopState extends State<_Desktop> {
 
           const SizedBox(height: 10),
 
-          Row(
+          Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Cash Payment Section
-              Expanded(child: _buildCashPaymentSection(isEditing ? totalAmount : remainingBalance, tr)),
+              _buildCashPaymentSection(isEditing ? totalAmount : remainingBalance, tr),
 
-              const SizedBox(width: 10),
+              const SizedBox(height: 10),
 
               // Account Payment Section
-              Expanded(child: _buildAccountPaymentSection(isEditing ? totalAmount : remainingBalance, cashAmount, tr, isEditing)),
+              _buildAccountPaymentSection(isEditing ? totalAmount : remainingBalance, cashAmount, tr, isEditing),
             ],
           ),
 
@@ -1113,7 +1111,7 @@ class _DesktopState extends State<_Desktop> {
 
     return Cover(
       radius: 8,
-      color: isValid ? Theme.of(context).colorScheme.primary.withValues(alpha: .1) : Theme.of(context).colorScheme.error.withValues(alpha: .07),
+      color: isValid ? Theme.of(context).colorScheme.primary.withValues(alpha: .03) : Theme.of(context).colorScheme.error.withValues(alpha: .07),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -1126,15 +1124,15 @@ class _DesktopState extends State<_Desktop> {
               ),
             ),
 
-            Divider(),
+            Divider(color: Theme.of(context).colorScheme.outline.withValues(alpha: .2)),
 
             if (cashAmount > 0)
               _buildSummaryRow(tr.cashPayment, cashAmount, Icons.money),
 
             if (accountAmount > 0)
-              _buildSummaryRow(tr.accountPayment, accountAmount, Icons.account_balance),
+              _buildSummaryRow(tr.accountPayment, accountAmount, Icons.account_circle),
 
-            const Divider(),
+             Divider(color: Theme.of(context).colorScheme.outline.withValues(alpha: .2)),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1148,9 +1146,7 @@ class _DesktopState extends State<_Desktop> {
                 ),
               ],
             ),
-
-            const SizedBox(height: 0),
-
+            Divider(color: Theme.of(context).colorScheme.outline.withValues(alpha: .2)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -1195,9 +1191,10 @@ class _DesktopState extends State<_Desktop> {
             //     ),
             //   ),
 
+
             if (isValid)
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 10.0),
                 child: Row(
                   children: [
                     Icon(Icons.check_circle, color: Colors.green, size: 16),
@@ -1278,10 +1275,10 @@ class _DesktopState extends State<_Desktop> {
       }
 
       // Validate that account is selected if account payment is enabled
-      if (_isAccountPaymentEnabled && paymentAccNumber != null && isAccountCcyEqualBase == false) {
+      if (_isAccountPaymentEnabled && paymentAccNumber != null && _accountCurrency != baseCurrency) {
         setState(() {
           _paymentFormValid = false;
-          _paymentError = "Select an account that matches your shipping currency ($baseCurrency)";
+          _paymentError = "${AppLocalizations.of(context)!.accountCcyNotMatchBaseCcy} ($baseCurrency)";
         });
         return;
       }
