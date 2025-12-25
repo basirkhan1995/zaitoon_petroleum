@@ -1126,7 +1126,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionFailedTitle => 'Transaction Failed';
 
   @override
-  String get fundTransferTitle => 'Fund Transfer SA';
+  String get fundTransferTitle => 'Fund Transfer';
 
   @override
   String get fundTransferMultiTitle => 'Fund Transfer MA';
@@ -1748,4 +1748,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shippingCharges => 'Shipping Charges';
+
+  @override
+  String get singleAccount => 'Single Account';
+
+  @override
+  String get multiAccount => 'Multi Account';
 }

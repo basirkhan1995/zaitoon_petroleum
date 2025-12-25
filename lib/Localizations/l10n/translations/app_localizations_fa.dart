@@ -1118,7 +1118,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get transactionFailedTitle => 'عملیات ناموفق';
 
   @override
-  String get fundTransferTitle => 'انتقال وجه - انفرادی';
+  String get fundTransferTitle => 'انتقال وجه';
 
   @override
   String get fundTransferMultiTitle => 'انتقال وجه - چندگانه';
@@ -1740,4 +1740,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get shippingCharges => 'هزینه ارسال کالا';
+
+  @override
+  String get singleAccount => 'تک حساب';
+
+  @override
+  String get multiAccount => ' چندگانه';
 }

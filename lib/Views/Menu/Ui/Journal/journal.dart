@@ -1510,16 +1510,16 @@ class _DesktopState extends State<_Desktop> {
                         Wrap(
                           spacing: 5,
                           children: [
-                            const Icon(Icons.reset_tv_rounded, size: 20),
+                            const Icon(Icons.cached_rounded, size: 20),
                             Text(
                               locale.cashFlow,
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
                           ],
                         ),
-
                         if (login.hasPermission(19) ?? false)
                           ZOutlineButton(
+                            backgroundColor: color.primary.withValues(alpha: .05),
                             toolTip: "F1",
                             label: Text(locale.deposit),
                             icon: Icons.arrow_circle_down_rounded,
@@ -1529,6 +1529,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         if (login.hasPermission(18) ?? false)
                           ZOutlineButton(
+                            backgroundColor: color.primary.withValues(alpha: .05),
                             toolTip: "F2",
                             label: Text(locale.withdraw),
                             icon: Icons.arrow_circle_up_rounded,
@@ -1537,6 +1538,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         if (login.hasPermission(22) ?? false)
                           ZOutlineButton(
+                            backgroundColor: color.primary.withValues(alpha: .05),
                             toolTip: "F3",
                             label: Text(locale.income),
                             icon: Icons.arrow_circle_down_rounded,
@@ -1545,24 +1547,38 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         if (login.hasPermission(23) ?? false)
                           ZOutlineButton(
+                            backgroundColor: color.primary.withValues(alpha: .05),
                             toolTip: "F4",
                             label: Text(locale.expense),
                             icon: Icons.arrow_circle_up_rounded,
                             width: double.infinity,
                             onPressed: () => onCashExpense(trnType: "XPNS"),
                           ),
+                        SizedBox(height: 5),
+                        Wrap(
+                          spacing: 5,
+                          children: [
+                            const Icon(Icons.swap_horiz_rounded, size: 20),
+                            Text(
+                              locale.fundTransferTitle,
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                          ],
+                        ),
                         if (login.hasPermission(24) ?? false)
                           ZOutlineButton(
+                            backgroundColor: color.primary.withValues(alpha: .05),
                             toolTip: "F5",
-                            label: Text(locale.fundTransferTitle),
+                            label: Text(locale.singleAccount),
                             icon: Icons.swap_horiz_rounded,
                             width: double.infinity,
                             onPressed: () => accountToAccount(trnType: "ATAT"),
                           ),
                         if (login.hasPermission(24) ?? false)
                           ZOutlineButton(
+                            backgroundColor: color.primary.withValues(alpha: .05),
                             toolTip: "F5",
-                            label: Text(locale.fundTransferMultiTitle),
+                            label: Text(locale.multiAccount),
                             icon: Icons.swap_horiz_rounded,
                             width: double.infinity,
                             onPressed: (){
@@ -1573,6 +1589,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         if (login.hasPermission(24) ?? false)
                           ZOutlineButton(
+                            backgroundColor: color.primary.withValues(alpha: .05),
                             toolTip: "F5",
                             label: Text(locale.fxTransaction),
                             icon: Icons.swap_horiz_rounded,
@@ -1597,6 +1614,7 @@ class _DesktopState extends State<_Desktop> {
 
                         if (login.hasPermission(21) ?? false)
                           ZOutlineButton(
+                            backgroundColor: color.primary.withValues(alpha: .05),
                             toolTip: "F6",
                             label: Text(locale.glCreditTitle),
                             width: double.infinity,
@@ -1605,6 +1623,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         if (login.hasPermission(20) ?? false)
                           ZOutlineButton(
+                            backgroundColor: color.primary.withValues(alpha: .05),
                             toolTip: "F7",
                             label: Text(locale.glDebitTitle),
                             width: double.infinity,

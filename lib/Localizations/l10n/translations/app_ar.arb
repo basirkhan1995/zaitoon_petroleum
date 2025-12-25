@@ -381,7 +381,7 @@
   "ccyCode": "اسعار",
   "actionBrief": "عملیات",
   "transactionFailedTitle": "عملیات ناموفق",
-  "fundTransferTitle": "انتقال وجه - انفرادی",
+  "fundTransferTitle": "انتقال وجه ",
   "fundTransferMultiTitle": "انتقال وجه - چندگانه",
   "storage": "مخزن",
   "storages": "ذخایر",
@@ -582,5 +582,7 @@
   "cashAmountCannotExceed": "د نغدو پیسو اندازه نشي زیاتیدلی",
   "editExistingPayment": "د موجوده تادیې ترمیم کول",
   "lastMonthShipments": "د تېرې میاشتې لېږدونه",
-  "shippingCharges": "د لېږد لګښتونه"
+  "shippingCharges": "د لېږد لګښتونه",
+  "singleAccount": "تک حساب",
+  "multiAccount": " چندگانه"
 }

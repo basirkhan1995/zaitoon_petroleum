@@ -381,7 +381,7 @@
   "ccyCode": "CCY",
   "actionBrief": "Act",
   "transactionFailedTitle": "Transaction Failed",
-  "fundTransferTitle": "Fund Transfer SA",
+  "fundTransferTitle": "Fund Transfer",
   "fundTransferMultiTitle": "Fund Transfer MA",
   "storage": "Storage",
   "storages": "Storages",
@@ -582,5 +582,7 @@
   "cashAmountCannotExceed": "Cash amount cannot exceed",
   "editExistingPayment": "Editing existing payment",
   "lastMonthShipments": "Last month shipments",
-  "shippingCharges": "Shipping Charges"
+  "shippingCharges": "Shipping Charges",
+  "singleAccount": "Single Account",
+  "multiAccount": "Multi Account"
 }

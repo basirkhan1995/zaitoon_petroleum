@@ -2269,7 +2269,7 @@ abstract class AppLocalizations {
   /// No description provided for @fundTransferTitle.
   ///
   /// In en, this message translates to:
-  /// **'Fund Transfer SA'**
+  /// **'Fund Transfer'**
   String get fundTransferTitle;
 
   /// No description provided for @fundTransferMultiTitle.
@@ -3477,6 +3477,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Shipping Charges'**
   String get shippingCharges;
+
+  /// No description provided for @singleAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Single Account'**
+  String get singleAccount;
+
+  /// No description provided for @multiAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Multi Account'**
+  String get multiAccount;
 }
 
 class _AppLocalizationsDelegate
