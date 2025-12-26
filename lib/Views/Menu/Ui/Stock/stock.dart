@@ -163,7 +163,14 @@ class StockView extends StatelessWidget {
                     width: double.infinity,
                     // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
                   ),
-
+                  ZOutlineButton(
+                    backgroundColor: color.primary.withValues(alpha: .1),
+                    toolTip: "F2",
+                    label: Text(locale.adjustment),
+                    icon: Icons.auto_fix_high,
+                    width: double.infinity,
+                    // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
+                  ),
                 ],
               ),
             ),

@@ -72,8 +72,8 @@ class _DesktopState extends State<_Desktop> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Today's Orders",style: textTheme.titleMedium),
-                Text("Purchases, Sales, Return Goods",style: subtitleStyle),
+                Text(tr.orderTitle,style: textTheme.titleMedium),
+                Text(tr.ordersSubtitle,style: subtitleStyle),
               ],
             ),
           ),

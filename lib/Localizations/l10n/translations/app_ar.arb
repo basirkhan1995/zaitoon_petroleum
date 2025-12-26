@@ -593,5 +593,8 @@
   "invoiceTitle": "خرید و فروش",
   "accountCcyNotMatchBaseCcy": "د ټاکل شوي حساب اسعار د بار وړلو له اسعارو سره سمون نه لري.",
   "billNo": "بل شمیره",
-  "madeIn": "ساخت"
+  "madeIn": "ساخت",
+  "adjustment": "تنظیم",
+  "todayOrdersTitle": "سفارشات امروز",
+  "ordersSubtitle": "خرید ها، فروشات، برگشتی ها و تنظیم موجودی"
 }

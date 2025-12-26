@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/company_tab.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/ProductCategory/pro_cat_view.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/stock_settings.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/TxnTypes/txn_types_view.dart';
 import '../../../../Features/Generic/rounded_tab.dart';

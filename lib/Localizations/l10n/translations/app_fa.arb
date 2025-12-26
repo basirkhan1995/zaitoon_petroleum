@@ -593,5 +593,8 @@
   "invoiceTitle": "خرید و فروش",
   "accountCcyNotMatchBaseCcy": "واحد پول حساب انتخاب‌شده با واحد پول باربری مطابقت ندارد.",
   "billNo": "نمبربل",
-  "madeIn": "ساخت"
+  "madeIn": "ساخت",
+  "adjustment": "تنظیم",
+  "todayOrdersTitle": "سفارشات امروز",
+  "ordersSubtitle": "خرید ها، فروشات، برگشتی ها و تنظیم موجودی"
 }

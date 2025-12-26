@@ -1778,4 +1778,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get madeIn => 'ساخت';
+
+  @override
+  String get adjustment => 'تنظیم';
+
+  @override
+  String get todayOrdersTitle => 'سفارشات امروز';
+
+  @override
+  String get ordersSubtitle => 'خرید ها، فروشات، برگشتی ها و تنظیم موجودی';
 }

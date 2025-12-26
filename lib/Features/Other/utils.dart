@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:file_picker/file_picker.dart';
-import 'dart:typed_data';
 import '../../Localizations/l10n/translations/app_localizations.dart';
 
 class Utils{

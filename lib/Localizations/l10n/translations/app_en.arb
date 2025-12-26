@@ -593,5 +593,8 @@
   "invoiceTitle": "Invoice",
   "accountCcyNotMatchBaseCcy": "The selected account currency does not match the shipping currency.",
   "billNo": "Bill No",
-  "madeIn": "Made In"
+  "madeIn": "Made In",
+  "adjustment": "Adjustment",
+  "todayOrdersTitle": "Today's Orders",
+  "ordersSubtitle": "Purchases, Sales, Return Goods and adjustment"
 }

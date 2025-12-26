@@ -1783,4 +1783,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get madeIn => 'Made In';
+
+  @override
+  String get adjustment => 'Adjustment';
+
+  @override
+  String get todayOrdersTitle => 'Today\'s Orders';
+
+  @override
+  String get ordersSubtitle => 'Purchases, Sales, Return Goods and adjustment';
 }

@@ -3543,6 +3543,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Made In'**
   String get madeIn;
+
+  /// No description provided for @adjustment.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjustment'**
+  String get adjustment;
+
+  /// No description provided for @todayOrdersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Orders'**
+  String get todayOrdersTitle;
+
+  /// No description provided for @ordersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases, Sales, Return Goods and adjustment'**
+  String get ordersSubtitle;
 }
 
 class _AppLocalizationsDelegate
