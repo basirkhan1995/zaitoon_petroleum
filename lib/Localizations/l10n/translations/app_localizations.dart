@@ -3567,6 +3567,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your account is blocked.'**
   String get accountBlockedMessage;
+
+  /// No description provided for @transportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport'**
+  String get transportTitle;
 }
 
 class _AppLocalizationsDelegate

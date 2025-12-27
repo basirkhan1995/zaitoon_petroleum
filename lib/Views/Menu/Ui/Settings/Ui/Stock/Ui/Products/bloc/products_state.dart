@@ -22,6 +22,13 @@ final class ProductsLoadedState extends ProductsState {
   List<Object> get props => [products];
 }
 
+final class ProductsStockLoadedState extends ProductsState {
+  final List<ProductsStockModel> products;
+  const ProductsStockLoadedState(this.products);
+  @override
+  List<Object> get props => [products];
+}
+
 final class ProductsSuccessState extends ProductsState {
   @override
   List<Object> get props => [];

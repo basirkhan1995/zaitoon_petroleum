@@ -66,7 +66,6 @@ class HrTabView extends StatelessWidget {
               selectedTextColor: Theme.of(context).colorScheme.surface,
               unselectedTextColor: Theme.of(context).colorScheme.secondary,
             );
-
           },
         ),
       ),

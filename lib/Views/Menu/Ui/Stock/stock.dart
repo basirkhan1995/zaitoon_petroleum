@@ -51,15 +51,12 @@ class StockView extends StatelessWidget {
                 ];
 
                 final available = tabs.map((t) => t.value).toList();
-                final selected = available.contains(state.tabs)
-                    ? state.tabs
-                    : available.first;
+                final selected = available.contains(state.tabs) ? state.tabs : available.first;
                 return ZTabContainer<StockTabsName>(
                   margin: EdgeInsets.only(top: 6),
                   tabBarPadding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                  borderRadius: 0,
                   title: AppLocalizations.of(context)!.inventory,
-                  padding: EdgeInsets.zero,
-
                   /// Tab data
                   tabs: tabs,
                   selectedValue: selected,
@@ -68,7 +65,7 @@ class StockView extends StatelessWidget {
                   onChanged: (val) => context.read<StockTabBloc>().add(StockOnChangeEvent(val)),
 
                   /// Colors for underline style
-                  style: ZTabStyle.underline,
+                  style: ZTabStyle.rounded,
                   selectedColor: Theme.of(context).colorScheme.primary,
                   unselectedTextColor: Theme.of(context).colorScheme.secondary,
                   selectedTextColor: Theme.of(context).colorScheme.surface,

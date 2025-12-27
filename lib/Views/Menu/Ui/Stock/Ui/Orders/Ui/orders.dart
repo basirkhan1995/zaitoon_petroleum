@@ -56,7 +56,6 @@ class _DesktopState extends State<_Desktop> {
     final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     TextStyle? titleStyle = textTheme.titleSmall;
-    TextStyle? subtitleStyle = textTheme.bodySmall?.copyWith(color: color.outline);
     final tr = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -65,21 +64,21 @@ class _DesktopState extends State<_Desktop> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // SizedBox(height: 10),
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          //   child: Column(
+          //     mainAxisAlignment: MainAxisAlignment.start,
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       Text(tr.orderTitle,style: textTheme.titleMedium),
+          //       Text(tr.ordersSubtitle,style: subtitleStyle),
+          //     ],
+          //   ),
+          // ),
           SizedBox(height: 10),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(tr.orderTitle,style: textTheme.titleMedium),
-                Text(tr.ordersSubtitle,style: subtitleStyle),
-              ],
-            ),
-          ),
-          SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Row(
               children: [
                 SizedBox(
@@ -133,7 +132,7 @@ class _DesktopState extends State<_Desktop> {
 
                        },
                        child: Container(
-                         padding: EdgeInsets.symmetric(horizontal: 8,vertical: 8),
+                         padding: EdgeInsets.symmetric(horizontal: 12,vertical: 8),
                          decoration: BoxDecoration(
                            color: index.isEven? color.primary.withValues(alpha: .05) : Colors.transparent
                          ),

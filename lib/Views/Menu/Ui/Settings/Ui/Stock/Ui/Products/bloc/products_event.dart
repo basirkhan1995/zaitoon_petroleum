@@ -11,6 +11,13 @@ class LoadProductsEvent extends ProductsEvent{
   List<Object?> get props => [];
 }
 
+class LoadProductsStockEvent extends ProductsEvent{
+  final int? proId;
+  const LoadProductsStockEvent({this.proId});
+  @override
+  List<Object?> get props => [];
+}
+
 class AddProductEvent extends ProductsEvent{
   final ProductsModel newProduct;
   const AddProductEvent(this.newProduct);

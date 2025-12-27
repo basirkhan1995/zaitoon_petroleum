@@ -597,5 +597,6 @@
   "adjustment": "Adjustment",
   "todayOrdersTitle": "Today's Orders",
   "ordersSubtitle": "Purchases, Sales, Return Goods and adjustment",
-  "accountBlockedMessage": "Your account is blocked."
+  "accountBlockedMessage": "Your account is blocked.",
+  "transportTitle": "Transport"
 }

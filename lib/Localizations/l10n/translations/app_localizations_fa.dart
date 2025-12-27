@@ -1788,4 +1788,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get accountBlockedMessage => 'حساب شما مسدود میباشد';
+
+  @override
+  String get transportTitle => 'ترانسپورت';
 }

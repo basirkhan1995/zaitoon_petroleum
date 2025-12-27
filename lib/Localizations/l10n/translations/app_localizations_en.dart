@@ -1795,4 +1795,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountBlockedMessage => 'Your account is blocked.';
+
+  @override
+  String get transportTitle => 'Transport';
 }
