@@ -63,7 +63,7 @@ class _Desktop extends StatefulWidget {
 
 class _DesktopState extends State<_Desktop> {
   final TextEditingController searchController = TextEditingController();
-  String? _baseCurrency;
+  String _baseCurrency = "";
   String? myLocale;
   bool _isDialogOpen = false;
   int? _loadingShpId;
@@ -85,7 +85,7 @@ class _DesktopState extends State<_Desktop> {
       myLocale = context.read<LocalizationBloc>().state.languageCode;
       final comState = context.read<CompanyProfileBloc>().state;
       if (comState is CompanyProfileLoadedState) {
-        _baseCurrency = comState.company.comLocalCcy;
+        _baseCurrency = comState.company.comLocalCcy ?? "";
         company.comName = comState.company.comName??"";
         company.statementDate =DateTime.now().toDateTime;
         company.comEmail = comState.company.comEmail??"";

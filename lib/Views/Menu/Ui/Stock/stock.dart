@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/estimate.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/new_purchase.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewSale/new_sale.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Orders/Ui/orders.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Shift/shift.dart';
 import '../../../../Features/Generic/tab_bar.dart';
@@ -112,7 +115,7 @@ class StockView extends StatelessWidget {
                       label: Text(locale.purchaseTitle),
                       icon: Icons.shopping_bag,
                       width: double.infinity,
-                    //  onPressed: () => onCashDepositWithdraw(trnType: "CHDP"),
+                       onPressed: () => Utils.goto(context, NewPurchaseVew()),
                     ),
                   if (login.hasPermission(18) ?? false)
                     ZOutlineButton(
@@ -121,7 +124,7 @@ class StockView extends StatelessWidget {
                       label: Text(locale.sellTitle),
                       icon: Icons.shopping_bag,
                       width: double.infinity,
-                     // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
+                      onPressed: () => Utils.goto(context, NewSaleVew()),
                     ),
 
                   ZOutlineButton(

@@ -17,6 +17,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/Transacti
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/ProductCategory/model/pro_cat_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/model/product_stock_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/TxnTypes/model/txn_types_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
@@ -1649,7 +1650,40 @@ class Repositories {
       throw "$e";
     }
   }
+  Future<List<ProductsStockModel>> getProductStock({int? proId}) async {
+    try {
+      final queryParams = {'proID': proId};
+      // Fetch data from API
+      final response = await api.get(
+          endpoint: "/inventory/availableProducts.php",
+          queryParams: queryParams
+      );
 
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => ProductsStockModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
   /// Product Category .........................................................
   Future<Map<String, dynamic>> addProCategory({required ProCategoryModel newCategory}) async {
     try {
@@ -1781,6 +1815,22 @@ class Repositories {
       throw "$e";
     }
   }
+
+  /// Purchase Invoice .............................................................
+  Future<Map<String, dynamic>> newPurchaseInvoice({required ProCategoryModel newCategory}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/inventory/purchase.php",
+          data: newCategory.toMap()
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   /// Transaction Types ........................................................
   Future<Map<String, dynamic>> addTxnType({required TxnTypeModel newType}) async {
     try {
