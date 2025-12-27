@@ -3561,6 +3561,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Purchases, Sales, Return Goods and adjustment'**
   String get ordersSubtitle;
+
+  /// No description provided for @accountBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is blocked.'**
+  String get accountBlockedMessage;
 }
 
 class _AppLocalizationsDelegate

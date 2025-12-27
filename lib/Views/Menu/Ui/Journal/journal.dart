@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
@@ -2000,12 +2001,7 @@ class _DesktopState extends State<_Desktop> {
                                     icon: Icons.swap_horiz_rounded,
                                     width: double.infinity,
                                     onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return FxTransactionScreen();
-                                        },
-                                      );
+                                       Utils.goto(context, FxTransactionScreen());
                                     },
                                   ),
                                 SizedBox(height: 5),

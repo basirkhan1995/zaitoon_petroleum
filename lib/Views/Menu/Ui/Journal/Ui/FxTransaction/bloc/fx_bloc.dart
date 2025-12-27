@@ -462,7 +462,7 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       final accountNo = result['account']?.toString().toLowerCase() ?? '';
 
       if (msg.contains('success')) {
-        final reference = result['reference']?.toString() ?? 'Transaction successful';
+        final reference = result['reference']?.toString() ?? tr.successTransactionMessage;
         emit(FxSavedState(true, reference));
 
         await Future.delayed(const Duration(milliseconds: 500));
@@ -480,10 +480,10 @@ class FxBloc extends Bloc<FxEvent, FxState> {
       } else {
         String errorType = 'failed';
         String errorMessage = msg;
-        if(msg == "no Limit"){
+        if(msg == "no limit"){
           errorMessage = tr.accountLimitMessage;
         }if(msg == "blocked"){
-          errorMessage = tr.blockedMessage;
+          errorMessage = tr.accountBlockedMessage;
         }if(msg == "failed"){
           errorMessage = tr.transactionFailedTitle;
         }

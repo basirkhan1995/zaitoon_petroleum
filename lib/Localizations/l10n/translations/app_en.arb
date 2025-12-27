@@ -596,5 +596,6 @@
   "madeIn": "Made In",
   "adjustment": "Adjustment",
   "todayOrdersTitle": "Today's Orders",
-  "ordersSubtitle": "Purchases, Sales, Return Goods and adjustment"
+  "ordersSubtitle": "Purchases, Sales, Return Goods and adjustment",
+  "accountBlockedMessage": "Your account is blocked."
 }

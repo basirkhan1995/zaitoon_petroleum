@@ -1792,4 +1792,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ordersSubtitle => 'Purchases, Sales, Return Goods and adjustment';
+
+  @override
+  String get accountBlockedMessage => 'Your account is blocked.';
 }

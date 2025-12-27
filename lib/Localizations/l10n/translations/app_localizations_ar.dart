@@ -1787,4 +1787,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get ordersSubtitle => 'خرید ها، فروشات، برگشتی ها و تنظیم موجودی';
+
+  @override
+  String get accountBlockedMessage => 'حساب شما مسدود میباشد';
 }

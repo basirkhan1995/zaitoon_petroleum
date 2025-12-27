@@ -596,5 +596,6 @@
   "madeIn": "ساخت",
   "adjustment": "تنظیم",
   "todayOrdersTitle": "سفارشات امروز",
-  "ordersSubtitle": "خرید ها، فروشات، برگشتی ها و تنظیم موجودی"
+  "ordersSubtitle": "خرید ها، فروشات، برگشتی ها و تنظیم موجودی",
+  "accountBlockedMessage": "حساب شما مسدود میباشد"
 }

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
-import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
@@ -206,6 +205,9 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context)!;
+
     return BlocListener<ExchangeRateBloc, ExchangeRateState>(
       listener: (context, state) {
         if (state is ExchangeRateLoadedState && state.rate != null) {
@@ -229,13 +231,13 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
           }
         }
       },
-      child: ZFormDialog(
-        width: MediaQuery.of(context).size.width * .99,
-        icon: Icons.currency_exchange_rounded,
-        isActionTrue: false,
-        onAction: null,
-        title: AppLocalizations.of(context)!.fxTransactionTitle,
-        child: BlocBuilder<AuthBloc, AuthState>(
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          title: Text(AppLocalizations.of(context)!.fxTransactionTitle),
+        ),
+        body: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, auth) {
             if (auth is AuthenticatedState) {
               userName = auth.loginData.usrName;
@@ -341,7 +343,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                         Icon(Icons.check_circle, color: Colors.green, size: 64),
                         const SizedBox(height: 16),
                         Text(
-                          AppLocalizations.of(context)!.successTransactionMessage,
+                          tr.successTransactionMessage,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -350,8 +352,8 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Reference: ${state.reference}',
-                          style: const TextStyle(color: Colors.grey),
+                          '${tr.referenceNumber}: ${state.reference}',
+                          style: TextStyle(color: color.outline),
                         ),
                         const SizedBox(height: 24),
                         ZOutlineButton(
@@ -359,7 +361,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                           onPressed: () {
                             context.read<FxBloc>().add(InitializeFxEvent());
                           },
-                          label: const Text('New Transaction'),
+                          label: Text(tr.newKeyword),
                         ),
                       ],
                     ),
@@ -926,11 +928,12 @@ class _TableHeaderRow extends StatelessWidget {
     final tr = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final TextStyle? titleStyle = textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold);
+    final color = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+        color: color.outline.withValues(alpha: .03),
+        border: Border(bottom: BorderSide(color: color.outline.withValues(alpha: .2))),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -1177,6 +1180,7 @@ class __EntryRowState extends State<_EntryRow> {
   @override
   Widget build(BuildContext context) {
     currentLocale = context.watch<LocalizationBloc>().state.countryCode;
+    final color = Theme.of(context).colorScheme;
     final comState = context.watch<CompanyProfileBloc>().state;
     if (comState is CompanyProfileLoadedState) {
       baseCurrency = comState.company.comLocalCcy;
@@ -1190,7 +1194,7 @@ class __EntryRowState extends State<_EntryRow> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 12),
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+        border: Border(bottom: BorderSide(color: color.outline.withValues(alpha: .1))),
       ),
       child: Row(
         spacing: 5,
@@ -1245,14 +1249,14 @@ class __EntryRowState extends State<_EntryRow> {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
+                          color: color.outline.withValues(alpha: .05),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           account.actCurrency ?? "",
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(
-                            color: Colors.grey[800],
+                            color: color.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -1331,7 +1335,7 @@ class __EntryRowState extends State<_EntryRow> {
                   fontWeight: FontWeight.bold,
                   color: widget.entry.currency == widget.baseCurrency
                       ? Colors.green
-                      : Colors.blue,
+                      : color.primary,
                 ),
               ),
             ),
@@ -1386,7 +1390,7 @@ class __EntryRowState extends State<_EntryRow> {
                 Text(
                   _amountInBase.toAmount(),
                   style: TextStyle(
-                    color: Colors.grey.shade700,
+                    color: color.outline,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
