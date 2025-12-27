@@ -123,7 +123,9 @@ class ZTabContainer<T> extends StatelessWidget {
                               if (icon != null) const SizedBox(width: 5),
                               Text(
                                 title!,
-                                style: Theme.of(context).textTheme.titleLarge,
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
@@ -139,15 +141,12 @@ class ZTabContainer<T> extends StatelessWidget {
                 ],
               ),
               if (title != null)
-              SizedBox(height: 5),
+              SizedBox(height: 7),
               /// ---------------- Optional Description
               if (description != null) ...[
                 Text(
                   description!,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(color: Colors.grey[700]),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
                 ),
                 const SizedBox(height: 10),
               ],
@@ -240,7 +239,7 @@ class _ZRoundedTab<T> extends StatelessWidget {
           border: Border.all(
             color: isSelected
                 ? selectedColor
-                : selectedColor.withValues(alpha: .2),
+                : Theme.of(context).colorScheme.outline.withValues(alpha: .3),
           ),
           borderRadius: BorderRadius.circular(borderRadius),
         ),

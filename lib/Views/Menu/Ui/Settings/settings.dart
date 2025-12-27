@@ -55,6 +55,7 @@ class _Desktop extends StatelessWidget {
                 screen: const CompanyTabsView(),
               ),
 
+              if(login.usrRole == "Super")
               TabDefinition(
                 value: SettingsTabName.txnTypes,
                 label: AppLocalizations.of(context)!.transactionType,

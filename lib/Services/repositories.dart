@@ -910,17 +910,15 @@ class Repositories {
       if (id != null) {
         queryParams['shpID'] = id;
       }
-
       final response = await api.get(
         endpoint: '/transport/shipping.php',
         queryParams: queryParams,
       );
-
       // Check for error messages
       if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
         final msg = response.data['msg'];
         if (msg == 'failed' || msg == 'error') {
-          throw Exception('Failed to load shipping data');
+          throw msg;
         }
       }
 
@@ -944,7 +942,7 @@ class Repositories {
     } on DioException catch (e) {
       throw 'Network error: ${e.message}';
     } catch (e) {
-      throw 'Failed to load shipping: $e';
+      throw '$e';
     }
   }
   Future<ShippingDetailsModel> getShippingById({required int shpId}) async {

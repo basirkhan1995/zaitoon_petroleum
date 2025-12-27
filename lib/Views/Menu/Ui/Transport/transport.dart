@@ -43,7 +43,8 @@ class TransportView extends StatelessWidget {
 
             return ZTabContainer<TransportTabName>(
               title: AppLocalizations.of(context)!.transport,
-
+              tabBarPadding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+              borderRadius: 0,
               /// Tab data
               tabs: tabs,
               selectedValue: selected,
@@ -54,7 +55,7 @@ class TransportView extends StatelessWidget {
                   .add(TransportOnChangedEvent(val)),
 
               /// Colors for underline style
-              style: ZTabStyle.underline,
+              style: ZTabStyle.rounded,
               selectedColor: Theme.of(context).colorScheme.primary,
               unselectedTextColor: Theme.of(context).colorScheme.secondary,
               selectedTextColor: Theme.of(context).colorScheme.surface,
