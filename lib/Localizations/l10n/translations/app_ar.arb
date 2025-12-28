@@ -301,7 +301,7 @@
   "authorizeDeniedMessage": "تاسو د دې راکړې ورکړې د تایید اجازه نه لرئ.",
   "reversed": "راګرځول شوې",
   "txnReprint": "چاپ معاملات",
-  "overLimitMessage": "موجودی کافی نمیباشد",
+  "overLimitMessage": "د حساب موجودي کافي نه ده یا د حساب حد تېر شوی دی.",
   "deleteAuthorizedMessage": "این معامله تایید شده میباشد، و قابل حذف شدن ندارد",
   "deleteInvalidMessage": "شما اجازه حذف این معامله را ندارید.",
   "editInvalidMessage": "شما اجازه تغییر در این معامله را ندارید.",

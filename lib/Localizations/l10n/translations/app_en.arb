@@ -301,7 +301,7 @@
   "authorizeDeniedMessage": "You are not allowed to authorize this transaction.",
   "reversed": "Reversed",
   "txnReprint": "TXN Reprint",
-  "overLimitMessage": "Insuffiecent account balance.",
+  "overLimitMessage": "Insuffiecent account balance or account limit exceed.",
   "deleteAuthorizedMessage": "This transaction is auhtorized and cannot be deleted.",
   "deleteInvalidMessage": "You're not allowed to delete this transaction.",
   "editInvalidMessage": "You're not allowed to update this transaction.",

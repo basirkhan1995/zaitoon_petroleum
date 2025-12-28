@@ -301,7 +301,7 @@
   "authorizeDeniedMessage": "شما مجاز به تأیید این تراکنش نیستید.",
   "reversed": "برگشتی",
   "txnReprint": "چاپ معاملات",
-  "overLimitMessage": "موجودی کافی نمیباشد",
+  "overLimitMessage": "موجودی یا سقف حساب کافی نیست",
   "deleteAuthorizedMessage": "این معامله تایید شده میباشد، و قابل حذف شدن ندارد",
   "deleteInvalidMessage": "شما اجازه حذف این معامله را ندارید.",
   "editInvalidMessage": "شما اجازه تغییر در این معامله را ندارید.",
