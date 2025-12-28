@@ -866,7 +866,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get txnReprint => 'چاپ معاملات';
 
   @override
-  String get overLimitMessage => 'موجودی کافی نمیباشد';
+  String get overLimitMessage => 'موجودی یا سقف حساب کافی نیست';
 
   @override
   String get deleteAuthorizedMessage =>

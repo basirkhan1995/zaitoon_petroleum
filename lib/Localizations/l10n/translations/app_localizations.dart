@@ -1789,7 +1789,7 @@ abstract class AppLocalizations {
   /// No description provided for @overLimitMessage.
   ///
   /// In en, this message translates to:
-  /// **'Insuffiecent account balance.'**
+  /// **'Insuffiecent account balance or account limit exceed.'**
   String get overLimitMessage;
 
   /// No description provided for @deleteAuthorizedMessage.

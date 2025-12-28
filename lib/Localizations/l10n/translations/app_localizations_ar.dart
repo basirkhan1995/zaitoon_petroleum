@@ -868,7 +868,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get txnReprint => 'چاپ معاملات';
 
   @override
-  String get overLimitMessage => 'موجودی کافی نمیباشد';
+  String get overLimitMessage =>
+      'د حساب موجودي کافي نه ده یا د حساب حد تېر شوی دی.';
 
   @override
   String get deleteAuthorizedMessage =>

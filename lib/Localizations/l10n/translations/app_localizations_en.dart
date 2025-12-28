@@ -869,7 +869,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get txnReprint => 'TXN Reprint';
 
   @override
-  String get overLimitMessage => 'Insuffiecent account balance.';
+  String get overLimitMessage =>
+      'Insuffiecent account balance or account limit exceed.';
 
   @override
   String get deleteAuthorizedMessage =>
