@@ -30,9 +30,6 @@ class VehicleBloc extends Bloc<VehicleEvent, VehicleState> {
           add(LoadVehicleEvent());
         }else if(msg == "failed"){
           emit(VehicleErrorState("Failed operation"));
-        }else if(msg == "owned"){
-          emit(VehicleSuccessState());
-          add(LoadVehicleEvent());
         }
       }catch(e){
         emit(VehicleErrorState(e.toString()));
