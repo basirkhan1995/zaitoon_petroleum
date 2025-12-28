@@ -25,12 +25,14 @@ class VehicleBloc extends Bloc<VehicleEvent, VehicleState> {
       try{
         final response = await _repo.addVehicle(newVehicle: event.newVehicle);
         final msg = response['msg'];
-        print(msg);
         if(msg == "success"){
           emit(VehicleSuccessState());
           add(LoadVehicleEvent());
-        }else{
-          emit(VehicleErrorState(msg));
+        }else if(msg == "failed"){
+          emit(VehicleErrorState("Failed operation"));
+        }else if(msg == "owned"){
+          emit(VehicleSuccessState());
+          add(LoadVehicleEvent());
         }
       }catch(e){
         emit(VehicleErrorState(e.toString()));
