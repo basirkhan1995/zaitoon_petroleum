@@ -284,6 +284,7 @@ class _DesktopState extends State<_Desktop> {
                               controller: amount,
                               title: locale.amount,
                             ),
+                            SizedBox(height: 10),
                             ZTextFieldEntitled(
                               keyboardInputType: TextInputType.multiline,
                               controller: narration,

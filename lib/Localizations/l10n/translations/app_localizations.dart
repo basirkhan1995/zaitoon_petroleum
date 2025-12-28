@@ -2929,7 +2929,7 @@ abstract class AppLocalizations {
   /// No description provided for @fromTo.
   ///
   /// In en, this message translates to:
-  /// **'From - To'**
+  /// **'From → To'**
   String get fromTo;
 
   /// No description provided for @selectCustomer.
@@ -3585,6 +3585,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Asset Entry'**
   String get assetEntry;
+
+  /// No description provided for @attentionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Attention'**
+  String get attentionTitle;
+
+  /// No description provided for @pendingShippingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This shipping is not yet delivered. You can authorize or delete the transaction after shipping is delivered.'**
+  String get pendingShippingMessage;
+
+  /// No description provided for @transportInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport Information'**
+  String get transportInformation;
+
+  /// No description provided for @movingDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving date'**
+  String get movingDate;
+
+  /// No description provided for @arrivalDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival date'**
+  String get arrivalDate;
 }
 
 class _AppLocalizationsDelegate

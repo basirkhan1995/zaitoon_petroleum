@@ -198,7 +198,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get userOwner => 'دارنده کاربر';
 
   @override
-  String get id => 'شناسه';
+  String get id => 'آی دی';
 
   @override
   String get admin => 'مدیر';
@@ -1453,7 +1453,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get shippingDetails => 'جزئیات بارگیری';
 
   @override
-  String get fromTo => 'از - به';
+  String get fromTo => 'از → به';
 
   @override
   String get selectCustomer => 'مهرباني وکړئ یو پېرېدونکی وټاکئ';
@@ -1799,4 +1799,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get assetEntry => 'دارایی';
+
+  @override
+  String get attentionTitle => 'توجه';
+
+  @override
+  String get pendingShippingMessage =>
+      'دا بارونه تر اوسه نه دی سپارل شوی. تاسو کولی شئ لاندې معامله ورسته له تحویل تأیید یا حذف کړئ.';
+
+  @override
+  String get transportInformation => 'معلومات ترانسپورت';
+
+  @override
+  String get movingDate => 'د بارگیری نېټه';
+
+  @override
+  String get arrivalDate => 'د رسیدو نېټه';
 }

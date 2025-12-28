@@ -81,7 +81,7 @@
   "active": "فعال",
   "blocked": "مسدود",
   "userOwner": "دارنده کاربر",
-  "id": "شناسه",
+  "id": "آی دی",
   "admin": "مدیر",
   "manager": "مدیر اجرایی",
   "viewer": "بنینده",
@@ -491,7 +491,7 @@
   "delivered": "تکمیل شده",
   "shippingSummary": "خلاص بارگیری",
   "shippingDetails": "جزئیات بارگیری",
-  "fromTo": "از - به",
+  "fromTo": "از → به",
   "selectCustomer": "لطفاً مشتری را انتخاب کنید",
   "selectProduct": "لطفاً محصول را انتخاب کنید",
   "selectVehicle": "لطفاً وسیله نقلیه را انتخاب کنید",
@@ -600,5 +600,10 @@
   "accountBlockedMessage": "حساب شما مسدود میباشد",
   "transportTitle": "ترانسپورت",
   "transportEntry": "ترانسپورت",
-  "assetEntry": "دارایی"
+  "assetEntry": "دارایی",
+  "attentionTitle": "توجه",
+  "pendingShippingMessage": "این ارسال هنوز تحویل نشده است. شما می‌ توانید معامله را بعد ازتحویل تایید و یا حذف کنید.",
+  "transportInformation": "معلومات ترانسپورت",
+  "movingDate": "تاریخ بارگیری",
+  "arrivalDate": "تاریخ تحویل"
 }

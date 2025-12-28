@@ -123,6 +123,11 @@ class _DesktopState extends State<_Desktop> {
                   return Center(child: CircularProgressIndicator());
                 }
                 if(state is OrdersLoadedState){
+                  if(state.order.isEmpty){
+                    return NoDataWidget(
+                     enableAction: false,
+                    );
+                  }
                   return ListView.builder(
                       itemCount: state.order.length,
                       itemBuilder: (context,index){

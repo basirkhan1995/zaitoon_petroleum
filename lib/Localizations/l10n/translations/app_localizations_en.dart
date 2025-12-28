@@ -1459,7 +1459,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shippingDetails => 'Shipping Details';
 
   @override
-  String get fromTo => 'From - To';
+  String get fromTo => 'From → To';
 
   @override
   String get selectCustomer => 'Please select a customer';
@@ -1804,4 +1804,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get assetEntry => 'Asset Entry';
+
+  @override
+  String get attentionTitle => 'Attention';
+
+  @override
+  String get pendingShippingMessage =>
+      'This shipping is not yet delivered. You can authorize or delete the transaction after shipping is delivered.';
+
+  @override
+  String get transportInformation => 'Transport Information';
+
+  @override
+  String get movingDate => 'Moving date';
+
+  @override
+  String get arrivalDate => 'Arrival date';
 }

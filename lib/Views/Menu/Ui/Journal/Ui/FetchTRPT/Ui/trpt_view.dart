@@ -196,7 +196,7 @@ class _DesktopState extends State<_Desktop> {
   Widget _buildLoadedState(
       BuildContext context,
       TrptModel trpt,
-      AppLocalizations locale,
+      AppLocalizations tr,
       dynamic login,
       ) {
     final transaction = trpt.transaction;
@@ -227,7 +227,7 @@ class _DesktopState extends State<_Desktop> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    locale.transactionDetails,
+                    tr.transactionDetails,
                     style: const TextStyle(
 
                       fontSize: 24,
@@ -325,7 +325,7 @@ class _DesktopState extends State<_Desktop> {
                                     Icon(Icons.local_shipping, size: 20, color: color.primary),
                                     const SizedBox(width: 8),
                                     Text(
-                                      'Transport Information',
+                                      tr.transportInformation,
                                       style: textTheme.titleMedium?.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -333,11 +333,11 @@ class _DesktopState extends State<_Desktop> {
                                   ],
                                 ),
                                 const Divider(height: 20, thickness: 1),
-                                _buildDetailRow('Vehicle', trpt.vehicle ?? "-"),
-                                _buildDetailRow('Product', trpt.proName ?? "-"),
-                                _buildDetailRow('Customer', trpt.customer ?? "-"),
-                                _buildDetailRow('From → To', '${trpt.shpFrom ?? "-"} → ${trpt.shpTo ?? "-"}'),
-                                _buildDetailRow('Status', _getTransportStatusText(trpt.shpStatus)),
+                                _buildDetailRow(tr.vehicle, trpt.vehicle ?? "-"),
+                                _buildDetailRow(tr.productName, trpt.proName ?? "-"),
+                                _buildDetailRow(tr.customer, trpt.customer ?? "-"),
+                                _buildDetailRow(tr.fromTo, '${trpt.shpFrom ?? "-"} → ${trpt.shpTo ?? "-"}'),
+                                _buildDetailRow(tr.status, _getTransportStatusText(trpt.shpStatus)),
                               ],
                             ),
                           ),
@@ -361,7 +361,7 @@ class _DesktopState extends State<_Desktop> {
                                     Icon(Icons.inventory_2, size: 20, color: color.primary),
                                     const SizedBox(width: 8),
                                     Text(
-                                      'Shipping Details',
+                                      tr.shippingDetails,
                                       style: textTheme.titleMedium?.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -369,11 +369,11 @@ class _DesktopState extends State<_Desktop> {
                                   ],
                                 ),
                                 const Divider(height: 20, thickness: 1),
-                                _buildDetailRow('Load Size', '${trpt.shpLoadSize?.toAmount()} ${trpt.shpUnit}'),
-                                _buildDetailRow('Unload Size', '${trpt.shpUnloadSize?.toAmount()} ${trpt.shpUnit}'),
-                                _buildDetailRow('Rent', '${trpt.shpRent?.toAmount()} ${transaction?.currency}'),
-                                _buildDetailRow('Moving Date', _formatDate(trpt.shpMovingDate)),
-                                _buildDetailRow('Arrival Date', _formatDate(trpt.shpArriveDate)),
+                                _buildDetailRow(tr.loadingSize, '${trpt.shpLoadSize?.toAmount()} ${trpt.shpUnit}'),
+                                _buildDetailRow(tr.unloadingSize, '${trpt.shpUnloadSize?.toAmount()} ${trpt.shpUnit}'),
+                                _buildDetailRow(tr.shippingRent, '${trpt.shpRent?.toAmount()} ${transaction?.currency}'),
+                                _buildDetailRow(tr.movingDate, _formatDate(trpt.shpMovingDate)),
+                                _buildDetailRow(tr.arrivalDate, _formatDate(trpt.shpArriveDate)),
                               ],
                             ),
                           ),
@@ -508,7 +508,7 @@ class _DesktopState extends State<_Desktop> {
                                 color: color.surface,
                               ),
                             )
-                                : Text(locale.delete),
+                                : Text(tr.delete),
                           ),
 
                         if (showAuthorizeButton)
@@ -542,10 +542,18 @@ class _DesktopState extends State<_Desktop> {
                     ),
                   ),
                 ],
+
               ],
             ),
           ),
         ),
+        if(!showAnyButton)...[
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.attentionTitle,style: TextStyle(color: Theme.of(context).colorScheme.error),),
+            subtitle: Text(AppLocalizations.of(context)!.pendingShippingMessage),
+          ),
+          SizedBox(height: 10),
+        ]
       ],
     );
   }
@@ -634,11 +642,9 @@ class _DesktopState extends State<_Desktop> {
   String _getTransactionStatusText(int? status) {
     switch (status) {
       case 0:
-        return 'Pending';
+        return AppLocalizations.of(context)!.pendingTitle;
       case 1:
-        return 'Approved';
-      case 2:
-        return 'Rejected';
+        return AppLocalizations.of(context)!.authorizedTitle;
       default:
         return '';
     }

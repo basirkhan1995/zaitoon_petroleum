@@ -198,7 +198,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get userOwner => 'دارنده کاربر';
 
   @override
-  String get id => 'شناسه';
+  String get id => 'آی دی';
 
   @override
   String get admin => 'مدیر';
@@ -1451,7 +1451,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get shippingDetails => 'جزئیات بارگیری';
 
   @override
-  String get fromTo => 'از - به';
+  String get fromTo => 'از → به';
 
   @override
   String get selectCustomer => 'لطفاً مشتری را انتخاب کنید';
@@ -1797,4 +1797,20 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get assetEntry => 'دارایی';
+
+  @override
+  String get attentionTitle => 'توجه';
+
+  @override
+  String get pendingShippingMessage =>
+      'این ارسال هنوز تحویل نشده است. شما می‌ توانید معامله را بعد ازتحویل تایید و یا حذف کنید.';
+
+  @override
+  String get transportInformation => 'معلومات ترانسپورت';
+
+  @override
+  String get movingDate => 'تاریخ بارگیری';
+
+  @override
+  String get arrivalDate => 'تاریخ تحویل';
 }

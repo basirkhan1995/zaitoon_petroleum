@@ -81,7 +81,7 @@
   "active": "فعال",
   "blocked": "مسدود",
   "userOwner": "دارنده کاربر",
-  "id": "شناسه",
+  "id": "آی دی",
   "admin": "مدیر",
   "manager": "اجرایی مدیر",
   "viewer": "کتونکی",
@@ -491,7 +491,7 @@
   "delivered": "تکمیل شده",
   "shippingSummary": "خلاص بارگیری",
   "shippingDetails": "جزئیات بارگیری",
-  "fromTo": "از - به",
+  "fromTo": "از → به",
   "selectCustomer": "مهرباني وکړئ یو پېرېدونکی وټاکئ",
   "selectProduct": "مهرباني وکړئ یو محصول وټاکئ",
   "selectVehicle": "مهرباني وکړئ یو موټر وټاکئ",
@@ -600,5 +600,10 @@
   "accountBlockedMessage": "حساب شما مسدود میباشد",
   "transportTitle": "ترانسپورت",
   "transportEntry": "ترانسپورت",
-  "assetEntry": "دارایی"
+  "assetEntry": "دارایی",
+  "attentionTitle": "توجه",
+  "pendingShippingMessage": "دا بارونه تر اوسه نه دی سپارل شوی. تاسو کولی شئ لاندې معامله ورسته له تحویل تأیید یا حذف کړئ.",
+  "transportInformation": "معلومات ترانسپورت",
+  "movingDate": "د بارگیری نېټه",
+  "arrivalDate": "د رسیدو نېټه"
 }

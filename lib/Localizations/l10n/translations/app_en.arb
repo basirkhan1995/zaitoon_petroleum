@@ -491,7 +491,7 @@
   "delivered": "Delivered",
   "shippingSummary": "Shipping Summary",
   "shippingDetails": "Shipping Details",
-  "fromTo": "From - To",
+  "fromTo": "From → To",
   "selectCustomer": "Please select a customer",
   "selectProduct": "Please select a product",
   "selectVehicle": "Please select a vehicle",
@@ -600,5 +600,10 @@
   "accountBlockedMessage": "Your account is blocked.",
   "transportTitle": "Transport",
   "transportEntry": "Transport Entry",
-  "assetEntry": "Asset Entry"
+  "assetEntry": "Asset Entry",
+  "attentionTitle": "Attention",
+  "pendingShippingMessage": "This shipping is not yet delivered. You can authorize or delete the transaction after shipping is delivered.",
+  "transportInformation": "Transport Information",
+  "movingDate": "Moving date",
+  "arrivalDate": "Arrival date"
 }
