@@ -1820,4 +1820,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get arrivalDate => 'Arrival date';
+
+  @override
+  String get cannotMarkDeliveredMsg =>
+      'Cannot mark as delivered. Payment incomplete. Paid';
 }

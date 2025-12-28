@@ -489,7 +489,7 @@
   "lastMonth": "ماه گذشته",
   "dateRange": "بازه زمانی",
   "delivered": "تکمیل شده",
-  "shippingSummary": "خلاص بارگیری",
+  "shippingSummary": "خلاصه بارگیری",
   "shippingDetails": "جزئیات بارگیری",
   "fromTo": "از → به",
   "selectCustomer": "لطفاً مشتری را انتخاب کنید",
@@ -605,5 +605,6 @@
   "pendingShippingMessage": "این ارسال هنوز تحویل نشده است. شما می‌ توانید معامله را بعد ازتحویل تایید و یا حذف کنید.",
   "transportInformation": "معلومات ترانسپورت",
   "movingDate": "تاریخ بارگیری",
-  "arrivalDate": "تاریخ تحویل"
+  "arrivalDate": "تاریخ تحویل",
+  "cannotMarkDeliveredMsg": "امکان ثبت تحویل‌ وجود ندارد. پرداخت کامل نشده است"
 }

@@ -2632,7 +2632,7 @@ class _DesktopState extends State<_Desktop> {
           final payment = shipping.pyment!.first;
           existingPaid = _parseAmount(payment.cashAmount) + _parseAmount(payment.cardAmount);
         }
-        paymentStatusMessage = "Cannot mark as delivered. Payment incomplete. Paid: ${existingPaid.toAmount()}, Required: ${totalAmount.toAmount()}";
+        paymentStatusMessage = "${tr.cannotMarkDeliveredMsg}: ${existingPaid.toAmount()}, ${tr.requiredTitle}: ${totalAmount.toAmount()}";
       }
     }
 

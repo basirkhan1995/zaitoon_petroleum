@@ -489,7 +489,7 @@
   "lastMonth": "تېره میاشت",
   "dateRange": "د نېټې موده",
   "delivered": "تکمیل شده",
-  "shippingSummary": "خلاص بارگیری",
+  "shippingSummary": "خلاصه بارگیری",
   "shippingDetails": "جزئیات بارگیری",
   "fromTo": "از → به",
   "selectCustomer": "مهرباني وکړئ یو پېرېدونکی وټاکئ",
@@ -605,5 +605,6 @@
   "pendingShippingMessage": "دا بارونه تر اوسه نه دی سپارل شوی. تاسو کولی شئ لاندې معامله ورسته له تحویل تأیید یا حذف کړئ.",
   "transportInformation": "معلومات ترانسپورت",
   "movingDate": "د بارگیری نېټه",
-  "arrivalDate": "د رسیدو نېټه"
+  "arrivalDate": "د رسیدو نېټه",
+  "cannotMarkDeliveredMsg": "د سپارلو په توګه نښه کېدای نه شي. پیسې بشپړې شوې نه دي"
 }

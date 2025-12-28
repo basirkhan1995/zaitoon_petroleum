@@ -1445,7 +1445,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get delivered => 'تکمیل شده';
 
   @override
-  String get shippingSummary => 'خلاص بارگیری';
+  String get shippingSummary => 'خلاصه بارگیری';
 
   @override
   String get shippingDetails => 'جزئیات بارگیری';
@@ -1813,4 +1813,8 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get arrivalDate => 'تاریخ تحویل';
+
+  @override
+  String get cannotMarkDeliveredMsg =>
+      'امکان ثبت تحویل‌ وجود ندارد. پرداخت کامل نشده است';
 }

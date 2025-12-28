@@ -605,5 +605,6 @@
   "pendingShippingMessage": "This shipping is not yet delivered. You can authorize or delete the transaction after shipping is delivered.",
   "transportInformation": "Transport Information",
   "movingDate": "Moving date",
-  "arrivalDate": "Arrival date"
+  "arrivalDate": "Arrival date",
+  "cannotMarkDeliveredMsg": "Cannot mark as delivered. Payment incomplete. Paid"
 }

@@ -1447,7 +1447,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get delivered => 'تکمیل شده';
 
   @override
-  String get shippingSummary => 'خلاص بارگیری';
+  String get shippingSummary => 'خلاصه بارگیری';
 
   @override
   String get shippingDetails => 'جزئیات بارگیری';
@@ -1815,4 +1815,8 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get arrivalDate => 'د رسیدو نېټه';
+
+  @override
+  String get cannotMarkDeliveredMsg =>
+      'د سپارلو په توګه نښه کېدای نه شي. پیسې بشپړې شوې نه دي';
 }

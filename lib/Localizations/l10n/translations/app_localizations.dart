@@ -3615,6 +3615,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Arrival date'**
   String get arrivalDate;
+
+  /// No description provided for @cannotMarkDeliveredMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot mark as delivered. Payment incomplete. Paid'**
+  String get cannotMarkDeliveredMsg;
 }
 
 class _AppLocalizationsDelegate
