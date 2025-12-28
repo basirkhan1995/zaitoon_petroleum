@@ -141,13 +141,16 @@ class _DesktopState extends State<_Desktop> {
 
   void _prefillForm(ShippingDetailsModel shipping) {
     if (!mounted) return;
-    setState(() {
-      _currentStep = 0;
-      _paymentError = null; // Clear payment error
-      _isEditingExistingPayment = false;
-      _existingPaymentReference = null;
-    });
 
+    // Only reset step if not reloading due to update
+    if (!_isReloadingDueToUpdate) {
+      setState(() {
+       // _currentStep = 0;
+        _paymentError = null;
+        _isEditingExistingPayment = false;
+        _existingPaymentReference = null;
+      });
+    }
     _clearAllControllers();
 
     customerId = shipping.perId;
@@ -405,7 +408,8 @@ class _DesktopState extends State<_Desktop> {
     // Revalidate payment form
     _validatePaymentAmounts(shipping);
   }
-
+  // Add this flag
+  bool _isReloadingDueToUpdate = false;
   // ==================== BUILD METHOD ====================
   @override
   Widget build(BuildContext context) {
@@ -421,38 +425,48 @@ class _DesktopState extends State<_Desktop> {
     return BlocConsumer<ShippingBloc, ShippingState>(
       listener: (context, state) {
         if (state is ShippingSuccessState) {
-          if (state.message.contains('Shipping')) {
-            // Shipping added/updated successfully
+          // Check what kind of success message we have
+          final message = state.message.toLowerCase();
+
+          if (message.contains('shipping') && !message.contains('expense') && !message.contains('payment')) {
+            // Only reset for shipping add/update, not for expense or payment
             WidgetsBinding.instance.addPostFrameCallback((_) {
               Navigator.of(context).pop();
             });
           }
-          // Clear expense form after success
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _clearExpenseForm();
-            setState(() {
-              _selectedExpenseForEdit = null;
+
+          // Clear expense form after expense success
+          if (message.contains('expense')) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _clearExpenseForm();
+              setState(() {
+                _selectedExpenseForEdit = null;
+              });
             });
-          });
+          }
 
           // Clear payment error after successful payment
-          if (state.message.contains('Payment')) {
+          if (message.contains('payment')) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               _clearPaymentError();
               _isEditingExistingPayment = false;
             });
           }
 
-          // Reload shipping details if payment was added/updated
-          if (state.message.contains('Payment') && widget.shippingId != null) {
+          // Reload shipping details if payment or expense was added/updated
+          if ((message.contains('payment') || message.contains('expense')) && widget.shippingId != null) {
             context.read<ShippingBloc>().add(LoadShippingDetailEvent(widget.shippingId!));
           }
         }
 
-        // Prefill form when shipping details are loaded
+        // Prefill form when shipping details are loaded - ONLY reset step for initial load
         if (state is ShippingDetailLoadedState) {
+          // Track if this is the first load to avoid resetting step on expense/payment updates
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            _prefillForm(state.currentShipping!);
+            // Only reset form on initial load, not when reloading due to expense/payment updates
+            if (!_isReloadingDueToUpdate) {
+              _prefillForm(state.currentShipping!);
+            }
           });
         }
 
@@ -465,13 +479,19 @@ class _DesktopState extends State<_Desktop> {
           return _buildLoadingContent();
         }
 
-        // Extract shipping from various states
+        // Extract shipping from various states - FIXED: Check ShippingSuccessState first
         ShippingDetailsModel? currentShipping;
-        if (blocState is ShippingDetailLoadedState) {
+
+        // Check ShippingSuccessState first since this is what gets emitted after onFinish
+        if (blocState is ShippingSuccessState && blocState.currentShipping != null) {
           currentShipping = blocState.currentShipping;
-        } else if (blocState is ShippingSuccessState && blocState.currentShipping != null) {
+        }
+        // Then check ShippingDetailLoadedState
+        else if (blocState is ShippingDetailLoadedState) {
           currentShipping = blocState.currentShipping;
-        } else if (blocState is ShippingListLoadedState && blocState.currentShipping != null) {
+        }
+        // Then check ShippingListLoadedState
+        else if (blocState is ShippingListLoadedState && blocState.currentShipping != null) {
           currentShipping = blocState.currentShipping;
         }
 
@@ -480,8 +500,15 @@ class _DesktopState extends State<_Desktop> {
           return _buildStepperWithData(currentShipping, tr, context);
         }
 
-        // Default: new shipping
-        return _buildNewShippingStepper(tr, context);
+        // Default: new shipping - ONLY show this if we're creating a new shipping
+        // AND we're not in a success state from an update
+        if (widget.shippingId == null && blocState is! ShippingSuccessState) {
+          return _buildNewShippingStepper(tr, context);
+        }
+
+        // If we're updating an existing shipping but somehow lost the data,
+        // show loading or go back to the data
+        return _buildLoadingContent();
       },
     );
   }
@@ -1537,7 +1564,10 @@ class _DesktopState extends State<_Desktop> {
                 ? null
                 : () {
               Navigator.of(context).pop(); // Close confirmation dialog
-
+              // Set flag to prevent step reset
+              setState(() {
+                _isReloadingDueToUpdate = true;
+              });
               // Dispatch the event
               if (hasExistingPayment && _isEditingExistingPayment && _existingPaymentReference != null) {
                 // Update existing payment
@@ -1573,6 +1603,14 @@ class _DesktopState extends State<_Desktop> {
                   usrName: usrName ?? "",
                 ));
               }
+              // Reset flag after delay
+              Future.delayed(Duration(milliseconds: 500), () {
+                if (mounted) {
+                  setState(() {
+                    _isReloadingDueToUpdate = false;
+                  });
+                }
+              });
             },
             label: Text(hasExistingPayment ? tr.updatePayment : tr.confirmPayment),
           ),
@@ -3042,6 +3080,10 @@ class _DesktopState extends State<_Desktop> {
       return;
     }
 
+    // Set flag to prevent step reset
+    setState(() {
+      _isReloadingDueToUpdate = true;
+    });
     if (_selectedExpenseForEdit != null) {
       context.read<ShippingBloc>().add(
         UpdateShippingExpenseEvent(
@@ -3063,6 +3105,14 @@ class _DesktopState extends State<_Desktop> {
         ),
       );
     }
+    // Reset the flag after a delay
+    Future.delayed(Duration(milliseconds: 500), () {
+      if (mounted) {
+        setState(() {
+          _isReloadingDueToUpdate = false;
+        });
+      }
+    });
   }
 
   Widget _datePicker({required String date, required String title, bool? isActive}) {
