@@ -213,15 +213,15 @@ class Utils{
     return null;
   }
 
-  static String glCategories({required int category, AppLocalizations? locale}) {
+  static String glCategories({required int category, required AppLocalizations locale}) {
     if (category == 1) {
-      return locale!.asset;
+      return locale.asset;
     } else if (category == 2) {
-      return locale!.liability;
+      return locale.liability;
     } else if (category == 3) {
-      return locale!.income;
+      return locale.income;
     } else if (category == 4) {
-      return locale!.expense;
+      return locale.expense;
     } else {
       return "not found";
     }

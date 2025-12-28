@@ -2475,13 +2475,13 @@ class _DesktopState extends State<_Desktop> {
                                 style: textTheme.titleSmall,
                               ),
                             ),
-                            const SizedBox(width: 50),
+
                           ],
                         ),
                       ),
                       Container(
                         decoration: BoxDecoration(
-                          border: Border.all(color: color.outline.withValues(alpha: .3)),
+                          border: Border.all(color: color.outline.withValues(alpha: .1)),
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: ListView.builder(
@@ -2497,7 +2497,7 @@ class _DesktopState extends State<_Desktop> {
                                 highlightColor: color.primary.withValues(alpha: .06),
                                 onTap: isLoading ? null : () => _loadExpenseForEdit(expense),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
                                     color: _selectedExpenseForEdit?.trdReference == expense.trdReference
                                         ? color.primary.withValues(alpha: .1)
@@ -2515,7 +2515,9 @@ class _DesktopState extends State<_Desktop> {
                                           children: [
                                             Text(
                                               expense.trdReference ?? "",
-                                              style: textTheme.titleSmall,
+                                              style: textTheme.bodyMedium?.copyWith(
+                                                color: color.outline
+                                              ),
                                             ),
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.start,

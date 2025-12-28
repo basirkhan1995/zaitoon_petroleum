@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/zform_dialog.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
@@ -74,7 +75,7 @@ class _DesktopState extends State<_Desktop> {
     if (widget.model != null) {
       final m = widget.model!;
       accName.text = m.accName ?? "";
-      accountLimit.text = m.accCreditLimit ?? "";
+      accountLimit.text = m.accCreditLimit?.toAmount() ?? "";
       defaultCcy = m.actCurrency ?? "";
       statusValue = m.accStatus ?? 0;
       status = statusValue == 1;
@@ -209,17 +210,10 @@ class _DesktopState extends State<_Desktop> {
       accName: accName.text,
       actCurrency: ccyCode?.ccyCode ??"USD",
       accStatus: statusValue,
-      accCreditLimit: accountLimit.text,
+      accCreditLimit: accountLimit.text.cleanAmount,
       actSignatory: widget.perId,
       accNumber: widget.model?.accNumber,
     );
-
-    print(accName.text);
-    print(ccyCode?.ccyCode);
-    print(statusValue);
-    print(accountLimit.text);
-    print(widget.perId);
-    print(widget.model?.accNumber);
 
     final bloc = context.read<AccountsBloc>();
 

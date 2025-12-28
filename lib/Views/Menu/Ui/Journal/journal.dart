@@ -5,9 +5,9 @@ import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/status_badge.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FxTransaction/Ui/fx_transaction.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/View/all_transactions.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/View/authorized.dart';
@@ -76,6 +76,7 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   String? currentLocale;
   String? usrName;
+  String? baseCurrency;
   Uint8List _companyLogo = Uint8List(0);
   final company = ReportModel();
   TransactionsModel? transactionsModel;
@@ -85,6 +86,10 @@ class _DesktopState extends State<_Desktop> {
     super.initState();
     // Delay context access until after initState
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = context.read<CompanyProfileBloc>().state;
+      if(state is CompanyProfileLoadedState){
+        baseCurrency = state.company.comLocalCcy;
+      }
       if (mounted) {
         setState(() {
           currentLocale = context.read<LocalizationBloc>().state.languageCode;
@@ -485,192 +490,207 @@ class _DesktopState extends State<_Desktop> {
       final TextEditingController amount = TextEditingController();
       final TextEditingController narration = TextEditingController();
       int? accNumber;
+      String? availableBalance;
+      int? accCategory;
+      int? accStatus;
 
       showDialog(
         context: context,
         builder: (context) {
-          return BlocBuilder<TransactionsBloc, TransactionsState>(
-            builder: (context, trState) {
-              return ZFormDialog(
-                width: 600,
-                icon: Icons.arrow_circle_down_rounded,
-                title: locale.income,
-                onAction: () {
-                  context.read<TransactionsBloc>().add(
-                    OnCashTransactionEvent(
-                      TransactionsModel(
-                        usrName: login.usrName,
-                        trdAccount: accNumber,
-                        trdCcy: baseCurrency,
-                        trnType: trnType,
-                        trdAmount: amount.text.cleanAmount,
-                        trdNarration: narration.text,
+          return StatefulBuilder(
+            builder: (context,setState) {
+              return BlocBuilder<TransactionsBloc, TransactionsState>(
+                builder: (context, trState) {
+                  return ZFormDialog(
+                    width: 600,
+                    icon: Icons.arrow_circle_down_rounded,
+                    title: locale.income,
+                    onAction: () {
+                      context.read<TransactionsBloc>().add(
+                        OnCashTransactionEvent(
+                          TransactionsModel(
+                            usrName: login.usrName,
+                            trdAccount: accNumber,
+                            trdCcy: baseCurrency,
+                            trnType: trnType,
+                            trdAmount: amount.text.cleanAmount,
+                            trdNarration: narration.text,
+                          ),
+                        ),
+                      );
+                    },
+                    actionLabel: trState is TxnLoadingState
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              color: Theme.of(context).colorScheme.surface,
+                            ),
+                          )
+                        : Text(locale.create),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          spacing: 12,
+                          children: [
+                            GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
+                              showAllOnFocus: true,
+                              controller: accountController,
+                              title: locale.accounts,
+                              hintText: locale.accNameOrNumber,
+                              isRequired: true,
+                              bloc: context.read<AccountsBloc>(),
+                              fetchAllFunction: (bloc) => bloc.add(
+                                LoadAccountsFilterEvent(start: 3, end: 3,ccy: baseCurrency,exclude: ""),
+                              ),
+                              searchFunction: (bloc, query) => bloc.add(
+                                LoadAccountsFilterEvent(
+                                  start: 3,
+                                  end: 3,
+                                  ccy: baseCurrency,
+                                  input: query, exclude: ""
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return locale.required(locale.accounts);
+                                }
+                                return null;
+                              },
+                              itemBuilder: (context, account) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 5,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "${account.accNumber} | ${account.accName}",
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyLarge,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
+                              stateToLoading: (state) => state is AccountLoadingState,
+                              loadingBuilder: (context) => const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(strokeWidth: 3),
+                              ),
+                              stateToItems: (state) {
+                                if (state is AccountLoadedState) {
+                                  return state.accounts;
+                                }
+                                return [];
+                              },
+                              onSelected: (value) {
+                                setState(() {
+                                  accNumber = value.accNumber;
+                                  availableBalance = value.accAvailBalance;
+                                  accountController.text = value.accName?? "";
+                                  accCategory = value.accCategory;
+                                  accStatus = value.accStatus;
+                                });
+                              },
+                              noResultsText: locale.noDataFound,
+                              showClearButton: true,
+                            ),
+
+                            if(accNumber != null)...[
+                              accountDetails(AccountsModel(
+                                  accNumber: accNumber,
+                                  accAvailBalance: availableBalance?.toAmount(),
+                                  accName: accountController.text,
+                                  accCategory: accCategory,
+                                  accStatus: accStatus
+                              )),
+                            ],
+
+                            ZTextFieldEntitled(
+                              isRequired: true,
+                              keyboardInputType: TextInputType.numberWithOptions(
+                                decimal: true,
+                              ),
+                              inputFormat: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9.,]*'),
+                                ),
+                                SmartThousandsDecimalFormatter(),
+                              ],
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return locale.required(locale.exchangeRate);
+                                }
+
+                                // Remove formatting (e.g. commas)
+                                final clean = value.replaceAll(
+                                  RegExp(r'[^\d.]'),
+                                  '',
+                                );
+                                final amount = double.tryParse(clean);
+
+                                if (amount == null || amount <= 0.0) {
+                                  return locale.amountGreaterZero;
+                                }
+
+                                return null;
+                              },
+                              controller: amount,
+                              title: locale.amount,
+                            ),
+                            ZTextFieldEntitled(
+                              keyboardInputType: TextInputType.multiline,
+                              controller: narration,
+                              title: locale.narration,
+                            ),
+
+                            Row(
+                              spacing: 5,
+                              children: [
+                                Checkbox(
+                                  visualDensity: VisualDensity(horizontal: -4),
+                                  value: isPrint,
+                                  onChanged: (e) {
+                                    setState(() {
+                                      isPrint = e ?? true;
+                                    });
+                                  },
+                                ),
+                                Text(locale.print),
+                              ],
+                            ),
+                            if (trState is TransactionErrorState)
+                              SizedBox(height: 10),
+                            Row(
+                              children: [
+                                trState is TransactionErrorState
+                                    ? Text(
+                                        trState.message,
+                                        style: TextStyle(color: color.error),
+                                      )
+                                    : SizedBox(),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
                 },
-                actionLabel: trState is TxnLoadingState
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          color: Theme.of(context).colorScheme.surface,
-                        ),
-                      )
-                    : Text(locale.create),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      spacing: 12,
-                      children: [
-                        GenericTextfield<
-                          AccountsModel,
-                          AccountsBloc,
-                          AccountsState
-                        >(
-                          showAllOnFocus: true,
-                          controller: accountController,
-                          title: locale.accounts,
-                          hintText: locale.accNameOrNumber,
-                          isRequired: true,
-                          bloc: context.read<AccountsBloc>(),
-                          fetchAllFunction: (bloc) => bloc.add(
-                            LoadAccountsFilterEvent(start: 3, end: 3),
-                          ),
-                          searchFunction: (bloc, query) => bloc.add(
-                            LoadAccountsFilterEvent(
-                              start: 3,
-                              end: 3,
-                              input: query,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return locale.required(locale.accounts);
-                            }
-                            return null;
-                          },
-                          itemBuilder: (context, account) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 5,
-                              vertical: 5,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "${account.accNumber} | ${account.accName}",
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodyLarge,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          itemToString: (acc) =>
-                              "${acc.accNumber} | ${acc.accName}",
-                          stateToLoading: (state) =>
-                              state is AccountLoadingState,
-                          loadingBuilder: (context) => const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 3),
-                          ),
-                          stateToItems: (state) {
-                            if (state is AccountLoadedState) {
-                              return state.accounts;
-                            }
-                            return [];
-                          },
-                          onSelected: (value) {
-                            setState(() {
-                              accNumber = value.accNumber;
-                            });
-                          },
-                          noResultsText: locale.noDataFound,
-                          showClearButton: true,
-                        ),
-                        ZTextFieldEntitled(
-                          isRequired: true,
-                          // onSubmit: (_)=> onSubmit(),
-                          keyboardInputType: TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                          inputFormat: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'[0-9.,]*'),
-                            ),
-                            SmartThousandsDecimalFormatter(),
-                          ],
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return locale.required(locale.exchangeRate);
-                            }
-
-                            // Remove formatting (e.g. commas)
-                            final clean = value.replaceAll(
-                              RegExp(r'[^\d.]'),
-                              '',
-                            );
-                            final amount = double.tryParse(clean);
-
-                            if (amount == null || amount <= 0.0) {
-                              return locale.amountGreaterZero;
-                            }
-
-                            return null;
-                          },
-                          controller: amount,
-                          title: locale.amount,
-                        ),
-                        ZTextFieldEntitled(
-                          keyboardInputType: TextInputType.multiline,
-                          controller: narration,
-                          title: locale.narration,
-                        ),
-
-                        Row(
-                          spacing: 5,
-                          children: [
-                            Checkbox(
-                              visualDensity: VisualDensity(horizontal: -4),
-                              value: isPrint,
-                              onChanged: (e) {
-                                setState(() {
-                                  isPrint = e ?? true;
-                                });
-                              },
-                            ),
-                            Text(locale.print),
-                          ],
-                        ),
-                        if (trState is TransactionErrorState)
-                          SizedBox(height: 10),
-                        Row(
-                          children: [
-                            trState is TransactionErrorState
-                                ? Text(
-                                    trState.message,
-                                    style: TextStyle(color: color.error),
-                                  )
-                                : SizedBox(),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
               );
-            },
+            }
           );
         },
       );
@@ -682,189 +702,203 @@ class _DesktopState extends State<_Desktop> {
       final TextEditingController amount = TextEditingController();
       final TextEditingController narration = TextEditingController();
       int? accNumber;
+      String? availableBalance;
+      int? accCategory;
+      int? accStatus;
+      String? accName;
 
       showDialog(
         context: context,
         builder: (context) {
           return BlocBuilder<TransactionsBloc, TransactionsState>(
             builder: (context, trState) {
-              return ZFormDialog(
-                width: 600,
-                icon: Icons.arrow_circle_up_rounded,
-                title: locale.expense,
-                onAction: () {
-                  context.read<TransactionsBloc>().add(
-                    OnCashTransactionEvent(
-                      TransactionsModel(
-                        usrName: login.usrName,
-                        trdAccount: accNumber,
-                        trdCcy: baseCurrency ?? "",
-                        trnType: trnType ?? "",
-                        trdAmount: amount.text.cleanAmount,
-                        trdNarration: narration.text,
-                      ),
-                    ),
-                  );
-                },
-                actionLabel: trState is TxnLoadingState
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          color: Theme.of(context).colorScheme.surface,
+              return StatefulBuilder(
+                builder: (context,setState) {
+                  return ZFormDialog(
+                    width: 600,
+                    icon: Icons.arrow_circle_up_rounded,
+                    title: locale.expense,
+                    onAction: () {
+                      context.read<TransactionsBloc>().add(
+                        OnCashTransactionEvent(
+                          TransactionsModel(
+                            usrName: login.usrName,
+                            trdAccount: accNumber,
+                            trdCcy: baseCurrency ?? "",
+                            trnType: trnType ?? "",
+                            trdAmount: amount.text.cleanAmount,
+                            trdNarration: narration.text,
+                          ),
                         ),
-                      )
-                    : Text(locale.create),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      spacing: 12,
-                      children: [
-                        GenericTextfield<
-                          AccountsModel,
-                          AccountsBloc,
-                          AccountsState
-                        >(
-                          showAllOnFocus: true,
-                          controller: accountController,
-                          title: locale.accounts,
-                          hintText: locale.accNameOrNumber,
-                          isRequired: true,
-                          bloc: context.read<AccountsBloc>(),
-                          fetchAllFunction: (bloc) => bloc.add(
-                            LoadAccountsFilterEvent(start: 4, end: 4),
-                          ),
-                          searchFunction: (bloc, query) => bloc.add(
-                            LoadAccountsFilterEvent(
-                              start: 4,
-                              end: 4,
-                              input: query,
+                      );
+                    },
+                    actionLabel: trState is TxnLoadingState
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              color: Theme.of(context).colorScheme.surface,
                             ),
-                          ),
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return locale.required(locale.accounts);
-                            }
-                            return null;
-                          },
-                          itemBuilder: (context, account) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 5,
-                              vertical: 5,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                          )
+                        : Text(locale.create),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          spacing: 12,
+                          children: [
+                            GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
+                              showAllOnFocus: true,
+                              controller: accountController,
+                              title: locale.accounts,
+                              hintText: locale.accNameOrNumber,
+                              isRequired: true,
+                              bloc: context.read<AccountsBloc>(),
+                              fetchAllFunction: (bloc) => bloc.add(
+                                LoadAccountsFilterEvent(start: 4, end: 4,ccy: baseCurrency,exclude: ""),
+                              ),
+                              searchFunction: (bloc, query) => bloc.add(
+                                LoadAccountsFilterEvent(
+                                    start: 4,
+                                    end: 4,
+                                    ccy: baseCurrency,
+                                    input: query, exclude: ""
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return locale.required(locale.accounts);
+                                }
+                                return null;
+                              },
+                              itemBuilder: (context, account) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 5,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      "${account.accNumber} | ${account.accName}",
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodyLarge,
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "${account.accNumber} | ${account.accName}",
+                                          style: Theme.of(context).textTheme.bodyLarge,
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
-                          ),
-                          itemToString: (acc) =>
-                              "${acc.accNumber} | ${acc.accName}",
-                          stateToLoading: (state) =>
-                              state is AccountLoadingState,
-                          loadingBuilder: (context) => const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 3),
-                          ),
-                          stateToItems: (state) {
-                            if (state is AccountLoadedState) {
-                              return state.accounts;
-                            }
-                            return [];
-                          },
-                          onSelected: (value) {
-                            setState(() {
-                              accNumber = value.accNumber;
-                            });
-                          },
-                          noResultsText: locale.noDataFound,
-                          showClearButton: true,
-                        ),
-
-                        ZTextFieldEntitled(
-                          isRequired: true,
-                          keyboardInputType: TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                          inputFormat: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'[0-9.,]*'),
-                            ),
-                            SmartThousandsDecimalFormatter(),
-                          ],
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return locale.required(locale.exchangeRate);
-                            }
-
-                            // Remove formatting (e.g. commas)
-                            final clean = value.replaceAll(
-                              RegExp(r'[^\d.]'),
-                              '',
-                            );
-                            final amount = double.tryParse(clean);
-
-                            if (amount == null || amount <= 0.0) {
-                              return locale.amountGreaterZero;
-                            }
-
-                            return null;
-                          },
-                          controller: amount,
-                          title: locale.amount,
-                        ),
-                        ZTextFieldEntitled(
-                          keyboardInputType: TextInputType.multiline,
-                          controller: narration,
-                          title: locale.narration,
-                        ),
-                        Row(
-                          spacing: 5,
-                          children: [
-                            Checkbox(
-                              visualDensity: VisualDensity(horizontal: -4),
-                              value: isPrint,
-                              onChanged: (e) {
+                              ),
+                              itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
+                              stateToLoading: (state) => state is AccountLoadingState,
+                              loadingBuilder: (context) => const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(strokeWidth: 3),
+                              ),
+                              stateToItems: (state) {
+                                if (state is AccountLoadedState) {
+                                  return state.accounts;
+                                }
+                                return [];
+                              },
+                              onSelected: (value) {
                                 setState(() {
-                                  isPrint = e ?? true;
+                                  accNumber = value.accNumber;
+                                  availableBalance = value.accAvailBalance;
+                                  accCategory = value.accCategory;
+                                  accStatus = value.accStatus;
+                                  accName = value.accName;
                                 });
                               },
+                              noResultsText: locale.noDataFound,
+                              showClearButton: true,
                             ),
-                            Text(locale.print),
+
+                            if(accNumber !=null)...[
+                              accountDetails(AccountsModel(
+                                accNumber: accNumber,
+                                accCategory: accCategory,
+                                accName: accName,
+                                accAvailBalance: availableBalance,
+                                accStatus: accStatus,
+                              ))
+                            ],
+
+                            ZTextFieldEntitled(
+                              isRequired: true,
+                              keyboardInputType: TextInputType.numberWithOptions(
+                                decimal: true,
+                              ),
+                              inputFormat: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9.,]*'),
+                                ),
+                                SmartThousandsDecimalFormatter(),
+                              ],
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return locale.required(locale.exchangeRate);
+                                }
+
+                                // Remove formatting (e.g. commas)
+                                final clean = value.replaceAll(
+                                  RegExp(r'[^\d.]'),
+                                  '',
+                                );
+                                final amount = double.tryParse(clean);
+
+                                if (amount == null || amount <= 0.0) {
+                                  return locale.amountGreaterZero;
+                                }
+
+                                return null;
+                              },
+                              controller: amount,
+                              title: locale.amount,
+                            ),
+                            ZTextFieldEntitled(
+                              keyboardInputType: TextInputType.multiline,
+                              controller: narration,
+                              title: locale.narration,
+                            ),
+                            Row(
+                              spacing: 5,
+                              children: [
+                                Checkbox(
+                                  visualDensity: VisualDensity(horizontal: -4),
+                                  value: isPrint,
+                                  onChanged: (e) {
+                                    setState(() {
+                                      isPrint = e ?? true;
+                                    });
+                                  },
+                                ),
+                                Text(locale.print),
+                              ],
+                            ),
+                            if (trState is TransactionErrorState)
+                              SizedBox(height: 10),
+                            Row(
+                              children: [
+                                trState is TransactionErrorState
+                                    ? Text(
+                                        trState.message,
+                                        style: TextStyle(color: color.error),
+                                      )
+                                    : SizedBox(),
+                              ],
+                            ),
                           ],
                         ),
-                        if (trState is TransactionErrorState)
-                          SizedBox(height: 10),
-                        Row(
-                          children: [
-                            trState is TransactionErrorState
-                                ? Text(
-                                    trState.message,
-                                    style: TextStyle(color: color.error),
-                                  )
-                                : SizedBox(),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                }
               );
             },
           );
@@ -878,193 +912,211 @@ class _DesktopState extends State<_Desktop> {
       final TextEditingController amount = TextEditingController();
       final TextEditingController narration = TextEditingController();
       int? accNumber;
-
+      String? availableBalance;
+      int? accCategory;
+      int? accStatus;
+      String? accName;
       showDialog(
         context: context,
         builder: (context) {
           return BlocBuilder<TransactionsBloc, TransactionsState>(
             builder: (context, trState) {
-              return ZFormDialog(
-                width: 600,
-                icon: Icons.cached_rounded,
-                title: trnType == "GLCR"
-                    ? locale.glCreditTitle
-                    : locale.glDebitTitle,
-                onAction: () {
-                  context.read<TransactionsBloc>().add(
-                    OnCashTransactionEvent(
-                      TransactionsModel(
-                        usrName: login.usrName,
-                        trdAccount: accNumber,
-                        trdCcy: baseCurrency,
-                        trnType: trnType,
-                        trdAmount: amount.text.cleanAmount,
-                        trdNarration: narration.text,
-                      ),
-                    ),
-                  );
-                },
-                actionLabel: trState is TxnLoadingState
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          color: Theme.of(context).colorScheme.surface,
+              return StatefulBuilder(
+                builder: (context,setState) {
+                  return ZFormDialog(
+                    width: 600,
+                    icon: Icons.cached_rounded,
+                    title: trnType == "GLCR"
+                        ? locale.glCreditTitle
+                        : locale.glDebitTitle,
+                    onAction: () {
+                      context.read<TransactionsBloc>().add(
+                        OnCashTransactionEvent(
+                          TransactionsModel(
+                            usrName: login.usrName,
+                            trdAccount: accNumber,
+                            trdCcy: baseCurrency,
+                            trnType: trnType,
+                            trdAmount: amount.text.cleanAmount,
+                            trdNarration: narration.text,
+                          ),
                         ),
-                      )
-                    : Text(locale.create),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      spacing: 12,
-                      children: [
-                        GenericTextfield<
-                          AccountsModel,
-                          AccountsBloc,
-                          AccountsState
-                        >(
-                          showAllOnFocus: true,
-                          controller: accountController,
-                          title: locale.accounts,
-                          hintText: locale.accNameOrNumber,
-                          isRequired: true,
-                          bloc: context.read<AccountsBloc>(),
-                          fetchAllFunction: (bloc) => bloc.add(
-                            LoadAccountsFilterEvent(
-                              start: 1,
-                              end: 4,
-                              exclude: "10101010, 10101011",
+                      );
+                    },
+                    actionLabel: trState is TxnLoadingState
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              color: Theme.of(context).colorScheme.surface,
                             ),
-                          ),
-                          searchFunction: (bloc, query) => bloc.add(
-                            LoadAccountsFilterEvent(
-                              start: 1,
-                              end: 4,
-                              input: query,
-                              exclude: "10101010, 10101011",
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return locale.required(locale.accounts);
-                            }
-                            return null;
-                          },
-                          itemBuilder: (context, account) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 5,
-                              vertical: 5,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                          )
+                        : Text(locale.create),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          spacing: 12,
+                          children: [
+                            GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
+                              showAllOnFocus: true,
+                              controller: accountController,
+                              title: locale.accounts,
+                              hintText: locale.accNameOrNumber,
+                              isRequired: true,
+                              bloc: context.read<AccountsBloc>(),
+                              fetchAllFunction: (bloc) => bloc.add(
+                                LoadAccountsFilterEvent(
+                                  start: 1,
+                                  end: 4,
+                                  ccy: baseCurrency,
+                                  exclude: "10101010, 10101011",
+                                ),
+                              ),
+                              searchFunction: (bloc, query) => bloc.add(
+                                LoadAccountsFilterEvent(
+                                  start: 1,
+                                  end: 4,
+                                  ccy: baseCurrency,
+                                  input: query,
+                                  exclude: "10101010, 10101011",
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return locale.required(locale.accounts);
+                                }
+                                return null;
+                              },
+                              itemBuilder: (context, account) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 5,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      "${account.accNumber} | ${account.accName}",
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodyLarge,
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "${account.accNumber} | ${account.accName}",
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyLarge,
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
-                          ),
-                          itemToString: (acc) =>
-                              "${acc.accNumber} | ${acc.accName}",
-                          stateToLoading: (state) =>
-                              state is GlAccountsLoadingState,
-                          loadingBuilder: (context) => const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 3),
-                          ),
-                          stateToItems: (state) {
-                            if (state is AccountLoadedState) {
-                              return state.accounts;
-                            }
-                            return [];
-                          },
-                          onSelected: (value) {
-                            setState(() {
-                              accNumber = value.accNumber;
-                            });
-                          },
-                          noResultsText: locale.noDataFound,
-                          showClearButton: true,
-                        ),
-                        ZTextFieldEntitled(
-                          isRequired: true,
-                          // onSubmit: (_)=> onSubmit(),
-                          keyboardInputType: TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                          inputFormat: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'[0-9.,]*'),
-                            ),
-                            SmartThousandsDecimalFormatter(),
-                          ],
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return locale.required(locale.exchangeRate);
-                            }
-
-                            // Remove formatting (e.g. commas)
-                            final clean = value.replaceAll(
-                              RegExp(r'[^\d.]'),
-                              '',
-                            );
-                            final amount = double.tryParse(clean);
-
-                            if (amount == null || amount <= 0.0) {
-                              return locale.amountGreaterZero;
-                            }
-
-                            return null;
-                          },
-                          controller: amount,
-                          title: locale.amount,
-                        ),
-                        ZTextFieldEntitled(
-                          keyboardInputType: TextInputType.multiline,
-                          controller: narration,
-                          title: locale.narration,
-                        ),
-                        Row(
-                          spacing: 5,
-                          children: [
-                            Checkbox(
-                              visualDensity: VisualDensity(horizontal: -4),
-                              value: isPrint,
-                              onChanged: (e) {
+                              ),
+                              itemToString: (acc) =>
+                                  "${acc.accNumber} | ${acc.accName}",
+                              stateToLoading: (state) =>
+                                  state is AccountLoadingState,
+                              loadingBuilder: (context) => const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(strokeWidth: 3),
+                              ),
+                              stateToItems: (state) {
+                                if (state is AccountLoadedState) {
+                                  return state.accounts;
+                                }
+                                return [];
+                              },
+                              onSelected: (value) {
                                 setState(() {
-                                  isPrint = e ?? true;
+                                  accNumber = value.accNumber;
+                                  availableBalance = value.accAvailBalance;
+                                  accName = value.accName?? "";
+                                  accCategory = value.accCategory;
+                                  accStatus = value.accStatus;
                                 });
                               },
+                              noResultsText: locale.noDataFound,
+                              showClearButton: true,
                             ),
-                            Text(locale.print),
+                            if(accNumber !=null)...[
+                              accountDetails(AccountsModel(
+                                accNumber: accNumber,
+                                accCategory: accCategory,
+                                accName: accName,
+                                accAvailBalance: availableBalance,
+                                accStatus: accStatus,
+                              ))
+                            ],
+                            ZTextFieldEntitled(
+                              isRequired: true,
+                              // onSubmit: (_)=> onSubmit(),
+                              keyboardInputType: TextInputType.numberWithOptions(
+                                decimal: true,
+                              ),
+                              inputFormat: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9.,]*'),
+                                ),
+                                SmartThousandsDecimalFormatter(),
+                              ],
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return locale.required(locale.exchangeRate);
+                                }
+
+                                // Remove formatting (e.g. commas)
+                                final clean = value.replaceAll(
+                                  RegExp(r'[^\d.]'),
+                                  '',
+                                );
+                                final amount = double.tryParse(clean);
+
+                                if (amount == null || amount <= 0.0) {
+                                  return locale.amountGreaterZero;
+                                }
+
+                                return null;
+                              },
+                              controller: amount,
+                              title: locale.amount,
+                            ),
+                            ZTextFieldEntitled(
+                              keyboardInputType: TextInputType.multiline,
+                              controller: narration,
+                              title: locale.narration,
+                            ),
+                            Row(
+                              spacing: 5,
+                              children: [
+                                Checkbox(
+                                  visualDensity: VisualDensity(horizontal: -4),
+                                  value: isPrint,
+                                  onChanged: (e) {
+                                    setState(() {
+                                      isPrint = e ?? true;
+                                    });
+                                  },
+                                ),
+                                Text(locale.print),
+                              ],
+                            ),
+                            if (trState is TransactionErrorState)
+                              SizedBox(height: 10),
+                            Row(
+                              children: [
+                                trState is TransactionErrorState
+                                    ? Text(trState.message)
+                                    : SizedBox(),
+                              ],
+                            ),
                           ],
                         ),
-                        if (trState is TransactionErrorState)
-                          SizedBox(height: 10),
-                        Row(
-                          children: [
-                            trState is TransactionErrorState
-                                ? Text(trState.message)
-                                : SizedBox(),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                }
               );
             },
           );
@@ -2055,6 +2107,57 @@ class _DesktopState extends State<_Desktop> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget accountDetails(AccountsModel details){
+    final tr = AppLocalizations.of(context)!;
+    TextStyle? titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith();
+    return Cover(
+      margin: EdgeInsets.symmetric(horizontal: 2),
+      color: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
+      padding: EdgeInsets.all(8),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Text(tr.accountDetails,style: titleStyle?.copyWith(fontWeight: FontWeight.bold),)
+            ],
+          ),
+          Divider(),
+          Row(
+              children: [
+                 SizedBox(
+                   width: 150,
+                   child: Column(
+                     mainAxisAlignment: MainAxisAlignment.start,
+                     crossAxisAlignment: CrossAxisAlignment.start,
+                     spacing: 5,
+                     children: [
+                       Text(tr.accountNumber,style: titleStyle),
+                       Text(tr.accountName,style: titleStyle),
+                       Text(tr.accountCategory,style: titleStyle),
+                       Text(tr.balance,style: titleStyle),
+                       Text(tr.status,style: titleStyle),
+                     ],
+                   ),
+                 ),
+                 Column(
+                   mainAxisAlignment: MainAxisAlignment.start,
+                   crossAxisAlignment: CrossAxisAlignment.start,
+                   spacing: 5,
+                   children: [
+                    Text(details.accNumber.toString()),
+                    Text(details.accName??""),
+                    Text(Utils.glCategories(category: details.accCategory??1,locale: tr)),
+                    Text("${details.accAvailBalance?.toAmount()} $baseCurrency"),
+                     StatusBadge(status: details.accStatus??1, trueValue: tr.active,falseValue: tr.inactive),
+                   ],
+                 )
+              ],
+          ),
+        ],
       ),
     );
   }
