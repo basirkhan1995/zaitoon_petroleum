@@ -92,15 +92,6 @@ class _DesktopState extends State<_Desktop> {
                     icon: Icons.refresh,
                     onPressed: onRefresh,
                     label: Text(locale.refresh)),
-                ZOutlineButton(
-                    width: 120,
-                    icon: Icons.add,
-                    isActive: true,
-
-                    onPressed: (){
-
-                    },
-                    label: Text(locale.newKeyword)),
               ],
             ),
           ),
@@ -132,8 +123,7 @@ class _DesktopState extends State<_Desktop> {
           ),
           SizedBox(height: 10),
           Expanded(
-            child: BlocConsumer<UsersBloc, UsersState>(
-              listener: (context,state){},
+            child: BlocBuilder<UsersBloc, UsersState>(
               builder: (context, state) {
                 if (state is UsersLoadingState) {
                   return Center(child: CircularProgressIndicator());
@@ -252,7 +242,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-  void onAdd() {}
 
   void onRefresh(){
     context.read<UsersBloc>().add(LoadUsersEvent(usrOwner: widget.perId));
