@@ -3573,6 +3573,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Transport'**
   String get transportTitle;
+
+  /// No description provided for @transportEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport Entry'**
+  String get transportEntry;
+
+  /// No description provided for @assetEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Asset Entry'**
+  String get assetEntry;
 }
 
 class _AppLocalizationsDelegate

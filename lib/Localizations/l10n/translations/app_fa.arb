@@ -598,5 +598,7 @@
   "todayOrdersTitle": "سفارشات امروز",
   "ordersSubtitle": "خرید ها، فروشات، برگشتی ها و تنظیم موجودی",
   "accountBlockedMessage": "حساب شما مسدود میباشد",
-  "transportTitle": "ترانسپورت"
+  "transportTitle": "ترانسپورت",
+  "transportEntry": "ترانسپورت",
+  "assetEntry": "دارایی"
 }

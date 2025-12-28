@@ -2136,7 +2136,6 @@ class _DesktopState extends State<_Desktop> {
                        Text(tr.accountNumber,style: titleStyle),
                        Text(tr.accountName,style: titleStyle),
                        Text(tr.accountCategory,style: titleStyle),
-                       Text(tr.balance,style: titleStyle),
                        Text(tr.status,style: titleStyle),
                      ],
                    ),
@@ -2149,8 +2148,7 @@ class _DesktopState extends State<_Desktop> {
                     Text(details.accNumber.toString()),
                     Text(details.accName??""),
                     Text(Utils.glCategories(category: details.accCategory??1,locale: tr)),
-                    Text("${details.accAvailBalance?.toAmount()} $baseCurrency"),
-                     StatusBadge(status: details.accStatus??1, trueValue: tr.active,falseValue: tr.inactive),
+                    StatusBadge(status: details.accStatus??1, trueValue: tr.active,falseValue: tr.inactive),
                    ],
                  )
               ],

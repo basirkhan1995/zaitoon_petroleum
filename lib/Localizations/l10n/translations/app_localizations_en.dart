@@ -1798,4 +1798,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transportTitle => 'Transport';
+
+  @override
+  String get transportEntry => 'Transport Entry';
+
+  @override
+  String get assetEntry => 'Asset Entry';
 }

@@ -1793,4 +1793,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get transportTitle => 'ترانسپورت';
+
+  @override
+  String get transportEntry => 'ترانسپورت';
+
+  @override
+  String get assetEntry => 'دارایی';
 }

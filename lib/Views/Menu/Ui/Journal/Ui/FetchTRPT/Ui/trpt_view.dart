@@ -204,8 +204,8 @@ class _DesktopState extends State<_Desktop> {
     final color = Theme.of(context).colorScheme;
 
     // Check if any buttons should be shown
-    final bool showAuthorizeButton = trpt.shpStatus == 0 && (transaction?.trnStatus == 0 && login.usrName != transaction?.maker);
-    final bool showDeleteButton = trpt.shpStatus == 0 && (trpt.transaction?.trnStatus == 0 && transaction?.maker == login.usrName);
+    final bool showAuthorizeButton = trpt.shpStatus == 1 && (transaction?.trnStatus == 1 && login.usrName != transaction?.maker);
+    final bool showDeleteButton = trpt.shpStatus == 1 && (trpt.transaction?.trnStatus == 1 && transaction?.maker == login.usrName);
     final bool showAnyButton = showAuthorizeButton || showDeleteButton;
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -265,28 +265,25 @@ class _DesktopState extends State<_Desktop> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Cover(
-                        color: color.surface,
-                        child: Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                AppLocalizations.of(context)!.amount,
-                                style: textTheme.titleSmall?.copyWith(
-                                  color: color.onSurface.withValues(alpha: .7),
-                                ),
+                      Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.amount,
+                              style: textTheme.titleSmall?.copyWith(
+                                color: color.onSurface.withValues(alpha: .7),
                               ),
-                              Text(
-                                "${trpt.transaction?.amount?.toAmount() ?? "0.00"} ${transaction?.currency ?? ""}",
-                                style: textTheme.headlineMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: color.primary,
-                                ),
+                            ),
+                            Text(
+                              "${trpt.transaction?.amount?.toAmount() ?? "0.00"} ${transaction?.currency ?? ""}",
+                              style: textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: color.primary,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
 
@@ -317,6 +314,7 @@ class _DesktopState extends State<_Desktop> {
                       Expanded(
                         child: Cover(
                           color: color.surface,
+                          radius: 8,
                           child: Padding(
                             padding: const EdgeInsets.all(16),
                             child: Column(
@@ -352,6 +350,7 @@ class _DesktopState extends State<_Desktop> {
                       Expanded(
                         child: Cover(
                           color: color.surface,
+                          radius: 8,
                           child: Padding(
                             padding: const EdgeInsets.all(16),
                             child: Column(
@@ -390,6 +389,7 @@ class _DesktopState extends State<_Desktop> {
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Cover(
                       color: color.surface,
+                      radius: 8,
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
@@ -446,6 +446,7 @@ class _DesktopState extends State<_Desktop> {
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Cover(
                       color: color.surface,
+                      radius: 8,
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
