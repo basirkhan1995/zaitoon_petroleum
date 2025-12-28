@@ -35,7 +35,6 @@ class AddEditVehicleView extends StatelessWidget {
     );
   }
 }
-
 class _Mobile extends StatelessWidget {
   const _Mobile();
 
@@ -44,7 +43,6 @@ class _Mobile extends StatelessWidget {
     return const Placeholder();
   }
 }
-
 class _Tablet extends StatelessWidget {
   const _Tablet();
 
@@ -53,7 +51,6 @@ class _Tablet extends StatelessWidget {
     return const Placeholder();
   }
 }
-
 class _Desktop extends StatefulWidget {
   final VehicleModel? model;
   const _Desktop(this.model);
@@ -61,7 +58,6 @@ class _Desktop extends StatefulWidget {
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> {
   final vclModel = TextEditingController();
   final plateNo = TextEditingController();
@@ -70,7 +66,6 @@ class _DesktopState extends State<_Desktop> {
   final vclVinNo = TextEditingController();
   final vclEnginPower = TextEditingController();
   final vclRegNo = TextEditingController();
-  final vclPurchaseAmount = TextEditingController();
   final driverCtrl = TextEditingController();
   final amount = TextEditingController();
 
@@ -83,6 +78,9 @@ class _DesktopState extends State<_Desktop> {
 
   final formKey = GlobalKey<FormState>();
 
+  // Track if amount field should be visible
+  bool showAmountField = true;
+
   @override
   void dispose() {
     plateNo.dispose();
@@ -90,7 +88,7 @@ class _DesktopState extends State<_Desktop> {
     vclRegNo.dispose();
     vclEnginPower.dispose();
     vclModel.dispose();
-    vclPurchaseAmount.dispose();
+    amount.dispose();
     super.dispose();
   }
 
@@ -101,22 +99,35 @@ class _DesktopState extends State<_Desktop> {
       plateNo.text = m.vclPlateNo??"";
       driverCtrl.text = m.driver ??"";
       vclVinNo.text = m.vclVinNo ??"";
-      vclPurchaseAmount.text = m.vclPurchaseAmount??"";
-      driverId = m.driverId;
       vclYear.text = m.vclYear ??"";
       vclModel.text = m.vclModel??"";
-      odometer.text = m.vclOdoMeter.toString();
-      vclPurchaseAmount.text = m.vclPurchaseAmount?.toAmount()??"";
+      odometer.text = m.vclOdoMeter?.toString() ?? "";
+      driverId = m.driverId;
+      // Handle amount field
+      if (m.vclPurchaseAmount != null) {
+        amount.text = m.vclPurchaseAmount?.toAmount() ?? "";
+      }
+
       vclEnginPower.text = m.vclEnginPower??"";
       vclRegNo.text = m.vclRegNo??"";
       fuel = m.vclFuelType ??"";
       vehicleCategory = m.vclBodyType ??"";
       ownerShipValue = m.vclOwnership;
+
+      // Set initial showAmountField based on ownership
+      _updateAmountFieldVisibility(m.vclOwnership);
     }
     super.initState();
   }
 
   LoginData? loginData;
+
+  // Method to update amount field visibility
+  void _updateAmountFieldVisibility(String? ownership) {
+    setState(() {
+      showAmountField = ownership == "Owned";
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,13 +147,13 @@ class _DesktopState extends State<_Desktop> {
       title: isEdit ? tr.update : tr.newKeyword,
       actionLabel: (context.watch<VehicleBloc>().state is VehicleLoadingState)
           ? SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: theme.colorScheme.surface,
-              ),
-            )
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          color: theme.colorScheme.surface,
+        ),
+      )
           : Text(isEdit ? tr.update : tr.create),
 
       child: BlocConsumer<VehicleBloc, VehicleState>(
@@ -176,68 +187,65 @@ class _DesktopState extends State<_Desktop> {
                     SizedBox(
                       width: double.infinity,
                       child:
-                          GenericTextfield<DriverModel, DriverBloc, DriverState>(
-                            controller: driverCtrl,
-                            validator: (e){
-                              return null;
-                            },
-                            title: tr.driver,
-                            hintText: tr.driver,
-                            bloc: context.read<DriverBloc>(),
-                            fetchAllFunction: (bloc) =>
-                                bloc.add(LoadDriverEvent()),
-                            searchFunction: (bloc, query) =>
-                                bloc.add(LoadDriverEvent()),
-                            itemBuilder: (context, driver) => Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              child: Row(
-                                spacing: 8,
-                                children: [
-                                  ImageHelper.stakeholderProfile(
-                                    imageName: driver.perPhoto,
-                                    size: 35,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      "${driver.perfullName}",
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.titleSmall,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            itemToString: (account) => "${account.perfullName}",
-                            stateToLoading: (state) => state is DriverLoadingState,
-                            loadingBuilder: (context) => const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 1),
-                            ),
-                            stateToItems: (state) {
-                              if (state is DriverLoadedState) {
-                                return state.drivers;
-                              }
-                              return [];
-                            },
-                            onSelected: (account) {
-                              setState(() {
-                                driverId = account.empId;
-                              });
-                            },
-                            noResultsText: 'No driver found',
-                            showClearButton: true,
+                      GenericTextfield<DriverModel, DriverBloc, DriverState>(
+                        controller: driverCtrl,
+                        validator: (e){
+                          return null;
+                        },
+                        title: tr.driver,
+                        hintText: tr.driver,
+                        bloc: context.read<DriverBloc>(),
+                        fetchAllFunction: (bloc) => bloc.add(LoadDriverEvent()),
+                        searchFunction: (bloc, query) => bloc.add(LoadDriverEvent()),
+                        itemBuilder: (context, driver) => Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
                           ),
+                          child: Row(
+                            spacing: 8,
+                            children: [
+                              ImageHelper.stakeholderProfile(
+                                imageName: driver.perPhoto,
+                                size: 35,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  "${driver.perfullName}",
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleSmall,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        itemToString: (account) => "${account.perfullName}",
+                        stateToLoading: (state) => state is DriverLoadingState,
+                        loadingBuilder: (context) => const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 1),
+                        ),
+                        stateToItems: (state) {
+                          if (state is DriverLoadedState) {
+                            return state.drivers;
+                          }
+                          return [];
+                        },
+                        onSelected: (account) {
+                          setState(() {
+                            driverId = account.empId;
+                          });
+                        },
+                        noResultsText: 'No driver found',
+                        showClearButton: true,
+                      ),
                     ),
                     Row(
                       spacing: 5,
                       children: [
                         Expanded(
-                          flex: 2,
                           child: ZTextFieldEntitled(
                             isRequired: true,
                             title: tr.vehiclePlate,
@@ -251,35 +259,21 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         ),
                         Expanded(
-                          flex: 2,
                           child: ZTextFieldEntitled(
                             title: tr.meter,
                             controller: odometer,
                             inputFormat: [
                               FilteringTextInputFormatter.digitsOnly,
                             ],
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return tr.required(tr.meter);
-                              }
-                              return null;
-                            },
                           ),
                         ),
                         Expanded(
                           child: ZTextFieldEntitled(
-                            isRequired: true,
                             title: tr.manufacturedYear,
                             controller: vclYear,
                             inputFormat: [
                               FilteringTextInputFormatter.digitsOnly,
                             ],
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return tr.required(tr.manufacturedYear);
-                              }
-                              return null;
-                            },
                           ),
                         ),
                       ],
@@ -291,82 +285,21 @@ class _DesktopState extends State<_Desktop> {
                         Expanded(
                           flex: 2,
                           child: ZTextFieldEntitled(
-                            isRequired: true,
                             title: tr.vinNumber,
                             controller: vclVinNo,
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return tr.required(tr.vehiclePlate);
-                              }
-                              return null;
-                            },
                           ),
                         ),
-                        Expanded(child: datePicker()),
-                      ],
-                    ),
-                    Row(
-                      spacing: 8,
-                      children: [
-                        Expanded(child: FuelDropdown(onFuelSelected: (e) {
-                          setState(() {
-                            fuel = e.name;
-                          });
-                        })),
                         Expanded(
-                          child: VehicleDropdown(onVehicleSelected: (e) {
-                            setState(() {
-                              vehicleCategory = e.name;
-                            });
-                          }),
-                        ),
-                        Expanded(
-                          child: OwnershipDropdown(
-                            selectedOwnership: VehicleOwnership.owned,
-                            onOwnershipSelected: (e) {
-                              setState(() {
-                                ownerShipValue = e.name;
-                              });
-                            },
+                          child: ZTextFieldEntitled(
+                            title: tr.enginePower,
+                            controller: vclEnginPower,
                           ),
                         ),
                       ],
-                    ),
-                    ZTextFieldEntitled(
-                      keyboardInputType: TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      inputFormat: [
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
-                        SmartThousandsDecimalFormatter(),
-                      ],
-
-                      // validator: (value) {
-                      //   if (value == null || value.isEmpty) {
-                      //     return tr.required(tr.amount);
-                      //   }
-                      //   return null;
-                      // },
-
-                      controller: amount,
-                      title: tr.amount,
                     ),
                     Row(
                       spacing: 5,
                       children: [
-                        Expanded(
-                          child: ZTextFieldEntitled(
-                            isRequired: true,
-                            title: tr.enginePower,
-                            controller: vclEnginPower,
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return tr.required(tr.enginePower);
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
                         Expanded(
                           child: ZTextFieldEntitled(
                             isRequired: true,
@@ -380,8 +313,64 @@ class _DesktopState extends State<_Desktop> {
                             },
                           ),
                         ),
+                        Expanded(child: datePicker()),
                       ],
                     ),
+                    Row(
+                      spacing: 8,
+                      children: [
+                        Expanded(
+                          child: FuelDropdown(
+                            selectedFuel: widget.model?.vclFuelType,
+                            onFuelSelected: (e) {
+                              setState(() {
+                                fuel = e.toDatabaseValue(); // Changed from e.name
+                              });
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: VehicleDropdown(
+                            selectedVehicle: widget.model?.vclBodyType,
+                            onVehicleSelected: (e) {
+                              setState(() {
+                                vehicleCategory = e.toDatabaseValue(); // Changed from e.name
+                              });
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: OwnershipDropdown(
+                            // Pass the string value from model
+                            selectedOwnership: widget.model?.vclOwnership,
+                            onOwnershipSelected: (e) {
+                              setState(() {
+                                ownerShipValue = e.toDatabaseValue();
+                                _updateAmountFieldVisibility(ownerShipValue);
+                                // Clear amount if not owned
+                                if (e != VehicleOwnership.owned) {
+                                  amount.clear();
+                                }
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // Conditionally show amount field
+                    if (showAmountField)
+                      ZTextFieldEntitled(
+                        keyboardInputType: TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        inputFormat: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
+                          SmartThousandsDecimalFormatter(),
+                        ],
+                        controller: amount,
+                        title: tr.amount,
+                      ),
 
                     Row(
                       children: [
@@ -414,6 +403,10 @@ class _DesktopState extends State<_Desktop> {
   void onSubmit() {
     if (!formKey.currentState!.validate()) return;
     final bloc = context.read<VehicleBloc>();
+
+    // Only include purchase amount if vehicle is owned
+    final purchaseAmount = showAmountField ? amount.text.cleanAmount : null;
+
     final data = VehicleModel(
       usrName: loginData?.usrName,
       vclModel: vclModel.text,
@@ -427,7 +420,7 @@ class _DesktopState extends State<_Desktop> {
       vclPlateNo: plateNo.text,
       vclOdoMeter: int.tryParse(odometer.text),
       vclOwnership: ownerShipValue ?? AppLocalizations.of(context)!.owned,
-      vclPurchaseAmount: amount.text.cleanAmount,
+      vclPurchaseAmount: purchaseAmount,
       driverId: driverId,
       vclStatus: 1,
       vclId: widget.model?.vclId,
@@ -440,3 +433,4 @@ class _DesktopState extends State<_Desktop> {
     }
   }
 }
+

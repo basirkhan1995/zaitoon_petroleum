@@ -26,13 +26,14 @@ enum FuelType {
   }
 
   static FuelType fromDatabaseValue(String value) {
-    switch (value) {
-      case "Petrol": return FuelType.petrol;
-      case "Diesel": return FuelType.diesel;
-      case "CNG": return FuelType.cng;
-      case "LPG": return FuelType.lpg;
-      case "Electric": return FuelType.electric;
-      case "Hydrogen": return FuelType.hydrogen;
+    final lowerValue = value.toLowerCase().trim();
+    switch (lowerValue) {
+      case "petrol": return FuelType.petrol;
+      case "diesel": return FuelType.diesel;
+      case "cng": return FuelType.cng;
+      case "lpg": return FuelType.lpg;
+      case "electric": return FuelType.electric;
+      case "hydrogen": return FuelType.hydrogen;
       default: return FuelType.petrol;
     }
   }
@@ -77,7 +78,7 @@ class FuelTranslator {
 /// =======================
 
 class FuelDropdown extends StatefulWidget {
-  final FuelType? selectedFuel;
+  final String? selectedFuel;
   final Function(FuelType) onFuelSelected;
 
   const FuelDropdown({
@@ -96,7 +97,10 @@ class _FuelDropdownState extends State<FuelDropdown> {
   @override
   void initState() {
     super.initState();
-    _selectedFuel = widget.selectedFuel ?? FuelType.values.first;
+    // Convert string to enum
+    _selectedFuel = widget.selectedFuel != null && widget.selectedFuel!.isNotEmpty
+        ? FuelType.fromDatabaseValue(widget.selectedFuel!)
+        : FuelType.values.first;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onFuelSelected(_selectedFuel);
@@ -106,9 +110,10 @@ class _FuelDropdownState extends State<FuelDropdown> {
   @override
   void didUpdateWidget(covariant FuelDropdown oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.selectedFuel != null && widget.selectedFuel != _selectedFuel) {
+    if (widget.selectedFuel != null &&
+        FuelType.fromDatabaseValue(widget.selectedFuel!) != _selectedFuel) {
       setState(() {
-        _selectedFuel = widget.selectedFuel!;
+        _selectedFuel = FuelType.fromDatabaseValue(widget.selectedFuel!);
       });
     }
   }

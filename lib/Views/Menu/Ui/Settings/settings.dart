@@ -4,7 +4,7 @@ import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/company_tab.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/stock_settings.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/TxnTypes/txn_types_view.dart';
-import '../../../../Features/Generic/rounded_tab.dart';
+import '../../../../Features/Generic/tab_bar.dart';
 import '../../../../Features/Other/responsive.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../Auth/bloc/auth_bloc.dart';
@@ -41,34 +41,34 @@ class _Desktop extends StatelessWidget {
         padding: const EdgeInsets.only(top: 5.0),
         child: BlocBuilder<SettingsTabBloc, SettingsTabState>(
           builder: (context, state) {
-            final tabs = <TabDefinition<SettingsTabName>>[
-              if(login.hasPermission(31) ?? false)
-              TabDefinition(
-                value: SettingsTabName.general,
-                label: AppLocalizations.of(context)!.general,
-                screen: const GeneralView(),
-              ),
-              if(login.hasPermission(32) ?? false)
-              TabDefinition(
-                value: SettingsTabName.company,
-                label: AppLocalizations.of(context)!.company,
-                screen: const CompanyTabsView(),
-              ),
+            final tabs = <ZTabItem<SettingsTabName>>[
+              if (login.hasPermission(31) ?? false)
+                ZTabItem(
+                  value: SettingsTabName.general,
+                  label: AppLocalizations.of(context)!.general,
+                  screen: const GeneralView(),
+                ),
+              if (login.hasPermission(32) ?? false)
+                ZTabItem(
+                  value: SettingsTabName.company,
+                  label: AppLocalizations.of(context)!.company,
+                  screen: const CompanyTabsView(),
+                ),
 
-              if(login.usrRole == "Super")
-              TabDefinition(
-                value: SettingsTabName.txnTypes,
-                label: AppLocalizations.of(context)!.transactionType,
-                screen: const TxnTypesView(),
-              ),
+              if (login.usrRole == "Super")
+                ZTabItem(
+                  value: SettingsTabName.txnTypes,
+                  label: AppLocalizations.of(context)!.transactionType,
+                  screen: const TxnTypesView(),
+                ),
 
-              TabDefinition(
+              ZTabItem(
                 value: SettingsTabName.stock,
                 label: AppLocalizations.of(context)!.stock,
                 screen: const StockSettingsView(),
               ),
 
-              TabDefinition(
+              ZTabItem(
                 value: SettingsTabName.about,
                 label: AppLocalizations.of(context)!.about,
                 screen: const AboutView(),
@@ -80,17 +80,26 @@ class _Desktop extends StatelessWidget {
                 ? state.tabs
                 : availableValues.first;
 
-            return GenericTab<SettingsTabName>(
-              borderRadius: 3,
+            return ZTabContainer<SettingsTabName>(
+              /// Tab data
+              tabs: tabs,
+              selectedValue: selected,
+
+              /// Bloc update
+              onChanged: (val) => context
+                  .read<SettingsTabBloc>()
+                  .add(SettingsOnChangeEvent(val)),
+
               title: AppLocalizations.of(context)!.settings,
               description: AppLocalizations.of(context)!.settingsHint,
-              tabContainerColor: Theme.of(context).colorScheme.surface,
-              selectedValue: selected,
-              onChanged: (val) => context.read<SettingsTabBloc>().add(SettingsOnChangeEvent(val)),
-              tabs: tabs,
+              /// Colors and style
+              style: ZTabStyle.rounded,
+              tabBarPadding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+              borderRadius: 0,
               selectedColor: Theme.of(context).colorScheme.primary,
-              selectedTextColor: Theme.of(context).colorScheme.surface,
               unselectedTextColor: Theme.of(context).colorScheme.secondary,
+              selectedTextColor: Theme.of(context).colorScheme.surface,
+              tabContainerColor: Theme.of(context).colorScheme.surface,
             );
           },
         ),
@@ -98,6 +107,7 @@ class _Desktop extends StatelessWidget {
     );
   }
 }
+
 class _Mobile extends StatelessWidget {
   const _Mobile();
 
@@ -106,6 +116,7 @@ class _Mobile extends StatelessWidget {
     return const Placeholder();
   }
 }
+
 class _Tablet extends StatelessWidget {
   const _Tablet();
 
@@ -114,5 +125,3 @@ class _Tablet extends StatelessWidget {
     return const Placeholder();
   }
 }
-
-

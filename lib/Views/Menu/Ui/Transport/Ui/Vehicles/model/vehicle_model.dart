@@ -64,6 +64,7 @@ class VehicleModel {
     int? vclPurchaseAccount,
     String? vclPurchaseTrnRef,
     String? driver,
+    int? perId,
     int? vclStatus,
     String? usrName,
   }) =>
@@ -98,6 +99,7 @@ class VehicleModel {
     vclBodyType: json["vclBodyType"],
     vclPlateNo: json["vclPlateNo"],
     vclRegNo: json["vclRegNo"],
+    driverId: json["vclDriver"],
     vclExpireDate: json["vclExpireDate"] == null ? null : DateTime.parse(json["vclExpireDate"]),
     vclOwnership: json["vclOwnership"],
     vclOdoMeter: json["vclOdoMeter"],

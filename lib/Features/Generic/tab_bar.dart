@@ -141,14 +141,14 @@ class ZTabContainer<T> extends StatelessWidget {
                 ],
               ),
               if (title != null)
-              SizedBox(height: 7),
+              SizedBox(height: 5),
               /// ---------------- Optional Description
               if (description != null) ...[
                 Text(
                   description!,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.outline),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
               ],
 
               /// ---------------- Tabs Row

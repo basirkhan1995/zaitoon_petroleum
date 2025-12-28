@@ -44,22 +44,26 @@ enum VehicleType {
   }
 
   static VehicleType fromDatabaseValue(String value) {
-    switch (value) {
-      case "Truck": return VehicleType.truck;
-      case "Tanker": return VehicleType.tanker;
-      case "Trailer": return VehicleType.trailer;
-      case "Pickup": return VehicleType.pickup;
-      case "Van": return VehicleType.van;
-      case "Bus": return VehicleType.bus;
-      case "Minivan": return VehicleType.minivan;
-      case "Sedan": return VehicleType.sedan;
-      case "SUV": return VehicleType.suv;
-      case "Motorcycle": return VehicleType.motorcycle;
-      case "Three-Wheeler": return VehicleType.threeWheeler;
-      case "Ambulance": return VehicleType.ambulance;
-      case "Fire Truck": return VehicleType.fireTruck;
-      case "Tractor": return VehicleType.tractor;
-      case "Refrigerated Truck": return VehicleType.refrigeratedTruck;
+    final lowerValue = value.toLowerCase().trim();
+    switch (lowerValue) {
+      case "truck": return VehicleType.truck;
+      case "tanker": return VehicleType.tanker;
+      case "trailer": return VehicleType.trailer;
+      case "pickup": return VehicleType.pickup;
+      case "van": return VehicleType.van;
+      case "bus": return VehicleType.bus;
+      case "minivan": return VehicleType.minivan;
+      case "sedan": return VehicleType.sedan;
+      case "suv": return VehicleType.suv;
+      case "motorcycle": return VehicleType.motorcycle;
+      case "three-wheeler":
+      case "three wheeler": return VehicleType.threeWheeler;
+      case "ambulance": return VehicleType.ambulance;
+      case "fire truck":
+      case "firetruck": return VehicleType.fireTruck;
+      case "tractor": return VehicleType.tractor;
+      case "refrigerated truck":
+      case "refrigeratedtruck": return VehicleType.refrigeratedTruck;
       default: return VehicleType.truck;
     }
   }
@@ -113,7 +117,7 @@ class VehicleTranslator {
 /// =======================
 
 class VehicleDropdown extends StatefulWidget {
-  final VehicleType? selectedVehicle;
+  final String? selectedVehicle;
   final Function(VehicleType) onVehicleSelected;
 
   const VehicleDropdown({
@@ -132,7 +136,10 @@ class _VehicleDropdownState extends State<VehicleDropdown> {
   @override
   void initState() {
     super.initState();
-    _selectedVehicle = widget.selectedVehicle ?? VehicleType.values.first;
+    // Convert string to enum
+    _selectedVehicle = widget.selectedVehicle != null && widget.selectedVehicle!.isNotEmpty
+        ? VehicleType.fromDatabaseValue(widget.selectedVehicle!)
+        : VehicleType.values.first;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onVehicleSelected(_selectedVehicle);
@@ -142,9 +149,10 @@ class _VehicleDropdownState extends State<VehicleDropdown> {
   @override
   void didUpdateWidget(covariant VehicleDropdown oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.selectedVehicle != null && widget.selectedVehicle != _selectedVehicle) {
+    if (widget.selectedVehicle != null &&
+        VehicleType.fromDatabaseValue(widget.selectedVehicle!) != _selectedVehicle) {
       setState(() {
-        _selectedVehicle = widget.selectedVehicle!;
+        _selectedVehicle = VehicleType.fromDatabaseValue(widget.selectedVehicle!);
       });
     }
   }

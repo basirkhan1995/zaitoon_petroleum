@@ -1216,7 +1216,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driver => 'Driver';
 
   @override
-  String get manufacturedYear => 'Manufactured';
+  String get manufacturedYear => 'Model Year';
 
   @override
   String get vehiclePlate => 'Plate No';
@@ -1234,7 +1234,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enginePower => 'Engine Power';
 
   @override
-  String get vclRegisteredNo => 'Registered License';
+  String get vclRegisteredNo => 'Registration Number';
 
   @override
   String get ownership => 'Onwership';

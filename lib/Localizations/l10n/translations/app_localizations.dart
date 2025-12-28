@@ -2443,7 +2443,7 @@ abstract class AppLocalizations {
   /// No description provided for @manufacturedYear.
   ///
   /// In en, this message translates to:
-  /// **'Manufactured'**
+  /// **'Model Year'**
   String get manufacturedYear;
 
   /// No description provided for @vehiclePlate.
@@ -2479,7 +2479,7 @@ abstract class AppLocalizations {
   /// No description provided for @vclRegisteredNo.
   ///
   /// In en, this message translates to:
-  /// **'Registered License'**
+  /// **'Registration Number'**
   String get vclRegisteredNo;
 
   /// No description provided for @ownership.

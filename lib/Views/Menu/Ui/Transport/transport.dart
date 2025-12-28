@@ -43,7 +43,7 @@ class TransportView extends StatelessWidget {
 
             return ZTabContainer<TransportTabName>(
               title: AppLocalizations.of(context)!.transportTitle,
-              tabBarPadding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+              tabBarPadding: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
               borderRadius: 0,
               /// Tab data
               tabs: tabs,

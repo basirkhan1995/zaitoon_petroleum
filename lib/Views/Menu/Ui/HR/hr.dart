@@ -4,7 +4,7 @@ import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/attendance.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/Ui/employees.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/bloc/hrtab_bloc.dart';
-import '../../../../Features/Generic/rounded_tab.dart';
+import '../../../../Features/Generic/tab_bar.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../Auth/bloc/auth_bloc.dart';
 import 'Ui/Users/Ui/users.dart';
@@ -25,28 +25,26 @@ class HrTabView extends StatelessWidget {
         padding: const EdgeInsets.only(top: 6.0),
         child: BlocBuilder<HrTabBloc, HrTabState>(
           builder: (context, state) {
+            final tabs = <ZTabItem<HrTabName>>[
+              if (login.hasPermission(14) ?? false)
+                ZTabItem(
+                  value: HrTabName.employees,
+                  label: AppLocalizations.of(context)!.employees,
+                  screen: const EmployeesView(),
+                ),
 
-            final tabs = <TabDefinition<HrTabName>>[
-              if(login.hasPermission(14) ?? false)
-              TabDefinition(
-                value: HrTabName.employees,
-                label: AppLocalizations.of(context)!.employees,
-                screen: const EmployeesView(),
-              ),
-
-              TabDefinition(
+              ZTabItem(
                 value: HrTabName.attendance,
                 label: AppLocalizations.of(context)!.attendence,
                 screen: const AttendanceView(),
               ),
 
-              if(login.hasPermission(15) ?? false)
-              TabDefinition(
-                value: HrTabName.users,
-                label: AppLocalizations.of(context)!.users,
-                screen: const UsersView(),
-              ),
-
+              if (login.hasPermission(15) ?? false)
+                ZTabItem(
+                  value: HrTabName.users,
+                  label: AppLocalizations.of(context)!.users,
+                  screen: const UsersView(),
+                ),
             ];
 
             final availableValues = tabs.map((tab) => tab.value).toList();
@@ -54,17 +52,24 @@ class HrTabView extends StatelessWidget {
                 ? state.tabs
                 : availableValues.first;
 
-            return GenericTab<HrTabName>(
-              borderRadius: 3,
+            return ZTabContainer<HrTabName>(
               title: AppLocalizations.of(context)!.hrTitle,
               description: AppLocalizations.of(context)!.hrManagement,
-              tabContainerColor: Theme.of(context).colorScheme.surface,
-              selectedValue: selected,
-              onChanged: (val) => context.read<HrTabBloc>().add(HrOnchangeEvent(val)),
+              /// Tab data
               tabs: tabs,
+              selectedValue: selected,
+
+              /// Bloc update
+              onChanged: (val) => context.read<HrTabBloc>().add(HrOnchangeEvent(val)),
+
+              /// Colors and style
+              style: ZTabStyle.rounded,
+              tabBarPadding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+              borderRadius: 0,
               selectedColor: Theme.of(context).colorScheme.primary,
-              selectedTextColor: Theme.of(context).colorScheme.surface,
               unselectedTextColor: Theme.of(context).colorScheme.secondary,
+              selectedTextColor: Theme.of(context).colorScheme.surface,
+              tabContainerColor: Theme.of(context).colorScheme.surface,
             );
           },
         ),

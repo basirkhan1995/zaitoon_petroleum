@@ -67,7 +67,7 @@ class OwnershipTranslator {
 /// =======================
 
 class OwnershipDropdown extends StatefulWidget {
-  final VehicleOwnership? selectedOwnership;
+  final String? selectedOwnership; // Changed from VehicleOwnership? to String?
   final Function(VehicleOwnership) onOwnershipSelected;
 
   const OwnershipDropdown({
@@ -86,7 +86,10 @@ class _OwnershipDropdownState extends State<OwnershipDropdown> {
   @override
   void initState() {
     super.initState();
-    _selectedOwnership = widget.selectedOwnership ?? VehicleOwnership.values.first;
+    // Convert string to enum
+    _selectedOwnership = widget.selectedOwnership != null
+        ? VehicleOwnership.fromDatabaseValue(widget.selectedOwnership!)
+        : VehicleOwnership.values.first;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onOwnershipSelected(_selectedOwnership);
@@ -96,9 +99,10 @@ class _OwnershipDropdownState extends State<OwnershipDropdown> {
   @override
   void didUpdateWidget(covariant OwnershipDropdown oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.selectedOwnership != null && widget.selectedOwnership != _selectedOwnership) {
+    if (widget.selectedOwnership != null &&
+        VehicleOwnership.fromDatabaseValue(widget.selectedOwnership!) != _selectedOwnership) {
       setState(() {
-        _selectedOwnership = widget.selectedOwnership!;
+        _selectedOwnership = VehicleOwnership.fromDatabaseValue(widget.selectedOwnership!);
       });
     }
   }

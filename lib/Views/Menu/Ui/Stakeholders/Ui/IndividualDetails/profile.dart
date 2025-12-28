@@ -46,7 +46,10 @@ class IndividualsDetailsTabView extends StatelessWidget {
             onChanged: (val) => context.read<IndividualDetailTabBloc>().add(IndOnChangedEvent(val)),
 
             /// Colors for underline style
-            style: ZTabStyle.underline,
+            style: ZTabStyle.rounded,
+            tabBarPadding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+            borderRadius: 0,
+            title: AppLocalizations.of(context)!.details,
             selectedColor: Theme.of(context).colorScheme.primary,
             unselectedTextColor: Theme.of(context).colorScheme.secondary,
             selectedTextColor: Theme.of(context).colorScheme.surface,
