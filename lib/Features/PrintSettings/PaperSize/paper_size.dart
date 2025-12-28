@@ -10,16 +10,17 @@ class PdfFormatHelper {
     pw.PdfPageFormat.a4,
     pw.PdfPageFormat.a5,
     pw.PdfPageFormat.letter,
-    pw.PdfPageFormat.roll80,
+   // pw.PdfPageFormat.roll80,
   ];
 
-  static String getDisplayName(pw.PdfPageFormat format) {
+  static String? getDisplayName(pw.PdfPageFormat format) {
     if (format == pw.PdfPageFormat.a4) return 'A4 (210 × 297 mm)';
     if (format == pw.PdfPageFormat.a5) return 'A5 (148 × 210 mm)';
     if (format == pw.PdfPageFormat.letter) return 'Letter (216 × 279 mm)';
     //if (format == pw.PdfPageFormat.roll80) return 'Roll (80 mm)';
-    return 'Custom Size';
+    return null;
   }
+
 }
 
 class PageFormatDropdown extends StatefulWidget {
@@ -51,7 +52,7 @@ class _PageFormatDropdownState extends State<PageFormatDropdown> {
       title: AppLocalizations.of(context)!.paper,
       items: PdfFormatHelper.availableFormats,
       initialValue: PdfFormatHelper.getDisplayName(_selectedFormat),
-      itemLabel: (format) => PdfFormatHelper.getDisplayName(format),
+      itemLabel: (format) => PdfFormatHelper.getDisplayName(format) ?? "",
       onItemSelected: (selected) {
         setState(() {
           _selectedFormat = selected;

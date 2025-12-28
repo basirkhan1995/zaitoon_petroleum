@@ -1204,14 +1204,10 @@ class _DesktopState extends State<_Desktop> {
                                 Expanded(
                                   child: Column(
                                     children: [
-                                      GenericTextfield<
-                                        AccountsModel,
-                                        AccountsBloc,
-                                        AccountsState
-                                      >(
+                                      GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
                                         showAllOnFocus: true,
                                         controller: debitAccountCtrl,
-                                        title: tr.accounts,
+                                        title: tr.debitAccount,
                                         hintText: tr.accNameOrNumber,
                                         isRequired: true,
                                         bloc: context.read<AccountsBloc>(),
@@ -1301,8 +1297,7 @@ class _DesktopState extends State<_Desktop> {
                                         noResultsText: tr.noDataFound,
                                         showClearButton: true,
                                       ),
-                                      if (debitAccName != null &&
-                                          debitAccName!.isNotEmpty)
+                                      if (debitAccName != null && debitAccName!.isNotEmpty)
                                         Cover(
                                           color: color.surface,
                                           margin: EdgeInsets.symmetric(
@@ -1354,12 +1349,8 @@ class _DesktopState extends State<_Desktop> {
                                                             .start,
                                                     children: [
                                                       Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
+                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
                                                         spacing: 5,
                                                         children: [
                                                           SizedBox(
@@ -1415,12 +1406,8 @@ class _DesktopState extends State<_Desktop> {
                                                         ],
                                                       ),
                                                       Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
+                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
                                                         spacing: 5,
                                                         children: [
                                                           Text(
@@ -1473,14 +1460,10 @@ class _DesktopState extends State<_Desktop> {
                                 Expanded(
                                   child: Column(
                                     children: [
-                                      GenericTextfield<
-                                        AccountsModel,
-                                        AccountsBloc,
-                                        AccountsState
-                                      >(
+                                      GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
                                         showAllOnFocus: true,
                                         controller: creditAccountCtrl,
-                                        title: tr.accounts,
+                                        title: tr.creditAccount,
                                         hintText: tr.accNameOrNumber,
                                         isRequired: true,
                                         bloc: context.read<AccountsBloc>(),
@@ -1742,7 +1725,7 @@ class _DesktopState extends State<_Desktop> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 5),
+
                             ZTextFieldEntitled(
                               isRequired: true,
                               keyboardInputType:
@@ -1780,6 +1763,21 @@ class _DesktopState extends State<_Desktop> {
                               keyboardInputType: TextInputType.multiline,
                               controller: narration,
                               title: tr.narration,
+                            ),
+                            Row(
+                              spacing: 5,
+                              children: [
+                                Checkbox(
+                                  visualDensity: VisualDensity(horizontal: -4),
+                                  value: isPrint,
+                                  onChanged: (e) {
+                                    setState(() {
+                                      isPrint = e ?? true;
+                                    });
+                                  },
+                                ),
+                                Text(locale.print),
+                              ],
                             ),
                             if (trState is TransactionErrorState)
                               SizedBox(height: 10),

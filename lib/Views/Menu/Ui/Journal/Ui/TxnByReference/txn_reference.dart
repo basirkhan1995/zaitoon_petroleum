@@ -150,7 +150,7 @@ class _DesktopState extends State<_Desktop> {
                     children: [
                       Container(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 12,
+                          horizontal: 10,
                         ),
                         width: double.infinity,
                         child: Column(
@@ -297,15 +297,8 @@ class _DesktopState extends State<_Desktop> {
                       if (showAnyButton)
                         Column(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                              child: Row(
-                                children: [
-                                  Text(locale.actions,style: Theme.of(context).textTheme.titleMedium)
-                                ],
-                              ),
-                            ),
-                            Divider(indent: 12,endIndent: 12,color: color.primary,thickness: 2,),
+
+                            SizedBox(height: 10),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 5),
                               child: Row(
