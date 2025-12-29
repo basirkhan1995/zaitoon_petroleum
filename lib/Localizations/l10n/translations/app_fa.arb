@@ -606,5 +606,9 @@
   "transportInformation": "معلومات ترانسپورت",
   "movingDate": "تاریخ بارگیری",
   "arrivalDate": "تاریخ تحویل",
-  "cannotMarkDeliveredMsg": "امکان ثبت تحویل‌ وجود ندارد. پرداخت کامل نشده است"
+  "cannotMarkDeliveredMsg": "امکان ثبت تحویل‌ وجود ندارد. پرداخت کامل نشده است",
+  "supplier": "فروشنده",
+  "purchaseEntry": "بل خرید",
+  "unitPrice": "قیمت واحد",
+  "qty": "مقدار"
 }

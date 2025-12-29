@@ -1820,4 +1820,16 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get cannotMarkDeliveredMsg =>
       'د سپارلو په توګه نښه کېدای نه شي. پیسې بشپړې شوې نه دي';
+
+  @override
+  String get supplier => 'فروشنده';
+
+  @override
+  String get purchaseEntry => 'بل خرید';
+
+  @override
+  String get unitPrice => 'قیمت واحد';
+
+  @override
+  String get qty => 'مقدار';
 }

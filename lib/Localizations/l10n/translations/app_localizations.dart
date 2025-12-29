@@ -3621,6 +3621,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cannot mark as delivered. Payment incomplete. Paid'**
   String get cannotMarkDeliveredMsg;
+
+  /// No description provided for @supplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier'**
+  String get supplier;
+
+  /// No description provided for @purchaseEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase Entry'**
+  String get purchaseEntry;
+
+  /// No description provided for @unitPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit Price'**
+  String get unitPrice;
+
+  /// No description provided for @qty.
+  ///
+  /// In en, this message translates to:
+  /// **'QTY'**
+  String get qty;
 }
 
 class _AppLocalizationsDelegate

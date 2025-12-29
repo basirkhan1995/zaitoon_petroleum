@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
 import '../../../../../../../../Services/repositories.dart';
 import '../../../../../Settings/Ui/Company/Storage/model/storage_model.dart';
 import '../../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
 import '../model/pur_invoice_items.dart';
-
 part 'purchase_event.dart';
 part 'purchase_state.dart';
 
@@ -39,13 +37,17 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
         storageId: 0,
       )],
       payment: 0.0,
+      paymentMode: PaymentMode.credit, // Default to credit
     ));
   }
 
   void _onSelectSupplierAccount(SelectSupplierAccountEvent event, Emitter<PurchaseState> emit) {
     if (state is PurchaseLoaded) {
       final current = state as PurchaseLoaded;
-      emit(current.copyWith(supplierAccount: event.supplier));
+      emit(current.copyWith(
+        supplierAccount: event.supplier,
+        paymentMode: PaymentMode.credit, // Switch to credit when account selected
+      ));
     }
   }
 
@@ -59,7 +61,7 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
   void _onClearSupplier(ClearSupplierEvent event, Emitter<PurchaseState> emit) {
     if (state is PurchaseLoaded) {
       final current = state as PurchaseLoaded;
-      emit(current.copyWith(supplier: null));
+      emit(current.copyWith(supplier: null, supplierAccount: null));
     }
   }
 
@@ -141,6 +143,7 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
         storageId: 0,
       )],
       payment: 0.0,
+      paymentMode: PaymentMode.credit,
     ));
   }
 
@@ -152,15 +155,20 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
 
     final current = state as PurchaseLoaded;
 
+    // Save current state before attempting to save
+    final savedState = current.copyWith();
+
     // Validate required fields
     if (current.supplier == null) {
       emit(PurchaseError('Please select a supplier'));
+      emit(savedState); // Restore saved state
       event.completer.complete('');
       return;
     }
 
-    if (current.supplierAccount == null) {
-      emit(PurchaseError('Please select a supplier account'));
+    if (current.supplierAccount == null && current.paymentMode == PaymentMode.credit) {
+      emit(PurchaseError('Please select a supplier account for credit payment'));
+      emit(savedState); // Restore saved state
       event.completer.complete('');
       return;
     }
@@ -168,24 +176,38 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     // Validate items
     for (var item in current.items) {
       if (item.productId.isEmpty || item.storageId == 0) {
-        emit(PurchaseError('Please fill all item details'));
+        emit(PurchaseError('Please fill all item details (product, quantity, price, storage)'));
+        emit(savedState); // Restore saved state
         event.completer.complete('');
         return;
       }
     }
 
-    // Validate cash payment
-    if (event.cashPayment > current.grandTotal) {
-      emit(PurchaseError('Cash payment cannot exceed grand total'));
+    // Calculate credit amount based on payment mode
+    double creditAmount = 0;
+    if (current.paymentMode == PaymentMode.credit) {
+      // Full amount as credit
+      creditAmount = current.grandTotal;
+    } else if (current.paymentMode == PaymentMode.mixed) {
+      // Partial payment, remaining as credit
+      creditAmount = current.grandTotal - current.payment;
+    }
+
+    // Validate credit amount
+    if (creditAmount < 0) {
+      emit(PurchaseError('Credit amount cannot be negative'));
+      emit(savedState); // Restore saved state
       event.completer.complete('');
       return;
     }
 
+    // Show saving state
     emit(PurchaseSaving(
       items: current.items,
       supplier: current.supplier,
       supplierAccount: current.supplierAccount,
       payment: current.payment,
+      paymentMode: current.paymentMode,
       storages: current.storages,
     ));
 
@@ -202,14 +224,11 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
 
       final xRef = event.xRef ?? 'PUR-${DateTime.now().millisecondsSinceEpoch}';
 
-      // Calculate the amount to be added to account (credit amount)
-      final creditAmount = current.grandTotal - event.cashPayment;
-
       final result = await repo.purchaseInvoice(
         usrName: event.usrName,
         perID: event.perID,
         xRef: xRef,
-        account: current.supplierAccount!.accNumber!,
+        account: current.supplierAccount?.accNumber,
         amount: creditAmount, // Only the credit portion goes to account
         records: records,
       );
@@ -220,9 +239,9 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
       // Reset after successful save
       add(ResetPurchaseEvent());
     } catch (e) {
-      emit(current);
+      // Restore saved state on error
       emit(PurchaseError(e.toString()));
-      emit(PurchaseSaved(false));
+      emit(savedState);
       event.completer.complete('');
     }
   }

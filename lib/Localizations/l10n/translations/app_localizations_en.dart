@@ -1825,4 +1825,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cannotMarkDeliveredMsg =>
       'Cannot mark as delivered. Payment incomplete. Paid';
+
+  @override
+  String get supplier => 'Supplier';
+
+  @override
+  String get purchaseEntry => 'Purchase Entry';
+
+  @override
+  String get unitPrice => 'Unit Price';
+
+  @override
+  String get qty => 'QTY';
 }

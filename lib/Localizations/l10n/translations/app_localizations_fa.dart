@@ -1817,4 +1817,16 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get cannotMarkDeliveredMsg =>
       'امکان ثبت تحویل‌ وجود ندارد. پرداخت کامل نشده است';
+
+  @override
+  String get supplier => 'فروشنده';
+
+  @override
+  String get purchaseEntry => 'بل خرید';
+
+  @override
+  String get unitPrice => 'قیمت واحد';
+
+  @override
+  String get qty => 'مقدار';
 }

@@ -606,5 +606,9 @@
   "transportInformation": "معلومات ترانسپورت",
   "movingDate": "د بارگیری نېټه",
   "arrivalDate": "د رسیدو نېټه",
-  "cannotMarkDeliveredMsg": "د سپارلو په توګه نښه کېدای نه شي. پیسې بشپړې شوې نه دي"
+  "cannotMarkDeliveredMsg": "د سپارلو په توګه نښه کېدای نه شي. پیسې بشپړې شوې نه دي",
+  "supplier": "فروشنده",
+  "purchaseEntry": "بل خرید",
+  "unitPrice": "قیمت واحد",
+  "qty": "مقدار"
 }

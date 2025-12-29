@@ -1818,13 +1818,35 @@ class Repositories {
   }
 
   /// Purchase Invoice .............................................................
-  Future<Map<String, dynamic>> newPurchaseInvoice({required ProCategoryModel newCategory}) async {
+  // In your repositories.dart file
+  Future<String> purchaseInvoice({
+    required String usrName,
+    required int perID,
+    required String? xRef,
+    required int? account,
+    required double amount,
+    required List<PurchaseRecord> records,
+  }) async {
     try {
+      final data = {
+        "usrName": usrName,
+        "perID": perID,
+        "xRef": xRef ?? "PUR-${DateTime.now().millisecondsSinceEpoch}",
+        "account": account,
+        "amount": amount,
+        "records": records.map((r) => r.toJson()).toList(),
+      };
+
       final response = await api.post(
-          endpoint: "/inventory/purchase.php",
-          data: newCategory.toMap()
+        endpoint: "/inventory/purchase.php",
+        data: data,
       );
-      return response.data;
+
+      if (response.data['msg'] == 'success') {
+        return response.data['invoiceNo'] ?? 'Unknown';
+      } else {
+        throw response.data['msg'] ?? 'Failed to save invoice';
+      }
     } on DioException catch (e) {
       throw '${e.message}';
     } catch (e) {
@@ -1832,35 +1854,7 @@ class Repositories {
     }
   }
 
-  // In your Repositories class
-  Future<String> purchaseInvoice({
-    required String usrName,
-    required int perID,
-    required String xRef,
-    required int account,
-    required double amount,
-    required List<PurchaseRecord> records,
-  }) async {
 
-    try {
-      final response = await api.post(
-        endpoint: "/inventory/purchase.php",
-        data: jsonEncode({
-          'usrName': usrName,
-          'perID': perID,
-          'xRef': xRef,
-          'account': account,
-          'amount': amount,
-          'records': records.map((record) => record.toJson()).toList(),
-        }),
-      );
-      return response.data;
-    }on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
 
   /// Transaction Types ........................................................
   Future<Map<String, dynamic>> addTxnType({required TxnTypeModel newType}) async {
