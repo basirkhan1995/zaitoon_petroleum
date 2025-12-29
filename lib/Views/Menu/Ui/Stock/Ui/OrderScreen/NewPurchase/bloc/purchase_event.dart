@@ -83,6 +83,7 @@ class SavePurchaseInvoiceEvent extends PurchaseEvent {
   final int perID;
   final int? accNumber;
   final double? totalAmount;
+  final double cashPayment;
   final String? xRef;
   final List<PurInvoiceItem> items;
   final Completer<String> completer;
@@ -93,12 +94,13 @@ class SavePurchaseInvoiceEvent extends PurchaseEvent {
     this.xRef,
     this.accNumber,
     this.totalAmount,
+    required this.cashPayment,
     required this.items,
     required this.completer,
   });
 
   @override
-  List<Object?> get props => [usrName, perID, xRef, items, completer];
+  List<Object?> get props => [usrName, perID, xRef, items, completer, cashPayment];
 }
 
 class LoadStoragesEvent extends PurchaseEvent {

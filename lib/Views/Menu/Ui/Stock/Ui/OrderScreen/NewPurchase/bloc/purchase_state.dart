@@ -62,20 +62,21 @@ class PurchaseLoaded extends PurchaseState {
     return PurchaseLoaded(
       items: items ?? this.items,
       supplier: supplier ?? this.supplier,
-
+      supplierAccount: supplierAccount ?? this.supplierAccount,
       payment: payment ?? this.payment,
       storages: storages ?? this.storages,
     );
   }
 
   @override
-  List<Object?> get props => [items, supplier, payment, storages];
+  List<Object?> get props => [items, supplier,supplierAccount, payment, storages];
 }
 
 class PurchaseSaving extends PurchaseLoaded {
   const PurchaseSaving({
     required super.items,
     super.supplier,
+    super.supplierAccount,
     required super.payment,
     super.storages,
   });

@@ -24,7 +24,6 @@ import '../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
 import 'bloc/purchase_bloc.dart';
 import 'model/pur_invoice_items.dart';
 
-
 class NewPurchaseView extends StatefulWidget {
   const NewPurchaseView({super.key});
 
@@ -37,15 +36,13 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
   final TextEditingController _personController = TextEditingController();
   final TextEditingController _paymentController = TextEditingController();
   final TextEditingController _narrationController = TextEditingController();
+  final TextEditingController _cashPaymentController = TextEditingController();
 
   final List<List<FocusNode>> _rowFocusNodes = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  int? _userId;
-  int? perId;
-  double? totalAmount;
-  int? accNumber;
   String? _userName;
+  double cashPayment = 0.0;
 
   @override
   void initState() {
@@ -66,6 +63,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
     _paymentController.dispose();
     _narrationController.dispose();
     _personController.dispose();
+    _cashPaymentController.dispose();
     super.dispose();
   }
 
@@ -76,7 +74,6 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthenticatedState) {
-
           _userName = state.loginData.usrName ?? '';
         }
       },
@@ -87,12 +84,19 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
           }
           if (state is PurchaseSaved) {
             if (state.success) {
-              Utils.showOverlayMessage(context, message: "Success invoice",isError: false);
+              Utils.showOverlayMessage(
+                context,
+                message: "Invoice ${state.invoiceNumber} created successfully",
+                isError: false,
+              );
               // Reset form
+              _accountController.clear();
               _paymentController.clear();
               _narrationController.clear();
+              _personController.clear();
+              _cashPaymentController.clear();
             } else {
-              Utils.showOverlayMessage(context, message: "Failed invoice", isError: true);
+              Utils.showOverlayMessage(context, message: "Failed to create invoice", isError: true);
             }
           }
         },
@@ -107,7 +111,11 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                   _accountController.clear();
                   _paymentController.clear();
                   _narrationController.clear();
-                  _personController.dispose();
+                  _personController.clear();
+                  _cashPaymentController.clear();
+                  setState(() {
+                    cashPayment = 0.0;
+                  });
                 },
               ),
             ],
@@ -127,54 +135,85 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                     children: [
                       Expanded(
                         child: GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
+                          key: ValueKey('person_field'),
                           controller: _personController,
                           title: locale.customer,
                           hintText: locale.customer,
                           isRequired: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a supplier';
+                            }
+                            return null;
+                          },
                           bloc: context.read<IndividualsBloc>(),
-                          fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent(),),
+                          fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
                           searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
                           itemBuilder: (context, ind) => ListTile(
-                            title: Text(ind.perName ?? ''),
-                            subtitle: Text(ind.perId.toString()),
+                            title: Text("${ind.perName ?? ''} ${ind.perLastName ?? ''}"),
+                            subtitle: Text("ID: ${ind.perId}"),
                           ),
-                          itemToString: (account) => "${account.perName} ${account.perLastName}",
-                          stateToLoading: (state) => state is AccountLoadingState,
+                          itemToString: (individual) => "${individual.perName} ${individual.perLastName}",
+                          stateToLoading: (state) => state is IndividualLoadingState,
                           stateToItems: (state) {
                             if (state is IndividualLoadedState) return state.individuals;
                             return [];
                           },
                           onSelected: (value) {
+                            _personController.text = "${value.perName} ${value.perLastName}";
                             context.read<PurchaseBloc>().add(SelectSupplierEvent(value));
-                            perId = value.perId;
+
+                            // Load accounts for this supplier
+                            context.read<AccountsBloc>().add(LoadAccountsFilterEvent(
+                                input: value.perId.toString(),
+                                start: 5,
+                                end: 5,
+                                exclude: ''
+                            ));
                           },
                           showClearButton: true,
+                          // onClear: () {
+                          //   context.read<PurchaseBloc>().add(ClearSupplierEvent());
+                          //   _accountController.clear();
+                          // },
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
+                          key: ValueKey('account_field'),
                           controller: _accountController,
-                          title: locale.customer,
-                          hintText: locale.customer,
+                          title: locale.accounts,
+                          hintText: locale.selectAccount,
                           isRequired: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select an account';
+                            }
+                            return null;
+                          },
                           bloc: context.read<AccountsBloc>(),
-                          fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 5, end: 5, exclude: ''),),
-                          searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(input: query,start: 5, end: 5, exclude: '')),
+                          fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 5, end: 5, exclude: '')),
+                          searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(
+                              input: query,
+                              start: 5,
+                              end: 5,
+                              exclude: ''
+                          )),
                           itemBuilder: (context, account) => ListTile(
                             title: Text(account.accName ?? ''),
-                            subtitle: Text(account.accNumber.toString()),
-                            trailing: Text(account.actCurrency??""),
+                            subtitle: Text('${account.accNumber} - Balance: ${account.accAvailBalance?.toAmount() ?? "0.0"}'),
+                            trailing: Text(account.actCurrency ?? ""),
                           ),
-                          itemToString: (account) => account.accName ?? '',
+                          itemToString: (account) => '${account.accName} (${account.accNumber})',
                           stateToLoading: (state) => state is AccountLoadingState,
                           stateToItems: (state) {
                             if (state is AccountLoadedState) return state.accounts;
                             return [];
                           },
                           onSelected: (value) {
+                            _accountController.text = '${value.accName} (${value.accNumber})';
                             context.read<PurchaseBloc>().add(SelectSupplierAccountEvent(value));
-                            accNumber = value.accNumber;
                           },
                           showClearButton: true,
                         ),
@@ -246,7 +285,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
       child: Row(
         children: [
           SizedBox(width: 40, child: Text('#', style: TextStyle(color: Colors.white))),
-          Expanded( child: Text(locale.products, style: TextStyle(color: Colors.white))),
+          Expanded(child: Text(locale.products, style: TextStyle(color: Colors.white))),
           SizedBox(width: 100, child: Text("qty", style: TextStyle(color: Colors.white))),
           SizedBox(width: 100, child: Text("unit price", style: TextStyle(color: Colors.white))),
           SizedBox(width: 150, child: Text(locale.storage, style: TextStyle(color: Colors.white))),
@@ -428,20 +467,21 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
             ],
           ),
         ),
-        Row(
-          children: [
-            if (isLastRow)...[
-
-              ZOutlineButton(
-                icon: Icons.add,
-                label: Text("Add Item"),
-                onPressed: (){
-                  context.read<PurchaseBloc>().add(AddNewItemEvent());
-                },
-              )
-            ]
-          ],
-        )
+        if (isLastRow)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Row(
+              children: [
+                ZOutlineButton(
+                  icon: Icons.add,
+                  label: Text("Add Item"),
+                  onPressed: () {
+                    context.read<PurchaseBloc>().add(AddNewItemEvent());
+                  },
+                )
+              ],
+            ),
+          )
       ],
     );
   }
@@ -453,6 +493,8 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
           final current = state as PurchaseLoaded;
           final isSaving = state is PurchaseSaving;
           final locale = AppLocalizations.of(context)!;
+
+          final creditAmount = current.grandTotal - cashPayment;
 
           return Container(
             padding: const EdgeInsets.all(16),
@@ -466,28 +508,50 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                 // Grand Total
                 _buildSummaryRow(
                   context,
-                  label: "grand total",
+                  label: "Grand Total",
                   value: current.grandTotal,
                   isBold: true,
                 ),
                 const SizedBox(height: 8),
 
-                // Payment
+                // Cash Payment
                 _buildSummaryRow(
                   context,
-                  label: locale.payment,
-                  value: current.payment,
+                  label: "Cash Payment",
+                  value: cashPayment,
+                  isBold: false,
+                  color: Colors.green,
                 ),
                 const SizedBox(height: 8),
 
-                // Balance
-                if (current.supplier != null)
+                // Credit Amount
+                _buildSummaryRow(
+                  context,
+                  label: "Credit Amount",
+                  value: creditAmount,
+                  isBold: true,
+                  color: Colors.blue,
+                ),
+                const SizedBox(height: 8),
+
+                // Current Balance
+                if (current.supplierAccount != null)
                   _buildSummaryRow(
                     context,
-                    label: locale.balance,
-                    value: current.netBalance,
+                    label: "Current Balance",
+                    value: double.tryParse(current.supplierAccount!.accAvailBalance ?? "") ?? 0.0,
+                    isBold: false,
+                    color: Colors.grey[700],
+                  ),
+
+                // New Balance
+                if (current.supplierAccount != null)
+                  _buildSummaryRow(
+                    context,
+                    label: "New Balance",
+                    value: double.tryParse(current.supplierAccount?.accAvailBalance??"0.0") ?? 0.0 + creditAmount,
                     isBold: true,
-                    color: current.netBalance > 0 ? Colors.green : Colors.red,
+                    color: Colors.orange,
                   ),
 
                 const SizedBox(height: 16),
@@ -563,60 +627,137 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
 
   void _showPaymentDialog(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
-    final controller = TextEditingController();
+    final controller = TextEditingController(text: cashPayment.toString());
 
     showDialog(
       context: context,
       builder: (context) => ZFormDialog(
-        title: locale.payment,
+        title: "Payment Details",
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ZTextFieldEntitled(
-              title: locale.amount,
+              title: "Cash Payment Amount",
               controller: controller,
+              hint: "Enter cash payment amount",
               inputFormat: [SmartThousandsDecimalFormatter()],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "Note: Remaining amount will be added to supplier's account as credit",
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+                fontStyle: FontStyle.italic,
+              ),
             ),
           ],
         ),
         onAction: () {
           final cleaned = controller.text.replaceAll(',', '');
           final payment = double.tryParse(cleaned) ?? 0;
+
+          // Update cash payment
+          setState(() {
+            cashPayment = payment;
+          });
+
+          // Update total payment in bloc
           context.read<PurchaseBloc>().add(UpdatePaymentEvent(payment));
+
           Navigator.pop(context);
         },
       ),
     );
   }
 
-
-
   void _saveInvoice(BuildContext context, PurchaseLoaded state) {
+    // Validate form
     if (!_formKey.currentState!.validate()) {
-      Utils.showOverlayMessage(context, message: 'Please fill all required fields', isError: true);
+      Utils.showOverlayMessage(
+        context,
+        message: 'Please fill all required fields',
+        isError: true,
+      );
       return;
     }
 
+    // Validate supplier selection
+    if (state.supplier == null) {
+      Utils.showOverlayMessage(
+        context,
+        message: 'Please select a supplier',
+        isError: true,
+      );
+      return;
+    }
+
+    // Validate account selection
+    if (state.supplierAccount == null) {
+      Utils.showOverlayMessage(
+        context,
+        message: 'Please select a supplier account',
+        isError: true,
+      );
+      return;
+    }
+
+    // Validate items
     if (state.items.isEmpty) {
-      Utils.showOverlayMessage(context, message: 'Please add at least one item', isError: true);
+      Utils.showOverlayMessage(
+        context,
+        message: 'Please add at least one item',
+        isError: true,
+      );
       return;
     }
 
+    // Validate each item
+    for (var item in state.items) {
+      if (item.productId.isEmpty || item.storageId == 0) {
+        Utils.showOverlayMessage(
+          context,
+          message: 'Please fill all item details (product, quantity, price, storage)',
+          isError: true,
+        );
+        return;
+      }
+    }
+
+    // Validate cash payment doesn't exceed total
+    if (cashPayment > state.grandTotal) {
+      Utils.showOverlayMessage(
+        context,
+        message: 'Cash payment cannot exceed grand total',
+        isError: true,
+      );
+      return;
+    }
 
     final completer = Completer<String>();
     context.read<PurchaseBloc>().add(SavePurchaseInvoiceEvent(
-      usrName: _userName ?? 'radveen',
+      usrName: _userName ?? 'admin',
       perID: state.supplier!.perId!,
-      accNumber: state.accountNumber,
-      xRef: "541",
+      accNumber: state.supplierAccount?.accNumber,
+      xRef: "PUR-${DateTime.now().millisecondsSinceEpoch}",
       totalAmount: state.grandTotal,
+      cashPayment: cashPayment,
       items: state.items,
       completer: completer,
     ));
 
     completer.future.then((invoiceNumber) {
       if (invoiceNumber.isNotEmpty) {
-        Utils.showOverlayMessage(context, message: 'Invoice saved: $invoiceNumber', isError: false);
+        Utils.showOverlayMessage(
+          context,
+          message: 'Invoice $invoiceNumber saved successfully',
+          isError: false,
+        );
+
+        // Reset cash payment
+        setState(() {
+          cashPayment = 0.0;
+        });
       }
     });
   }

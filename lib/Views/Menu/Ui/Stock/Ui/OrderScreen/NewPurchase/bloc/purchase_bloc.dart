@@ -159,6 +159,12 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
       return;
     }
 
+    if (current.supplierAccount == null) {
+      emit(PurchaseError('Please select a supplier account'));
+      event.completer.complete('');
+      return;
+    }
+
     // Validate items
     for (var item in current.items) {
       if (item.productId.isEmpty || item.storageId == 0) {
@@ -168,9 +174,17 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
       }
     }
 
+    // Validate cash payment
+    if (event.cashPayment > current.grandTotal) {
+      emit(PurchaseError('Cash payment cannot exceed grand total'));
+      event.completer.complete('');
+      return;
+    }
+
     emit(PurchaseSaving(
       items: current.items,
       supplier: current.supplier,
+      supplierAccount: current.supplierAccount,
       payment: current.payment,
       storages: current.storages,
     ));
@@ -188,12 +202,15 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
 
       final xRef = event.xRef ?? 'PUR-${DateTime.now().millisecondsSinceEpoch}';
 
+      // Calculate the amount to be added to account (credit amount)
+      final creditAmount = current.grandTotal - event.cashPayment;
+
       final result = await repo.purchaseInvoice(
         usrName: event.usrName,
         perID: event.perID,
         xRef: xRef,
-        account: current.accountNumber,
-        amount: current.grandTotal,
+        account: current.supplierAccount!.accNumber!,
+        amount: creditAmount, // Only the credit portion goes to account
         records: records,
       );
 
