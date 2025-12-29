@@ -115,7 +115,7 @@ class StockView extends StatelessWidget {
                       label: Text(locale.purchaseTitle),
                       icon: Icons.shopping_bag,
                       width: double.infinity,
-                       onPressed: () => Utils.goto(context, NewPurchaseVew()),
+                       onPressed: () => Utils.goto(context, NewPurchaseView()),
                     ),
                   if (login.hasPermission(18) ?? false)
                     ZOutlineButton(

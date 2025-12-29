@@ -32,6 +32,7 @@ import '../Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/model/limit_
 import '../Views/Menu/Ui/Settings/Ui/Company/Branches/model/branch_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/model/product_model.dart';
 import '../Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
+import '../Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/model/pur_invoice_items.dart';
 import '../Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/model/shipping_model.dart';
 
 class Repositories {
@@ -1825,6 +1826,36 @@ class Repositories {
       );
       return response.data;
     } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  // In your Repositories class
+  Future<String> purchaseInvoice({
+    required String usrName,
+    required int perID,
+    required String xRef,
+    required int account,
+    required double amount,
+    required List<PurchaseRecord> records,
+  }) async {
+
+    try {
+      final response = await api.post(
+        endpoint: "/inventory/purchase.php",
+        data: jsonEncode({
+          'usrName': usrName,
+          'perID': perID,
+          'xRef': xRef,
+          'account': account,
+          'amount': amount,
+          'records': records.map((record) => record.toJson()).toList(),
+        }),
+      );
+      return response.data;
+    }on DioException catch (e) {
       throw '${e.message}';
     } catch (e) {
       throw e.toString();
