@@ -1623,7 +1623,7 @@ class Repositories {
     try {
       final queryParams = {'proID': proId};
       final response = await api.get(
-        endpoint: "/inventory/productsView.php",
+        endpoint: "/inventory/product.php",
         queryParams: queryParams,
       );
 
