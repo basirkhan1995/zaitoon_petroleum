@@ -32,6 +32,7 @@ import '../Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/model/limit_
 import '../Views/Menu/Ui/Settings/Ui/Company/Branches/model/branch_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/model/product_model.dart';
 import '../Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
+import '../Views/Menu/Ui/Stock/Ui/OrderScreen/GetOrderById/model/ord_by_Id_model.dart';
 import '../Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/model/pur_invoice_items.dart';
 import '../Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/model/shipping_model.dart';
 
@@ -1617,38 +1618,41 @@ class Repositories {
       throw e.toString();
     }
   }
+  // In repositories.dart - Check if this method exists and works correctly
   Future<List<ProductsModel>> getProduct({int? proId}) async {
     try {
       final queryParams = {'proID': proId};
-      // Fetch data from API
       final response = await api.get(
-        endpoint: "/inventory/product.php",
-        queryParams: queryParams
+        endpoint: "/inventory/productsView.php",
+        queryParams: queryParams,
       );
 
-      // Handle error messages from server
       if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
         throw Exception(response.data['msg']);
       }
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      if (response.data == null) {
         return [];
       }
 
-      // Parse list of stakeholders safely
+      // Handle single product
+      if (response.data is Map<String, dynamic>) {
+        if (response.data.containsKey('proID') || response.data.containsKey('proId')) {
+          return [ProductsModel.fromMap(response.data)];
+        }
+      }
+
+      // Handle list of products
       if (response.data is List) {
         return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
+            .whereType<Map<String, dynamic>>()
             .map((json) => ProductsModel.fromMap(json))
             .toList();
       }
 
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
     } catch (e) {
-      throw "$e";
+      rethrow;
     }
   }
   Future<List<ProductsStockModel>> getProductStock({int? proId}) async {
@@ -1782,30 +1786,39 @@ class Repositories {
       throw "$e";
     }
   }
-  Future<List<OrdersModel>> getOrderById({int? orderId}) async {
+
+  // In repositories.dart - Add just these 2 methods:
+
+  Future<List<OrderByIdModel>> getOrderById({int? orderId}) async {
     try {
       final queryParams = {'ordID': orderId};
-      // Fetch data from API
       final response = await api.get(
-          endpoint: "/inventory/ordersView.php",
+          endpoint: "/inventory/purchase.php",
           queryParams: queryParams
       );
 
-      // Handle error messages from server
       if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
         throw Exception(response.data['msg']);
       }
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      if (response.data == null) {
         return [];
       }
 
-      // Parse list of stakeholders safely
+      // Your API returns a single order with records included
+      if (response.data is Map<String, dynamic>) {
+        final orderData = response.data as Map<String, dynamic>;
+        if (orderData.containsKey('ordID') || orderData.containsKey('ordId')) {
+          final order = OrderByIdModel.fromMap(orderData);
+          return [order];
+        }
+      }
+
+      // If it's a list (though your API doesn't seem to return this)
       if (response.data is List) {
         return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => OrdersModel.fromMap(json))
+            .whereType<Map<String, dynamic>>()
+            .map((json) => OrderByIdModel.fromMap(json))
             .toList();
       }
 
@@ -1814,6 +1827,29 @@ class Repositories {
       throw "${e.message}";
     } catch (e) {
       throw "$e";
+    }
+  }
+
+  Future<bool> updatePurchaseOrder({
+    required int orderId,
+    required String usrName,
+    required List<Map<String, dynamic>> records,
+  }) async {
+    try {
+      final data = {
+        "ordID": orderId,
+        "usrName": usrName,
+        "records": records,
+      };
+
+      final response = await api.post(
+        endpoint: "/inventory/updatePurchaseOrder.php",
+        data: data,
+      );
+
+      return response.data['msg'] == 'success';
+    } catch (e) {
+      rethrow;
     }
   }
 

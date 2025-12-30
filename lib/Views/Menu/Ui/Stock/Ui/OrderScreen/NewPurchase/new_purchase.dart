@@ -61,8 +61,15 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
     _accountController.dispose();
     _personController.dispose();
     _xRefController.dispose();
+
+    for (final controller in _priceControllers.values) {
+      controller.dispose();
+    }
+
     super.dispose();
   }
+  final Map<String, TextEditingController> _priceControllers = {};
+
 
   @override
   Widget build(BuildContext context) {
@@ -362,12 +369,15 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
       ),
       child: Row(
         children: [
-          SizedBox(width: 40, child: Text('#', style: title)),
+          SizedBox(width: 40, child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text('#', style: title),
+          )),
           Expanded(child: Text(locale.products, style: title)),
           SizedBox(width: 100, child: Text(locale.qty, style: title)),
-          SizedBox(width: 100, child: Text(locale.unitPrice, style: title)),
-          SizedBox(width: 150, child: Text(locale.storage, style: title)),
+          SizedBox(width: 150, child: Text(locale.unitPrice, style: title)),
           SizedBox(width: 100, child: Text(locale.totalTitle, style: title)),
+          SizedBox(width: 180, child: Text(locale.storage, style: title)),
           SizedBox(width: 60, child: Text(locale.actions, style: title)),
         ],
       ),
@@ -383,7 +393,11 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
     final locale = AppLocalizations.of(context)!;
     final productController = TextEditingController(text: item.productName);
     final qtyController = TextEditingController(text: item.qty.toString());
-    final priceController = TextEditingController(text: item.purPrice.toAmount());
+    final priceController = _priceControllers.putIfAbsent(
+      item.rowId,
+          () => TextEditingController(text: item.purPrice.toAmount()),
+    );
+
     final storageController = TextEditingController(text: item.storageName);
 
     return Column(
@@ -463,36 +477,50 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
               ),
 
               // Unit Price
+             SizedBox(
+            width: 150,
+            child: TextField(
+              controller: priceController,
+              focusNode: nodes[2],
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                SmartThousandsDecimalFormatter(),
+              ],
+              decoration: const InputDecoration(
+                hintText: 'Price',
+                border: InputBorder.none,
+                isDense: true,
+              ),
+              onChanged: (value) {
+                final parsed = double.tryParse(value.replaceAll(',', ''));
+                if (parsed != null) {
+                  context.read<PurchaseBloc>().add(
+                    UpdateItemEvent(
+                      rowId: item.rowId,
+                      purPrice: parsed,
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+
+              // Total
               SizedBox(
                 width: 100,
-                child: TextField(
-                  controller: priceController,
-                  focusNode: nodes[2],
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'[0-9.,]*'),
-                    ),
-                    SmartThousandsDecimalFormatter(),
-                  ],
-                  decoration: InputDecoration(
-                    hintText: 'Price',
-                    border: InputBorder.none,
-                    isDense: true,
+                child: Text(
+                  item.total.toAmount(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
-                  onChanged: (value) {
-                    context.read<PurchaseBloc>().add(UpdateItemEvent(
-                      rowId: item.rowId,
-                      purPrice: double.tryParse(priceController.text.cleanAmount),
-                    ));
-                  },
-                  onSubmitted: (_) => nodes[3].requestFocus(),
                 ),
               ),
 
-              // Storage Selection with default first storage
+           // Storage Selection with default first storage
               SizedBox(
-                width: 150,
+                width: 180,
                 child: BlocBuilder<StorageBloc, StorageState>(
                   builder: (context, storageState) {
                     if (storageState is StorageLoadedState && storageState.storage.isNotEmpty) {
@@ -518,9 +546,9 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                       bloc: context.read<StorageBloc>(),
                       fetchAllFunction: (bloc) => bloc.add(LoadStorageEvent()),
                       searchFunction: (bloc, query) => bloc.add(LoadStorageEvent()),
-                      itemBuilder: (context, stg) => ListTile(
-                        title: Text(stg.stgName ?? ''),
-                        subtitle: Text('Code: ${stg.stgId ?? ''}'),
+                      itemBuilder: (context, stg) => Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(stg.stgName ?? ''),
                       ),
                       itemToString: (stg) => stg.stgName ?? '',
                       stateToLoading: (state) => state is StorageLoadingState,
@@ -540,17 +568,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                 ),
               ),
 
-              // Total
-              SizedBox(
-                width: 100,
-                child: Text(
-                  item.total.toAmount(),
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ),
+
 
               // Actions
               SizedBox(
@@ -730,6 +748,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
     showDialog(
       context: context,
       builder: (context) => ZFormDialog(
+        isActionTrue: false,
         title: "Select Payment Mode",
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -778,30 +797,36 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
       context: context,
       builder: (context) => ZFormDialog(
         title: "Mixed Payment Details",
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ZTextFieldEntitled(
-              title: "Cash Payment Amount",
-              controller: controller,
-              hint: "Enter cash payment amount",
-              inputFormat: [SmartThousandsDecimalFormatter()],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              "Grand Total: ${current.grandTotal.toAmount()}",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Remaining ${(current.grandTotal - (double.tryParse(controller.text.replaceAll(',', '')) ?? 0)).toAmount()} will be added to supplier's account as credit",
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-                fontStyle: FontStyle.italic,
+        actionLabel: Text("Submit"),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ZTextFieldEntitled(
+                title: "Cash Payment Amount",
+                controller: controller,
+                hint: "Enter cash payment amount",
+                inputFormat: [SmartThousandsDecimalFormatter()],
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Text(
+                "Grand Total: ${current.grandTotal.toAmount()}",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                "Remaining ${(current.grandTotal - (double.tryParse(controller.text.replaceAll(',', '')) ?? 0)).toAmount()} will be added to supplier's account as credit",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
         ),
         onAction: () {
           final cleaned = controller.text.replaceAll(',', '');

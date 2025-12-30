@@ -34,10 +34,10 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
         qty: 1,
         purPrice: 0,
         storageName: '',
-        storageId: 0,
+        storageId: 1,
       )],
       payment: 0.0,
-      paymentMode: PaymentMode.credit, // Default to credit
+      paymentMode: PaymentMode.cash,
     ));
   }
 

@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Orders/bloc/orders_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../OrderScreen/GetOrderById/order_by_Id.dart';
 
 class OrdersView extends StatelessWidget {
   const OrdersView({super.key});
@@ -134,7 +136,7 @@ class _DesktopState extends State<_Desktop> {
                         final ord = state.order[index];
                      return InkWell(
                        onTap: (){
-
+                         Utils.goto(context, OrderByIdView(orderId: ord.ordId!));
                        },
                        child: Container(
                          padding: EdgeInsets.symmetric(horizontal: 12,vertical: 8),
