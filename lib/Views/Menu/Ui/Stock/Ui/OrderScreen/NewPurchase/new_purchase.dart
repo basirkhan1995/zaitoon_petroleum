@@ -515,6 +515,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                   item.total.toAmount(),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
+                    fontSize: 16,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),

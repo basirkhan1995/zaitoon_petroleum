@@ -78,7 +78,7 @@ class _DesktopState extends State<_Desktop> {
 
     myLocale = context.read<LocalizationBloc>().state.languageCode;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      onRefresh();
+
     });
     super.initState();
   }
@@ -175,12 +175,13 @@ class _DesktopState extends State<_Desktop> {
             ).colorScheme.primary.withValues(alpha: 0.09),
           ),
           BlocConsumer<ExchangeRateBloc, ExchangeRateState>(
-            listener: (context,state){
-              if(state is ExchangeRateSuccessState){
-                onRefresh();
+            listener: (context, state) {
+              if (state is ExchangeRateSuccessState) {
                 Navigator.of(context).pop();
+                onRefresh();
               }
             },
+
             builder: (context, state) {
               if (state is ExchangeRateErrorState) {
                 return Center(child: Text(state.message));
@@ -340,12 +341,16 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  void onRefresh(){
-    final state = context.read<CompanyProfileBloc>().state;
-    if(state is CompanyProfileLoadedState){
-      baseCurrency = state.company.comLocalCcy;
-      context.read<ExchangeRateBloc>().add(LoadExchangeRateEvent(baseCurrency??""));
+  void onRefresh() {
+    final companyState = context.read<CompanyProfileBloc>().state;
+    if (companyState is CompanyProfileLoadedState) {
+      context.read<ExchangeRateBloc>().add(
+        LoadExchangeRateEvent(
+          companyState.company.comLocalCcy ?? "",
+        ),
+      );
     }
   }
+
 }
 

@@ -48,32 +48,10 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
-  String _comName = "";
-  Uint8List _companyLogo = Uint8List(0);
-
   @override
   void initState() {
     super.initState();
 
-    // Listen to company profile changes once
-    final companyBloc = context.read<CompanyProfileBloc>();
-    companyBloc.stream.listen((state) {
-      if (state is CompanyProfileLoadedState) {
-        setState(() {
-          _comName = state.company.comName ?? "";
-          final base64Logo = state.company.comLogo;
-          if (base64Logo != null && base64Logo.isNotEmpty) {
-            try {
-              _companyLogo = base64Decode(base64Logo);
-            } catch (_) {
-              _companyLogo = Uint8List(0);
-            }
-          } else {
-            _companyLogo = Uint8List(0);
-          }
-        });
-      }
-    });
   }
 
   void _logout() async {
@@ -148,9 +126,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     ];
 
-    final isLoading =
-        context.watch<CompanyProfileBloc>().state is CompanyProfileLoadingState;
-
     return Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -172,64 +147,81 @@ class _DesktopState extends State<_Desktop> {
             context,
           ).colorScheme.primary.withValues(alpha: .9),
           unselectedTextColor: Theme.of(context).colorScheme.secondary,
-          menuHeaderBuilder: (isExpanded) => Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(3),
-                margin: const EdgeInsets.all(5),
-                width: 120,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: .09),
-                  ),
-                ),
-                child: (_companyLogo.isEmpty)
-                    ? Image.asset("assets/images/zaitoonLogo.png")
-                    : Image.memory(_companyLogo),
-              ),
-              if (isExpanded)
-                InkWell(
-                  onTap: () {
-                    context.read<MenuBloc>().add(
-                      MenuOnChangedEvent(MenuName.settings),
-                    );
-                    context.read<SettingsTabBloc>().add(
-                      SettingsOnChangeEvent(SettingsTabName.company),
-                    );
-                    context.read<CompanySettingsMenuBloc>().add(
-                      CompanySettingsOnChangedEvent(
-                        CompanySettingsMenuName.profile,
+          menuHeaderBuilder: (isExpanded) {
+            return BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
+              builder: (context, state) {
+                String comName = "";
+                Uint8List logo = Uint8List(0);
+
+                if (state is CompanyProfileLoadedState) {
+                  comName = state.company.comName ?? "";
+
+                  final base64Logo = state.company.comLogo;
+                  if (base64Logo != null && base64Logo.isNotEmpty) {
+                    try {
+                      logo = base64Decode(base64Logo);
+                    } catch (_) {}
+                  }
+                }
+
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(3),
+                      margin: const EdgeInsets.all(5),
+                      width: 120,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withValues(alpha: .09),
+                        ),
                       ),
-                    );
-                  },
-                  child: isLoading
-                      ? SizedBox(
+                      child: logo.isEmpty
+                          ? Image.asset("assets/images/zaitoonLogo.png")
+                          : Image.memory(logo),
+                    ),
+
+                    if (isExpanded)
+                      InkWell(
+                        onTap: () {
+                          context.read<MenuBloc>().add(
+                            MenuOnChangedEvent(MenuName.settings),
+                          );
+                          context.read<SettingsTabBloc>().add(
+                            SettingsOnChangeEvent(SettingsTabName.company),
+                          );
+                          context.read<CompanySettingsMenuBloc>().add(
+                            CompanySettingsOnChangedEvent(
+                              CompanySettingsMenuName.profile,
+                            ),
+                          );
+                        },
+                        child: state is CompanyProfileLoadingState
+                            ? const SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(
-                            color: Theme.of(context).colorScheme.primary,
-                            strokeWidth: 3,
-                          ),
+                          child: CircularProgressIndicator(strokeWidth: 3),
                         )
-                      : SizedBox(
+                            : SizedBox(
                           width: 150,
                           child: Text(
-                            _comName,
-                            style: Theme.of(context).textTheme.titleSmall,
-                            softWrap: true,
+                            comName,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.center,
                           ),
                         ),
-                ),
-            ],
-          ),
+                      ),
+                  ],
+                );
+              },
+            );
+          },
+
           menuFooterBuilder: (isExpanded) => Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4),
             child: Column(
