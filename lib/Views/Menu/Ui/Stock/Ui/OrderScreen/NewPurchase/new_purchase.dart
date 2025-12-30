@@ -110,8 +110,10 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
           }
         },
         child: Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surface,
           appBar: AppBar(
             titleSpacing: 0,
+            backgroundColor: Theme.of(context).colorScheme.surface,
             title: Text(locale.purchaseEntry),
             actions: [
               IconButton(
@@ -181,7 +183,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                       const SizedBox(width: 8),
                       Expanded(child: ZTextFieldEntitled(
                           controller: _xRefController,
-                          title: 'Bill No.')),
+                          title: locale.invoiceNumber)),
                       const SizedBox(width: 8),
                       Expanded(
                         child: BlocBuilder<PurchaseBloc, PurchaseState>(
@@ -593,8 +595,9 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
             child: Row(
               children: [
                 ZOutlineButton(
+                  width: 120,
                   icon: Icons.add,
-                  label: Text("Add Item"),
+                  label: Text(locale.addItem),
                   onPressed: () {
                     context.read<PurchaseBloc>().add(AddNewItemEvent());
                   },
@@ -623,7 +626,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                 // Payment Mode
                 _buildSummaryRow(
                   context,
-                  label: "Payment Mode",
+                  label: AppLocalizations.of(context)!.paymentMethod,
                   value: _getPaymentModeLabel(current.paymentMode),
                   isBold: false,
                   isText: true,
@@ -633,7 +636,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                 // Grand Total
                 _buildSummaryRow(
                   context,
-                  label: "Grand Total",
+                  label: AppLocalizations.of(context)!.grandTotal,
                   value: current.grandTotal,
                   isBold: true,
                 ),
@@ -643,7 +646,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                 if (current.paymentMode != PaymentMode.credit)
                   _buildSummaryRow(
                     context,
-                    label: current.paymentMode == PaymentMode.cash ? "Cash Payment" : "Partial Payment",
+                    label: current.paymentMode == PaymentMode.cash ? AppLocalizations.of(context)!.cashPayment : AppLocalizations.of(context)!.accountPayment,
                     value: current.cashPayment,
                     isBold: false,
                     color: Colors.green,
@@ -749,13 +752,13 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
       context: context,
       builder: (context) => ZFormDialog(
         isActionTrue: false,
-        title: "Select Payment Mode",
+        title: AppLocalizations.of(context)!.selectPaymentMethod,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               leading: Icon(Icons.money, color: current.paymentMode == PaymentMode.cash ? Colors.green : Colors.grey),
-              title: Text("Cash Payment"),
+              title: Text(AppLocalizations.of(context)!.cashPayment),
               subtitle: Text("Pay full amount in cash"),
               trailing: current.paymentMode == PaymentMode.cash ? Icon(Icons.check, color: Colors.green) : null,
               onTap: () {
@@ -765,7 +768,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
             ),
             ListTile(
               leading: Icon(Icons.credit_card, color: current.paymentMode == PaymentMode.credit ? Colors.blue : Colors.grey),
-              title: Text("Credit Payment"),
+              title: Text(AppLocalizations.of(context)!.accountPayment),
               subtitle: Text("Add full amount to supplier account"),
               trailing: current.paymentMode == PaymentMode.credit ? Icon(Icons.check, color: Colors.blue) : null,
               onTap: () {
@@ -813,7 +816,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
               ),
               const SizedBox(height: 16),
               Text(
-                "Grand Total: ${current.grandTotal.toAmount()}",
+                "${AppLocalizations.of(context)!.grandTotal}: ${current.grandTotal.toAmount()}",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 5),

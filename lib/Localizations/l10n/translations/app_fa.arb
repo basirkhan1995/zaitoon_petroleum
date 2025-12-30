@@ -610,5 +610,8 @@
   "supplier": "فروشنده",
   "purchaseEntry": "بل خرید",
   "unitPrice": "قیمت واحد",
-  "qty": "مقدار"
+  "qty": "مقدار",
+  "addItem": "افزودن قلم",
+  "invoiceNumber": "نمبر بل #",
+  "grandTotal": "جمع کل"
 }

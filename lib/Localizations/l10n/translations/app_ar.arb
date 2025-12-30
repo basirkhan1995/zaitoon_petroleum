@@ -610,5 +610,8 @@
   "supplier": "فروشنده",
   "purchaseEntry": "بل خرید",
   "unitPrice": "قیمت واحد",
-  "qty": "مقدار"
+  "qty": "مقدار",
+  "addItem": "توکی اضافه",
+  "invoiceNumber": "نمبر بل #",
+  "grandTotal": "ټولیزه مجموعه"
 }

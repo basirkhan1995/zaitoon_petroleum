@@ -610,5 +610,8 @@
   "supplier": "Supplier",
   "purchaseEntry": "Purchase Entry",
   "unitPrice": "Unit Price",
-  "qty": "QTY"
+  "qty": "QTY",
+  "addItem": "Add Item",
+  "invoiceNumber": "Invoice #",
+  "grandTotal": "Grand Total"
 }

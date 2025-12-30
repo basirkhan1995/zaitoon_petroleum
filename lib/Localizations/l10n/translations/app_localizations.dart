@@ -3645,6 +3645,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'QTY'**
   String get qty;
+
+  /// No description provided for @addItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Item'**
+  String get addItem;
+
+  /// No description provided for @invoiceNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice #'**
+  String get invoiceNumber;
+
+  /// No description provided for @grandTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Grand Total'**
+  String get grandTotal;
 }
 
 class _AppLocalizationsDelegate

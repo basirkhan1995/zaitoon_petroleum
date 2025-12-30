@@ -1832,4 +1832,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get qty => 'مقدار';
+
+  @override
+  String get addItem => 'توکی اضافه';
+
+  @override
+  String get invoiceNumber => 'نمبر بل #';
+
+  @override
+  String get grandTotal => 'ټولیزه مجموعه';
 }

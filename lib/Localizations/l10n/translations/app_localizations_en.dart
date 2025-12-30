@@ -1837,4 +1837,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qty => 'QTY';
+
+  @override
+  String get addItem => 'Add Item';
+
+  @override
+  String get invoiceNumber => 'Invoice #';
+
+  @override
+  String get grandTotal => 'Grand Total';
 }
