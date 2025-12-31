@@ -20,24 +20,26 @@ class PurInvoiceItem {
   double get total => qty * purPrice;
 }
 
-// PurchaseRecord model for API records
 class PurchaseRecord {
   final int proID;
   final int stgID;
   final double quantity;
-  final double pPrice;
+  final double? pPrice;
+  final double? sPrice;
 
   PurchaseRecord({
     required this.proID,
     required this.stgID,
     required this.quantity,
-    required this.pPrice,
+    this.pPrice,
+    this.sPrice,
   });
 
   Map<String, dynamic> toJson() => {
-    'proID': proID,
-    'stgID': stgID,
-    'quantity': quantity,
-    'pPrice': pPrice,
+    'stkProduct': proID,
+    'stkStorage': stgID,
+    'stkQuantity': quantity,
+    'stkPurPrice': pPrice,
+    'stkSalePrice': sPrice,
   };
 }

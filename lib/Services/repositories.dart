@@ -1786,14 +1786,11 @@ class Repositories {
       throw "$e";
     }
   }
-
-  // In repositories.dart - Add just these 2 methods:
-
   Future<List<OrderByIdModel>> getOrderById({int? orderId}) async {
     try {
       final queryParams = {'ordID': orderId};
       final response = await api.get(
-          endpoint: "/inventory/purchase.php",
+          endpoint: "/inventory/salePurchase.php",
           queryParams: queryParams
       );
 
@@ -1830,51 +1827,30 @@ class Repositories {
     }
   }
 
-  Future<bool> updatePurchaseOrder({
-    required int orderId,
-    required String usrName,
-    required List<Map<String, dynamic>> records,
-  }) async {
-    try {
-      final data = {
-        "ordID": orderId,
-        "usrName": usrName,
-        "records": records,
-      };
-
-      final response = await api.post(
-        endpoint: "/inventory/updatePurchaseOrder.php",
-        data: data,
-      );
-
-      return response.data['msg'] == 'success';
-    } catch (e) {
-      rethrow;
-    }
-  }
-
   /// Purchase Invoice .............................................................
   // In your repositories.dart file
   Future<String> purchaseInvoice({
     required String usrName,
     required int perID,
     required String? xRef,
-    required int? account,
-    required double amount,
+    required String orderName,
+     int? account,
+     double? amount,
     required List<PurchaseRecord> records,
   }) async {
     try {
       final data = {
         "usrName": usrName,
-        "perID": perID,
-        "xRef": xRef ?? "PUR-${DateTime.now().millisecondsSinceEpoch}",
+        "ordName":orderName,
+        "ordPersonal": perID,
+        "ordxRef": xRef,
         "account": account,
         "amount": amount,
         "records": records.map((r) => r.toJson()).toList(),
       };
 
       final response = await api.post(
-        endpoint: "/inventory/purchase.php",
+        endpoint: "/inventory/salePurchase.php",
         data: data,
       );
 
@@ -1890,7 +1866,51 @@ class Repositories {
     }
   }
 
+  Future<bool> updatePurchaseOrder({
+    required int orderId,
+    required String usrName,
+    required List<Map<String, dynamic>> records,
+  }) async {
+    try {
+      final data = {
+        "ordID": orderId,
+        "usrName": usrName,
+        "records": records,
+      };
 
+      final response = await api.post(
+        endpoint: "/inventory/salePurchase.php",
+        data: data,
+      );
+
+      return response.data['msg'] == 'success';
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> deletePurchaseOrder({
+    required int orderId,
+    required String usrName,
+    required List<Map<String, dynamic>> records,
+  }) async {
+    try {
+      final data = {
+        "ordID": orderId,
+        "usrName": usrName,
+        "records": records,
+      };
+
+      final response = await api.delete(
+        endpoint: "/inventory/salePurchase.php",
+        data: data,
+      );
+
+      return response.data['msg'] == 'success';
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   /// Transaction Types ........................................................
   Future<Map<String, dynamic>> addTxnType({required TxnTypeModel newType}) async {

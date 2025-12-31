@@ -80,7 +80,8 @@ class ResetPurchaseEvent extends PurchaseEvent {}
 
 class SavePurchaseInvoiceEvent extends PurchaseEvent {
   final String usrName;
-  final int perID;
+  final String orderName;
+  final int ordPersonal;
   final double cashPayment;
   final String? xRef;
   final List<PurInvoiceItem> items;
@@ -88,7 +89,8 @@ class SavePurchaseInvoiceEvent extends PurchaseEvent {
 
   const SavePurchaseInvoiceEvent({
     required this.usrName,
-    required this.perID,
+    required this.ordPersonal,
+    required this.orderName,
     this.xRef,
     required this.cashPayment,
     required this.items,
@@ -96,7 +98,7 @@ class SavePurchaseInvoiceEvent extends PurchaseEvent {
   });
 
   @override
-  List<Object?> get props => [usrName, perID, xRef, cashPayment, items, completer];
+  List<Object?> get props => [usrName, ordPersonal, xRef, cashPayment, items, completer];
 }
 
 class LoadStoragesEvent extends PurchaseEvent {

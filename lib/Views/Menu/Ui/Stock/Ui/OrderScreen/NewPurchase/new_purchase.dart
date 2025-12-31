@@ -944,7 +944,8 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
     final completer = Completer<String>();
     context.read<PurchaseBloc>().add(SavePurchaseInvoiceEvent(
       usrName: _userName ?? '',
-      perID: state.supplier!.perId!,
+      orderName: "Purchase",
+      ordPersonal: state.supplier!.perId!,
       xRef: _xRefController.text,
       cashPayment: state.cashPayment,
       items: state.items,

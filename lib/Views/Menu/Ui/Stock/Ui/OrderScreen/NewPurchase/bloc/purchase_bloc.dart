@@ -225,8 +225,9 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
       final xRef = event.xRef ?? 'PUR-${DateTime.now().millisecondsSinceEpoch}';
 
       final result = await repo.purchaseInvoice(
+        orderName: event.orderName,
         usrName: event.usrName,
-        perID: event.perID,
+        perID: event.ordPersonal,
         xRef: xRef,
         account: current.supplierAccount?.accNumber,
         amount: creditAmount, // Only the credit portion goes to account
