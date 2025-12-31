@@ -103,7 +103,7 @@ class _DesktopState extends State<_Desktop> {
 
 
                 SizedBox(
-                    width: 100,
+                    width: 150,
                     child: Text(tr.billNo,style: titleStyle)),
 
                 SizedBox(
@@ -163,7 +163,7 @@ class _DesktopState extends State<_Desktop> {
                              ),
 
                              SizedBox(
-                                 width: 100,
+                                 width: 150,
                                  child: Text(ord.ordxRef.toString())),
 
                              SizedBox(
