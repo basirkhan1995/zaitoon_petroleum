@@ -267,6 +267,15 @@ class Utils{
     }
   }
 
+  static String getInvoiceType({required String txn, required BuildContext context}) {
+    switch (txn) {
+      case "Purchase":return AppLocalizations.of(context)!.purchaseTitle;
+      case "Sale":return AppLocalizations.of(context)!.saleTitle;
+      case "Return Sale":return AppLocalizations.of(context)!.returnGoods;
+      default: return "";
+    }
+  }
+
   static String getTxnCode({required String txn, required BuildContext context}) {
     switch (txn) {
       case "CHDP":return AppLocalizations.of(context)!.deposit;

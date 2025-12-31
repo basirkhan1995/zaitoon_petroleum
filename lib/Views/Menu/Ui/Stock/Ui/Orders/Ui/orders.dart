@@ -7,6 +7,7 @@ import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Orders/bloc/orders_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import '../../OrderScreen/GetOrderById/order_by_Id.dart';
 
 class OrdersView extends StatelessWidget {
@@ -45,12 +46,18 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
+  String? baseCurrency;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<OrdersBloc>().add(const LoadOrdersEvent());
     });
+
+    final companyState = context.read<CompanyProfileBloc>().state;
+    if (companyState is CompanyProfileLoadedState) {
+      baseCurrency = companyState.company.comLocalCcy ?? "";
+    }
   }
 
   @override
@@ -66,19 +73,8 @@ class _DesktopState extends State<_Desktop> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // SizedBox(height: 10),
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          //   child: Column(
-          //     mainAxisAlignment: MainAxisAlignment.start,
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       Text(tr.orderTitle,style: textTheme.titleMedium),
-          //       Text(tr.ordersSubtitle,style: subtitleStyle),
-          //     ],
-          //   ),
-          // ),
           SizedBox(height: 10),
+
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Row(
@@ -86,29 +82,23 @@ class _DesktopState extends State<_Desktop> {
                 SizedBox(
                     width: 30,
                     child: Text("#",style: titleStyle)),
-               SizedBox(
-                   width: 180,
-                   child: Text(tr.referenceNumber,style: titleStyle)),
-
                 SizedBox(
                     width: 100,
                     child: Text(tr.date,style: titleStyle)),
+               SizedBox(
+                   width: 180,
+                   child: Text(tr.referenceNumber,style: titleStyle)),
 
                 Expanded(
                     child: Text(tr.customer,style: titleStyle)),
 
                 SizedBox(
                     width: 100,
-                    child: Text(tr.txnType,style: titleStyle)),
-
-
-                SizedBox(
-                    width: 150,
-                    child: Text(tr.billNo,style: titleStyle)),
+                    child: Text(tr.invoiceType,style: titleStyle)),
 
                 SizedBox(
-                    width: 100,
-                    child: Text(tr.totalTitle,style: titleStyle)),
+                    width: 130,
+                    child: Text(tr.totalInvoice,style: titleStyle)),
               ],
             ),
           ),
@@ -149,26 +139,22 @@ class _DesktopState extends State<_Desktop> {
                                  width: 30,
                                  child: Text(ord.ordId.toString())),
                              SizedBox(
-                                 width: 180,
-                                 child: Text(ord.ordTrnRef??"")),
-                             SizedBox(
                                  width: 100,
                                  child: Text(ord.ordEntryDate?.toFormattedDate()??"")),
+                             SizedBox(
+                                 width: 180,
+                                 child: Text(ord.ordTrnRef??"")),
                              Expanded(
                                child: Text(ord.personal??""),
                              ),
                              SizedBox(
                                width: 100,
-                               child: Text(ord.ordName.toString()),
+                               child: Text(Utils.getInvoiceType(txn: ord.ordName??"", context: context)),
                              ),
 
                              SizedBox(
-                                 width: 150,
-                                 child: Text(ord.ordxRef.toString())),
-
-                             SizedBox(
-                                 width: 100,
-                                 child: Text(ord.totalBill?.toAmount()??"0.0")),
+                                 width: 130,
+                                 child: Text("${ord.totalBill?.toAmount()} $baseCurrency")),
                            ],
                          ),
                        ),

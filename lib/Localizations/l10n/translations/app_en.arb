@@ -613,5 +613,9 @@
   "qty": "QTY",
   "addItem": "Add Item",
   "invoiceNumber": "Invoice #",
-  "grandTotal": "Grand Total"
+  "grandTotal": "Grand Total",
+  "invoiceType": "Invoice Type",
+  "totalInvoice": "Total Invoice",
+  "saleTitle": "Sale",
+  "newBalance": "New Balance"
 }

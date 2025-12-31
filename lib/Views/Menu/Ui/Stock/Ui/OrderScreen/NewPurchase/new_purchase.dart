@@ -17,6 +17,7 @@ import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import '../../../../Settings/Ui/Stock/Ui/Products/bloc/products_bloc.dart';
 import '../../../../Settings/Ui/Stock/Ui/Products/model/product_model.dart';
 import '../../../../Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
@@ -42,13 +43,18 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? _userName;
-
+  String? baseCurrency;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<PurchaseBloc>().add(InitializePurchaseEvent());
     });
+
+    final companyState = context.read<CompanyProfileBloc>().state;
+    if (companyState is CompanyProfileLoadedState) {
+      baseCurrency = companyState.company.comLocalCcy ?? "";
+    }
   }
 
   @override
@@ -73,7 +79,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
     final state = context.watch<AuthBloc>().state;
 
     if (state is! AuthenticatedState) {
@@ -111,30 +117,22 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
         },
         child: Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface,
-          appBar: AppBar(
-            titleSpacing: 0,
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            title: Text(locale.purchaseEntry),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                onPressed: () {
-                  context.read<PurchaseBloc>().add(ResetPurchaseEvent());
-                  _accountController.clear();
-                  _personController.clear();
-                  _xRefController.clear();
-                },
-              ),
-            ],
-          ),
           body: Form(
             key: _formKey,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Row(
+                    spacing: 8,
+                    children: [
+                      Utils.zBackButton(context),
+                      Text(tr.purchaseEntry,style: Theme.of(context).textTheme.titleLarge)
+                    ],
+                  ),
+                  SizedBox(height: 8),
                   // Supplier Selection
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -144,12 +142,12 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                         child: GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
                           key: ValueKey('person_field'),
                           controller: _personController,
-                          title: locale.supplier,
-                          hintText: "Select Supplier",
+                          title: tr.supplier,
+                          hintText: tr.supplier,
                           isRequired: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please select a supplier';
+                              return tr.required(tr.supplier);
                             }
                             return null;
                           },
@@ -181,10 +179,6 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Expanded(child: ZTextFieldEntitled(
-                          controller: _xRefController,
-                          title: locale.invoiceNumber)),
-                      const SizedBox(width: 8),
                       Expanded(
                         child: BlocBuilder<PurchaseBloc, PurchaseState>(
                           builder: (context, state) {
@@ -194,8 +188,8 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                               return GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
                                 key: ValueKey('account_field'),
                                 controller: _accountController,
-                                title: locale.accounts,
-                                hintText: locale.selectAccount,
+                                title: tr.accounts,
+                                hintText: tr.selectAccount,
                                 isRequired: current.paymentMode != PaymentMode.cash,
                                 validator: (value) {
                                   if (current.paymentMode != PaymentMode.cash && (value == null || value.isEmpty)) {
@@ -233,8 +227,8 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                             return GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
                               key: ValueKey('account_field'),
                               controller: _accountController,
-                              title: locale.accounts,
-                              hintText: locale.selectAccount,
+                              title: tr.accounts,
+                              hintText: tr.selectAccount,
                               isRequired: false,
                               bloc: context.read<AccountsBloc>(),
                               fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 5, end: 5, exclude: '')),
@@ -265,27 +259,20 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      BlocBuilder<PurchaseBloc, PurchaseState>(
-                        builder: (context, state) {
-                          if (state is PurchaseLoaded) {
-                            final current = state;
-                            return ZOutlineButton(
-                              icon: current.paymentMode == PaymentMode.cash
-                                  ? Icons.money
-                                  : current.paymentMode == PaymentMode.credit
-                                  ? Icons.credit_card
-                                  : Icons.payments,
-                              onPressed: () => _showPaymentModeDialog(context, current),
-                              label: Text(_getPaymentModeLabel(current.paymentMode)),
-                            );
-                          }
-                          return ZOutlineButton(
-                            icon: Icons.payments_rounded,
-                            onPressed: () {},
-                            label: Text(locale.payment),
-                          );
-                        },
-                      ),
+                      Expanded(child: ZTextFieldEntitled(
+                          controller: _xRefController,
+                          title: tr.invoiceNumber)),
+                      const SizedBox(width: 8),
+                      ZOutlineButton(
+                          width: 120,
+                          icon:  Icons.refresh,
+                          onPressed: () {
+                            context.read<PurchaseBloc>().add(ResetPurchaseEvent());
+                            _accountController.clear();
+                            _personController.clear();
+                            _xRefController.clear();
+                          },
+                          label: Text(tr.newKeyword)),
                       const SizedBox(width: 8),
                       BlocBuilder<PurchaseBloc,PurchaseState>(
                         builder: (context,state) {
@@ -611,6 +598,8 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
   }
 
   Widget _buildSummarySection(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context)!;
     return BlocBuilder<PurchaseBloc, PurchaseState>(
       builder: (context, state) {
         if (state is PurchaseLoaded || state is PurchaseSaving) {
@@ -618,22 +607,33 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
           return Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              border: Border.all(color: Colors.grey.shade300),
+              color: color.surface,
+              border: Border.all(color: color.outline.withValues(alpha:  .3)),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
               children: [
-                // Payment Mode
-                _buildSummaryRow(
-                  context,
-                  label: AppLocalizations.of(context)!.paymentMethod,
-                  value: _getPaymentModeLabel(current.paymentMode),
-                  isBold: false,
-                  isText: true,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(tr.paymentMethod),
+                    InkWell(
+                        onTap: ()=> _showPaymentModeDialog(current),
+                        child: Text(_getPaymentModeLabel(current.paymentMode)))
+                  ],
                 ),
-                const SizedBox(height: 8),
-
+                Divider(color: color.outline.withValues(alpha: .2)),
+                // Cash Payment (if applicable)
+                if (current.paymentMode != PaymentMode.credit)...[
+                  _buildSummaryRow(
+                    context,
+                    label: current.paymentMode == PaymentMode.cash ? tr.cashPayment : tr.accountPayment,
+                    value: current.cashPayment,
+                    isBold: true,
+                    color: Colors.green,
+                  ),
+                  Divider(color: color.outline.withValues(alpha: .2)),
+                ],
                 // Grand Total
                 _buildSummaryRow(
                   context,
@@ -641,47 +641,45 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                   value: current.grandTotal,
                   isBold: true,
                 ),
-                const SizedBox(height: 8),
-
-                // Cash Payment (if applicable)
-                if (current.paymentMode != PaymentMode.credit)
-                  _buildSummaryRow(
-                    context,
-                    label: current.paymentMode == PaymentMode.cash ? AppLocalizations.of(context)!.cashPayment : AppLocalizations.of(context)!.accountPayment,
-                    value: current.cashPayment,
-                    isBold: false,
-                    color: Colors.green,
-                  ),
 
                 // Credit Amount (if applicable)
-                if (current.paymentMode != PaymentMode.cash)
+                if (current.paymentMode != PaymentMode.cash)...[
+                  SizedBox(height: 5),
                   _buildSummaryRow(
                     context,
-                    label: "Credit Amount",
+                    label: tr.accountPayment,
                     value: current.creditAmount,
-                    isBold: false,
-                    color: Colors.blue,
-                  ),
-
-                // Current Balance (if account selected)
-                if (current.supplierAccount != null)
-                  _buildSummaryRow(
-                    context,
-                    label: "Current Balance",
-                    value: current.currentBalance,
-                    isBold: false,
-                    color: Colors.grey[700],
-                  ),
-
-                // New Balance (if credit)
-                if (current.supplierAccount != null && current.creditAmount > 0)
-                  _buildSummaryRow(
-                    context,
-                    label: "New Balance",
-                    value: current.newBalance,
                     isBold: true,
                     color: Colors.orange,
                   ),
+                ],
+
+
+                // Current Balance (if account selected)
+                if (current.supplierAccount != null)...[
+                  SizedBox(height: 5),
+                  _buildSummaryRow(
+                    context,
+                    label: tr.currentBalance,
+                    value: current.currentBalance,
+                    isBold: true,
+                    color: Colors.deepOrangeAccent,
+                  ),
+                ],
+
+
+                // New Balance (if credit)
+                if (current.supplierAccount != null && current.creditAmount > 0)...[
+                  Divider(color: Theme.of(context).colorScheme.outline.withValues(alpha: .2)),
+                  _buildSummaryRow(
+                    context,
+                    label: AppLocalizations.of(context)!.newBalance,
+                    value: current.newBalance,
+                    isBold: true,
+                    color: color.primary,
+                  ),
+                ]
+
 
               ],
             ),
@@ -719,8 +717,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
             color: color ?? Theme.of(context).colorScheme.primary,
           ),
         )
-            : Text(
-          (value as double).toAmount(),
+            : Text("${(value as double).toAmount()} $baseCurrency",
           style: TextStyle(
             fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
             fontSize: isBold ? 16 : 14,
@@ -748,7 +745,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
     }
   }
 
-  void _showPaymentModeDialog(BuildContext context, PurchaseLoaded current) {
+  void _showPaymentModeDialog(PurchaseLoaded current) {
     showDialog(
       context: context,
       builder: (context) => ZFormDialog(
@@ -866,9 +863,9 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
   String _getPaymentModeLabel(PaymentMode mode) {
     switch (mode) {
       case PaymentMode.cash:
-        return "Cash";
+        return AppLocalizations.of(context)!.cash;
       case PaymentMode.credit:
-        return "Credit";
+        return AppLocalizations.of(context)!.accountPayment;
       case PaymentMode.mixed:
         return "Mixed";
     }

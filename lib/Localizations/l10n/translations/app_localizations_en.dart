@@ -1846,4 +1846,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get grandTotal => 'Grand Total';
+
+  @override
+  String get invoiceType => 'Invoice Type';
+
+  @override
+  String get totalInvoice => 'Total Invoice';
+
+  @override
+  String get saleTitle => 'Sale';
+
+  @override
+  String get newBalance => 'New Balance';
 }

@@ -1838,4 +1838,16 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get grandTotal => 'جمع کل';
+
+  @override
+  String get invoiceType => 'نوع بل';
+
+  @override
+  String get totalInvoice => 'جمع کل';
+
+  @override
+  String get saleTitle => 'فروش';
+
+  @override
+  String get newBalance => 'مانده جدید';
 }

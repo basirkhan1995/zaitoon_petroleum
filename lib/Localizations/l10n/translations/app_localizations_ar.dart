@@ -1841,4 +1841,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get grandTotal => 'ټولیزه مجموعه';
+
+  @override
+  String get invoiceType => 'بل ډول';
+
+  @override
+  String get totalInvoice => 'ټولیزه بل';
+
+  @override
+  String get saleTitle => 'فروش';
+
+  @override
+  String get newBalance => 'نوې پاتې شونې';
 }

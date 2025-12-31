@@ -3663,6 +3663,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Grand Total'**
   String get grandTotal;
+
+  /// No description provided for @invoiceType.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice Type'**
+  String get invoiceType;
+
+  /// No description provided for @totalInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Invoice'**
+  String get totalInvoice;
+
+  /// No description provided for @saleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale'**
+  String get saleTitle;
+
+  /// No description provided for @newBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'New Balance'**
+  String get newBalance;
 }
 
 class _AppLocalizationsDelegate

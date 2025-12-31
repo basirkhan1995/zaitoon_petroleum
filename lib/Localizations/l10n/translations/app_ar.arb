@@ -613,5 +613,9 @@
   "qty": "مقدار",
   "addItem": "توکی اضافه",
   "invoiceNumber": "نمبر بل #",
-  "grandTotal": "ټولیزه مجموعه"
+  "grandTotal": "ټولیزه مجموعه",
+  "invoiceType": "بل ډول",
+  "totalInvoice": "ټولیزه بل",
+  "saleTitle": "فروش",
+  "newBalance": "نوې پاتې شونې"
 }

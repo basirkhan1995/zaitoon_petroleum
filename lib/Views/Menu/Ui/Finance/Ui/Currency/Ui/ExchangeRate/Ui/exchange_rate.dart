@@ -45,7 +45,6 @@ class ExchangeRateView extends StatelessWidget {
   }
 }
 
-
 class _Mobile extends StatelessWidget {
   const _Mobile();
 
@@ -72,14 +71,9 @@ class _Desktop extends StatefulWidget {
 }
 class _DesktopState extends State<_Desktop> {
   String? myLocale;
-  String? baseCurrency;
   @override
   void initState() {
-
     myLocale = context.read<LocalizationBloc>().state.languageCode;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-
-    });
     super.initState();
   }
   @override
