@@ -46,20 +46,15 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
     if (state is PurchaseInvoiceLoaded) {
       final current = state as PurchaseInvoiceLoaded;
 
-      // Determine payment mode based on current payment amount
       PaymentMode newPaymentMode;
 
       if (current.payment == 0) {
-        // No cash payment = full credit
         newPaymentMode = PaymentMode.credit;
       } else if (current.payment >= current.grandTotal) {
-        // Full cash payment
         newPaymentMode = PaymentMode.cash;
       } else if (current.payment > 0 && current.payment < current.grandTotal) {
-        // Partial cash payment = mixed
         newPaymentMode = PaymentMode.mixed;
       } else {
-        // Default to credit if payment is invalid
         newPaymentMode = PaymentMode.credit;
       }
 
@@ -156,32 +151,28 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
       PaymentMode newPaymentMode;
 
       if (event.isCreditAmount) {
-        // event.payment contains CREDIT amount
         creditAmount = event.payment;
         cashPayment = current.grandTotal - creditAmount;
 
         if (creditAmount <= 0) {
-          // No credit = full cash
           newPaymentMode = PaymentMode.cash;
           cashPayment = current.grandTotal;
           creditAmount = 0;
         } else if (creditAmount >= current.grandTotal) {
-          // Full credit
           newPaymentMode = PaymentMode.credit;
           cashPayment = 0;
           creditAmount = current.grandTotal;
         } else {
-          // Mixed
           newPaymentMode = PaymentMode.mixed;
         }
       } else {
-        // Original logic: event.payment contains CASH amount
         cashPayment = event.payment;
         creditAmount = current.grandTotal - cashPayment;
 
         if (cashPayment == 0) {
           newPaymentMode = PaymentMode.credit;
           creditAmount = current.grandTotal;
+          cashPayment = 0;
         } else if (cashPayment >= current.grandTotal) {
           newPaymentMode = PaymentMode.cash;
           cashPayment = current.grandTotal;
@@ -192,7 +183,7 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
       }
 
       emit(current.copyWith(
-        payment: cashPayment, // Store cash payment in state
+        payment: cashPayment,
         paymentMode: newPaymentMode,
       ));
     }
@@ -222,7 +213,6 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
     final current = state as PurchaseInvoiceLoaded;
     final savedState = current.copyWith();
 
-    // Validate supplier
     if (current.supplier == null) {
       emit(PurchaseInvoiceError('Please select a supplier'));
       emit(savedState);
@@ -230,7 +220,6 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
       return;
     }
 
-    // Validate items are not empty
     if (current.items.isEmpty) {
       emit(PurchaseInvoiceError('Please add at least one item'));
       emit(savedState);
@@ -238,7 +227,6 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
       return;
     }
 
-    // Validate each item has all required fields
     for (var i = 0; i < current.items.length; i++) {
       final item = current.items[i];
       if (item.productId.isEmpty) {
@@ -267,7 +255,6 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
       }
     }
 
-    // Validate payment based on mode
     if (current.paymentMode == PaymentMode.credit || current.paymentMode == PaymentMode.mixed) {
       if (current.supplierAccount == null) {
         emit(PurchaseInvoiceError('Please select a supplier account for credit payment'));
@@ -292,7 +279,6 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
       }
     }
 
-    // Show saving state
     emit(PurchaseInvoiceSaving(
       items: current.items,
       supplier: current.supplier,
@@ -303,32 +289,26 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
     ));
 
     try {
-      // Calculate account and amount for API
       int? accountNumber;
-      double amountToSend;
+      double amountToSend; // This is CREDIT amount for API
 
       switch (current.paymentMode) {
         case PaymentMode.cash:
-        // Full cash payment - no account needed
-          accountNumber = 0; // 0 means cash payment
-          amountToSend = current.grandTotal; // Full amount as cash
+          accountNumber = 0;
+          amountToSend = 0.0; // No credit to account
           break;
 
         case PaymentMode.credit:
-        // Full credit payment - all amount goes to account as credit
           accountNumber = current.supplierAccount!.accNumber;
-          amountToSend = 0.0; // No cash payment now
+          amountToSend = current.grandTotal; // All amount as credit
           break;
 
         case PaymentMode.mixed:
-        // Mixed payment: part cash now, rest as credit
           accountNumber = current.supplierAccount!.accNumber;
-          amountToSend = current.payment; // Cash portion being paid now
-          // The credit portion (current.creditAmount) will automatically go to account
+          amountToSend = current.creditAmount; // Credit portion to account
           break;
       }
 
-      // Convert items to records
       final records = current.items.map((item) {
         return PurchaseInvoiceRecord(
           proID: int.tryParse(item.productId) ?? 0,
@@ -340,42 +320,31 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
 
       final xRef = event.xRef ?? 'PUR-${DateTime.now().millisecondsSinceEpoch}';
 
-      // Call API - returns Map<String, dynamic>
       final response = await repo.addInvoice(
         orderName: "Purchase",
         usrName: event.usrName,
         perID: event.ordPersonal,
         xRef: xRef,
         account: accountNumber,
-        amount: amountToSend,
+        amount: amountToSend, // CREDIT amount
         records: records,
       );
 
-      // Extract message from response
       final message = response['msg']?.toString() ?? 'No response message';
 
-      // Handle different response messages
       if (message.toLowerCase().contains('success')) {
-        // Success - extract invoice number if available
         String invoiceNumber = response['invoiceNo']?.toString() ?? 'Generated';
-
         emit(PurchaseInvoiceSaved(true, invoiceNumber: invoiceNumber));
         event.completer.complete(invoiceNumber);
-
-        // Reset after successful save
         add(ResetPurchaseInvoiceEvent());
       }
       else if (message.toLowerCase().contains('authorized')) {
-        // Transaction is authorized but not completed
         String invoiceNumber = response['invoiceNo']?.toString() ?? 'Authorized';
-
         emit(PurchaseInvoiceSaved(true, invoiceNumber: invoiceNumber));
         event.completer.complete(invoiceNumber);
-
         add(ResetPurchaseInvoiceEvent());
       }
       else {
-        // Handle specific error messages
         String errorMessage;
         final msgLower = message.toLowerCase();
 
@@ -388,13 +357,13 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
         } else if (msgLower.contains('not found')) {
           errorMessage = 'Invalid product or storage ID';
         } else if (msgLower.contains('unavailable')) {
-          errorMessage = message; // Contains product name and available quantity
+          errorMessage = message;
         } else if (msgLower.contains('large')) {
           errorMessage = 'Payment amount exceeds total bill amount';
         } else if (msgLower.contains('failed')) {
           errorMessage = 'Invoice creation failed. Please try again.';
         } else {
-          errorMessage = message; // Return the original message
+          errorMessage = message;
         }
 
         emit(PurchaseInvoiceError(errorMessage));

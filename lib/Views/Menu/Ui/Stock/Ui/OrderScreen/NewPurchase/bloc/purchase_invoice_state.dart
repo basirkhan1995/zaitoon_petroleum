@@ -69,18 +69,13 @@ class PurchaseInvoiceLoaded extends PurchaseInvoiceState {
     return currentBalance + creditAmount;
   }
 
-  // Check if form is valid for submission
   bool get isFormValid {
-    // Check supplier
     if (supplier == null) return false;
 
-    // Check account for credit/mixed payments
     if (paymentMode != PaymentMode.cash && supplierAccount == null) return false;
 
-    // Check items
     if (items.isEmpty) return false;
 
-    // Check each item
     for (var item in items) {
       if (item.productId.isEmpty ||
           item.productName.isEmpty ||
@@ -93,7 +88,6 @@ class PurchaseInvoiceLoaded extends PurchaseInvoiceState {
       }
     }
 
-    // Check mixed payment validation
     if (paymentMode == PaymentMode.mixed) {
       if (payment <= 0 || payment >= grandTotal) return false;
     }

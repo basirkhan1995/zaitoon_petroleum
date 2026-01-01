@@ -70,7 +70,7 @@ class UpdatePurchaseItemEvent extends PurchaseInvoiceEvent {
 
 class UpdatePurchasePaymentEvent extends PurchaseInvoiceEvent {
   final double payment;
-  final bool isCreditAmount; // Add this
+  final bool isCreditAmount;
 
   const UpdatePurchasePaymentEvent(this.payment, {this.isCreditAmount = false});
 

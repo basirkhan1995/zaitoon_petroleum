@@ -669,7 +669,7 @@ class _DesktopState extends State<_Desktop> {
       builder: (context, state) {
         if (state is PurchaseInvoiceLoaded || state is PurchaseInvoiceSaving) {
           final current = state is PurchaseInvoiceSaving ?
-          (state as PurchaseInvoiceSaving) :
+          state :
           (state as PurchaseInvoiceLoaded);
 
           return Container(
@@ -712,25 +712,25 @@ class _DesktopState extends State<_Desktop> {
                 if (current.paymentMode == PaymentMode.cash) ...[
                   _buildSummaryRow(
                     label: "Cash Payment",
-                    value: current.grandTotal,
+                    value: current.cashPayment, // Use cashPayment getter
                     color: Colors.green,
                   ),
                 ] else if (current.paymentMode == PaymentMode.credit) ...[
                   _buildSummaryRow(
                     label: "Account (Credit) Payment",
-                    value: current.grandTotal,
+                    value: current.creditAmount, // Use creditAmount getter
                     color: Colors.orange,
                   ),
                 ] else if (current.paymentMode == PaymentMode.mixed) ...[
                   _buildSummaryRow(
                     label: "Account (Credit) Payment",
-                    value: current.grandTotal - current.payment,
+                    value: current.creditAmount, // Use creditAmount getter
                     color: Colors.orange,
                   ),
                   const SizedBox(height: 4),
                   _buildSummaryRow(
                     label: "Cash Payment",
-                    value: current.payment,
+                    value: current.cashPayment, // Use cashPayment getter
                     color: Colors.green,
                   ),
                 ],
