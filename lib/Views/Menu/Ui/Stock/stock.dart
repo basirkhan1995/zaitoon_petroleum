@@ -115,7 +115,7 @@ class StockView extends StatelessWidget {
                       label: Text(locale.purchaseTitle),
                       icon: Icons.shopping_bag,
                       width: double.infinity,
-                       onPressed: () => Utils.goto(context, NewPurchaseView()),
+                       onPressed: () => Utils.goto(context, NewOrderView(ordName: "Purchase")),
                     ),
                   if (login.hasPermission(18) ?? false)
                     ZOutlineButton(
@@ -124,7 +124,7 @@ class StockView extends StatelessWidget {
                       label: Text(locale.sellTitle),
                       icon: Icons.shopping_bag,
                       width: double.infinity,
-                      onPressed: () => Utils.goto(context, NewSaleVew()),
+                      onPressed: () => Utils.goto(context, NewOrderView(ordName: "Sale")),
                     ),
 
                   ZOutlineButton(

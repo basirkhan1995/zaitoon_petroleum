@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
+import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/bloc/storage_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
@@ -25,14 +26,28 @@ import '../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
 import 'bloc/purchase_bloc.dart';
 import 'model/pur_invoice_items.dart';
 
-class NewPurchaseView extends StatefulWidget {
-  const NewPurchaseView({super.key});
+class NewOrderView extends StatelessWidget {
+  final String? ordName;
+  const NewOrderView({super.key,this.ordName});
 
   @override
-  State<NewPurchaseView> createState() => _NewPurchaseViewState();
+  Widget build(BuildContext context) {
+     return ResponsiveLayout(mobile: _Mobile(), desktop: _Desktop(ordName), tablet: _Tablet(),);
+  }
+
 }
 
-class _NewPurchaseViewState extends State<NewPurchaseView> {
+
+
+class _Desktop extends StatefulWidget {
+  final String? orderName;
+  const _Desktop(this.orderName);
+
+  @override
+  State<_Desktop> createState() => _DesktopState();
+}
+
+class _DesktopState extends State<_Desktop> {
   final TextEditingController _accountController = TextEditingController();
   final TextEditingController _personController = TextEditingController();
   final TextEditingController _xRefController = TextEditingController();
@@ -129,7 +144,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                     spacing: 8,
                     children: [
                       Utils.zBackButton(context),
-                      Text(tr.purchaseEntry,style: Theme.of(context).textTheme.titleLarge)
+                      Text(widget.orderName == "Purchase"? tr.purchaseEntry : tr.saleTitle,style: Theme.of(context).textTheme.titleLarge)
                     ],
                   ),
                   SizedBox(height: 8),
@@ -275,26 +290,26 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                           label: Text(tr.newKeyword)),
                       const SizedBox(width: 8),
                       BlocBuilder<PurchaseBloc,PurchaseState>(
-                        builder: (context,state) {
-                          if (state is PurchaseLoaded || state is PurchaseSaving) {
-                            final current = state as PurchaseLoaded;
-                            final isSaving = state is PurchaseSaving;
-                            final locale = AppLocalizations.of(context)!;
-                            // Save Button
-                            return ZButton(
-                              width: 120,
-                              onPressed: isSaving ? null : () => _saveInvoice(context, current),
-                              label: isSaving
-                                  ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2,color: Theme.of(context).colorScheme.surface,),
-                              )
-                                  : Text(locale.create),
-                            );
+                          builder: (context,state) {
+                            if (state is PurchaseLoaded || state is PurchaseSaving) {
+                              final current = state as PurchaseLoaded;
+                              final isSaving = state is PurchaseSaving;
+                              final locale = AppLocalizations.of(context)!;
+                              // Save Button
+                              return ZButton(
+                                width: 120,
+                                onPressed: isSaving ? null : () => _saveInvoice(context, current),
+                                label: isSaving
+                                    ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(strokeWidth: 2,color: Theme.of(context).colorScheme.surface,),
+                                )
+                                    : Text(locale.create),
+                              );
+                            }
+                            return const SizedBox();
                           }
-                          return const SizedBox();
-                        }
                       )
                     ],
                   ),
@@ -466,34 +481,34 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
               ),
 
               // Unit Price
-             SizedBox(
-            width: 150,
-            child: TextField(
-              controller: priceController,
-              focusNode: nodes[2],
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
-                SmartThousandsDecimalFormatter(),
-              ],
-              decoration: const InputDecoration(
-                hintText: 'Price',
-                border: InputBorder.none,
-                isDense: true,
+              SizedBox(
+                width: 150,
+                child: TextField(
+                  controller: priceController,
+                  focusNode: nodes[2],
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                    SmartThousandsDecimalFormatter(),
+                  ],
+                  decoration: const InputDecoration(
+                    hintText: 'Price',
+                    border: InputBorder.none,
+                    isDense: true,
+                  ),
+                  onChanged: (value) {
+                    final parsed = double.tryParse(value.replaceAll(',', ''));
+                    if (parsed != null) {
+                      context.read<PurchaseBloc>().add(
+                        UpdateItemEvent(
+                          rowId: item.rowId,
+                          purPrice: parsed,
+                        ),
+                      );
+                    }
+                  },
+                ),
               ),
-              onChanged: (value) {
-                final parsed = double.tryParse(value.replaceAll(',', ''));
-                if (parsed != null) {
-                  context.read<PurchaseBloc>().add(
-                    UpdateItemEvent(
-                      rowId: item.rowId,
-                      purPrice: parsed,
-                    ),
-                  );
-                }
-              },
-            ),
-          ),
 
               // Total
               SizedBox(
@@ -508,7 +523,7 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
                 ),
               ),
 
-           // Storage Selection with default first storage
+              // Storage Selection with default first storage
               SizedBox(
                 width: 180,
                 child: BlocBuilder<StorageBloc, StorageState>(
@@ -907,7 +922,8 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
     }
 
     // Validate account for credit payment
-    if (state.paymentMode != PaymentMode.cash && state.supplierAccount == null) {
+    if (state.paymentMode != PaymentMode.cash &&
+        state.supplierAccount == null) {
       Utils.showOverlayMessage(
         context,
         message: 'Please select a supplier account for credit payment',
@@ -939,14 +955,41 @@ class _NewPurchaseViewState extends State<NewPurchaseView> {
     }
 
     final completer = Completer<String>();
-    context.read<PurchaseBloc>().add(SavePurchaseInvoiceEvent(
-      usrName: _userName ?? '',
-      orderName: "Purchase",
-      ordPersonal: state.supplier!.perId!,
-      xRef: _xRefController.text,
-      cashPayment: state.cashPayment,
-      items: state.items,
-      completer: completer,
-    ));
+    if(widget.orderName == "Purchase"){
+      context.read<PurchaseBloc>().add(SavePurchaseInvoiceEvent(
+        usrName: _userName ?? '',
+        orderName: "Purchase",
+        ordPersonal: state.supplier!.perId!,
+        xRef: _xRefController.text,
+        cashPayment: state.cashPayment,
+        items: state.items,
+        completer: completer,
+      ));
+    }else{
+      context.read<PurchaseBloc>().add(SavePurchaseInvoiceEvent(
+        usrName: _userName ?? '',
+        orderName: "Sale",
+        ordPersonal: state.supplier!.perId!,
+        xRef: _xRefController.text,
+        cashPayment: state.cashPayment,
+        items: state.items,
+        completer: completer,
+      ));
+    }
+  }
+}
+
+class _Tablet extends StatelessWidget {
+  const _Tablet();
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+class _Mobile extends StatelessWidget {
+  const _Mobile();
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }

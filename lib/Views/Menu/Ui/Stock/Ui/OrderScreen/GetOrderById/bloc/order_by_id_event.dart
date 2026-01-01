@@ -58,3 +58,20 @@ class SaveOrderChangesEvent extends OrderByIdEvent {
 }
 
 class ResetOrderEvent extends OrderByIdEvent {}
+
+class DeleteOrderEvent extends OrderByIdEvent {
+  final int orderId;
+  final String ref;
+  final String orderName;
+  final String usrName;
+
+  const DeleteOrderEvent({
+    required this.orderId,
+    required this.ref,
+    required this.orderName,
+    required this.usrName,
+  });
+
+  @override
+  List<Object?> get props => [orderId, ref, orderName, usrName];
+}

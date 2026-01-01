@@ -76,32 +76,53 @@ class _OrderByIdViewState extends State<OrderByIdView> {
             message: state.message,
             isError: !state.success,
           );
+
+          // Navigate back if delete was successful
+          if (state.success) {
+           Navigator.of(context).pop();
+          }
+        }
+
+        if (state is OrderByIdDeleted) {
+          Utils.showOverlayMessage(
+            context,
+            message: state.message,
+            isError: !state.success,
+          );
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          titleSpacing: 0,
-          title: Text('Order #${widget.orderId}'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: () {
-                context.read<OrderByIdBloc>().add(LoadOrderByIdEvent(widget.orderId));
-              },
-            ),
-            BlocBuilder<OrderByIdBloc, OrderByIdState>(
-              builder: (context, state) {
-                if (state is OrderByIdLoaded && state.order.trnStateText?.toLowerCase() == 'pending') {
-                  return IconButton(
-                    icon: Icon(state.isEditing ? Icons.visibility : Icons.edit),
-                    onPressed: () => _toggleEditMode(context, state),
-                  );
-                }
-                return const SizedBox();
-              },
-            ),
-          ],
-        ),
+        titleSpacing: 0,
+        title: Text('Order #${widget.orderId}'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              context.read<OrderByIdBloc>().add(LoadOrderByIdEvent(widget.orderId));
+            },
+          ),
+          BlocBuilder<OrderByIdBloc, OrderByIdState>(
+            builder: (context, state) {
+              if (state is OrderByIdLoaded && state.order.trnStateText == 'Pending') {
+                return Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(state.isEditing ? Icons.visibility : Icons.edit),
+                      onPressed: () => _toggleEditMode(context, state),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline),
+                      onPressed: () => _showDeleteDialog(context, state.order),
+                    ),
+                  ],
+                );
+              }
+              return const SizedBox();
+            },
+          ),
+        ],
+      ),
         body: BlocBuilder<OrderByIdBloc, OrderByIdState>(
           builder: (context, state) {
             if (state is OrderByIdLoading) {
@@ -681,6 +702,60 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     context.read<OrderByIdBloc>().add(SaveOrderChangesEvent(
       usrName: _userName!,
       completer: completer,
+    ));
+  }
+
+  void _showDeleteDialog(BuildContext context, OrderByIdModel order) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Order'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Are you sure you want to delete this order?'),
+            SizedBox(height: 8),
+            Text('Order: ${order.ordName ?? 'N/A'}', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Reference: ${order.ordTrnRef ?? 'N/A'}'),
+            SizedBox(height: 12),
+            Text(
+              'Note: Only pending orders can be deleted. Verified transactions cannot be deleted.',
+              style: TextStyle(color: Colors.orange, fontSize: 12),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteOrder(context, order);
+            },
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteOrder(BuildContext context, OrderByIdModel order) {
+    if (_userName == null) {
+      Utils.showOverlayMessage(context, message: 'User not authenticated', isError: true);
+      return;
+    }
+
+    context.read<OrderByIdBloc>().add(DeleteOrderEvent(
+      orderId: order.ordId!,
+      ref: order.ordTrnRef ?? '',
+      orderName: order.ordName ?? '',
+      usrName: _userName!,
     ));
   }
 }

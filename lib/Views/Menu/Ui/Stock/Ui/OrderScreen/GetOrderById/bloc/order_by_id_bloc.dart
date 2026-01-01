@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
 import '../model/ord_by_Id_model.dart';
+
 part 'order_by_id_event.dart';
 part 'order_by_id_state.dart';
 
@@ -17,6 +18,7 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     on<RemoveOrderItemEvent>(_onRemoveItem);
     on<SaveOrderChangesEvent>(_onSaveChanges);
     on<ResetOrderEvent>(_onReset);
+    on<DeleteOrderEvent>(_onDeleteOrder); // Added delete event handler
   }
 
   Future<void> _onLoadOrderById(
@@ -248,6 +250,49 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     if (state is OrderByIdLoaded) {
       final current = state as OrderByIdLoaded;
       emit(current.copyWith(isEditing: false));
+    }
+  }
+
+  Future<void> _onDeleteOrder(
+      DeleteOrderEvent event,
+      Emitter<OrderByIdState> emit,
+      ) async {
+    try {
+      if (state is! OrderByIdLoaded) return;
+
+      final current = state as OrderByIdLoaded;
+      final savedState = current.copyWith();
+
+      emit(OrderByIdDeleting(current.order));
+
+      final success = await repo.deleteOrder(
+        orderId: event.orderId,
+        usrName: event.usrName,
+        ref: event.ref,
+        ordName: event.orderName,
+      );
+
+      if (success) {
+        emit(OrderByIdDeleted(true, message: 'Order deleted successfully'));
+        // Navigate back or handle UI change
+        // You might want to add a callback or use a navigator
+      } else {
+        emit(OrderByIdError('Failed to delete order. The order transaction may be verified.'));
+        emit(savedState);
+      }
+    } catch (e) {
+      // Handle the "Authorized" message from the API
+      if (e.toString().contains('Authorized')) {
+        emit(OrderByIdError('Cannot delete order: The transaction is verified and cannot be deleted.'));
+      } else {
+        emit(OrderByIdError(e.toString()));
+      }
+
+      // Restore previous state
+      if (state is OrderByIdLoaded) {
+        final current = state as OrderByIdLoaded;
+        emit(current);
+      }
     }
   }
 }

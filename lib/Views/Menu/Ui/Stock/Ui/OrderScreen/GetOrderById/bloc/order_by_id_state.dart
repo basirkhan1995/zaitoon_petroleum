@@ -81,11 +81,30 @@ class OrderByIdSaving extends OrderByIdState {
   List<Object?> get props => [order];
 }
 
+class OrderByIdDeleting extends OrderByIdState {
+  final OrderByIdModel order;
+
+  const OrderByIdDeleting(this.order);
+
+  @override
+  List<Object?> get props => [order];
+}
+
 class OrderByIdSaved extends OrderByIdState {
   final bool success;
   final String message;
 
   const OrderByIdSaved(this.success, {this.message = ''});
+
+  @override
+  List<Object?> get props => [success, message];
+}
+
+class OrderByIdDeleted extends OrderByIdState {
+  final bool success;
+  final String message;
+
+  const OrderByIdDeleted(this.success, {this.message = ''});
 
   @override
   List<Object?> get props => [success, message];

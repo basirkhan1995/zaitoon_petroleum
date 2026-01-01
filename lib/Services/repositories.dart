@@ -1882,23 +1882,25 @@ class Repositories {
         endpoint: "/inventory/salePurchase.php",
         data: data,
       );
-
       return response.data['msg'] == 'success';
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<bool> deletePurchaseOrder({
+  Future<bool> deleteOrder({
     required int orderId,
     required String usrName,
-    required List<Map<String, dynamic>> records,
+    required String? ref,
+    required String? ordName,
+
   }) async {
     try {
       final data = {
         "ordID": orderId,
         "usrName": usrName,
-        "records": records,
+        "ordTrnRef":ref,
+        "ordName":ordName
       };
 
       final response = await api.delete(
