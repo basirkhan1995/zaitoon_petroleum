@@ -1,15 +1,15 @@
-part of 'invoice_bloc.dart';
+part of 'purchase_invoice_bloc.dart';
 
-abstract class InvoiceEvent extends Equatable {
-  const InvoiceEvent();
+abstract class PurchaseInvoiceEvent extends Equatable {
+  const PurchaseInvoiceEvent();
 
   @override
   List<Object?> get props => [];
 }
 
-class InitializeInvoiceEvent extends InvoiceEvent {}
+class InitializePurchaseInvoiceEvent extends PurchaseInvoiceEvent {}
 
-class SelectSupplierEvent extends InvoiceEvent {
+class SelectSupplierEvent extends PurchaseInvoiceEvent {
   final IndividualsModel supplier;
   const SelectSupplierEvent(this.supplier);
 
@@ -17,7 +17,7 @@ class SelectSupplierEvent extends InvoiceEvent {
   List<Object?> get props => [supplier];
 }
 
-class SelectSupplierAccountEvent extends InvoiceEvent {
+class SelectSupplierAccountEvent extends PurchaseInvoiceEvent {
   final AccountsModel supplier;
   const SelectSupplierAccountEvent(this.supplier);
 
@@ -25,19 +25,19 @@ class SelectSupplierAccountEvent extends InvoiceEvent {
   List<Object?> get props => [supplier];
 }
 
-class ClearSupplierEvent extends InvoiceEvent {}
+class ClearSupplierEvent extends PurchaseInvoiceEvent {}
 
-class AddNewItemEvent extends InvoiceEvent {}
+class AddNewPurchaseItemEvent extends PurchaseInvoiceEvent {}
 
-class RemoveItemEvent extends InvoiceEvent {
+class RemovePurchaseItemEvent extends PurchaseInvoiceEvent {
   final String rowId;
-  const RemoveItemEvent(this.rowId);
+  const RemovePurchaseItemEvent(this.rowId);
 
   @override
   List<Object?> get props => [rowId];
 }
 
-class UpdateItemEvent extends InvoiceEvent {
+class UpdatePurchaseItemEvent extends PurchaseInvoiceEvent {
   final String rowId;
   final String? productId;
   final String? productName;
@@ -47,7 +47,7 @@ class UpdateItemEvent extends InvoiceEvent {
   final int? storageId;
   final String? storageName;
 
-  const UpdateItemEvent({
+  const UpdatePurchaseItemEvent({
     required this.rowId,
     this.productId,
     this.productName,
@@ -71,26 +71,26 @@ class UpdateItemEvent extends InvoiceEvent {
   ];
 }
 
-class UpdatePaymentEvent extends InvoiceEvent {
+class UpdatePurchasePaymentEvent extends PurchaseInvoiceEvent {
   final double payment;
-  const UpdatePaymentEvent(this.payment);
+  const UpdatePurchasePaymentEvent(this.payment);
 
   @override
   List<Object?> get props => [payment];
 }
 
-class ResetInvoiceEvent extends InvoiceEvent {}
+class ResetPurchaseInvoiceEvent extends PurchaseInvoiceEvent {}
 
-class SaveInvoiceEvent extends InvoiceEvent {
+class SavePurchaseInvoiceEvent extends PurchaseInvoiceEvent {
   final String usrName;
   final String orderName;
   final int ordPersonal;
   final double cashPayment;
   final String? xRef;
-  final List<InvoiceItem> items;
+  final List<PurchaseInvoiceItem> items;
   final Completer<String> completer;
 
-  const SaveInvoiceEvent({
+  const SavePurchaseInvoiceEvent({
     required this.usrName,
     required this.ordPersonal,
     required this.orderName,
@@ -104,9 +104,9 @@ class SaveInvoiceEvent extends InvoiceEvent {
   List<Object?> get props => [usrName, ordPersonal, xRef, cashPayment, items, completer];
 }
 
-class LoadStoragesEvent extends InvoiceEvent {
+class LoadPurchaseStoragesEvent extends PurchaseInvoiceEvent {
   final int productId;
-  const LoadStoragesEvent(this.productId);
+  const LoadPurchaseStoragesEvent(this.productId);
 
   @override
   List<Object?> get props => [productId];

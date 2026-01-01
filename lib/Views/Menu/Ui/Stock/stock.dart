@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/estimate.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/new_invoice.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/new_purchase.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewSale/new_sale.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Orders/Ui/orders.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Shift/shift.dart';
@@ -115,7 +115,7 @@ class StockView extends StatelessWidget {
                       label: Text(locale.purchaseTitle),
                       icon: Icons.shopping_bag,
                       width: double.infinity,
-                       onPressed: () => Utils.goto(context, NewOrderView(ordName: "Purchase")),
+                       onPressed: () => Utils.goto(context, NewPurchaseOrderView(ordName: "Purchase")),
                     ),
                   if (login.hasPermission(18) ?? false)
                     ZOutlineButton(
@@ -124,7 +124,7 @@ class StockView extends StatelessWidget {
                       label: Text(locale.sellTitle),
                       icon: Icons.shopping_bag,
                       width: double.infinity,
-                      onPressed: () => Utils.goto(context, NewOrderView(ordName: "Sale")),
+                      onPressed: () => Utils.goto(context, NewPurchaseOrderView(ordName: "Sale")),
                     ),
 
                   ZOutlineButton(

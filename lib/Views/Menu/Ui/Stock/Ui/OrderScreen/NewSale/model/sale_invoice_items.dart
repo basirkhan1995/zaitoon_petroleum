@@ -1,5 +1,5 @@
 
-class InvoiceItem {
+class SaleInvoiceItem {
   final String rowId;
   String productId;
   String productName;
@@ -8,7 +8,7 @@ class InvoiceItem {
   double? salePrice;
   int storageId;
   String storageName;
-  InvoiceItem({
+  SaleInvoiceItem({
     String? itemId,
     required this.productId,
     required this.productName,
@@ -23,15 +23,14 @@ class InvoiceItem {
   double get totalSale => qty * (salePrice ?? 0);
 
 }
-
-class InvoiceRecord {
+class SaleInvoiceRecord {
   final int proID;
   final int stgID;
   final double quantity;
   final double? pPrice;
   final double? sPrice;
 
-  InvoiceRecord({
+  SaleInvoiceRecord({
     required this.proID,
     required this.stgID,
     required this.quantity,
