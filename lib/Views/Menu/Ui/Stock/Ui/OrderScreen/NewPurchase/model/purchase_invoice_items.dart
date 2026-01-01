@@ -1,4 +1,3 @@
-
 class PurchaseInvoiceItem {
   final String rowId;
   String productId;
@@ -7,6 +6,7 @@ class PurchaseInvoiceItem {
   double? purPrice;
   int storageId;
   String storageName;
+
   PurchaseInvoiceItem({
     String? itemId,
     required this.productId,
@@ -18,28 +18,26 @@ class PurchaseInvoiceItem {
   }) : rowId = itemId ?? DateTime.now().millisecondsSinceEpoch.toString();
 
   double get totalPurchase => qty * (purPrice ?? 0);
-
 }
+
 class PurchaseInvoiceRecord {
   final int proID;
   final int stgID;
   final double quantity;
   final double? pPrice;
-  final double? sPrice;
 
   PurchaseInvoiceRecord({
     required this.proID,
     required this.stgID,
     required this.quantity,
     this.pPrice,
-    this.sPrice,
   });
 
   Map<String, dynamic> toJson() => {
     'stkProduct': proID,
     'stkStorage': stgID,
-    'stkQuantity': quantity,
-    'stkPurPrice': pPrice,
-    'stkSalePrice': sPrice,
+    'stkQuantity': quantity.toString(),
+    'stkPurPrice': (pPrice ?? 0.0).toString(),
+    'stkSalePrice': "0.0000",
   };
 }

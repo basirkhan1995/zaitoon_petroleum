@@ -43,7 +43,6 @@ class UpdatePurchaseItemEvent extends PurchaseInvoiceEvent {
   final String? productName;
   final int? qty;
   final double? purPrice;
-  final double? salePrice;
   final int? storageId;
   final String? storageName;
 
@@ -53,7 +52,6 @@ class UpdatePurchaseItemEvent extends PurchaseInvoiceEvent {
     this.productName,
     this.qty,
     this.purPrice,
-    this.salePrice,
     this.storageId,
     this.storageName,
   });
@@ -65,7 +63,6 @@ class UpdatePurchaseItemEvent extends PurchaseInvoiceEvent {
     productName,
     qty,
     purPrice,
-    salePrice,
     storageId,
     storageName,
   ];
@@ -73,10 +70,12 @@ class UpdatePurchaseItemEvent extends PurchaseInvoiceEvent {
 
 class UpdatePurchasePaymentEvent extends PurchaseInvoiceEvent {
   final double payment;
-  const UpdatePurchasePaymentEvent(this.payment);
+  final bool isCreditAmount; // Add this
+
+  const UpdatePurchasePaymentEvent(this.payment, {this.isCreditAmount = false});
 
   @override
-  List<Object?> get props => [payment];
+  List<Object?> get props => [payment, isCreditAmount];
 }
 
 class ResetPurchaseInvoiceEvent extends PurchaseInvoiceEvent {}
@@ -85,7 +84,6 @@ class SavePurchaseInvoiceEvent extends PurchaseInvoiceEvent {
   final String usrName;
   final String orderName;
   final int ordPersonal;
-  final double cashPayment;
   final String? xRef;
   final List<PurchaseInvoiceItem> items;
   final Completer<String> completer;
@@ -95,13 +93,12 @@ class SavePurchaseInvoiceEvent extends PurchaseInvoiceEvent {
     required this.ordPersonal,
     required this.orderName,
     this.xRef,
-    required this.cashPayment,
     required this.items,
     required this.completer,
   });
 
   @override
-  List<Object?> get props => [usrName, ordPersonal, xRef, cashPayment, items, completer];
+  List<Object?> get props => [usrName, ordPersonal, orderName, xRef, items, completer];
 }
 
 class LoadPurchaseStoragesEvent extends PurchaseInvoiceEvent {

@@ -1829,23 +1829,23 @@ class Repositories {
 
   /// Purchase Invoice .............................................................
 
-  Future<String> addInvoice({
+  Future<Map<String, dynamic>> addInvoice({
     required String usrName,
     required int perID,
     required String? xRef,
     required String orderName, //Purchase or Sale
-     int? account,
-     double? amount,
+    int? account,
+    double? amount,
     required List<PurchaseInvoiceRecord> records,
   }) async {
     try {
       final data = {
         "usrName": usrName,
-        "ordName":orderName,
+        "ordName": orderName,
         "ordPersonal": perID,
-        "ordxRef": xRef,
-        "account": account,
-        "amount": amount,
+        "ordxRef": xRef ?? "",
+        "account": account ?? 0,
+        "amount": amount ?? 0.0,
         "records": records.map((r) => r.toJson()).toList(),
       };
 
@@ -1854,15 +1854,15 @@ class Repositories {
         data: data,
       );
 
-      if (response.data['msg'] == 'success') {
-        return response.data['invoiceNo'] ?? 'Unknown';
-      } else {
-        throw response.data['msg'] ?? 'Failed to save invoice';
-      }
+      // Return the full response data
+      return response.data is Map<String, dynamic>
+          ? response.data
+          : {'msg': 'Invalid response format'};
+
     } on DioException catch (e) {
       throw '${e.message}';
     } catch (e) {
-      throw e.toString();
+      throw 'Unexpected error: $e';
     }
   }
 

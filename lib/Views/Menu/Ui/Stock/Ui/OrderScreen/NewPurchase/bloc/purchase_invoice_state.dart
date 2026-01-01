@@ -6,19 +6,14 @@ abstract class PurchaseInvoiceState extends Equatable {
   const PurchaseInvoiceState();
 }
 
-class InvoiceInitial extends PurchaseInvoiceState {
+class PurchaseInvoiceInitial extends PurchaseInvoiceState {
   @override
   List<Object> get props => [];
 }
 
-class PurchaseLoading extends PurchaseInvoiceState {
-  @override
-  List<Object> get props => [];
-}
-
-class InvoiceError extends PurchaseInvoiceState {
+class PurchaseInvoiceError extends PurchaseInvoiceState {
   final String message;
-  const InvoiceError(this.message);
+  const PurchaseInvoiceError(this.message);
 
   @override
   List<Object> get props => [message];
@@ -28,7 +23,7 @@ class PurchaseInvoiceLoaded extends PurchaseInvoiceState {
   final List<PurchaseInvoiceItem> items;
   final AccountsModel? supplierAccount;
   final IndividualsModel? supplier;
-  final double payment;
+  final double payment; // Cash payment
   final PaymentMode paymentMode;
   final List<StorageModel>? storages;
 
@@ -37,7 +32,7 @@ class PurchaseInvoiceLoaded extends PurchaseInvoiceState {
     this.supplier,
     this.supplierAccount,
     required this.payment,
-    this.paymentMode = PaymentMode.credit,
+    this.paymentMode = PaymentMode.cash,
     this.storages,
   });
 
@@ -74,6 +69,38 @@ class PurchaseInvoiceLoaded extends PurchaseInvoiceState {
     return currentBalance + creditAmount;
   }
 
+  // Check if form is valid for submission
+  bool get isFormValid {
+    // Check supplier
+    if (supplier == null) return false;
+
+    // Check account for credit/mixed payments
+    if (paymentMode != PaymentMode.cash && supplierAccount == null) return false;
+
+    // Check items
+    if (items.isEmpty) return false;
+
+    // Check each item
+    for (var item in items) {
+      if (item.productId.isEmpty ||
+          item.productName.isEmpty ||
+          item.storageId == 0 ||
+          item.storageName.isEmpty ||
+          item.purPrice == null ||
+          item.purPrice! <= 0 ||
+          item.qty <= 0) {
+        return false;
+      }
+    }
+
+    // Check mixed payment validation
+    if (paymentMode == PaymentMode.mixed) {
+      if (payment <= 0 || payment >= grandTotal) return false;
+    }
+
+    return true;
+  }
+
   PurchaseInvoiceLoaded copyWith({
     List<PurchaseInvoiceItem>? items,
     AccountsModel? supplierAccount,
@@ -96,8 +123,8 @@ class PurchaseInvoiceLoaded extends PurchaseInvoiceState {
   List<Object?> get props => [items, supplier, supplierAccount, payment, paymentMode, storages];
 }
 
-class InvoiceSaving extends PurchaseInvoiceLoaded {
-  const InvoiceSaving({
+class PurchaseInvoiceSaving extends PurchaseInvoiceLoaded {
+  const PurchaseInvoiceSaving({
     required super.items,
     super.supplier,
     super.supplierAccount,
@@ -107,11 +134,11 @@ class InvoiceSaving extends PurchaseInvoiceLoaded {
   });
 }
 
-class InvoiceSaved extends PurchaseInvoiceState {
+class PurchaseInvoiceSaved extends PurchaseInvoiceState {
   final bool success;
   final String? invoiceNumber;
 
-  const InvoiceSaved(this.success, {this.invoiceNumber});
+  const PurchaseInvoiceSaved(this.success, {this.invoiceNumber});
 
   @override
   List<Object?> get props => [success, invoiceNumber];
