@@ -5,15 +5,15 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/indi
 import '../../../../../../../../Services/repositories.dart';
 import '../../../../../Settings/Ui/Company/Storage/model/storage_model.dart';
 import '../../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
-import '../model/pur_invoice_items.dart';
-part 'purchase_event.dart';
-part 'purchase_state.dart';
+import '../model/invoice_items.dart';
+part 'invoice_event.dart';
+part 'invoice_state.dart';
 
-class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
+class InvoiceBloc extends Bloc<InvoiceEvent, InvoiceState> {
   final Repositories repo;
 
-  PurchaseBloc(this.repo) : super(PurchaseInitial()) {
-    on<InitializePurchaseEvent>(_onInitialize);
+  InvoiceBloc(this.repo) : super(InvoiceInitial()) {
+    on<InitializeInvoiceEvent>(_onInitialize);
     on<SelectSupplierEvent>(_onSelectSupplier);
     on<SelectSupplierAccountEvent>(_onSelectSupplierAccount);
     on<ClearSupplierEvent>(_onClearSupplier);
@@ -21,14 +21,14 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     on<RemoveItemEvent>(_onRemoveItem);
     on<UpdateItemEvent>(_onUpdateItem);
     on<UpdatePaymentEvent>(_onUpdatePayment);
-    on<ResetPurchaseEvent>(_onReset);
-    on<SavePurchaseInvoiceEvent>(_onSaveInvoice);
+    on<ResetInvoiceEvent>(_onReset);
+    on<SaveInvoiceEvent>(_onSaveInvoice);
     on<LoadStoragesEvent>(_onLoadStorages);
   }
 
-  void _onInitialize(InitializePurchaseEvent event, Emitter<PurchaseState> emit) {
-    emit(PurchaseLoaded(
-      items: [PurInvoiceItem(
+  void _onInitialize(InitializeInvoiceEvent event, Emitter<InvoiceState> emit) {
+    emit(InvoiceLoaded(
+      items: [InvoiceItem(
         productId: '',
         productName: '',
         qty: 1,
@@ -41,9 +41,9 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     ));
   }
 
-  void _onSelectSupplierAccount(SelectSupplierAccountEvent event, Emitter<PurchaseState> emit) {
-    if (state is PurchaseLoaded) {
-      final current = state as PurchaseLoaded;
+  void _onSelectSupplierAccount(SelectSupplierAccountEvent event, Emitter<InvoiceState> emit) {
+    if (state is InvoiceLoaded) {
+      final current = state as InvoiceLoaded;
       emit(current.copyWith(
         supplierAccount: event.supplier,
         paymentMode: PaymentMode.credit, // Switch to credit when account selected
@@ -51,25 +51,25 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     }
   }
 
-  void _onSelectSupplier(SelectSupplierEvent event, Emitter<PurchaseState> emit) {
-    if (state is PurchaseLoaded) {
-      final current = state as PurchaseLoaded;
+  void _onSelectSupplier(SelectSupplierEvent event, Emitter<InvoiceState> emit) {
+    if (state is InvoiceLoaded) {
+      final current = state as InvoiceLoaded;
       emit(current.copyWith(supplier: event.supplier));
     }
   }
 
-  void _onClearSupplier(ClearSupplierEvent event, Emitter<PurchaseState> emit) {
-    if (state is PurchaseLoaded) {
-      final current = state as PurchaseLoaded;
+  void _onClearSupplier(ClearSupplierEvent event, Emitter<InvoiceState> emit) {
+    if (state is InvoiceLoaded) {
+      final current = state as InvoiceLoaded;
       emit(current.copyWith(supplier: null, supplierAccount: null));
     }
   }
 
-  void _onAddNewItem(AddNewItemEvent event, Emitter<PurchaseState> emit) {
-    if (state is! PurchaseLoaded) return;
-    final current = state as PurchaseLoaded;
+  void _onAddNewItem(AddNewItemEvent event, Emitter<InvoiceState> emit) {
+    if (state is! InvoiceLoaded) return;
+    final current = state as InvoiceLoaded;
 
-    final newItem = PurInvoiceItem(
+    final newItem = InvoiceItem(
       productId: '',
       productName: '',
       qty: 1,
@@ -78,18 +78,18 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
       storageId: 0,
     );
 
-    final updatedItems = List<PurInvoiceItem>.from(current.items)..add(newItem);
+    final updatedItems = List<InvoiceItem>.from(current.items)..add(newItem);
     emit(current.copyWith(items: updatedItems));
   }
 
-  void _onRemoveItem(RemoveItemEvent event, Emitter<PurchaseState> emit) {
-    if (state is PurchaseLoaded) {
-      final current = state as PurchaseLoaded;
+  void _onRemoveItem(RemoveItemEvent event, Emitter<InvoiceState> emit) {
+    if (state is InvoiceLoaded) {
+      final current = state as InvoiceLoaded;
       final updatedItems = current.items.where((item) => item.rowId != event.rowId).toList();
 
       // Ensure at least one item remains
       if (updatedItems.isEmpty) {
-        updatedItems.add(PurInvoiceItem(
+        updatedItems.add(InvoiceItem(
           productId: '',
           productName: '',
           qty: 1,
@@ -103,12 +103,12 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     }
   }
 
-  void _onUpdateItem(UpdateItemEvent event, Emitter<PurchaseState> emit) {
-    if (state is PurchaseLoaded) {
-      final current = state as PurchaseLoaded;
+  void _onUpdateItem(UpdateItemEvent event, Emitter<InvoiceState> emit) {
+    if (state is InvoiceLoaded) {
+      final current = state as InvoiceLoaded;
       final updatedItems = current.items.map((item) {
         if (item.rowId == event.rowId) {
-          return PurInvoiceItem(
+          return InvoiceItem(
             itemId: item.rowId,
             productId: event.productId ?? item.productId,
             productName: event.productName ?? item.productName,
@@ -125,20 +125,21 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     }
   }
 
-  void _onUpdatePayment(UpdatePaymentEvent event, Emitter<PurchaseState> emit) {
-    if (state is PurchaseLoaded) {
-      final current = state as PurchaseLoaded;
+  void _onUpdatePayment(UpdatePaymentEvent event, Emitter<InvoiceState> emit) {
+    if (state is InvoiceLoaded) {
+      final current = state as InvoiceLoaded;
       emit(current.copyWith(payment: event.payment));
     }
   }
 
-  void _onReset(ResetPurchaseEvent event, Emitter<PurchaseState> emit) {
-    emit(PurchaseLoaded(
-      items: [PurInvoiceItem(
+  void _onReset(ResetInvoiceEvent event, Emitter<InvoiceState> emit) {
+    emit(InvoiceLoaded(
+      items: [InvoiceItem(
         productId: '',
         productName: '',
         qty: 1,
         purPrice: 0,
+        salePrice: 0,
         storageName: '',
         storageId: 0,
       )],
@@ -147,27 +148,27 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     ));
   }
 
-  Future<void> _onSaveInvoice(SavePurchaseInvoiceEvent event, Emitter<PurchaseState> emit) async {
-    if (state is! PurchaseLoaded) {
+  Future<void> _onSaveInvoice(SaveInvoiceEvent event, Emitter<InvoiceState> emit) async {
+    if (state is! InvoiceLoaded) {
       event.completer.complete('');
       return;
     }
 
-    final current = state as PurchaseLoaded;
+    final current = state as InvoiceLoaded;
 
     // Save current state before attempting to save
     final savedState = current.copyWith();
 
     // Validate required fields
     if (current.supplier == null) {
-      emit(PurchaseError('Please select a supplier'));
+      emit(InvoiceError('Please select a supplier'));
       emit(savedState); // Restore saved state
       event.completer.complete('');
       return;
     }
 
     if (current.supplierAccount == null && current.paymentMode == PaymentMode.credit) {
-      emit(PurchaseError('Please select a supplier account for credit payment'));
+      emit(InvoiceError('Please select a supplier account for credit payment'));
       emit(savedState); // Restore saved state
       event.completer.complete('');
       return;
@@ -176,7 +177,7 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     // Validate items
     for (var item in current.items) {
       if (item.productId.isEmpty || item.storageId == 0) {
-        emit(PurchaseError('Please fill all item details (product, quantity, price, storage)'));
+        emit(InvoiceError('Please fill all item details (product, quantity, price, storage)'));
         emit(savedState); // Restore saved state
         event.completer.complete('');
         return;
@@ -195,14 +196,14 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
 
     // Validate credit amount
     if (creditAmount < 0) {
-      emit(PurchaseError('Credit amount cannot be negative'));
+      emit(InvoiceError('Credit amount cannot be negative'));
       emit(savedState); // Restore saved state
       event.completer.complete('');
       return;
     }
 
     // Show saving state
-    emit(PurchaseSaving(
+    emit(InvoiceSaving(
       items: current.items,
       supplier: current.supplier,
       supplierAccount: current.supplierAccount,
@@ -212,9 +213,9 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     ));
 
     try {
-      // Convert PurInvoiceItem to PurchaseRecord for API
+      // Convert PurInvoiceItem to Invoice Record for API
       final records = current.items.map((item) {
-        return PurchaseRecord(
+        return InvoiceRecord(
           proID: int.tryParse(item.productId) ?? 0,
           stgID: item.storageId,
           quantity: item.qty.toDouble(),
@@ -224,7 +225,7 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
 
       final xRef = event.xRef ?? 'PUR-${DateTime.now().millisecondsSinceEpoch}';
 
-      final result = await repo.purchaseInvoice(
+      final result = await repo.addInvoice(
         orderName: event.orderName,
         usrName: event.usrName,
         perID: event.ordPersonal,
@@ -234,26 +235,26 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
         records: records,
       );
 
-      emit(PurchaseSaved(true, invoiceNumber: result));
+      emit(InvoiceSaved(true, invoiceNumber: result));
       event.completer.complete(result);
 
       // Reset after successful save
-      add(ResetPurchaseEvent());
+      add(ResetInvoiceEvent());
     } catch (e) {
       // Restore saved state on error
-      emit(PurchaseError(e.toString()));
+      emit(InvoiceError(e.toString()));
       emit(savedState);
       event.completer.complete('');
     }
   }
 
-  Future<void> _onLoadStorages(LoadStoragesEvent event, Emitter<PurchaseState> emit) async {
+  Future<void> _onLoadStorages(LoadStoragesEvent event, Emitter<InvoiceState> emit) async {
     try {
       // Implement storage loading logic here
       // This would call your repository to fetch storages for a product
       // For now, we'll return an empty list
-      if (state is PurchaseLoaded) {
-        final current = state as PurchaseLoaded;
+      if (state is InvoiceLoaded) {
+        final current = state as InvoiceLoaded;
         emit(current.copyWith(storages: []));
       }
     } catch (e) {

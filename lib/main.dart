@@ -42,7 +42,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualDetail
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/bloc/stk_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/GetOrderById/bloc/order_by_id_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/bloc/purchase_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/bloc/invoice_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Orders/bloc/orders_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/bloc/stock_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/bloc/driver_bloc.dart';
@@ -136,7 +136,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ProCatBloc(Repositories(ApiServices()))..add(LoadProCatEvent())),
         BlocProvider(create: (context) => UserLogBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => OrdersBloc(Repositories(ApiServices()))..add(LoadOrdersEvent())),
-        BlocProvider(create: (context) => PurchaseBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => InvoiceBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => OrderByIdBloc(Repositories(ApiServices()))),
         ///Report Bloc
         BlocProvider(create: (context) => AccStatementBloc(Repositories(ApiServices()))),

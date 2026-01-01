@@ -1,38 +1,38 @@
-part of 'purchase_bloc.dart';
+part of 'invoice_bloc.dart';
 
 enum PaymentMode { cash, credit, mixed }
 
-abstract class PurchaseState extends Equatable {
-  const PurchaseState();
+abstract class InvoiceState extends Equatable {
+  const InvoiceState();
 }
 
-class PurchaseInitial extends PurchaseState {
+class InvoiceInitial extends InvoiceState {
   @override
   List<Object> get props => [];
 }
 
-class PurchaseLoading extends PurchaseState {
+class PurchaseLoading extends InvoiceState {
   @override
   List<Object> get props => [];
 }
 
-class PurchaseError extends PurchaseState {
+class InvoiceError extends InvoiceState {
   final String message;
-  const PurchaseError(this.message);
+  const InvoiceError(this.message);
 
   @override
   List<Object> get props => [message];
 }
 
-class PurchaseLoaded extends PurchaseState {
-  final List<PurInvoiceItem> items;
+class InvoiceLoaded extends InvoiceState {
+  final List<InvoiceItem> items;
   final AccountsModel? supplierAccount;
   final IndividualsModel? supplier;
   final double payment;
   final PaymentMode paymentMode;
   final List<StorageModel>? storages;
 
-  const PurchaseLoaded({
+  const InvoiceLoaded({
     required this.items,
     this.supplier,
     this.supplierAccount,
@@ -42,7 +42,7 @@ class PurchaseLoaded extends PurchaseState {
   });
 
   double get grandTotal {
-    return items.fold(0.0, (sum, item) => sum + item.total);
+    return items.fold(0.0, (sum, item) => sum + item.totalPurchase);
   }
 
   double get cashPayment {
@@ -74,15 +74,15 @@ class PurchaseLoaded extends PurchaseState {
     return currentBalance + creditAmount;
   }
 
-  PurchaseLoaded copyWith({
-    List<PurInvoiceItem>? items,
+  InvoiceLoaded copyWith({
+    List<InvoiceItem>? items,
     AccountsModel? supplierAccount,
     IndividualsModel? supplier,
     double? payment,
     PaymentMode? paymentMode,
     List<StorageModel>? storages,
   }) {
-    return PurchaseLoaded(
+    return InvoiceLoaded(
       items: items ?? this.items,
       supplier: supplier ?? this.supplier,
       supplierAccount: supplierAccount ?? this.supplierAccount,
@@ -96,8 +96,8 @@ class PurchaseLoaded extends PurchaseState {
   List<Object?> get props => [items, supplier, supplierAccount, payment, paymentMode, storages];
 }
 
-class PurchaseSaving extends PurchaseLoaded {
-  const PurchaseSaving({
+class InvoiceSaving extends InvoiceLoaded {
+  const InvoiceSaving({
     required super.items,
     super.supplier,
     super.supplierAccount,
@@ -107,11 +107,11 @@ class PurchaseSaving extends PurchaseLoaded {
   });
 }
 
-class PurchaseSaved extends PurchaseState {
+class InvoiceSaved extends InvoiceState {
   final bool success;
   final String? invoiceNumber;
 
-  const PurchaseSaved(this.success, {this.invoiceNumber});
+  const InvoiceSaved(this.success, {this.invoiceNumber});
 
   @override
   List<Object?> get props => [success, invoiceNumber];

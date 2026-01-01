@@ -6,6 +6,7 @@ import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/bloc/storage_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/model/product_stock_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
 import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
@@ -23,8 +24,8 @@ import '../../../../Settings/Ui/Stock/Ui/Products/bloc/products_bloc.dart';
 import '../../../../Settings/Ui/Stock/Ui/Products/model/product_model.dart';
 import '../../../../Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import '../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
-import 'bloc/purchase_bloc.dart';
-import 'model/pur_invoice_items.dart';
+import 'bloc/invoice_bloc.dart';
+import 'model/invoice_items.dart';
 
 class NewOrderView extends StatelessWidget {
   final String? ordName;
@@ -36,8 +37,6 @@ class NewOrderView extends StatelessWidget {
   }
 
 }
-
-
 
 class _Desktop extends StatefulWidget {
   final String? orderName;
@@ -63,7 +62,7 @@ class _DesktopState extends State<_Desktop> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<PurchaseBloc>().add(InitializePurchaseEvent());
+      context.read<InvoiceBloc>().add(InitializeInvoiceEvent());
     });
 
     final companyState = context.read<CompanyProfileBloc>().state;
@@ -108,12 +107,12 @@ class _DesktopState extends State<_Desktop> {
           _userName = state.loginData.usrName ?? '';
         }
       },
-      child: BlocListener<PurchaseBloc, PurchaseState>(
+      child: BlocListener<InvoiceBloc, InvoiceState>(
         listener: (context, state) {
-          if (state is PurchaseError) {
+          if (state is InvoiceError) {
             Utils.showOverlayMessage(context, message: state.message, isError: true);
           }
-          if (state is PurchaseSaved) {
+          if (state is InvoiceSaved) {
             if (state.success) {
               Utils.showOverlayMessage(
                 context,
@@ -181,7 +180,7 @@ class _DesktopState extends State<_Desktop> {
                           },
                           onSelected: (value) {
                             _personController.text = "${value.perName} ${value.perLastName}";
-                            context.read<PurchaseBloc>().add(SelectSupplierEvent(value));
+                            context.read<InvoiceBloc>().add(SelectSupplierEvent(value));
                             // Load accounts for this supplier
                             context.read<AccountsBloc>().add(LoadAccountsFilterEvent(
                                 input: value.perId.toString(),
@@ -195,9 +194,9 @@ class _DesktopState extends State<_Desktop> {
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: BlocBuilder<PurchaseBloc, PurchaseState>(
+                        child: BlocBuilder<InvoiceBloc, InvoiceState>(
                           builder: (context, state) {
-                            if (state is PurchaseLoaded) {
+                            if (state is InvoiceLoaded) {
                               final current = state;
 
                               return GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
@@ -233,7 +232,7 @@ class _DesktopState extends State<_Desktop> {
                                 },
                                 onSelected: (value) {
                                   _accountController.text = '${value.accName} (${value.accNumber})';
-                                  context.read<PurchaseBloc>().add(SelectSupplierAccountEvent(value));
+                                  context.read<InvoiceBloc>().add(SelectSupplierAccountEvent(value));
                                 },
                                 showClearButton: true,
 
@@ -266,7 +265,7 @@ class _DesktopState extends State<_Desktop> {
                               },
                               onSelected: (value) {
                                 _accountController.text = '${value.accName} (${value.accNumber})';
-                                context.read<PurchaseBloc>().add(SelectSupplierAccountEvent(value));
+                                context.read<InvoiceBloc>().add(SelectSupplierAccountEvent(value));
                               },
                               showClearButton: true,
                             );
@@ -282,18 +281,18 @@ class _DesktopState extends State<_Desktop> {
                           width: 120,
                           icon:  Icons.refresh,
                           onPressed: () {
-                            context.read<PurchaseBloc>().add(ResetPurchaseEvent());
+                            context.read<InvoiceBloc>().add(ResetInvoiceEvent());
                             _accountController.clear();
                             _personController.clear();
                             _xRefController.clear();
                           },
                           label: Text(tr.newKeyword)),
                       const SizedBox(width: 8),
-                      BlocBuilder<PurchaseBloc,PurchaseState>(
+                      BlocBuilder<InvoiceBloc,InvoiceState>(
                           builder: (context,state) {
-                            if (state is PurchaseLoaded || state is PurchaseSaving) {
-                              final current = state as PurchaseLoaded;
-                              final isSaving = state is PurchaseSaving;
+                            if (state is InvoiceLoaded || state is InvoiceSaving) {
+                              final current = state as InvoiceLoaded;
+                              final isSaving = state is InvoiceSaving;
                               final locale = AppLocalizations.of(context)!;
                               // Save Button
                               return ZButton(
@@ -321,10 +320,10 @@ class _DesktopState extends State<_Desktop> {
 
                   // Items List
                   Expanded(
-                    child: BlocBuilder<PurchaseBloc, PurchaseState>(
+                    child: BlocBuilder<InvoiceBloc, InvoiceState>(
                       builder: (context, state) {
-                        if (state is PurchaseLoaded || state is PurchaseSaving) {
-                          final current = state as PurchaseLoaded;
+                        if (state is InvoiceLoaded || state is InvoiceSaving) {
+                          final current = state as InvoiceLoaded;
 
                           // Ensure focus nodes match items count
                           _synchronizeFocusNodes(current.items.length);
@@ -390,7 +389,7 @@ class _DesktopState extends State<_Desktop> {
 
   Widget _buildItemRow(
       BuildContext context, {
-        required PurInvoiceItem item,
+        required InvoiceItem item,
         required List<FocusNode> nodes,
         required bool isLastRow,
       }) {
@@ -399,7 +398,7 @@ class _DesktopState extends State<_Desktop> {
     final qtyController = TextEditingController(text: item.qty.toString());
     final priceController = _priceControllers.putIfAbsent(
       item.rowId,
-          () => TextEditingController(text: item.purPrice.toAmount()),
+          () => TextEditingController(text: item.purPrice?.toAmount()),
     );
 
     final storageController = TextEditingController(text: item.storageName);
@@ -423,38 +422,78 @@ class _DesktopState extends State<_Desktop> {
               ),
 
               // Product Selection
-              Expanded(
-                child: GenericUnderlineTextfield<ProductsModel, ProductsBloc, ProductsState>(
-                  title: "",
-                  controller: productController,
-                  hintText: locale.products,
-                  bloc: context.read<ProductsBloc>(),
-                  fetchAllFunction: (bloc) => bloc.add(LoadProductsEvent()),
-                  searchFunction: (bloc, query) => bloc.add(LoadProductsEvent()),
-                  itemBuilder: (context, product) => ListTile(
-                    title: Text(product.proName ?? ''),
-                    subtitle: Text('Code: ${product.proCode ?? ''}'),
+              if(widget.orderName == "Purchase")...[
+                Expanded(
+                  child: GenericUnderlineTextfield<ProductsModel, ProductsBloc, ProductsState>(
+                    title: "",
+                    controller: productController,
+                    hintText: locale.products,
+                    bloc: context.read<ProductsBloc>(),
+                    fetchAllFunction: (bloc) => bloc.add(LoadProductsEvent()),
+                    searchFunction: (bloc, query) => bloc.add(LoadProductsEvent()),
+                    itemBuilder: (context, product) => ListTile(
+                      title: Text(product.proName ?? ''),
+                      subtitle: Text('Code: ${product.proCode ?? ''}'),
+                    ),
+                    itemToString: (product) => product.proName ?? '',
+                    stateToLoading: (state) => state is ProductsLoadingState,
+                    stateToItems: (state) {
+                      if (state is ProductsLoadedState) return state.products;
+                      return [];
+                    },
+                    onSelected: (product) {
+                      context.read<InvoiceBloc>().add(UpdateItemEvent(
+                        rowId: item.rowId,
+                        productId: product.proId.toString(),
+                        productName: product.proName ?? '',
+                      ));
+
+                      // Auto-select first storage if available
+                      _autoSelectFirstStorage(context, item.rowId);
+
+                      nodes[1].requestFocus();
+                    },
                   ),
-                  itemToString: (product) => product.proName ?? '',
-                  stateToLoading: (state) => state is ProductsLoadingState,
-                  stateToItems: (state) {
-                    if (state is ProductsLoadedState) return state.products;
-                    return [];
-                  },
-                  onSelected: (product) {
-                    context.read<PurchaseBloc>().add(UpdateItemEvent(
-                      rowId: item.rowId,
-                      productId: product.proId.toString(),
-                      productName: product.proName ?? '',
-                    ));
-
-                    // Auto-select first storage if available
-                    _autoSelectFirstStorage(context, item.rowId);
-
-                    nodes[1].requestFocus();
-                  },
                 ),
-              ),
+              ]
+              else...[
+                Expanded(
+                  child: GenericUnderlineTextfield<ProductsStockModel, ProductsBloc, ProductsState>(
+                    title: "",
+                    controller: productController,
+                    hintText: locale.products,
+                    bloc: context.read<ProductsBloc>(),
+                    fetchAllFunction: (bloc) => bloc.add(LoadProductsStockEvent()),
+                    searchFunction: (bloc, query) => bloc.add(LoadProductsStockEvent()),
+                    itemBuilder: (context, product) => ListTile(
+                      title: Text(product.proName ?? ''),
+                      subtitle: Text('#${product.proCode} | P. Price: ${product.purchasePrice?.toAmount() ?? ''}'),
+                      trailing: Text(product.available??"0"),
+                    ),
+                    itemToString: (product) => product.proName ?? '',
+                    stateToLoading: (state) => state is ProductsLoadingState,
+                    stateToItems: (state) {
+                      if (state is ProductsStockLoadedState) return state.products;
+                      return [];
+                    },
+                    onSelected: (product) {
+                      context.read<InvoiceBloc>().add(UpdateItemEvent(
+                        rowId: item.rowId,
+                        productId: product.proId.toString(),
+                        productName: product.proName ?? '',
+                        storageId: product.stkStorage,
+                        purPrice: double.tryParse(product.purchasePrice?.toAmount() ??"0.0"),
+                        salePrice: double.tryParse(product.sellPrice?.toAmount() ??"0.0"),
+                      ));
+
+                      // Auto-select first storage if available
+                      _autoSelectFirstStorage(context, item.rowId);
+
+                      nodes[1].requestFocus();
+                    },
+                  ),
+                ),
+              ],
 
               // Quantity
               SizedBox(
@@ -471,7 +510,7 @@ class _DesktopState extends State<_Desktop> {
                   ),
                   onChanged: (value) {
                     final qty = int.tryParse(value) ?? 1;
-                    context.read<PurchaseBloc>().add(UpdateItemEvent(
+                    context.read<InvoiceBloc>().add(UpdateItemEvent(
                       rowId: item.rowId,
                       qty: qty,
                     ));
@@ -481,40 +520,71 @@ class _DesktopState extends State<_Desktop> {
               ),
 
               // Unit Price
-              SizedBox(
-                width: 150,
-                child: TextField(
-                  controller: priceController,
-                  focusNode: nodes[2],
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
-                    SmartThousandsDecimalFormatter(),
-                  ],
-                  decoration: const InputDecoration(
-                    hintText: 'Price',
-                    border: InputBorder.none,
-                    isDense: true,
+              if(widget.orderName == "Purchase")...[
+                SizedBox(
+                  width: 150,
+                  child: TextField(
+                    controller: priceController,
+                    focusNode: nodes[2],
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                      SmartThousandsDecimalFormatter(),
+                    ],
+                    decoration: const InputDecoration(
+                      hintText: 'Price',
+                      border: InputBorder.none,
+                      isDense: true,
+                    ),
+                    onChanged: (value) {
+                      final parsed = double.tryParse(value.replaceAll(',', ''));
+                      if (parsed != null) {
+                        context.read<InvoiceBloc>().add(
+                          UpdateItemEvent(
+                            rowId: item.rowId,
+                            purPrice: parsed,
+                          ),
+                        );
+                      }
+                    },
                   ),
-                  onChanged: (value) {
-                    final parsed = double.tryParse(value.replaceAll(',', ''));
-                    if (parsed != null) {
-                      context.read<PurchaseBloc>().add(
-                        UpdateItemEvent(
-                          rowId: item.rowId,
-                          purPrice: parsed,
-                        ),
-                      );
-                    }
-                  },
                 ),
-              ),
+              ]else...[
+                SizedBox(
+                  width: 150,
+                  child: TextField(
+                    controller: priceController,
+                    focusNode: nodes[2],
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                      SmartThousandsDecimalFormatter(),
+                    ],
+                    decoration: const InputDecoration(
+                      hintText: 'Price',
+                      border: InputBorder.none,
+                      isDense: true,
+                    ),
+                    onChanged: (value) {
+                      final parsed = double.tryParse(value.replaceAll(',', ''));
+                      if (parsed != null) {
+                        context.read<InvoiceBloc>().add(
+                          UpdateItemEvent(
+                            rowId: item.rowId,
+                            salePrice: parsed,
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
 
               // Total
               SizedBox(
                 width: 100,
                 child: Text(
-                  item.total.toAmount(),
+                  item.totalPurchase.toAmount(),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -533,7 +603,7 @@ class _DesktopState extends State<_Desktop> {
                       if (item.storageId == 0) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           final firstStorage = storageState.storage.first;
-                          context.read<PurchaseBloc>().add(UpdateItemEvent(
+                          context.read<InvoiceBloc>().add(UpdateItemEvent(
                             rowId: item.rowId,
                             storageId: firstStorage.stgId!,
                             storageName: firstStorage.stgName ?? '',
@@ -562,7 +632,7 @@ class _DesktopState extends State<_Desktop> {
                         return [];
                       },
                       onSelected: (storage) {
-                        context.read<PurchaseBloc>().add(UpdateItemEvent(
+                        context.read<InvoiceBloc>().add(UpdateItemEvent(
                           rowId: item.rowId,
                           storageId: storage.stgId!,
                           storageName: storage.stgName ?? '',
@@ -583,7 +653,7 @@ class _DesktopState extends State<_Desktop> {
                     IconButton(
                       icon: const Icon(Icons.delete_outline, size: 18),
                       onPressed: () {
-                        context.read<PurchaseBloc>().add(RemoveItemEvent(item.rowId));
+                        context.read<InvoiceBloc>().add(RemoveItemEvent(item.rowId));
                       },
                     ),
                   ],
@@ -602,7 +672,7 @@ class _DesktopState extends State<_Desktop> {
                   icon: Icons.add,
                   label: Text(locale.addItem),
                   onPressed: () {
-                    context.read<PurchaseBloc>().add(AddNewItemEvent());
+                    context.read<InvoiceBloc>().add(AddNewItemEvent());
                   },
                 )
               ],
@@ -615,10 +685,10 @@ class _DesktopState extends State<_Desktop> {
   Widget _buildSummarySection(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
-    return BlocBuilder<PurchaseBloc, PurchaseState>(
+    return BlocBuilder<InvoiceBloc, InvoiceState>(
       builder: (context, state) {
-        if (state is PurchaseLoaded || state is PurchaseSaving) {
-          final current = state as PurchaseLoaded;
+        if (state is InvoiceLoaded || state is InvoiceSaving) {
+          final current = state as InvoiceLoaded;
           return Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -760,7 +830,7 @@ class _DesktopState extends State<_Desktop> {
     }
   }
 
-  void _showPaymentModeDialog(PurchaseLoaded current) {
+  void _showPaymentModeDialog(InvoiceLoaded current) {
     showDialog(
       context: context,
       builder: (context) => ZFormDialog(
@@ -776,7 +846,7 @@ class _DesktopState extends State<_Desktop> {
               trailing: current.paymentMode == PaymentMode.cash ? Icon(Icons.check, color: Colors.green) : null,
               onTap: () {
                 Navigator.pop(context);
-                context.read<PurchaseBloc>().add(UpdatePaymentEvent(current.grandTotal));
+                context.read<InvoiceBloc>().add(UpdatePaymentEvent(current.grandTotal));
               },
             ),
             ListTile(
@@ -786,7 +856,7 @@ class _DesktopState extends State<_Desktop> {
               trailing: current.paymentMode == PaymentMode.credit ? Icon(Icons.check, color: Colors.blue) : null,
               onTap: () {
                 Navigator.pop(context);
-                context.read<PurchaseBloc>().add(UpdatePaymentEvent(0));
+                context.read<InvoiceBloc>().add(UpdatePaymentEvent(0));
               },
             ),
             ListTile(
@@ -806,7 +876,7 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  void _showMixedPaymentDialog(BuildContext context, PurchaseLoaded current) {
+  void _showMixedPaymentDialog(BuildContext context, InvoiceLoaded current) {
     final controller = TextEditingController(text: current.payment.toString());
 
     showDialog(
@@ -868,7 +938,7 @@ class _DesktopState extends State<_Desktop> {
           }
 
           // Update payment
-          context.read<PurchaseBloc>().add(UpdatePaymentEvent(payment));
+          context.read<InvoiceBloc>().add(UpdatePaymentEvent(payment));
           Navigator.pop(context);
         },
       ),
@@ -891,7 +961,7 @@ class _DesktopState extends State<_Desktop> {
     if (storageState is StorageLoadedState && storageState.storage.isNotEmpty) {
       final firstStorage = storageState.storage.first;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.read<PurchaseBloc>().add(UpdateItemEvent(
+        context.read<InvoiceBloc>().add(UpdateItemEvent(
           rowId: rowId,
           storageId: firstStorage.stgId!,
           storageName: firstStorage.stgName ?? '',
@@ -900,7 +970,7 @@ class _DesktopState extends State<_Desktop> {
     }
   }
 
-  void _saveInvoice(BuildContext context, PurchaseLoaded state) {
+  void _saveInvoice(BuildContext context, InvoiceLoaded state) {
     // Validate form
     if (!_formKey.currentState!.validate()) {
       Utils.showOverlayMessage(
@@ -956,7 +1026,7 @@ class _DesktopState extends State<_Desktop> {
 
     final completer = Completer<String>();
     if(widget.orderName == "Purchase"){
-      context.read<PurchaseBloc>().add(SavePurchaseInvoiceEvent(
+      context.read<InvoiceBloc>().add(SaveInvoiceEvent(
         usrName: _userName ?? '',
         orderName: "Purchase",
         ordPersonal: state.supplier!.perId!,
@@ -966,7 +1036,7 @@ class _DesktopState extends State<_Desktop> {
         completer: completer,
       ));
     }else{
-      context.read<PurchaseBloc>().add(SavePurchaseInvoiceEvent(
+      context.read<InvoiceBloc>().add(SaveInvoiceEvent(
         usrName: _userName ?? '',
         orderName: "Sale",
         ordPersonal: state.supplier!.perId!,
@@ -975,6 +1045,10 @@ class _DesktopState extends State<_Desktop> {
         items: state.items,
         completer: completer,
       ));
+      print(state.items.first.salePrice);
+      print(state.items.first.purPrice);
+      print(state.items.first.storageId);
+      print(state.items.first.totalSale);
     }
   }
 }

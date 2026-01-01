@@ -33,7 +33,7 @@ import '../Views/Menu/Ui/Settings/Ui/Company/Branches/model/branch_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/model/product_model.dart';
 import '../Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
 import '../Views/Menu/Ui/Stock/Ui/OrderScreen/GetOrderById/model/ord_by_Id_model.dart';
-import '../Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/model/pur_invoice_items.dart';
+import '../Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/model/invoice_items.dart';
 import '../Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/model/shipping_model.dart';
 
 class Repositories {
@@ -1828,15 +1828,15 @@ class Repositories {
   }
 
   /// Purchase Invoice .............................................................
-  // In your repositories.dart file
-  Future<String> purchaseInvoice({
+
+  Future<String> addInvoice({
     required String usrName,
     required int perID,
     required String? xRef,
     required String orderName,
      int? account,
      double? amount,
-    required List<PurchaseRecord> records,
+    required List<InvoiceRecord> records,
   }) async {
     try {
       final data = {
