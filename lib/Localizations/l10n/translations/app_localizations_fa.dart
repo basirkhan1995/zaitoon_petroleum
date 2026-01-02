@@ -1850,4 +1850,22 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get newBalance => 'مانده جدید';
+
+  @override
+  String get cashPaymentSubtitle => 'پرداخت کامل به صورت نقدی';
+
+  @override
+  String get accountCredit => 'اعتبار حساب';
+
+  @override
+  String get accountCreditSubtitle => 'افزودن کل مبلغ به حساب به عنوان اعتبار';
+
+  @override
+  String get combinedPayment => 'نقدی و اعتبار حساب';
+
+  @override
+  String get combinedPaymentSubtitle => 'پرداخت با نقد و اعتبار حساب';
+
+  @override
+  String get submit => 'ثبت کردن';
 }

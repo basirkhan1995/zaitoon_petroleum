@@ -1858,4 +1858,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newBalance => 'New Balance';
+
+  @override
+  String get cashPaymentSubtitle => 'Pay the total amount in cash.';
+
+  @override
+  String get accountCredit => 'Account Credit';
+
+  @override
+  String get accountCreditSubtitle =>
+      'Apply the full amount as account credit.”';
+
+  @override
+  String get combinedPayment => 'Cash & Credit';
+
+  @override
+  String get combinedPaymentSubtitle => 'Pay using cash and account credit.';
+
+  @override
+  String get submit => 'Submit';
 }

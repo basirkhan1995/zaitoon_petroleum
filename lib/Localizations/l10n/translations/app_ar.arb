@@ -617,5 +617,11 @@
   "invoiceType": "بل ډول",
   "totalInvoice": "ټولیزه بل",
   "saleTitle": "فروش",
-  "newBalance": "نوې پاتې شونې"
+  "newBalance": "نوې پاتې شونې",
+  "cashPaymentSubtitle": "پرداخت کامل به صورت نقدی",
+  "accountCredit": "د حساب اعتبار",
+  "accountCreditSubtitle": "ټول مبلغ د حساب اعتبار ته اضافه کړئ",
+  "combinedPayment": "حساب او نقدی",
+  "combinedPaymentSubtitle": "د نغدو او د حساب اعتبار په کارولو سره تادیه وکړئ",
+  "submit": "ثبت کړئ"
 }

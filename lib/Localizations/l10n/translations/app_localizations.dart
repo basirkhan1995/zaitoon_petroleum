@@ -3687,6 +3687,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New Balance'**
   String get newBalance;
+
+  /// No description provided for @cashPaymentSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay the total amount in cash.'**
+  String get cashPaymentSubtitle;
+
+  /// No description provided for @accountCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Credit'**
+  String get accountCredit;
+
+  /// No description provided for @accountCreditSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply the full amount as account credit.”'**
+  String get accountCreditSubtitle;
+
+  /// No description provided for @combinedPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash & Credit'**
+  String get combinedPayment;
+
+  /// No description provided for @combinedPaymentSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay using cash and account credit.'**
+  String get combinedPaymentSubtitle;
+
+  /// No description provided for @submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submit;
 }
 
 class _AppLocalizationsDelegate

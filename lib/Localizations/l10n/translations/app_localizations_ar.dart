@@ -1853,4 +1853,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get newBalance => 'نوې پاتې شونې';
+
+  @override
+  String get cashPaymentSubtitle => 'پرداخت کامل به صورت نقدی';
+
+  @override
+  String get accountCredit => 'د حساب اعتبار';
+
+  @override
+  String get accountCreditSubtitle => 'ټول مبلغ د حساب اعتبار ته اضافه کړئ';
+
+  @override
+  String get combinedPayment => 'حساب او نقدی';
+
+  @override
+  String get combinedPaymentSubtitle =>
+      'د نغدو او د حساب اعتبار په کارولو سره تادیه وکړئ';
+
+  @override
+  String get submit => 'ثبت کړئ';
 }

@@ -21,6 +21,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/mo
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/TxnTypes/model/txn_types_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewSale/model/sale_invoice_items.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Orders/model/orders_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/model/driver_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/model/shp_details_model.dart';
@@ -1829,7 +1830,7 @@ class Repositories {
 
   /// Purchase Invoice .............................................................
 
-  Future<Map<String, dynamic>> addInvoice({
+  Future<Map<String, dynamic>> addPurchaseInvoice({
     required String usrName,
     required int perID,
     required String? xRef,
@@ -1865,6 +1866,44 @@ class Repositories {
       throw 'Unexpected error: $e';
     }
   }
+
+  Future<Map<String, dynamic>> addSaleInvoice({
+    required String usrName,
+    required int perID,
+    required String? xRef,
+    required String orderName, //Purchase or Sale
+    int? account,
+    double? amount,
+    required List<SaleInvoiceRecord> records,
+  }) async {
+    try {
+      final data = {
+        "usrName": usrName,
+        "ordName": orderName,
+        "ordPersonal": perID,
+        "ordxRef": xRef ?? "",
+        "account": account ?? 0,
+        "amount": amount ?? 0.0,
+        "records": records.map((r) => r.toJson()).toList(),
+      };
+
+      final response = await api.post(
+        endpoint: "/inventory/salePurchase.php",
+        data: data,
+      );
+
+      // Return the full response data
+      return response.data is Map<String, dynamic>
+          ? response.data
+          : {'msg': 'Invalid response format'};
+
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw 'Unexpected error: $e';
+    }
+  }
+
 
   Future<bool> updatePurchaseOrder({
     required int orderId,

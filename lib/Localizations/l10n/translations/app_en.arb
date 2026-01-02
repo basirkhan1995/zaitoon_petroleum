@@ -617,5 +617,11 @@
   "invoiceType": "Invoice Type",
   "totalInvoice": "Total Invoice",
   "saleTitle": "Sale",
-  "newBalance": "New Balance"
+  "newBalance": "New Balance",
+  "cashPaymentSubtitle": "Pay the total amount in cash.",
+  "accountCredit": "Account Credit",
+  "accountCreditSubtitle": "Apply the full amount as account credit.”",
+  "combinedPayment": "Cash & Credit",
+  "combinedPaymentSubtitle": "Pay using cash and account credit.",
+  "submit": "Submit"
 }

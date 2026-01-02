@@ -617,5 +617,11 @@
   "invoiceType": "نوع بل",
   "totalInvoice": "جمع کل",
   "saleTitle": "فروش",
-  "newBalance": "مانده جدید"
+  "newBalance": "مانده جدید",
+  "cashPaymentSubtitle": "پرداخت کامل به صورت نقدی",
+  "accountCredit": "اعتبار حساب",
+  "accountCreditSubtitle": "افزودن کل مبلغ به حساب به عنوان اعتبار",
+  "combinedPayment": "نقدی و اعتبار حساب",
+  "combinedPaymentSubtitle": "پرداخت با نقد و اعتبار حساب",
+  "submit": "ثبت کردن"
 }

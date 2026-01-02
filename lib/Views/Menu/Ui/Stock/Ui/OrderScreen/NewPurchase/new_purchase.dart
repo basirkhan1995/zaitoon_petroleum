@@ -299,8 +299,7 @@ class _DesktopState extends State<_Desktop> {
                           builder: (context, state) {
                             if (state is PurchaseInvoiceLoaded || state is PurchaseInvoiceSaving) {
                               final current = state is PurchaseInvoiceSaving ?
-                              (state as PurchaseInvoiceSaving) :
-                              (state as PurchaseInvoiceLoaded);
+                              state : (state as PurchaseInvoiceLoaded);
                               final isSaving = state is PurchaseInvoiceSaving;
 
                               return ZButton(
@@ -335,11 +334,8 @@ class _DesktopState extends State<_Desktop> {
                       builder: (context, state) {
                         if (state is PurchaseInvoiceLoaded || state is PurchaseInvoiceSaving) {
                           final current = state is PurchaseInvoiceSaving ?
-                          (state as PurchaseInvoiceSaving) :
-                          (state as PurchaseInvoiceLoaded);
-
+                          state : (state as PurchaseInvoiceLoaded);
                           _synchronizeFocusNodes(current.items.length);
-
                           return ListView.builder(
                             itemCount: current.items.length,
                             itemBuilder: (context, index) {
@@ -676,7 +672,7 @@ class _DesktopState extends State<_Desktop> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: color.surface,
-              border: Border.all(color: color.outline.withOpacity(0.3)),
+              border: Border.all(color: color.outline.withValues(alpha: .3)),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
@@ -698,7 +694,7 @@ class _DesktopState extends State<_Desktop> {
                     ),
                   ],
                 ),
-                Divider(color: color.outline.withOpacity(0.2)),
+                Divider(color: color.outline.withValues(alpha: .2)),
 
                 // Grand Total
                 _buildSummaryRow(
@@ -706,30 +702,30 @@ class _DesktopState extends State<_Desktop> {
                   value: current.grandTotal,
                   isBold: true,
                 ),
-                Divider(color: color.outline.withOpacity(0.2)),
+                Divider(color: color.outline.withValues(alpha: .2)),
 
                 // Payment Breakdown
                 if (current.paymentMode == PaymentMode.cash) ...[
                   _buildSummaryRow(
-                    label: "Cash Payment",
+                    label: AppLocalizations.of(context)!.cashPayment,
                     value: current.cashPayment, // Use cashPayment getter
                     color: Colors.green,
                   ),
                 ] else if (current.paymentMode == PaymentMode.credit) ...[
                   _buildSummaryRow(
-                    label: "Account (Credit) Payment",
+                    label: AppLocalizations.of(context)!.accountPayment,
                     value: current.creditAmount, // Use creditAmount getter
                     color: Colors.orange,
                   ),
                 ] else if (current.paymentMode == PaymentMode.mixed) ...[
                   _buildSummaryRow(
-                    label: "Account (Credit) Payment",
+                    label: AppLocalizations.of(context)!.accountPayment,
                     value: current.creditAmount, // Use creditAmount getter
                     color: Colors.orange,
                   ),
                   const SizedBox(height: 4),
                   _buildSummaryRow(
-                    label: "Cash Payment",
+                    label: AppLocalizations.of(context)!.cashPayment,
                     value: current.cashPayment, // Use cashPayment getter
                     color: Colors.green,
                   ),
@@ -737,16 +733,16 @@ class _DesktopState extends State<_Desktop> {
 
                 // Account Information
                 if (current.supplierAccount != null) ...[
-                  Divider(color: color.outline.withOpacity(0.2)),
+                  Divider(color: color.outline.withValues(alpha: .2)),
                   _buildSummaryRow(
-                    label: "Current Balance",
+                    label: AppLocalizations.of(context)!.currentBalance,
                     value: current.currentBalance,
                     color: Colors.deepOrangeAccent,
                   ),
                   if (current.creditAmount > 0) ...[
                     const SizedBox(height: 8),
                     _buildSummaryRow(
-                      label: "New Balance After Payment",
+                      label: AppLocalizations.of(context)!.newBalance,
                       value: current.newBalance,
                       isBold: true,
                       color: color.primary,
@@ -808,19 +804,24 @@ class _DesktopState extends State<_Desktop> {
   }
 
   void _showPaymentModeDialog(PurchaseInvoiceLoaded current) {
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
     showDialog(
       context: context,
       builder: (context) => ZFormDialog(
         isActionTrue: false,
-        title: "Select Payment Method",
+        padding: EdgeInsets.symmetric(vertical: 18,horizontal: 5),
+        title: tr.selectPaymentMethod,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: Icon(Icons.money, color: current.paymentMode == PaymentMode.cash ? Colors.green : Colors.grey),
-              title: const Text("Cash Payment"),
-              subtitle: const Text("Pay full amount in cash"),
-              trailing: current.paymentMode == PaymentMode.cash ? const Icon(Icons.check, color: Colors.green) : null,
+              leading: CircleAvatar(
+                  backgroundColor: color.primary.withValues(alpha: .05),
+                  child: Icon(Icons.money, color: current.paymentMode == PaymentMode.cash ? color.primary : color.outline)),
+              title: Text(tr.cashPayment),
+              subtitle: Text(tr.cashPaymentSubtitle),
+              trailing: current.paymentMode == PaymentMode.cash ? Icon(Icons.check, color: color.primary) : null,
               onTap: () {
                 Navigator.pop(context);
                 context.read<PurchaseInvoiceBloc>().add(UpdatePurchasePaymentEvent(current.grandTotal));
@@ -828,20 +829,24 @@ class _DesktopState extends State<_Desktop> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.credit_card, color: current.paymentMode == PaymentMode.credit ? Colors.blue : Colors.grey),
-              title: const Text("Credit Payment"),
-              subtitle: const Text("Add full amount to account as credit"),
-              trailing: current.paymentMode == PaymentMode.credit ? const Icon(Icons.check, color: Colors.blue) : null,
+              leading: CircleAvatar(
+                  backgroundColor: color.primary.withValues(alpha: .05),
+                  child: Icon(Icons.credit_card, color: current.paymentMode == PaymentMode.credit ? color.primary : color.outline)),
+              title: Text(tr.accountCredit),
+              subtitle: Text(tr.accountCreditSubtitle),
+              trailing: current.paymentMode == PaymentMode.credit ? Icon(Icons.check, color: color.primary) : null,
               onTap: () {
                 Navigator.pop(context);
                 context.read<PurchaseInvoiceBloc>().add(UpdatePurchasePaymentEvent(0));
               },
             ),
             ListTile(
-              leading: Icon(Icons.payments, color: current.paymentMode == PaymentMode.mixed ? Colors.orange : Colors.grey),
-              title: const Text("Mixed Payment"),
-              subtitle: const Text("Part cash, part credit"),
-              trailing: current.paymentMode == PaymentMode.mixed ? const Icon(Icons.check, color: Colors.orange) : null,
+              leading: CircleAvatar(
+                  backgroundColor: color.primary.withValues(alpha: .05),
+                  child: Icon(Icons.payments, color: current.paymentMode == PaymentMode.mixed ? color.primary : color.outline)),
+              title: Text(tr.combinedPayment),
+              subtitle: Text(tr.combinedPaymentSubtitle),
+              trailing: current.paymentMode == PaymentMode.mixed ? Icon(Icons.check, color: color.primary) : null,
               onTap: () {
                 Navigator.pop(context);
                 _showMixedPaymentDialog(context, current);
@@ -856,12 +861,13 @@ class _DesktopState extends State<_Desktop> {
 
   void _showMixedPaymentDialog(BuildContext context, PurchaseInvoiceLoaded current) {
     final controller = TextEditingController();
+    final tr = AppLocalizations.of(context)!;
 
     showDialog(
       context: context,
       builder: (context) => ZFormDialog(
-        title: "Mixed Payment Details",
-        actionLabel: const Text("Submit"),
+        title: tr.combinedPayment,
+        actionLabel: Text(tr.submit),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -876,7 +882,7 @@ class _DesktopState extends State<_Desktop> {
               ),
               const SizedBox(height: 16),
               Text(
-                "Grand Total: ${current.grandTotal.toAmount()}",
+                "${tr.grandTotal}: ${current.grandTotal.toAmount()}",
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
@@ -890,7 +896,7 @@ class _DesktopState extends State<_Desktop> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "Cash Payment: ${(current.grandTotal - (double.tryParse(controller.text.replaceAll(',', '')) ?? 0)).toAmount()}",
+                      "${tr.cashPayment}: ${(current.grandTotal - (double.tryParse(controller.text.replaceAll(',', '')) ?? 0)).toAmount()}",
                       style: const TextStyle(color: Colors.green),
                     ),
                   ],
@@ -925,11 +931,11 @@ class _DesktopState extends State<_Desktop> {
   String _getPaymentModeLabel(PaymentMode mode) {
     switch (mode) {
       case PaymentMode.cash:
-        return "Cash";
+        return AppLocalizations.of(context)!.cash;
       case PaymentMode.credit:
-        return "Credit";
+        return AppLocalizations.of(context)!.creditTitle;
       case PaymentMode.mixed:
-        return "Mixed";
+        return AppLocalizations.of(context)!.combinedPayment;
     }
   }
 
