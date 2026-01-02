@@ -25,8 +25,19 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
     on<ResetPurchaseInvoiceEvent>(_onReset);
     on<SavePurchaseInvoiceEvent>(_onSaveInvoice);
     on<LoadPurchaseStoragesEvent>(_onLoadStorages);
+    // In purchase_invoice_bloc.dart, add this handler
+    on<ClearSupplierAccountEvent>(_onClearSupplierAccount);
   }
-
+  void _onClearSupplierAccount(ClearSupplierAccountEvent event, Emitter<PurchaseInvoiceState> emit) {
+    if (state is PurchaseInvoiceLoaded) {
+      final current = state as PurchaseInvoiceLoaded;
+      emit(current.copyWith(
+        supplierAccount: null,
+        payment: current.grandTotal, // Reset to full cash payment
+        paymentMode: PaymentMode.cash,
+      ));
+    }
+  }
   void _onInitialize(InitializePurchaseInvoiceEvent event, Emitter<PurchaseInvoiceState> emit) {
     emit(PurchaseInvoiceLoaded(
       items: [PurchaseInvoiceItem(
@@ -78,7 +89,8 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
       emit(current.copyWith(
         supplier: null,
         supplierAccount: null,
-        paymentMode: PaymentMode.cash,
+        payment: current.grandTotal, // Reset payment to full amount
+        paymentMode: PaymentMode.cash, // Reset to cash mode
       ));
     }
   }
@@ -151,6 +163,7 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
       PaymentMode newPaymentMode;
 
       if (event.isCreditAmount) {
+        // When setting credit amount (from mixed payment)
         creditAmount = event.payment;
         cashPayment = current.grandTotal - creditAmount;
 
@@ -166,6 +179,7 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
           newPaymentMode = PaymentMode.mixed;
         }
       } else {
+        // When setting cash payment
         cashPayment = event.payment;
         creditAmount = current.grandTotal - cashPayment;
 
@@ -173,22 +187,26 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
           newPaymentMode = PaymentMode.credit;
           creditAmount = current.grandTotal;
           cashPayment = 0;
+          // Don't clear account here - account is required for credit
         } else if (cashPayment >= current.grandTotal) {
           newPaymentMode = PaymentMode.cash;
           cashPayment = current.grandTotal;
           creditAmount = 0;
+          // Clear account when switching to full cash
         } else {
           newPaymentMode = PaymentMode.mixed;
+          // Account should still be selected for mixed
         }
       }
 
       emit(current.copyWith(
         payment: cashPayment,
         paymentMode: newPaymentMode,
+        // Clear supplierAccount only when switching to full cash
+        supplierAccount: newPaymentMode == PaymentMode.cash ? null : current.supplierAccount,
       ));
     }
   }
-
   void _onReset(ResetPurchaseInvoiceEvent event, Emitter<PurchaseInvoiceState> emit) {
     emit(PurchaseInvoiceLoaded(
       items: [PurchaseInvoiceItem(

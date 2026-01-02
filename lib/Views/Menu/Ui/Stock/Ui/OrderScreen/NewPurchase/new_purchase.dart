@@ -123,8 +123,8 @@ class _DesktopState extends State<_Desktop> {
             if (state.success) {
               Utils.showOverlayMessage(
                 context,
-                title: "Success",
-                message: "Purchase invoice created successfully${state.invoiceNumber != null ? '\nInvoice #: ${state.invoiceNumber}' : ''}",
+                title: tr.successTitle,
+                message: tr.successPurchaseInvoiceMsg,
                 isError: false,
               );
               _accountController.clear();
@@ -211,7 +211,7 @@ class _DesktopState extends State<_Desktop> {
                                 isRequired: current.paymentMode != PaymentMode.cash,
                                 validator: (value) {
                                   if (current.paymentMode != PaymentMode.cash && (value == null || value.isEmpty)) {
-                                    return 'Please select an account for credit payment';
+                                    return tr.selectCreditAccountMsg;
                                   }
                                   return null;
                                 },
@@ -225,7 +225,7 @@ class _DesktopState extends State<_Desktop> {
                                 )),
                                 itemBuilder: (context, account) => ListTile(
                                   title: Text(account.accName ?? ''),
-                                  subtitle: Text('${account.accNumber} - Balance: ${account.accAvailBalance?.toAmount() ?? "0.0"}'),
+                                  subtitle: Text('${account.accNumber} - ${tr.balance}: ${account.accAvailBalance?.toAmount() ?? "0.0"}'),
                                   trailing: Text(account.actCurrency ?? ""),
                                 ),
                                 itemToString: (account) => '${account.accName} (${account.accNumber})',
@@ -257,7 +257,7 @@ class _DesktopState extends State<_Desktop> {
                               )),
                               itemBuilder: (context, account) => ListTile(
                                 title: Text(account.accName ?? ''),
-                                subtitle: Text('${account.accNumber} - Balance: ${account.accAvailBalance?.toAmount() ?? "0.0"}'),
+                                subtitle: Text('${account.accNumber} - ${tr.balance}: ${account.accAvailBalance?.toAmount() ?? "0.0"}'),
                                 trailing: Text(account.actCurrency ?? ""),
                               ),
                               itemToString: (account) => '${account.accName} (${account.accNumber})',
@@ -810,7 +810,7 @@ class _DesktopState extends State<_Desktop> {
       context: context,
       builder: (context) => ZFormDialog(
         isActionTrue: false,
-        padding: EdgeInsets.symmetric(vertical: 18,horizontal: 5),
+        padding: EdgeInsets.symmetric(vertical: 18, horizontal: 5),
         title: tr.selectPaymentMethod,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -818,32 +818,42 @@ class _DesktopState extends State<_Desktop> {
             ListTile(
               leading: CircleAvatar(
                   backgroundColor: color.primary.withValues(alpha: .05),
-                  child: Icon(Icons.money, color: current.paymentMode == PaymentMode.cash ? color.primary : color.outline)),
+                  child: Icon(Icons.money,
+                      color: current.paymentMode == PaymentMode.cash ? color.primary : color.outline)),
               title: Text(tr.cashPayment),
               subtitle: Text(tr.cashPaymentSubtitle),
               trailing: current.paymentMode == PaymentMode.cash ? Icon(Icons.check, color: color.primary) : null,
               onTap: () {
                 Navigator.pop(context);
-                context.read<PurchaseInvoiceBloc>().add(UpdatePurchasePaymentEvent(current.grandTotal));
+                // Clear account and set full amount as cash
                 _accountController.clear();
+                // Use the new event to clear only account, not supplier
+                context.read<PurchaseInvoiceBloc>().add(ClearSupplierAccountEvent());
               },
             ),
             ListTile(
               leading: CircleAvatar(
                   backgroundColor: color.primary.withValues(alpha: .05),
-                  child: Icon(Icons.credit_card, color: current.paymentMode == PaymentMode.credit ? color.primary : color.outline)),
+                  child: Icon(Icons.credit_card,
+                      color: current.paymentMode == PaymentMode.credit ? color.primary : color.outline)),
               title: Text(tr.accountCredit),
               subtitle: Text(tr.accountCreditSubtitle),
               trailing: current.paymentMode == PaymentMode.credit ? Icon(Icons.check, color: color.primary) : null,
               onTap: () {
                 Navigator.pop(context);
+                // Set payment to 0 (full credit)
                 context.read<PurchaseInvoiceBloc>().add(UpdatePurchasePaymentEvent(0));
+                // Show account field as required
+                setState(() {
+                  // This will trigger the validator to show account is required
+                });
               },
             ),
             ListTile(
               leading: CircleAvatar(
                   backgroundColor: color.primary.withValues(alpha: .05),
-                  child: Icon(Icons.payments, color: current.paymentMode == PaymentMode.mixed ? color.primary : color.outline)),
+                  child: Icon(Icons.payments,
+                      color: current.paymentMode == PaymentMode.mixed ? color.primary : color.outline)),
               title: Text(tr.combinedPayment),
               subtitle: Text(tr.combinedPaymentSubtitle),
               trailing: current.paymentMode == PaymentMode.mixed ? Icon(Icons.check, color: color.primary) : null,

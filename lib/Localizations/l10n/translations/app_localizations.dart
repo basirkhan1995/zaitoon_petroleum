@@ -3723,6 +3723,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Submit'**
   String get submit;
+
+  /// No description provided for @successPurchaseInvoiceMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase invoice completed successfully.'**
+  String get successPurchaseInvoiceMsg;
+
+  /// No description provided for @successTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get successTitle;
+
+  /// No description provided for @selectCreditAccountMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an account for credit payment.'**
+  String get selectCreditAccountMsg;
 }
 
 class _AppLocalizationsDelegate

@@ -623,5 +623,8 @@
   "accountCreditSubtitle": "افزودن کل مبلغ به حساب به عنوان اعتبار",
   "combinedPayment": "نقدی و اعتبار حساب",
   "combinedPaymentSubtitle": "پرداخت با نقد و اعتبار حساب",
-  "submit": "ثبت کردن"
+  "submit": "ثبت کردن",
+  "successPurchaseInvoiceMsg": "بل خرید موفقانه ثبت گردید.",
+  "successTitle": "موفق",
+  "selectCreditAccountMsg": "لطفاً یک حساب برای پرداخت اعتباری انتخاب کنید"
 }

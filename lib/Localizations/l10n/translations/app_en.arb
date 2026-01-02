@@ -623,5 +623,8 @@
   "accountCreditSubtitle": "Apply the full amount as account credit.”",
   "combinedPayment": "Cash & Credit",
   "combinedPaymentSubtitle": "Pay using cash and account credit.",
-  "submit": "Submit"
+  "submit": "Submit",
+  "successPurchaseInvoiceMsg": "Purchase invoice completed successfully.",
+  "successTitle": "Success",
+  "selectCreditAccountMsg": "Please select an account for credit payment."
 }

@@ -1872,4 +1872,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get submit => 'ثبت کړئ';
+
+  @override
+  String get successPurchaseInvoiceMsg => 'د بل پیرود په بریالیتوب ترسره شو.';
+
+  @override
+  String get successTitle => 'بریالیتوب';
+
+  @override
+  String get selectCreditAccountMsg =>
+      'مهرباني وکړئ د اعتباري تادیې لپاره یو حساب وټاکئ.';
 }

@@ -100,7 +100,13 @@ class SavePurchaseInvoiceEvent extends PurchaseInvoiceEvent {
   @override
   List<Object?> get props => [usrName, ordPersonal, orderName, xRef, items, completer];
 }
+// In purchase_invoice_event.dart
+class ClearSupplierAccountEvent extends PurchaseInvoiceEvent {
+  const ClearSupplierAccountEvent();
 
+  @override
+  List<Object?> get props => [];
+}
 class LoadPurchaseStoragesEvent extends PurchaseInvoiceEvent {
   final int productId;
   const LoadPurchaseStoragesEvent(this.productId);

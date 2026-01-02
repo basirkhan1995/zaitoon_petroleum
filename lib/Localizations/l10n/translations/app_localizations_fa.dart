@@ -1868,4 +1868,14 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get submit => 'ثبت کردن';
+
+  @override
+  String get successPurchaseInvoiceMsg => 'بل خرید موفقانه ثبت گردید.';
+
+  @override
+  String get successTitle => 'موفق';
+
+  @override
+  String get selectCreditAccountMsg =>
+      'لطفاً یک حساب برای پرداخت اعتباری انتخاب کنید';
 }
