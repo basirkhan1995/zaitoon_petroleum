@@ -396,12 +396,7 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget _buildItemRow({
-    required BuildContext context,
-    required PurchaseInvoiceItem item,
-    required List<FocusNode> nodes,
-    required bool isLastRow,
-  }) {
+  Widget _buildItemRow({required BuildContext context, required PurchaseInvoiceItem item, required List<FocusNode> nodes, required bool isLastRow,}) {
     final locale = AppLocalizations.of(context)!;
 
     // Get or create controllers for this row

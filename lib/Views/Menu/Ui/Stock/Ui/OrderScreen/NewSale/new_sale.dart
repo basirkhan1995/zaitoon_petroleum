@@ -422,15 +422,15 @@ class _DesktopState extends State<_Desktop> {
           () => TextEditingController(text: item.purPrice != null && item.purPrice! > 0 ? item.purPrice!.toAmount() : ''),
     );
 
-    // FIX: Properly manage sale price controller
-    final salePriceController = TextEditingController(
-      text: item.salePrice != null && item.salePrice! > 0 ? item.salePrice!.toAmount() : '',
+    // FIX: Use putIfAbsent to properly manage the sale price controller
+    final salePriceController = _priceControllers.putIfAbsent(
+      "sale_${item.rowId}",
+          () => TextEditingController(text: item.salePrice != null && item.salePrice! > 0 ? item.salePrice!.toAmount() : ''),
     );
 
-    // FIX: Add a storage text controller (read-only)
     final storageController = TextEditingController(text: item.storageName);
 
-    // FIX: Listen to state changes to update controllers
+    // Update controllers when the item changes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (item.salePrice != null && item.salePrice! > 0) {
         salePriceController.text = item.salePrice!.toAmount();
@@ -443,9 +443,10 @@ class _DesktopState extends State<_Desktop> {
     return Column(
       children: [
         Container(
+          padding: const EdgeInsets.symmetric(vertical: 0),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outline)),
+            border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
           ),
           child: Row(
             children: [
@@ -481,7 +482,7 @@ class _DesktopState extends State<_Desktop> {
                     final purchasePrice = double.tryParse(product.purchasePrice?.toAmount() ?? "0.0") ?? 0.0;
                     final salePrice = double.tryParse(product.sellPrice?.toAmount() ?? "0.0") ?? 0.0;
 
-                    // FIX: Get storage ID and name from product
+                    // Get storage ID and name from product
                     final storageId = product.stkStorage;
                     final storageName = product.stgName ?? '';
 
@@ -525,7 +526,7 @@ class _DesktopState extends State<_Desktop> {
                     }),
                   ],
                   decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context)!.qty,
+                    hintText: locale.qty,
                     border: InputBorder.none,
                     isDense: true,
                   ),
@@ -568,7 +569,7 @@ class _DesktopState extends State<_Desktop> {
                 ),
               ),
 
-              // Sale Price (Editable)
+              // Sale Price (Editable) - ULTRA SIMPLE FIX
               SizedBox(
                 width: 120,
                 child: TextField(
@@ -576,17 +577,8 @@ class _DesktopState extends State<_Desktop> {
                   focusNode: nodes[3],
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
-                    SmartThousandsDecimalFormatter(),
-                    // Prevent invalid prices
-                    TextInputFormatter.withFunction((oldValue, newValue) {
-                      if (newValue.text.isEmpty) return newValue;
-                      final parsed = double.tryParse(newValue.text.replaceAll(',', ''));
-                      if (parsed == null || parsed <= 0) {
-                        return TextEditingValue.empty;
-                      }
-                      return newValue;
-                    }),
+                    // Only allow numbers and decimal point
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
                   ],
                   decoration: InputDecoration(
                     hintText: locale.salePrice,
@@ -601,7 +593,7 @@ class _DesktopState extends State<_Desktop> {
                       ));
                       return;
                     }
-                    final parsed = double.tryParse(value.replaceAll(',', ''));
+                    final parsed = double.tryParse(value);
                     if (parsed != null && parsed > 0) {
                       context.read<SaleInvoiceBloc>().add(
                         UpdateSaleItemEvent(
@@ -611,7 +603,6 @@ class _DesktopState extends State<_Desktop> {
                       );
                     }
                   },
-                  onSubmitted: (_) => nodes[4].requestFocus(),
                 ),
               ),
 
@@ -666,6 +657,7 @@ class _DesktopState extends State<_Desktop> {
                       onPressed: () {
                         // Clean up controllers before removing
                         _priceControllers.remove("purchase_${item.rowId}");
+                        _priceControllers.remove("sale_${item.rowId}");
                         _qtyControllers.remove(item.rowId);
                         context.read<SaleInvoiceBloc>().add(RemoveSaleItemEvent(item.rowId));
                       },
