@@ -36,8 +36,32 @@ class SaleInvoiceLoaded extends SaleInvoiceState {
     this.storages,
   });
 
-  double get grandTotal {
+  // Total purchase cost (total cost price)
+  double get totalPurchaseCost {
     return items.fold(0.0, (sum, item) => sum + item.totalPurchase);
+  }
+
+  // Total sale amount (total selling price)
+  double get totalSaleAmount {
+    return items.fold(0.0, (sum, item) => sum + item.totalSale);
+  }
+
+  // Grand total (use sale amount for the invoice total)
+  double get grandTotal {
+    return totalSaleAmount;
+  }
+
+  // Profit calculation
+  double get totalProfit {
+    return totalSaleAmount - totalPurchaseCost;
+  }
+
+  // Profit percentage
+  double get profitPercentage {
+    if (totalPurchaseCost > 0) {
+      return (totalProfit / totalPurchaseCost) * 100;
+    }
+    return 0.0;
   }
 
   double get cashPayment {
@@ -81,8 +105,8 @@ class SaleInvoiceLoaded extends SaleInvoiceState {
           item.productName.isEmpty ||
           item.storageId == 0 ||
           item.storageName.isEmpty ||
-          item.purPrice == null ||
-          item.purPrice! <= 0 ||
+          item.salePrice == null ||
+          item.salePrice! <= 0 ||
           item.qty <= 0) {
         return false;
       }
@@ -116,7 +140,6 @@ class SaleInvoiceLoaded extends SaleInvoiceState {
   @override
   List<Object?> get props => [items, customer, customerAccount, payment, paymentMode, storages];
 }
-
 class PurchaseInvoiceSaving extends SaleInvoiceLoaded {
   const PurchaseInvoiceSaving({
     required super.items,

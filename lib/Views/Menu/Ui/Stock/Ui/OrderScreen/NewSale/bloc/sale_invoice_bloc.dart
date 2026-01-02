@@ -25,6 +25,18 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
     on<ResetSaleInvoiceEvent>(_onReset);
     on<SaveSaleInvoiceEvent>(_onSaveInvoice);
     on<LoadSaleStoragesEvent>(_onLoadStorages);
+    on<ClearCustomerAccountEvent>(_onClearSupplierAccount);
+  }
+
+  void _onClearSupplierAccount(ClearCustomerAccountEvent event, Emitter<SaleInvoiceState> emit) {
+    if (state is SaleInvoiceLoaded) {
+      final current = state as SaleInvoiceLoaded;
+      emit(current.copyWith(
+        customerAccount: null,
+        payment: current.grandTotal,
+        paymentMode: PaymentMode.cash,
+      ));
+    }
   }
 
   void _onInitialize(InitializeSaleInvoiceEvent event, Emitter<SaleInvoiceState> emit) {
@@ -34,6 +46,7 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
         productName: '',
         qty: 1,
         purPrice: 0,
+        salePrice: 0, // Add this
         storageName: '',
         storageId: 0,
       )],
@@ -92,6 +105,7 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
       productName: '',
       qty: 1,
       purPrice: 0,
+      salePrice: 0, // Add this
       storageName: '',
       storageId: 0,
     );
@@ -99,7 +113,6 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
     final updatedItems = List<SaleInvoiceItem>.from(current.items)..add(newItem);
     emit(current.copyWith(items: updatedItems));
   }
-
   void _onRemoveItem(RemoveSaleItemEvent event, Emitter<SaleInvoiceState> emit) {
     if (state is SaleInvoiceLoaded) {
       final current = state as SaleInvoiceLoaded;
@@ -131,6 +144,7 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
             productName: event.productName ?? item.productName,
             qty: event.qty ?? item.qty,
             purPrice: event.purPrice ?? item.purPrice,
+            salePrice: event.salePrice ?? item.salePrice, // FIX: Add sale price
             storageName: event.storageName ?? item.storageName,
             storageId: event.storageId ?? item.storageId,
           );
@@ -151,6 +165,7 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
       PaymentMode newPaymentMode;
 
       if (event.isCreditAmount) {
+        // When setting credit amount (from mixed payment)
         creditAmount = event.payment;
         cashPayment = current.grandTotal - creditAmount;
 
@@ -166,6 +181,7 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
           newPaymentMode = PaymentMode.mixed;
         }
       } else {
+        // When setting cash payment
         cashPayment = event.payment;
         creditAmount = current.grandTotal - cashPayment;
 
@@ -173,22 +189,26 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
           newPaymentMode = PaymentMode.credit;
           creditAmount = current.grandTotal;
           cashPayment = 0;
+          // Don't clear account here - account is required for credit
         } else if (cashPayment >= current.grandTotal) {
           newPaymentMode = PaymentMode.cash;
           cashPayment = current.grandTotal;
           creditAmount = 0;
+          // Clear account when switching to full cash
         } else {
           newPaymentMode = PaymentMode.mixed;
+          // Account should still be selected for mixed
         }
       }
 
       emit(current.copyWith(
         payment: cashPayment,
         paymentMode: newPaymentMode,
+        // Clear customerAccount only when switching to full cash
+        customerAccount: newPaymentMode == PaymentMode.cash ? null : current.customerAccount,
       ));
     }
   }
-
   void _onReset(ResetSaleInvoiceEvent event, Emitter<SaleInvoiceState> emit) {
     emit(SaleInvoiceLoaded(
       items: [SaleInvoiceItem(
@@ -196,6 +216,7 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
         productName: '',
         qty: 1,
         purPrice: 0,
+        salePrice: 0, // Add this
         storageName: '',
         storageId: 0,
       )],
@@ -315,10 +336,11 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
           stgID: item.storageId,
           quantity: item.qty.toDouble(),
           pPrice: item.purPrice,
+          sPrice: item.salePrice,
         );
       }).toList();
 
-      final xRef = event.xRef ?? 'PUR-${DateTime.now().millisecondsSinceEpoch}';
+      final xRef = event.xRef ?? '';
 
       final response = await repo.addSaleInvoice(
         orderName: "Sale",

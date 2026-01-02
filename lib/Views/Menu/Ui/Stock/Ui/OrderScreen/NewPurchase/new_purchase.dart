@@ -487,7 +487,7 @@ class _DesktopState extends State<_Desktop> {
                     }),
                   ],
                   decoration: InputDecoration(
-                    hintText: 'Qty',
+                    hintText: AppLocalizations.of(context)!.qty,
                     border: InputBorder.none,
                     isDense: true,
                   ),
@@ -530,7 +530,7 @@ class _DesktopState extends State<_Desktop> {
                     }),
                   ],
                   decoration: InputDecoration(
-                    hintText: 'Price',
+                    hintText: AppLocalizations.of(context)!.unitPrice,
                     border: InputBorder.none,
                     isDense: true,
                   ),

@@ -3741,6 +3741,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please select an account for credit payment.'**
   String get selectCreditAccountMsg;
+
+  /// No description provided for @totalCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Cost'**
+  String get totalCost;
+
+  /// No description provided for @profit.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit'**
+  String get profit;
+
+  /// No description provided for @totalSale.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Sale'**
+  String get totalSale;
+
+  /// No description provided for @salePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale Price'**
+  String get salePrice;
+
+  /// No description provided for @costPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost Price'**
+  String get costPrice;
+
+  /// No description provided for @purchasePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'P. Price'**
+  String get purchasePrice;
+
+  /// No description provided for @profitSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit & Loss'**
+  String get profitSummary;
 }
 
 class _AppLocalizationsDelegate

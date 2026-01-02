@@ -626,5 +626,12 @@
   "submit": "Submit",
   "successPurchaseInvoiceMsg": "Purchase invoice completed successfully.",
   "successTitle": "Success",
-  "selectCreditAccountMsg": "Please select an account for credit payment."
+  "selectCreditAccountMsg": "Please select an account for credit payment.",
+  "totalCost": "Total Cost",
+  "profit": "Profit",
+  "totalSale": "Total Sale",
+  "salePrice": "Sale Price",
+  "costPrice": "Cost Price",
+  "purchasePrice": "P. Price",
+  "profitSummary": "Profit & Loss"
 }

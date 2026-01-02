@@ -43,6 +43,7 @@ class UpdateSaleItemEvent extends SaleInvoiceEvent {
   final String? productName;
   final int? qty;
   final double? purPrice;
+  final double? salePrice;
   final int? storageId;
   final String? storageName;
 
@@ -52,6 +53,7 @@ class UpdateSaleItemEvent extends SaleInvoiceEvent {
     this.productName,
     this.qty,
     this.purPrice,
+    this.salePrice,
     this.storageId,
     this.storageName,
   });
@@ -63,6 +65,7 @@ class UpdateSaleItemEvent extends SaleInvoiceEvent {
     productName,
     qty,
     purPrice,
+    salePrice,
     storageId,
     storageName,
   ];
@@ -100,7 +103,11 @@ class SaveSaleInvoiceEvent extends SaleInvoiceEvent {
   @override
   List<Object?> get props => [usrName, ordPersonal, orderName, xRef, items, completer];
 }
-
+class ClearCustomerAccountEvent extends SaleInvoiceEvent {
+  const ClearCustomerAccountEvent();
+  @override
+  List<Object?> get props => [];
+}
 class LoadSaleStoragesEvent extends SaleInvoiceEvent {
   final int productId;
   const LoadSaleStoragesEvent(this.productId);

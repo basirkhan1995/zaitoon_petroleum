@@ -25,7 +25,6 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
     on<ResetPurchaseInvoiceEvent>(_onReset);
     on<SavePurchaseInvoiceEvent>(_onSaveInvoice);
     on<LoadPurchaseStoragesEvent>(_onLoadStorages);
-    // In purchase_invoice_bloc.dart, add this handler
     on<ClearSupplierAccountEvent>(_onClearSupplierAccount);
   }
   void _onClearSupplierAccount(ClearSupplierAccountEvent event, Emitter<PurchaseInvoiceState> emit) {
@@ -33,7 +32,7 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
       final current = state as PurchaseInvoiceLoaded;
       emit(current.copyWith(
         supplierAccount: null,
-        payment: current.grandTotal, // Reset to full cash payment
+        payment: current.grandTotal,
         paymentMode: PaymentMode.cash,
       ));
     }

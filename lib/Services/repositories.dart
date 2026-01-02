@@ -1871,7 +1871,7 @@ class Repositories {
     required String usrName,
     required int perID,
     required String? xRef,
-    required String orderName, //Purchase or Sale
+    required String orderName,
     int? account,
     double? amount,
     required List<SaleInvoiceRecord> records,

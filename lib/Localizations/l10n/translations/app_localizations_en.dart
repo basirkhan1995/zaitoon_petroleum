@@ -1888,4 +1888,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get selectCreditAccountMsg =>
       'Please select an account for credit payment.';
+
+  @override
+  String get totalCost => 'Total Cost';
+
+  @override
+  String get profit => 'Profit';
+
+  @override
+  String get totalSale => 'Total Sale';
+
+  @override
+  String get salePrice => 'Sale Price';
+
+  @override
+  String get costPrice => 'Cost Price';
+
+  @override
+  String get purchasePrice => 'P. Price';
+
+  @override
+  String get profitSummary => 'Profit & Loss';
 }

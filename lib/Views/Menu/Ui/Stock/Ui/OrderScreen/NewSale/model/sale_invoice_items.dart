@@ -5,7 +5,7 @@ class SaleInvoiceItem {
   String productName;
   int qty;
   double? purPrice;
-  double? salePrice;
+  double? salePrice; // Add this
   int storageId;
   String storageName;
   SaleInvoiceItem({
@@ -14,14 +14,13 @@ class SaleInvoiceItem {
     required this.productName,
     required this.qty,
     this.purPrice,
-    this.salePrice,
+    this.salePrice, // Add this
     required this.storageName,
     required this.storageId,
   }) : rowId = itemId ?? DateTime.now().millisecondsSinceEpoch.toString();
 
   double get totalPurchase => qty * (purPrice ?? 0);
-  double get totalSale => qty * (salePrice ?? 0);
-
+  double get totalSale => qty * (salePrice ?? 0); // Add this
 }
 class SaleInvoiceRecord {
   final int proID;

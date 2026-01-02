@@ -626,5 +626,12 @@
   "submit": "ثبت کړئ",
   "successPurchaseInvoiceMsg": "د بل پیرود په بریالیتوب ترسره شو.",
   "successTitle": "بریالیتوب",
-  "selectCreditAccountMsg": "مهرباني وکړئ د اعتباري تادیې لپاره یو حساب وټاکئ."
+  "selectCreditAccountMsg": "مهرباني وکړئ د اعتباري تادیې لپاره یو حساب وټاکئ.",
+  "totalCost": "کل هزینه",
+  "profit": "مفاد",
+  "totalSale": "کل مبلغ فروش",
+  "salePrice": "قیمت فروش",
+  "costPrice": "مبلغ هزینه",
+  "purchasePrice": "قیمت خرید",
+  "profitSummary": "سود و زیان"
 }

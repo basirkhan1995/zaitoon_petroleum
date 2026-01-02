@@ -1878,4 +1878,25 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get selectCreditAccountMsg =>
       'لطفاً یک حساب برای پرداخت اعتباری انتخاب کنید';
+
+  @override
+  String get totalCost => 'کل هزینه';
+
+  @override
+  String get profit => 'مفاد';
+
+  @override
+  String get totalSale => 'کل مبلغ فروش';
+
+  @override
+  String get salePrice => 'قیمت فروش';
+
+  @override
+  String get costPrice => 'مبلغ هزینه';
+
+  @override
+  String get purchasePrice => 'قیمت خرید';
+
+  @override
+  String get profitSummary => 'سود و زیان';
 }

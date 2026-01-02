@@ -626,5 +626,12 @@
   "submit": "ثبت کردن",
   "successPurchaseInvoiceMsg": "بل خرید موفقانه ثبت گردید.",
   "successTitle": "موفق",
-  "selectCreditAccountMsg": "لطفاً یک حساب برای پرداخت اعتباری انتخاب کنید"
+  "selectCreditAccountMsg": "لطفاً یک حساب برای پرداخت اعتباری انتخاب کنید",
+  "totalCost": "کل هزینه",
+  "profit": "مفاد",
+  "totalSale": "کل مبلغ فروش",
+  "salePrice": "قیمت فروش",
+  "costPrice": "مبلغ هزینه",
+  "purchasePrice": "قیمت خرید",
+  "profitSummary": "سود و زیان"
 }
