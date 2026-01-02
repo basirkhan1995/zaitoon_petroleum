@@ -1017,7 +1017,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weekly => 'Weekly';
 
   @override
-  String get paymentMethod => 'Payment method';
+  String get paymentMethod => 'Payment Method';
 
   @override
   String get salary => 'Salary';
@@ -1909,4 +1909,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profitSummary => 'Profit & Loss';
+
+  @override
+  String get saleEntry => 'Sale Entry';
 }

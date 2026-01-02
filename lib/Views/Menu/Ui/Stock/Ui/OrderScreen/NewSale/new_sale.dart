@@ -146,7 +146,7 @@ class _DesktopState extends State<_Desktop> {
                     spacing: 8,
                     children: [
                       Utils.zBackButton(context),
-                      Text(tr.saleTitle, style: Theme.of(context).textTheme.titleLarge)
+                      Text(tr.saleEntry, style: Theme.of(context).textTheme.titleLarge)
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -357,6 +357,7 @@ class _DesktopState extends State<_Desktop> {
 
                   // Summary Section
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     spacing: 8,
                     children: [
                       Expanded(child: _buildSummarySection(context)),
@@ -385,7 +386,7 @@ class _DesktopState extends State<_Desktop> {
       ),
       child: Row(
         children: [
-          SizedBox(width: 40, child: Padding(
+          SizedBox(width: 30, child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text('#', style: title),
           )),
@@ -442,10 +443,9 @@ class _DesktopState extends State<_Desktop> {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(vertical: 0),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+            border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outline)),
           ),
           child: Row(
             children: [

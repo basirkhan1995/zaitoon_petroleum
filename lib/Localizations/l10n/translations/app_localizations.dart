@@ -2065,7 +2065,7 @@ abstract class AppLocalizations {
   /// No description provided for @paymentMethod.
   ///
   /// In en, this message translates to:
-  /// **'Payment method'**
+  /// **'Payment Method'**
   String get paymentMethod;
 
   /// No description provided for @salary.
@@ -3783,6 +3783,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profit & Loss'**
   String get profitSummary;
+
+  /// No description provided for @saleEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale Entry'**
+  String get saleEntry;
 }
 
 class _AppLocalizationsDelegate

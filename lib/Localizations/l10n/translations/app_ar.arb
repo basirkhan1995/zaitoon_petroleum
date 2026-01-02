@@ -633,5 +633,6 @@
   "salePrice": "قیمت فروش",
   "costPrice": "مبلغ هزینه",
   "purchasePrice": "قیمت خرید",
-  "profitSummary": "سود و زیان"
+  "profitSummary": "سود و زیان",
+  "saleEntry": "بل فروش"
 }

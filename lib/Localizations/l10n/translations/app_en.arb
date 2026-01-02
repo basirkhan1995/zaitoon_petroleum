@@ -347,7 +347,7 @@
   "daily": "Daily",
   "salaryBase": "Salary base",
   "weekly": "Weekly",
-  "paymentMethod": "Payment method",
+  "paymentMethod": "Payment Method",
   "salary": "Salary",
   "employeeRegistration": "Employee Registration",
   "taxInfo": "TIN number",
@@ -633,5 +633,6 @@
   "salePrice": "Sale Price",
   "costPrice": "Cost Price",
   "purchasePrice": "P. Price",
-  "profitSummary": "Profit & Loss"
+  "profitSummary": "Profit & Loss",
+  "saleEntry": "Sale Entry"
 }

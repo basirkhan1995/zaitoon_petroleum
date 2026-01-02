@@ -1899,4 +1899,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get profitSummary => 'سود و زیان';
+
+  @override
+  String get saleEntry => 'بل فروش';
 }
