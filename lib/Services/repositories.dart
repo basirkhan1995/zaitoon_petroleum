@@ -1240,7 +1240,6 @@ class Repositories {
       throw e.toString();
     }
   }
-
   Future<Map<String, dynamic>> bulkTransfer({required String userName, required List<Map<String, dynamic>> records,}) async {
     try {
       final response = await api.post(
@@ -1619,7 +1618,6 @@ class Repositories {
       throw e.toString();
     }
   }
-  // In repositories.dart - Check if this method exists and works correctly
   Future<List<ProductsModel>> getProduct({int? proId}) async {
     try {
       final queryParams = {'proID': proId};
@@ -1690,6 +1688,7 @@ class Repositories {
       throw "$e";
     }
   }
+
   /// Product Category .........................................................
   Future<Map<String, dynamic>> addProCategory({required ProCategoryModel newCategory}) async {
     try {
@@ -1901,6 +1900,22 @@ class Repositories {
       throw '${e.message}';
     } catch (e) {
       throw 'Unexpected error: $e';
+    }
+  }
+
+  // In your repositories.dart
+  Future<Map<String, dynamic>> updateOrder({required Map<String, dynamic> orderData}) async {
+    try {
+      final response = await api.put(
+        endpoint: "/inventory/salePurchase.php",
+        data: orderData,
+      );
+
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
     }
   }
 
