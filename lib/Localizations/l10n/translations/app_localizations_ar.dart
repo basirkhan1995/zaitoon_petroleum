@@ -1912,4 +1912,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get orderSearchHint => 'آی دی،‌ ریفرینس، نوع فرمایش';
+
+  @override
+  String get userTitle => 'یوزر';
+
+  @override
+  String get noRecords => 'هیچ سابقه‌ ای یافت نشد';
+
+  @override
+  String get accountingEntries => 'د حسابدارۍ داخلې';
+
+  @override
+  String get noItems => 'هیڅ توکي نشته';
+
+  @override
+  String get items => 'توکي';
 }

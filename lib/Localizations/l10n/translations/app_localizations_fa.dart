@@ -1908,4 +1908,19 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get orderSearchHint => 'آی دی،‌ ریفرینس، نوع فرمایش';
+
+  @override
+  String get userTitle => 'یوزر';
+
+  @override
+  String get noRecords => 'هیڅ سابقه ونه موندل شوه';
+
+  @override
+  String get accountingEntries => 'ثبت‌ های حسابداری';
+
+  @override
+  String get noItems => 'موردی نیست';
+
+  @override
+  String get items => 'اقلام';
 }

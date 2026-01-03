@@ -392,7 +392,6 @@ class _DesktopState extends State<_Desktop> {
 
   Widget _buildStatusBadge(BuildContext context, String status) {
     final color = Theme.of(context).colorScheme;
-    print(status);
     final isAuthorized = status.toLowerCase().contains("Authorize");
     final tr = AppLocalizations.of(context)!;
     return Container(

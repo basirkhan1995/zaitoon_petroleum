@@ -3801,6 +3801,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Order ID, Reference, Oder Type'**
   String get orderSearchHint;
+
+  /// No description provided for @userTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get userTitle;
+
+  /// No description provided for @noRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'No Records'**
+  String get noRecords;
+
+  /// No description provided for @accountingEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounting Entries'**
+  String get accountingEntries;
+
+  /// No description provided for @noItems.
+  ///
+  /// In en, this message translates to:
+  /// **'No items'**
+  String get noItems;
+
+  /// No description provided for @items.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get items;
 }
 
 class _AppLocalizationsDelegate

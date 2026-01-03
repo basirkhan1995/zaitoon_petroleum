@@ -1918,4 +1918,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orderSearchHint => 'Order ID, Reference, Oder Type';
+
+  @override
+  String get userTitle => 'User';
+
+  @override
+  String get noRecords => 'No Records';
+
+  @override
+  String get accountingEntries => 'Accounting Entries';
+
+  @override
+  String get noItems => 'No items';
+
+  @override
+  String get items => 'Items';
 }

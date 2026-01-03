@@ -284,7 +284,15 @@ class _DesktopState extends State<_Desktop> {
                       ),
                       const SizedBox(width: 8),
                       ZOutlineButton(
-                        width: 120,
+                        width: 100,
+                        icon: Icons.print,
+                        onPressed: () {},
+                        label: Text(tr.print),
+                      ),
+
+                      const SizedBox(width: 8),
+                      ZOutlineButton(
+                        width: 100,
                         icon: Icons.refresh,
                         onPressed: () {
                           context.read<PurchaseInvoiceBloc>().add(ResetPurchaseInvoiceEvent());
@@ -303,7 +311,7 @@ class _DesktopState extends State<_Desktop> {
                               final isSaving = state is PurchaseInvoiceSaving;
 
                               return ZButton(
-                                width: 120,
+                                width: 100,
                                 onPressed: (isSaving || !current.isFormValid) ? null : () => _saveInvoice(context, current),
                                 label: isSaving
                                     ? SizedBox(
@@ -440,9 +448,9 @@ class _DesktopState extends State<_Desktop> {
                   bloc: context.read<ProductsBloc>(),
                   fetchAllFunction: (bloc) => bloc.add(LoadProductsEvent()),
                   searchFunction: (bloc, query) => bloc.add(LoadProductsEvent()),
-                  itemBuilder: (context, product) => ListTile(
-                    title: Text(product.proName ?? ''),
-                    subtitle: Text('Code: ${product.proCode ?? ''}'),
+                  itemBuilder: (context, product) => Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(product.proName ?? ''),
                   ),
                   itemToString: (product) => product.proName ?? '',
                   stateToLoading: (state) => state is ProductsLoadingState,

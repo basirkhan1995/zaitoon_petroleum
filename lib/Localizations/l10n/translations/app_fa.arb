@@ -636,5 +636,10 @@
   "profitSummary": "سود و زیان",
   "saleEntry": "بل فروش",
   "salePriceBrief": "ق. فروش",
-  "orderSearchHint": "آی دی،‌ ریفرینس، نوع فرمایش"
+  "orderSearchHint": "آی دی،‌ ریفرینس، نوع فرمایش",
+  "userTitle": "یوزر",
+  "noRecords": "هیڅ سابقه ونه موندل شوه",
+  "accountingEntries": "ثبت‌ های حسابداری",
+  "noItems": "موردی نیست",
+  "items": "اقلام"
 }

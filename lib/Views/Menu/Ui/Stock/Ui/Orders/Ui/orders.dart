@@ -162,7 +162,7 @@ class _DesktopState extends State<_Desktop> {
                   SizedBox(width: 30, child: Text("#", style: titleStyle)),
                   SizedBox(width: 100, child: Text(tr.date, style: titleStyle)),
                   SizedBox(
-                    width: 180,
+                    width: 215,
                     child: Text(tr.referenceNumber, style: titleStyle),
                   ),
 
