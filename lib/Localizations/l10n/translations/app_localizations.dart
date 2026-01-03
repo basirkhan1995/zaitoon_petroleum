@@ -3775,7 +3775,7 @@ abstract class AppLocalizations {
   /// No description provided for @purchasePrice.
   ///
   /// In en, this message translates to:
-  /// **'P. Price'**
+  /// **'P-AVG. Price'**
   String get purchasePrice;
 
   /// No description provided for @profitSummary.
@@ -3789,6 +3789,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sale Entry'**
   String get saleEntry;
+
+  /// No description provided for @salePriceBrief.
+  ///
+  /// In en, this message translates to:
+  /// **'S. Price'**
+  String get salePriceBrief;
+
+  /// No description provided for @orderSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Order ID, Reference, Oder Type'**
+  String get orderSearchHint;
 }
 
 class _AppLocalizationsDelegate

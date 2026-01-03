@@ -418,8 +418,8 @@ class _DesktopState extends State<_Desktop> {
                                             child: Row(
                                               children: [
                                                 SizedBox(
-                                                  width: 28, // Fixed width
-                                                  height: 28, // Fixed height
+                                                  width: 28,
+                                                  height: 28,
                                                   child: Material(
                                                     color: Colors.transparent,
                                                     child: InkWell(

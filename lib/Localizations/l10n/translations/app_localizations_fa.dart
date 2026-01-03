@@ -1895,11 +1895,17 @@ class AppLocalizationsFa extends AppLocalizations {
   String get costPrice => 'مبلغ هزینه';
 
   @override
-  String get purchasePrice => 'قیمت خرید';
+  String get purchasePrice => 'ق.ا خرید';
 
   @override
   String get profitSummary => 'سود و زیان';
 
   @override
   String get saleEntry => 'بل فروش';
+
+  @override
+  String get salePriceBrief => 'ق. فروش';
+
+  @override
+  String get orderSearchHint => 'آی دی،‌ ریفرینس، نوع فرمایش';
 }

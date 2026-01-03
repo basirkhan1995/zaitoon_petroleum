@@ -71,8 +71,8 @@ class ZSearchField extends StatelessWidget {
             keyboardType: keyboardInputType,
             controller: controller,
             maxLength: maxLength,
-            maxLines: keyboardInputType == TextInputType.multiline ? null : 1, // 👈 Allows multiline
-            minLines: keyboardInputType == TextInputType.multiline ? 3 : 1, // 👈 Minimum 3 lines for descriptions
+            maxLines: keyboardInputType == TextInputType.multiline ? null : 1,
+            minLines: keyboardInputType == TextInputType.multiline ? 3 : 1,
             decoration: InputDecoration(
               filled: !isEnabled,
               suffixIcon: trailing,
@@ -87,7 +87,7 @@ class ZSearchField extends StatelessWidget {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(3),
                 borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: .3),
+                  color: Theme.of(context).colorScheme.outline.withValues(alpha: .3),
                 ),
               ),
               focusedBorder: OutlineInputBorder(

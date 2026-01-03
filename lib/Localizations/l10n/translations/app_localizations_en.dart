@@ -1905,11 +1905,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get costPrice => 'Cost Price';
 
   @override
-  String get purchasePrice => 'P. Price';
+  String get purchasePrice => 'P-AVG. Price';
 
   @override
   String get profitSummary => 'Profit & Loss';
 
   @override
   String get saleEntry => 'Sale Entry';
+
+  @override
+  String get salePriceBrief => 'S. Price';
+
+  @override
+  String get orderSearchHint => 'Order ID, Reference, Oder Type';
 }

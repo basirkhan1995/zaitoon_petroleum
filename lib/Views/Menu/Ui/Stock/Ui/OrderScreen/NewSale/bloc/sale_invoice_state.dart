@@ -140,8 +140,8 @@ class SaleInvoiceLoaded extends SaleInvoiceState {
   @override
   List<Object?> get props => [items, customer, customerAccount, payment, paymentMode, storages];
 }
-class PurchaseInvoiceSaving extends SaleInvoiceLoaded {
-  const PurchaseInvoiceSaving({
+class SaleInvoiceSaving extends SaleInvoiceLoaded {
+  const SaleInvoiceSaving({
     required super.items,
     super.customer,
     super.customerAccount,
@@ -151,11 +151,11 @@ class PurchaseInvoiceSaving extends SaleInvoiceLoaded {
   });
 }
 
-class PurchaseInvoiceSaved extends SaleInvoiceState {
+class SaleInvoiceSaved extends SaleInvoiceState {
   final bool success;
   final String? invoiceNumber;
 
-  const PurchaseInvoiceSaved(this.success, {this.invoiceNumber});
+  const SaleInvoiceSaved(this.success, {this.invoiceNumber});
 
   @override
   List<Object?> get props => [success, invoiceNumber];

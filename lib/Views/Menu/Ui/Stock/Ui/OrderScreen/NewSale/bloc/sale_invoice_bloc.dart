@@ -300,7 +300,7 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
       }
     }
 
-    emit(PurchaseInvoiceSaving(
+    emit(SaleInvoiceSaving(
       items: current.items,
       customer: current.customer,
       customerAccount: current.customerAccount,
@@ -356,13 +356,13 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
 
       if (message.toLowerCase().contains('success')) {
         String invoiceNumber = response['invoiceNo']?.toString() ?? 'Generated';
-        emit(PurchaseInvoiceSaved(true, invoiceNumber: invoiceNumber));
+        emit(SaleInvoiceSaved(true, invoiceNumber: invoiceNumber));
         event.completer.complete(invoiceNumber);
         add(ResetSaleInvoiceEvent());
       }
       else if (message.toLowerCase().contains('authorized')) {
         String invoiceNumber = response['invoiceNo']?.toString() ?? 'Authorized';
-        emit(PurchaseInvoiceSaved(true, invoiceNumber: invoiceNumber));
+        emit(SaleInvoiceSaved(true, invoiceNumber: invoiceNumber));
         event.completer.complete(invoiceNumber);
         add(ResetSaleInvoiceEvent());
       }

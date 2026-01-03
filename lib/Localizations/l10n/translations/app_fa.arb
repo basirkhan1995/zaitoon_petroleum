@@ -632,7 +632,9 @@
   "totalSale": "کل مبلغ فروش",
   "salePrice": "قیمت فروش",
   "costPrice": "مبلغ هزینه",
-  "purchasePrice": "قیمت خرید",
+  "purchasePrice": "ق.ا خرید",
   "profitSummary": "سود و زیان",
-  "saleEntry": "بل فروش"
+  "saleEntry": "بل فروش",
+  "salePriceBrief": "ق. فروش",
+  "orderSearchHint": "آی دی،‌ ریفرینس، نوع فرمایش"
 }

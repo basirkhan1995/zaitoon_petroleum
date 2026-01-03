@@ -632,7 +632,9 @@
   "totalSale": "Total Sale",
   "salePrice": "Sale Price",
   "costPrice": "Cost Price",
-  "purchasePrice": "P. Price",
+  "purchasePrice": "P-AVG. Price",
   "profitSummary": "Profit & Loss",
-  "saleEntry": "Sale Entry"
+  "saleEntry": "Sale Entry",
+  "salePriceBrief": "S. Price",
+  "orderSearchHint": "Order ID, Reference, Oder Type"
 }

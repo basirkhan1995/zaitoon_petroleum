@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
@@ -117,7 +118,7 @@ class _DesktopState extends State<_Desktop> {
           if (state is SaleInvoiceError) {
             Utils.showOverlayMessage(context, message: state.message, isError: true);
           }
-          if (state is PurchaseInvoiceSaved) {
+          if (state is SaleInvoiceSaved) {
             if (state.success) {
               Utils.showOverlayMessage(
                 context,
@@ -146,12 +147,12 @@ class _DesktopState extends State<_Desktop> {
                     spacing: 8,
                     children: [
                       Utils.zBackButton(context),
-                      Text(tr.saleEntry, style: Theme.of(context).textTheme.titleLarge)
+                      Text(tr.saleEntry, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold,fontSize: 20))
                     ],
                   ),
                   const SizedBox(height: 8),
 
-                  // Supplier and Account Selection
+                  // Customer and Account Selection
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -160,12 +161,12 @@ class _DesktopState extends State<_Desktop> {
                         child: GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
                           key: const ValueKey('person_field'),
                           controller: _personController,
-                          title: tr.supplier,
-                          hintText: tr.supplier,
+                          title: tr.customer,
+                          hintText: tr.customer,
                           isRequired: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return tr.required(tr.supplier);
+                              return tr.required(tr.customer);
                             }
                             return null;
                           },
@@ -274,15 +275,15 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Expanded(
-                        child: ZTextFieldEntitled(
-                            controller: _xRefController,
-                            title: tr.invoiceNumber
-                        ),
+                      ZOutlineButton(
+                        width: 100,
+                        icon: Icons.print,
+                        onPressed: () {},
+                        label: Text(tr.print),
                       ),
                       const SizedBox(width: 8),
                       ZOutlineButton(
-                        width: 120,
+                        width: 100,
                         icon: Icons.refresh,
                         onPressed: () {
                           context.read<SaleInvoiceBloc>().add(ResetSaleInvoiceEvent());
@@ -295,13 +296,13 @@ class _DesktopState extends State<_Desktop> {
                       const SizedBox(width: 8),
                       BlocBuilder<SaleInvoiceBloc, SaleInvoiceState>(
                           builder: (context, state) {
-                            if (state is SaleInvoiceLoaded || state is PurchaseInvoiceSaving) {
-                              final current = state is PurchaseInvoiceSaving ?
+                            if (state is SaleInvoiceLoaded || state is SaleInvoiceSaving) {
+                              final current = state is SaleInvoiceSaving ?
                               state : (state as SaleInvoiceLoaded);
-                              final isSaving = state is PurchaseInvoiceSaving;
+                              final isSaving = state is SaleInvoiceSaving;
 
                               return ZButton(
-                                width: 120,
+                                width: 100,
                                 onPressed: (isSaving || !current.isFormValid) ? null : () => _saveInvoice(context, current),
                                 label: isSaving
                                     ? SizedBox(
@@ -320,7 +321,7 @@ class _DesktopState extends State<_Desktop> {
                       )
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
 
                   // Items Header
                   _buildItemsHeader(context),
@@ -330,8 +331,8 @@ class _DesktopState extends State<_Desktop> {
                   Expanded(
                     child: BlocBuilder<SaleInvoiceBloc, SaleInvoiceState>(
                       builder: (context, state) {
-                        if (state is SaleInvoiceLoaded || state is PurchaseInvoiceSaving) {
-                          final current = state is PurchaseInvoiceSaving ?
+                        if (state is SaleInvoiceLoaded || state is SaleInvoiceSaving) {
+                          final current = state is SaleInvoiceSaving ?
                           state : (state as SaleInvoiceLoaded);
                           _synchronizeFocusNodes(current.items.length);
                           return ListView.builder(
@@ -408,42 +409,30 @@ class _DesktopState extends State<_Desktop> {
     required List<FocusNode> nodes,
     required bool isLastRow,
   }) {
-    final locale = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    TextStyle? title = textTheme.titleSmall?.copyWith(color: color.primary);
 
-    // Get or create controllers for this row
     final productController = TextEditingController(text: item.productName);
     final qtyController = _qtyControllers.putIfAbsent(
-      item.rowId,
-          () => TextEditingController(text: item.qty > 0 ? item.qty.toString() : ''),
+      item.rowId, () => TextEditingController(text: item.qty > 0 ? item.qty.toString() : ''),
     );
 
     final purchasePriceController = _priceControllers.putIfAbsent(
-      "purchase_${item.rowId}",
-          () => TextEditingController(text: item.purPrice != null && item.purPrice! > 0 ? item.purPrice!.toAmount() : ''),
+      "purchase_${item.rowId}", () => TextEditingController(text: item.purPrice != null && item.purPrice! > 0 ? item.purPrice!.toAmount() : ''),
     );
 
     // FIX: Use putIfAbsent to properly manage the sale price controller
     final salePriceController = _priceControllers.putIfAbsent(
-      "sale_${item.rowId}",
-          () => TextEditingController(text: item.salePrice != null && item.salePrice! > 0 ? item.salePrice!.toAmount() : ''),
+      "sale_${item.rowId}", () => TextEditingController(text: item.salePrice != null && item.salePrice! > 0 ? item.salePrice!.toAmount() : ''),
     );
 
     final storageController = TextEditingController(text: item.storageName);
 
-    // Update controllers when the item changes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (item.salePrice != null && item.salePrice! > 0) {
-        salePriceController.text = item.salePrice!.toAmount();
-      }
-      if (item.storageName.isNotEmpty) {
-        storageController.text = item.storageName;
-      }
-    });
-
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(vertical: 0),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
@@ -463,14 +452,39 @@ class _DesktopState extends State<_Desktop> {
                 child: GenericUnderlineTextfield<ProductsStockModel, ProductsBloc, ProductsState>(
                   title: "",
                   controller: productController,
-                  hintText: locale.products,
+                  hintText: tr.products,
                   bloc: context.read<ProductsBloc>(),
                   fetchAllFunction: (bloc) => bloc.add(LoadProductsStockEvent()),
                   searchFunction: (bloc, query) => bloc.add(LoadProductsStockEvent()),
                   itemBuilder: (context, product) => ListTile(
                     title: Text(product.proName ?? ''),
-                    subtitle: Text('#${product.proCode} | ${locale.purchasePrice}: ${product.purchasePrice?.toAmount() ?? '' } | ${locale.salePrice} ${product.sellPrice?.toAmount() ?? ""} | ${locale.storage}: ${product.stgName}'),
-                    trailing: Text(product.available??"0"),
+                    subtitle: Row(
+                      spacing: 5,
+                      children: [
+                       Wrap(
+                         children: [
+                           Cover(radius: 0,child: Text(tr.purchasePrice,style: title),),
+                           Cover(radius: 0,child: Text(product.purchasePrice?.toAmount()??"")),
+                         ],
+                       ),
+                        Wrap(
+                          children: [
+                            Cover(radius: 0,child: Text(tr.salePriceBrief,style: title)),
+                            Cover(radius: 0,child: Text(product.sellPrice?.toAmount()??"")),
+                          ],
+                        ),
+                      ],
+                    ),
+                    trailing: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(product.available?.toAmount()??"",style: TextStyle(fontSize: 18),),
+                        Text(product.stgName??"",style: TextStyle(
+                          color: Theme.of(context).colorScheme.outline,
+                        ),),
+                      ],
+                    ),
                   ),
                   itemToString: (product) => product.proName ?? '',
                   stateToLoading: (state) => state is ProductsLoadingState,
@@ -526,7 +540,7 @@ class _DesktopState extends State<_Desktop> {
                     }),
                   ],
                   decoration: InputDecoration(
-                    hintText: locale.qty,
+                    hintText: tr.qty,
                     border: InputBorder.none,
                     isDense: true,
                   ),
@@ -559,9 +573,18 @@ class _DesktopState extends State<_Desktop> {
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
                     SmartThousandsDecimalFormatter(),
+                    // Prevent invalid prices
+                    TextInputFormatter.withFunction((oldValue, newValue) {
+                      if (newValue.text.isEmpty) return newValue;
+                      final parsed = double.tryParse(newValue.text.replaceAll(',', ''));
+                      if (parsed == null || parsed <= 0) {
+                        return TextEditingValue.empty;
+                      }
+                      return newValue;
+                    }),
                   ],
                   decoration: InputDecoration(
-                    hintText: locale.costPrice,
+                    hintText: tr.costPrice,
                     border: InputBorder.none,
                     isDense: true,
                   ),
@@ -581,7 +604,7 @@ class _DesktopState extends State<_Desktop> {
                     FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
                   ],
                   decoration: InputDecoration(
-                    hintText: locale.salePrice,
+                    hintText: tr.salePrice,
                     border: InputBorder.none,
                     isDense: true,
                   ),
@@ -622,7 +645,7 @@ class _DesktopState extends State<_Desktop> {
                     ),
                     if (item.purPrice != null && item.purPrice! > 0 && item.salePrice != null && item.salePrice! > 0)
                       Text(
-                        '${locale.profit}: ${(item.totalSale - item.totalPurchase).toAmount()}',
+                        '${tr.profit}: ${(item.totalSale - item.totalPurchase).toAmount()}',
                         style: TextStyle(
                           fontSize: 12,
                           color: (item.totalSale - item.totalPurchase) >= 0 ? Colors.green : Colors.red,
@@ -638,9 +661,9 @@ class _DesktopState extends State<_Desktop> {
                 child: TextField(
                   controller: storageController,
                   focusNode: nodes[4],
-                  readOnly: true, // Make storage read-only
+                  readOnly: true,
                   decoration: InputDecoration(
-                    hintText: locale.storage,
+                    hintText: tr.storage,
                     border: InputBorder.none,
                     isDense: true,
                   ),
@@ -693,8 +716,8 @@ class _DesktopState extends State<_Desktop> {
 
     return BlocBuilder<SaleInvoiceBloc, SaleInvoiceState>(
       builder: (context, state) {
-        if (state is SaleInvoiceLoaded || state is PurchaseInvoiceSaving) {
-          final current = state is PurchaseInvoiceSaving ?
+        if (state is SaleInvoiceLoaded || state is SaleInvoiceSaving) {
+          final current = state is SaleInvoiceSaving ?
           state :
           (state as SaleInvoiceLoaded);
 
@@ -796,8 +819,8 @@ class _DesktopState extends State<_Desktop> {
 
     return BlocBuilder<SaleInvoiceBloc, SaleInvoiceState>(
       builder: (context, state) {
-        if (state is SaleInvoiceLoaded || state is PurchaseInvoiceSaving) {
-          final current = state is PurchaseInvoiceSaving ?
+        if (state is SaleInvoiceLoaded || state is SaleInvoiceSaving) {
+          final current = state is SaleInvoiceSaving ?
           state :
           (state as SaleInvoiceLoaded);
 
@@ -825,7 +848,6 @@ class _DesktopState extends State<_Desktop> {
                   value: current.totalPurchaseCost,
                   color: color.primary.withValues(alpha: .9),
                 ),
-
                 SizedBox(height: 5),
                 _buildSummaryRow(
                   label: tr.profit,
@@ -833,7 +855,6 @@ class _DesktopState extends State<_Desktop> {
                   color: current.totalProfit >= 0 ? Colors.green : Colors.red,
                   isBold: true,
                 ),
-                SizedBox(height: 5),
                 if (current.totalPurchaseCost > 0)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1068,7 +1089,7 @@ class _DesktopState extends State<_Desktop> {
 
     context.read<SaleInvoiceBloc>().add(SaveSaleInvoiceEvent(
       usrName: _userName ?? '',
-      orderName: "Purchase",
+      orderName: "Sale",
       ordPersonal: state.customer!.perId!,
       xRef: _xRefController.text.isNotEmpty ? _xRefController.text : null,
       items: state.items,
