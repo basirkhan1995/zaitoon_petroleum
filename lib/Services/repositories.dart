@@ -29,6 +29,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/model/vehi
 import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/FetchGLAT/model/glat_model.dart';
+import '../Views/Menu/Ui/Journal/Ui/GetOrder/model/get_order_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/model/limit_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Company/Branches/model/branch_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/model/product_model.dart';
@@ -1963,8 +1964,26 @@ class Repositories {
       );
 
       return response.data['msg'] == 'success';
+    } on DioException catch (e) {
+      throw '${e.message}';
     } catch (e) {
-      rethrow;
+      throw e.toString();
+    }
+  }
+
+  Future<OrderTxnModel> fetchOrderTxn({required String reference}) async {
+    try {
+      final response = await api.get(
+        endpoint: "/inventory/spTransaction.php",
+        queryParams: {'ref': reference},
+      );
+
+      // Convert the response data to OrderTxnModel
+      return OrderTxnModel.fromMap(response.data);
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
     }
   }
 

@@ -23,6 +23,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchGLAT/bloc/glat_b
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchTRPT/bloc/trpt_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FundTransfer/BulkTransfer/bloc/transfer_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FxTransaction/bloc/fx_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/GetOrder/bloc/order_txn_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/bloc/transaction_tab_bloc.dart';
@@ -140,6 +141,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => PurchaseInvoiceBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => OrderByIdBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => SaleInvoiceBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => OrderTxnBloc(Repositories(ApiServices()))),
         ///Report Bloc
         BlocProvider(create: (context) => AccStatementBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => TxnRefReportBloc(Repositories(ApiServices()))),

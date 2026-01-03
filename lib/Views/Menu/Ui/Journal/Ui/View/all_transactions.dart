@@ -7,6 +7,8 @@ import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchGLAT/Ui/glat_view.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/GetOrder/bloc/order_txn_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/GetOrder/txn_oder.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -93,6 +95,8 @@ class _DesktopState extends State<_Desktop> {
       context.read<TrptBloc>().add(LoadTrptEvent(txn.trnReference ?? ""));
     } else if (txn.trnType == "GLAT") {
       context.read<GlatBloc>().add(LoadGlatEvent(txn.trnReference ?? ""));
+    } else if (txn.trnType == "SALE" || txn.trnType == "PRCH"){
+       context.read<OrderTxnBloc>().add(FetchOrderTxnEvent(reference: txn.trnReference ?? ""));
     } else {
       context.read<TxnReferenceBloc>().add(
         FetchTxnByReferenceEvent(txn.trnReference ?? ""),
@@ -107,6 +111,31 @@ class _DesktopState extends State<_Desktop> {
 
     return MultiBlocListener(
       listeners: [
+        BlocListener<OrderTxnBloc, OrderTxnState>(
+          listener: (context, state) {
+            if (state is OrderTxnLoadedState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              showDialog(
+                context: context,
+                builder: (context) => OrderTxnView(reference: state.data.trnReference ?? ""),
+              );
+            } else if (state is OrderTxnErrorState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              Utils.showOverlayMessage(
+                context,
+                title: tr.noData,
+                message: state.message,
+                isError: true,
+              );
+            }
+          },
+        ),
         BlocListener<TrptBloc, TrptState>(
           listener: (context, state) {
             if (state is TrptLoadedState) {
