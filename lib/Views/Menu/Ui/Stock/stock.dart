@@ -129,15 +129,35 @@ class StockView extends StatelessWidget {
 
                   ZOutlineButton(
                     backgroundColor: color.primary.withValues(alpha: .1),
-                    toolTip: "F2",
+                    toolTip: "F3",
                     label: Text(locale.estimateTitle),
                     icon: Icons.real_estate_agent_outlined,
                     width: double.infinity,
                     // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
                   ),
+
+                  SizedBox(height: 3),
+                  Wrap(
+                    spacing: 5,
+                    children: [
+                      const Icon(Icons.keyboard_return, size: 20),
+                      Text(
+                        locale.returnGoods,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ],
+                  ),
                   ZOutlineButton(
                     backgroundColor: color.primary.withValues(alpha: .1),
-                    toolTip: "F2",
+                    toolTip: "F4",
+                    label: Text(locale.returnGoods),
+                    icon: Icons.read_more_outlined,
+                    width: double.infinity,
+                    // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
+                  ),
+                  ZOutlineButton(
+                    backgroundColor: color.primary.withValues(alpha: .1),
+                    toolTip: "F5",
                     label: Text(locale.returnGoods),
                     icon: Icons.read_more_outlined,
                     width: double.infinity,
@@ -157,7 +177,7 @@ class StockView extends StatelessWidget {
 
                   ZOutlineButton(
                     backgroundColor: color.primary.withValues(alpha: .1),
-                    toolTip: "F2",
+                    toolTip: "F6",
                     label: Text(locale.shift),
                     icon: Icons.filter_tilt_shift,
                     width: double.infinity,
@@ -165,7 +185,7 @@ class StockView extends StatelessWidget {
                   ),
                   ZOutlineButton(
                     backgroundColor: color.primary.withValues(alpha: .1),
-                    toolTip: "F2",
+                    toolTip: "F7",
                     label: Text(locale.adjustment),
                     icon: Icons.auto_fix_high,
                     width: double.infinity,

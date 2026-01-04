@@ -380,20 +380,20 @@ class _DesktopState extends State<_Desktop> {
     TextStyle? title = Theme.of(context).textTheme.titleSmall?.copyWith(color: color.surface);
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
       decoration: BoxDecoration(
         color: color.primary,
         borderRadius: BorderRadius.circular(3),
       ),
       child: Row(
         children: [
-          SizedBox(width: 30, child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          SizedBox(width: 25, child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5.0),
             child: Text('#', style: title),
           )),
           Expanded(child: Text(locale.products, style: title)),
           SizedBox(width: 80, child: Text(locale.qty, style: title)),
-          SizedBox(width: 120, child: Text(locale.costPrice, style: title)),
+         // SizedBox(width: 120, child: Text(locale.costPrice, style: title)),
           SizedBox(width: 120, child: Text(locale.unitPrice, style: title)),
           SizedBox(width: 120, child: Text(locale.totalTitle, style: title)),
           SizedBox(width: 150, child: Text(locale.storage, style: title)),
@@ -440,7 +440,7 @@ class _DesktopState extends State<_Desktop> {
           child: Row(
             children: [
               SizedBox(
-                width: 40,
+                width: 30,
                 child: Text(
                   (_rowFocusNodes.indexOf(nodes) + 1).toString(),
                   textAlign: TextAlign.center,
@@ -563,34 +563,34 @@ class _DesktopState extends State<_Desktop> {
               ),
 
               // Purchase Price (Read-only/Disabled)
-              SizedBox(
-                width: 120,
-                child: TextField(
-                  controller: purchasePriceController,
-                  focusNode: nodes[2],
-                  readOnly: true, // Make purchase price read-only
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
-                    SmartThousandsDecimalFormatter(),
-                    // Prevent invalid prices
-                    TextInputFormatter.withFunction((oldValue, newValue) {
-                      if (newValue.text.isEmpty) return newValue;
-                      final parsed = double.tryParse(newValue.text.replaceAll(',', ''));
-                      if (parsed == null || parsed <= 0) {
-                        return TextEditingValue.empty;
-                      }
-                      return newValue;
-                    }),
-                  ],
-                  decoration: InputDecoration(
-                    hintText: tr.costPrice,
-                    border: InputBorder.none,
-                    isDense: true,
-                  ),
-                  onSubmitted: (_) => nodes[3].requestFocus(),
-                ),
-              ),
+              // SizedBox(
+              //   width: 120,
+              //   child: TextField(
+              //     controller: purchasePriceController,
+              //     focusNode: nodes[2],
+              //     readOnly: true, // Make purchase price read-only
+              //     keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              //     inputFormatters: [
+              //       FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+              //       SmartThousandsDecimalFormatter(),
+              //       // Prevent invalid prices
+              //       TextInputFormatter.withFunction((oldValue, newValue) {
+              //         if (newValue.text.isEmpty) return newValue;
+              //         final parsed = double.tryParse(newValue.text.replaceAll(',', ''));
+              //         if (parsed == null || parsed <= 0) {
+              //           return TextEditingValue.empty;
+              //         }
+              //         return newValue;
+              //       }),
+              //     ],
+              //     decoration: InputDecoration(
+              //       hintText: tr.costPrice,
+              //       border: InputBorder.none,
+              //       isDense: true,
+              //     ),
+              //     onSubmitted: (_) => nodes[3].requestFocus(),
+              //   ),
+              // ),
 
               // Sale Price (Editable) - ULTRA SIMPLE FIX
               SizedBox(
@@ -672,11 +672,13 @@ class _DesktopState extends State<_Desktop> {
 
               // Actions
               SizedBox(
-                width: 60,
+                width: 65,
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.delete_outline, size: 18),
+                      icon: const Icon(Icons.delete_outline, size: 20),
+                      isSelected: true,
+                      hoverColor: color.primary.withValues(alpha: .05),
                       onPressed: () {
                         // Clean up controllers before removing
                         _priceControllers.remove("purchase_${item.rowId}");
@@ -698,6 +700,8 @@ class _DesktopState extends State<_Desktop> {
               children: [
                 ZOutlineButton(
                   width: 120,
+                  height: 35,
+                  backgroundColor: color.primary.withValues(alpha: .08),
                   icon: Icons.add,
                   label: Text(AppLocalizations.of(context)!.addItem),
                   onPressed: () {
