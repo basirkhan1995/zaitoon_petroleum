@@ -150,7 +150,7 @@ class OrderTxnPrintSettings extends PrintServices {
                     fontSize: 7,
                   ),
                   buildTextWidget(
-                    text: " ${data.usrName ?? 'N/A'} ",
+                    text: " ${data.maker ?? 'N/A'} ",
                     fontSize: 7,
                   ),
                 ],
@@ -343,7 +343,7 @@ class OrderTxnPrintSettings extends PrintServices {
                   pw.SizedBox(height: 8),
                   _buildDetailRow(
                     label: getTranslation(locale: 'createdBy', language: language),
-                    value: data.usrName ?? 'N/A',
+                    value: data.maker ?? 'N/A',
                   ),
                   _buildDetailRow(
                     label: getTranslation(locale: 'currencyTitle', language: language),

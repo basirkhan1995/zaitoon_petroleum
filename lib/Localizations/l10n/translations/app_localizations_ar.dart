@@ -1927,4 +1927,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get items => 'توکي';
+
+  @override
+  String get notEnoughMsg => 'موجودی کالا کافی نیست.';
 }

@@ -641,5 +641,6 @@
   "noRecords": "No Records",
   "accountingEntries": "Accounting Entries",
   "noItems": "No items",
-  "items": "Items"
+  "items": "Items",
+  "notEnoughMsg": "Not enough items available."
 }

@@ -641,5 +641,6 @@
   "noRecords": "هیچ سابقه‌ ای یافت نشد",
   "accountingEntries": "د حسابدارۍ داخلې",
   "noItems": "هیڅ توکي نشته",
-  "items": "توکي"
+  "items": "توکي",
+  "notEnoughMsg": "موجودی کالا کافی نیست."
 }

@@ -641,5 +641,6 @@
   "noRecords": "هیڅ سابقه ونه موندل شوه",
   "accountingEntries": "ثبت‌ های حسابداری",
   "noItems": "موردی نیست",
-  "items": "اقلام"
+  "items": "اقلام",
+  "notEnoughMsg": "موجودی کالا کافی نیست."
 }

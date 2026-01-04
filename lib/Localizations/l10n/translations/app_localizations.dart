@@ -3831,6 +3831,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Items'**
   String get items;
+
+  /// No description provided for @notEnoughMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough items available.'**
+  String get notEnoughMsg;
 }
 
 class _AppLocalizationsDelegate

@@ -10,7 +10,7 @@ class OrderTxnModel {
   final String? trntName;
   final int? trnStatus;
   final String? trnStateText;
-  final String? usrName;
+  final String? maker;
   final DateTime? trnEntryDate;
   final String? totalBill;
   final String? ccySymbol;
@@ -18,6 +18,7 @@ class OrderTxnModel {
   final String? ccyName;
   final String? branch;
   final String? remark;
+  final String? checker;
   final List<Record>? records;
   final List<Bill>? bill;
 
@@ -27,7 +28,7 @@ class OrderTxnModel {
     this.trntName,
     this.trnStatus,
     this.trnStateText,
-    this.usrName,
+    this.maker,
     this.trnEntryDate,
     this.totalBill,
     this.ccySymbol,
@@ -35,6 +36,7 @@ class OrderTxnModel {
     this.ccyName,
     this.branch,
     this.remark,
+    this.checker,
     this.records,
     this.bill,
   });
@@ -53,6 +55,7 @@ class OrderTxnModel {
     String? ccyName,
     String? branch,
     String? remark,
+    String? checker,
     List<Record>? records,
     List<Bill>? bill,
   }) =>
@@ -62,7 +65,7 @@ class OrderTxnModel {
         trntName: trntName ?? this.trntName,
         trnStatus: trnStatus ?? this.trnStatus,
         trnStateText: trnStateText ?? this.trnStateText,
-        usrName: usrName ?? this.usrName,
+        maker: usrName ?? this.maker,
         trnEntryDate: trnEntryDate ?? this.trnEntryDate,
         totalBill: totalBill ?? this.totalBill,
         ccySymbol: ccySymbol ?? this.ccySymbol,
@@ -80,11 +83,12 @@ class OrderTxnModel {
     trntName: json["trntName"],
     trnStatus: json["trnStatus"],
     trnStateText: json["trnStateText"],
-    usrName: json["usrName"],
+    maker: json["maker"],
     trnEntryDate: json["trnEntryDate"] == null ? null : DateTime.parse(json["trnEntryDate"]),
     totalBill: json["total_bill"],
     ccySymbol: json["ccy_symbol"],
     ccy: json["ccy"],
+    checker: json["checker"],
     ccyName: json["ccy_name"],
     branch: json["branch"],
     remark: json["remark"],
@@ -98,7 +102,7 @@ class OrderTxnModel {
     "trntName": trntName,
     "trnStatus": trnStatus,
     "trnStateText": trnStateText,
-    "usrName": usrName,
+    "usrName": maker,
     "trnEntryDate": trnEntryDate?.toIso8601String(),
     "total_bill": totalBill,
     "ccy_symbol": ccySymbol,

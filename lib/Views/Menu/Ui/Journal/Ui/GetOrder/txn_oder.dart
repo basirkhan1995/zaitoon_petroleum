@@ -110,8 +110,8 @@ class _OrderTxnDialogState extends State<_OrderTxnDialog> {
                 final billItems = orderTxn?.bill ?? [];
 
                 // Check permissions
-                final showDeleteButton = orderTxn?.trnStatus == 0 && orderTxn?.usrName == login.usrName;
-                final showAuthorizeButton = orderTxn?.trnStatus == 0 && orderTxn?.usrName != login.usrName;
+                final showDeleteButton = orderTxn?.trnStatus == 0 && orderTxn?.maker == login.usrName;
+                final showAuthorizeButton = orderTxn?.trnStatus == 0 && orderTxn?.maker != login.usrName;
                 final showAnyButton = showDeleteButton || showAuthorizeButton;
 
                 // Get loading states
@@ -200,7 +200,7 @@ class _OrderTxnDialogState extends State<_OrderTxnDialog> {
                                   Row(
                                     children: [
                                       Text(
-                                        orderTxn?.totalBill ?? "0.00",
+                                        orderTxn?.totalBill?.toAmount() ?? "0.00",
                                         style: textTheme.headlineMedium?.copyWith(
                                           fontWeight: FontWeight.bold,
                                           color: color.primary,
@@ -210,7 +210,8 @@ class _OrderTxnDialogState extends State<_OrderTxnDialog> {
                                       Text(
                                         orderTxn?.ccy ?? "USD",
                                         style: textTheme.headlineMedium?.copyWith(
-                                          color: color.outline.withValues(alpha: .9),
+                                          fontWeight: FontWeight.bold,
+                                          color: color.outline,
                                         ),
                                       ),
                                     ],
@@ -318,7 +319,8 @@ class _OrderTxnDialogState extends State<_OrderTxnDialog> {
 
                                     // User Info
                                     Divider(height: 20, thickness: 1),
-                                    _buildDetailRow(tr.createdBy, orderTxn?.usrName ?? "-"),
+                                    _buildDetailRow(tr.maker, orderTxn?.maker ?? "-"),
+                                    _buildDetailRow(tr.checker, orderTxn?.checker ?? "-"),
                                     _buildDetailRow(tr.currencyTitle, orderTxn?.ccy ?? "-"),
                                   ],
                                 ),
@@ -334,7 +336,7 @@ class _OrderTxnDialogState extends State<_OrderTxnDialog> {
                         Cover(
                           color: color.surface,
                           child: Padding(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(10),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -344,7 +346,7 @@ class _OrderTxnDialogState extends State<_OrderTxnDialog> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                Divider(height: 20, thickness: 1),
+                                Divider(thickness: 1),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   spacing: 12,

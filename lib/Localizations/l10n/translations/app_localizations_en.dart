@@ -1933,4 +1933,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get items => 'Items';
+
+  @override
+  String get notEnoughMsg => 'Not enough items available.';
 }

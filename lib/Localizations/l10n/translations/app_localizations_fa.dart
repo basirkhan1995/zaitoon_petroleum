@@ -1923,4 +1923,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get items => 'اقلام';
+
+  @override
+  String get notEnoughMsg => 'موجودی کالا کافی نیست.';
 }

@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewSale/model/sale_invoice_items.dart';
+import '../../../../../../../../Services/localization_services.dart';
 import '../../../../../../../../Services/repositories.dart';
 import '../../../../../Settings/Ui/Company/Storage/model/storage_model.dart';
 import '../../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
@@ -226,6 +227,7 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
   }
 
   Future<void> _onSaveInvoice(SaveSaleInvoiceEvent event, Emitter<SaleInvoiceState> emit) async {
+    final tr = localizationService.loc;
     if (state is! SaleInvoiceLoaded) {
       event.completer.complete('');
       return;
@@ -353,7 +355,7 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
       );
 
       final message = response['msg']?.toString() ?? 'No response message';
-
+      final sp = response['specific']?.toString() ?? 'No response message';
       if (message.toLowerCase().contains('success')) {
         String invoiceNumber = response['invoiceNo']?.toString() ?? 'Generated';
         emit(SaleInvoiceSaved(true, invoiceNumber: invoiceNumber));
@@ -371,9 +373,9 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
         final msgLower = message.toLowerCase();
 
         if (msgLower.contains('over limit')) {
-          errorMessage = 'Account credit limit exceeded';
+          errorMessage = tr.overLimitMessage;
         } else if (msgLower.contains('block')) {
-          errorMessage = 'Account is blocked';
+          errorMessage = tr.accountBlockedMessage;
         } else if (msgLower.contains('invalid ccy')) {
           errorMessage = 'Account currency does not match system currency';
         } else if (msgLower.contains('not found')) {
@@ -384,6 +386,8 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
           errorMessage = 'Payment amount exceeds total bill amount';
         } else if (msgLower.contains('failed')) {
           errorMessage = 'Invoice creation failed. Please try again.';
+        }else if(msgLower.contains('not enough')){
+          errorMessage = '${tr.notEnoughMsg} $sp';
         } else {
           errorMessage = message;
         }
