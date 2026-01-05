@@ -65,7 +65,7 @@ class OrderTxnModel {
         trntName: trntName ?? this.trntName,
         trnStatus: trnStatus ?? this.trnStatus,
         trnStateText: trnStateText ?? this.trnStateText,
-        maker: usrName ?? this.maker,
+        maker: usrName ?? maker,
         trnEntryDate: trnEntryDate ?? this.trnEntryDate,
         totalBill: totalBill ?? this.totalBill,
         ccySymbol: ccySymbol ?? this.ccySymbol,

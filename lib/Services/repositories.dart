@@ -1867,6 +1867,8 @@ class Repositories {
     }
   }
 
+
+
   Future<Map<String, dynamic>> addSaleInvoice({
     required String usrName,
     required int perID,
@@ -1904,21 +1906,6 @@ class Repositories {
     }
   }
 
-  // In your repositories.dart
-  Future<Map<String, dynamic>> updateOrder({required Map<String, dynamic> orderData}) async {
-    try {
-      final response = await api.put(
-        endpoint: "/inventory/salePurchase.php",
-        data: orderData,
-      );
-
-      return response.data as Map<String, dynamic>;
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
-    }
-  }
 
 
   Future<bool> updatePurchaseOrder({
