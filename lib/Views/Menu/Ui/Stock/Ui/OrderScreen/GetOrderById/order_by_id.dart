@@ -271,6 +271,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
 
             // Supplier/Customer Selection
             Row(
+              spacing: 15,
               children: [
                 Expanded(
                   child: state.isEditing
@@ -439,6 +440,8 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                 runSpacing: 8,
                 children: [
                   ChoiceChip(
+                    selectedColor: color.primary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                     label: Text(tr.cash),
                     selected: state.paymentMode == PaymentMode.cash,
                     onSelected: (selected) {
@@ -451,6 +454,8 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                     },
                   ),
                   ChoiceChip(
+                    selectedColor: color.primary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                     label: Text(tr.creditTitle),
                     selected: state.paymentMode == PaymentMode.credit,
                     onSelected: (selected) {
@@ -463,6 +468,8 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                     },
                   ),
                   ChoiceChip(
+                    selectedColor: color.primary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                     label: Text(tr.combinedPayment),
                     selected: state.paymentMode == PaymentMode.mixed,
                     onSelected: (selected) {

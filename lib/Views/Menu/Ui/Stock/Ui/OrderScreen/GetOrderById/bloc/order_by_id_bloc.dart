@@ -113,10 +113,7 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     return double.tryParse(order.amount ?? "0.0") ?? 0.0;
   }
 
-  void _onToggleEditMode(
-      ToggleEditModeEvent event,
-      Emitter<OrderByIdState> emit,
-      ) {
+  void _onToggleEditMode(ToggleEditModeEvent event, Emitter<OrderByIdState> emit) {
     if (state is OrderByIdLoaded) {
       final current = state as OrderByIdLoaded;
       emit(current.copyWith(isEditing: !current.isEditing));
