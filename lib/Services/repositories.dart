@@ -1892,7 +1892,6 @@ class Repositories {
         data: data,
       );
 
-      print(response.data);
       return response.data is Map<String, dynamic>
           ? response.data
           : {'msg': 'Invalid response format'};
@@ -1906,24 +1905,26 @@ class Repositories {
 
 
 
+  // In repositories.dart or similar
   Future<bool> updatePurchaseOrder({
     required int orderId,
     required String usrName,
     required List<Map<String, dynamic>> records,
+    required Map<String, dynamic> orderData, // Add this
   }) async {
     try {
-      final data = {
-        "ordID": orderId,
-        "usrName": usrName,
-        "records": records,
-      };
-
-      final response = await api.post(
+      final response = await api.put(
         endpoint: "/inventory/salePurchase.php",
-        data: data,
+        data: orderData,
       );
-      return response.data['msg'] == 'success';
+
+      print('Update Response: ${response.data}'); // Debug log
+
+      final message = response.data['msg']?.toString() ?? '';
+      return message.toLowerCase().contains('success') ||
+          message.toLowerCase().contains('authorized');
     } catch (e) {
+      print('Update Error: $e'); // Debug log
       rethrow;
     }
   }

@@ -28,6 +28,10 @@ class OrderByIdLoaded extends OrderByIdState {
   final Map<int, String> productNames;
   final Map<int, String> storageNames;
   final bool isEditing;
+  final IndividualsModel? selectedSupplier;
+  final AccountsModel? selectedAccount;
+  final double cashPayment;
+  final double creditAmount;
 
   const OrderByIdLoaded({
     required this.order,
@@ -35,15 +39,38 @@ class OrderByIdLoaded extends OrderByIdState {
     required this.productNames,
     required this.storageNames,
     this.isEditing = false,
+    this.selectedSupplier,
+    this.selectedAccount,
+    this.cashPayment = 0.0,
+    this.creditAmount = 0.0,
   });
 
   double get grandTotal {
     if (order.records == null) return 0.0;
+    final isPurchase = order.ordName?.toLowerCase().contains('purchase') ?? true;
+
     return order.records!.fold(0.0, (sum, record) {
       final qty = double.tryParse(record.stkQuantity ?? "0") ?? 0;
-      final price = double.tryParse(record.stkPurPrice ?? "0") ?? 0;
+      double price;
+
+      if (isPurchase) {
+        price = double.tryParse(record.stkPurPrice ?? "0") ?? 0;
+      } else {
+        price = double.tryParse(record.stkSalePrice ?? "0") ?? 0;
+      }
+
       return sum + (qty * price);
     });
+  }
+
+  double get totalPayment => cashPayment + creditAmount;
+
+  bool get isPaymentValid => (totalPayment - grandTotal).abs() < 0.01;
+
+  PaymentMode get paymentMode {
+    if (creditAmount <= 0) return PaymentMode.cash;
+    if (cashPayment <= 0) return PaymentMode.credit;
+    return PaymentMode.mixed;
   }
 
   OrderByIdLoaded copyWith({
@@ -52,6 +79,10 @@ class OrderByIdLoaded extends OrderByIdState {
     Map<int, String>? productNames,
     Map<int, String>? storageNames,
     bool? isEditing,
+    IndividualsModel? selectedSupplier,
+    AccountsModel? selectedAccount,
+    double? cashPayment,
+    double? creditAmount,
   }) {
     return OrderByIdLoaded(
       order: order ?? this.order,
@@ -59,6 +90,10 @@ class OrderByIdLoaded extends OrderByIdState {
       productNames: productNames ?? this.productNames,
       storageNames: storageNames ?? this.storageNames,
       isEditing: isEditing ?? this.isEditing,
+      selectedSupplier: selectedSupplier ?? this.selectedSupplier,
+      selectedAccount: selectedAccount ?? this.selectedAccount,
+      cashPayment: cashPayment ?? this.cashPayment,
+      creditAmount: creditAmount ?? this.creditAmount,
     );
   }
 
@@ -69,6 +104,10 @@ class OrderByIdLoaded extends OrderByIdState {
     productNames,
     storageNames,
     isEditing,
+    selectedSupplier,
+    selectedAccount,
+    cashPayment,
+    creditAmount,
   ];
 }
 
@@ -109,3 +148,6 @@ class OrderByIdDeleted extends OrderByIdState {
   @override
   List<Object?> get props => [success, message];
 }
+
+// Add PaymentMode enum if not already defined
+enum PaymentMode { cash, credit, mixed }

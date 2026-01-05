@@ -16,21 +16,58 @@ class LoadOrderByIdEvent extends OrderByIdEvent {
   List<Object?> get props => [orderId];
 }
 
+class ToggleEditModeEvent extends OrderByIdEvent {}
+
+class SelectOrderSupplierEvent extends OrderByIdEvent {
+  final IndividualsModel supplier;
+
+  const SelectOrderSupplierEvent(this.supplier);
+
+  @override
+  List<Object?> get props => [supplier];
+}
+
+class SelectOrderAccountEvent extends OrderByIdEvent {
+  final AccountsModel account;
+
+  const SelectOrderAccountEvent(this.account);
+
+  @override
+  List<Object?> get props => [account];
+}
+
+class ClearOrderAccountEvent extends OrderByIdEvent {}
+
+class UpdateOrderPaymentEvent extends OrderByIdEvent {
+  final double cashPayment;
+  final double creditAmount;
+
+  const UpdateOrderPaymentEvent({
+    required this.cashPayment,
+    required this.creditAmount,
+  });
+
+  @override
+  List<Object?> get props => [cashPayment, creditAmount];
+}
+
 class UpdateOrderItemEvent extends OrderByIdEvent {
   final int index;
+  final int? productId;
   final double? quantity;
   final double? price;
   final int? storageId;
 
   const UpdateOrderItemEvent({
     required this.index,
+    this.productId,
     this.quantity,
     this.price,
     this.storageId,
   });
 
   @override
-  List<Object?> get props => [index, quantity, price, storageId];
+  List<Object?> get props => [index, productId, quantity, price, storageId];
 }
 
 class AddOrderItemEvent extends OrderByIdEvent {}
@@ -56,8 +93,6 @@ class SaveOrderChangesEvent extends OrderByIdEvent {
   @override
   List<Object?> get props => [usrName, completer];
 }
-
-class ResetOrderEvent extends OrderByIdEvent {}
 
 class DeleteOrderEvent extends OrderByIdEvent {
   final int orderId;
