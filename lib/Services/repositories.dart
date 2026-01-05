@@ -1867,8 +1867,6 @@ class Repositories {
     }
   }
 
-
-
   Future<Map<String, dynamic>> addSaleInvoice({
     required String usrName,
     required int perID,
@@ -1894,7 +1892,7 @@ class Repositories {
         data: data,
       );
 
-      // Return the full response data
+      print(response.data);
       return response.data is Map<String, dynamic>
           ? response.data
           : {'msg': 'Invalid response format'};
