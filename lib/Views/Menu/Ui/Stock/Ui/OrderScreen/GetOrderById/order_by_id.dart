@@ -81,7 +81,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
 
   OrderByIdModel? xOrder;
 
-
   @override
   Widget build(BuildContext context) {
     final authState = context.watch<AuthBloc>().state;
