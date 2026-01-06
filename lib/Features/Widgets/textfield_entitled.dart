@@ -147,10 +147,9 @@ class ZTextFieldEntitled extends StatelessWidget {
                         ),
                         prefixIcon: icon != null ? Icon(icon, size: 18) : null,
                         hintText: hint,
-                        hintStyle: const TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 10,
-                          color: Colors.grey,
+                        hintStyle: TextStyle(
+                          fontSize: 13,
+                          color: Theme.of(context).colorScheme.outline,
                         ),
                         isDense: compactMode ?? true,
                         contentPadding: EdgeInsets.symmetric(

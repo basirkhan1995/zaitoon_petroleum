@@ -29,8 +29,9 @@ import 'model/ord_by_Id_model.dart';
 
 class OrderByIdView extends StatefulWidget {
   final int orderId;
+  final String? ordName;
 
-  const OrderByIdView({super.key, required this.orderId});
+  const OrderByIdView({super.key,this.ordName, required this.orderId});
 
   @override
   State<OrderByIdView> createState() => _OrderByIdViewState();
@@ -42,11 +43,16 @@ class _OrderByIdViewState extends State<OrderByIdView> {
   final Map<int, TextEditingController> _priceControllers = {};
   final TextEditingController _personController = TextEditingController();
   final TextEditingController _accountController = TextEditingController();
+  late final TextEditingController cashController;
+  late final TextEditingController creditController;
+
   String? _userName;
   String? ccy;
   @override
   void initState() {
     super.initState();
+    cashController = TextEditingController();
+    creditController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<OrderByIdBloc>().add(LoadOrderByIdEvent(widget.orderId));
       context.read<StorageBloc>().add(LoadStorageEvent());
@@ -90,6 +96,10 @@ class _OrderByIdViewState extends State<OrderByIdView> {
 
     return BlocListener<OrderByIdBloc, OrderByIdState>(
       listener: (context, state) {
+        if (state is OrderByIdLoaded) {
+          cashController.text = state.cashPayment.toAmount();
+          creditController.text = state.creditAmount.toAmount();
+        }
         if (state is OrderByIdError) {
           Utils.showOverlayMessage(context, message: state.message, isError: true);
         }
@@ -121,7 +131,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
         appBar: AppBar(
           titleSpacing: 0,
           actionsPadding: EdgeInsets.symmetric(horizontal: 15),
-          title: Text('${xOrder?.ordName} #${widget.orderId}'),
+          title: Text('${widget.ordName??""} #${widget.orderId}'),
           actions: [
             CircleAvatar(
               backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: .09),
@@ -132,6 +142,16 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                 onPressed: () {
                   context.read<OrderByIdBloc>().add(LoadOrderByIdEvent(widget.orderId));
                 },
+              ),
+            ),
+            SizedBox(width: 8),
+            CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: .09),
+              child: IconButton(
+                icon: Icon(Icons.print),
+                onPressed: () => _toggleEditMode(),
+                hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .1),
+                tooltip: AppLocalizations.of(context)!.print,
               ),
             ),
             SizedBox(width: 8),
@@ -247,8 +267,12 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 10,
                       children: [
-                        Expanded(child: _buildOrderHeader(state)),
-                        Expanded(child: _buildOrderHeaderDetails(state)),
+                        Expanded(
+                            flex: 2,
+                            child: _buildOrderHeaderDetails(state)),
+                        Expanded(
+                            flex: 3,
+                            child: _buildOrderHeader(state)),
                       ],
                     ),
                     const SizedBox(height: 15),
@@ -263,7 +287,11 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                     const SizedBox(height: 10),
 
                     // Order Summary
-                    _buildOrderSummary(state),
+                    Row(
+                      children: [
+                        _buildOrderSummary(state),
+                      ],
+                    ),
 
                     const SizedBox(height: 10),
                   ],
@@ -296,7 +324,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
               children: [
                 Text(
                   paymentTitle,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: color.outline.withValues(alpha: .8)),
+                  style: Theme.of(context).textTheme.titleLarge
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -305,7 +333,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    order.trnStateText?.toUpperCase() ?? 'UNKNOWN',
+                    order.trnStateText?.toUpperCase() ?? '',
                     style: TextStyle(
                       color: color.surface,
                       fontWeight: FontWeight.bold,
@@ -315,7 +343,8 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            Divider(),
+            const SizedBox(height: 5),
 
             // Supplier/Customer Selection
             Row(
@@ -325,7 +354,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                       ? GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
                     controller: TextEditingController(
                         text: state.selectedSupplier != null
-                            ? "${state.selectedSupplier!.perName} ${state.selectedSupplier!.perLastName}"
+                            ? "${state.selectedSupplier?.perName ?? ""} ${state.selectedSupplier?.perLastName ??""}"
                             : order.personal ?? ''
                     ),
                     title: order.ordName?.toLowerCase().contains('purchase') ?? true
@@ -369,7 +398,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                         style: TextStyle(color: color.outline),
                       ),
                       Text(
-                        order.personal ?? 'Unknown',
+                        order.personal ?? '',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -391,58 +420,39 @@ class _OrderByIdViewState extends State<OrderByIdView> {
   }
   Widget _buildOrderHeaderDetails(OrderByIdLoaded state) {
     final order = state.order;
-    final color = Theme.of(context).colorScheme;
-    TextStyle? simpleTitle = Theme.of(context).textTheme.titleMedium?.copyWith(color: color.outline.withValues(alpha: .8));
     final tr = AppLocalizations.of(context)!;
     final String invoiceType = order.ordName == "Sale"? tr.saleTitle : order.ordName == "Purchase"? tr.purchaseTitle : "";
     return Cover(
-      radius: 8,
+      radius: 10,
       padding: EdgeInsets.symmetric(horizontal: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              invoiceType,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: color.outline.withValues(alpha: .9)),
-            ),
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                tr.invoiceDetails,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              Text("${tr.orderId} #${order.ordId}")
+            ],
           ),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            visualDensity: VisualDensity(vertical: -4),
-            title: Text(tr.referenceNumber,style: simpleTitle),
-            subtitle: Text(
-              order.ordTrnRef??"",
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(tr.orderDate,style: simpleTitle),
-            subtitle: Text(
-              order.ordEntryDate?.toDateTime??"",
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(tr.orderId,style: simpleTitle),
-            subtitle: Text(
-              "#${order.ordId.toString()}",
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-
+          Divider(),
+          rowHeader(title: tr.invoiceType,value: invoiceType),
+          SizedBox(height: 5),
+          rowHeader(title: tr.referenceNumber,value: order.ordTrnRef),
+          SizedBox(height: 5),
+          rowHeader(title: tr.totalInvoice,value: "${state.grandTotal.toAmount()} $ccy"),
+          SizedBox(height: 5),
+          rowHeader(title: tr.orderDate,value: order.ordEntryDate?.toDateTime),
+          SizedBox(height: 10),
 
         ],
       ),
     );
   }
-
-
   Widget _buildEditablePaymentSection(OrderByIdLoaded state) {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
@@ -451,9 +461,8 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(tr.paymentDetails, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        const SizedBox(height: 12),
-
-        // Payment Mode Selection
+        Divider(),
+        SizedBox(height: 5),
         Row(
           children: [
             Expanded(
@@ -565,44 +574,48 @@ class _OrderByIdViewState extends State<OrderByIdView> {
               Expanded(
                 child: ZTextFieldEntitled(
                   title: tr.cashPayment,
-                  controller: TextEditingController(
-                      text: state.cashPayment.toAmount()
-                  ),
+                  controller: cashController,
+                  inputFormat: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                  ],
                   onChanged: (value) {
                     final cash = double.tryParse(value) ?? 0.0;
                     final credit = state.grandTotal - cash;
-                    context.read<OrderByIdBloc>().add(UpdateOrderPaymentEvent(
-                      cashPayment: cash,
-                      creditAmount: credit,
-                    ));
+
+                    context.read<OrderByIdBloc>().add(
+                      UpdateOrderPaymentEvent(
+                        cashPayment: cash,
+                        creditAmount: credit,
+                      ),
+                    );
                   },
-                    end: Text(ccy??""),
-                    inputFormat: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-                    ],
-                ),
+                  end: Text(ccy ?? ""),
+                )
+
               ),
               if (state.paymentMode != PaymentMode.cash)...[
                 SizedBox(width: 5),
                 Expanded(
                   child: ZTextFieldEntitled(
                     title: tr.accountPayment,
-                    controller: TextEditingController(
-                        text: state.creditAmount.toStringAsFixed(2)
-                    ),
-                    onChanged: (value) {
-                      final credit = double.tryParse(value) ?? 0.0;
-                      final cash = state.grandTotal - credit;
-                      context.read<OrderByIdBloc>().add(UpdateOrderPaymentEvent(
-                        cashPayment: cash,
-                        creditAmount: credit,
-                      ));
-                    },
-                    end: Text(ccy??""),
+                    controller: creditController,
                     inputFormat: [
                       FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
                     ],
-                  ),
+                    onChanged: (value) {
+                      final credit = double.tryParse(value) ?? 0.0;
+                      final cash = state.grandTotal - credit;
+
+                      context.read<OrderByIdBloc>().add(
+                        UpdateOrderPaymentEvent(
+                          cashPayment: cash,
+                          creditAmount: credit,
+                        ),
+                      );
+                    },
+                    end: Text(ccy ?? ""),
+                  )
+
                 ),
               ]
 
@@ -652,7 +665,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       ],
     );
   }
-
   Widget _buildReadOnlyPaymentSection(OrderByIdModel order, OrderByIdLoaded state) {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
@@ -665,54 +677,30 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(tr.paymentDetails, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        const SizedBox(height: 8),
-
-        if (hasAccount)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        Divider(),
+        if (hasAccount)...[
+          Row(
             children: [
-              Row(
-                children: [
-                  Icon(Icons.credit_card, size: 16, color: color.outline),
-                  const SizedBox(width: 8),
-                  Text(
-                    tr.accountNumber,
-                    style: TextStyle(
-                      color: color.outline,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+              Icon(Icons.add_card_rounded, size: 20, color: color.outline),
+              const SizedBox(width: 8),
               Text(
-                order.acc.toString(),
-                style: TextStyle(fontSize: 14),
+                tr.accountPayment,
+                style: TextStyle(
+                  color: color.outline,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              const SizedBox(height: 8),
             ],
           ),
-
+          Text("${state.order.acc.toString()} | ${state.order.personal}"),
+          Text("${creditAmount.toAmount()} $ccy",
+            style: TextStyle(fontSize: 14,color: color.primary,fontWeight: FontWeight.bold),
+          ),
+        ],
+        const SizedBox(height: 8),
         Row(
           children: [
-            Icon(Icons.add_card_rounded, size: 16, color: color.outline),
-            const SizedBox(width: 8),
-            Text(
-              tr.accountPayment,
-              style: TextStyle(
-                color: color.outline,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        Text(hasAccount ? '${tr.creditTitle}: ${creditAmount.toAmount()}'
-              : '${tr.cash}: ${creditAmount.toAmount()}',
-          style: TextStyle(fontSize: 14),
-        ),
-
-        Row(
-          children: [
-            Icon(Icons.money, size: 16, color: color.outline),
+            Icon(Icons.money, size: 20, color: color.outline),
             const SizedBox(width: 8),
             Text(
               tr.cashAmount,
@@ -723,13 +711,13 @@ class _OrderByIdViewState extends State<OrderByIdView> {
             ),
           ],
         ),
+        Text("10101010 | ${tr.cash}"),
         Text("${state.cashPayment.toAmount()} $ccy",
-          style: TextStyle(fontSize: 14),
+          style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,color: color.primary),
         ),
       ],
     );
   }
-
   Widget _buildItemsHeader(bool isEditing) {
     final locale = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
@@ -754,7 +742,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       ),
     );
   }
-
   Widget _buildItemsList(OrderByIdModel order, OrderByIdLoaded state, bool isEditing) {
     if (order.records == null || order.records!.isEmpty) {
       return Cover(
@@ -810,7 +797,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       ],
     );
   }
-
   Widget _buildItemRow({required OrderRecords record, required int index, required OrderByIdLoaded state, required List<FocusNode> nodes, required bool isEditing,}) {
     final locale = AppLocalizations.of(context)!;
     final productName = state.productNames[record.stkProduct] ?? 'Unknown';
@@ -890,13 +876,13 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                         Wrap(
                           children: [
                             Cover(child: Text(tr.purchasePrice,style: title),),
-                            Cover(child: Text(product.purchasePrice?.toAmount()??"")),
+                            Cover(child: Text(product.purchasePrice)),
                           ],
                         ),
                         Wrap(
                           children: [
                             Cover(radius: 0,child: Text(tr.salePriceBrief,style: title)),
-                            Cover(radius: 0,child: Text(product.sellPrice?.toAmount()??"")),
+                            Cover(radius: 0,child: Text(product.sellPrice)),
                           ],
                         ),
                       ],
@@ -905,7 +891,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text(product.available?.toAmount()??"",style: TextStyle(fontSize: 18),),
+                        Text(product.available,style: TextStyle(fontSize: 18),),
                         Text(product.stgName??"",style: TextStyle(
                           color: Theme.of(context).colorScheme.outline,
                         ),),
@@ -1101,12 +1087,12 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       ),
     );
   }
-
   Widget _buildOrderSummary(OrderByIdLoaded state) {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
 
     return Container(
+      width: 600,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -1160,7 +1146,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       ),
     );
   }
-
   Widget _buildSummaryRow({required String label, required double value, bool isBold = false, Color? color}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -1186,18 +1171,29 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       ),
     );
   }
-
   Color _getStatusColor(String? status) {
     switch (status?.toLowerCase()) {
       case 'pending':
         return Colors.orange;
-      case 'completed':
+      case 'authorized':
         return Colors.green;
       case 'cancelled':
         return Colors.red;
       default:
-        return Colors.grey;
+        return Theme.of(context).colorScheme.primary;
     }
+  }
+  Widget rowHeader({required String title, dynamic value}){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+            width: 150,
+            child: Text(title,style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.outline))),
+        Text(value)
+      ],
+    );
   }
 
   void _initializeControllers(OrderByIdModel order) {
@@ -1228,14 +1224,12 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       _priceControllers[i] = TextEditingController(text: priceText);
     }
   }
-
   void _toggleEditMode() {
     final state = context.read<OrderByIdBloc>().state;
     if (state is OrderByIdLoaded) {
       context.read<OrderByIdBloc>().add(ToggleEditModeEvent());
     }
   }
-
   void _removeItemDialog(int index) {
     final tr = AppLocalizations.of(context)!;
     showDialog(
@@ -1259,7 +1253,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       ),
     );
   }
-
   void _saveChanges() {
     if (_userName == null) {
       Utils.showOverlayMessage(context, message: 'User not authenticated', isError: true);
@@ -1272,7 +1265,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       completer: completer,
     ));
   }
-
   void _showDeleteDialog(OrderByIdModel order) {
     showDialog(
       context: context,
@@ -1312,7 +1304,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       ),
     );
   }
-
   void _deleteOrder(OrderByIdModel order) {
     if (_userName == null) {
       Utils.showOverlayMessage(context, message: 'User not authenticated', isError: true);

@@ -652,5 +652,13 @@
   "customerAndPaymentDetails": "د پیرودونکي او تادیې معلومات",
   "supplierAndPaymentDetails": "د عرضه کوونکي او تادیې معلومات",
   "orderDate": "فرمایش نیته",
-  "orderId": "کد فرمایش"
+  "orderId": "کد فرمایش",
+  "invoiceDetails": "جزئیات بل",
+  "returnPurchase": "مرجوعی خرید",
+  "saleReturn": "مرجوعی فروش",
+  "findInvoice": "بل لتون",
+  "enterInvoiceNumber": "مهرباني وکړئ د بل آی‌ ډي دننه کړئ",
+  "newPurchase": "نوی خرید",
+  "newSale": "نوی فروش",
+  "party": "طرف حساب"
 }

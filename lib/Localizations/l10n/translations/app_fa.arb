@@ -652,5 +652,13 @@
   "customerAndPaymentDetails": "اطلاعات مشتری و پرداخت",
   "supplierAndPaymentDetails": "اطلاعات فروشنده و پرداخت",
   "orderDate": "تاریخ فرمایش",
-  "orderId": "کد فرمایش"
+  "orderId": "کد فرمایش",
+  "invoiceDetails": "جزئیات بل",
+  "returnPurchase": "برگشت خرید",
+  "saleReturn": "برگشت فروش",
+  "findInvoice": "جستجو بل",
+  "enterInvoiceNumber": "لطفاً نمبربل را وارد کنید",
+  "newPurchase": "خرید جدید",
+  "newSale": "فروش جدید",
+  "party": "طرف حساب"
 }

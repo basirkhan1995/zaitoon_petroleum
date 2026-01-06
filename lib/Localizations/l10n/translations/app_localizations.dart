@@ -3667,7 +3667,7 @@ abstract class AppLocalizations {
   /// No description provided for @invoiceType.
   ///
   /// In en, this message translates to:
-  /// **'Invoice Type'**
+  /// **'Invoice'**
   String get invoiceType;
 
   /// No description provided for @totalInvoice.
@@ -3897,6 +3897,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Order ID'**
   String get orderId;
+
+  /// No description provided for @invoiceDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice Details'**
+  String get invoiceDetails;
+
+  /// No description provided for @returnPurchase.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase Return'**
+  String get returnPurchase;
+
+  /// No description provided for @saleReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale Return'**
+  String get saleReturn;
+
+  /// No description provided for @findInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Find Invoice'**
+  String get findInvoice;
+
+  /// No description provided for @enterInvoiceNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the invoice number to proceed.'**
+  String get enterInvoiceNumber;
+
+  /// No description provided for @newPurchase.
+  ///
+  /// In en, this message translates to:
+  /// **'New Purchase'**
+  String get newPurchase;
+
+  /// No description provided for @newSale.
+  ///
+  /// In en, this message translates to:
+  /// **'New Sale'**
+  String get newSale;
+
+  /// No description provided for @party.
+  ///
+  /// In en, this message translates to:
+  /// **'Party'**
+  String get party;
 }
 
 class _AppLocalizationsDelegate

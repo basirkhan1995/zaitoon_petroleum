@@ -166,7 +166,7 @@ class _DesktopState extends State<_Desktop> {
                     child: Text(tr.referenceNumber, style: titleStyle),
                   ),
 
-                  Expanded(child: Text(tr.customer, style: titleStyle)),
+                  Expanded(child: Text(tr.party, style: titleStyle)),
 
                   SizedBox(
                     width: 100,
@@ -218,7 +218,7 @@ class _DesktopState extends State<_Desktop> {
                           onTap: () {
                             Utils.goto(
                               context,
-                              OrderByIdView(orderId: ord.ordId!),
+                              OrderByIdView(orderId: ord.ordId!,ordName: ord.ordName),
                             );
                           },
                           child: Container(

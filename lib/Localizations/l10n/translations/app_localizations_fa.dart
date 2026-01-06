@@ -1958,4 +1958,28 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get orderId => 'کد فرمایش';
+
+  @override
+  String get invoiceDetails => 'جزئیات بل';
+
+  @override
+  String get returnPurchase => 'برگشت خرید';
+
+  @override
+  String get saleReturn => 'برگشت فروش';
+
+  @override
+  String get findInvoice => 'جستجو بل';
+
+  @override
+  String get enterInvoiceNumber => 'لطفاً نمبربل را وارد کنید';
+
+  @override
+  String get newPurchase => 'خرید جدید';
+
+  @override
+  String get newSale => 'فروش جدید';
+
+  @override
+  String get party => 'طرف حساب';
 }

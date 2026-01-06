@@ -1961,4 +1961,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get orderId => 'کد فرمایش';
+
+  @override
+  String get invoiceDetails => 'جزئیات بل';
+
+  @override
+  String get returnPurchase => 'مرجوعی خرید';
+
+  @override
+  String get saleReturn => 'مرجوعی فروش';
+
+  @override
+  String get findInvoice => 'بل لتون';
+
+  @override
+  String get enterInvoiceNumber => 'مهرباني وکړئ د بل آی‌ ډي دننه کړئ';
+
+  @override
+  String get newPurchase => 'نوی خرید';
+
+  @override
+  String get newSale => 'نوی فروش';
+
+  @override
+  String get party => 'طرف حساب';
 }

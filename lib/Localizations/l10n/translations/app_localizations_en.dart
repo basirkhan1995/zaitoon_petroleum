@@ -1848,7 +1848,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get grandTotal => 'Grand Total';
 
   @override
-  String get invoiceType => 'Invoice Type';
+  String get invoiceType => 'Invoice';
 
   @override
   String get totalInvoice => 'Total Invoice';
@@ -1967,4 +1967,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orderId => 'Order ID';
+
+  @override
+  String get invoiceDetails => 'Invoice Details';
+
+  @override
+  String get returnPurchase => 'Purchase Return';
+
+  @override
+  String get saleReturn => 'Sale Return';
+
+  @override
+  String get findInvoice => 'Find Invoice';
+
+  @override
+  String get enterInvoiceNumber => 'Enter the invoice number to proceed.';
+
+  @override
+  String get newPurchase => 'New Purchase';
+
+  @override
+  String get newSale => 'New Sale';
+
+  @override
+  String get party => 'Party';
 }

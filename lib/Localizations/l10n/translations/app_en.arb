@@ -614,7 +614,7 @@
   "addItem": "Add Item",
   "invoiceNumber": "Invoice #",
   "grandTotal": "Grand Total",
-  "invoiceType": "Invoice Type",
+  "invoiceType": "Invoice",
   "totalInvoice": "Total Invoice",
   "saleTitle": "Sale",
   "newBalance": "New Balance",
@@ -652,5 +652,13 @@
   "customerAndPaymentDetails": "Customer & Payment Details",
   "supplierAndPaymentDetails": "Supplier & Payment Details",
   "orderDate": "Order Date",
-  "orderId": "Order ID"
+  "orderId": "Order ID",
+  "invoiceDetails": "Invoice Details",
+  "returnPurchase": "Purchase Return",
+  "saleReturn": "Sale Return",
+  "findInvoice": "Find Invoice",
+  "enterInvoiceNumber": "Enter the invoice number to proceed.",
+  "newPurchase": "New Purchase",
+  "newSale": "New Sale",
+  "party": "Party"
 }
