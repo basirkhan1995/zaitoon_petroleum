@@ -3837,6 +3837,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not enough items available.'**
   String get notEnoughMsg;
+
+  /// No description provided for @paymentMismatchTotalInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment total isn\'t equal total invoice.'**
+  String get paymentMismatchTotalInvoice;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @savingChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving Changes ...'**
+  String get savingChanges;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @removeItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Item'**
+  String get removeItem;
+
+  /// No description provided for @removeItemMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove this item?'**
+  String get removeItemMsg;
+
+  /// No description provided for @customerAndPaymentDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer & Payment Details'**
+  String get customerAndPaymentDetails;
+
+  /// No description provided for @supplierAndPaymentDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier & Payment Details'**
+  String get supplierAndPaymentDetails;
+
+  /// No description provided for @orderDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Date'**
+  String get orderDate;
+
+  /// No description provided for @orderId.
+  ///
+  /// In en, this message translates to:
+  /// **'Order ID'**
+  String get orderId;
 }
 
 class _AppLocalizationsDelegate

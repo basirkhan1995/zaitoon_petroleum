@@ -1936,4 +1936,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notEnoughMsg => 'Not enough items available.';
+
+  @override
+  String get paymentMismatchTotalInvoice =>
+      'Payment total isn\'t equal total invoice.';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get savingChanges => 'Saving Changes ...';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get removeItem => 'Remove Item';
+
+  @override
+  String get removeItemMsg => 'Are you sure you want to remove this item?';
+
+  @override
+  String get customerAndPaymentDetails => 'Customer & Payment Details';
+
+  @override
+  String get supplierAndPaymentDetails => 'Supplier & Payment Details';
+
+  @override
+  String get orderDate => 'Order Date';
+
+  @override
+  String get orderId => 'Order ID';
 }

@@ -63,14 +63,35 @@ class OrderByIdLoaded extends OrderByIdState {
     });
   }
 
+  // This is for validation - total of cash + credit should equal grandTotal
   double get totalPayment => cashPayment + creditAmount;
 
   bool get isPaymentValid => (totalPayment - grandTotal).abs() < 0.01;
 
+  // CORRECTED: Use the actual cashPayment and creditAmount fields, not calculations
   PaymentMode get paymentMode {
-    if (creditAmount <= 0) return PaymentMode.cash;
-    if (cashPayment <= 0) return PaymentMode.credit;
-    return PaymentMode.mixed;
+    if (creditAmount <= 0) {
+      return PaymentMode.cash;
+    } else if (cashPayment <= 0) {
+      return PaymentMode.credit;
+    } else {
+      return PaymentMode.mixed;
+    }
+  }
+
+  bool get isCashOnly => paymentMode == PaymentMode.cash;
+  bool get isCreditOnly => paymentMode == PaymentMode.credit;
+  bool get isMixed => paymentMode == PaymentMode.mixed;
+
+  // Helper to show the actual payment breakdown
+  String get paymentSummary {
+    if (isCashOnly) {
+      return 'Cash: ${cashPayment.toAmount()}';
+    } else if (isCreditOnly) {
+      return 'Credit: ${creditAmount.toAmount()}';
+    } else {
+      return 'Cash: ${cashPayment.toAmount()}, Credit: ${creditAmount.toAmount()}';
+    }
   }
 
   OrderByIdLoaded copyWith({
@@ -149,5 +170,4 @@ class OrderByIdDeleted extends OrderByIdState {
   List<Object?> get props => [success, message];
 }
 
-// Add PaymentMode enum if not already defined
 enum PaymentMode { cash, credit, mixed }

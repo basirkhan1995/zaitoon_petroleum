@@ -1926,4 +1926,36 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get notEnoughMsg => 'موجودی کالا کافی نیست.';
+
+  @override
+  String get paymentMismatchTotalInvoice =>
+      'مجموع پرداخت باید با مبلغ کل بل یکسان باشد.';
+
+  @override
+  String get retry => 'تلاش مجدد';
+
+  @override
+  String get savingChanges => 'در حال ذخیره تغییرات';
+
+  @override
+  String get remove => 'حذف';
+
+  @override
+  String get removeItem => 'حذف قلم';
+
+  @override
+  String get removeItemMsg =>
+      'آیا مطمئن هستید که می‌خواهید این مورد را حذف کنید؟';
+
+  @override
+  String get customerAndPaymentDetails => 'اطلاعات مشتری و پرداخت';
+
+  @override
+  String get supplierAndPaymentDetails => 'اطلاعات فروشنده و پرداخت';
+
+  @override
+  String get orderDate => 'تاریخ فرمایش';
+
+  @override
+  String get orderId => 'کد فرمایش';
 }

@@ -642,5 +642,15 @@
   "accountingEntries": "د حسابدارۍ داخلې",
   "noItems": "هیڅ توکي نشته",
   "items": "توکي",
-  "notEnoughMsg": "موجودی کالا کافی نیست."
+  "notEnoughMsg": "موجودی کالا کافی نیست.",
+  "paymentMismatchTotalInvoice": "د تادیې مجموعه باید د بل ټول مبلغ سره برابره وي.",
+  "retry": "بیا هڅه وکړئ",
+  "savingChanges": "بدلونونه خوندي کول",
+  "remove": "لرې کول",
+  "removeItem": "حذف قلم",
+  "removeItemMsg": "ایا باوري ياست چې غواړئ دا توکی لرې کړئ؟",
+  "customerAndPaymentDetails": "د پیرودونکي او تادیې معلومات",
+  "supplierAndPaymentDetails": "د عرضه کوونکي او تادیې معلومات",
+  "orderDate": "فرمایش نیته",
+  "orderId": "کد فرمایش"
 }

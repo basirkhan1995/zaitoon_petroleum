@@ -1930,4 +1930,35 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get notEnoughMsg => 'موجودی کالا کافی نیست.';
+
+  @override
+  String get paymentMismatchTotalInvoice =>
+      'د تادیې مجموعه باید د بل ټول مبلغ سره برابره وي.';
+
+  @override
+  String get retry => 'بیا هڅه وکړئ';
+
+  @override
+  String get savingChanges => 'بدلونونه خوندي کول';
+
+  @override
+  String get remove => 'لرې کول';
+
+  @override
+  String get removeItem => 'حذف قلم';
+
+  @override
+  String get removeItemMsg => 'ایا باوري ياست چې غواړئ دا توکی لرې کړئ؟';
+
+  @override
+  String get customerAndPaymentDetails => 'د پیرودونکي او تادیې معلومات';
+
+  @override
+  String get supplierAndPaymentDetails => 'د عرضه کوونکي او تادیې معلومات';
+
+  @override
+  String get orderDate => 'فرمایش نیته';
+
+  @override
+  String get orderId => 'کد فرمایش';
 }

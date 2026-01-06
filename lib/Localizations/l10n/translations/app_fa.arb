@@ -642,5 +642,15 @@
   "accountingEntries": "ثبت‌ های حسابداری",
   "noItems": "موردی نیست",
   "items": "اقلام",
-  "notEnoughMsg": "موجودی کالا کافی نیست."
+  "notEnoughMsg": "موجودی کالا کافی نیست.",
+  "paymentMismatchTotalInvoice": "مجموع پرداخت باید با مبلغ کل بل یکسان باشد.",
+  "retry": "تلاش مجدد",
+  "savingChanges": "در حال ذخیره تغییرات",
+  "remove": "حذف",
+  "removeItem": "حذف قلم",
+  "removeItemMsg": "آیا مطمئن هستید که می‌خواهید این مورد را حذف کنید؟",
+  "customerAndPaymentDetails": "اطلاعات مشتری و پرداخت",
+  "supplierAndPaymentDetails": "اطلاعات فروشنده و پرداخت",
+  "orderDate": "تاریخ فرمایش",
+  "orderId": "کد فرمایش"
 }

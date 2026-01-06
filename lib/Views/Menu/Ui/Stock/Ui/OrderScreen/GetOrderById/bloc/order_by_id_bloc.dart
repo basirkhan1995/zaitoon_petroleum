@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
 import '../../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
@@ -46,34 +47,83 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
       // Load storages
       final storages = await repo.getStorage();
 
-      // Load product names
+      // Load ALL products initially
+      final allProducts = await repo.getProduct();
       final productNames = <int, String>{};
-      final storageNames = <int, String>{};
+      for (var product in allProducts) {
+        if (product.proId != null && product.proName != null) {
+          productNames[product.proId!] = product.proName!;
+        }
+      }
 
-      // Handle nullable records
+      final storageNames = <int, String>{};
       final records = order.records ?? [];
 
       for (final record in records) {
-        // Load product name
-        if (record.stkProduct != null && !productNames.containsKey(record.stkProduct)) {
-          try {
-            final products = await repo.getProduct(proId: record.stkProduct!);
-            if (products.isNotEmpty) {
-              productNames[record.stkProduct!] = products.first.proName ?? 'Unknown';
+        // Update product name from pre-loaded list
+        if (record.stkProduct != null) {
+          if (!productNames.containsKey(record.stkProduct)) {
+            // If not in pre-loaded list, try to load it
+            try {
+              final products = await repo.getProduct(proId: record.stkProduct!);
+              if (products.isNotEmpty) {
+                productNames[record.stkProduct!] = products.first.proName ?? 'Unknown';
+              } else {
+                productNames[record.stkProduct!] = 'Unknown';
+              }
+            } catch (_) {
+              productNames[record.stkProduct!] = 'Unknown';
             }
-          } catch (_) {
-            productNames[record.stkProduct!] = 'Unknown';
+          }
+
+          // Load storage name
+          if (record.stkStorage != null && !storageNames.containsKey(record.stkStorage)) {
+            final storage = storages.firstWhere(
+                  (s) => s.stgId == record.stkStorage,
+              orElse: () => StorageModel(stgId: 0, stgName: 'Unknown'),
+            );
+            storageNames[record.stkStorage!] = storage.stgName ?? 'Unknown';
           }
         }
+      }
 
-        // Load storage name
-        if (record.stkStorage != null && !storageNames.containsKey(record.stkStorage)) {
-          final storage = storages.firstWhere(
-                (s) => s.stgId == record.stkStorage,
-            orElse: () => StorageModel(stgId: 0, stgName: 'Unknown'),
-          );
-          storageNames[record.stkStorage!] = storage.stgName ?? 'Unknown';
+      // Calculate grand total from items
+      double grandTotal = 0.0;
+      final isPurchase = order.ordName?.toLowerCase().contains('purchase') ?? true;
+
+      for (final record in records) {
+        final qty = double.tryParse(record.stkQuantity ?? "0") ?? 0;
+        double price;
+
+        if (isPurchase) {
+          price = double.tryParse(record.stkPurPrice ?? "0") ?? 0;
+        } else {
+          price = double.tryParse(record.stkSalePrice ?? "0") ?? 0;
         }
+
+        grandTotal += qty * price;
+      }
+
+      // Get credit amount from API
+      final creditAmount = double.tryParse(order.amount ?? "0.0") ?? 0.0;
+      final hasAccount = order.acc != null && order.acc! > 0;
+
+      // Calculate cash payment
+      double cashPayment = grandTotal - creditAmount;
+
+      // Validate: credit amount should not exceed grand total
+      if (creditAmount > grandTotal) {
+        cashPayment = 0.0;
+        // Or you can adjust creditAmount = grandTotal;
+      }
+
+      // Determine initial supplier
+      IndividualsModel? selectedSupplier;
+      if (order.perId != null && order.personal != null) {
+        selectedSupplier = IndividualsModel(
+          perId: order.perId,
+          perName: order.personal,
+        );
       }
 
       emit(OrderByIdLoaded(
@@ -82,37 +132,17 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
         productNames: productNames,
         storageNames: storageNames,
         isEditing: false,
-        selectedSupplier: null, // Will be populated from order
-        selectedAccount: order.acc != null ?
-        AccountsModel(accNumber: order.acc) : null,
-        cashPayment: _calculateCashPayment(order),
-        creditAmount: _calculateCreditAmount(order),
+        selectedSupplier: selectedSupplier,
+        selectedAccount: hasAccount && creditAmount > 0
+            ? AccountsModel(accNumber: order.acc)
+            : null,
+        cashPayment: cashPayment,
+        creditAmount: creditAmount,
       ));
     } catch (e) {
       emit(OrderByIdError(e.toString()));
     }
   }
-
-  double _calculateCashPayment(OrderByIdModel order) {
-    if (order.acc == null || order.acc == 0) {
-      // No account means full cash
-      return double.tryParse(order.amount ?? "0.0") ?? 0.0;
-    } else {
-      // Has account, check if payment is mixed
-      final total = double.tryParse(order.amount ?? "0.0") ?? 0.0;
-      // For simplicity, assume mixed if total > 0 and account exists
-      // You might want to adjust this logic based on your business rules
-      return 0.0; // Default to credit
-    }
-  }
-
-  double _calculateCreditAmount(OrderByIdModel order) {
-    if (order.acc == null || order.acc == 0) {
-      return 0.0;
-    }
-    return double.tryParse(order.amount ?? "0.0") ?? 0.0;
-  }
-
   void _onToggleEditMode(ToggleEditModeEvent event, Emitter<OrderByIdState> emit) {
     if (state is OrderByIdLoaded) {
       final current = state as OrderByIdLoaded;
@@ -164,25 +194,49 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
       double cashPayment = event.cashPayment;
       double creditAmount = event.creditAmount;
 
-      // Validate
+      // Validate that payments match grand total
       final total = cashPayment + creditAmount;
       if ((total - current.grandTotal).abs() > 0.01) {
-        // Payment doesn't match total
         emit(OrderByIdError('Total payment must equal grand total'));
         return;
+      }
+
+      // Validate credit amount
+      if (creditAmount > current.grandTotal) {
+        emit(OrderByIdError('Credit amount cannot exceed grand total'));
+        return;
+      }
+
+      // Validate cash amount
+      if (cashPayment < 0) {
+        emit(OrderByIdError('Cash payment cannot be negative'));
+        return;
+      }
+
+      // Auto-adjust if needed
+      if (cashPayment > current.grandTotal) {
+        cashPayment = current.grandTotal;
+        creditAmount = 0.0;
+      } else if (creditAmount > current.grandTotal) {
+        creditAmount = current.grandTotal;
+        cashPayment = 0.0;
+      }
+
+      // Clear account if no credit
+      AccountsModel? selectedAccount = current.selectedAccount;
+      if (creditAmount <= 0) {
+        selectedAccount = null;
       }
 
       emit(current.copyWith(
         cashPayment: cashPayment,
         creditAmount: creditAmount,
+        selectedAccount: selectedAccount,
       ));
     }
   }
 
-  void _onUpdateItem(
-      UpdateOrderItemEvent event,
-      Emitter<OrderByIdState> emit,
-      ) {
+  void _onUpdateItem(UpdateOrderItemEvent event, Emitter<OrderByIdState> emit,) {
     if (state is! OrderByIdLoaded) return;
 
     final current = state as OrderByIdLoaded;
@@ -197,26 +251,47 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     final records = List<OrderRecords>.from(currentRecords);
     final record = records[event.index];
 
+    // Determine order type
+    final isPurchase = current.order.ordName?.toLowerCase().contains('purchase') ?? true;
+    final isSale = current.order.ordName?.toLowerCase().contains('sale') ?? false;
+
+    // Handle quantity with 3 decimal places
+    String? quantityString;
+    if (event.quantity != null) {
+      quantityString = event.quantity!.toStringAsFixed(3);
+    } else {
+      quantityString = record.stkQuantity;
+    }
+
+    // Handle price with 4 decimal places
+    String? purPriceString = record.stkPurPrice;
+    String? salePriceString = record.stkSalePrice;
+
+    if (event.price != null) {
+      if (isPurchase) {
+        purPriceString = event.price!.toStringAsFixed(4);
+      } else if (isSale) {
+        salePriceString = event.price!.toStringAsFixed(4);
+      }
+    }
+
+    // Handle product name update
+    Map<int, String> updatedProductNames = Map.from(current.productNames);
+    if (event.productId != null && event.productId! > 0 && event.productName != null) {
+      updatedProductNames[event.productId!] = event.productName!;
+    }
+
     final updatedRecord = record.copyWith(
       stkProduct: event.productId ?? record.stkProduct,
-      stkQuantity: event.quantity?.toString() ?? record.stkQuantity,
-      stkPurPrice: event.price?.toString() ?? record.stkPurPrice,
+      stkQuantity: quantityString,
+      stkPurPrice: purPriceString,
+      stkSalePrice: salePriceString,
       stkStorage: event.storageId ?? record.stkStorage,
     );
 
     records[event.index] = updatedRecord;
 
     final updatedOrder = current.order.copyWith(records: records);
-
-    // Update product name if product changed
-    Map<int, String> updatedProductNames = Map.from(current.productNames);
-    if (event.productId != null && event.productId! > 0) {
-      // Load product name if not already loaded
-      if (!updatedProductNames.containsKey(event.productId)) {
-        // We'll load this later when saving
-        updatedProductNames[event.productId!] = 'Loading...';
-      }
-    }
 
     emit(current.copyWith(
       order: updatedOrder,
@@ -233,16 +308,22 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     final current = state as OrderByIdLoaded;
     if (!current.isEditing) return;
 
-    // Determine if it's purchase or sale based on order name
+    // Determine if it's purchase or sale
     final isPurchase = current.order.ordName?.toLowerCase().contains('purchase') ?? true;
     final isSale = current.order.ordName?.toLowerCase().contains('sale') ?? false;
+
+    // Get default storage ID
+    int defaultStorageId = 0;
+    if (current.storages.isNotEmpty) {
+      defaultStorageId = current.storages.first.stgId ?? 0;
+    }
 
     final newRecord = OrderRecords(
       stkId: 0, // New item
       stkOrder: current.order.ordId,
       stkProduct: 0,
       stkEntryType: isPurchase ? "IN" : (isSale ? "OUT" : "IN"),
-      stkStorage: current.storages.isNotEmpty ? current.storages.first.stgId : 0,
+      stkStorage: defaultStorageId,
       stkQuantity: "1.000",
       stkPurPrice: isPurchase ? "0.0000" : "0.0000",
       stkSalePrice: isSale ? "0.0000" : "0.0000",
@@ -276,12 +357,22 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
 
     // Ensure at least one item remains
     if (records.isEmpty) {
+      // Determine if it's purchase or sale
+      final isPurchase = current.order.ordName?.toLowerCase().contains('purchase') ?? true;
+      final isSale = current.order.ordName?.toLowerCase().contains('sale') ?? false;
+
+      // Get default storage ID
+      int defaultStorageId = 0;
+      if (current.storages.isNotEmpty) {
+        defaultStorageId = current.storages.first.stgId ?? 0;
+      }
+
       records.add(OrderRecords(
         stkId: 0,
         stkOrder: current.order.ordId,
         stkProduct: 0,
-        stkEntryType: "IN",
-        stkStorage: current.storages.isNotEmpty ? current.storages.first.stgId : 0,
+        stkEntryType: isPurchase ? "IN" : (isSale ? "OUT" : "IN"),
+        stkStorage: defaultStorageId,
         stkQuantity: "1.000",
         stkPurPrice: "0.0000",
         stkSalePrice: "0.0000",
@@ -328,12 +419,50 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
         event.completer.complete(false);
         return;
       }
+
+      // Validate quantity
+      final qty = double.tryParse(record.stkQuantity ?? "0") ?? 0;
+      if (qty <= 0) {
+        emit(OrderByIdError('Please enter a valid quantity for item ${i + 1}'));
+        emit(savedState);
+        event.completer.complete(false);
+        return;
+      }
+
+      // Validate price
+      final isPurchase = current.order.ordName?.toLowerCase().contains('purchase') ?? true;
+      final isSale = current.order.ordName?.toLowerCase().contains('sale') ?? false;
+
+      if (isPurchase) {
+        final price = double.tryParse(record.stkPurPrice ?? "0") ?? 0;
+        if (price <= 0) {
+          emit(OrderByIdError('Please enter a valid price for item ${i + 1}'));
+          emit(savedState);
+          event.completer.complete(false);
+          return;
+        }
+      } else if (isSale) {
+        final price = double.tryParse(record.stkSalePrice ?? "0") ?? 0;
+        if (price <= 0) {
+          emit(OrderByIdError('Please enter a valid price for item ${i + 1}'));
+          emit(savedState);
+          event.completer.complete(false);
+          return;
+        }
+      }
     }
 
     // Validate payment
-    final totalPayment = current.cashPayment + current.creditAmount;
-    if ((totalPayment - current.grandTotal).abs() > 0.01) {
+    if (!current.isPaymentValid) {
       emit(OrderByIdError('Total payment must equal grand total. Please adjust payment.'));
+      emit(savedState);
+      event.completer.complete(false);
+      return;
+    }
+
+    // Validate account for credit/mixed payment
+    if (current.creditAmount > 0 && current.selectedAccount == null) {
+      emit(OrderByIdError('Please select an account for credit payment'));
       emit(savedState);
       event.completer.complete(false);
       return;
@@ -361,14 +490,20 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
           "stkQuantity": quantity.toStringAsFixed(3),
           "stkPurPrice": isPurchase ? purPrice.toStringAsFixed(4) : "0.0000",
           "stkSalePrice": isSale ? salePrice.toStringAsFixed(4) : "0.0000",
-          // Don't include stkExpiryDate as requested
         };
       }).toList();
 
-      // Prepare account info
-      int? accountNumber = current.selectedAccount?.accNumber;
-      if (current.creditAmount <= 0) {
-        accountNumber = 0; // No credit
+      // Prepare account info - API expects:
+      // - For cash: account = 0, amount = 0.0
+      // - For credit: account = accountNumber, amount = creditAmount (full amount)
+      // - For mixed: account = accountNumber, amount = creditAmount (partial)
+      int? accountNumber = 0; // Default to cash
+      double amountToSend = 0.0;
+
+      if (current.creditAmount > 0) {
+        // Credit or mixed payment
+        accountNumber = current.selectedAccount!.accNumber;
+        amountToSend = current.creditAmount;
       }
 
       // Prepare the update payload according to API
@@ -381,13 +516,13 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
         "ordxRef": current.order.ordxRef,
         "ordTrnRef": current.order.ordTrnRef,
         "account": accountNumber,
-        "amount": current.grandTotal.toStringAsFixed(4), // Use calculated total
+        "amount": amountToSend.toStringAsFixed(4), // Only credit amount goes here
         "trnStateText": current.order.trnStateText,
         "ordEntryDate": current.order.ordEntryDate?.toIso8601String(),
         "records": updateRecords,
       };
 
-      print('Update payload: ${payload}'); // Debug log
+      print('Update payload: ${payload}');
 
       final success = await repo.updatePurchaseOrder(
         orderId: current.order.ordId!,
@@ -408,7 +543,7 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
 
       event.completer.complete(success);
     } catch (e) {
-      print('Error updating order: $e'); // Debug log
+      print('Error updating order: $e');
       emit(OrderByIdError(e.toString()));
       emit(savedState);
       event.completer.complete(false);

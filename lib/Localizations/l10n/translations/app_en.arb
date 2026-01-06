@@ -642,5 +642,15 @@
   "accountingEntries": "Accounting Entries",
   "noItems": "No items",
   "items": "Items",
-  "notEnoughMsg": "Not enough items available."
+  "notEnoughMsg": "Not enough items available.",
+  "paymentMismatchTotalInvoice": "Payment total isn't equal total invoice.",
+  "retry": "Retry",
+  "savingChanges": "Saving Changes ...",
+  "remove": "Remove",
+  "removeItem": "Remove Item",
+  "removeItemMsg": "Are you sure you want to remove this item?",
+  "customerAndPaymentDetails": "Customer & Payment Details",
+  "supplierAndPaymentDetails": "Supplier & Payment Details",
+  "orderDate": "Order Date",
+  "orderId": "Order ID"
 }
