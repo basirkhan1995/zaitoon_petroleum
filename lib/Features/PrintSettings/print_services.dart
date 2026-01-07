@@ -804,7 +804,7 @@ abstract class PrintServices {
         'ar':'بل نوع',
       },
       'PUR':{
-        'en':'Orders',
+        'en':'Purchase',
         'fa':'خرید',
         'ar':'خرید',
       },
@@ -1022,6 +1022,61 @@ abstract class PrintServices {
         'en': 'Pending',
         'fa': 'در انتظار',
         'ar': 'قيد الانتظار',
+      },
+      'termsAndConditions': {
+        'en': 'Terms & Conditions',
+        'fa': 'شرایط و ضوابط',
+        'ar': 'شرایط و ضوابط',
+      },
+      'customerSignature': {
+        'en': 'Customer Signature',
+        'fa': 'امضای مشتری',
+        'ar': 'امضاء العميل',
+      },
+      'totalPayment': {
+        'en': 'Total Payment',
+        'fa': 'مجموع پرداخت',
+        'ar': 'المبلغ الإجمالي',
+      },
+      'cashPayment': {
+        'en': 'Cash Payment',
+        'fa': 'پرداخت نقدی',
+        'ar': 'دفع نقدي',
+      },
+      'accountPayment': {
+        'en': 'Account Payment',
+        'fa': 'پرداخت حساب',
+        'ar': 'دفع الحساب',
+      },
+      'supplier': {
+        'en': 'Supplier',
+        'fa': 'تامین کننده',
+        'ar': 'المورد',
+      },
+      'referenceNumber': {
+        'en': 'Reference No',
+        'fa': 'شماره مرجع',
+        'ar': 'رقم المرجع',
+      },
+      'orderDate': {
+        'en': 'Order Date',
+        'fa': 'تاریخ سفارش',
+        'ar': 'تاريخ الطلب',
+      },
+      'quantity': {
+        'en': 'Qty',
+        'fa': 'تعداد',
+        'ar': 'الكمية',
+      },
+      'storage': {
+        'en': 'Storage',
+        'fa': 'انبار',
+        'ar': 'المستودع',
+      },
+      'description': {
+        'en': 'Description',
+        'fa': 'توضیحات',
+        'ar': 'الوصف',
       },
 
     };

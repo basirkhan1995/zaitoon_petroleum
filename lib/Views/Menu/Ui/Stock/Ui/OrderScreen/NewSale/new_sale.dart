@@ -1100,6 +1100,7 @@ class _DesktopState extends State<_Desktop> {
       completer: completer,
     ));
   }
+
 }
 
 class _Tablet extends StatelessWidget {

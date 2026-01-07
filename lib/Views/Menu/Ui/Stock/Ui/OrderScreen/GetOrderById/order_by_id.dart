@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,8 +23,11 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/ac
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
+import '../../../../../../../Features/PrintSettings/print_preview.dart';
+import '../../../../../../../Features/PrintSettings/report_model.dart';
 import '../../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import '../Print/print.dart';
 import 'bloc/order_by_id_bloc.dart';
 import 'model/ord_by_Id_model.dart';
 
@@ -128,7 +132,9 @@ class _OrderByIdViewState extends State<OrderByIdView> {
         }
       },
       child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.surface,
           titleSpacing: 0,
           actionsPadding: EdgeInsets.symmetric(horizontal: 15),
           title: Text('${widget.ordName??""} #${widget.orderId}'),
@@ -149,7 +155,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
               backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: .09),
               child: IconButton(
                 icon: Icon(Icons.print),
-                onPressed: () => _toggleEditMode(),
+                onPressed: () => _printInvoice(),
                 hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .1),
                 tooltip: AppLocalizations.of(context)!.print,
               ),
@@ -268,18 +274,18 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                       spacing: 10,
                       children: [
                         Expanded(
-                            flex: 2,
-                            child: _buildOrderHeaderDetails(state)),
-                        Expanded(
                             flex: 3,
                             child: _buildOrderHeader(state)),
+                        Expanded(
+                            flex: 2,
+                            child: _buildOrderHeaderDetails(state)),
                       ],
                     ),
                     const SizedBox(height: 15),
 
                     // Items Header
                     _buildItemsHeader(isEditing),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 1),
 
                     // Items List
                     _buildItemsList(order, state, isEditing),
@@ -314,6 +320,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     final String paymentTitle = order.ordName == "Sale"? tr.customerAndPaymentDetails : tr.supplierAndPaymentDetails;
     return Cover(
       radius: 8,
+      color: color.outline.withValues(alpha: .03),
       child: Padding(
         padding: const EdgeInsets.all(13),
         child: Column(
@@ -421,9 +428,11 @@ class _OrderByIdViewState extends State<OrderByIdView> {
   Widget _buildOrderHeaderDetails(OrderByIdLoaded state) {
     final order = state.order;
     final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
     final String invoiceType = order.ordName == "Sale"? tr.saleTitle : order.ordName == "Purchase"? tr.purchaseTitle : "";
     return Cover(
       radius: 10,
+      color: color.outline.withValues(alpha: .03),
       padding: EdgeInsets.symmetric(horizontal: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -724,10 +733,10 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     TextStyle? title = Theme.of(context).textTheme.titleSmall?.copyWith(color: color.surface);
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       decoration: BoxDecoration(
         color: color.primary,
-        borderRadius: BorderRadius.circular(3),
+        borderRadius: BorderRadius.circular(1),
       ),
       child: Row(
         children: [
@@ -833,8 +842,8 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: isEditing? 0 : 8, horizontal: 10),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        border: Border(bottom: BorderSide(color: color.outline.withValues(alpha: .4))),
+        color: index.isEven? Theme.of(context).colorScheme.outline.withValues(alpha: .05) : Colors.transparent,
+        border: Border(bottom: BorderSide(color: color.outline.withValues(alpha: .1))),
       ),
       child: Row(
         children: [
@@ -1093,9 +1102,9 @@ class _OrderByIdViewState extends State<OrderByIdView> {
 
     return Container(
       width: 600,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: color.outline.withValues(alpha: .03),
         border: Border.all(color: color.outline.withValues(alpha: .4)),
         borderRadius: BorderRadius.circular(5),
       ),
@@ -1133,7 +1142,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                   value: double.tryParse(state.selectedAccount!.accAvailBalance ?? "0.0") ?? 0.0,
                   color: Colors.deepOrangeAccent,
                 ),
-                const SizedBox(height: 4),
                 _buildSummaryRow(
                   label: tr.newBalance,
                   value: (double.tryParse(state.selectedAccount!.accAvailBalance ?? "0.0") ?? 0.0) + state.creditAmount,
@@ -1195,7 +1203,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       ],
     );
   }
-
   void _initializeControllers(OrderByIdModel order) {
     if (order.records == null) return;
 
@@ -1316,5 +1323,121 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       orderName: order.ordName ?? '',
       usrName: _userName!,
     ));
+  }
+
+  void _printInvoice() {
+    final state = context.read<OrderByIdBloc>().state;
+
+    if (state is! OrderByIdLoaded) {
+      Utils.showOverlayMessage(context, message: 'Cannot print: No order loaded', isError: true);
+      return;
+    }
+
+    final current = state;
+    final order = current.order;
+
+    // Get company info from CompanyProfileBloc
+    final companyState = context.read<CompanyProfileBloc>().state;
+    if (companyState is! CompanyProfileLoadedState) {
+      Utils.showOverlayMessage(context, message: 'Company information not available', isError: true);
+      return;
+    }
+
+    final company = ReportModel(
+      comName: companyState.company.comName ?? "",
+      comAddress: companyState.company.addName ?? "",
+      compPhone: companyState.company.comPhone ?? "",
+      comEmail: companyState.company.comEmail ?? "",
+      startDate: order.ordEntryDate?.toFormattedDate() ?? DateTime.now().toFormattedDate(),
+      endDate: DateTime.now().toFormattedDate(),
+      statementDate: DateTime.now().toFullDateTime,
+    );
+
+    // Get company logo
+    final base64Logo = companyState.company.comLogo;
+    if (base64Logo != null && base64Logo.isNotEmpty) {
+      try {
+        company.comLogo = base64Decode(base64Logo);
+      } catch (e) {
+        "";
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (_) => PrintPreviewDialog<OrderByIdModel>(
+        data: order,
+        company: company,
+        buildPreview: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+        }) {
+          return OrderPrintService().printPreview(
+            order: order,
+            company: company,
+            language: language,
+            orientation: orientation,
+            pageFormat: pageFormat,
+            storages: current.storages,
+            productNames: current.productNames,
+            storageNames: current.storageNames,
+            cashPayment: current.cashPayment,
+            creditAmount: current.creditAmount,
+            selectedAccount: current.selectedAccount,
+            selectedSupplier: current.selectedSupplier,
+          );
+        },
+        onPrint: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+          required selectedPrinter,
+          required copies,
+          required pages,
+        }) {
+          return OrderPrintService().printDocument(
+            order: order,
+            company: company,
+            language: language,
+            orientation: orientation,
+            pageFormat: pageFormat,
+            selectedPrinter: selectedPrinter,
+            copies: copies,
+
+            storages: current.storages,
+            productNames: current.productNames,
+            storageNames: current.storageNames,
+            cashPayment: current.cashPayment,
+            creditAmount: current.creditAmount,
+            selectedAccount: current.selectedAccount,
+            selectedSupplier: current.selectedSupplier,
+          );
+        },
+        onSave: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+        }) {
+          return OrderPrintService().createDocument(
+            order: order,
+            company: company,
+            language: language,
+            orientation: orientation,
+            pageFormat: pageFormat,
+            storages: current.storages,
+            productNames: current.productNames,
+            storageNames: current.storageNames,
+            cashPayment: current.cashPayment,
+            creditAmount: current.creditAmount,
+            selectedAccount: current.selectedAccount,
+            selectedSupplier: current.selectedSupplier,
+          );
+        },
+      ),
+    );
   }
 }
