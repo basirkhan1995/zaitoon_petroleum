@@ -925,48 +925,79 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                 }
                 return [];
               },
+              // In the _buildItemRow method, update the onSelected callback in the GenericUnderlineTextfield:
+
               onSelected: (product) {
                 int productId;
                 String productName;
 
                 if (isPurchase) {
-                  productId = (product as ProductsModel).proId!;
-                  productName = (product).proName ?? '';
+                  final purchaseProduct = product as ProductsModel;
+                  productId = purchaseProduct.proId!;
+                  productName = purchaseProduct.proName ?? '';
+
+                  // For purchase orders, update only the purchase price
+                  context.read<OrderByIdBloc>().add(UpdateOrderItemEvent(
+                    index: index,
+                    productId: productId,
+                    productName: productName,
+                    price: 0.0, // Set initial price to 0, user will edit it
+                  ));
+
+                  // Update the price controller
+                  priceController.text = "0.00";
+
                 } else {
-                  productId = (product as ProductsStockModel).proId!;
-                  productName = (product).proName ?? '';
+                  // For sale orders
+                  final stockProduct = product as ProductsStockModel;
+                  productId = stockProduct.proId!;
+                  productName = stockProduct.proName ?? '';
+
+                  // Get both purchase and sale prices from product stock
+                  final purchasePrice = double.tryParse(stockProduct.purchasePrice?.replaceAll(',', '') ?? "0.0") ?? 0.0;
+                  final salePrice = double.tryParse(stockProduct.sellPrice?.replaceAll(',', '') ?? "0.0") ?? 0.0;
 
                   // For sale orders, auto-set storage from product
-                  final storageId = (product).stkStorage;
+                  final storageId = stockProduct.stkStorage;
                   if (storageId != null && storageId > 0) {
                     context.read<OrderByIdBloc>().add(UpdateOrderItemEvent(
                       index: index,
                       productId: productId,
                       productName: productName,
                       storageId: storageId,
+                      price: salePrice, // This will set the sale price
                     ));
 
-                    storageController.text = (product).stgName ?? '';
-                  }
-                }
-
-                context.read<OrderByIdBloc>().add(UpdateOrderItemEvent(
-                  index: index,
-                  productId: productId,
-                  productName: productName,
-                ));
-
-                // Update price if available
-                if (!isPurchase) {
-                  final salePrice = (product as ProductsStockModel).sellPrice;
-                  if (salePrice != null) {
-                    final priceValue = double.tryParse(salePrice) ?? 0.0;
+                    // Also set the purchase price
                     context.read<OrderByIdBloc>().add(UpdateOrderItemEvent(
                       index: index,
-                      price: priceValue,
+                      productId: productId,
+                      productName: productName,
+                      price: purchasePrice,
+                      isPurchasePrice: true,
                     ));
-                    priceController.text = priceValue.toAmount();
+
+                    storageController.text = stockProduct.stgName ?? '';
+                  } else {
+                    // Without storage, just update product and prices
+                    context.read<OrderByIdBloc>().add(UpdateOrderItemEvent(
+                      index: index,
+                      productId: productId,
+                      productName: productName,
+                      price: salePrice,
+                    ));
+
+                    context.read<OrderByIdBloc>().add(UpdateOrderItemEvent(
+                      index: index,
+                      productId: productId,
+                      productName: productName,
+                      price: purchasePrice,
+                      isPurchasePrice: true,
+                    ));
                   }
+
+                  // Update the price controller with sale price
+                  priceController.text = salePrice.toAmount();
                 }
               },
               title: '',
@@ -1032,16 +1063,34 @@ class _OrderByIdViewState extends State<OrderByIdView> {
             ),
           ),
 
+          // In _buildItemRow method, update the total section:
+
           // Total
           SizedBox(
             width: 100,
-            child: Text(
-              total.toAmount(),
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  total.toAmount(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                // Show profit for sale orders
+                if (!isPurchase && record.stkPurPrice != null && double.tryParse(record.stkPurPrice!)! > 0)
+                  Text(
+                    'Profit: ${(total - (double.tryParse(record.stkPurPrice!)! * qty)).toAmount()}',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: (total - (double.tryParse(record.stkPurPrice!)! * qty)) >= 0
+                          ? Colors.green
+                          : Colors.red,
+                    ),
+                  ),
+              ],
             ),
           ),
 
@@ -1100,6 +1149,23 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
 
+    final isSale = state.order.ordName?.toLowerCase().contains('sale') ?? false;
+
+    // Calculate total cost and profit for sale orders
+    double totalCost = 0.0;
+    double totalProfit = 0.0;
+
+    if (isSale && state.order.records != null) {
+      for (final record in state.order.records!) {
+        final qty = double.tryParse(record.stkQuantity ?? "0") ?? 0;
+        final purPrice = double.tryParse(record.stkPurPrice ?? "0") ?? 0;
+        final salePrice = double.tryParse(record.stkSalePrice ?? "0") ?? 0;
+
+        totalCost += qty * purPrice;
+        totalProfit += qty * (salePrice - purPrice);
+      }
+    }
+
     return Container(
       width: 600,
       padding: const EdgeInsets.all(14),
@@ -1110,6 +1176,37 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       ),
       child: Column(
         children: [
+          // Profit summary for sale orders
+          if (isSale) ...[
+            _buildSummaryRow(
+              label: tr.totalCost,
+              value: totalCost,
+              color: color.primary.withValues(alpha: .9),
+            ),
+            _buildSummaryRow(
+              label: tr.profit,
+              value: totalProfit,
+              color: totalProfit >= 0 ? Colors.green : Colors.red,
+              isBold: true,
+            ),
+            if (totalCost > 0)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('${tr.profit} %', style: TextStyle(fontSize: 14)),
+                  Text(
+                    '${(totalProfit / totalCost * 100).toStringAsFixed(2)}%',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: totalProfit >= 0 ? Colors.green : Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            Divider(color: color.outline.withValues(alpha: 0.3)),
+          ],
+
           _buildSummaryRow(
             label: tr.grandTotal,
             value: state.grandTotal,
@@ -1266,6 +1363,127 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       return;
     }
 
+    // Get the current state
+    final state = context.read<OrderByIdBloc>().state;
+
+    if (state is! OrderByIdLoaded) {
+      Utils.showOverlayMessage(context, message: 'Order not loaded', isError: true);
+      return;
+    }
+
+    final currentState = state;
+
+    // Validate supplier/customer is selected
+    if (currentState.selectedSupplier == null) {
+      final tr = AppLocalizations.of(context)!;
+      final orderType = currentState.order.ordName?.toLowerCase().contains('purchase') ?? true
+          ? tr.supplier
+          : tr.customer;
+      Utils.showOverlayMessage(
+          context,
+          message: 'Please select a $orderType',
+          isError: true
+      );
+      return;
+    }
+
+    // Validate items
+    final records = currentState.order.records ?? [];
+    if (records.isEmpty) {
+      Utils.showOverlayMessage(context, message: 'Please add at least one item', isError: true);
+      return;
+    }
+
+    // Validate each item
+    for (var i = 0; i < records.length; i++) {
+      final record = records[i];
+      if (record.stkProduct == 0 || record.stkProduct == null) {
+        Utils.showOverlayMessage(
+            context,
+            message: 'Please select a product for item ${i + 1}',
+            isError: true
+        );
+        return;
+      }
+
+      if (record.stkStorage == 0 || record.stkStorage == null) {
+        Utils.showOverlayMessage(
+            context,
+            message: 'Please select a storage for item ${i + 1}',
+            isError: true
+        );
+        return;
+      }
+
+      // Validate quantity
+      final qty = double.tryParse(record.stkQuantity ?? "0") ?? 0;
+      if (qty <= 0) {
+        Utils.showOverlayMessage(
+            context,
+            message: 'Please enter a valid quantity for item ${i + 1}',
+            isError: true
+        );
+        return;
+      }
+
+      // Validate price based on order type
+      final isPurchase = currentState.order.ordName?.toLowerCase().contains('purchase') ?? true;
+      final isSale = currentState.order.ordName?.toLowerCase().contains('sale') ?? false;
+
+      if (isPurchase) {
+        final price = double.tryParse(record.stkPurPrice ?? "0") ?? 0;
+        if (price <= 0) {
+          Utils.showOverlayMessage(
+              context,
+              message: 'Please enter a valid price for item ${i + 1}',
+              isError: true
+          );
+          return;
+        }
+      } else if (isSale) {
+        final salePrice = double.tryParse(record.stkSalePrice ?? "0") ?? 0;
+        if (salePrice <= 0) {
+          Utils.showOverlayMessage(
+              context,
+              message: 'Please enter a valid sale price for item ${i + 1}',
+              isError: true
+          );
+          return;
+        }
+
+        final purPrice = double.tryParse(record.stkPurPrice ?? "0") ?? 0;
+        if (purPrice <= 0) {
+          Utils.showOverlayMessage(
+              context,
+              message: 'Purchase price not found for item ${i + 1}. Please reselect the product.',
+              isError: true
+          );
+          return;
+        }
+      }
+    }
+
+    // Validate payment
+    if (!currentState.isPaymentValid) {
+      Utils.showOverlayMessage(
+          context,
+          message: 'Total payment must equal grand total. Please adjust payment.',
+          isError: true
+      );
+      return;
+    }
+
+    // Validate account for credit/mixed payment
+    if (currentState.creditAmount > 0 && currentState.selectedAccount == null) {
+      Utils.showOverlayMessage(
+          context,
+          message: 'Please select an account for credit payment',
+          isError: true
+      );
+      return;
+    }
+
+    // If all validations pass, dispatch the save event
     final completer = Completer<bool>();
     context.read<OrderByIdBloc>().add(SaveOrderChangesEvent(
       usrName: _userName!,

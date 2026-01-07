@@ -51,7 +51,28 @@ class UpdateOrderPaymentEvent extends OrderByIdEvent {
   List<Object?> get props => [cashPayment, creditAmount];
 }
 
+class UpdateSaleOrderItemEvent extends OrderByIdEvent {
+  final int index;
+  final int productId;
+  final String productName;
+  final int? storageId;
+  final double purchasePrice;
+  final double salePrice;
+  final double? quantity;
 
+  const UpdateSaleOrderItemEvent({
+    required this.index,
+    required this.productId,
+    required this.productName,
+    this.storageId,
+    required this.purchasePrice,
+    required this.salePrice,
+    this.quantity,
+  });
+
+  @override
+  List<Object?> get props => [index, productId, productName, storageId, purchasePrice, salePrice, quantity];
+}
 
 class UpdateOrderItemEvent extends OrderByIdEvent {
   final int index;
@@ -60,6 +81,7 @@ class UpdateOrderItemEvent extends OrderByIdEvent {
   final double? quantity;
   final double? price;
   final int? storageId;
+  final bool isPurchasePrice; // Add this flag
 
   const UpdateOrderItemEvent({
     required this.index,
@@ -68,10 +90,11 @@ class UpdateOrderItemEvent extends OrderByIdEvent {
     this.quantity,
     this.price,
     this.storageId,
+    this.isPurchasePrice = false, // Default to false
   });
 
   @override
-  List<Object?> get props => [index, productId, productName, quantity, price, storageId];
+  List<Object?> get props => [index, productId, productName, quantity, price, storageId, isPurchasePrice];
 }
 class AddOrderItemEvent extends OrderByIdEvent {}
 

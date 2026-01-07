@@ -26,6 +26,51 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     on<SelectOrderAccountEvent>(_onSelectAccount);
     on<ClearOrderAccountEvent>(_onClearAccount);
     on<UpdateOrderPaymentEvent>(_onUpdatePayment);
+    on<UpdateSaleOrderItemEvent>(_onUpdateSaleItem);
+  }
+
+// Add this method:
+  void _onUpdateSaleItem(UpdateSaleOrderItemEvent event, Emitter<OrderByIdState> emit,) {
+    if (state is! OrderByIdLoaded) return;
+
+    final current = state as OrderByIdLoaded;
+    if (!current.isEditing) return;
+
+    final currentRecords = current.order.records ?? [];
+
+    if (event.index < 0 || event.index >= currentRecords.length) {
+      return;
+    }
+
+    final records = List<OrderRecords>.from(currentRecords);
+    final record = records[event.index];
+
+    // Handle quantity
+    String? quantityString = record.stkQuantity;
+    if (event.quantity != null) {
+      quantityString = event.quantity!.toStringAsFixed(3);
+    }
+
+    final updatedRecord = record.copyWith(
+      stkProduct: event.productId,
+      stkQuantity: quantityString,
+      stkPurPrice: event.purchasePrice.toStringAsFixed(4),
+      stkSalePrice: event.salePrice.toStringAsFixed(4),
+      stkStorage: event.storageId ?? record.stkStorage,
+    );
+
+    records[event.index] = updatedRecord;
+
+    // Update product names
+    Map<int, String> updatedProductNames = Map.from(current.productNames);
+    updatedProductNames[event.productId] = event.productName;
+
+    final updatedOrder = current.order.copyWith(records: records);
+
+    emit(current.copyWith(
+      order: updatedOrder,
+      productNames: updatedProductNames,
+    ));
   }
 
   Future<void> _onLoadOrderById(
@@ -44,6 +89,9 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
 
       final order = orders.first;
 
+      // Determine order type
+      final isPurchase = order.ordName?.toLowerCase().contains('purchase') ?? true;
+
       // Load storages
       final storages = await repo.getStorage();
 
@@ -58,6 +106,48 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
 
       final storageNames = <int, String>{};
       final records = order.records ?? [];
+
+      // For sale orders, load product stock to get purchase prices
+      if (!isPurchase) {
+        try {
+          // Load product stock data to get purchase prices
+          final productsStock = await repo.getProductStock(); // You need to add this method to your repository
+
+          // Create a map of productId -> purchase price
+          final productPurchasePrices = <int, double>{};
+          for (var stock in productsStock) {
+            if (stock.proId != null && stock.purchasePrice != null) {
+              // Remove thousand separators and parse
+              final cleanPrice = stock.purchasePrice!.replaceAll(',', '');
+              final price = double.tryParse(cleanPrice) ?? 0.0;
+              if (price > 0) {
+                productPurchasePrices[stock.proId!] = price;
+              }
+            }
+          }
+
+          // Update records with purchase prices if missing
+          for (var i = 0; i < records.length; i++) {
+            final record = records[i];
+            if (record.stkProduct != null && record.stkProduct! > 0) {
+              final purchasePrice = productPurchasePrices[record.stkProduct!];
+
+              // Check if purchase price is missing or zero
+              final currentPurPrice = double.tryParse(record.stkPurPrice ?? "0") ?? 0;
+              if ((currentPurPrice == 0 || record.stkPurPrice == null || record.stkPurPrice!.isEmpty)
+                  && purchasePrice != null && purchasePrice > 0) {
+                // Update the record with purchase price
+                final updatedRecord = record.copyWith(
+                  stkPurPrice: purchasePrice.toStringAsFixed(4),
+                );
+                records[i] = updatedRecord;
+              }
+            }
+          }
+        } catch (e) {
+          // Continue without purchase prices - they may be loaded later when editing
+        }
+      }
 
       for (final record in records) {
         // Update product name from pre-loaded list
@@ -89,7 +179,6 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
 
       // Calculate grand total from items
       double grandTotal = 0.0;
-      final isPurchase = order.ordName?.toLowerCase().contains('purchase') ?? true;
 
       for (final record in records) {
         final qty = double.tryParse(record.stkQuantity ?? "0") ?? 0;
@@ -127,7 +216,7 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
       }
 
       emit(OrderByIdLoaded(
-        order: order,
+        order: order.copyWith(records: records), // Use updated records
         storages: storages,
         productNames: productNames,
         storageNames: storageNames,
@@ -263,15 +352,49 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
       quantityString = record.stkQuantity;
     }
 
-    // Handle price with 4 decimal places
+    // Handle prices
     String? purPriceString = record.stkPurPrice;
     String? salePriceString = record.stkSalePrice;
 
+    // Update product ID if provided
+    int? productId = event.productId ?? record.stkProduct;
+
+    // When a product is selected (productId > 0) but no price is provided
+    if (event.productId != null && event.productId! > 0 && event.price == null) {
+      // This is just a product selection, keep existing prices
+      // or set default prices based on order type
+      if (isPurchase) {
+        // For purchase orders, keep existing purchase price or set to 0 if not set
+        if (purPriceString == null || purPriceString.isEmpty || double.tryParse(purPriceString) == 0) {
+          purPriceString = "0.0000";
+        }
+        salePriceString = "0.0000";
+      } else if (isSale) {
+        // For sale orders, keep existing sale price or set to 0 if not set
+        if (salePriceString == null || salePriceString.isEmpty || double.tryParse(salePriceString) == 0) {
+          salePriceString = "0.0000";
+        }
+        // Keep existing purchase price or set to 0
+        if (purPriceString == null || purPriceString.isEmpty || double.tryParse(purPriceString) == 0) {
+          purPriceString = "0.0000";
+        }
+      }
+    }
+
     if (event.price != null) {
       if (isPurchase) {
+        // For purchase orders, only update purchase price
         purPriceString = event.price!.toStringAsFixed(4);
+        salePriceString = "0.0000";
       } else if (isSale) {
-        salePriceString = event.price!.toStringAsFixed(4);
+        // For sale orders, check which price to update
+        if (event.isPurchasePrice) {
+          // This is the purchase price update
+          purPriceString = event.price!.toStringAsFixed(4);
+        } else {
+          // This is the sale price update (default behavior)
+          salePriceString = event.price!.toStringAsFixed(4);
+        }
       }
     }
 
@@ -282,7 +405,7 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     }
 
     final updatedRecord = record.copyWith(
-      stkProduct: event.productId ?? record.stkProduct,
+      stkProduct: productId,
       stkQuantity: quantityString,
       stkPurPrice: purPriceString,
       stkSalePrice: salePriceString,
@@ -321,11 +444,12 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     final newRecord = OrderRecords(
       stkId: 0, // New item
       stkOrder: current.order.ordId,
-      stkProduct: 0,
+      stkProduct: 0, // Set to 0 initially
       stkEntryType: isPurchase ? "IN" : (isSale ? "OUT" : "IN"),
       stkStorage: defaultStorageId,
       stkQuantity: "1.000",
-      stkPurPrice: isPurchase ? "0.0000" : "0.0000",
+      // Set appropriate default prices based on order type
+      stkPurPrice: isPurchase ? "0.0000" : "0.0000", // For sale, this might be fetched later
       stkSalePrice: isSale ? "0.0000" : "0.0000",
     );
 
@@ -439,9 +563,20 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
           return;
         }
       } else if (isSale) {
-        final price = double.tryParse(record.stkSalePrice ?? "0") ?? 0;
-        if (price <= 0) {
-          emit(OrderByIdError('Please enter a valid price for item ${i + 1}'));
+        // For sale orders, we need both sale price (mandatory) and purchase price (for profit calculation)
+        final salePrice = double.tryParse(record.stkSalePrice ?? "0") ?? 0;
+        if (salePrice <= 0) {
+          emit(OrderByIdError('Please enter a valid sale price for item ${i + 1}'));
+          emit(savedState);
+          event.completer.complete(false);
+          return;
+        }
+
+        // For sale orders, we should also get the purchase price from product stock
+        // This should already be populated from the product selection
+        final purPrice = double.tryParse(record.stkPurPrice ?? "0") ?? 0;
+        if (purPrice <= 0) {
+          emit(OrderByIdError('Purchase price not found for item ${i + 1}. Please reselect the product.'));
           emit(savedState);
           event.completer.complete(false);
           return;
@@ -470,7 +605,6 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     try {
       // Determine order type
       final isPurchase = current.order.ordName?.toLowerCase().contains('purchase') ?? true;
-      final isSale = current.order.ordName?.toLowerCase().contains('sale') ?? false;
 
       // Convert records to update format
       final updateRecords = records.map((record) {
@@ -485,8 +619,8 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
           "stkEntryType": record.stkEntryType ?? (isPurchase ? "IN" : "OUT"),
           "stkStorage": record.stkStorage,
           "stkQuantity": quantity.toStringAsFixed(3),
-          "stkPurPrice": isPurchase ? purPrice.toStringAsFixed(4) : "0.0000",
-          "stkSalePrice": isSale ? salePrice.toStringAsFixed(4) : "0.0000",
+          "stkPurPrice": purPrice.toStringAsFixed(4),
+          "stkSalePrice": salePrice.toStringAsFixed(4),
         };
       }).toList();
 
@@ -519,8 +653,6 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
         "records": updateRecords,
       };
 
-      print('Update payload: ${payload}');
-
       final success = await repo.updatePurchaseOrder(
         orderId: current.order.ordId!,
         usrName: event.usrName,
@@ -540,7 +672,6 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
 
       event.completer.complete(success);
     } catch (e) {
-      print('Error updating order: $e');
       emit(OrderByIdError(e.toString()));
       emit(savedState);
       event.completer.complete(false);
