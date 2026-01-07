@@ -273,7 +273,6 @@ class AllShippingPdfServices extends PrintServices {
 
       // Parse string values to double before adding
       totalRevenue += parseStringToDouble(shp.total);
-
       totalUnloadingSize += parseStringToDouble(shp.shpUnloadSize);
 
       if (unit.isEmpty && shp.shpUnit != null && shp.shpUnit!.isNotEmpty) {
