@@ -13,6 +13,7 @@ class EstimateModel {
   final String? brcName;
   final String? ordxRef;
   final String? ordTrnRef;
+  final String? totalEstimate;
   final List<EstimateRecord>? records;
 
   EstimateModel({
@@ -25,6 +26,7 @@ class EstimateModel {
     this.ordxRef,
     this.ordTrnRef,
     this.records,
+    this.totalEstimate
   });
 
   EstimateModel copyWith({
@@ -36,6 +38,7 @@ class EstimateModel {
     String? brcName,
     String? ordxRef,
     String? ordTrnRef,
+    String? totalEstimate,
     List<EstimateRecord>? records,
   }) =>
       EstimateModel(
@@ -48,6 +51,7 @@ class EstimateModel {
         ordxRef: ordxRef ?? this.ordxRef,
         ordTrnRef: ordTrnRef ?? this.ordTrnRef,
         records: records ?? this.records,
+        totalEstimate: totalEstimate ?? this.totalEstimate
       );
 
   factory EstimateModel.fromMap(Map<String, dynamic> json) => EstimateModel(
@@ -59,6 +63,7 @@ class EstimateModel {
     brcName: json["brcName"],
     ordxRef: json["ordxRef"],
     ordTrnRef: json["ordTrnRef"],
+    totalEstimate: json["total"],
     records: json["records"] == null ? [] : List<EstimateRecord>.from(json["records"]!.map((x) => EstimateRecord.fromMap(x))),
   );
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
@@ -138,7 +139,10 @@ class _DesktopState extends State<_Desktop> {
                 ),
 
                 Expanded(child: Text(tr.party, style: titleStyle)),
-
+                SizedBox(
+                  width: 150,
+                  child: Text(tr.totalInvoice, style: titleStyle),
+                ),
               ],
             ),
           ),
@@ -197,6 +201,11 @@ class _DesktopState extends State<_Desktop> {
                               ),
                               Expanded(child: Text(ord.ordPersonalName ?? "")),
 
+
+                              SizedBox(
+                                width: 150,
+                                child: Text("${ord.totalEstimate?.toAmount()} $baseCurrency"),
+                              ),
                             ],
                           ),
                         ),

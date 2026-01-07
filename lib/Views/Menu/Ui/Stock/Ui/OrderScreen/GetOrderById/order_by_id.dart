@@ -1254,8 +1254,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                             index: index,
                             productId: productId,
                             productName: productName,
-                            price:
-                                0.0, // Set initial price to 0, user will edit it
+                            price: 0.0,
                           ),
                         );
 
