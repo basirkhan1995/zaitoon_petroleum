@@ -9,14 +9,13 @@ part 'estimate_state.dart';
 class EstimateBloc extends Bloc<EstimateEvent, EstimateState> {
   final Repositories _repo;
   EstimateBloc(this._repo) : super(EstimateInitial()) {
-
     on<LoadEstimateEvent>((event, emit) async{
       emit(EstimateLoadingState());
       try{
         final estimates = await _repo.getAllEstimates();
         emit(EstimateLoadedState(estimates));
       }catch(e){
-        emit(OrdersErrorState(e.toString()));
+        emit(EstimateErrorState(e.toString()));
       }
     });
   }

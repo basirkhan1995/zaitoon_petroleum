@@ -1982,4 +1982,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get party => 'طرف حساب';
+
+  @override
+  String get estimate => 'برآورد';
 }

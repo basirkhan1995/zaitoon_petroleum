@@ -3945,6 +3945,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Party'**
   String get party;
+
+  /// No description provided for @estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate'**
+  String get estimate;
 }
 
 class _AppLocalizationsDelegate

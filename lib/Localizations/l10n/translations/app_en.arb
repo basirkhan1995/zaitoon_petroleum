@@ -660,5 +660,6 @@
   "enterInvoiceNumber": "Enter the invoice number to proceed.",
   "newPurchase": "New Purchase",
   "newSale": "New Sale",
-  "party": "Party"
+  "party": "Party",
+  "estimate": "Estimate"
 }

@@ -660,5 +660,6 @@
   "enterInvoiceNumber": "لطفاً نمبربل را وارد کنید",
   "newPurchase": "خرید جدید",
   "newSale": "فروش جدید",
-  "party": "طرف حساب"
+  "party": "طرف حساب",
+  "estimate": "برآورد"
 }

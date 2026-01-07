@@ -1991,14 +1991,10 @@ class Repositories {
         endpoint: "/inventory/salePurchase.php",
         data: orderData,
       );
-
-      print('Update Response: ${response.data}'); // Debug log
-
       final message = response.data['msg']?.toString() ?? '';
       return message.toLowerCase().contains('success') ||
           message.toLowerCase().contains('authorized');
     } catch (e) {
-      print('Update Error: $e'); // Debug log
       rethrow;
     }
   }

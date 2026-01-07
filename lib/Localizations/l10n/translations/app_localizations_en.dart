@@ -1991,4 +1991,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get party => 'Party';
+
+  @override
+  String get estimate => 'Estimate';
 }

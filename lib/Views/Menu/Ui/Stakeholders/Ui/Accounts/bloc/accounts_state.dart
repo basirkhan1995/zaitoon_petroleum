@@ -28,10 +28,14 @@ final class AccountErrorState extends AccountsState {
 
 final class AccountLoadedState extends AccountsState {
   final List<AccountsModel> accounts;
-  const AccountLoadedState(this.accounts);
+  final AccountsModel? selectedAccount;
+
+  const AccountLoadedState(this.accounts, {this.selectedAccount});
+
   @override
-  List<Object> get props => [accounts];
+  List<Object?> get props => [accounts, selectedAccount];
 }
+
 
 final class StkAccountLoadedState extends AccountsState {
   final List<StakeholdersAccountsModel> accounts;

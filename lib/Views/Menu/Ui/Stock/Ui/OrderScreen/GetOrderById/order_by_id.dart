@@ -45,8 +45,10 @@ class _OrderByIdViewState extends State<OrderByIdView> {
   final List<List<FocusNode>> _rowFocusNodes = [];
   final Map<int, TextEditingController> _qtyControllers = {};
   final Map<int, TextEditingController> _priceControllers = {};
-  final Map<int, int> _qtyCursorPositions = {}; // Store cursor positions for qty
-  final Map<int, int> _priceCursorPositions = {}; // Store cursor positions for price
+  final Map<int, int> _qtyCursorPositions =
+      {}; // Store cursor positions for qty
+  final Map<int, int> _priceCursorPositions =
+      {}; // Store cursor positions for price
   final TextEditingController _personController = TextEditingController();
   final TextEditingController _accountController = TextEditingController();
   late final TextEditingController cashController;
@@ -138,7 +140,11 @@ class _OrderByIdViewState extends State<OrderByIdView> {
           _updateItemControllers(state.order);
         }
         if (state is OrderByIdError) {
-          Utils.showOverlayMessage(context, message: state.message, isError: true);
+          Utils.showOverlayMessage(
+            context,
+            message: state.message,
+            isError: true,
+          );
         }
         if (state is OrderByIdSaved) {
           Utils.showOverlayMessage(
@@ -173,19 +179,25 @@ class _OrderByIdViewState extends State<OrderByIdView> {
           title: Text('${widget.ordName ?? ""} #${widget.orderId}'),
           actions: [
             CircleAvatar(
-              backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(23),
+              backgroundColor: Theme.of(
+                context,
+              ).colorScheme.primary.withAlpha(23),
               child: IconButton(
                 icon: const Icon(Icons.refresh),
                 hoverColor: Theme.of(context).colorScheme.primary.withAlpha(26),
                 tooltip: AppLocalizations.of(context)!.refresh,
                 onPressed: () {
-                  context.read<OrderByIdBloc>().add(LoadOrderByIdEvent(widget.orderId));
+                  context.read<OrderByIdBloc>().add(
+                    LoadOrderByIdEvent(widget.orderId),
+                  );
                 },
               ),
             ),
             const SizedBox(width: 8),
             CircleAvatar(
-              backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(23),
+              backgroundColor: Theme.of(
+                context,
+              ).colorScheme.primary.withAlpha(23),
               child: IconButton(
                 icon: const Icon(Icons.print),
                 onPressed: () => _printInvoice(),
@@ -199,39 +211,60 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                 if (state is OrderByIdLoaded) {
                   xOrder = state.order;
                 }
-                if (state is OrderByIdLoaded && state.order.trnStateText?.toLowerCase() == 'pending') {
+                if (state is OrderByIdLoaded &&
+                    state.order.trnStateText?.toLowerCase() == 'pending') {
                   return Row(
                     spacing: 8,
                     children: [
                       CircleAvatar(
-                        backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(23),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primary.withAlpha(23),
                         child: IconButton(
-                          icon: Icon(state.isEditing ? Icons.visibility : Icons.edit),
+                          icon: Icon(
+                            state.isEditing ? Icons.visibility : Icons.edit,
+                          ),
                           onPressed: () => _toggleEditMode(),
-                          hoverColor: Theme.of(context).colorScheme.primary.withAlpha(26),
-                          tooltip: state.isEditing ? AppLocalizations.of(context)!.cancel : AppLocalizations.of(context)!.edit,
+                          hoverColor: Theme.of(
+                            context,
+                          ).colorScheme.primary.withAlpha(26),
+                          tooltip: state.isEditing
+                              ? AppLocalizations.of(context)!.cancel
+                              : AppLocalizations.of(context)!.edit,
                         ),
                       ),
                       CircleAvatar(
-                        backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(23),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primary.withAlpha(23),
                         child: IconButton(
                           icon: const Icon(Icons.delete_outline),
                           onPressed: () => _showDeleteDialog(state.order),
                           isSelected: true,
-                          hoverColor: Theme.of(context).colorScheme.primary.withAlpha(26),
+                          hoverColor: Theme.of(
+                            context,
+                          ).colorScheme.primary.withAlpha(26),
                           tooltip: AppLocalizations.of(context)!.delete,
                         ),
                       ),
                       if (state.isEditing) ...[
                         CircleAvatar(
-                          backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(23),
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary.withAlpha(23),
                           child: IconButton(
-                            hoverColor: Theme.of(context).colorScheme.primary.withAlpha(26),
-                            onPressed: !state.isPaymentValid || state.selectedSupplier == null ? null : () => _saveChanges(),
+                            hoverColor: Theme.of(
+                              context,
+                            ).colorScheme.primary.withAlpha(26),
+                            onPressed:
+                                !state.isPaymentValid ||
+                                    state.selectedSupplier == null
+                                ? null
+                                : () => _saveChanges(),
                             tooltip: AppLocalizations.of(context)!.saveChanges,
                             icon: const Icon(Icons.check),
                           ),
-                        )
+                        ),
                       ],
                     ],
                   );
@@ -257,7 +290,9 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                     ZButton(
                       width: 120,
                       label: Text(AppLocalizations.of(context)!.retry),
-                      onPressed: () => context.read<OrderByIdBloc>().add(LoadOrderByIdEvent(widget.orderId)),
+                      onPressed: () => context.read<OrderByIdBloc>().add(
+                        LoadOrderByIdEvent(widget.orderId),
+                      ),
                     ),
                   ],
                 ),
@@ -307,7 +342,10 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                       spacing: 10,
                       children: [
                         Expanded(flex: 3, child: _buildOrderHeader(state)),
-                        Expanded(flex: 2, child: _buildOrderHeaderDetails(state)),
+                        Expanded(
+                          flex: 2,
+                          child: _buildOrderHeaderDetails(state),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 15),
@@ -322,11 +360,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                     const SizedBox(height: 10),
 
                     // Order Summary
-                    Row(
-                      children: [
-                        _buildOrderSummary(state),
-                      ],
-                    ),
+                    Row(children: [_buildOrderSummary(state)]),
 
                     const SizedBox(height: 10),
                   ],
@@ -342,7 +376,11 @@ class _OrderByIdViewState extends State<OrderByIdView> {
   }
 
   // Helper method to update controller value without selecting all text
-  void _updateControllerValue(TextEditingController controller, String newValue, int? savedCursorPos) {
+  void _updateControllerValue(
+    TextEditingController controller,
+    String newValue,
+    int? savedCursorPos,
+  ) {
     // Don't update if value is the same
     if (controller.text == newValue) {
       return;
@@ -384,7 +422,8 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       // Update price controller if exists
       if (_priceControllers.containsKey(i)) {
         final savedCursorPos = _priceCursorPositions[i];
-        final isPurchase = order.ordName?.toLowerCase().contains('purchase') ?? true;
+        final isPurchase =
+            order.ordName?.toLowerCase().contains('purchase') ?? true;
         final priceText = isPurchase
             ? record.stkPurPrice?.toAmount()
             : record.stkSalePrice?.toAmount();
@@ -422,7 +461,10 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor,
                     borderRadius: BorderRadius.circular(20),
@@ -446,58 +488,87 @@ class _OrderByIdViewState extends State<OrderByIdView> {
               children: [
                 Expanded(
                   child: state.isEditing
-                      ? GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
-                    controller: TextEditingController(
-                      text: state.selectedSupplier != null
-                          ? "${state.selectedSupplier?.perName ?? ""} ${state.selectedSupplier?.perLastName ?? ""}"
-                          : order.personal ?? '',
-                    ),
-                    title: order.ordName?.toLowerCase().contains('purchase') ?? true
-                        ? tr.supplier
-                        : tr.customer,
-                    hintText: order.ordName?.toLowerCase().contains('purchase') ?? true
-                        ? tr.supplier
-                        : tr.customer,
-                    bloc: context.read<IndividualsBloc>(),
-                    fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
-                    searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
-                    itemBuilder: (context, ind) => Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text("${ind.perName ?? ''} ${ind.perLastName ?? ''}"),
-                    ),
-                    itemToString: (individual) => "${individual.perName} ${individual.perLastName}",
-                    stateToLoading: (state) => state is IndividualLoadingState,
-                    stateToItems: (state) {
-                      if (state is IndividualLoadedState) return state.individuals;
-                      return [];
-                    },
-                    onSelected: (value) {
-                      context.read<OrderByIdBloc>().add(SelectOrderSupplierEvent(value));
-                      // Load accounts for this individual
-                      context.read<AccountsBloc>().add(LoadAccountsFilterEvent(
-                        input: value.perId.toString(),
-                        start: 5,
-                        end: 5,
-                        exclude: '',
-                      ));
-                    },
-                    showClearButton: true,
-                  )
+                      ? GenericTextfield<
+                          IndividualsModel,
+                          IndividualsBloc,
+                          IndividualsState
+                        >(
+                          controller: TextEditingController(
+                            text: state.selectedSupplier != null
+                                ? "${state.selectedSupplier?.perName ?? ""} ${state.selectedSupplier?.perLastName ?? ""}"
+                                : order.personal ?? '',
+                          ),
+                          title:
+                              order.ordName?.toLowerCase().contains(
+                                    'purchase',
+                                  ) ??
+                                  true
+                              ? tr.supplier
+                              : tr.customer,
+                          hintText:
+                              order.ordName?.toLowerCase().contains(
+                                    'purchase',
+                                  ) ??
+                                  true
+                              ? tr.supplier
+                              : tr.customer,
+                          bloc: context.read<IndividualsBloc>(),
+                          fetchAllFunction: (bloc) =>
+                              bloc.add(LoadIndividualsEvent()),
+                          searchFunction: (bloc, query) =>
+                              bloc.add(LoadIndividualsEvent()),
+                          itemBuilder: (context, ind) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "${ind.perName ?? ''} ${ind.perLastName ?? ''}",
+                            ),
+                          ),
+                          itemToString: (individual) =>
+                              "${individual.perName} ${individual.perLastName}",
+                          stateToLoading: (state) =>
+                              state is IndividualLoadingState,
+                          stateToItems: (state) {
+                            if (state is IndividualLoadedState) {
+                              return state.individuals;
+                            }
+                            return [];
+                          },
+                          onSelected: (value) {
+                            context.read<OrderByIdBloc>().add(
+                              SelectOrderSupplierEvent(value),
+                            );
+                            // Load accounts for this individual
+                            context.read<AccountsBloc>().add(
+                              LoadAccountsFilterEvent(
+                                input: value.perId.toString(),
+                                start: 5,
+                                end: 5,
+                                exclude: '',
+                              ),
+                            );
+                          },
+                          showClearButton: true,
+                        )
                       : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        order.ordName?.toLowerCase().contains('purchase') ?? true
-                            ? tr.supplier
-                            : tr.customer,
-                        style: TextStyle(color: color.outline),
-                      ),
-                      Text(
-                        order.personal ?? '',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              order.ordName?.toLowerCase().contains(
+                                        'purchase',
+                                      ) ??
+                                      true
+                                  ? tr.supplier
+                                  : tr.customer,
+                              style: TextStyle(color: color.outline),
+                            ),
+                            Text(
+                              order.personal ?? '',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                 ),
               ],
             ),
@@ -538,7 +609,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                 tr.invoiceDetails,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              Text("${tr.orderId} #${order.ordId}")
+              Text("${tr.orderId} #${order.ordId}"),
             ],
           ),
           const Divider(),
@@ -546,7 +617,10 @@ class _OrderByIdViewState extends State<OrderByIdView> {
           const SizedBox(height: 5),
           rowHeader(title: tr.referenceNumber, value: order.ordTrnRef),
           const SizedBox(height: 5),
-          rowHeader(title: tr.totalInvoice, value: "${state.grandTotal.toAmount()} $ccy"),
+          rowHeader(
+            title: tr.totalInvoice,
+            value: "${state.grandTotal.toAmount()} $ccy",
+          ),
           const SizedBox(height: 5),
           rowHeader(title: tr.orderDate, value: order.ordEntryDate?.toDateTime),
           const SizedBox(height: 10),
@@ -562,7 +636,10 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(tr.paymentDetails, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        Text(
+          tr.paymentDetails,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
         const Divider(),
         const SizedBox(height: 5),
         Row(
@@ -575,39 +652,47 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                   // Cash Only
                   ChoiceChip(
                     selectedColor: color.primary.withAlpha(26),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                     label: Text(tr.cash),
                     selected: state.isCashOnly,
                     onSelected: (selected) {
                       if (selected) {
-                        context.read<OrderByIdBloc>().add(UpdateOrderPaymentEvent(
-                          cashPayment: state.grandTotal,
-                          creditAmount: 0.0,
-                        ));
+                        context.read<OrderByIdBloc>().add(
+                          UpdateOrderPaymentEvent(
+                            cashPayment: state.grandTotal,
+                            creditAmount: 0.0,
+                          ),
+                        );
                       }
                     },
                   ),
-
                   // Credit Only
                   ChoiceChip(
                     selectedColor: color.primary.withAlpha(26),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                     label: Text(tr.creditTitle),
                     selected: state.isCreditOnly,
                     onSelected: (selected) {
                       if (selected) {
-                        context.read<OrderByIdBloc>().add(UpdateOrderPaymentEvent(
-                          cashPayment: 0.0,
-                          creditAmount: state.grandTotal,
-                        ));
+                        context.read<OrderByIdBloc>().add(
+                          UpdateOrderPaymentEvent(
+                            cashPayment: 0.0,
+                            creditAmount: state.grandTotal,
+                          ),
+                        );
                       }
                     },
                   ),
-
                   // Mixed Payment
                   ChoiceChip(
                     selectedColor: color.primary.withAlpha(26),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                     label: Text(tr.combinedPayment),
                     selected: state.isMixed,
                     onSelected: (selected) {
@@ -615,10 +700,12 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                         // Default to 50/50 split for mixed
                         final credit = state.grandTotal / 2;
                         final cash = state.grandTotal - credit;
-                        context.read<OrderByIdBloc>().add(UpdateOrderPaymentEvent(
-                          cashPayment: cash,
-                          creditAmount: credit,
-                        ));
+                        context.read<OrderByIdBloc>().add(
+                          UpdateOrderPaymentEvent(
+                            cashPayment: cash,
+                            creditAmount: credit,
+                          ),
+                        );
                       }
                     },
                   ),
@@ -631,39 +718,57 @@ class _OrderByIdViewState extends State<OrderByIdView> {
         const SizedBox(height: 8),
         // Account Selection (Editable when editing and credit payment)
         if (state.isEditing && state.creditAmount > 0) ...[
-          GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
-            controller: TextEditingController(
-              text: state.selectedAccount != null
-                  ? '${state.selectedAccount!.accName} (${state.selectedAccount!.accNumber})'
-                  : '',
-            ),
-            title: tr.accounts,
-            hintText: tr.selectAccount,
-            isRequired: state.creditAmount > 0,
-            bloc: context.read<AccountsBloc>(),
-            fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 5, end: 5, exclude: '')),
-            searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(
-              input: query,
-              start: 5,
-              end: 5,
-              exclude: '',
-            )),
-            itemBuilder: (context, account) => ListTile(
-              title: Text(account.accName ?? ''),
-              subtitle: Text('${account.accNumber} - ${tr.balance}: ${account.accAvailBalance?.toAmount() ?? "0.0"}'),
-              trailing: Text(account.actCurrency ?? ""),
-            ),
-            itemToString: (account) => '${account.accName} (${account.accNumber})',
-            stateToLoading: (state) => state is AccountLoadingState,
-            stateToItems: (state) {
-              if (state is AccountLoadedState) return state.accounts;
-              return [];
+          BlocBuilder<AccountsBloc, AccountsState>(
+            builder: (context, accState) {
+              AccountsModel? selectedAccount;
+
+              if (accState is AccountLoadedState && state.selectedAccount != null) {
+                selectedAccount = accState.accounts.firstWhere(
+                  (a) => a.accNumber == state.selectedAccount!.accNumber,
+                  orElse: () => state.selectedAccount!,
+                );
+              }
+
+              return GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
+                controller: TextEditingController(
+                  text: selectedAccount != null
+                      ? '${selectedAccount.accNumber ?? ""} | ${selectedAccount.accName ?? ""}'
+                      : '',
+                ),
+                title: tr.accounts,
+                hintText: tr.selectAccount,
+                isRequired: state.creditAmount > 0,
+                bloc: context.read<AccountsBloc>(),
+                fetchAllFunction: (bloc) => bloc.add(
+                  LoadAccountsFilterEvent(start: 5, end: 5, exclude: ''),
+                ),
+                searchFunction: (bloc, query) => bloc.add(
+                  LoadAccountsFilterEvent(
+                    input: query,
+                    start: 5,
+                    end: 5,
+                    exclude: '',
+                  ),
+                ),
+                itemBuilder: (context, account) => ListTile(
+                  title: Text(account.accName ?? ''),
+                  subtitle: Text('${account.accNumber}'),
+                ),
+                itemToString: (account) =>
+                    '${account.accName ?? ""} (${account.accNumber ?? ""})',
+                stateToLoading: (state) => state is AccountLoadingState,
+                stateToItems: (state) =>
+                    state is AccountLoadedState ? state.accounts : [],
+                onSelected: (value) {
+                  context.read<OrderByIdBloc>().add(
+                    SelectOrderAccountEvent(value),
+                  );
+                },
+                showClearButton: true,
+              );
             },
-            onSelected: (value) {
-              context.read<OrderByIdBloc>().add(SelectOrderAccountEvent(value));
-            },
-            showClearButton: true,
           ),
+
           const SizedBox(height: 8),
         ],
 
@@ -692,9 +797,12 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                     );
 
                     // Restore cursor position
-                    if (cursorPos != -1 && cursorPos <= cashController.text.length) {
+                    if (cursorPos != -1 &&
+                        cursorPos <= cashController.text.length) {
                       Future.delayed(Duration.zero, () {
-                        cashController.selection = TextSelection.collapsed(offset: cursorPos);
+                        cashController.selection = TextSelection.collapsed(
+                          offset: cursorPos,
+                        );
                       });
                     }
                   },
@@ -723,16 +831,19 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                       );
 
                       // Restore cursor position
-                      if (cursorPos != -1 && cursorPos <= creditController.text.length) {
+                      if (cursorPos != -1 &&
+                          cursorPos <= creditController.text.length) {
                         Future.delayed(Duration.zero, () {
-                          creditController.selection = TextSelection.collapsed(offset: cursorPos);
+                          creditController.selection = TextSelection.collapsed(
+                            offset: cursorPos,
+                          );
                         });
                       }
                     },
                     end: Text(ccy ?? ""),
                   ),
                 ),
-              ]
+              ],
             ],
           ),
 
@@ -756,9 +867,16 @@ class _OrderByIdViewState extends State<OrderByIdView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(tr.currentBalance, style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text(
-                    (double.tryParse(state.selectedAccount!.accAvailBalance ?? "0.0") ?? 0.0).toAmount(),
+                    tr.currentBalance,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    (double.tryParse(
+                              state.selectedAccount!.accAvailBalance ?? "0.0",
+                            ) ??
+                            0.0)
+                        .toAmount(),
                     style: const TextStyle(color: Colors.deepOrangeAccent),
                   ),
                 ],
@@ -767,10 +885,22 @@ class _OrderByIdViewState extends State<OrderByIdView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(tr.newBalance, style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text(
-                    ((double.tryParse(state.selectedAccount!.accAvailBalance ?? "0.0") ?? 0.0) + state.creditAmount).toAmount(),
-                    style: TextStyle(color: color.primary, fontWeight: FontWeight.bold),
+                    tr.newBalance,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    ((double.tryParse(
+                                  state.selectedAccount!.accAvailBalance ??
+                                      "0.0",
+                                ) ??
+                                0.0) +
+                            state.creditAmount)
+                        .toAmount(),
+                    style: TextStyle(
+                      color: color.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -780,7 +910,10 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     );
   }
 
-  Widget _buildReadOnlyPaymentSection(OrderByIdModel order, OrderByIdLoaded state) {
+  Widget _buildReadOnlyPaymentSection(
+    OrderByIdModel order,
+    OrderByIdLoaded state,
+  ) {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
 
@@ -791,7 +924,10 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(tr.paymentDetails, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        Text(
+          tr.paymentDetails,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
         const Divider(),
         if (hasAccount) ...[
           Row(
@@ -808,8 +944,13 @@ class _OrderByIdViewState extends State<OrderByIdView> {
             ],
           ),
           Text("${state.order.acc.toString()} | ${state.order.personal}"),
-          Text("${creditAmount.toAmount()} $ccy",
-            style: TextStyle(fontSize: 14, color: color.primary, fontWeight: FontWeight.bold),
+          Text(
+            "${creditAmount.toAmount()} $ccy",
+            style: TextStyle(
+              fontSize: 14,
+              color: color.primary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
         const SizedBox(height: 8),
@@ -827,8 +968,13 @@ class _OrderByIdViewState extends State<OrderByIdView> {
           ],
         ),
         Text("10101010 | ${tr.cash}"),
-        Text("${state.cashPayment.toAmount()} $ccy",
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: color.primary),
+        Text(
+          "${state.cashPayment.toAmount()} $ccy",
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: color.primary,
+          ),
         ),
       ],
     );
@@ -837,7 +983,9 @@ class _OrderByIdViewState extends State<OrderByIdView> {
   Widget _buildItemsHeader(bool isEditing) {
     final locale = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
-    TextStyle? title = Theme.of(context).textTheme.titleSmall?.copyWith(color: color.surface);
+    TextStyle? title = Theme.of(
+      context,
+    ).textTheme.titleSmall?.copyWith(color: color.surface);
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -853,13 +1001,18 @@ class _OrderByIdViewState extends State<OrderByIdView> {
           SizedBox(width: 150, child: Text(locale.unitPrice, style: title)),
           SizedBox(width: 100, child: Text(locale.totalTitle, style: title)),
           SizedBox(width: 180, child: Text(locale.storage, style: title)),
-          if (isEditing) SizedBox(width: 60, child: Text(locale.actions, style: title)),
+          if (isEditing)
+            SizedBox(width: 60, child: Text(locale.actions, style: title)),
         ],
       ),
     );
   }
 
-  Widget _buildItemsList(OrderByIdModel order, OrderByIdLoaded state, bool isEditing) {
+  Widget _buildItemsList(
+    OrderByIdModel order,
+    OrderByIdLoaded state,
+    bool isEditing,
+  ) {
     if (order.records == null || order.records!.isEmpty) {
       return Cover(
         child: Padding(
@@ -867,7 +1020,11 @@ class _OrderByIdViewState extends State<OrderByIdView> {
           child: Center(
             child: Column(
               children: [
-                Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey.shade400),
+                Icon(
+                  Icons.inventory_2_outlined,
+                  size: 64,
+                  color: Colors.grey.shade400,
+                ),
                 const SizedBox(height: 16),
                 const Text(
                   'No Items Found',
@@ -888,7 +1045,9 @@ class _OrderByIdViewState extends State<OrderByIdView> {
           itemCount: order.records!.length,
           itemBuilder: (context, index) {
             final record = order.records![index];
-            final nodes = _rowFocusNodes.length > index ? _rowFocusNodes[index] : [FocusNode(), FocusNode()];
+            final nodes = _rowFocusNodes.length > index
+                ? _rowFocusNodes[index]
+                : [FocusNode(), FocusNode()];
             return _buildItemRow(
               record: record,
               index: index,
@@ -906,7 +1065,8 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                 ZOutlineButton(
                   icon: Icons.add,
                   label: Text(AppLocalizations.of(context)!.addItem),
-                  onPressed: () => context.read<OrderByIdBloc>().add(AddOrderItemEvent()),
+                  onPressed: () =>
+                      context.read<OrderByIdBloc>().add(AddOrderItemEvent()),
                 ),
               ],
             ),
@@ -929,19 +1089,23 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     final productController = TextEditingController(text: productName);
 
     // Get or create quantity controller
-    final qtyController = _qtyControllers[index] ?? TextEditingController(text: record.stkQuantity);
+    final qtyController =
+        _qtyControllers[index] ??
+        TextEditingController(text: record.stkQuantity);
     if (!_qtyControllers.containsKey(index)) {
       _qtyControllers[index] = qtyController;
     }
 
     // Determine which price to show based on order type
-    final isPurchase = state.order.ordName?.toLowerCase().contains('purchase') ?? true;
+    final isPurchase =
+        state.order.ordName?.toLowerCase().contains('purchase') ?? true;
     final priceText = isPurchase
         ? record.stkPurPrice?.toAmount()
         : record.stkSalePrice?.toAmount();
 
     // Get or create price controller
-    final priceController = _priceControllers[index] ?? TextEditingController(text: priceText);
+    final priceController =
+        _priceControllers[index] ?? TextEditingController(text: priceText);
     if (!_priceControllers.containsKey(index)) {
       _priceControllers[index] = priceController;
     }
@@ -965,9 +1129,14 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     TextStyle? title = textTheme.titleSmall?.copyWith(color: color.primary);
 
     return Container(
-      padding: EdgeInsets.symmetric(vertical: isEditing ? 0 : 8, horizontal: 10),
+      padding: EdgeInsets.symmetric(
+        vertical: isEditing ? 0 : 8,
+        horizontal: 10,
+      ),
       decoration: BoxDecoration(
-        color: index.isEven ? Theme.of(context).colorScheme.outline.withAlpha(13) : Colors.transparent,
+        color: index.isEven
+            ? Theme.of(context).colorScheme.outline.withAlpha(13)
+            : Colors.transparent,
         border: Border(bottom: BorderSide(color: color.outline.withAlpha(26))),
       ),
       child: Row(
@@ -977,162 +1146,202 @@ class _OrderByIdViewState extends State<OrderByIdView> {
           // Product
           Expanded(
             child: isEditing
-                ? GenericUnderlineTextfield<dynamic, ProductsBloc, ProductsState>(
-              controller: productController,
-              hintText: locale.products,
-              bloc: context.read<ProductsBloc>(),
-              fetchAllFunction: (bloc) => isPurchase
-                  ? bloc.add(LoadProductsEvent())
-                  : bloc.add(LoadProductsStockEvent()),
-              searchFunction: (bloc, query) => isPurchase
-                  ? bloc.add(LoadProductsEvent())
-                  : bloc.add(LoadProductsStockEvent()),
-              itemBuilder: (context, product) {
-                if (isPurchase) {
-                  final prod = product as ProductsModel;
-                  return ListTile(
-                    title: Text(prod.proName ?? ''),
-                    subtitle: Text(prod.proCode ?? ''),
-                    trailing: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("T"),
-                      ],
-                    ),
-                  );
-                } else {
-                  return ListTile(
-                    title: Text(product.proName ?? ''),
-                    subtitle: Row(
-                      spacing: 5,
-                      children: [
-                        Wrap(
-                          children: [
-                            Cover(child: Text(tr.purchasePrice, style: title)),
-                            Cover(child: Text(product.purchasePrice)),
-                          ],
-                        ),
-                        Wrap(
-                          children: [
-                            Cover(radius: 0, child: Text(tr.salePriceBrief, style: title)),
-                            Cover(radius: 0, child: Text(product.sellPrice)),
-                          ],
-                        ),
-                      ],
-                    ),
-                    trailing: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(product.available, style: const TextStyle(fontSize: 18)),
-                        Text(product.stgName ?? "",
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.outline,
+                ? GenericUnderlineTextfield<
+                    dynamic,
+                    ProductsBloc,
+                    ProductsState
+                  >(
+                    controller: productController,
+                    hintText: locale.products,
+                    bloc: context.read<ProductsBloc>(),
+                    fetchAllFunction: (bloc) => isPurchase
+                        ? bloc.add(LoadProductsEvent())
+                        : bloc.add(LoadProductsStockEvent()),
+                    searchFunction: (bloc, query) => isPurchase
+                        ? bloc.add(LoadProductsEvent())
+                        : bloc.add(LoadProductsStockEvent()),
+                    itemBuilder: (context, product) {
+                      if (isPurchase) {
+                        final prod = product as ProductsModel;
+                        return ListTile(
+                          title: Text(prod.proName ?? ''),
+                          subtitle: Text(prod.proCode ?? ''),
+                          trailing: const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [Text("T")],
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-              },
-              itemToString: (product) {
-                if (isPurchase) {
-                  return (product as ProductsModel).proName ?? '';
-                } else {
-                  return (product as ProductsStockModel).proName ?? '';
-                }
-              },
-              stateToLoading: (state) => state is ProductsLoadingState,
-              stateToItems: (state) {
-                if (isPurchase) {
-                  if (state is ProductsLoadedState) return state.products;
-                } else {
-                  if (state is ProductsStockLoadedState) return state.products;
-                }
-                return [];
-              },
-              onSelected: (product) {
-                int productId;
-                String productName;
+                        );
+                      } else {
+                        return ListTile(
+                          title: Text(product.proName ?? ''),
+                          subtitle: Row(
+                            spacing: 5,
+                            children: [
+                              Wrap(
+                                children: [
+                                  Cover(
+                                    child: Text(tr.purchasePrice, style: title),
+                                  ),
+                                  Cover(child: Text(product.purchasePrice)),
+                                ],
+                              ),
+                              Wrap(
+                                children: [
+                                  Cover(
+                                    radius: 0,
+                                    child: Text(
+                                      tr.salePriceBrief,
+                                      style: title,
+                                    ),
+                                  ),
+                                  Cover(
+                                    radius: 0,
+                                    child: Text(product.sellPrice),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          trailing: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                product.available,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                              Text(
+                                product.stgName ?? "",
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.outline,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
+                    itemToString: (product) {
+                      if (isPurchase) {
+                        return (product as ProductsModel).proName ?? '';
+                      } else {
+                        return (product as ProductsStockModel).proName ?? '';
+                      }
+                    },
+                    stateToLoading: (state) => state is ProductsLoadingState,
+                    stateToItems: (state) {
+                      if (isPurchase) {
+                        if (state is ProductsLoadedState) return state.products;
+                      } else {
+                        if (state is ProductsStockLoadedState) {
+                          return state.products;
+                        }
+                      }
+                      return [];
+                    },
+                    onSelected: (product) {
+                      int productId;
+                      String productName;
 
-                if (isPurchase) {
-                  final purchaseProduct = product as ProductsModel;
-                  productId = purchaseProduct.proId!;
-                  productName = purchaseProduct.proName ?? '';
+                      if (isPurchase) {
+                        final purchaseProduct = product as ProductsModel;
+                        productId = purchaseProduct.proId!;
+                        productName = purchaseProduct.proName ?? '';
 
-                  // For purchase orders, update only the purchase price
-                  context.read<OrderByIdBloc>().add(UpdateOrderItemEvent(
-                    index: index,
-                    productId: productId,
-                    productName: productName,
-                    price: 0.0, // Set initial price to 0, user will edit it
-                  ));
+                        // For purchase orders, update only the purchase price
+                        context.read<OrderByIdBloc>().add(
+                          UpdateOrderItemEvent(
+                            index: index,
+                            productId: productId,
+                            productName: productName,
+                            price:
+                                0.0, // Set initial price to 0, user will edit it
+                          ),
+                        );
 
-                  // Update the price controller
-                  priceController.text = "0.00";
-                } else {
-                  // For sale orders
-                  final stockProduct = product as ProductsStockModel;
-                  productId = stockProduct.proId!;
-                  productName = stockProduct.proName ?? '';
+                        // Update the price controller
+                        priceController.text = "0.00";
+                      } else {
+                        // For sale orders
+                        final stockProduct = product as ProductsStockModel;
+                        productId = stockProduct.proId!;
+                        productName = stockProduct.proName ?? '';
 
-                  // Get both purchase and sale prices from product stock
-                  final purchasePrice = double.tryParse(stockProduct.purchasePrice?.replaceAll(',', '') ?? "0.0") ?? 0.0;
-                  final salePrice = double.tryParse(stockProduct.sellPrice?.replaceAll(',', '') ?? "0.0") ?? 0.0;
+                        // Get both purchase and sale prices from product stock
+                        final purchasePrice =
+                            double.tryParse(
+                              stockProduct.purchasePrice?.replaceAll(',', '') ??
+                                  "0.0",
+                            ) ??
+                            0.0;
+                        final salePrice =
+                            double.tryParse(
+                              stockProduct.sellPrice?.replaceAll(',', '') ??
+                                  "0.0",
+                            ) ??
+                            0.0;
 
-                  // For sale orders, auto-set storage from product
-                  final storageId = stockProduct.stkStorage;
-                  if (storageId != null && storageId > 0) {
-                    context.read<OrderByIdBloc>().add(UpdateOrderItemEvent(
-                      index: index,
-                      productId: productId,
-                      productName: productName,
-                      storageId: storageId,
-                      price: salePrice, // This will set the sale price
-                    ));
+                        // For sale orders, auto-set storage from product
+                        final storageId = stockProduct.stkStorage;
+                        if (storageId != null && storageId > 0) {
+                          context.read<OrderByIdBloc>().add(
+                            UpdateOrderItemEvent(
+                              index: index,
+                              productId: productId,
+                              productName: productName,
+                              storageId: storageId,
+                              price: salePrice, // This will set the sale price
+                            ),
+                          );
 
-                    // Also set the purchase price
-                    context.read<OrderByIdBloc>().add(UpdateOrderItemEvent(
-                      index: index,
-                      productId: productId,
-                      productName: productName,
-                      price: purchasePrice,
-                      isPurchasePrice: true,
-                    ));
+                          // Also set the purchase price
+                          context.read<OrderByIdBloc>().add(
+                            UpdateOrderItemEvent(
+                              index: index,
+                              productId: productId,
+                              productName: productName,
+                              price: purchasePrice,
+                              isPurchasePrice: true,
+                            ),
+                          );
 
-                    storageController.text = stockProduct.stgName ?? '';
-                  } else {
-                    // Without storage, just update product and prices
-                    context.read<OrderByIdBloc>().add(UpdateOrderItemEvent(
-                      index: index,
-                      productId: productId,
-                      productName: productName,
-                      price: salePrice,
-                    ));
+                          storageController.text = stockProduct.stgName ?? '';
+                        } else {
+                          // Without storage, just update product and prices
+                          context.read<OrderByIdBloc>().add(
+                            UpdateOrderItemEvent(
+                              index: index,
+                              productId: productId,
+                              productName: productName,
+                              price: salePrice,
+                            ),
+                          );
 
-                    context.read<OrderByIdBloc>().add(UpdateOrderItemEvent(
-                      index: index,
-                      productId: productId,
-                      productName: productName,
-                      price: purchasePrice,
-                      isPurchasePrice: true,
-                    ));
-                  }
+                          context.read<OrderByIdBloc>().add(
+                            UpdateOrderItemEvent(
+                              index: index,
+                              productId: productId,
+                              productName: productName,
+                              price: purchasePrice,
+                              isPurchasePrice: true,
+                            ),
+                          );
+                        }
 
-                  // Update the price controller with sale price
-                  priceController.text = salePrice.toAmount();
-                }
-              },
-              title: '',
-            )
+                        // Update the price controller with sale price
+                        priceController.text = salePrice.toAmount();
+                      }
+                    },
+                    title: '',
+                  )
                 : TextField(
-              controller: productController,
-              readOnly: true,
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-              ),
-            ),
+                    controller: productController,
+                    readOnly: true,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      isDense: true,
+                    ),
+                  ),
           ),
 
           // Quantity
@@ -1152,23 +1361,25 @@ class _OrderByIdViewState extends State<OrderByIdView> {
               ),
               onChanged: isEditing
                   ? (value) {
-                // Save cursor position
-                final cursorPos = qtyController.selection.baseOffset;
-                _qtyCursorPositions[index] = cursorPos;
+                      // Save cursor position
+                      final cursorPos = qtyController.selection.baseOffset;
+                      _qtyCursorPositions[index] = cursorPos;
 
-                final qty = double.tryParse(value) ?? 0.0;
-                context.read<OrderByIdBloc>().add(UpdateOrderItemEvent(
-                  index: index,
-                  quantity: qty,
-                ));
+                      final qty = double.tryParse(value) ?? 0.0;
+                      context.read<OrderByIdBloc>().add(
+                        UpdateOrderItemEvent(index: index, quantity: qty),
+                      );
 
-                // Restore cursor position
-                if (cursorPos != -1 && cursorPos <= qtyController.text.length) {
-                  Future.delayed(Duration.zero, () {
-                    qtyController.selection = TextSelection.collapsed(offset: cursorPos);
-                  });
-                }
-              }
+                      // Restore cursor position
+                      if (cursorPos != -1 &&
+                          cursorPos <= qtyController.text.length) {
+                        Future.delayed(Duration.zero, () {
+                          qtyController.selection = TextSelection.collapsed(
+                            offset: cursorPos,
+                          );
+                        });
+                      }
+                    }
                   : null,
             ),
           ),
@@ -1180,7 +1391,9 @@ class _OrderByIdViewState extends State<OrderByIdView> {
               controller: priceController,
               focusNode: isEditing ? nodes[1] : null,
               readOnly: !isEditing,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
                 SmartThousandsDecimalFormatter(),
@@ -1191,23 +1404,26 @@ class _OrderByIdViewState extends State<OrderByIdView> {
               ),
               onChanged: isEditing
                   ? (value) {
-                // Save cursor position
-                final cursorPos = priceController.selection.baseOffset;
-                _priceCursorPositions[index] = cursorPos;
+                      // Save cursor position
+                      final cursorPos = priceController.selection.baseOffset;
+                      _priceCursorPositions[index] = cursorPos;
 
-                final price = double.tryParse(value.replaceAll(',', '')) ?? 0.0;
-                context.read<OrderByIdBloc>().add(UpdateOrderItemEvent(
-                  index: index,
-                  price: price,
-                ));
+                      final price =
+                          double.tryParse(value.replaceAll(',', '')) ?? 0.0;
+                      context.read<OrderByIdBloc>().add(
+                        UpdateOrderItemEvent(index: index, price: price),
+                      );
 
-                // Restore cursor position
-                if (cursorPos != -1 && cursorPos <= priceController.text.length) {
-                  Future.delayed(Duration.zero, () {
-                    priceController.selection = TextSelection.collapsed(offset: cursorPos);
-                  });
-                }
-              }
+                      // Restore cursor position
+                      if (cursorPos != -1 &&
+                          cursorPos <= priceController.text.length) {
+                        Future.delayed(Duration.zero, () {
+                          priceController.selection = TextSelection.collapsed(
+                            offset: cursorPos,
+                          );
+                        });
+                      }
+                    }
                   : null,
             ),
           ),
@@ -1234,7 +1450,11 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                     'Profit: ${(total - (double.tryParse(record.stkPurPrice!)! * qty)).toAmount()}',
                     style: TextStyle(
                       fontSize: 11,
-                      color: (total - (double.tryParse(record.stkPurPrice!)! * qty)) >= 0
+                      color:
+                          (total -
+                                  (double.tryParse(record.stkPurPrice!)! *
+                                      qty)) >=
+                              0
                           ? Colors.green
                           : Colors.red,
                     ),
@@ -1247,38 +1467,45 @@ class _OrderByIdViewState extends State<OrderByIdView> {
           SizedBox(
             width: 180,
             child: isEditing
-                ? GenericUnderlineTextfield<StorageModel, StorageBloc, StorageState>(
-              controller: storageController,
-              hintText: locale.storage,
-              bloc: context.read<StorageBloc>(),
-              fetchAllFunction: (bloc) => bloc.add(LoadStorageEvent()),
-              searchFunction: (bloc, query) => bloc.add(LoadStorageEvent()),
-              itemBuilder: (context, stg) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(stg.stgName ?? ''),
-              ),
-              itemToString: (stg) => stg.stgName ?? '',
-              stateToLoading: (state) => state is StorageLoadingState,
-              stateToItems: (state) {
-                if (state is StorageLoadedState) return state.storage;
-                return [];
-              },
-              onSelected: (storage) {
-                context.read<OrderByIdBloc>().add(UpdateOrderItemEvent(
-                  index: index,
-                  storageId: storage.stgId,
-                ));
-              },
-              title: '',
-            )
+                ? GenericUnderlineTextfield<
+                    StorageModel,
+                    StorageBloc,
+                    StorageState
+                  >(
+                    controller: storageController,
+                    hintText: locale.storage,
+                    bloc: context.read<StorageBloc>(),
+                    fetchAllFunction: (bloc) => bloc.add(LoadStorageEvent()),
+                    searchFunction: (bloc, query) =>
+                        bloc.add(LoadStorageEvent()),
+                    itemBuilder: (context, stg) => Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(stg.stgName ?? ''),
+                    ),
+                    itemToString: (stg) => stg.stgName ?? '',
+                    stateToLoading: (state) => state is StorageLoadingState,
+                    stateToItems: (state) {
+                      if (state is StorageLoadedState) return state.storage;
+                      return [];
+                    },
+                    onSelected: (storage) {
+                      context.read<OrderByIdBloc>().add(
+                        UpdateOrderItemEvent(
+                          index: index,
+                          storageId: storage.stgId,
+                        ),
+                      );
+                    },
+                    title: '',
+                  )
                 : TextField(
-              controller: storageController,
-              readOnly: true,
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-              ),
-            ),
+                    controller: storageController,
+                    readOnly: true,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      isDense: true,
+                    ),
+                  ),
           ),
 
           // Actions
@@ -1386,12 +1613,21 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                 Divider(color: color.outline.withAlpha(77)),
                 _buildSummaryRow(
                   label: tr.currentBalance,
-                  value: double.tryParse(state.selectedAccount!.accAvailBalance ?? "0.0") ?? 0.0,
+                  value:
+                      double.tryParse(
+                        state.selectedAccount!.accAvailBalance ?? "0.0",
+                      ) ??
+                      0.0,
                   color: Colors.deepOrangeAccent,
                 ),
                 _buildSummaryRow(
                   label: tr.newBalance,
-                  value: (double.tryParse(state.selectedAccount!.accAvailBalance ?? "0.0") ?? 0.0) + state.creditAmount,
+                  value:
+                      (double.tryParse(
+                            state.selectedAccount!.accAvailBalance ?? "0.0",
+                          ) ??
+                          0.0) +
+                      state.creditAmount,
                   isBold: true,
                   color: color.primary,
                 ),
@@ -1402,7 +1638,12 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     );
   }
 
-  Widget _buildSummaryRow({required String label, required double value, bool isBold = false, Color? color}) {
+  Widget _buildSummaryRow({
+    required String label,
+    required double value,
+    bool isBold = false,
+    Color? color,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
@@ -1450,10 +1691,12 @@ class _OrderByIdViewState extends State<OrderByIdView> {
           width: 150,
           child: Text(
             title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.outline),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: Theme.of(context).colorScheme.outline,
+            ),
           ),
         ),
-        Text(value.toString())
+        Text(value.toString()),
       ],
     );
   }
@@ -1482,7 +1725,8 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       }
 
       // Price controller
-      final isPurchase = order.ordName?.toLowerCase().contains('purchase') ?? true;
+      final isPurchase =
+          order.ordName?.toLowerCase().contains('purchase') ?? true;
       final priceText = isPurchase
           ? record.stkPurPrice?.toAmount()
           : record.stkSalePrice?.toAmount();
@@ -1526,7 +1770,11 @@ class _OrderByIdViewState extends State<OrderByIdView> {
 
   void _saveChanges() {
     if (_userName == null) {
-      Utils.showOverlayMessage(context, message: 'User not authenticated', isError: true);
+      Utils.showOverlayMessage(
+        context,
+        message: 'User not authenticated',
+        isError: true,
+      );
       return;
     }
 
@@ -1534,7 +1782,11 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     final state = context.read<OrderByIdBloc>().state;
 
     if (state is! OrderByIdLoaded) {
-      Utils.showOverlayMessage(context, message: 'Order not loaded', isError: true);
+      Utils.showOverlayMessage(
+        context,
+        message: 'Order not loaded',
+        isError: true,
+      );
       return;
     }
 
@@ -1543,7 +1795,8 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     // Validate supplier/customer is selected
     if (currentState.selectedSupplier == null) {
       final tr = AppLocalizations.of(context)!;
-      final orderType = currentState.order.ordName?.toLowerCase().contains('purchase') ?? true
+      final orderType =
+          currentState.order.ordName?.toLowerCase().contains('purchase') ?? true
           ? tr.supplier
           : tr.customer;
       Utils.showOverlayMessage(
@@ -1557,7 +1810,11 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     // Validate items
     final records = currentState.order.records ?? [];
     if (records.isEmpty) {
-      Utils.showOverlayMessage(context, message: 'Please add at least one item', isError: true);
+      Utils.showOverlayMessage(
+        context,
+        message: 'Please add at least one item',
+        isError: true,
+      );
       return;
     }
 
@@ -1594,8 +1851,11 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       }
 
       // Validate price based on order type
-      final isPurchase = currentState.order.ordName?.toLowerCase().contains('purchase') ?? true;
-      final isSale = currentState.order.ordName?.toLowerCase().contains('sale') ?? false;
+      final isPurchase =
+          currentState.order.ordName?.toLowerCase().contains('purchase') ??
+          true;
+      final isSale =
+          currentState.order.ordName?.toLowerCase().contains('sale') ?? false;
 
       if (isPurchase) {
         final price = double.tryParse(record.stkPurPrice ?? "0") ?? 0;
@@ -1622,7 +1882,8 @@ class _OrderByIdViewState extends State<OrderByIdView> {
         if (purPrice <= 0) {
           Utils.showOverlayMessage(
             context,
-            message: 'Purchase price not found for item ${i + 1}. Please reselect the product.',
+            message:
+                'Purchase price not found for item ${i + 1}. Please reselect the product.',
             isError: true,
           );
           return;
@@ -1652,10 +1913,9 @@ class _OrderByIdViewState extends State<OrderByIdView> {
 
     // If all validations pass, dispatch the save event
     final completer = Completer<bool>();
-    context.read<OrderByIdBloc>().add(SaveOrderChangesEvent(
-      usrName: _userName!,
-      completer: completer,
-    ));
+    context.read<OrderByIdBloc>().add(
+      SaveOrderChangesEvent(usrName: _userName!, completer: completer),
+    );
   }
 
   void _showDeleteDialog(OrderByIdModel order) {
@@ -1669,7 +1929,10 @@ class _OrderByIdViewState extends State<OrderByIdView> {
           children: [
             const Text('Are you sure you want to delete this order?'),
             const SizedBox(height: 8),
-            Text('Order: ${order.ordName ?? 'N/A'}', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              'Order: ${order.ordName ?? 'N/A'}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             Text('Reference: ${order.ordTrnRef ?? 'N/A'}'),
             const SizedBox(height: 12),
             const Text(
@@ -1688,10 +1951,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
               Navigator.pop(context);
               _deleteOrder(order);
             },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -1700,23 +1960,33 @@ class _OrderByIdViewState extends State<OrderByIdView> {
 
   void _deleteOrder(OrderByIdModel order) {
     if (_userName == null) {
-      Utils.showOverlayMessage(context, message: 'User not authenticated', isError: true);
+      Utils.showOverlayMessage(
+        context,
+        message: 'User not authenticated',
+        isError: true,
+      );
       return;
     }
 
-    context.read<OrderByIdBloc>().add(DeleteOrderEvent(
-      orderId: order.ordId!,
-      ref: order.ordTrnRef ?? '',
-      orderName: order.ordName ?? '',
-      usrName: _userName!,
-    ));
+    context.read<OrderByIdBloc>().add(
+      DeleteOrderEvent(
+        orderId: order.ordId!,
+        ref: order.ordTrnRef ?? '',
+        orderName: order.ordName ?? '',
+        usrName: _userName!,
+      ),
+    );
   }
 
   void _printInvoice() {
     final state = context.read<OrderByIdBloc>().state;
 
     if (state is! OrderByIdLoaded) {
-      Utils.showOverlayMessage(context, message: 'Cannot print: No order loaded', isError: true);
+      Utils.showOverlayMessage(
+        context,
+        message: 'Cannot print: No order loaded',
+        isError: true,
+      );
       return;
     }
 
@@ -1726,7 +1996,11 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     // Get company info from CompanyProfileBloc
     final companyState = context.read<CompanyProfileBloc>().state;
     if (companyState is! CompanyProfileLoadedState) {
-      Utils.showOverlayMessage(context, message: 'Company information not available', isError: true);
+      Utils.showOverlayMessage(
+        context,
+        message: 'Company information not available',
+        isError: true,
+      );
       return;
     }
 
@@ -1735,7 +2009,9 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       comAddress: companyState.company.addName ?? "",
       compPhone: companyState.company.comPhone ?? "",
       comEmail: companyState.company.comEmail ?? "",
-      startDate: order.ordEntryDate?.toFormattedDate() ?? DateTime.now().toFormattedDate(),
+      startDate:
+          order.ordEntryDate?.toFormattedDate() ??
+          DateTime.now().toFormattedDate(),
       endDate: DateTime.now().toFormattedDate(),
       statementDate: DateTime.now().toFullDateTime,
     );
@@ -1755,74 +2031,77 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       builder: (_) => PrintPreviewDialog<OrderByIdModel>(
         data: order,
         company: company,
-        buildPreview: ({
-          required data,
-          required language,
-          required orientation,
-          required pageFormat,
-        }) {
-          return OrderPrintService().printPreview(
-            order: order,
-            company: company,
-            language: language,
-            orientation: orientation,
-            pageFormat: pageFormat,
-            storages: current.storages,
-            productNames: current.productNames,
-            storageNames: current.storageNames,
-            cashPayment: current.cashPayment,
-            creditAmount: current.creditAmount,
-            selectedAccount: current.selectedAccount,
-            selectedSupplier: current.selectedSupplier,
-          );
-        },
-        onPrint: ({
-          required data,
-          required language,
-          required orientation,
-          required pageFormat,
-          required selectedPrinter,
-          required copies,
-          required pages,
-        }) {
-          return OrderPrintService().printDocument(
-            order: order,
-            company: company,
-            language: language,
-            orientation: orientation,
-            pageFormat: pageFormat,
-            selectedPrinter: selectedPrinter,
-            copies: copies,
-            storages: current.storages,
-            productNames: current.productNames,
-            storageNames: current.storageNames,
-            cashPayment: current.cashPayment,
-            creditAmount: current.creditAmount,
-            selectedAccount: current.selectedAccount,
-            selectedSupplier: current.selectedSupplier,
-          );
-        },
-        onSave: ({
-          required data,
-          required language,
-          required orientation,
-          required pageFormat,
-        }) {
-          return OrderPrintService().createDocument(
-            order: order,
-            company: company,
-            language: language,
-            orientation: orientation,
-            pageFormat: pageFormat,
-            storages: current.storages,
-            productNames: current.productNames,
-            storageNames: current.storageNames,
-            cashPayment: current.cashPayment,
-            creditAmount: current.creditAmount,
-            selectedAccount: current.selectedAccount,
-            selectedSupplier: current.selectedSupplier,
-          );
-        },
+        buildPreview:
+            ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+            }) {
+              return OrderPrintService().printPreview(
+                order: order,
+                company: company,
+                language: language,
+                orientation: orientation,
+                pageFormat: pageFormat,
+                storages: current.storages,
+                productNames: current.productNames,
+                storageNames: current.storageNames,
+                cashPayment: current.cashPayment,
+                creditAmount: current.creditAmount,
+                selectedAccount: current.selectedAccount,
+                selectedSupplier: current.selectedSupplier,
+              );
+            },
+        onPrint:
+            ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+              required selectedPrinter,
+              required copies,
+              required pages,
+            }) {
+              return OrderPrintService().printDocument(
+                order: order,
+                company: company,
+                language: language,
+                orientation: orientation,
+                pageFormat: pageFormat,
+                selectedPrinter: selectedPrinter,
+                copies: copies,
+                storages: current.storages,
+                productNames: current.productNames,
+                storageNames: current.storageNames,
+                cashPayment: current.cashPayment,
+                creditAmount: current.creditAmount,
+                selectedAccount: current.selectedAccount,
+                selectedSupplier: current.selectedSupplier,
+              );
+            },
+        onSave:
+            ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+            }) {
+              return OrderPrintService().createDocument(
+                order: order,
+                company: company,
+                language: language,
+                orientation: orientation,
+                pageFormat: pageFormat,
+                storages: current.storages,
+                productNames: current.productNames,
+                storageNames: current.storageNames,
+                cashPayment: current.cashPayment,
+                creditAmount: current.creditAmount,
+                selectedAccount: current.selectedAccount,
+                selectedSupplier: current.selectedSupplier,
+              );
+            },
       ),
     );
   }

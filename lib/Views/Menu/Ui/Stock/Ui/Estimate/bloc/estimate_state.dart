@@ -13,13 +13,12 @@ final class EstimateLoadingState extends EstimateState {
   List<Object> get props => [];
 }
 
-final class OrdersErrorState extends EstimateState {
+final class EstimateErrorState extends EstimateState {
   final String message;
-  const OrdersErrorState(this.message);
+  const EstimateErrorState(this.message);
   @override
   List<Object> get props => [message];
 }
-
 
 final class EstimateLoadedState extends EstimateState {
   final List<EstimateModel> order;
