@@ -1324,7 +1324,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       usrName: _userName!,
     ));
   }
-
   void _printInvoice() {
     final state = context.read<OrderByIdBloc>().state;
 

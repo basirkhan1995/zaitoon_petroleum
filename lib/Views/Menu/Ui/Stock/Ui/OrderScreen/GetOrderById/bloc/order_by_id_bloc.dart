@@ -337,10 +337,7 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     emit(current.copyWith(order: updatedOrder));
   }
 
-  void _onRemoveItem(
-      RemoveOrderItemEvent event,
-      Emitter<OrderByIdState> emit,
-      ) {
+  void _onRemoveItem(RemoveOrderItemEvent event, Emitter<OrderByIdState> emit,) {
     if (state is! OrderByIdLoaded) return;
 
     final current = state as OrderByIdLoaded;
