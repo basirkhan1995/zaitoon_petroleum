@@ -30,10 +30,16 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ResponsiveLayout(
-      mobile: _Mobile(),
-      tablet: _Tablet(),
-      desktop: _Desktop(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => MenuBloc()),
+        // Add other providers if needed
+      ],
+      child: const ResponsiveLayout(
+        mobile: _Mobile(),
+        tablet: _Tablet(),
+        desktop: _Desktop(),
+      ),
     );
   }
 }
@@ -47,11 +53,20 @@ class _Desktop extends StatefulWidget {
   State<_Desktop> createState() => _DesktopState();
 }
 
-class _DesktopState extends State<_Desktop> {
+class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
+  Uint8List? _cachedLogo;
+  String? _cachedComName;
+
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     super.initState();
-
+    // Pre-fetch company profile when initializing
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CompanyProfileBloc>().add(LoadCompanyProfileEvent());
+    });
   }
 
   void _logout() async {
@@ -62,12 +77,17 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
-    final currentTab = context.watch<MenuBloc>().state.tabs;
-    final authState = context.watch<AuthBloc>().state;
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+
+    // Use context.select here, at the top of build method
+    final currentTab = context.select((MenuBloc bloc) => bloc.state.tabs);
+    final authState = context.select((AuthBloc bloc) => bloc.state);
 
     if (authState is! AuthenticatedState) return const SizedBox();
 
     final String adminName = authState.loginData.usrFullName ?? "";
+    final String usrPhoto = authState.loginData.usrPhoto ??"";
+    final String usrRole = authState.loginData.usrRole ?? "";
 
     final menuItems = [
       MenuDefinition(
@@ -134,35 +154,49 @@ class _DesktopState extends State<_Desktop> {
           }
         },
         child: GenericMenuWithScreen<MenuName>(
+          key: const Key('main_menu'), // Add a key for better widget identity
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
           margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
           selectedValue: currentTab,
-          onChanged: (val) =>
-              context.read<MenuBloc>().add(MenuOnChangedEvent(val)),
+          onChanged: (val) {
+            // Only update if the tab is different
+            if (currentTab != val) {
+              context.read<MenuBloc>().add(MenuOnChangedEvent(val));
+            }
+          },
           items: menuItems,
-          selectedColor: Theme.of(
-            context,
-          ).colorScheme.primary.withValues(alpha: .09),
-          selectedTextColor: Theme.of(
-            context,
-          ).colorScheme.primary.withValues(alpha: .9),
+          selectedColor: Theme.of(context).colorScheme.primary.withAlpha(23),
+          selectedTextColor: Theme.of(context).colorScheme.primary.withAlpha(230),
           unselectedTextColor: Theme.of(context).colorScheme.secondary,
           menuHeaderBuilder: (isExpanded) {
-            return BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
-              builder: (context, state) {
-                String comName = "";
-                Uint8List logo = Uint8List(0);
-
+            return BlocConsumer<CompanyProfileBloc, CompanyProfileState>(
+              listener: (context, state) {
+                // Cache the logo and company name when loaded
                 if (state is CompanyProfileLoadedState) {
-                  comName = state.company.comName ?? "";
+                  if (_cachedComName != state.company.comName) {
+                    _cachedComName = state.company.comName;
+                  }
 
                   final base64Logo = state.company.comLogo;
                   if (base64Logo != null && base64Logo.isNotEmpty) {
                     try {
-                      logo = base64Decode(base64Logo);
-                    } catch (_) {}
+                      final newLogo = base64Decode(base64Logo);
+                      // Only update if different
+                      if (!_areBytesEqual(_cachedLogo, newLogo)) {
+                        _cachedLogo = newLogo;
+                      }
+                    } catch (_) {
+                      _cachedLogo = null;
+                    }
+                  } else {
+                    _cachedLogo = null;
                   }
                 }
+              },
+              builder: (context, state) {
+                // Use cached values to prevent unnecessary rebuilds
+                final logo = _cachedLogo;
+                final comName = _cachedComName ?? "";
 
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -177,12 +211,20 @@ class _DesktopState extends State<_Desktop> {
                           color: Theme.of(context)
                               .colorScheme
                               .primary
-                              .withValues(alpha: .09),
+                              .withAlpha(23),
                         ),
                       ),
-                      child: logo.isEmpty
-                          ? Image.asset("assets/images/zaitoonLogo.png")
-                          : Image.memory(logo),
+                      child: logo == null || logo.isEmpty
+                          ? Image.asset(
+                        "assets/images/zaitoonLogo.png",
+                        cacheHeight: 120,
+                        cacheWidth: 120,
+                      )
+                          : Image.memory(
+                        logo,
+                        cacheHeight: 120,
+                        cacheWidth: 120,
+                      ),
                     ),
 
                     if (isExpanded)
@@ -221,256 +263,290 @@ class _DesktopState extends State<_Desktop> {
               },
             );
           },
+          menuFooterBuilder: (isExpanded) {
+            // Pass the pre-fetched values instead of using context.select here
+            return _MenuFooter(
+              isExpanded: isExpanded,
+              adminName: adminName,
+              usrPhoto: usrPhoto,
+              usrRole: usrRole,
+              onProfileTap: () => _showProfileDialog(context),
+            );
+          },
+        ),
+      ),
+    );
+  }
 
-          menuFooterBuilder: (isExpanded) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4),
-            child: Column(
-              mainAxisAlignment: isExpanded
-                  ? MainAxisAlignment.start
-                  : MainAxisAlignment.center,
-              crossAxisAlignment: isExpanded
-                  ? CrossAxisAlignment.start
-                  : CrossAxisAlignment.center,
+  bool _areBytesEqual(Uint8List? a, Uint8List? b) {
+    if (a == null && b == null) return true;
+    if (a == null || b == null) return false;
+    if (a.length != b.length) return false;
+    for (int i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
+
+  void _showProfileDialog(BuildContext context) {
+    final authState = context.read<AuthBloc>().state as AuthenticatedState;
+    final isEnglish = context.read<LocalizationBloc>().state.languageCode == "en";
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          alignment: isEnglish
+              ? Alignment.bottomLeft
+              : Alignment.bottomRight,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Container(
+            width: 320,
+            padding: EdgeInsets.zero,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withAlpha(25),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: _ProfileDialogContent(
+              authState: authState,
+              onLogout: _logout,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// Separate widget for menu footer to avoid context.select issues
+class _MenuFooter extends StatelessWidget {
+  final bool isExpanded;
+  final String adminName;
+  final String usrPhoto;
+  final String usrRole;
+  final VoidCallback onProfileTap;
+
+  const _MenuFooter({
+    required this.isExpanded,
+    required this.adminName,
+    required this.usrPhoto,
+    required this.usrRole,
+    required this.onProfileTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4),
+      child: Column(
+        mainAxisAlignment: isExpanded
+            ? MainAxisAlignment.start
+            : MainAxisAlignment.center,
+        crossAxisAlignment: isExpanded
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.center,
+        children: [
+          InkWell(
+            onTap: onProfileTap,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                InkWell(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return Dialog(
-                          alignment:
-                              context.read<LocalizationBloc>().state.languageCode == "en"
-                              ? AlignmentGeometry.bottomLeft
-                              : AlignmentGeometry.bottomRight,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          elevation: 0,
-                          backgroundColor: Colors.transparent,
-                          child: Container(
-                            width: 320,
-                            padding: EdgeInsets.zero,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surface,
-                              borderRadius: BorderRadius.circular(8.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: .1),
-                                  blurRadius: 20,
-                                  spreadRadius: 2,
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                // Header with gradient background
-                                SizedBox(height: 15),
-                                Column(
-                                  children: [
-                                    // Profile image with border
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.primary,
-                                          width: 1.2,
-                                        ),
-                                      ),
-                                      child: ImageHelper.stakeholderProfile(
-                                        imageName: authState.loginData.usrPhoto,
-                                        size: 80,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    // User name
-                                    Text(
-                                      authState.loginData.usrFullName ?? "No Name",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurface,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    Text(
-                                      authState.loginData.usrName ?? "No Name",
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurface,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ),
+                ImageHelper.stakeholderProfile(
+                  imageName: usrPhoto,
+                  border: Border.all(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withAlpha(77),
+                  ),
+                  size: 40,
+                ),
 
-                                Divider(indent: 10, endIndent: 10),
-                                // User details
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 10,
-                                    horizontal: 20,
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // Email
-                                      _buildDetailRow(
-                                        context,
-                                        icon: Icons.email_outlined,
-                                        text:
-                                            authState.loginData.usrEmail ??
-                                            "No Email",
-                                      ),
-                                      const SizedBox(height: 12),
+                if (!isExpanded) const SizedBox.shrink(),
 
-                                      // Role
-                                      _buildDetailRow(
-                                        context,
-                                        icon: Icons.work_outline,
-                                        text:
-                                            authState.loginData.usrRole ??
-                                            "No Role",
-                                      ),
-                                      const SizedBox(height: 12),
+                if (isExpanded) const SizedBox(width: 5),
 
-                                      // Branch
-                                      _buildDetailRow(
-                                        context,
-                                        icon: Icons.business_outlined,
-                                        text:
-                                            authState.loginData.brcName ??
-                                            "No Branch",
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                // Logout button
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.of(context).pop(); // Close dialog
-                                    _logout();
-                                  },
-                                  borderRadius: const BorderRadius.only(
-                                    bottomLeft: Radius.circular(8.0),
-                                    bottomRight: Radius.circular(8.0),
-                                  ),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 10,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.only(
-                                        bottomLeft: Radius.circular(8.0),
-                                        bottomRight: Radius.circular(8.0),
-                                      ),
-                                      color: Theme.of(context).colorScheme.error
-                                          .withValues(alpha: .05),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.logout_rounded,
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.error,
-                                          size: 20,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          AppLocalizations.of(context)!.logout,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.error,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      ImageHelper.stakeholderProfile(
-                        imageName: authState.loginData.usrPhoto,
-                        border: Border.all(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: .3),
+                if (isExpanded)
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          adminName,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        size: 40,
-                      ),
-
-                      if (!isExpanded) const SizedBox.shrink(),
-
-                      if (isExpanded) const SizedBox(width: 5),
-
-                      if (isExpanded)
-                        Expanded(
-                          // or Flexible
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                adminName,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(
-                                authState.loginData.usrRole ?? "",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 11),
-                              ),
-                            ],
-                          ),
+                        Text(
+                          usrRole,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 11),
                         ),
-                    ],
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Separate widget for dialog content to optimize rebuilds
+class _ProfileDialogContent extends StatelessWidget {
+  final AuthenticatedState authState;
+  final VoidCallback onLogout;
+
+  const _ProfileDialogContent({
+    required this.authState,
+    required this.onLogout,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(height: 15),
+        Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 1.2,
+                ),
+              ),
+              child: ImageHelper.stakeholderProfile(
+                imageName: authState.loginData.usrPhoto,
+                size: 80,
+              ),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              authState.loginData.usrFullName ?? "No Name",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              authState.loginData.usrName ?? "No Name",
+              style: TextStyle(
+                fontSize: 15,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+
+        const Divider(indent: 10, endIndent: 10),
+
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _DetailRow(
+                icon: Icons.email_outlined,
+                text: authState.loginData.usrEmail ?? "No Email",
+              ),
+              const SizedBox(height: 12),
+              _DetailRow(
+                icon: Icons.work_outline,
+                text: authState.loginData.usrRole ?? "No Role",
+              ),
+              const SizedBox(height: 12),
+              _DetailRow(
+                icon: Icons.business_outlined,
+                text: authState.loginData.brcName ?? "No Branch",
+              ),
+            ],
+          ),
+        ),
+
+        InkWell(
+          onTap: () {
+            Navigator.of(context).pop();
+            onLogout();
+          },
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(8.0),
+            bottomRight: Radius.circular(8.0),
+          ),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(8.0),
+                bottomRight: Radius.circular(8.0),
+              ),
+              color: Theme.of(context).colorScheme.error.withAlpha(13),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.logout_rounded,
+                  color: Theme.of(context).colorScheme.error,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  AppLocalizations.of(context)!.logout,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).colorScheme.error,
                   ),
                 ),
               ],
             ),
           ),
         ),
-      ),
+      ],
     );
   }
+}
 
-  // Helper widget for detail rows
-  Widget _buildDetailRow(
-    BuildContext context, {
-    required IconData icon,
-    required String text,
-  }) {
+class _DetailRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const _DetailRow({
+    required this.icon,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(
           icon,
           size: 18,
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
+          color: Theme.of(context).colorScheme.onSurface.withAlpha(153),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -478,9 +554,7 @@ class _DesktopState extends State<_Desktop> {
             text,
             style: TextStyle(
               fontSize: 14,
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: .8),
+              color: Theme.of(context).colorScheme.onSurface.withAlpha(204),
             ),
             overflow: TextOverflow.ellipsis,
           ),

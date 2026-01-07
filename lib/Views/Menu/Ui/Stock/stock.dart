@@ -10,7 +10,6 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/estimate.dart'
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/new_purchase.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewSale/new_sale.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Orders/Ui/orders.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Shift/shift.dart';
 import '../../../../Features/Generic/tab_bar.dart';
 import '../../../../Features/Widgets/outline_button.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
@@ -62,11 +61,6 @@ class StockView extends StatelessWidget {
                       value: StockTabsName.estimates,
                       label: locale.estimateTitle,
                       screen: const EstimateView(),
-                    ),
-                    ZTabItem(
-                      value: StockTabsName.shift,
-                      label: locale.shift,
-                      screen: const TodayShiftView(),
                     ),
                   ];
 
