@@ -21,6 +21,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/mo
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/TxnTypes/model/txn_types_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/model/estimate_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewSale/model/sale_invoice_items.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Orders/model/orders_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/model/driver_model.dart';
@@ -1828,8 +1829,81 @@ class Repositories {
     }
   }
 
-  /// Purchase Invoice .............................................................
 
+  ///Estimate ..................................................................
+  Future<List<EstimateModel>> getAllEstimates() async {
+    try {
+      final response = await api.get(
+          endpoint: "/inventory/estimate.php",
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => EstimateModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+  Future<List<EstimateModel>> getEstimateById({int? orderId}) async {
+    try {
+      final queryParams = {'ordID': orderId};
+      final response = await api.get(
+          endpoint: "/inventory/estimate.php",
+          queryParams: queryParams
+      );
+
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      if (response.data == null) {
+        return [];
+      }
+
+      // Your API returns a single order with records included
+      if (response.data is Map<String, dynamic>) {
+        final orderData = response.data as Map<String, dynamic>;
+        if (orderData.containsKey('ordID')) {
+          final order = EstimateModel.fromMap(orderData);
+          return [order];
+        }
+      }
+
+      // If it's a list (though your API doesn't seem to return this)
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>()
+            .map((json) => EstimateModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+
+  /// Purchase Invoice...........................................................................
   Future<Map<String, dynamic>> addPurchaseInvoice({
     required String usrName,
     required int perID,

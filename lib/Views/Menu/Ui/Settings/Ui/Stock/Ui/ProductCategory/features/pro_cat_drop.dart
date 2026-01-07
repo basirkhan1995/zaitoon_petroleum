@@ -39,7 +39,7 @@ class _ProductCategoryDropdownState extends State<ProductCategoryDropdown> {
   void _setInitialSelection() {
     if (_categories.isEmpty) return;
 
-    // 1️⃣ EDIT MODE → ID → Model
+    // 1️⃣ EDIT MODE → ID → model
     if (widget.selectedCategoryId != null) {
       _selectedCategory = _categories.firstWhere(
             (c) => c.pcId == widget.selectedCategoryId,

@@ -929,7 +929,7 @@ abstract class PrintServices {
         'ar': 'د موټر آی ډی',
       },
       'model': {
-        'en': 'Model',
+        'en': 'model',
         'fa': 'مدل',
         'ar': 'مودل',
       },
