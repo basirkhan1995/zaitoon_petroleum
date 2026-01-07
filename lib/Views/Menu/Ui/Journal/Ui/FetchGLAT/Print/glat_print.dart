@@ -401,7 +401,8 @@ import 'package:flutter/services.dart';
      }
    }
 
-   Future<pw.Widget> header({required ReportModel report}) async {
+   @override
+  Future<pw.Widget> header({required ReportModel report}) async {
      final image = (report.comLogo != null && report.comLogo is Uint8List && report.comLogo!.isNotEmpty)
          ? pw.MemoryImage(report.comLogo!)
          : null;
@@ -438,7 +439,8 @@ import 'package:flutter/services.dart';
        ],
      );
    }
-   pw.Widget footer({required ReportModel report, required pw.Context context, required String language, required pw.MemoryImage logoImage}) {
+   @override
+  pw.Widget footer({required ReportModel report, required pw.Context context, required String language, required pw.MemoryImage logoImage}) {
      return pw.Column(
        children: [
          pw.Row(

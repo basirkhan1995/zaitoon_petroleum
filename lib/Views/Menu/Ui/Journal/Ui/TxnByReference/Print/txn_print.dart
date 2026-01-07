@@ -131,6 +131,7 @@ class TransactionReferencePrintSettings extends PrintServices{
     );
   }
 
+  @override
   Future<pw.Widget> header({required ReportModel report}) async {
     final image = (report.comLogo != null && report.comLogo is Uint8List && report.comLogo!.isNotEmpty)
         ? pw.MemoryImage(report.comLogo!)
@@ -168,6 +169,7 @@ class TransactionReferencePrintSettings extends PrintServices{
       ],
     );
   }
+  @override
   pw.Widget footer({required ReportModel report, required pw.Context context, required String language, required pw.MemoryImage logoImage}) {
     return pw.Column(
       children: [

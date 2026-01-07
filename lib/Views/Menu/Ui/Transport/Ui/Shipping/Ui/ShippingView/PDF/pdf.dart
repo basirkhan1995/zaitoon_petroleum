@@ -143,6 +143,7 @@ class AllShippingPdfServices extends PrintServices {
     return document;
   }
 
+  @override
   Future<pw.Widget> header({required ReportModel report}) async {
     final image = (report.comLogo != null && report.comLogo is Uint8List && report.comLogo!.isNotEmpty)
         ? pw.MemoryImage(report.comLogo!)
@@ -180,6 +181,7 @@ class AllShippingPdfServices extends PrintServices {
     );
   }
 
+  @override
   pw.Widget footer({
     required ReportModel report,
     required pw.Context context,
@@ -246,7 +248,7 @@ class AllShippingPdfServices extends PrintServices {
 
     double totalRevenue = 0.0;
 
-    double totalLoadingSize = 0.0;
+
     double totalUnloadingSize = 0.0;
 
     String unit = "";
@@ -271,15 +273,13 @@ class AllShippingPdfServices extends PrintServices {
 
       // Parse string values to double before adding
       totalRevenue += parseStringToDouble(shp.total);
-      totalLoadingSize += parseStringToDouble(shp.shpLoadSize);
+
       totalUnloadingSize += parseStringToDouble(shp.shpUnloadSize);
 
       if (unit.isEmpty && shp.shpUnit != null && shp.shpUnit!.isNotEmpty) {
         unit = shp.shpUnit!;
       }
     }
-
-    double avgLoadingSize = totalShipments > 0 ? totalLoadingSize / totalShipments : 0.0;
     double avgUnloadingSize = totalShipments > 0 ? totalUnloadingSize / totalShipments : 0.0;
 
     return pw.Container(

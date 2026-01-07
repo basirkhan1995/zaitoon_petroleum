@@ -9,104 +9,45 @@ import 'package:zaitoon_petroleum/Features/Other/amount_to_word.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/PrintSettings/print_services.dart';
 import 'package:zaitoon_petroleum/Features/PrintSettings/report_model.dart';
+import '../../../../Settings/Ui/Company/Storage/model/storage_model.dart';
 import '../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
+import '../../../../Stakeholders/Ui/Individuals/individual_model.dart';
+import '../GetOrderById/model/ord_by_Id_model.dart';
 
-// Invoice item interface for both sale and purchase
-abstract class InvoiceItem {
-  String get productName;
-  double get quantity;
-  double get unitPrice;
-  double get total;
-  String get storageName;
-}
-
-// Sale invoice item implementation
-class SaleInvoiceItemForPrint implements InvoiceItem {
-  @override
-  final String productName;
-  @override
-  final double quantity;
-  @override
-  final double unitPrice; // sale price
-  @override
-  final double total;
-  @override
-  final String storageName;
-  final double? purchasePrice;
-  final double? profit;
-
-  SaleInvoiceItemForPrint({
-    required this.productName,
-    required this.quantity,
-    required this.unitPrice,
-    required this.total,
-    required this.storageName,
-    this.purchasePrice,
-    this.profit,
-  });
-}
-
-// Purchase invoice item implementation
-class PurchaseInvoiceItemForPrint implements InvoiceItem {
-  @override
-  final String productName;
-  @override
-  final double quantity;
-  @override
-  final double unitPrice; // purchase price
-  @override
-  final double total;
-  @override
-  final String storageName;
-
-  PurchaseInvoiceItemForPrint({
-    required this.productName,
-    required this.quantity,
-    required this.unitPrice,
-    required this.total,
-    required this.storageName,
-  });
-}
-
-class InvoicePrintService extends PrintServices {
-  Future<void> createInvoiceDocument({
-    required String invoiceType, // "Sale" or "Purchase"
-    required int invoiceNumber,
-    required String? reference,
-    required DateTime? invoiceDate,
-    required String customerSupplierName,
-    required List<InvoiceItem> items,
-    required double grandTotal,
-    required double cashPayment,
-    required double creditAmount,
-    required AccountsModel? account,
+class OrderPrintService extends PrintServices {
+  Future<void> createDocument({
+    required OrderByIdModel order,
     required String language,
     required pw.PageOrientation orientation,
     required ReportModel company,
     required pw.PdfPageFormat pageFormat,
-    String? currency,
+    required List<StorageModel> storages,
+    required Map<int, String> productNames,
+    required Map<int, String> storageNames,
+    required double cashPayment,
+    required double creditAmount,
+    required AccountsModel? selectedAccount,
+    required IndividualsModel? selectedSupplier,
   }) async {
     try {
-      final document = await generateInvoiceDocument(
-        invoiceType: invoiceType,
-        invoiceNumber: invoiceNumber,
-        reference: reference,
-        invoiceDate: invoiceDate,
-        customerSupplierName: customerSupplierName,
-        items: items,
-        grandTotal: grandTotal,
-        cashPayment: cashPayment,
-        creditAmount: creditAmount,
-        account: account,
+      final document = await generateOrderDocument(
+        order: order,
+        company: company,
         language: language,
         orientation: orientation,
-        company: company,
         pageFormat: pageFormat,
-        currency: currency,
+        storages: storages,
+        productNames: productNames,
+        storageNames: storageNames,
+        cashPayment: cashPayment,
+        creditAmount: creditAmount,
+        selectedAccount: selectedAccount,
+        selectedSupplier: selectedSupplier,
       );
 
+      // Save the document
       await saveDocument(
-        suggestedName: "${invoiceType}_$invoiceNumber.pdf",
+        suggestedName: "${order.ordName}_${order.ordId}.pdf",
         pdf: document,
       );
     } catch (e) {
@@ -114,44 +55,39 @@ class InvoicePrintService extends PrintServices {
     }
   }
 
-  Future<void> printInvoiceDocument({
-    required String invoiceType,
-    required int invoiceNumber,
-    required String? reference,
-    required DateTime? invoiceDate,
-    required String customerSupplierName,
-    required List<InvoiceItem> items,
-    required double grandTotal,
-    required double cashPayment,
-    required double creditAmount,
-    required AccountsModel? account,
+  Future<void> printDocument({
+    required OrderByIdModel order,
     required String language,
     required pw.PageOrientation orientation,
     required ReportModel company,
     required Printer selectedPrinter,
     required pw.PdfPageFormat pageFormat,
     required int copies,
-    String? currency,
+    required List<StorageModel> storages,
+    required Map<int, String> productNames,
+    required Map<int, String> storageNames,
+    required double cashPayment,
+    required double creditAmount,
+    required AccountsModel? selectedAccount,
+    required IndividualsModel? selectedSupplier,
   }) async {
     try {
-      final document = await generateInvoiceDocument(
-        invoiceType: invoiceType,
-        invoiceNumber: invoiceNumber,
-        reference: reference,
-        invoiceDate: invoiceDate,
-        customerSupplierName: customerSupplierName,
-        items: items,
-        grandTotal: grandTotal,
-        cashPayment: cashPayment,
-        creditAmount: creditAmount,
-        account: account,
+      final document = await generateOrderDocument(
+        order: order,
+        company: company,
         language: language,
         orientation: orientation,
-        company: company,
         pageFormat: pageFormat,
-        currency: currency,
+        storages: storages,
+        productNames: productNames,
+        storageNames: storageNames,
+        cashPayment: cashPayment,
+        creditAmount: creditAmount,
+        selectedAccount: selectedAccount,
+        selectedSupplier: selectedSupplier,
       );
 
+      // Use copies parameter for multiple print jobs
       for (int i = 0; i < copies; i++) {
         await Printing.directPrintPdf(
           printer: selectedPrinter,
@@ -160,6 +96,7 @@ class InvoicePrintService extends PrintServices {
           },
         );
 
+        // Optional: Add a small delay between copies if needed
         if (i < copies - 1) {
           await Future.delayed(Duration(milliseconds: 100));
         }
@@ -169,67 +106,63 @@ class InvoicePrintService extends PrintServices {
     }
   }
 
-  Future<pw.Document> printInvoicePreview({
-    required String invoiceType,
-    required int invoiceNumber,
-    required String? reference,
-    required DateTime? invoiceDate,
-    required String customerSupplierName,
-    required List<InvoiceItem> items,
-    required double grandTotal,
+  // Real Time document show for preview
+  Future<pw.Document> printPreview({
+    required OrderByIdModel order,
+    required String language,
+    required ReportModel company,
+    required pw.PageOrientation orientation,
+    required pw.PdfPageFormat pageFormat,
+    required List<StorageModel> storages,
+    required Map<int, String> productNames,
+    required Map<int, String> storageNames,
     required double cashPayment,
     required double creditAmount,
-    required AccountsModel? account,
-    required String language,
-    required pw.PageOrientation orientation,
-    required ReportModel company,
-    required pw.PdfPageFormat pageFormat,
-    String? currency,
+    required AccountsModel? selectedAccount,
+    required IndividualsModel? selectedSupplier,
   }) async {
-    return generateInvoiceDocument(
-      invoiceType: invoiceType,
-      invoiceNumber: invoiceNumber,
-      reference: reference,
-      invoiceDate: invoiceDate,
-      customerSupplierName: customerSupplierName,
-      items: items,
-      grandTotal: grandTotal,
-      cashPayment: cashPayment,
-      creditAmount: creditAmount,
-      account: account,
+    return generateOrderDocument(
+      order: order,
+      company: company,
       language: language,
       orientation: orientation,
-      company: company,
       pageFormat: pageFormat,
-      currency: currency,
+      storages: storages,
+      productNames: productNames,
+      storageNames: storageNames,
+      cashPayment: cashPayment,
+      creditAmount: creditAmount,
+      selectedAccount: selectedAccount,
+      selectedSupplier: selectedSupplier,
     );
   }
 
-  Future<pw.Document> generateInvoiceDocument({
-    required String invoiceType,
-    required int invoiceNumber,
-    required String? reference,
-    required DateTime? invoiceDate,
-    required String customerSupplierName,
-    required List<InvoiceItem> items,
-    required double grandTotal,
+  Future<pw.Document> generateOrderDocument({
+    required OrderByIdModel order,
+    required String language,
+    required ReportModel company,
+    required pw.PageOrientation orientation,
+    required pw.PdfPageFormat pageFormat,
+    required List<StorageModel> storages,
+    required Map<int, String> productNames,
+    required Map<int, String> storageNames,
     required double cashPayment,
     required double creditAmount,
-    required AccountsModel? account,
-    required String language,
-    required pw.PageOrientation orientation,
-    required ReportModel company,
-    required pw.PdfPageFormat pageFormat,
-    String? currency,
+    required AccountsModel? selectedAccount,
+    required IndividualsModel? selectedSupplier,
   }) async {
     final document = pw.Document();
     final prebuiltHeader = await header(report: company);
 
+    // Load your image asset
     final ByteData imageData = await rootBundle.load('assets/images/zaitoonLogo.png');
     final Uint8List imageBytes = imageData.buffer.asUint8List();
     final pw.MemoryImage logoImage = pw.MemoryImage(imageBytes);
 
-    final isSale = invoiceType.toLowerCase().contains('sale');
+    // Calculate totals
+    final isPurchase = order.ordName?.toLowerCase().contains('purchase') ?? true;
+    final grandTotal = _calculateOrderTotal(order, isPurchase);
+    final subTotal = grandTotal; // If no tax/discount, subTotal = grandTotal
 
     document.addPage(
       pw.MultiPage(
@@ -240,39 +173,41 @@ class InvoicePrintService extends PrintServices {
         orientation: orientation,
         build: (context) => [
           horizontalDivider(),
-          _invoiceHeaderWidget(
+          invoiceHeaderWidget(
             language: language,
-            invoiceType: invoiceType,
-            invoiceNumber: invoiceNumber,
-            invoiceDate: invoiceDate,
-            reference: reference,
+            order: order,
+            company: company,
+            isPurchase: isPurchase,
           ),
-          _customerSupplierInfo(
+
+          customerSupplierInfo(
+            order: order,
             language: language,
-            customerSupplierName: customerSupplierName,
-            isSale: isSale,
+            isPurchase: isPurchase,
+            selectedSupplier: selectedSupplier,
           ),
           pw.SizedBox(height: 10),
-          _itemsTable(
-            items: items,
+          itemsTable(
+            order: order,
             language: language,
-            isSale: isSale,
+            productNames: productNames,
+            storageNames: storageNames,
+            isPurchase: isPurchase,
           ),
           pw.SizedBox(height: 15),
-          _paymentSummary(
+          paymentSummary(
+            order: order,
             language: language,
             grandTotal: grandTotal,
+            subTotal: subTotal,
             cashPayment: cashPayment,
             creditAmount: creditAmount,
-            account: account,
-            currency: currency,
+            selectedAccount: selectedAccount,
           ),
           pw.SizedBox(height: 20),
-          _profitSummaryIfSale(items: items, language: language, isSale: isSale),
+          termsAndConditions(language: language),
           pw.SizedBox(height: 20),
-          _termsAndConditions(language: language),
-          pw.SizedBox(height: 20),
-          _signatureSection(language: language),
+          signatureSection(language: language),
         ],
         header: (context) => prebuiltHeader,
         footer: (context) => footer(
@@ -286,16 +221,93 @@ class InvoicePrintService extends PrintServices {
     return document;
   }
 
-  pw.Widget _invoiceHeaderWidget({
+  @override
+  Future<pw.Widget> header({required ReportModel report}) async {
+    final image = (report.comLogo != null && report.comLogo is Uint8List && report.comLogo!.isNotEmpty)
+        ? pw.MemoryImage(report.comLogo!)
+        : null;
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            // Company info (left side)
+            pw.Expanded(
+              flex: 3,
+              child: pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  buildTextWidget(text: report.comName ?? "", fontSize: 25, tightBounds: true),
+                  pw.SizedBox(height: 3),
+                  buildTextWidget(text: report.comAddress ?? "", fontSize: 10),
+                  buildTextWidget(text: "${report.compPhone ?? ""} | ${report.comEmail ?? ""}", fontSize: 9),
+                ],
+              ),
+            ),
+            // Logo (right side)
+            if (image != null)
+              pw.Container(
+                width: 80,
+                height: 80,
+                child: pw.Image(image, fit: pw.BoxFit.contain),
+              ),
+          ],
+        ),
+        pw.SizedBox(height: 5)
+      ],
+    );
+  }
+
+  @override
+  pw.Widget footer({
+    required ReportModel report,
+    required pw.Context context,
     required String language,
-    required String invoiceType,
-    required int invoiceNumber,
-    required DateTime? invoiceDate,
-    required String? reference,
+    required pw.MemoryImage logoImage,
   }) {
-    final invoiceTitle = invoiceType.toLowerCase().contains('sale')
-        ? getTranslation(locale: 'SEL', language: language)
-        : getTranslation(locale: 'PUR', language: language);
+    return pw.Column(
+      children: [
+        pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.start,
+          children: [
+            pw.Container(
+              height: 20,
+              child: pw.Image(logoImage),
+            ),
+            verticalDivider(height: 15, width: 0.6),
+            buildTextWidget(
+              text: getTranslation(locale: 'producedBy', language: language),
+              fontWeight: pw.FontWeight.normal,
+              fontSize: 8,
+            ),
+          ],
+        ),
+        pw.SizedBox(height: 3),
+        horizontalDivider(),
+        pw.SizedBox(height: 3),
+        pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: pw.CrossAxisAlignment.end,
+          children: [
+            buildTextWidget(text: report.comAddress ?? "", fontSize: 9),
+            buildPage(context.pageNumber, context.pagesCount, language),
+          ],
+        ),
+      ],
+    );
+  }
+
+  pw.Widget invoiceHeaderWidget({
+    required String language,
+    required OrderByIdModel order,
+    required ReportModel company,
+    required bool isPurchase,
+  }) {
+    final invoiceType = isPurchase
+        ? getTranslation(locale: 'PUR', language: language)
+        : getTranslation(locale: 'SEL', language: language);
 
     return pw.Container(
       padding: pw.EdgeInsets.symmetric(vertical: 10),
@@ -309,13 +321,13 @@ class InvoicePrintService extends PrintServices {
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   buildTextWidget(
-                    text: invoiceTitle,
+                    text: invoiceType,
                     fontSize: 24,
                     fontWeight: pw.FontWeight.bold,
                     color: pw.PdfColors.blue700,
                   ),
                   buildTextWidget(
-                    text: "${getTranslation(locale: 'invoiceNumber', language: language)}: $invoiceNumber",
+                    text: "${getTranslation(locale: 'invoiceNumber', language: language)}: ${order.ordId}",
                     fontSize: 14,
                   ),
                 ],
@@ -328,12 +340,12 @@ class InvoicePrintService extends PrintServices {
                     fontSize: 10,
                   ),
                   buildTextWidget(
-                    text: invoiceDate?.toDateTime ?? DateTime.now().toFormattedDate(),
+                    text: order.ordEntryDate?.toDateTime ?? DateTime.now().toFormattedDate(),
                     fontSize: 14,
                     fontWeight: pw.FontWeight.bold,
                   ),
                   buildTextWidget(
-                    text: invoiceDate?.toAfghanShamsi.toFormattedDate() ?? "",
+                    text: order.ordEntryDate?.toAfghanShamsi.toFormattedDate() ?? "",
                     fontSize: 10,
                     color: pw.PdfColors.blue600,
                   ),
@@ -341,25 +353,32 @@ class InvoicePrintService extends PrintServices {
               ),
             ],
           ),
-          pw.SizedBox(height: 8),
-          if (reference != null && reference.isNotEmpty)
-            buildTextWidget(
-              text: "${getTranslation(locale: 'referenceNumber', language: language)}: $reference",
-              fontSize: 11,
-            ),
+
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              buildTextWidget(
+                text: "${getTranslation(locale: 'referenceNumber', language: language)}: ${order.ordTrnRef ?? ""}",
+                fontSize: 11,
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  pw.Widget _customerSupplierInfo({
+  pw.Widget customerSupplierInfo({
+    required OrderByIdModel order,
     required String language,
-    required String customerSupplierName,
-    required bool isSale,
+    required bool isPurchase,
+    required IndividualsModel? selectedSupplier,
   }) {
-    final title = isSale
-        ? getTranslation(locale: 'customer', language: language)
-        : getTranslation(locale: 'supplier', language: language);
+    final title = isPurchase
+        ? getTranslation(locale: 'supplier', language: language)
+        : getTranslation(locale: 'customer', language: language);
+
+    final name = selectedSupplier?.perName ?? order.personal ?? "";
 
     return pw.Container(
       child: pw.Column(
@@ -373,7 +392,7 @@ class InvoicePrintService extends PrintServices {
           ),
           pw.SizedBox(height: 2),
           buildTextWidget(
-            text: customerSupplierName,
+            text: name,
             fontSize: 13,
           ),
         ],
@@ -381,10 +400,12 @@ class InvoicePrintService extends PrintServices {
     );
   }
 
-  pw.Widget _itemsTable({
-    required List<InvoiceItem> items,
+  pw.Widget itemsTable({
+    required OrderByIdModel order,
     required String language,
-    required bool isSale,
+    required Map<int, String> productNames,
+    required Map<int, String> storageNames,
+    required bool isPurchase,
   }) {
     const numberWidth = 30.0;
     const descriptionWidth = 200.0;
@@ -392,6 +413,8 @@ class InvoicePrintService extends PrintServices {
     const priceWidth = 80.0;
     const totalWidth = 90.0;
     const storageWidth = 100.0;
+
+    final records = order.records ?? [];
 
     return pw.Table(
       border: pw.TableBorder.all(color: pw.PdfColors.grey300, width: 1),
@@ -465,9 +488,11 @@ class InvoicePrintService extends PrintServices {
         ),
 
         // Data Rows
-        for (int i = 0; i < items.length; i++)
+        for (int i = 0; i < records.length; i++)
           pw.TableRow(
-            decoration: i.isOdd ? pw.BoxDecoration(color: pw.PdfColors.grey50) : null,
+            decoration: i.isOdd
+                ? pw.BoxDecoration(color: pw.PdfColors.grey50)
+                : null,
             children: [
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
@@ -480,22 +505,14 @@ class InvoicePrintService extends PrintServices {
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
                 child: buildTextWidget(
-                  text: items[i].productName,
+                  text: productNames[records[i].stkProduct] ?? "Unknown",
                   fontSize: 9,
                 ),
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
                 child: buildTextWidget(
-                  text: items[i].quantity.toString(),
-                  fontSize: 9,
-                  textAlign: pw.TextAlign.center,
-                ),
-              ),
-              pw.Padding(
-                padding: pw.EdgeInsets.all(8),
-                child: buildTextWidget(
-                  text: items[i].unitPrice.toAmount(),
+                  text: records[i].stkQuantity?.toString() ?? "0",
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
                 ),
@@ -503,7 +520,17 @@ class InvoicePrintService extends PrintServices {
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
                 child: buildTextWidget(
-                  text: items[i].total.toAmount(),
+                  text: isPurchase
+                      ? (double.tryParse(records[i].stkPurPrice ?? "0") ?? 0).toAmount()
+                      : (double.tryParse(records[i].stkSalePrice ?? "0") ?? 0).toAmount(),
+                  fontSize: 9,
+                  textAlign: pw.TextAlign.center,
+                ),
+              ),
+              pw.Padding(
+                padding: pw.EdgeInsets.all(8),
+                child: buildTextWidget(
+                  text: _calculateItemTotal(records[i], isPurchase).toAmount(),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.center,
@@ -512,7 +539,7 @@ class InvoicePrintService extends PrintServices {
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
                 child: buildTextWidget(
-                  text: items[i].storageName,
+                  text: storageNames[records[i].stkStorage] ?? "Unknown",
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
                 ),
@@ -523,21 +550,26 @@ class InvoicePrintService extends PrintServices {
     );
   }
 
-  pw.Widget _paymentSummary({
+  pw.Widget paymentSummary({
+    required OrderByIdModel order,
     required String language,
     required double grandTotal,
+    required double subTotal,
     required double cashPayment,
     required double creditAmount,
-    required AccountsModel? account,
-    String? currency,
+    required AccountsModel? selectedAccount,
   }) {
+    final isPurchase = order.ordName?.toLowerCase().contains('purchase') ?? true;
+    final ccy = isPurchase ? "" : "";
     final lang = NumberToWords.getLanguageFromLocale(Locale(language));
+
+    // Use cleaned amount for number to words conversion
     final cleanAmount = grandTotal.toString().replaceAll(',', '');
     final parsedAmount = int.tryParse(
       double.tryParse(cleanAmount)?.toStringAsFixed(0) ?? "0",
     ) ?? 0;
+
     final amountInWords = NumberToWords.convert(parsedAmount, lang);
-    final ccy = currency ?? '';
 
     return pw.Container(
       width: 300,
@@ -545,6 +577,14 @@ class InvoicePrintService extends PrintServices {
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.end,
         children: [
+          // Subtotal
+          _buildSummaryRow(
+            label: getTranslation(locale: 'subTotal', language: language),
+            value: subTotal,
+            ccy: ccy,
+          ),
+          pw.SizedBox(height: 5),
+
           // Grand Total
           pw.Container(
             padding: pw.EdgeInsets.all(10),
@@ -596,9 +636,9 @@ class InvoicePrintService extends PrintServices {
                     ccy: ccy,
                   ),
 
-                if (creditAmount > 0 && account != null)
+                if (creditAmount > 0 && selectedAccount != null)
                   _buildPaymentRow(
-                    label: "${getTranslation(locale: 'accountPayment', language: language)} (${account.accNumber})",
+                    label: "${getTranslation(locale: 'accountPayment', language: language)} (${selectedAccount.accNumber})",
                     value: creditAmount,
                     ccy: ccy,
                   ),
@@ -646,86 +686,7 @@ class InvoicePrintService extends PrintServices {
     );
   }
 
-  pw.Widget _profitSummaryIfSale({
-    required List<InvoiceItem> items,
-    required String language,
-    required bool isSale,
-  }) {
-    if (!isSale) return pw.SizedBox.shrink();
-
-    // Calculate total profit for sale items
-    double totalCost = 0;
-    double totalSale = 0;
-
-    for (final item in items) {
-      if (item is SaleInvoiceItemForPrint) {
-        final saleItem = item;
-        if (saleItem.purchasePrice != null) {
-          totalCost += saleItem.purchasePrice! * saleItem.quantity;
-          totalSale += saleItem.total;
-        }
-      }
-    }
-
-    final totalProfit = totalSale - totalCost;
-    final profitPercentage = totalCost > 0 ? (totalProfit / totalCost * 100) : 0;
-
-    return pw.Container(
-      padding: pw.EdgeInsets.all(10),
-      decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: pw.PdfColors.grey300),
-        borderRadius: pw.BorderRadius.circular(5),
-      ),
-      child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          buildTextWidget(
-            text: getTranslation(locale: 'profitSummary', language: language),
-            fontSize: 12,
-            fontWeight: pw.FontWeight.bold,
-          ),
-          pw.SizedBox(height: 5),
-          pw.Divider(color: pw.PdfColors.grey300),
-          pw.SizedBox(height: 5),
-          _buildSummaryRow(
-            label: getTranslation(locale: 'totalCost', language: language),
-            value: totalCost,
-          ),
-          pw.SizedBox(height: 5),
-          _buildSummaryRow(
-            label: getTranslation(locale: 'totalSale', language: language),
-            value: totalSale,
-          ),
-          pw.SizedBox(height: 5),
-          _buildSummaryRow(
-            label: getTranslation(locale: 'profit', language: language),
-            value: totalProfit,
-            color: totalProfit >= 0 ? pw.PdfColors.green : pw.PdfColors.red,
-            isBold: true,
-          ),
-          if (totalCost > 0) ...[
-            pw.SizedBox(height: 5),
-            _buildSummaryRow(
-              label: '${getTranslation(locale: 'profit', language: language)} %',
-              value: 0, // We'll handle this separately
-              showValue: false,
-            ),
-            pw.Align(
-              alignment: pw.Alignment.centerRight,
-              child: buildTextWidget(
-                text: '${profitPercentage.toStringAsFixed(2)}%',
-                fontSize: 12,
-                color: totalProfit >= 0 ? pw.PdfColors.green : pw.PdfColors.red,
-                fontWeight: pw.FontWeight.bold,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  pw.Widget _termsAndConditions({required String language}) {
+  pw.Widget termsAndConditions({required String language}) {
     return pw.Container(
       padding: pw.EdgeInsets.all(10),
       decoration: pw.BoxDecoration(
@@ -750,7 +711,7 @@ class InvoicePrintService extends PrintServices {
     );
   }
 
-  pw.Widget _signatureSection({required String language}) {
+  pw.Widget signatureSection({required String language}) {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [
@@ -786,6 +747,31 @@ class InvoicePrintService extends PrintServices {
     );
   }
 
+  pw.Widget _buildSummaryRow({
+    required String label,
+    required double value,
+    String ccy = "",
+    bool isBold = false,
+    bool isTotal = false,
+  }) {
+    return pw.Row(
+      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+      children: [
+        buildTextWidget(
+          text: label,
+          fontSize: isTotal ? 14 : 11,
+          fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
+        ),
+        buildTextWidget(
+          text: "${value.toAmount()} $ccy",
+          fontSize: isTotal ? 14 : 11,
+          fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
+          color: isTotal ? pw.PdfColors.blue700 : null,
+        ),
+      ],
+    );
+  }
+
   pw.Widget _buildPaymentRow({
     required String label,
     required double value,
@@ -810,32 +796,35 @@ class InvoicePrintService extends PrintServices {
     );
   }
 
-  pw.Widget _buildSummaryRow({
-    required String label,
-    required double value,
-    bool showValue = true,
-    pw.PdfColor? color,
-    bool isBold = false,
-  }) {
-    return pw.Row(
-      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-      children: [
-        buildTextWidget(
-          text: label,
-          fontSize: 11,
-          fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
-        ),
-        if (showValue)
-          buildTextWidget(
-            text: value.toAmount(),
-            fontSize: 11,
-            fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
-            color: color,
-          ),
-      ],
-    );
+  // FIXED: Proper calculation methods
+  double _calculateOrderTotal(OrderByIdModel order, bool isPurchase) {
+    if (order.records == null || order.records!.isEmpty) return 0.0;
+
+    double total = 0.0;
+
+    for (final record in order.records!) {
+      total += _calculateItemTotal(record, isPurchase);
+    }
+
+    return total;
   }
 
+  double _calculateItemTotal(OrderRecords record, bool isPurchase) {
+    try {
+      final quantity = double.tryParse(record.stkQuantity ?? "0") ?? 0.0;
+      double price;
+
+      if (isPurchase) {
+        price = double.tryParse(record.stkPurPrice ?? "0") ?? 0.0;
+      } else {
+        price = double.tryParse(record.stkSalePrice ?? "0") ?? 0.0;
+      }
+
+      return quantity * price;
+    } catch (e) {
+      return 0.0;
+    }
+  }
   String _getTermsAndConditions(String language) {
     const terms = {
       'en': "1. Goods once sold will not be taken back.\n"

@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
@@ -13,6 +15,8 @@ import '../../../../../../../Features/Generic/underline_searchable_textfield.dar
 import '../../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../../Features/Other/utils.dart';
 import '../../../../../../../Features/Other/zForm_dialog.dart';
+import '../../../../../../../Features/PrintSettings/print_preview.dart';
+import '../../../../../../../Features/PrintSettings/report_model.dart';
 import '../../../../../../../Features/Widgets/button.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/textfield_entitled.dart';
@@ -23,6 +27,7 @@ import '../../../../Settings/Ui/Stock/Ui/Products/bloc/products_bloc.dart';
 import '../../../../Settings/Ui/Stock/Ui/Products/model/product_stock_model.dart';
 import '../../../../Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import '../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
+import '../Print/print.dart';
 import 'model/sale_invoice_items.dart';
 
 class NewSaleView extends StatelessWidget {
@@ -278,7 +283,7 @@ class _DesktopState extends State<_Desktop> {
                       ZOutlineButton(
                         width: 100,
                         icon: Icons.print,
-                        onPressed: () {},
+                        onPressed: () => _printSaleInvoice(),
                         label: Text(tr.print),
                       ),
                       const SizedBox(width: 8),
@@ -1099,6 +1104,141 @@ class _DesktopState extends State<_Desktop> {
       items: state.items,
       completer: completer,
     ));
+  }
+
+  void _printSaleInvoice() {
+    final state = context.read<SaleInvoiceBloc>().state;
+
+    if (state is! SaleInvoiceLoaded) {
+      Utils.showOverlayMessage(context, message: 'Cannot print: No invoice data loaded', isError: true);
+      return;
+    }
+
+    final current = state;
+
+    // Get company info
+    final companyState = context.read<CompanyProfileBloc>().state;
+    if (companyState is! CompanyProfileLoadedState) {
+      Utils.showOverlayMessage(context, message: 'Company information not available', isError: true);
+      return;
+    }
+
+    final company = ReportModel(
+      comName: companyState.company.comName ?? "",
+      comAddress: companyState.company.addName ?? "",
+      compPhone: companyState.company.comPhone ?? "",
+      comEmail: companyState.company.comEmail ?? "",
+      statementDate: DateTime.now().toFullDateTime,
+    );
+
+    // Get company logo
+    final base64Logo = companyState.company.comLogo;
+    if (base64Logo != null && base64Logo.isNotEmpty) {
+      try {
+        company.comLogo = base64Decode(base64Logo);
+      } catch (e) {
+       "";
+      }
+    }
+
+
+    // Prepare invoice items for print
+    final List<InvoiceItem> invoiceItems = current.items.map((item) {
+      return SaleInvoiceItemForPrint(
+        productName: item.productName,
+        quantity: item.qty.toDouble(),
+        unitPrice: item.salePrice ?? 0.0,
+        total: item.totalSale,
+        storageName: item.storageName,
+        purchasePrice: item.purPrice ?? 0.0,
+        profit: (item.salePrice ?? 0.0) - (item.purPrice ?? 0.0),
+      );
+    }).toList();
+
+    showDialog(
+      context: context,
+      builder: (_) => PrintPreviewDialog<dynamic>(
+        data: null, // You can pass current state here if needed
+        company: company,
+        buildPreview: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+        }) {
+          return InvoicePrintService().printInvoicePreview(
+            invoiceType: "Sale",
+            invoiceNumber: 0, // Use 0 for new invoices, or get from saved invoice
+            reference: _xRefController.text,
+            invoiceDate: DateTime.now(),
+            customerSupplierName: current.customer?.perName ?? "",
+            items: invoiceItems,
+            grandTotal: current.grandTotal,
+            cashPayment: current.cashPayment,
+            creditAmount: current.creditAmount,
+            account: current.customerAccount,
+            language: language,
+            orientation: orientation,
+            company: company,
+            pageFormat: pageFormat,
+            currency: baseCurrency,
+          );
+        },
+        onPrint: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+          required selectedPrinter,
+          required copies,
+          required pages,
+        }) {
+          return InvoicePrintService().printInvoiceDocument(
+            invoiceType: "Sale",
+            invoiceNumber: 0,
+            reference: _xRefController.text,
+            invoiceDate: DateTime.now(),
+            customerSupplierName: current.customer?.perName ?? "",
+            items: invoiceItems,
+            grandTotal: current.grandTotal,
+            cashPayment: current.cashPayment,
+            creditAmount: current.creditAmount,
+            account: current.customerAccount,
+            language: language,
+            orientation: orientation,
+            company: company,
+            selectedPrinter: selectedPrinter,
+            pageFormat: pageFormat,
+            copies: copies,
+            currency: baseCurrency,
+          );
+        },
+        onSave: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+        }) {
+          return InvoicePrintService().createInvoiceDocument(
+            invoiceType: "Sale",
+            invoiceNumber: 0,
+            reference: _xRefController.text,
+            invoiceDate: DateTime.now(),
+            customerSupplierName: current.customer?.perName ?? "",
+            items: invoiceItems,
+            grandTotal: current.grandTotal,
+            cashPayment: current.cashPayment,
+            creditAmount: current.creditAmount,
+            account: current.customerAccount,
+            language: language,
+            orientation: orientation,
+            company: company,
+            pageFormat: pageFormat,
+            currency: baseCurrency,
+          );
+        },
+      ),
+    );
   }
 
 }

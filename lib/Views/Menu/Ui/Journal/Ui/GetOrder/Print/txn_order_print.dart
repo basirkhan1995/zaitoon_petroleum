@@ -512,7 +512,7 @@ class OrderTxnPrintSettings extends PrintServices {
                 ),
                 // Data Rows
                 ...billItems.map((item) {
-                  final itemTotal = double.tryParse(item.totalPrice ?? '') ?? 0;
+
                   return pw.TableRow(
                     decoration: pw.BoxDecoration(
                       color: billItems.indexOf(item) % 2 == 0
@@ -707,6 +707,7 @@ class OrderTxnPrintSettings extends PrintServices {
     );
   }
 
+  @override
   Future<pw.Widget> header({required ReportModel report}) async {
     final image = (report.comLogo != null &&
         report.comLogo is Uint8List &&
@@ -748,6 +749,7 @@ class OrderTxnPrintSettings extends PrintServices {
     );
   }
 
+  @override
   pw.Widget footer({required ReportModel report, required pw.Context context, required String language, required pw.MemoryImage logoImage}) {
     return pw.Column(
       children: [

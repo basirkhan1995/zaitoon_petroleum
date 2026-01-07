@@ -4,6 +4,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:zaitoon_petroleum/Features/PrintSettings/report_model.dart';
 
 
 abstract class PrintServices {
@@ -16,6 +17,84 @@ abstract class PrintServices {
   static Future<void> initializeFonts() async {
     await _loadEnglishFont();
     await _loadPersianFont();
+  }
+
+  // Add these methods to your InvoicePrintService class
+
+  Future<pw.Widget> header({required ReportModel report}) async {
+    final image = (report.comLogo != null && report.comLogo is Uint8List && report.comLogo!.isNotEmpty)
+        ? pw.MemoryImage(report.comLogo!)
+        : null;
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            // Company info (left side)
+            pw.Expanded(
+              flex: 3,
+              child: pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  buildTextWidget(text: report.comName ?? "", fontSize: 25, tightBounds: true),
+                  pw.SizedBox(height: 3),
+                  buildTextWidget(text: report.comAddress ?? "", fontSize: 10),
+                  buildTextWidget(text: "${report.compPhone ?? ""} | ${report.comEmail ?? ""}", fontSize: 9),
+                ],
+              ),
+            ),
+            // Logo (right side)
+            if (image != null)
+              pw.Container(
+                width: 80,
+                height: 80,
+                child: pw.Image(image, fit: pw.BoxFit.contain),
+              ),
+          ],
+        ),
+        pw.SizedBox(height: 5)
+      ],
+    );
+  }
+
+  pw.Widget footer({
+    required ReportModel report,
+    required pw.Context context,
+    required String language,
+    required pw.MemoryImage logoImage,
+  }) {
+    return pw.Column(
+      children: [
+        pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.start,
+          children: [
+            pw.Container(
+              height: 20,
+              child: pw.Image(logoImage),
+            ),
+            verticalDivider(height: 15, width: 0.6),
+            buildTextWidget(
+              text: getTranslation(locale: 'producedBy', language: language),
+              fontWeight: pw.FontWeight.normal,
+              fontSize: 8,
+            ),
+          ],
+        ),
+        pw.SizedBox(height: 3),
+        horizontalDivider(),
+        pw.SizedBox(height: 3),
+        pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: pw.CrossAxisAlignment.end,
+          children: [
+            buildTextWidget(text: report.comAddress ?? "", fontSize: 9),
+            buildPage(context.pageNumber, context.pagesCount, language),
+          ],
+        ),
+      ],
+    );
   }
 
   static Future<void> _loadEnglishFont() async {
