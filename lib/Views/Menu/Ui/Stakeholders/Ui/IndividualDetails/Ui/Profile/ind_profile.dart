@@ -84,7 +84,7 @@ class _DesktopState extends State<_Desktop> {
               SizedBox(height: 5),
               BlurLoader(
                 isLoading: state is StakeholderByIdLoadingState,
-                child: Cover(
+                child: ZCard(
                   radius: 5,
                   margin: EdgeInsets.symmetric(horizontal: 8),
                   padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
@@ -121,17 +121,17 @@ class _DesktopState extends State<_Desktop> {
                                   "${individual?.perName} ${individual?.perLastName}",
                                   style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 18),
                                 ),
-                                Cover(child: Text(individual?.perPhone ?? "")),
+                                ZCard(child: Text(individual?.perPhone ?? "")),
                                 SizedBox(height: 5),
                                 Row(
                                   spacing: 5,
                                   children: [
-                                    Cover(child: Text(individual?.perEnidNo ?? "")),
-                                    Cover(child: Text(Utils.genderType(gender: individual?.perGender ?? "",locale: locale))),
-                                    Cover(child: Text(individual?.addCity ?? "")),
-                                    Cover(child: Text(individual?.addProvince ?? "")),
-                                    Cover(child: Text(individual?.addCountry ?? "")),
-                                    Cover(child: Text(individual?.addName ?? "")),
+                                    ZCard(child: Text(individual?.perEnidNo ?? "")),
+                                    ZCard(child: Text(Utils.genderType(gender: individual?.perGender ?? "",locale: locale))),
+                                    ZCard(child: Text(individual?.addCity ?? "")),
+                                    ZCard(child: Text(individual?.addProvince ?? "")),
+                                    ZCard(child: Text(individual?.addCountry ?? "")),
+                                    ZCard(child: Text(individual?.addName ?? "")),
                                   ],
                                 ),
                                 SizedBox(height: 5),

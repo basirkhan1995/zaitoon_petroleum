@@ -200,7 +200,7 @@ class _DesktopState extends State<_Desktop> {
                                   SizedBox(
                                       width: 60,
                                       child: Text(brc.balId.toString(),style: textTheme.bodyMedium)),
-                                  Cover(child: Text(brc.balCurrency??"",style: textTheme.bodyMedium)),
+                                  ZCard(child: Text(brc.balCurrency??"",style: textTheme.bodyMedium)),
                                   Spacer(),
                                   SizedBox(
                                       width: 150,

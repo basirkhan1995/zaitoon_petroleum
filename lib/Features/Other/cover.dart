@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class Cover extends StatelessWidget {
+class ZCard extends StatelessWidget {
   final Widget child;
   final Color? color;
   final Color? shadowColor;
@@ -8,7 +8,7 @@ class Cover extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
 
-  const Cover({
+  const ZCard({
     super.key,
     required this.child,
     this.color,

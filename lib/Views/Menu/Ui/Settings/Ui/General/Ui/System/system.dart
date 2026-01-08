@@ -74,7 +74,7 @@ class _Desktop extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 10),
-                  Cover(
+                  ZCard(
                     padding: EdgeInsets.zero,
                     margin: EdgeInsets.zero,
                     color: Theme.of(context).colorScheme.surface,
@@ -94,7 +94,7 @@ class _Desktop extends StatelessWidget {
                     child: bulletPoint(locale.clockHint),
                   ),
                   SizedBox(height: 10),
-                  Cover(
+                  ZCard(
                     padding: EdgeInsets.zero,
                     margin: EdgeInsets.zero,
                     color: Theme.of(context).colorScheme.surface,

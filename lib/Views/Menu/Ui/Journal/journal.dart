@@ -270,7 +270,7 @@ class _DesktopState extends State<_Desktop> {
                               showClearButton: true,
                             ),
                             if (accName != null && accName!.isNotEmpty)
-                              Cover(
+                              ZCard(
                                 color: color.surface,
                                 padding: EdgeInsets.symmetric(
                                   horizontal: 5,
@@ -1298,7 +1298,7 @@ class _DesktopState extends State<_Desktop> {
                                         showClearButton: true,
                                       ),
                                       if (debitAccName != null && debitAccName!.isNotEmpty)
-                                        Cover(
+                                        ZCard(
                                           color: color.surface,
                                           margin: EdgeInsets.symmetric(
                                             vertical: 5,
@@ -1556,7 +1556,7 @@ class _DesktopState extends State<_Desktop> {
                                       ),
                                       if (creditAccName != null &&
                                           creditAccName!.isNotEmpty)
-                                        Cover(
+                                        ZCard(
                                           margin: EdgeInsets.symmetric(
                                             vertical: 5,
                                           ),
@@ -1846,7 +1846,7 @@ class _DesktopState extends State<_Desktop> {
               child: Column(
                 children: [
                   // -------------------- HEADER & TABS --------------------
-                  Cover(
+                  ZCard(
                     margin: const EdgeInsets.only(top: 6, bottom: 5),
                     radius: 5,
                     color: Theme.of(context).colorScheme.surface,
@@ -2112,7 +2112,7 @@ class _DesktopState extends State<_Desktop> {
   Widget accountDetails(AccountsModel details){
     final tr = AppLocalizations.of(context)!;
     TextStyle? titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith();
-    return Cover(
+    return ZCard(
       margin: EdgeInsets.symmetric(horizontal: 2),
       color: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
       padding: EdgeInsets.all(8),

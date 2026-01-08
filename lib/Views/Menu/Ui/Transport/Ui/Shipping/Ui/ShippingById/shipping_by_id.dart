@@ -669,7 +669,7 @@ class _DesktopState extends State<_Desktop> {
 
 
   Widget _buildAmountSummaryCard(double totalAmount, double paidAmount, double remaining, AppLocalizations tr, bool paymentNeedsUpdate) {
-    return Cover(
+    return ZCard(
       radius: 8,
       color: Theme.of(context).colorScheme.primary.withValues(alpha: .03),
       child: Padding(
@@ -729,7 +729,7 @@ class _DesktopState extends State<_Desktop> {
     final cashAmount = _parseAmount(payment.cashAmount);
     final cardAmount = _parseAmount(payment.cardAmount);
 
-    return Cover(
+    return ZCard(
       radius: 8,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -848,7 +848,7 @@ class _DesktopState extends State<_Desktop> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Remaining balance info
-          Cover(
+          ZCard(
             radius: 5,
             padding: const EdgeInsets.all(8),
             color: Theme.of(context).colorScheme.primary.withValues(alpha: .8),
@@ -900,7 +900,7 @@ class _DesktopState extends State<_Desktop> {
     );
   }
   Widget _buildCashPaymentSection(double targetAmount, AppLocalizations tr) {
-    return Cover(
+    return ZCard(
       padding: const EdgeInsets.all(8.0),
       radius: 5,
       child: Column(
@@ -966,7 +966,7 @@ class _DesktopState extends State<_Desktop> {
         ? _safeMax(targetAmount - cashAmount, 0)
         : targetAmount - cashAmount;
 
-    return Cover(
+    return ZCard(
       radius: 5,
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -1136,7 +1136,7 @@ class _DesktopState extends State<_Desktop> {
         ? totalPayment == targetAmount  // When editing, must match current shipping total
         : totalPayment == targetAmount; // When adding, must match remaining balance
 
-    return Cover(
+    return ZCard(
       radius: 8,
       color: isValid ? Theme.of(context).colorScheme.primary.withValues(alpha: .03) : Theme.of(context).colorScheme.error.withValues(alpha: .07),
       child: Padding(

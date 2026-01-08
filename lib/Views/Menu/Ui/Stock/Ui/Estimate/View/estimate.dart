@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/bloc/estimate_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
-import '../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import '../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import '../View/EstimateById/estimate_details.dart';
+import 'add_estimate.dart';
 
 class EstimateView extends StatelessWidget {
   const EstimateView({super.key});
@@ -50,12 +53,13 @@ class _Desktop extends StatefulWidget {
 
 class _DesktopState extends State<_Desktop> {
   String? baseCurrency;
+  late EstimatesLoaded _cachedEstimates;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<EstimateBloc>().add(LoadEstimateEvent());
+      context.read<EstimateBloc>().add(LoadEstimatesEvent());
     });
 
     final companyState = context.read<CompanyProfileBloc>().state;
@@ -86,7 +90,7 @@ class _DesktopState extends State<_Desktop> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: Row(
               spacing: 8,
               children: [
@@ -125,6 +129,14 @@ class _DesktopState extends State<_Desktop> {
                   onPressed: onRefresh,
                   label: Text(tr.refresh),
                 ),
+                ZOutlineButton(
+                  toolTip: "F5",
+                  isActive: true,
+                  width: 120,
+                  icon: Icons.add,
+                  onPressed: ()=> Utils.goto(context,AddEstimateView()),
+                  label: Text(tr.newKeyword),
+                ),
               ],
             ),
           ),
@@ -137,7 +149,6 @@ class _DesktopState extends State<_Desktop> {
                   width: 215,
                   child: Text(tr.referenceNumber, style: titleStyle),
                 ),
-
                 Expanded(child: Text(tr.party, style: titleStyle)),
                 SizedBox(
                   width: 150,
@@ -148,39 +159,76 @@ class _DesktopState extends State<_Desktop> {
           ),
           Divider(endIndent: 8, indent: 8),
           Expanded(
-            child: BlocBuilder<EstimateBloc, EstimateState>(
+            child: BlocConsumer<EstimateBloc, EstimateState>(
+              listener: (context, state) {
+                if (state is EstimateDeleted || state is EstimateConverted) {
+                  // Store the updated estimates
+                  if (state is EstimatesLoaded) {
+                    _cachedEstimates = state;
+                  }
+                }
+                if (state is EstimateError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+                  );
+                }
+                if (state is EstimateSaved) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+                  );
+                }
+              },
               builder: (context, state) {
-                if (state is EstimateErrorState) {
-                  return NoDataWidget(message: state.message);
+                // Cache the estimates when loaded
+                if (state is EstimatesLoaded) {
+                  _cachedEstimates = state;
                 }
-                if (state is EstimateLoadingState) {
-                  return Center(child: CircularProgressIndicator());
+
+                // If we're in detail view, show cached estimates
+                final displayState = (state is EstimateDetailLoading ||
+                    state is EstimateDetailLoaded ||
+                    state is EstimateSaving ||
+                    state is EstimateDeleting ||
+                    state is EstimateConverting)
+                    ? _cachedEstimates
+                    : state;
+
+                if (displayState is EstimateError) {
+                  return NoDataWidget(message: displayState.message);
                 }
-                if (state is EstimateLoadedState) {
+
+                if (displayState is EstimateLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (displayState is EstimatesLoaded) {
                   final query = searchController.text.toLowerCase().trim();
-                  final filteredList = state.order.where((item) {
-                    final ref = item.ordTrnRef?.toLowerCase() ?? '';
+                  final filteredList = displayState.estimates.where((item) {
+                    final ref = item.ordxRef?.toLowerCase() ?? '';
                     final ordId = item.ordId?.toString() ?? '';
-                    final ordName = item.ordName?.toLowerCase() ?? '';
+                    final customerName = item.ordPersonalName?.toLowerCase() ?? '';
+                    final reference = item.ordTrnRef?.toLowerCase() ?? '';
                     return ref.contains(query) ||
                         ordId.contains(query) ||
-                        ordName.contains(query);
+                        customerName.contains(query) ||
+                        reference.contains(query);
                   }).toList();
 
                   if (filteredList.isEmpty) {
                     return NoDataWidget(message: tr.noDataFound);
                   }
-                  if (state.order.isEmpty) {
-                    return NoDataWidget(enableAction: false);
-                  }
+
                   return ListView.builder(
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {
-                      final ord = filteredList[index];
+                      final estimate = filteredList[index];
+
                       return InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          Utils.goto(context, EstimateDetailView(estimateId: estimate.ordId!));
+                        },
                         child: Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                             horizontal: 12,
                             vertical: 8,
                           ),
@@ -193,18 +241,16 @@ class _DesktopState extends State<_Desktop> {
                             children: [
                               SizedBox(
                                 width: 30,
-                                child: Text(ord.ordId.toString()),
+                                child: Text(estimate.ordId.toString()),
                               ),
                               SizedBox(
                                 width: 215,
-                                child: Text(ord.ordxRef ?? ""),
+                                child: Text(estimate.ordxRef ?? "", overflow: TextOverflow.ellipsis),
                               ),
-                              Expanded(child: Text(ord.ordPersonalName ?? "")),
-
-
+                              Expanded(child: Text(estimate.ordPersonalName ?? "", overflow: TextOverflow.ellipsis)),
                               SizedBox(
                                 width: 150,
-                                child: Text("${ord.totalEstimate?.toAmount()} $baseCurrency"),
+                                child: Text("${estimate.total?.toAmount()} $baseCurrency"),
                               ),
                             ],
                           ),
@@ -213,6 +259,7 @@ class _DesktopState extends State<_Desktop> {
                     },
                   );
                 }
+
                 return const SizedBox();
               },
             ),
@@ -223,6 +270,6 @@ class _DesktopState extends State<_Desktop> {
   }
 
   void onRefresh() {
-    context.read<EstimateBloc>().add(LoadEstimateEvent());
+    context.read<EstimateBloc>().add(LoadEstimatesEvent());
   }
 }

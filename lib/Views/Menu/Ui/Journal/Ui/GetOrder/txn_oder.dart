@@ -137,7 +137,7 @@ class _OrderTxnDialogState extends State<_OrderTxnDialog> {
                                 ),
                               ),
                               SizedBox(height: 8),
-                              Cover(
+                              ZCard(
                                 color: color.primary.withAlpha(30),
                                 child: Text(
                                     orderTxn?.trntName ?? orderTxn?.trnType ?? "-",
@@ -181,7 +181,7 @@ class _OrderTxnDialogState extends State<_OrderTxnDialog> {
                       SizedBox(height: 8),
 
                       // Total Amount Card
-                      Cover(
+                      ZCard(
                         color: color.surface,
                         child: Padding(
                           padding: const EdgeInsets.all(10),
@@ -234,7 +234,7 @@ class _OrderTxnDialogState extends State<_OrderTxnDialog> {
                           // Bill Items
                           Expanded(
                             flex: 3,
-                            child: Cover(
+                            child: ZCard(
                               color: color.surface,
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
@@ -280,7 +280,7 @@ class _OrderTxnDialogState extends State<_OrderTxnDialog> {
                           // Accounting Records
                           Expanded(
                             flex: 2,
-                            child: Cover(
+                            child: ZCard(
                               color: color.surface,
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
@@ -333,7 +333,7 @@ class _OrderTxnDialogState extends State<_OrderTxnDialog> {
                       // Action Buttons
                       if (showAnyButton) ...[
                         SizedBox(height: 20),
-                        Cover(
+                        ZCard(
                           color: color.surface,
                           child: Padding(
                             padding: const EdgeInsets.all(10),
@@ -707,7 +707,7 @@ class _OrderTxnDialogState extends State<_OrderTxnDialog> {
                   ),
                 ),
               ),
-              Cover(
+              ZCard(
                 color: isDebit
                     ? Colors.red.withAlpha(30)
                     : Colors.green.withAlpha(30),

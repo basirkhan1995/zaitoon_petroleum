@@ -445,7 +445,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     final String paymentTitle = order.ordName == "Sale"
         ? tr.customerAndPaymentDetails
         : tr.supplierAndPaymentDetails;
-    return Cover(
+    return ZCard(
       radius: 8,
       color: color.outline.withAlpha(8),
       child: Padding(
@@ -594,7 +594,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
         : order.ordName == "Purchase"
         ? tr.purchaseTitle
         : "";
-    return Cover(
+    return ZCard(
       radius: 10,
       color: color.outline.withAlpha(8),
       padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -1014,7 +1014,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     bool isEditing,
   ) {
     if (order.records == null || order.records!.isEmpty) {
-      return Cover(
+      return ZCard(
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Center(
@@ -1179,22 +1179,22 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                             children: [
                               Wrap(
                                 children: [
-                                  Cover(
+                                  ZCard(
                                     child: Text(tr.purchasePrice, style: title),
                                   ),
-                                  Cover(child: Text(product.purchasePrice)),
+                                  ZCard(child: Text(product.purchasePrice)),
                                 ],
                               ),
                               Wrap(
                                 children: [
-                                  Cover(
+                                  ZCard(
                                     radius: 0,
                                     child: Text(
                                       tr.salePriceBrief,
                                       style: title,
                                     ),
                                   ),
-                                  Cover(
+                                  ZCard(
                                     radius: 0,
                                     child: Text(product.sellPrice),
                                   ),

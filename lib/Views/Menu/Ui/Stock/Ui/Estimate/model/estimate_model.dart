@@ -1,8 +1,4 @@
-import 'dart:convert';
 
-EstimateModel estimateModelFromMap(String str) => EstimateModel.fromMap(json.decode(str));
-
-String estimateModelToMap(EstimateModel data) => json.encode(data.toMap());
 
 class EstimateModel {
   final int? ordId;
@@ -13,6 +9,13 @@ class EstimateModel {
   final String? brcName;
   final String? ordxRef;
   final String? ordTrnRef;
+  final String? total;
+  final String? amount; // Credit amount
+  final int? acc; // Account number
+  final String? personal; // Customer name
+  final int? perId; // Customer ID
+  final DateTime? ordEntryDate;
+  final String? trnStateText;
   final String? totalEstimate;
   final List<EstimateRecord>? records;
 
@@ -25,8 +28,15 @@ class EstimateModel {
     this.brcName,
     this.ordxRef,
     this.ordTrnRef,
+    this.total,
+    this.amount,
+    this.acc,
+    this.personal,
+    this.perId,
+    this.ordEntryDate,
+    this.trnStateText,
+    this.totalEstimate,
     this.records,
-    this.totalEstimate
   });
 
   EstimateModel copyWith({
@@ -38,7 +48,13 @@ class EstimateModel {
     String? brcName,
     String? ordxRef,
     String? ordTrnRef,
-    String? totalEstimate,
+    String? total,
+    String? amount,
+    int? acc,
+    String? personal,
+    int? perId,
+    DateTime? ordEntryDate,
+    String? trnStateText,
     List<EstimateRecord>? records,
   }) =>
       EstimateModel(
@@ -50,8 +66,14 @@ class EstimateModel {
         brcName: brcName ?? this.brcName,
         ordxRef: ordxRef ?? this.ordxRef,
         ordTrnRef: ordTrnRef ?? this.ordTrnRef,
+        total: total ?? this.total,
+        amount: amount ?? this.amount,
+        acc: acc ?? this.acc,
+        personal: personal ?? this.personal,
+        perId: perId ?? this.perId,
+        ordEntryDate: ordEntryDate ?? this.ordEntryDate,
+        trnStateText: trnStateText ?? this.trnStateText,
         records: records ?? this.records,
-        totalEstimate: totalEstimate ?? this.totalEstimate
       );
 
   factory EstimateModel.fromMap(Map<String, dynamic> json) => EstimateModel(
@@ -63,8 +85,20 @@ class EstimateModel {
     brcName: json["brcName"],
     ordxRef: json["ordxRef"],
     ordTrnRef: json["ordTrnRef"],
+    total: json["total"],
+    amount: json["amount"],
+    acc: json["acc"],
+    personal: json["personal"],
+    perId: json["perID"],
     totalEstimate: json["total"],
-    records: json["records"] == null ? [] : List<EstimateRecord>.from(json["records"]!.map((x) => EstimateRecord.fromMap(x))),
+    ordEntryDate: json["ordEntryDate"] != null
+        ? DateTime.tryParse(json["ordEntryDate"])
+        : null,
+    trnStateText: json["trnStateText"],
+    records: json["records"] == null
+        ? []
+        : List<EstimateRecord>.from(
+        json["records"]!.map((x) => EstimateRecord.fromMap(x))),
   );
 
   Map<String, dynamic> toMap() => {
@@ -76,8 +110,41 @@ class EstimateModel {
     "brcName": brcName,
     "ordxRef": ordxRef,
     "ordTrnRef": ordTrnRef,
-    "records": records == null ? [] : List<dynamic>.from(records!.map((x) => x.toMap())),
+    "total": total,
+    "amount": amount,
+    "acc": acc,
+    "personal": personal,
+    "perID": perId,
+    "ordEntryDate": ordEntryDate?.toIso8601String(),
+    "trnStateText": trnStateText,
+    "records": records == null
+        ? []
+        : List<dynamic>.from(records!.map((x) => x.toMap())),
   };
+
+  double get grandTotal {
+    if (records == null) return 0.0;
+    return records!.fold(0.0, (sum, record) {
+      final qty = double.tryParse(record.tstQuantity ?? "0") ?? 0;
+      final price = double.tryParse(record.tstSalePrice ?? "0") ?? 0;
+      return sum + (qty * price);
+    });
+  }
+
+  double get creditAmount => double.tryParse(amount ?? "0.0") ?? 0.0;
+  double get cashPayment => grandTotal - creditAmount;
+
+  PaymentMode get paymentMode {
+    if (creditAmount <= 0) {
+      return PaymentMode.cash;
+    } else if (cashPayment <= 0) {
+      return PaymentMode.credit;
+    } else {
+      return PaymentMode.mixed;
+    }
+  }
+
+  bool get isPending => trnStateText?.toLowerCase() == 'pending';
 }
 
 class EstimateRecord {
@@ -137,4 +204,13 @@ class EstimateRecord {
     "tstPurPrice": tstPurPrice,
     "tstSalePrice": tstSalePrice,
   };
+
+  double get quantity => double.tryParse(tstQuantity ?? "0") ?? 0;
+  double get purchasePrice => double.tryParse(tstPurPrice ?? "0") ?? 0;
+  double get salePrice => double.tryParse(tstSalePrice ?? "0") ?? 0;
+  double get total => quantity * salePrice;
+  double get totalPurchase => quantity * purchasePrice;
+  double get profit => total - totalPurchase;
 }
+
+enum PaymentMode { cash, credit, mixed }

@@ -203,7 +203,7 @@ class _DesktopState extends State<_Desktop> {
 
                                       Padding(
                                         padding: const EdgeInsets.only(right: 6.0),
-                                        child: Cover(
+                                        child: ZCard(
                                           color: color.surface,
                                           child: Text(stk.usrEmail??""),
                                         ),

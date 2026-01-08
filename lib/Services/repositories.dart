@@ -1831,63 +1831,22 @@ class Repositories {
 
 
   ///Estimate ..................................................................
+  // Add these methods to your existing Repositories class
+
   Future<List<EstimateModel>> getAllEstimates() async {
     try {
       final response = await api.get(
-          endpoint: "/inventory/estimate.php",
+        endpoint: "/inventory/estimate.php",
       );
 
-      // Handle error messages from server
       if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
         throw Exception(response.data['msg']);
       }
 
-      // If data is null or empty, return empty list
       if (response.data == null || (response.data is List && response.data.isEmpty)) {
         return [];
       }
 
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => EstimateModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
-    }
-  }
-  Future<List<EstimateModel>> getEstimateById({int? orderId}) async {
-    try {
-      final queryParams = {'ordID': orderId};
-      final response = await api.get(
-          endpoint: "/inventory/estimate.php",
-          queryParams: queryParams
-      );
-
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      if (response.data == null) {
-        return [];
-      }
-
-      // Your API returns a single order with records included
-      if (response.data is Map<String, dynamic>) {
-        final orderData = response.data as Map<String, dynamic>;
-        if (orderData.containsKey('ordID')) {
-          final order = EstimateModel.fromMap(orderData);
-          return [order];
-        }
-      }
-
-      // If it's a list (though your API doesn't seem to return this)
       if (response.data is List) {
         return (response.data as List)
             .whereType<Map<String, dynamic>>()
@@ -1902,22 +1861,35 @@ class Repositories {
       throw "$e";
     }
   }
-  Future<Map<String, dynamic>> deleteEstimate({required int orderId, required String usrName}) async {
+
+  Future<EstimateModel?> getEstimateById({required int orderId}) async {
     try {
-      final response = await api.delete(
+      final queryParams = {'ordID': orderId};
+      final response = await api.get(
           endpoint: "/inventory/estimate.php",
-          data: {
-            "ordID": orderId,
-            "usrName": usrName
-          }
+          queryParams: queryParams
       );
-      return response.data;
+
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      if (response.data == null) {
+        return null;
+      }
+
+      if (response.data is Map<String, dynamic>) {
+        return EstimateModel.fromMap(response.data);
+      }
+
+      return null;
     } on DioException catch (e) {
-      throw '${e.message}';
+      throw "${e.message}";
     } catch (e) {
-      throw e.toString();
+      throw "$e";
     }
   }
+
   Future<Map<String, dynamic>> addEstimate({
     required String usrName,
     required int perID,
@@ -1958,11 +1930,11 @@ class Repositories {
   }) async {
     try {
       final data = {
-        "usrName": usrName, // created by
-        "ordName": "Estimate", // Order Type
-        "ordID":orderId, // Invoice Id
-        "ordPersonal": perID, // Customer
-        "ordxRef": xRef ?? "", // Optional Invoice No.
+        "usrName": usrName,
+        "ordName": "Estimate",
+        "ordID": orderId,
+        "ordPersonal": perID,
+        "ordxRef": xRef ?? "",
         "records": records.map((r) => r.toMap()).toList(),
       };
 
@@ -1971,7 +1943,9 @@ class Repositories {
         data: data,
       );
 
-      return response.data is Map<String, dynamic> ? response.data : {'msg': 'Invalid response format'};
+      return response.data is Map<String, dynamic>
+          ? response.data
+          : {'msg': 'Invalid response format'};
 
     } on DioException catch (e) {
       throw '${e.message}';
@@ -1980,21 +1954,44 @@ class Repositories {
     }
   }
 
-  Future<Map<String, dynamic>> changeEstimateIntoInvoice({
+  Future<Map<String, dynamic>> deleteEstimate({
+    required int orderId,
+    required String usrName,
+  }) async {
+    try {
+      final response = await api.delete(
+          endpoint: "/inventory/estimate.php",
+          data: {
+            "ordID": orderId,
+            "usrName": usrName
+          }
+      );
+
+      return response.data is Map<String, dynamic>
+          ? response.data
+          : {'msg': 'Invalid response format'};
+
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw 'Unexpected error: $e';
+    }
+  }
+
+  Future<Map<String, dynamic>> convertEstimateToSale({
     required String usrName,
     required int orderId,
     required int perID,
-    required int accountNo,
-    required String totalAmount,
-    required List<EstimateRecord> records,
+    required int account, // payment account
+    required String amount, // total invoice amount .. if it's cash set accNo null with amount
   }) async {
     try {
       final data = {
         "usrName": usrName,
-        "ordID":orderId,
+        "ordID": orderId,
         "ordPersonal": perID,
-        "account": accountNo, // Customer Account No.
-        "amount": totalAmount, // Total Invoice Amount
+        "account": account,
+        "amount": amount,
       };
 
       final response = await api.post(
@@ -2002,7 +1999,9 @@ class Repositories {
         data: data,
       );
 
-      return response.data is Map<String, dynamic> ? response.data : {'msg': 'Invalid response format'};
+      return response.data is Map<String, dynamic>
+          ? response.data
+          : {'msg': 'Invalid response format'};
 
     } on DioException catch (e) {
       throw '${e.message}';

@@ -313,7 +313,7 @@ class _DesktopState extends State<_Desktop> {
                                     ],
                                   ),
                                 ),
-                                Cover(
+                                ZCard(
                                   radius: 3,
                                   padding: EdgeInsets.all(2),
                                   color: color.surface,
@@ -335,7 +335,7 @@ class _DesktopState extends State<_Desktop> {
                                   ),
                                 ),
                                 SizedBox(width: 5),
-                                Cover(
+                                ZCard(
                                   radius: 3,
                                   padding: EdgeInsets.all(2),
                                   color: color.surface,
