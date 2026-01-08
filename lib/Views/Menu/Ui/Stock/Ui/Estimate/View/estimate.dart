@@ -53,7 +53,7 @@ class _Desktop extends StatefulWidget {
 
 class _DesktopState extends State<_Desktop> {
   String? baseCurrency;
-  late EstimatesLoaded _cachedEstimates;
+  EstimatesLoaded? _cachedEstimates; // Changed to nullable
 
   @override
   void initState() {
@@ -134,7 +134,7 @@ class _DesktopState extends State<_Desktop> {
                   isActive: true,
                   width: 120,
                   icon: Icons.add,
-                  onPressed: ()=> Utils.goto(context,AddEstimateView()),
+                  onPressed: () => Utils.goto(context, AddEstimateView()),
                   label: Text(tr.newKeyword),
                 ),
               ],
@@ -169,12 +169,18 @@ class _DesktopState extends State<_Desktop> {
                 }
                 if (state is EstimateError) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+                    SnackBar(
+                      content: Text(state.message),
+                      backgroundColor: Colors.red,
+                    ),
                   );
                 }
                 if (state is EstimateSaved) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+                    SnackBar(
+                      content: Text(state.message),
+                      backgroundColor: Colors.green,
+                    ),
                   );
                 }
               },
@@ -184,14 +190,19 @@ class _DesktopState extends State<_Desktop> {
                   _cachedEstimates = state;
                 }
 
-                // If we're in detail view, show cached estimates
-                final displayState = (state is EstimateDetailLoading ||
+                // Determine which state to display
+                final shouldUseCached = state is EstimateDetailLoading ||
                     state is EstimateDetailLoaded ||
                     state is EstimateSaving ||
                     state is EstimateDeleting ||
-                    state is EstimateConverting)
-                    ? _cachedEstimates
-                    : state;
+                    state is EstimateConverting;
+
+                final displayState = shouldUseCached ? _cachedEstimates : state;
+
+                // Handle null case for cached estimates
+                if (shouldUseCached && _cachedEstimates == null) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
                 if (displayState is EstimateError) {
                   return NoDataWidget(message: displayState.message);
@@ -225,7 +236,10 @@ class _DesktopState extends State<_Desktop> {
 
                       return InkWell(
                         onTap: () {
-                          Utils.goto(context, EstimateDetailView(estimateId: estimate.ordId!));
+                          Utils.goto(
+                            context,
+                            EstimateDetailView(estimateId: estimate.ordId!),
+                          );
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -245,12 +259,22 @@ class _DesktopState extends State<_Desktop> {
                               ),
                               SizedBox(
                                 width: 215,
-                                child: Text(estimate.ordxRef ?? "", overflow: TextOverflow.ellipsis),
+                                child: Text(
+                                  estimate.ordxRef ?? "",
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              Expanded(child: Text(estimate.ordPersonalName ?? "", overflow: TextOverflow.ellipsis)),
+                              Expanded(
+                                child: Text(
+                                  estimate.ordPersonalName ?? "",
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
                               SizedBox(
                                 width: 150,
-                                child: Text("${estimate.total?.toAmount()} $baseCurrency"),
+                                child: Text(
+                                  "${estimate.total?.toAmount()} $baseCurrency",
+                                ),
                               ),
                             ],
                           ),
@@ -260,7 +284,8 @@ class _DesktopState extends State<_Desktop> {
                   );
                 }
 
-                return const SizedBox();
+                // If we reach here, show loading indicator
+                return const Center(child: CircularProgressIndicator());
               },
             ),
           ),

@@ -4,6 +4,7 @@ import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/button.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
@@ -21,19 +22,17 @@ class EstimateDetailView extends StatefulWidget {
   @override
   State<EstimateDetailView> createState() => _EstimateDetailViewState();
 }
+
 class _EstimateDetailViewState extends State<EstimateDetailView> {
   String? _userName;
   String? baseCurrency;
-  double _totalCost = 0.0;
-  double _totalProfit = 0.0;
+  double _totalAmount = 0.0;
 
   // Payment variables
   PaymentMethod _selectedPaymentMethod = PaymentMethod.cash;
   AccountsModel? _selectedAccount;
   final TextEditingController _creditAmountController = TextEditingController();
-  double _totalAmount = 0.0;
   double _remainingAmount = 0.0;
-
 
   @override
   void initState() {
@@ -83,38 +82,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
         appBar: AppBar(
           titleSpacing: 0,
           backgroundColor: Theme.of(context).colorScheme.surface,
-          title: Text('${widget.estimateId}'),
-          actionsPadding: EdgeInsets.all(8),
-          actions: [
-            BlocBuilder<EstimateBloc, EstimateState>(
-              builder: (context, state) {
-                if (state is EstimateDetailLoaded) {
-                  return Row(
-                    spacing: 8,
-                    children: [
-                      // Delete button
-                      CircleAvatar(
-                        backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
-                        child: IconButton(
-                          icon: const Icon(Icons.delete_outline),
-                          onPressed: () => _deleteEstimate(state.estimate),
-                          tooltip: 'Delete',
-                        ),
-                      ),
-                      // Convert to Sale button
-                      ZButton(
-                        width: 130,
-                        height: 35,
-                        label: const Text('Convert to Sale'),
-                        onPressed: () => _showConvertToSaleDialog(state.estimate),
-                      ),
-                    ],
-                  );
-                }
-                return const SizedBox();
-              },
-            ),
-          ],
+          title: Text('Estimate #${widget.estimateId}'),
         ),
         body: BlocBuilder<EstimateBloc, EstimateState>(
           builder: (context, state) {
@@ -130,10 +98,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
               final estimate = state.estimate;
 
               // Update total amount
-              _totalAmount = double.tryParse(estimate.total ?? "0") ?? 0.0;
-
-              // Calculate totals
-              _calculateTotals(estimate);
+              _totalAmount = estimate.grandTotal;
 
               // Update remaining amount based on credit payment
               _updateRemainingAmount();
@@ -145,7 +110,38 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Header info
-                    _buildHeaderInfo(estimate),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        _buildHeaderInfo(estimate),
+                        BlocBuilder<EstimateBloc, EstimateState>(
+                          builder: (context, state) {
+                            if (state is EstimateDetailLoaded) {
+                              return Row(
+                                spacing: 8,
+                                children: [
+                                  ZOutlineButton(
+                                      width: 110,
+                                      icon: Icons.delete_outline,
+                                      backgroundHover: Theme.of(context).colorScheme.error,
+                                      onPressed: () => _deleteEstimate(state.estimate),
+                                      label: Text(AppLocalizations.of(context)!.delete)),
+
+                                  ZOutlineButton(
+                                    width: 110,
+                                    icon: Icons.published_with_changes_rounded,
+                                    label: const Text('Convert'),
+                                    onPressed: () => _showConvertToSaleDialog(state.estimate),
+                                  ),
+                                ],
+                              );
+                            }
+                            return const SizedBox();
+                          },
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 16),
 
                     // Items header
@@ -156,8 +152,8 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
 
                     const SizedBox(height: 16),
 
-                    // Summary section
-                    _buildSummarySection(estimate),
+                    // Profit Summary Section (Added like sale invoice)
+                    _buildProfitSummarySection(estimate)
                   ],
                 ),
               );
@@ -223,7 +219,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
         children: [
           SizedBox(width: 40, child: Text('#', style: TextStyle(color: color.surface))),
           Expanded(child: Text(tr.products, style: TextStyle(color: color.surface))),
-          SizedBox(width: 100, child: Text(tr.qty, style: TextStyle(color: color.surface))),
+          SizedBox(width: 80, child: Text(tr.qty, style: TextStyle(color: color.surface))),
           SizedBox(width: 120, child: Text(tr.unitPrice, style: TextStyle(color: color.surface))),
           SizedBox(width: 120, child: Text(tr.totalTitle, style: TextStyle(color: color.surface))),
           SizedBox(width: 150, child: Text(tr.storage, style: TextStyle(color: color.surface))),
@@ -246,9 +242,6 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
       children: records.asMap().entries.map((entry) {
         final index = entry.key;
         final record = entry.value;
-        final qty = double.tryParse(record.tstQuantity ?? "0") ?? 0;
-        final price = double.tryParse(record.tstSalePrice ?? "0") ?? 0;
-        final total = qty * price;
 
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -258,11 +251,34 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
           child: Row(
             children: [
               SizedBox(width: 40, child: Text((index + 1).toString())),
-              const Expanded(child: Text('Product Name')), // You'll need to fetch product names
-              SizedBox(width: 100, child: Text(record.tstQuantity ?? '')),
-              SizedBox(width: 120, child: Text(record.tstSalePrice?.toAmount() ?? '')),
-              SizedBox(width: 120, child: Text(total.toAmount())),
-              SizedBox(width: 150, child: Text('Storage Name')), // You'll need to fetch storage names
+              Expanded(child: Text(record.productName ?? 'Product ${record.tstProduct}')),
+              SizedBox(width: 80, child: Text(record.quantity.toStringAsFixed(2))),
+              SizedBox(width: 120, child: Text(record.salePrice.toAmount())),
+              SizedBox(
+                width: 120,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      record.total.toAmount(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    if (record.purchasePrice > 0 && record.salePrice > 0)
+                      Text(
+                        '${AppLocalizations.of(context)!.profit}: ${record.profit.toAmount()}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: record.profit >= 0 ? Colors.green : Colors.red,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              SizedBox(width: 150, child: Text(record.storageName ?? '')),
             ],
           ),
         );
@@ -270,52 +286,96 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
     );
   }
 
-  Widget _buildSummarySection(EstimateModel estimate) {
-    return ZCard(
-      radius: 5,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildSummaryRow('Total Cost', _totalCost),
-            _buildSummaryRow('Profit', _totalProfit, color: _totalProfit >= 0 ? Colors.green : Colors.red),
-            Divider(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
-            _buildSummaryRow('Grand Total', _totalAmount, isBold: true),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget _buildProfitSummarySection(EstimateModel estimate) {
+    final color = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context)!;
 
-  Widget _buildSummaryRow(String label, double value, {bool isBold = false, Color? color}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.surface,
+        border: Border.all(color: color.outline.withValues(alpha: .3)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
         children: [
-          Text(label, style: TextStyle(
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-          )),
-          Text("${value.toAmount()} $baseCurrency", style: TextStyle(
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            color: color ?? Theme.of(context).colorScheme.primary,
-          )),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(tr.profitSummary, style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(width: 4),
+              Icon(Icons.ssid_chart, size: 22, color: color.primary),
+            ],
+          ),
+          Divider(color: color.outline.withValues(alpha: .2)),
+          // Profit Summary - Similar to Sale Invoice
+          _buildProfitRow(
+            label: tr.totalCost,
+            value: estimate.totalPurchaseCost,
+            color: color.primary.withValues(alpha: .9),
+          ),
+          const SizedBox(height: 5),
+          _buildProfitRow(
+            label: tr.profit,
+            value: estimate.totalProfit,
+            color: estimate.totalProfit >= 0 ? Colors.green : Colors.red,
+            isBold: true,
+          ),
+          if (estimate.totalPurchaseCost > 0)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('${tr.profit} %', style: const TextStyle(fontSize: 16)),
+                Text(
+                  '${estimate.profitPercentage.toStringAsFixed(2)}%',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: estimate.totalProfit >= 0 ? Colors.green : Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          Divider(color: color.outline.withValues(alpha: .2)),
+
+          // Grand Total
+          _buildProfitRow(
+            label: tr.grandTotal,
+            value: estimate.grandTotal,
+            isBold: true,
+          ),
         ],
       ),
     );
   }
 
-  void _calculateTotals(EstimateModel estimate) {
-    _totalCost = 0.0;
-    _totalProfit = 0.0;
 
-    for (final record in estimate.records ?? []) {
-      final qty = double.tryParse(record.tstQuantity ?? "0") ?? 0;
-      final purPrice = double.tryParse(record.tstPurPrice ?? "0") ?? 0;
-      final salePrice = double.tryParse(record.tstSalePrice ?? "0") ?? 0;
-      _totalCost += qty * purPrice;
-      _totalProfit += qty * (salePrice - purPrice);
-    }
+  Widget _buildProfitRow({
+    required String label,
+    required double value,
+    bool isBold = false,
+    Color? color,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            fontSize: isBold ? 16 : 14,
+          ),
+        ),
+        Text(
+          "${value.toAmount()} $baseCurrency",
+          style: TextStyle(
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            fontSize: isBold ? 16 : 14,
+            color: color ?? Theme.of(context).colorScheme.primary,
+          ),
+        ),
+      ],
+    );
   }
 
   void _showConvertToSaleDialog(EstimateModel estimate) {
@@ -418,7 +478,8 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                         setState(() {
                           _selectedAccount = value;
                         });
-                      }, controller: null,
+                      },
+                      controller: null,
                     ),
 
                   // Credit Amount (for credit and mixed)

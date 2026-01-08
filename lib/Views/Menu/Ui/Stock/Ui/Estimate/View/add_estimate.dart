@@ -31,8 +31,12 @@ class AddEstimateView extends StatefulWidget {
 class _AddEstimateViewState extends State<AddEstimateView> {
   final List<TextEditingController> _productControllers = [];
   final List<TextEditingController> _qtyControllers = [];
-  final List<TextEditingController> _priceControllers = [];
+  final List<TextEditingController> _salePriceControllers = [];
   final List<TextEditingController> _storageControllers = [];
+
+  // Keep only purchase price controller for display
+  final List<TextEditingController> _purchasePriceControllers = [];
+  // Remove profit controller since we'll display it differently
 
   final TextEditingController _customerController = TextEditingController();
   final TextEditingController _xRefController = TextEditingController();
@@ -72,10 +76,13 @@ class _AddEstimateViewState extends State<AddEstimateView> {
     for (final controller in _qtyControllers) {
       controller.dispose();
     }
-    for (final controller in _priceControllers) {
+    for (final controller in _salePriceControllers) {
       controller.dispose();
     }
     for (final controller in _storageControllers) {
+      controller.dispose();
+    }
+    for (final controller in _purchasePriceControllers) {
       controller.dispose();
     }
     _customerController.dispose();
@@ -85,9 +92,11 @@ class _AddEstimateViewState extends State<AddEstimateView> {
 
   void _addEmptyItem() {
     _productControllers.add(TextEditingController());
-    _qtyControllers.add(TextEditingController(text: "1.000"));
-    _priceControllers.add(TextEditingController(text: "0.00"));
+    _qtyControllers.add(TextEditingController(text: "1"));
+    _salePriceControllers.add(TextEditingController(text: "0.00"));
     _storageControllers.add(TextEditingController());
+    _purchasePriceControllers.add(TextEditingController(text: "0.00"));
+
     _selectedProducts.add(null);
     _selectedStorages.add(null);
 
@@ -96,9 +105,9 @@ class _AddEstimateViewState extends State<AddEstimateView> {
       tstOrder: 0,
       tstProduct: 0,
       tstStorage: 0,
-      tstQuantity: "1.000",
-      tstPurPrice: "0.0000",
-      tstSalePrice: "0.0000",
+      tstQuantity: "1",
+      tstPurPrice: "0.00",
+      tstSalePrice: "0.00",
     ));
   }
 
@@ -111,8 +120,9 @@ class _AddEstimateViewState extends State<AddEstimateView> {
     setState(() {
       _productControllers.removeAt(index);
       _qtyControllers.removeAt(index);
-      _priceControllers.removeAt(index);
+      _salePriceControllers.removeAt(index);
       _storageControllers.removeAt(index);
+      _purchasePriceControllers.removeAt(index);
       _selectedProducts.removeAt(index);
       _selectedStorages.removeAt(index);
       _records.removeAt(index);
@@ -130,26 +140,48 @@ class _AddEstimateViewState extends State<AddEstimateView> {
 
     _records[index] = record.copyWith(
       tstProduct: productId ?? record.tstProduct,
-      tstQuantity: quantity?.toStringAsFixed(3) ?? record.tstQuantity,
-      tstSalePrice: salePrice?.toStringAsFixed(4) ?? record.tstSalePrice,
-      tstPurPrice: purchasePrice?.toStringAsFixed(4) ?? record.tstPurPrice,
+      tstQuantity: quantity?.toStringAsFixed(2) ?? record.tstQuantity,
+      tstSalePrice: salePrice?.toStringAsFixed(2) ?? record.tstSalePrice,
+      tstPurPrice: purchasePrice?.toStringAsFixed(2) ?? record.tstPurPrice,
       tstStorage: storageId ?? record.tstStorage,
     );
+
+    setState(() {}); // Update UI
   }
 
   double get _grandTotal {
     double total = 0.0;
     for (final record in _records) {
-      final qty = double.tryParse(record.tstQuantity ?? "0") ?? 0;
-      final price = double.tryParse(record.tstSalePrice ?? "0") ?? 0;
-      total += qty * price;
+      total += record.total;
     }
     return total;
+  }
+
+  double get _totalCost {
+    double total = 0.0;
+    for (final record in _records) {
+      total += record.totalPurchase;
+    }
+    return total;
+  }
+
+  double get _totalProfit {
+    double total = 0.0;
+    for (final record in _records) {
+      total += record.profit;
+    }
+    return total;
+  }
+
+  double get _profitPercentage {
+    if (_totalCost == 0) return 0.0;
+    return (_totalProfit / _totalCost) * 100;
   }
 
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context)!;
 
     return BlocListener<EstimateBloc, EstimateState>(
       listener: (context, state) {
@@ -169,22 +201,37 @@ class _AddEstimateViewState extends State<AddEstimateView> {
         backgroundColor: color.surface,
         appBar: AppBar(
           backgroundColor: color.surface,
-          title: const Text('New Estimate'),
+          title: Text('${tr.newKeyword} ${tr.estimate}'),
           titleSpacing: 0,
-          actionsPadding: EdgeInsets.all(8),
+          actionsPadding: const EdgeInsets.all(8),
           actions: [
             ZOutlineButton(
-              icon: Icons.print,
+              icon: Icons.refresh,
               width: 110,
               height: 38,
-              label: Text(AppLocalizations.of(context)!.print),
-              onPressed: _createEstimate,
+              label: Text(tr.refresh),
+              onPressed: () {
+                setState(() {
+                  _records.clear();
+                  _productControllers.clear();
+                  _qtyControllers.clear();
+                  _salePriceControllers.clear();
+                  _storageControllers.clear();
+                  _purchasePriceControllers.clear();
+                  _selectedProducts.clear();
+                  _selectedStorages.clear();
+                  _addEmptyItem();
+                  _customerController.clear();
+                  _xRefController.clear();
+                  _selectedCustomerId = null;
+                });
+              },
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             ZButton(
               width: 110,
               height: 38,
-              label: Text('Create'),
+              label: Text(tr.create),
               onPressed: _createEstimate,
             ),
           ],
@@ -199,8 +246,8 @@ class _AddEstimateViewState extends State<AddEstimateView> {
                   Expanded(
                     child: GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
                       controller: _customerController,
-                      title: 'Customer',
-                      hintText: 'Select customer',
+                      title: tr.customer,
+                      hintText: tr.customer,
                       isRequired: true,
                       bloc: context.read<IndividualsBloc>(),
                       fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
@@ -224,7 +271,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: ZTextFieldEntitled(
-                      title: 'Reference Number',
+                      title: tr.referenceNumber,
                       controller: _xRefController,
                     ),
                   ),
@@ -234,11 +281,11 @@ class _AddEstimateViewState extends State<AddEstimateView> {
               const SizedBox(height: 16),
 
               // Items header
-              _buildItemsHeader(),
+              _buildItemsHeader(tr),
 
               // Items list
               ...List.generate(_records.length, (index) {
-                return _buildItemRow(index);
+                return _buildItemRow(index, tr);
               }),
 
               // Add item button
@@ -249,7 +296,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
                     child: ZOutlineButton(
                       width: 120,
                       icon: Icons.add,
-                      label: const Text('Add Item'),
+                      label: Text(tr.addItem),
                       onPressed: () {
                         setState(() {
                           _addEmptyItem();
@@ -262,8 +309,15 @@ class _AddEstimateViewState extends State<AddEstimateView> {
 
               const SizedBox(height: 16),
 
-              // Summary section
-              _buildSummarySection(),
+              // Summary sections in row (like sale invoice)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 8,
+                children: [
+                  Expanded(child: _buildProfitSummarySection(tr)),
+                  Expanded(child: _buildTotalSummarySection(tr)),
+                ],
+              ),
             ],
           ),
         ),
@@ -271,7 +325,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
     );
   }
 
-  Widget _buildItemsHeader() {
+  Widget _buildItemsHeader(AppLocalizations tr) {
     final color = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -279,26 +333,28 @@ class _AddEstimateViewState extends State<AddEstimateView> {
         color: color.primary,
         borderRadius: BorderRadius.circular(4),
       ),
-      child: const Row(
+      child: Row(
         children: [
-          SizedBox(width: 40, child: Text('#', style: TextStyle(color: Colors.white))),
-          Expanded(child: Text('Product', style: TextStyle(color: Colors.white))),
-          SizedBox(width: 100, child: Text('Qty', style: TextStyle(color: Colors.white))),
-          SizedBox(width: 120, child: Text('Price', style: TextStyle(color: Colors.white))),
-          SizedBox(width: 120, child: Text('Total', style: TextStyle(color: Colors.white))),
-          SizedBox(width: 150, child: Text('Storage', style: TextStyle(color: Colors.white))),
-          SizedBox(width: 60, child: Text('Action', style: TextStyle(color: Colors.white))),
+          SizedBox(width: 40, child: Text('#', style: TextStyle(color: color.surface))),
+          Expanded(child: Text(tr.products, style: TextStyle(color: color.surface))),
+          SizedBox(width: 80, child: Text(tr.qty, style: TextStyle(color: color.surface))),
+          SizedBox(width: 120, child: Text(tr.costPrice, style: TextStyle(color: color.surface))),
+          SizedBox(width: 120, child: Text(tr.salePrice, style: TextStyle(color: color.surface))),
+          SizedBox(width: 120, child: Text(tr.totalTitle, style: TextStyle(color: color.surface))),
+          SizedBox(width: 120, child: Text(tr.profit, style: TextStyle(color: color.surface))),
+          SizedBox(width: 150, child: Text(tr.storage, style: TextStyle(color: color.surface))),
+          SizedBox(width: 60, child: Text(tr.actions, style: TextStyle(color: color.surface))),
         ],
       ),
     );
   }
 
-  Widget _buildItemRow(int index) {
+  Widget _buildItemRow(int index, AppLocalizations tr) {
     final color = Theme.of(context).colorScheme;
     final record = _records[index];
-    final qty = double.tryParse(record.tstQuantity ?? "0") ?? 0;
-    final price = double.tryParse(record.tstSalePrice ?? "0") ?? 0;
-    final total = qty * price;
+
+    // Calculate profit color
+    final profitColor = record.profit >= 0 ? Colors.green : Colors.red;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -313,14 +369,26 @@ class _AddEstimateViewState extends State<AddEstimateView> {
           Expanded(
             child: GenericUnderlineTextfield<ProductsStockModel, ProductsBloc, ProductsState>(
               controller: _productControllers[index],
-              hintText: 'Product',
+              hintText: tr.products,
               bloc: context.read<ProductsBloc>(),
               fetchAllFunction: (bloc) => bloc.add(LoadProductsStockEvent()),
               searchFunction: (bloc, query) => bloc.add(LoadProductsStockEvent()),
               itemBuilder: (context, product) => ListTile(
                 title: Text(product.proName ?? ''),
-                subtitle: Text('Sale: ${product.sellPrice?.toAmount()}'),
-                trailing: Text(product.available ?? ''),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${tr.costPrice}: ${product.purchasePrice?.toAmount() ?? "0.00"}'),
+                    Text('${tr.salePrice}: ${product.sellPrice?.toAmount() ?? "0.00"}'),
+                  ],
+                ),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('${tr.qty}: ${product.available ?? '0'}'),
+                    Text('${tr.storage}: ${product.stgName ?? ''}'),
+                  ],
+                ),
               ),
               itemToString: (product) => product.proName ?? '',
               stateToLoading: (state) => state is ProductsLoadingState,
@@ -338,7 +406,8 @@ class _AddEstimateViewState extends State<AddEstimateView> {
 
                 _selectedProducts[index] = product;
                 _storageControllers[index].text = product.stgName ?? '';
-                _priceControllers[index].text = salePrice.toAmount();
+                _salePriceControllers[index].text = salePrice.toAmount();
+                _purchasePriceControllers[index].text = purchasePrice.toAmount();
 
                 _updateRecord(index,
                   productId: product.proId,
@@ -353,67 +422,115 @@ class _AddEstimateViewState extends State<AddEstimateView> {
 
           // Quantity
           SizedBox(
-            width: 100,
+            width: 80,
             child: TextField(
               controller: _qtyControllers[index],
               keyboardType: TextInputType.number,
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
               ],
-              decoration: const InputDecoration(
-                hintText: 'Qty',
+              decoration: InputDecoration(
+                hintText: tr.qty,
                 border: InputBorder.none,
                 isDense: true,
               ),
               onChanged: (value) {
                 final qty = double.tryParse(value) ?? 0.0;
                 _updateRecord(index, quantity: qty);
-                setState(() {}); // Update UI
               },
             ),
           ),
 
-          // Price
+          // Purchase Price (Cost Price) - Read-only
           SizedBox(
             width: 120,
             child: TextField(
-              controller: _priceControllers[index],
+              controller: _purchasePriceControllers[index],
+              readOnly: true,
+              decoration: InputDecoration(
+                hintText: tr.costPrice,
+                border: InputBorder.none,
+                isDense: true,
+              ),
+              style: TextStyle(color: Colors.blue),
+            ),
+          ),
+
+          // Sale Price - Editable
+          SizedBox(
+            width: 120,
+            child: TextField(
+              controller: _salePriceControllers[index],
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
                 SmartThousandsDecimalFormatter(),
               ],
-              decoration: const InputDecoration(
-                hintText: 'Price',
+              decoration: InputDecoration(
+                hintText: tr.salePrice,
                 border: InputBorder.none,
                 isDense: true,
               ),
               onChanged: (value) {
                 final price = double.tryParse(value.replaceAll(',', '')) ?? 0.0;
                 _updateRecord(index, salePrice: price);
-                setState(() {}); // Update UI
               },
             ),
           ),
 
-          // Total
+          // Total and Profit Display - Like Sale Invoice
           SizedBox(
             width: 120,
-            child: Text(
-              total.toAmount(),
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: color.primary,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Total (Total Sale)
+                Text(
+                  record.total.toAmount(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: color.primary,
+                  ),
+                ),
+              ],
             ),
           ),
 
+          SizedBox(
+            width: 120,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Profit/Benefit
+                if (record.purchasePrice > 0)
+                  Text(
+                    record.profit.toAmount(),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: profitColor,
+                    ),
+                  ),
+                // Profit Percentage
+                if (record.purchasePrice > 0)
+                  Text(
+                    '(${record.profitPercentage.toStringAsFixed(1)}%)',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: profitColor,
+                    ),
+                  ),
+              ],
+            ),
+          ),
           // Storage
           SizedBox(
             width: 150,
             child: GenericUnderlineTextfield<StorageModel, StorageBloc, StorageState>(
               controller: _storageControllers[index],
-              hintText: 'Storage',
+              hintText: tr.storage,
               bloc: context.read<StorageBloc>(),
               fetchAllFunction: (bloc) => bloc.add(LoadStorageEvent()),
               searchFunction: (bloc, query) => bloc.add(LoadStorageEvent()),
@@ -439,7 +556,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
           SizedBox(
             width: 60,
             child: IconButton(
-              icon: const Icon(Icons.delete_outline, size: 18),
+              icon: Icon(Icons.delete_outline, size: 18, color: color.error),
               onPressed: () => _removeItem(index),
             ),
           ),
@@ -448,47 +565,138 @@ class _AddEstimateViewState extends State<AddEstimateView> {
     );
   }
 
-  Widget _buildSummarySection() {
-    double totalCost = 0.0;
-    double totalProfit = 0.0;
-
-    for (final record in _records) {
-      final qty = double.tryParse(record.tstQuantity ?? "0") ?? 0;
-      final purPrice = double.tryParse(record.tstPurPrice ?? "0") ?? 0;
-      final salePrice = double.tryParse(record.tstSalePrice ?? "0") ?? 0;
-      totalCost += qty * purPrice;
-      totalProfit += qty * (salePrice - purPrice);
-    }
+  Widget _buildProfitSummarySection(AppLocalizations tr) {
+    final color = Theme.of(context).colorScheme;
+    final profitColor = _totalProfit >= 0 ? Colors.green : Colors.red;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.outline.withAlpha(100)),
+        color: color.surface,
+        border: Border.all(color: color.outline.withValues(alpha: .3)),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
         children: [
-          _buildSummaryRow('Total Cost', totalCost),
-          _buildSummaryRow('Profit', totalProfit, color: totalProfit >= 0 ? Colors.green : Colors.red),
-          _buildSummaryRow('Grand Total', _grandTotal, isBold: true),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(tr.profitSummary, style: TextStyle(fontWeight: FontWeight.bold)),
+              Icon(Icons.ssid_chart, size: 22, color: color.primary),
+            ],
+          ),
+          Divider(color: color.outline.withValues(alpha: .2)),
+
+          // Total Cost
+          _buildSummaryRow(
+            label: tr.totalCost,
+            value: _totalCost,
+            color: Colors.blue,
+          ),
+
+          // Total Profit
+          _buildSummaryRow(
+            label: tr.profit,
+            value: _totalProfit,
+            color: profitColor,
+            isBold: true,
+          ),
+
+          // Profit Percentage
+          if (_totalCost > 0)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('${tr.profit} %', style: const TextStyle(fontSize: 16)),
+                Text(
+                  '${_profitPercentage.toStringAsFixed(2)}%',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: profitColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+
+          Divider(color: color.outline.withValues(alpha: .2)),
+
+          // Grand Total
+          _buildSummaryRow(
+            label: tr.grandTotal,
+            value: _grandTotal,
+            isBold: true,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSummaryRow(String label, double value, {bool isBold = false, Color? color}) {
+  Widget _buildTotalSummarySection(AppLocalizations tr) {
+    final color = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.surface,
+        border: Border.all(color: color.outline.withValues(alpha: .3)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
+
+          // Items count
+          _buildSummaryRow(
+            label: 'Total Items',
+            value: _records.length.toDouble(),
+          ),
+
+          // Per item averages
+          if (_records.isNotEmpty)
+            Column(
+              children: [
+                _buildSummaryRow(
+                  label: 'Average Price',
+                  value: _grandTotal / _records.length,
+                ),
+                _buildSummaryRow(
+                  label: 'Average Profit',
+                  value: _totalProfit / _records.length,
+                  color: _totalProfit >= 0 ? Colors.green : Colors.red,
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryRow({
+    required String label,
+    required double value,
+    bool isBold = false,
+    Color? color,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-          )),
-          Text("${value.toAmount()} $baseCurrency", style: TextStyle(
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            color: color ?? Theme.of(context).colorScheme.primary,
-          )),
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              fontSize: isBold ? 16 : 14,
+            ),
+          ),
+          Text(
+            "${value.toAmount()} $baseCurrency",
+            style: TextStyle(
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              fontSize: isBold ? 16 : 14,
+              color: color ?? Theme.of(context).colorScheme.primary,
+            ),
+          ),
         ],
       ),
     );
@@ -516,12 +724,12 @@ class _AddEstimateViewState extends State<AddEstimateView> {
         Utils.showOverlayMessage(context, message: 'Please select a storage for item ${i + 1}', isError: true);
         return;
       }
-      final qty = double.tryParse(record.tstQuantity ?? "0") ?? 0;
+      final qty = record.quantity;
       if (qty <= 0) {
         Utils.showOverlayMessage(context, message: 'Please enter a valid quantity for item ${i + 1}', isError: true);
         return;
       }
-      final price = double.tryParse(record.tstSalePrice ?? "0") ?? 0;
+      final price = record.salePrice;
       if (price <= 0) {
         Utils.showOverlayMessage(context, message: 'Please enter a valid price for item ${i + 1}', isError: true);
         return;

@@ -190,10 +190,12 @@ class EstimateRecord {
   final String? productName;
   final String? tstPurPrice;
   final String? tstSalePrice;
+  final String? storageName;
 
   EstimateRecord({
     this.tstId,
     this.tstOrder,
+    this.storageName,
     this.tstProduct,
     this.tstStorage,
     this.productName,
@@ -209,6 +211,7 @@ class EstimateRecord {
     int? tstStorage,
     String? tstQuantity,
     String? tstPurPrice,
+    String? storageName,
     String? productName,
     String? tstSalePrice,
   }) =>
@@ -216,6 +219,7 @@ class EstimateRecord {
         tstId: tstId ?? this.tstId,
         tstOrder: tstOrder ?? this.tstOrder,
         tstProduct: tstProduct ?? this.tstProduct,
+        storageName: storageName ?? this.storageName,
         tstStorage: tstStorage ?? this.tstStorage,
         tstQuantity: tstQuantity ?? this.tstQuantity,
         tstPurPrice: tstPurPrice ?? this.tstPurPrice,
@@ -229,6 +233,7 @@ class EstimateRecord {
     tstProduct: json["tstProduct"],
     tstStorage: json["tstStorage"],
     tstQuantity: json["tstQuantity"],
+    storageName: json["tstStorageName"],
     tstPurPrice: json["tstPurPrice"],
     productName: json["tstProductName"],
     tstSalePrice: json["tstSalePrice"],
