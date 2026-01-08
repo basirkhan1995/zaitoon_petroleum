@@ -6,6 +6,7 @@ import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/View/add_estimate.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/View/estimate.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/new_purchase.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewSale/new_sale.dart';
@@ -144,7 +145,7 @@ class StockView extends StatelessWidget {
                       label: Text(locale.estimateTitle),
                       icon: Icons.real_estate_agent_outlined,
                       width: double.infinity,
-                      // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
+                       onPressed: () => Utils.goto(context, AddEstimateView()),
                     ),
                     ZOutlineButton(
                       backgroundColor: color.primary.withValues(alpha: .1),

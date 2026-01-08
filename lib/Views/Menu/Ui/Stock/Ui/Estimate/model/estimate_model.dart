@@ -1,5 +1,4 @@
 
-
 class EstimateModel {
   final int? ordId;
   final String? ordName;
@@ -17,11 +16,13 @@ class EstimateModel {
   final DateTime? ordEntryDate;
   final String? trnStateText;
   final String? totalEstimate;
+  final String? productName;
   final List<EstimateRecord>? records;
 
   EstimateModel({
     this.ordId,
     this.ordName,
+    this.productName,
     this.ordPersonal,
     this.ordPersonalName,
     this.ordBranch,
@@ -42,6 +43,7 @@ class EstimateModel {
   EstimateModel copyWith({
     int? ordId,
     String? ordName,
+    String? productName,
     int? ordPersonal,
     String? ordPersonalName,
     int? ordBranch,
@@ -67,6 +69,7 @@ class EstimateModel {
         ordxRef: ordxRef ?? this.ordxRef,
         ordTrnRef: ordTrnRef ?? this.ordTrnRef,
         total: total ?? this.total,
+        productName: productName ?? this.productName,
         amount: amount ?? this.amount,
         acc: acc ?? this.acc,
         personal: personal ?? this.personal,
@@ -89,6 +92,7 @@ class EstimateModel {
     amount: json["amount"],
     acc: json["acc"],
     personal: json["personal"],
+    productName: json["tstProductName"],
     perId: json["perID"],
     totalEstimate: json["total"],
     ordEntryDate: json["ordEntryDate"] != null
@@ -112,6 +116,7 @@ class EstimateModel {
     "ordTrnRef": ordTrnRef,
     "total": total,
     "amount": amount,
+    "tstProductName":productName,
     "acc": acc,
     "personal": personal,
     "perID": perId,
@@ -145,6 +150,35 @@ class EstimateModel {
   }
 
   bool get isPending => trnStateText?.toLowerCase() == 'pending';
+
+  // ADD THESE NEW METHODS FOR PROFIT CALCULATION
+  double get totalPurchaseCost {
+    if (records == null) return 0.0;
+    return records!.fold(0.0, (sum, record) {
+      return sum + record.totalPurchase;
+    });
+  }
+
+  double get totalSaleValue {
+    if (records == null) return 0.0;
+    return records!.fold(0.0, (sum, record) {
+      return sum + record.total;
+    });
+  }
+
+  double get totalProfit {
+    return totalSaleValue - totalPurchaseCost;
+  }
+
+  double get profitPercentage {
+    if (totalPurchaseCost == 0) return 0.0;
+    return (totalProfit / totalPurchaseCost) * 100;
+  }
+
+  double get profitMarginPercentage {
+    if (totalSaleValue == 0) return 0.0;
+    return (totalProfit / totalSaleValue) * 100;
+  }
 }
 
 class EstimateRecord {
@@ -153,6 +187,7 @@ class EstimateRecord {
   final int? tstProduct;
   final int? tstStorage;
   final String? tstQuantity;
+  final String? productName;
   final String? tstPurPrice;
   final String? tstSalePrice;
 
@@ -161,6 +196,7 @@ class EstimateRecord {
     this.tstOrder,
     this.tstProduct,
     this.tstStorage,
+    this.productName,
     this.tstQuantity,
     this.tstPurPrice,
     this.tstSalePrice,
@@ -173,6 +209,7 @@ class EstimateRecord {
     int? tstStorage,
     String? tstQuantity,
     String? tstPurPrice,
+    String? productName,
     String? tstSalePrice,
   }) =>
       EstimateRecord(
@@ -182,6 +219,7 @@ class EstimateRecord {
         tstStorage: tstStorage ?? this.tstStorage,
         tstQuantity: tstQuantity ?? this.tstQuantity,
         tstPurPrice: tstPurPrice ?? this.tstPurPrice,
+        productName: productName ?? this.productName,
         tstSalePrice: tstSalePrice ?? this.tstSalePrice,
       );
 
@@ -192,6 +230,7 @@ class EstimateRecord {
     tstStorage: json["tstStorage"],
     tstQuantity: json["tstQuantity"],
     tstPurPrice: json["tstPurPrice"],
+    productName: json["tstProductName"],
     tstSalePrice: json["tstSalePrice"],
   );
 
@@ -205,12 +244,21 @@ class EstimateRecord {
     "tstSalePrice": tstSalePrice,
   };
 
+  // ADD THESE GETTERS FOR CALCULATIONS
   double get quantity => double.tryParse(tstQuantity ?? "0") ?? 0;
   double get purchasePrice => double.tryParse(tstPurPrice ?? "0") ?? 0;
   double get salePrice => double.tryParse(tstSalePrice ?? "0") ?? 0;
   double get total => quantity * salePrice;
   double get totalPurchase => quantity * purchasePrice;
   double get profit => total - totalPurchase;
+  double get profitPercentage {
+    if (purchasePrice == 0) return 0.0;
+    return ((salePrice - purchasePrice) / purchasePrice) * 100;
+  }
+  double get profitMargin {
+    if (salePrice == 0) return 0.0;
+    return ((salePrice - purchasePrice) / salePrice) * 100;
+  }
 }
 
 enum PaymentMode { cash, credit, mixed }
