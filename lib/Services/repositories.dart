@@ -1902,6 +1902,116 @@ class Repositories {
       throw "$e";
     }
   }
+  Future<Map<String, dynamic>> deleteEstimate({required int orderId, required String usrName}) async {
+    try {
+      final response = await api.delete(
+          endpoint: "/inventory/estimate.php",
+          data: {
+            "ordID": orderId,
+            "usrName": usrName
+          }
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<Map<String, dynamic>> addEstimate({
+    required String usrName,
+    required int perID,
+    required String? xRef,
+    required List<EstimateRecord> records,
+  }) async {
+    try {
+      final data = {
+        "usrName": usrName,
+        "ordName": "Estimate",
+        "ordPersonal": perID,
+        "ordxRef": xRef ?? "",
+        "records": records.map((r) => r.toMap()).toList(),
+      };
+
+      final response = await api.post(
+        endpoint: "/inventory/estimate.php",
+        data: data,
+      );
+
+      return response.data is Map<String, dynamic>
+          ? response.data
+          : {'msg': 'Invalid response format'};
+
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw 'Unexpected error: $e';
+    }
+  }
+
+  Future<Map<String, dynamic>> updateEstimate({
+    required String usrName,
+    required int orderId,
+    required int perID,
+    required String? xRef,
+    required List<EstimateRecord> records,
+  }) async {
+    try {
+      final data = {
+        "usrName": usrName, // created by
+        "ordName": "Estimate", // Order Type
+        "ordID":orderId, // Invoice Id
+        "ordPersonal": perID, // Customer
+        "ordxRef": xRef ?? "", // Optional Invoice No.
+        "records": records.map((r) => r.toMap()).toList(),
+      };
+
+      final response = await api.put(
+        endpoint: "/inventory/estimate.php",
+        data: data,
+      );
+
+      return response.data is Map<String, dynamic> ? response.data : {'msg': 'Invalid response format'};
+
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw 'Unexpected error: $e';
+    }
+  }
+
+  Future<Map<String, dynamic>> changeEstimateIntoInvoice({
+    required String usrName,
+    required int orderId,
+    required int perID,
+    required int accountNo,
+    required String totalAmount,
+    required List<EstimateRecord> records,
+  }) async {
+    try {
+      final data = {
+        "usrName": usrName,
+        "ordID":orderId,
+        "ordPersonal": perID,
+        "account": accountNo, // Customer Account No.
+        "amount": totalAmount, // Total Invoice Amount
+      };
+
+      final response = await api.post(
+        endpoint: "/inventory/estimateToSale.php",
+        data: data,
+      );
+
+      return response.data is Map<String, dynamic> ? response.data : {'msg': 'Invalid response format'};
+
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw 'Unexpected error: $e';
+    }
+  }
+
+
 
   /// Purchase Invoice...........................................................................
   Future<Map<String, dynamic>> addPurchaseInvoice({
