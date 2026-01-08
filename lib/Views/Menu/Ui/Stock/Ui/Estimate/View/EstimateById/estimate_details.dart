@@ -35,6 +35,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
   double _totalAmount = 0.0;
   double _remainingAmount = 0.0;
 
+
   @override
   void initState() {
     super.initState();
