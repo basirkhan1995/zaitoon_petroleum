@@ -21,7 +21,6 @@ class EstimateDetailView extends StatefulWidget {
   @override
   State<EstimateDetailView> createState() => _EstimateDetailViewState();
 }
-
 class _EstimateDetailViewState extends State<EstimateDetailView> {
   String? _userName;
   String? baseCurrency;
