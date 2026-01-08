@@ -27,9 +27,13 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
   String? baseCurrency;
   double _totalCost = 0.0;
   double _totalProfit = 0.0;
-  bool _isCashPayment = true;
-  final TextEditingController _accountController = TextEditingController();
-  final TextEditingController _amountController = TextEditingController();
+
+  // Payment variables
+  PaymentMethod _selectedPaymentMethod = PaymentMethod.cash;
+  AccountsModel? _selectedAccount;
+  final TextEditingController _creditAmountController = TextEditingController();
+  double _totalAmount = 0.0;
+  double _remainingAmount = 0.0;
 
   @override
   void initState() {
@@ -125,8 +129,14 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
             if (state is EstimateDetailLoaded) {
               final estimate = state.estimate;
 
+              // Update total amount
+              _totalAmount = double.tryParse(estimate.total ?? "0") ?? 0.0;
+
               // Calculate totals
               _calculateTotals(estimate);
+
+              // Update remaining amount based on credit payment
+              _updateRemainingAmount();
 
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
@@ -190,7 +200,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(AppLocalizations.of(context)!.totalInvoice, style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text("${estimate.total?.toAmount()} $baseCurrency"),
+                  Text("${_totalAmount.toAmount()} $baseCurrency"),
                 ],
               ),
             ],
@@ -261,8 +271,6 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
   }
 
   Widget _buildSummarySection(EstimateModel estimate) {
-    final total = double.tryParse(estimate.total ?? "0") ?? 0.0;
-
     return ZCard(
       radius: 5,
       child: Padding(
@@ -271,8 +279,8 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
           children: [
             _buildSummaryRow('Total Cost', _totalCost),
             _buildSummaryRow('Profit', _totalProfit, color: _totalProfit >= 0 ? Colors.green : Colors.red),
-             Divider(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
-            _buildSummaryRow('Grand Total', total, isBold: true),
+            Divider(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
+            _buildSummaryRow('Grand Total', _totalAmount, isBold: true),
           ],
         ),
       ),
@@ -313,10 +321,11 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
   void _showConvertToSaleDialog(EstimateModel estimate) {
     final tr = AppLocalizations.of(context)!;
 
-    // Reset controllers
-    _accountController.clear();
-    _amountController.text = estimate.total ?? "0";
-    _isCashPayment = true;
+    // Reset payment variables
+    _selectedPaymentMethod = PaymentMethod.cash;
+    _selectedAccount = null;
+    _creditAmountController.clear();
+    _remainingAmount = _totalAmount;
 
     showDialog(
       context: context,
@@ -328,52 +337,68 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Payment Type Selection
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ListTile(
-                          title: const Text('Cash Payment'),
-                          leading: Radio<bool>(
-                            value: true,
-                            groupValue: _isCashPayment,
-                            onChanged: (value) {
-                              setState(() {
-                                _isCashPayment = value!;
-                                if (_isCashPayment) {
-                                  _accountController.clear();
-                                }
-                              });
-                            },
-                          ),
+                  // Payment Method Selection
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      children: [
+                        // Cash Option
+                        _buildPaymentOption(
+                          title: 'Cash Payment',
+                          subtitle: 'Full payment in cash',
+                          isSelected: _selectedPaymentMethod == PaymentMethod.cash,
+                          onTap: () {
+                            setState(() {
+                              _selectedPaymentMethod = PaymentMethod.cash;
+                              _selectedAccount = null;
+                              _creditAmountController.clear();
+                              _remainingAmount = _totalAmount;
+                            });
+                          },
                         ),
-                      ),
-                      Expanded(
-                        child: ListTile(
-                          title: const Text('Credit Payment'),
-                          leading: Radio<bool>(
-                            value: false,
-                            groupValue: _isCashPayment,
-                            onChanged: (value) {
-                              setState(() {
-                                _isCashPayment = value!;
-                              });
-                            },
-                          ),
+
+                        // Credit Option
+                        _buildPaymentOption(
+                          title: 'Credit Payment',
+                          subtitle: 'Full payment via account',
+                          isSelected: _selectedPaymentMethod == PaymentMethod.credit,
+                          onTap: () {
+                            setState(() {
+                              _selectedPaymentMethod = PaymentMethod.credit;
+                              _remainingAmount = 0.0;
+                              _creditAmountController.text = _totalAmount.toStringAsFixed(2);
+                            });
+                          },
                         ),
-                      ),
-                    ],
+
+                        // Mixed Option
+                        _buildPaymentOption(
+                          title: 'Mixed Payment',
+                          subtitle: 'Part credit, rest cash',
+                          isSelected: _selectedPaymentMethod == PaymentMethod.mixed,
+                          onTap: () {
+                            setState(() {
+                              _selectedPaymentMethod = PaymentMethod.mixed;
+                              _remainingAmount = _totalAmount;
+                              _creditAmountController.text = '0';
+                            });
+                          },
+                        ),
+                      ],
+                    ),
                   ),
 
                   const SizedBox(height: 16),
 
-                  // Account Selection (only for credit)
-                  if (!_isCashPayment) ...[
+                  // Account Selection (for credit and mixed)
+                  if (_selectedPaymentMethod != PaymentMethod.cash)
                     GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
-                      controller: _accountController,
                       title: 'Customer Account',
-                      hintText: 'Select account',
-                      isRequired: !_isCashPayment,
+                      hintText: 'Select account for credit payment',
+                      isRequired: _selectedPaymentMethod != PaymentMethod.cash,
                       bloc: context.read<AccountsBloc>(),
                       fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 5, end: 5, exclude: '')),
                       searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(
@@ -390,33 +415,94 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                       stateToLoading: (state) => state is AccountLoadingState,
                       stateToItems: (state) => state is AccountLoadedState ? state.accounts : [],
                       onSelected: (value) {
-                        _accountController.text = '${value.accName} (${value.accNumber})';
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-
-                  // Payment Amount (only for credit)
-                  if (!_isCashPayment)
-                    ZTextFieldEntitled(
-                      title: 'Payment Amount',
-                      controller: _amountController,
-                      isRequired: !_isCashPayment,
+                        setState(() {
+                          _selectedAccount = value;
+                        });
+                      }, controller: null,
                     ),
 
-                  // For cash payment, show info
-                  if (_isCashPayment)
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Text(
-                        'Full cash payment will be processed. No account needed.',
-                        style: TextStyle(color: Colors.green),
-                      ),
+                  // Credit Amount (for credit and mixed)
+                  if (_selectedPaymentMethod != PaymentMethod.cash)
+                    Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        ZTextFieldEntitled(
+                          title: 'Credit Amount',
+                          controller: _creditAmountController,
+                          isRequired: _selectedPaymentMethod != PaymentMethod.cash,
+                          onChanged: (value) {
+                            final creditAmount = double.tryParse(value) ?? 0.0;
+                            setState(() {
+                              if (creditAmount > _totalAmount) {
+                                _creditAmountController.text = _totalAmount.toStringAsFixed(2);
+                                _remainingAmount = 0.0;
+                              } else {
+                                _remainingAmount = _totalAmount - creditAmount;
+                              }
+                            });
+                          },
+                        ),
+                      ],
                     ),
+
+                  // Payment Summary
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Total Invoice:', style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text("${_totalAmount.toAmount()} $baseCurrency"),
+                          ],
+                        ),
+                        if (_selectedPaymentMethod == PaymentMethod.credit) ...[
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Credit Payment:', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text("${_totalAmount.toAmount()} $baseCurrency"),
+                            ],
+                          ),
+                        ],
+                        if (_selectedPaymentMethod == PaymentMethod.mixed) ...[
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Credit Payment:', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text("${(_totalAmount - _remainingAmount).toAmount()} $baseCurrency"),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Cash Payment:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+                              Text("${_remainingAmount.toAmount()} $baseCurrency", style: TextStyle(color: Colors.green)),
+                            ],
+                          ),
+                        ],
+                        if (_selectedPaymentMethod == PaymentMethod.cash) ...[
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Cash Payment:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+                              Text("${_totalAmount.toAmount()} $baseCurrency", style: TextStyle(color: Colors.green)),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -427,55 +513,140 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
               ),
               ZButton(
                 label: const Text('Convert'),
-                onPressed: () {
-                  if (!_isCashPayment && _accountController.text.isEmpty) {
-                    Utils.showOverlayMessage(context, message: 'Please select an account', isError: true);
-                    return;
-                  }
-
-                  if (!_isCashPayment && (_amountController.text.isEmpty || double.tryParse(_amountController.text) == 0)) {
-                    Utils.showOverlayMessage(context, message: 'Please enter payment amount', isError: true);
-                    return;
-                  }
-
-                  if (_userName == null) return;
-
-                  int accountNumber = 0;
-                  String amount = "0";
-
-                  if (!_isCashPayment) {
-                    // Extract account number from controller text
-                    final accountText = _accountController.text;
-                    final accountNumberMatch = RegExp(r'\((\d+)\)').firstMatch(accountText);
-                    accountNumber = accountNumberMatch != null
-                        ? int.tryParse(accountNumberMatch.group(1)!) ?? 0
-                        : 0;
-
-                    amount = _amountController.text;
-
-                    if (accountNumber == 0) {
-                      Utils.showOverlayMessage(context, message: 'Invalid account number', isError: true);
-                      return;
-                    }
-                  }
-
-                  context.read<EstimateBloc>().add(ConvertEstimateToSaleEvent(
-                    usrName: _userName!,
-                    orderId: estimate.ordId!,
-                    perID: estimate.ordPersonal!,
-                    account: accountNumber,
-                    amount: amount,
-                    isCash: _isCashPayment,
-                  ));
-
-                  Navigator.pop(context);
-                },
+                onPressed: () => _convertEstimateToSale(estimate),
               ),
             ],
           );
         },
       ),
     );
+  }
+
+  Widget _buildPaymentOption({
+    required String title,
+    required String subtitle,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue.shade50 : Colors.transparent,
+          border: Border(
+            bottom: BorderSide(color: Colors.grey.shade300),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: isSelected ? Colors.blue : Colors.grey),
+                color: isSelected ? Colors.blue : Colors.transparent,
+              ),
+              child: isSelected
+                  ? const Icon(Icons.check, size: 12, color: Colors.white)
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: isSelected ? Colors.blue : Colors.black,
+                  )),
+                  Text(subtitle, style: TextStyle(
+                    fontSize: 12,
+                    color: isSelected ? Colors.blue : Colors.grey,
+                  )),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _convertEstimateToSale(EstimateModel estimate) {
+    if (_userName == null) {
+      Utils.showOverlayMessage(context, message: 'User not authenticated', isError: true);
+      return;
+    }
+
+    // Validation
+    if (_selectedPaymentMethod != PaymentMethod.cash && _selectedAccount == null) {
+      Utils.showOverlayMessage(context, message: 'Please select an account for credit payment', isError: true);
+      return;
+    }
+
+    if (_selectedPaymentMethod != PaymentMethod.cash) {
+      final creditAmount = double.tryParse(_creditAmountController.text) ?? 0.0;
+      if (creditAmount <= 0) {
+        Utils.showOverlayMessage(context, message: 'Please enter credit amount', isError: true);
+        return;
+      }
+
+      if (creditAmount > _totalAmount) {
+        Utils.showOverlayMessage(context, message: 'Credit amount cannot exceed total invoice', isError: true);
+        return;
+      }
+    }
+
+    // Prepare API parameters based on payment method
+    int account = 0;
+    String amount = "0";
+
+    switch (_selectedPaymentMethod) {
+      case PaymentMethod.cash:
+      // API expects account = 0, amount = 0 for cash
+        account = 0;
+        amount = "0";
+        break;
+
+      case PaymentMethod.credit:
+      // Full amount via credit
+        account = _selectedAccount?.accNumber ?? 0;
+        amount = _totalAmount.toStringAsFixed(2);
+        break;
+
+      case PaymentMethod.mixed:
+      // Part credit, rest auto cash
+        account = _selectedAccount?.accNumber ?? 0;
+        final creditAmount = double.tryParse(_creditAmountController.text) ?? 0.0;
+        amount = creditAmount.toStringAsFixed(2);
+        break;
+    }
+
+    // Send conversion request
+    context.read<EstimateBloc>().add(ConvertEstimateToSaleEvent(
+      usrName: _userName!,
+      orderId: estimate.ordId!,
+      perID: estimate.ordPersonal!,
+      account: account,
+      amount: amount,
+      isCash: _selectedPaymentMethod == PaymentMethod.cash,
+    ));
+
+    Navigator.pop(context); // Close dialog
+  }
+
+  void _updateRemainingAmount() {
+    if (_selectedPaymentMethod == PaymentMethod.cash) {
+      _remainingAmount = _totalAmount;
+    } else if (_selectedPaymentMethod == PaymentMethod.credit) {
+      _remainingAmount = 0.0;
+    } else if (_selectedPaymentMethod == PaymentMethod.mixed) {
+      final creditAmount = double.tryParse(_creditAmountController.text) ?? 0.0;
+      _remainingAmount = _totalAmount - creditAmount;
+      if (_remainingAmount < 0) _remainingAmount = 0.0;
+    }
   }
 
   void _deleteEstimate(EstimateModel estimate) {
@@ -508,4 +679,11 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
       ),
     );
   }
+}
+
+// Payment Method Enum
+enum PaymentMethod {
+  cash,
+  credit,
+  mixed,
 }
