@@ -661,5 +661,6 @@
   "newPurchase": "New Purchase",
   "newSale": "New Sale",
   "party": "Party",
-  "estimate": "Estimate"
+  "estimate": "Estimate",
+  "creditPayment": "Credit Payment"
 }

@@ -661,5 +661,6 @@
   "newPurchase": "خرید جدید",
   "newSale": "فروش جدید",
   "party": "طرف حساب",
-  "estimate": "برآورد"
+  "estimate": "برآورد",
+  "creditPayment": "پرداخت حسابی"
 }

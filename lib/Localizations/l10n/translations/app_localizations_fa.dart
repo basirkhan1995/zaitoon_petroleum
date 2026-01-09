@@ -1985,4 +1985,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get estimate => 'برآورد';
+
+  @override
+  String get creditPayment => 'پرداخت حسابی';
 }

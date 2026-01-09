@@ -107,7 +107,7 @@ class _ZFormDialogState extends State<ZFormDialog> {
                   isEnabled: widget.isButtonEnabled,
                   height: 35,
                   width: 100,
-                  label: widget.actionLabel ?? Text(""),
+                  label: widget.actionLabel ?? Text("Submit"),
                   onPressed: widget.onAction
               ),
             ],

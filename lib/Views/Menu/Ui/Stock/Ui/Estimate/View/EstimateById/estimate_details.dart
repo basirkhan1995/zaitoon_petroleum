@@ -7,6 +7,7 @@ import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/thousand_separator.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
+import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/button.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
@@ -1084,7 +1085,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
 
   void _showConvertToSaleDialog(EstimateModel estimate) {
     final tr = AppLocalizations.of(context)!;
-
+    final color = Theme.of(context).colorScheme;
     // Reset payment variables
     _selectedPaymentMethod = PaymentMethod.cash;
     _selectedAccount = null;
@@ -1095,9 +1096,13 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) {
-          return AlertDialog(
-            title: const Text('Convert to Sale'),
-            content: SingleChildScrollView(
+          return ZFormDialog(
+            title:  'Convert to Sale',
+            icon: Icons.add_card_rounded,
+            padding: EdgeInsets.all(12),
+            onAction: () => _convertEstimateToSale(estimate),
+            actionLabel: Text(tr.submit),
+            child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -1111,7 +1116,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                       children: [
                         // Cash Option
                         _buildPaymentOption(
-                          title: 'Cash Payment',
+                          title: tr.cashPayment,
                           subtitle: 'Full payment in cash',
                           isSelected: _selectedPaymentMethod == PaymentMethod.cash,
                           onTap: () {
@@ -1140,8 +1145,8 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
 
                         // Mixed Option
                         _buildPaymentOption(
-                          title: 'Mixed Payment',
-                          subtitle: 'Part credit, rest cash',
+                          title: tr.combinedPayment,
+                          subtitle: tr.combinedPaymentSubtitle,
                           isSelected: _selectedPaymentMethod == PaymentMethod.mixed,
                           onTap: () {
                             setState(() {
@@ -1160,8 +1165,8 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                   // Account Selection
                   if (_selectedPaymentMethod != PaymentMethod.cash)
                     GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
-                      title: 'Customer Account',
-                      hintText: 'Select account for credit payment',
+                      title: tr.accounts,
+                      hintText: tr.selectCreditAccountMsg,
                       isRequired: _selectedPaymentMethod != PaymentMethod.cash,
                       bloc: context.read<AccountsBloc>(),
                       fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 5, end: 5, exclude: '')),
@@ -1173,7 +1178,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                       )),
                       itemBuilder: (context, account) => ListTile(
                         title: Text(account.accName ?? ''),
-                        subtitle: Text('${account.accNumber} - Balance: ${account.accAvailBalance?.toAmount()}'),
+                        subtitle: Text('${account.accNumber} - ${tr.balance}: ${account.accAvailBalance?.toAmount()}'),
                       ),
                       itemToString: (account) => '${account.accName} (${account.accNumber})',
                       stateToLoading: (state) => state is AccountLoadingState,
@@ -1192,7 +1197,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                       children: [
                         const SizedBox(height: 16),
                         ZTextFieldEntitled(
-                          title: 'Credit Amount',
+                          title: tr.amount,
                           controller: _creditAmountController,
                           isRequired: _selectedPaymentMethod != PaymentMethod.cash,
                           onChanged: (value) {
@@ -1215,16 +1220,16 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      borderRadius: BorderRadius.circular(8),
+                      color: color.primary,
+                      borderRadius: BorderRadius.circular(5),
                     ),
                     child: Column(
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Total Invoice:', style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text("${_totalAmount.toAmount()} $baseCurrency"),
+                            Text('${tr.totalInvoice}:', style: TextStyle(fontWeight: FontWeight.bold,color: color.surface)),
+                            Text("${_totalAmount.toAmount()} $baseCurrency",style: TextStyle(color: color.surface),),
                           ],
                         ),
                         if (_selectedPaymentMethod == PaymentMethod.credit) ...[
@@ -1232,8 +1237,8 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Credit Payment:', style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text("${_totalAmount.toAmount()} $baseCurrency"),
+                              Text('${tr.creditPayment}:', style: TextStyle(fontWeight: FontWeight.bold,color: color.surface)),
+                              Text("${_totalAmount.toAmount()} $baseCurrency", style: TextStyle(fontWeight: FontWeight.bold,color: color.surface)),
                             ],
                           ),
                         ],
@@ -1242,16 +1247,16 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Credit Payment:', style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text("${(_totalAmount - _remainingAmount).toAmount()} $baseCurrency"),
+                              Text('${tr.creditPayment}:', style: TextStyle(fontWeight: FontWeight.bold,color: color.surface)),
+                              Text("${(_totalAmount - _remainingAmount).toAmount()} $baseCurrency",style: TextStyle(color: color.surface),),
                             ],
                           ),
                           const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Cash Payment:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
-                              Text("${_remainingAmount.toAmount()} $baseCurrency", style: TextStyle(color: Colors.green)),
+                              Text('${tr.cashPayment}:', style: TextStyle(fontWeight: FontWeight.bold, color: color.surface)),
+                              Text("${_remainingAmount.toAmount()} $baseCurrency", style: TextStyle(color: color.surface)),
                             ],
                           ),
                         ],
@@ -1260,8 +1265,8 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Cash Payment:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
-                              Text("${_totalAmount.toAmount()} $baseCurrency", style: TextStyle(color: Colors.green)),
+                              Text('${tr.cashPayment}:', style: TextStyle(fontWeight: FontWeight.bold, color: color.surface)),
+                              Text("${_totalAmount.toAmount()} $baseCurrency", style: TextStyle(color: color.surface)),
                             ],
                           ),
                         ],
@@ -1271,16 +1276,6 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                 ],
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(tr.cancel),
-              ),
-              ZButton(
-                label: const Text('Convert'),
-                onPressed: () => _convertEstimateToSale(estimate),
-              ),
-            ],
           );
         },
       ),
@@ -1293,14 +1288,15 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
+    final color = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.blue.shade50 : Colors.transparent,
+          color: isSelected ? color.primary.withValues(alpha: .06) : Colors.transparent,
           border: Border(
-            bottom: BorderSide(color: Colors.grey.shade300),
+            bottom: BorderSide(color: color.outline.withValues(alpha: .1)),
           ),
         ),
         child: Row(
@@ -1310,11 +1306,11 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
               height: 20,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: isSelected ? Colors.blue : Colors.grey),
-                color: isSelected ? Colors.blue : Colors.transparent,
+                border: Border.all(color: isSelected ? color.primary : color.outline),
+                color: isSelected ? color.primary : Colors.transparent,
               ),
               child: isSelected
-                  ? const Icon(Icons.check, size: 12, color: Colors.white)
+                  ? Icon(Icons.check, size: 12, color: color.surface)
                   : null,
             ),
             const SizedBox(width: 12),
@@ -1324,11 +1320,11 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                 children: [
                   Text(title, style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: isSelected ? Colors.blue : Colors.black,
+                    color: isSelected ? color.primary : color.onSurface,
                   )),
                   Text(subtitle, style: TextStyle(
                     fontSize: 12,
-                    color: isSelected ? Colors.blue : Colors.grey,
+                    color: isSelected ? color.primary : color.outline
                   )),
                 ],
               ),

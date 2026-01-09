@@ -3951,6 +3951,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Estimate'**
   String get estimate;
+
+  /// No description provided for @creditPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit Payment'**
+  String get creditPayment;
 }
 
 class _AppLocalizationsDelegate

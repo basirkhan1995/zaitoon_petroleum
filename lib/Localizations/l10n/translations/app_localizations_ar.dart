@@ -1988,4 +1988,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get estimate => 'اټکل';
+
+  @override
+  String get creditPayment => 'پرداخت حسابی';
 }

@@ -1994,4 +1994,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get estimate => 'Estimate';
+
+  @override
+  String get creditPayment => 'Credit Payment';
 }
