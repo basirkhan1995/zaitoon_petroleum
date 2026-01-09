@@ -209,7 +209,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
               icon: Icons.refresh,
               width: 110,
               height: 38,
-              label: Text(tr.refresh),
+              label: Text(tr.clear),
               onPressed: () {
                 setState(() {
                   _records.clear();
@@ -226,6 +226,14 @@ class _AddEstimateViewState extends State<AddEstimateView> {
                   _selectedCustomerId = null;
                 });
               },
+            ),
+            const SizedBox(width: 8),
+            ZOutlineButton(
+              width: 110,
+              height: 38,
+              icon: Icons.print,
+              label: Text(tr.print),
+              onPressed: _createEstimate,
             ),
             const SizedBox(width: 8),
             ZButton(
@@ -310,14 +318,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
               const SizedBox(height: 16),
 
               // Summary sections in row (like sale invoice)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 8,
-                children: [
-                  Expanded(child: _buildProfitSummarySection(tr)),
-                  Expanded(child: _buildTotalSummarySection(tr)),
-                ],
-              ),
+              _buildProfitSummarySection(tr)
             ],
           ),
         ),
@@ -632,44 +633,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
     );
   }
 
-  Widget _buildTotalSummarySection(AppLocalizations tr) {
-    final color = Theme.of(context).colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.surface,
-        border: Border.all(color: color.outline.withValues(alpha: .3)),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        children: [
-
-          // Items count
-          _buildSummaryRow(
-            label: 'Total Items',
-            value: _records.length.toDouble(),
-          ),
-
-          // Per item averages
-          if (_records.isNotEmpty)
-            Column(
-              children: [
-                _buildSummaryRow(
-                  label: 'Average Price',
-                  value: _grandTotal / _records.length,
-                ),
-                _buildSummaryRow(
-                  label: 'Average Profit',
-                  value: _totalProfit / _records.length,
-                  color: _totalProfit >= 0 ? Colors.green : Colors.red,
-                ),
-              ],
-            ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildSummaryRow({
     required String label,
@@ -690,7 +654,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
             ),
           ),
           Text(
-            "${value.toAmount()} $baseCurrency",
+            value.toString(),
             style: TextStyle(
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
               fontSize: isBold ? 16 : 14,

@@ -159,7 +159,7 @@ class _DesktopState extends State<_Desktop> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: IndividualsDetailsTabView(ind: widget.ind),
+                  child: IndividualsDetailsTabView(ind: individual ?? IndividualsModel()),
                 ),
               ),
             ],

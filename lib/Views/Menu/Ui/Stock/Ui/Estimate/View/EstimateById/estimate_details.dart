@@ -122,14 +122,20 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                                 spacing: 8,
                                 children: [
                                   ZOutlineButton(
-                                      width: 110,
+                                      width: 100,
+                                      icon: Icons.edit,
+                                      onPressed: () => _deleteEstimate(state.estimate),
+                                      label: Text(AppLocalizations.of(context)!.edit)),
+                                  ZOutlineButton(
+                                      width: 100,
                                       icon: Icons.delete_outline,
                                       backgroundHover: Theme.of(context).colorScheme.error,
                                       onPressed: () => _deleteEstimate(state.estimate),
                                       label: Text(AppLocalizations.of(context)!.delete)),
 
                                   ZOutlineButton(
-                                    width: 110,
+                                    width: 120,
+                                    isActive: true,
                                     icon: Icons.published_with_changes_rounded,
                                     label: const Text('Convert'),
                                     onPressed: () => _showConvertToSaleDialog(state.estimate),

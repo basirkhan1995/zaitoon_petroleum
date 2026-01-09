@@ -105,7 +105,7 @@ class _DesktopState extends State<_Desktop> {
                     icon: Icons.add,
                     onPressed: (){
                       showDialog(context: context, builder: (context){
-                        return AccountsAddEditView();
+                        return AccountsAddEditView(perId: widget.ind.perId);
                       });
                     },
                     label: Text(locale.newKeyword)),
