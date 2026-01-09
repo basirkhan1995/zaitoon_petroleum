@@ -1,4 +1,4 @@
-// estimate_state.dart
+
 part of 'estimate_bloc.dart';
 
 abstract class EstimateState extends Equatable {

@@ -168,20 +168,10 @@ class _DesktopState extends State<_Desktop> {
                   }
                 }
                 if (state is EstimateError) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(state.message),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
+                  Utils.showOverlayMessage(context, message: state.message, isError: true);
                 }
                 if (state is EstimateSaved) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(state.message),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
+                  context.read<EstimateBloc>().add(LoadEstimatesEvent());
                 }
               },
               builder: (context, state) {

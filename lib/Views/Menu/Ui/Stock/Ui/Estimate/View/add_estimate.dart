@@ -233,7 +233,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
               height: 38,
               icon: Icons.print,
               label: Text(tr.print),
-              onPressed: _createEstimate,
+              onPressed: null,
             ),
             const SizedBox(width: 8),
             ZButton(
