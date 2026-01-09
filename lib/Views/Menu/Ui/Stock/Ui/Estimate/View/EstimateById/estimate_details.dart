@@ -650,6 +650,10 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
   }
   Widget _buildItemsList() {
     final records = _records;
+    final tr = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
+    final color = Theme.of(context).colorScheme;
+    TextStyle? title = textTheme.titleSmall?.copyWith(color: color.primary);
 
     if (records.isEmpty) {
       return const Padding(
@@ -664,9 +668,10 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
         final record = entry.value;
 
         return Container(
-          padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+          padding: EdgeInsets.symmetric(vertical: _isEditing? 0 : 5, horizontal: 8),
           decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+            border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outline.withValues(alpha: .2))),
+            color: index.isOdd? Theme.of(context).colorScheme.outline.withValues(alpha: .06) : Colors.transparent
           ),
           child: Row(
             children: [
@@ -682,19 +687,33 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                   fetchAllFunction: (bloc) => bloc.add(LoadProductsStockEvent()),
                   searchFunction: (bloc, query) => bloc.add(LoadProductsStockEvent()),
                   itemBuilder: (context, product) => ListTile(
+                    visualDensity: VisualDensity(vertical: -2),
                     title: Text(product.proName ?? ''),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    subtitle: Row(
+                      spacing: 5,
                       children: [
-                        Text('Cost Price: ${product.purchasePrice?.toAmount() ?? "0.00"}'),
-                        Text('Sale Price: ${product.sellPrice?.toAmount() ?? "0.00"}'),
+                        Wrap(
+                          children: [
+                            ZCard(radius: 0,child: Text(tr.purchasePrice,style: title),),
+                            ZCard(radius: 0,child: Text(product.purchasePrice?.toAmount()??"")),
+                          ],
+                        ),
+                        Wrap(
+                          children: [
+                            ZCard(radius: 0,child: Text(tr.salePriceBrief,style: title)),
+                            ZCard(radius: 0,child: Text(product.sellPrice?.toAmount()??"")),
+                          ],
+                        ),
                       ],
                     ),
                     trailing: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text('Qty: ${product.available ?? '0'}'),
-                        Text('Storage: ${product.stgName ?? ''}'),
+                        Text(product.available?.toAmount()??"",style: TextStyle(fontSize: 18),),
+                        Text(product.stgName??"",style: TextStyle(
+                          color: Theme.of(context).colorScheme.outline,
+                        ),),
                       ],
                     ),
                   ),

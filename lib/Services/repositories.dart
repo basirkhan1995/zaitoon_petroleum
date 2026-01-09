@@ -1955,7 +1955,6 @@ class Repositories {
         endpoint: "/inventory/estimate.php",
         data: data,
       );
-
       return response.data is Map<String, dynamic>
           ? response.data
           : {'msg': 'Invalid response format'};

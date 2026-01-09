@@ -70,7 +70,7 @@ class _DesktopState extends State<_Desktop> {
       body: BlocListener<IndividualsBloc, IndividualsState>(
       listener: (context, state) {
         if(state is IndividualSuccessImageState || state is IndividualSuccessState){
-          context.read<StakeholderByIdBloc>().add(LoadStakeholderByIdEvent(stkId: individual!.perId!));
+          context.read<StakeholderByIdBloc>().add(LoadStakeholderByIdEvent(stkId: widget.ind.perId!));
         }
       },
       child: BlocBuilder<StakeholderByIdBloc, StakeholderByIdState>(
@@ -141,7 +141,7 @@ class _DesktopState extends State<_Desktop> {
                                   height: 35,
                                   onPressed: (){
                                     showDialog(context: context, builder: (context){
-                                      return IndividualAddEditView(model: individual);
+                                      return IndividualAddEditView(model: individual ?? widget.ind);
                                     });
                                   },
                                   label: Text(locale.edit),
@@ -159,7 +159,7 @@ class _DesktopState extends State<_Desktop> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: IndividualsDetailsTabView(ind: individual ?? IndividualsModel()),
+                  child: IndividualsDetailsTabView(ind: individual ?? widget.ind),
                 ),
               ),
             ],

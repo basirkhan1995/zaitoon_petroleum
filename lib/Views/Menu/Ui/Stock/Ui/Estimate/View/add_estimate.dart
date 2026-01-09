@@ -15,6 +15,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/bl
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/model/product_stock_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
+import '../../../../../../../Features/Other/cover.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
@@ -425,6 +426,9 @@ class _AddEstimateViewState extends State<AddEstimateView> {
   Widget _buildItemRow(int index, AppLocalizations tr) {
     final color = Theme.of(context).colorScheme;
     final record = _records[index];
+    final tr = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
+    TextStyle? title = textTheme.titleSmall?.copyWith(color: color.primary);
 
     // Calculate profit color
     final profitColor = record.profit >= 0 ? Colors.green : Colors.red;
@@ -433,6 +437,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
       padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: color.outline.withAlpha(50))),
+        color: index.isOdd? color.outline.withValues(alpha: .06) : Colors.transparent
       ),
       child: Row(
         children: [
@@ -448,18 +453,31 @@ class _AddEstimateViewState extends State<AddEstimateView> {
               searchFunction: (bloc, query) => bloc.add(LoadProductsStockEvent()),
               itemBuilder: (context, product) => ListTile(
                 title: Text(product.proName ?? ''),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                subtitle: Row(
+                  spacing: 5,
                   children: [
-                    Text('${tr.costPrice}: ${product.purchasePrice?.toAmount() ?? "0.00"}'),
-                    Text('${tr.salePrice}: ${product.sellPrice?.toAmount() ?? "0.00"}'),
+                    Wrap(
+                      children: [
+                        ZCard(radius: 0,child: Text(tr.purchasePrice,style: title),),
+                        ZCard(radius: 0,child: Text(product.purchasePrice?.toAmount()??"")),
+                      ],
+                    ),
+                    Wrap(
+                      children: [
+                        ZCard(radius: 0,child: Text(tr.salePriceBrief,style: title)),
+                        ZCard(radius: 0,child: Text(product.sellPrice?.toAmount()??"")),
+                      ],
+                    ),
                   ],
                 ),
                 trailing: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text('${tr.qty}: ${product.available ?? '0'}'),
-                    Text('${tr.storage}: ${product.stgName ?? ''}'),
+                    Text(product.available?.toAmount()??"",style: TextStyle(fontSize: 18),),
+                    Text(product.stgName??"",style: TextStyle(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),),
                   ],
                 ),
               ),
@@ -606,7 +624,6 @@ class _AddEstimateViewState extends State<AddEstimateView> {
           SizedBox(
             width: 150,
             child: GenericUnderlineTextfield<StorageModel, StorageBloc, StorageState>(
-
               controller: _storageControllers[index],
               hintText: tr.storage,
               bloc: context.read<StorageBloc>(),
@@ -688,7 +705,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
               children: [
                 Text('${tr.profit} %', style: const TextStyle(fontSize: 16)),
                 Text(
-                  '${_profitPercentage.toStringAsFixed(2)}%',
+                  '${_profitPercentage.toAmount(decimal: 2)}%',
                   style: TextStyle(
                     fontSize: 16,
                     color: profitColor,
@@ -730,7 +747,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
             ),
           ),
           Text(
-            value.toString(),
+            "${value.toAmount()} $baseCurrency",
             style: TextStyle(
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
               fontSize: isBold ? 16 : 14,

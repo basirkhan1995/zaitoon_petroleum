@@ -43,27 +43,40 @@ extension ListExtensions<T> on List<T> {
 }
 
 //Amount Formats
-extension NumberFormatting on Object {
+extension NumberFormatting on Object? {
   /// Converts string or number to double
   double toDoubleAmount() {
+    if (this == null) return 0;
+
     if (this is num) return (this as num).toDouble();
+
     if (this is String) {
-      final clean = (this as String).replaceAll(',', '').replaceAll(' ', '');
+      final clean = (this as String)
+          .replaceAll(',', '')
+          .replaceAll(' ', '');
+
       return double.tryParse(clean) ?? 0;
     }
+
     return 0;
   }
 
-  /// Formats number with commas and 2 decimals by default
-  String toAmount({int fractionDigits = 2}) {
-    final numValue = toDoubleAmount();
-    final fixed = numValue.toStringAsFixed(fractionDigits);
-    return fixed.replaceAllMapped(
+  /// Formats number with commas and decimals
+  String toAmount({int decimal = 2}) {
+    final value = toDoubleAmount();
+    final parts = value.toStringAsFixed(decimal).split('.');
+
+    final integerPart = parts[0].replaceAllMapped(
       RegExp(r'\B(?=(\d{3})+(?!\d))'),
-          (match) => ',',
+          (_) => ',',
     );
+
+    return decimal > 0
+        ? '$integerPart.${parts[1]}'
+        : integerPart;
   }
 }
+
 
 extension AmountCleaner on String {
   String get cleanAmount => replaceAll(RegExp(r'[^\d.]'), '');
