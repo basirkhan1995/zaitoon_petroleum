@@ -25,7 +25,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     on<LoadProductsStockEvent>((event, emit) async{
       emit(ProductsLoadingState());
       try{
-        final products = await _repo.getProductStock();
+        final products = await _repo.getProductStock(proId: event.proId, noStock: event.noStock);
         emit(ProductsStockLoadedState(products));
       }catch(e){
         emit(ProductsErrorState(e.toString()));
@@ -112,8 +112,6 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
         emit(ProductsErrorState(e.toString()));
       }
     });
-
-
 
   }
 }

@@ -1656,9 +1656,9 @@ class Repositories {
       rethrow;
     }
   }
-  Future<List<ProductsStockModel>> getProductStock({int? proId}) async {
+  Future<List<ProductsStockModel>> getProductStock({int? proId, int? noStock}) async {
     try {
-      final queryParams = {'proID': proId};
+      final queryParams = {'proID': proId,'av':noStock??0};
       // Fetch data from API
       final response = await api.get(
           endpoint: "/inventory/availableProducts.php",
@@ -1826,22 +1826,6 @@ class Repositories {
       throw "${e.message}";
     } catch (e) {
       throw "$e";
-    }
-  }
-  Future<Map<String,dynamic>> unAuthorizeOrderTxn({required String ref, required String usrName})async{
-    try {
-      final response = await api.put(
-          endpoint: "/journal/unauthorizeTrn.php",
-          data: {
-            "username":usrName,
-            "reference":ref,
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
     }
   }
 

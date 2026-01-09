@@ -82,6 +82,29 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(covariant ZDropdown<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // SINGLE SELECT
+    if (!widget.multiSelect &&
+        widget.selectedItem != oldWidget.selectedItem) {
+      setState(() {
+        _selectedItem = widget.selectedItem;
+      });
+    }
+
+    // MULTI SELECT
+    if (widget.multiSelect &&
+        widget.selectedItems != oldWidget.selectedItems) {
+      setState(() {
+        _selectedItems =
+        widget.selectedItems != null ? List.from(widget.selectedItems!) : [];
+      });
+    }
+  }
+
+
 
   void _onItemTapped(T item) {
     if (widget.multiSelect) {

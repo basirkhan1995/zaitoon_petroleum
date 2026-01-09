@@ -150,14 +150,21 @@ class _DesktopState extends State<_Desktop> {
           ),
           Divider(endIndent: 15,indent: 15),
           Expanded(
-            child: BlocBuilder<ProductsBloc, ProductsState>(
+            child: BlocConsumer<ProductsBloc, ProductsState>(
+              listener: (context,state){
+                if(state is ProductsSuccessState){
+                  Navigator.of(context).pop();
+                }
+              },
               builder: (context, state) {
+
                 if(state is ProductsLoadingState){
                   return Center(child: CircularProgressIndicator());
                 }
                 if(state is ProductsErrorState){
                   return NoDataWidget(
                     message: state.message,
+                    onRefresh: onRefresh,
                   );
                 }
                 if(state is ProductsLoadedState){

@@ -211,8 +211,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                 if (state is OrderByIdLoaded) {
                   xOrder = state.order;
                 }
-                if (state is OrderByIdLoaded &&
-                    state.order.trnStateText?.toLowerCase() == 'pending') {
+                if (state is OrderByIdLoaded) {
                   return Row(
                     spacing: 8,
                     children: [
@@ -233,39 +232,42 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                               : AppLocalizations.of(context)!.edit,
                         ),
                       ),
-                      CircleAvatar(
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.primary.withAlpha(23),
-                        child: IconButton(
-                          icon: const Icon(Icons.delete_outline),
-                          onPressed: () => _showDeleteDialog(state.order),
-                          isSelected: true,
-                          hoverColor: Theme.of(
-                            context,
-                          ).colorScheme.primary.withAlpha(26),
-                          tooltip: AppLocalizations.of(context)!.delete,
-                        ),
-                      ),
-                      if (state.isEditing) ...[
+                      if(state.order.trnStateText?.toLowerCase() == 'pending')...[
                         CircleAvatar(
                           backgroundColor: Theme.of(
                             context,
                           ).colorScheme.primary.withAlpha(23),
                           child: IconButton(
+                            icon: const Icon(Icons.delete_outline),
+                            onPressed: () => _showDeleteDialog(state.order),
+                            isSelected: true,
                             hoverColor: Theme.of(
                               context,
                             ).colorScheme.primary.withAlpha(26),
-                            onPressed:
-                                !state.isPaymentValid ||
-                                    state.selectedSupplier == null
-                                ? null
-                                : () => _saveChanges(),
-                            tooltip: AppLocalizations.of(context)!.saveChanges,
-                            icon: const Icon(Icons.check),
+                            tooltip: AppLocalizations.of(context)!.delete,
                           ),
                         ),
+                        if (state.isEditing) ...[
+                          CircleAvatar(
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.primary.withAlpha(23),
+                            child: IconButton(
+                              hoverColor: Theme.of(
+                                context,
+                              ).colorScheme.primary.withAlpha(26),
+                              onPressed:
+                              !state.isPaymentValid ||
+                                  state.selectedSupplier == null
+                                  ? null
+                                  : () => _saveChanges(),
+                              tooltip: AppLocalizations.of(context)!.saveChanges,
+                              icon: const Icon(Icons.check),
+                            ),
+                          ),
+                        ],
                       ],
+
                     ],
                   );
                 }
@@ -1146,20 +1148,16 @@ class _OrderByIdViewState extends State<OrderByIdView> {
           // Product
           Expanded(
             child: isEditing
-                ? GenericUnderlineTextfield<
-                    dynamic,
-                    ProductsBloc,
-                    ProductsState
-                  >(
+                ? GenericUnderlineTextfield<dynamic, ProductsBloc, ProductsState>(
                     controller: productController,
                     hintText: locale.products,
                     bloc: context.read<ProductsBloc>(),
                     fetchAllFunction: (bloc) => isPurchase
                         ? bloc.add(LoadProductsEvent())
-                        : bloc.add(LoadProductsStockEvent()),
+                        : bloc.add(LoadProductsStockEvent(noStock: 1)),
                     searchFunction: (bloc, query) => isPurchase
                         ? bloc.add(LoadProductsEvent())
-                        : bloc.add(LoadProductsStockEvent()),
+                        : bloc.add(LoadProductsStockEvent(noStock: 1)),
                     itemBuilder: (context, product) {
                       if (isPurchase) {
                         final prod = product as ProductsModel;

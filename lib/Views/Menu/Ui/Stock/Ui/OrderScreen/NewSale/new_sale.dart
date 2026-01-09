@@ -459,7 +459,7 @@ class _DesktopState extends State<_Desktop> {
                   controller: productController,
                   hintText: tr.products,
                   bloc: context.read<ProductsBloc>(),
-                  fetchAllFunction: (bloc) => bloc.add(LoadProductsStockEvent()),
+                  fetchAllFunction: (bloc) => bloc.add(LoadProductsStockEvent(noStock: 1)),
                   searchFunction: (bloc, query) => bloc.add(LoadProductsStockEvent()),
                   itemBuilder: (context, product) => ListTile(
                     title: Text(product.proName ?? ''),

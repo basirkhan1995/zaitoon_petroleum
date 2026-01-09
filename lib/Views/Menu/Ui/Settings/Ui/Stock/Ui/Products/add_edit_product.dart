@@ -88,52 +88,56 @@ class _DesktopState extends State<_Desktop> {
                 child: CircularProgressIndicator(
                   color: color.surface,
                 )) : Text(isEdit? tr.update : tr.create),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                spacing: 8,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ZTextFieldEntitled(
-                    title: tr.productCode,
-                    controller: productCode,
-                    isRequired: true,
-                    validator: (value){
-                      if(value.isEmpty){
-                        return tr.required(tr.productCode);
-                      }
-                      return null;
-                    },
-                  ),
-                  ZTextFieldEntitled(
-                      title: tr.productName,
-                      controller: productName,
+            child: Form(
+              key: formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  spacing: 15,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ZTextFieldEntitled(
+                      title: tr.productCode,
+                      controller: productCode,
                       isRequired: true,
                       validator: (value){
                         if(value.isEmpty){
-                          return tr.required(tr.productName);
+                          return tr.required(tr.productCode);
                         }
                         return null;
                       },
-                  ),
-                  ProductCategoryDropdown(
-                    selectedCategoryId: catId,
-                    onCategorySelected: (cat) {
-                      _selectedCategory = cat;
-                    },
-                  ),
+                    ),
+                    ZTextFieldEntitled(
+                        title: tr.productName,
+                        controller: productName,
+                        isRequired: true,
+                        validator: (value){
+                          if(value.isEmpty){
+                            return tr.required(tr.productName);
+                          }
+                          return null;
+                        },
+                    ),
+                    ProductCategoryDropdown(
+
+                      selectedCategoryId: catId,
+                      onCategorySelected: (cat) {
+                        _selectedCategory = cat;
+                      },
+                    ),
 
 
-                  ZTextFieldEntitled(
-                    title: tr.madeIn,
-                    controller: madeIn,
-                  ),
+                    ZTextFieldEntitled(
+                      title: tr.madeIn,
+                      controller: madeIn,
+                    ),
 
-                  ZTextFieldEntitled(
-                    title: tr.details,
-                    controller: details,
-                  ),
-                ],
+                    ZTextFieldEntitled(
+                      title: tr.details,
+                      controller: details,
+                    ),
+                  ],
+                ),
               ),
             ),
         );
@@ -146,6 +150,12 @@ class _DesktopState extends State<_Desktop> {
     final bloc = context.read<ProductsBloc>();
     final data = ProductsModel(
       proId: widget.model?.proId,
+      proCode: productCode.text,
+      proName: productName.text,
+      proMadeIn: madeIn.text,
+      proCategory: _selectedCategory?.pcId,
+      proDetails: details.text,
+      proStatus: 1
     );
     if(widget.model != null){
       bloc.add(UpdateProductEvent(data));
