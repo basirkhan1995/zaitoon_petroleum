@@ -30,7 +30,6 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
 
   }
 
-// Add this method:
   void _onUpdateSaleItem(UpdateSaleOrderItemEvent event, Emitter<OrderByIdState> emit,) {
     if (state is! OrderByIdLoaded) return;
 
@@ -237,30 +236,21 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     }
   }
 
-  void _onSelectSupplier(
-      SelectOrderSupplierEvent event,
-      Emitter<OrderByIdState> emit,
-      ) {
+  void _onSelectSupplier(SelectOrderSupplierEvent event, Emitter<OrderByIdState> emit,) {
     if (state is OrderByIdLoaded) {
       final current = state as OrderByIdLoaded;
       emit(current.copyWith(selectedSupplier: event.supplier));
     }
   }
 
-  void _onSelectAccount(
-      SelectOrderAccountEvent event,
-      Emitter<OrderByIdState> emit,
-      ) {
+  void _onSelectAccount(SelectOrderAccountEvent event, Emitter<OrderByIdState> emit) {
     if (state is OrderByIdLoaded) {
       final current = state as OrderByIdLoaded;
       emit(current.copyWith(selectedAccount: event.account));
     }
   }
 
-  void _onClearAccount(
-      ClearOrderAccountEvent event,
-      Emitter<OrderByIdState> emit,
-      ) {
+  void _onClearAccount(ClearOrderAccountEvent event, Emitter<OrderByIdState> emit,) {
     if (state is OrderByIdLoaded) {
       final current = state as OrderByIdLoaded;
       emit(current.copyWith(
@@ -271,10 +261,7 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     }
   }
 
-  void _onUpdatePayment(
-      UpdateOrderPaymentEvent event,
-      Emitter<OrderByIdState> emit,
-      ) {
+  void _onUpdatePayment(UpdateOrderPaymentEvent event, Emitter<OrderByIdState> emit,) {
     if (state is OrderByIdLoaded) {
       final current = state as OrderByIdLoaded;
 
@@ -420,10 +407,7 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     ));
   }
 
-  void _onAddItem(
-      AddOrderItemEvent event,
-      Emitter<OrderByIdState> emit,
-      ) {
+  void _onAddItem(AddOrderItemEvent event, Emitter<OrderByIdState> emit) {
     if (state is! OrderByIdLoaded) return;
 
     final current = state as OrderByIdLoaded;
@@ -503,10 +487,7 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     emit(current.copyWith(order: updatedOrder));
   }
 
-  Future<void> _onSaveChanges(
-      SaveOrderChangesEvent event,
-      Emitter<OrderByIdState> emit,
-      ) async {
+  Future<void> _onSaveChanges(SaveOrderChangesEvent event, Emitter<OrderByIdState> emit) async {
     if (state is! OrderByIdLoaded) {
       event.completer.complete(false);
       return;
@@ -676,10 +657,7 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     }
   }
 
-  Future<void> _onDeleteOrder(
-      DeleteOrderEvent event,
-      Emitter<OrderByIdState> emit,
-      ) async {
+  Future<void> _onDeleteOrder(DeleteOrderEvent event, Emitter<OrderByIdState> emit) async {
     try {
       if (state is! OrderByIdLoaded) return;
 
