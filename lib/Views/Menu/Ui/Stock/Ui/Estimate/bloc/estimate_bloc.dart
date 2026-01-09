@@ -93,10 +93,7 @@ class EstimateBloc extends Bloc<EstimateEvent, EstimateState> {
     }
   }
 
-  Future<void> _onUpdateEstimate(
-      UpdateEstimateEvent event,
-      Emitter<EstimateState> emit,
-      ) async {
+  Future<void> _onUpdateEstimate(UpdateEstimateEvent event, Emitter<EstimateState> emit,) async {
     emit(EstimateSaving());
 
     try {
