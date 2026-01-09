@@ -73,10 +73,7 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     ));
   }
 
-  Future<void> _onLoadOrderById(
-      LoadOrderByIdEvent event,
-      Emitter<OrderByIdState> emit,
-      ) async {
+  Future<void> _onLoadOrderById(LoadOrderByIdEvent event, Emitter<OrderByIdState> emit,) async {
     emit(OrderByIdLoading());
 
     try {

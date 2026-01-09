@@ -20,6 +20,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/ac
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
+import '../../../../../../../../Features/Other/alert_dialog.dart';
 import '../../../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import '../../bloc/estimate_bloc.dart';
@@ -579,10 +580,8 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
       ),
     );
   }
-
   Widget _buildEditableHeaderFields() {
     final tr = AppLocalizations.of(context)!;
-
     return Column(
       children: [
         Row(
@@ -625,7 +624,6 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
       ],
     );
   }
-
   Widget _buildItemsHeader() {
     final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
@@ -650,7 +648,6 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
       ),
     );
   }
-
   Widget _buildItemsList() {
     final records = _records;
 
@@ -888,7 +885,6 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
       }).toList(),
     );
   }
-
   Widget _buildProfitSummarySection() {
     final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
@@ -917,7 +913,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-               Text(tr.profitSummary, style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(tr.profitSummary, style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(width: 4),
               Icon(Icons.ssid_chart, size: 22, color: color.primary),
             ],
@@ -925,10 +921,10 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
           Divider(color: color.outline.withValues(alpha: .2)),
 
           _buildProfitRow(
-            label: 'Total Cost',
-            value: totalPurchaseCost,
-            color: color.primary.withValues(alpha: .9),
-            isBold: true
+              label: 'Total Cost',
+              value: totalPurchaseCost,
+              color: color.primary.withValues(alpha: .9),
+              isBold: true
           ),
           const SizedBox(height: 5),
           _buildProfitRow(
@@ -964,13 +960,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
       ),
     );
   }
-
-  Widget _buildProfitRow({
-    required String label,
-    required double value,
-    bool isBold = false,
-    Color? color,
-  }) {
+  Widget _buildProfitRow({required String label, required double value, bool isBold = false, Color? color,}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -992,7 +982,6 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
       ],
     );
   }
-
   void _toggleEditMode() {
     setState(() {
       _isEditing = !_isEditing;
@@ -1004,7 +993,6 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
       }
     });
   }
-
   void _saveChanges() {
     if (_userName == null) {
       Utils.showOverlayMessage(context, message: 'User not authenticated', isError: true);
@@ -1051,46 +1039,33 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
       records: _records,
     ));
   }
-
-  void _deleteEstimate(EstimateModel estimate) {
+  void _deleteEstimate(EstimateModel estimate){
+    final tr = AppLocalizations.of(context)!;
     if (_userName == null) {
       Utils.showOverlayMessage(context, message: 'User not authenticated', isError: true);
       return;
     }
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Estimate'),
-        content: const Text('Are you sure you want to delete this estimate?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<EstimateBloc>().add(DeleteEstimateEvent(
-                orderId: estimate.ordId!,
-                usrName: _userName!,
-              ));
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
+    showDialog(context: context, builder: (context){
+      return ZAlertDialog(title: tr.delete, content: tr.areYouSure,
+          onYes: (){
+            Navigator.pop(context);
+            context.read<EstimateBloc>().add(DeleteEstimateEvent(
+              orderId: estimate.ordId!,
+              usrName: _userName!,
+            ));
+          });
+    });
   }
-
   void _showConvertToSaleDialog(EstimateModel estimate) {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
-    // Reset payment variables
     _selectedPaymentMethod = PaymentMethod.cash;
     _selectedAccount = null;
     _creditAmountController.clear();
     _remainingAmount = _totalAmount;
+
+    // Create a TextEditingController for account selection
+    final accountController = TextEditingController();
 
     showDialog(
       context: context,
@@ -1162,13 +1137,14 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
 
                   const SizedBox(height: 16),
 
-                  // Account Selection
+                  // Account Selection - FIXED SECTION
                   if (_selectedPaymentMethod != PaymentMethod.cash)
                     GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
                       title: tr.accounts,
                       hintText: tr.selectCreditAccountMsg,
                       isRequired: _selectedPaymentMethod != PaymentMethod.cash,
                       bloc: context.read<AccountsBloc>(),
+                      controller: accountController,
                       fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 5, end: 5, exclude: '')),
                       searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(
                         input: query,
@@ -1177,18 +1153,39 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                         exclude: '',
                       )),
                       itemBuilder: (context, account) => ListTile(
-                        title: Text(account.accName ?? ''),
-                        subtitle: Text('${account.accNumber} - ${tr.balance}: ${account.accAvailBalance?.toAmount()}'),
+                        title: Text(
+                          account.accName ?? 'No Name',
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Acc #: ${account.accNumber ?? 'N/A'}',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            Text(
+                              '${tr.balance}: ${account.accAvailBalance?.toAmount() ?? "0.00"} $baseCurrency',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
                       ),
-                      itemToString: (account) => '${account.accName} (${account.accNumber})',
+                      itemToString: (account) => '${account.accName ?? "Unknown Account"} (${account.accNumber ?? "N/A"})',
                       stateToLoading: (state) => state is AccountLoadingState,
-                      stateToItems: (state) => state is AccountLoadedState ? state.accounts : [],
+                      stateToItems: (state) {
+                        if (state is AccountLoadedState) {
+                          return state.accounts;
+                        }
+                        return [];
+                      },
                       onSelected: (value) {
                         setState(() {
                           _selectedAccount = value;
+                          // Update controller text with account name
+                          accountController.text = '${value.accName ?? "Unknown Account"} (${value.accNumber ?? "N/A"})';
                         });
                       },
-                      controller: null,
                     ),
 
                   // Credit Amount
@@ -1281,60 +1278,6 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
       ),
     );
   }
-
-  Widget _buildPaymentOption({
-    required String title,
-    required String subtitle,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    final color = Theme.of(context).colorScheme;
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isSelected ? color.primary.withValues(alpha: .06) : Colors.transparent,
-          border: Border(
-            bottom: BorderSide(color: color.outline.withValues(alpha: .1)),
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 20,
-              height: 20,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: isSelected ? color.primary : color.outline),
-                color: isSelected ? color.primary : Colors.transparent,
-              ),
-              child: isSelected
-                  ? Icon(Icons.check, size: 12, color: color.surface)
-                  : null,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: isSelected ? color.primary : color.onSurface,
-                  )),
-                  Text(subtitle, style: TextStyle(
-                    fontSize: 12,
-                    color: isSelected ? color.primary : color.outline
-                  )),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _convertEstimateToSale(EstimateModel estimate) {
     if (_userName == null) {
       Utils.showOverlayMessage(context, message: 'User not authenticated', isError: true);
@@ -1391,6 +1334,53 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
     ));
 
     Navigator.pop(context);
+  }
+  Widget _buildPaymentOption({required String title, required String subtitle, required bool isSelected, required VoidCallback onTap,}) {
+    final color = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isSelected ? color.primary.withValues(alpha: .06) : Colors.transparent,
+          border: Border(
+            bottom: BorderSide(color: color.outline.withValues(alpha: .1)),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: isSelected ? color.primary : color.outline),
+                color: isSelected ? color.primary : Colors.transparent,
+              ),
+              child: isSelected
+                  ? Icon(Icons.check, size: 12, color: color.surface)
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: isSelected ? color.primary : color.onSurface,
+                  )),
+                  Text(subtitle, style: TextStyle(
+                      fontSize: 12,
+                      color: isSelected ? color.primary : color.outline
+                  )),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

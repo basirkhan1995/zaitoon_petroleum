@@ -64,12 +64,8 @@ class EstimateBloc extends Bloc<EstimateEvent, EstimateState> {
     }
   }
 
-  Future<void> _onAddEstimate(
-      AddEstimateEvent event,
-      Emitter<EstimateState> emit,
-      ) async {
+  Future<void> _onAddEstimate(AddEstimateEvent event, Emitter<EstimateState> emit) async {
     emit(EstimateSaving());
-
     try {
       final response = await _repo.addEstimate(
         usrName: event.usrName,
@@ -81,7 +77,6 @@ class EstimateBloc extends Bloc<EstimateEvent, EstimateState> {
       final msg = response['msg']?.toString() ?? '';
 
       if (msg.toLowerCase().contains('success')) {
-        // After successful add, reload estimates
         final estimates = await _repo.getAllEstimates();
         emit(EstimatesLoaded(estimates));
         emit(EstimateSaved(message: 'Estimate created successfully'));
