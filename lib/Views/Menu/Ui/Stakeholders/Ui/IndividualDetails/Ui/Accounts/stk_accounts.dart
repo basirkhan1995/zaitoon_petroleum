@@ -54,9 +54,7 @@ class _DesktopState extends State<_Desktop> {
     context.read<AccountsBloc>().add(LoadAccountsEvent(ownerId: widget.ind.perId));
     super.initState();
   }
-
   final TextEditingController searchController = TextEditingController();
-
   @override
   void dispose() {
     searchController.dispose();

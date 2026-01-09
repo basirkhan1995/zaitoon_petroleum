@@ -141,7 +141,7 @@ class _DesktopState extends State<_Desktop> {
                                   height: 35,
                                   onPressed: (){
                                     showDialog(context: context, builder: (context){
-                                      return IndividualAddEditView(model: individual ?? widget.ind);
+                                      return IndividualAddEditView(model: widget.ind);
                                     });
                                   },
                                   label: Text(locale.edit),
@@ -159,7 +159,7 @@ class _DesktopState extends State<_Desktop> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: IndividualsDetailsTabView(ind: individual ?? widget.ind),
+                  child: IndividualsDetailsTabView(ind: widget.ind),
                 ),
               ),
             ],
