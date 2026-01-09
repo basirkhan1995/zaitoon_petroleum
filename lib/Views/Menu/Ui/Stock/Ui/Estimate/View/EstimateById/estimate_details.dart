@@ -60,6 +60,12 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
   final TextEditingController _creditAmountController = TextEditingController();
   double _remainingAmount = 0.0;
 
+  // Local state tracking
+  EstimateModel? _currentEstimate;
+  bool _isSaving = false;
+  bool _hasError = false;
+  String? _errorMessage;
+
   @override
   void initState() {
     super.initState();
@@ -100,7 +106,8 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
   }
 
   void _initializeControllers(EstimateModel estimate) {
-    _records = estimate.records ?? [];
+    _currentEstimate = estimate;
+    _records = List.from(estimate.records ?? []);
 
     // Clear existing controllers
     for (final controller in _qtyControllers) {
@@ -147,10 +154,13 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
           text: record.productName ?? ''
       ));
 
-      // Initialize selected items (these will be loaded from API)
+      // Initialize selected items
       _selectedProducts.add(null);
       _selectedStorages.add(null);
     }
+
+    _updateTotalAmount();
+    _updateRemainingAmount();
   }
 
   void _updateRecord(int index, {
@@ -178,7 +188,6 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
     }
     setState(() {
       _totalAmount = total;
-      _updateRemainingAmount();
     });
   }
 
@@ -240,7 +249,13 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
     return BlocListener<EstimateBloc, EstimateState>(
       listener: (context, state) {
         if (state is EstimateError) {
+          // Show error message but don't change UI
           Utils.showOverlayMessage(context, message: state.message, isError: true);
+          setState(() {
+            _hasError = true;
+            _errorMessage = state.message;
+            _isSaving = false;
+          });
         }
         if (state is EstimateConverted) {
           Utils.showOverlayMessage(
@@ -264,7 +279,25 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
             message: state.message,
             isError: false,
           );
-          Navigator.pop(context);
+          // Reload the estimate to get updated data
+          context.read<EstimateBloc>().add(LoadEstimateByIdEvent(widget.estimateId));
+          setState(() {
+            _isEditing = false;
+            _isSaving = false;
+          });
+        }
+        if (state is EstimateSaving) {
+          setState(() {
+            _isSaving = true;
+            _hasError = false;
+          });
+        }
+        if (state is EstimateDetailLoaded) {
+          setState(() {
+            _initializeControllers(state.estimate);
+            _hasError = false;
+            _isSaving = false;
+          });
         }
       },
       child: Scaffold(
@@ -279,7 +312,9 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
               backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(23),
               child: IconButton(
                 icon: Icon(Icons.print),
-                onPressed: _toggleEditMode,
+                onPressed: () {
+                  // TODO: Implement print functionality
+                },
                 hoverColor: Theme.of(context).colorScheme.primary.withAlpha(26),
                 tooltip: AppLocalizations.of(context)!.print,
               ),
@@ -300,9 +335,8 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
               child: IconButton(
                 icon: const Icon(Icons.delete_outline),
                 onPressed: () {
-                  final state = context.read<EstimateBloc>().state;
-                  if (state is EstimateDetailLoaded) {
-                    _deleteEstimate(state.estimate);
+                  if (_currentEstimate != null) {
+                    _deleteEstimate(_currentEstimate!);
                   }
                 },
                 hoverColor: Theme.of(context).colorScheme.primary.withAlpha(26),
@@ -315,9 +349,8 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
               child: IconButton(
                 icon: const Icon(Icons.cached_rounded),
                 onPressed: () {
-                  final state = context.read<EstimateBloc>().state;
-                  if (state is EstimateDetailLoaded) {
-                    _showConvertToSaleDialog(state.estimate);
+                  if (_currentEstimate != null) {
+                    _showConvertToSaleDialog(_currentEstimate!);
                   }
                 },
                 hoverColor: Theme.of(context).colorScheme.primary.withAlpha(26),
@@ -340,91 +373,151 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
         ),
         body: BlocBuilder<EstimateBloc, EstimateState>(
           builder: (context, state) {
-            if (state is EstimateDetailLoading) {
+            // Show loading indicator
+            if (state is EstimateDetailLoading && _currentEstimate == null) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            if (state is EstimateError) {
-              return Center(child: Text(state.message));
-            }
-
-            if (state is EstimateDetailLoaded) {
-              final estimate = state.estimate;
-
-              // Initialize controllers on first load
-              if (_records.isEmpty) {
-                _initializeControllers(estimate);
-                _totalAmount = estimate.grandTotal;
-                _updateRemainingAmount();
-              }
-
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+            // Show error only if we don't have any estimate loaded
+            if (state is EstimateError && _currentEstimate == null) {
+              return Center(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Header info
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        _buildHeaderInfo(estimate),
-                        if (!_isEditing)
-                          ZOutlineButton(
-                            width: 120,
-                            isActive: true,
-                            icon: Icons.published_with_changes_rounded,
-                            label: const Text('Convert'),
-                            onPressed: () => _showConvertToSaleDialog(estimate),
-                          ),
-                      ],
+                    Text(state.message),
+                    const SizedBox(height: 16),
+                    ZButton(
+                      width: 120,
+                      label: const Text('Retry'),
+                      onPressed: () {
+                        context.read<EstimateBloc>().add(LoadEstimateByIdEvent(widget.estimateId));
+                      },
                     ),
-                    const SizedBox(height: 16),
-
-                    // Customer and Reference (Editable in edit mode)
-                    if (_isEditing) _buildEditableHeaderFields(estimate),
-
-                    // Items header
-                    _buildItemsHeader(),
-
-                    // Items list
-                    _buildItemsList(estimate),
-
-                    // Add item button in edit mode
-                    if (_isEditing)
-                      Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: ZOutlineButton(
-                              width: 120,
-                              icon: Icons.add,
-                              label: Text(AppLocalizations.of(context)!.addItem),
-                              onPressed: _addEmptyItem,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                    const SizedBox(height: 16),
-
-                    // Profit Summary Section
-                    _buildProfitSummarySection(estimate)
                   ],
                 ),
               );
             }
 
-            return const Center(child: CircularProgressIndicator());
+            // If we have loaded data or we're in edit mode, show content
+            return Stack(
+              children: [
+                SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header info
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          _buildHeaderInfo(),
+                          if (!_isEditing && _currentEstimate != null)
+                            ZOutlineButton(
+                              width: 120,
+                              isActive: true,
+                              icon: Icons.published_with_changes_rounded,
+                              label: const Text('Convert'),
+                              onPressed: () => _showConvertToSaleDialog(_currentEstimate!),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Customer and Reference (Editable in edit mode)
+                      if (_isEditing) _buildEditableHeaderFields(),
+
+                      // Items header
+                      _buildItemsHeader(),
+
+                      // Items list
+                      _buildItemsList(),
+
+                      // Add item button in edit mode
+                      if (_isEditing)
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: ZOutlineButton(
+                                width: 120,
+                                icon: Icons.add,
+                                label: Text(AppLocalizations.of(context)!.addItem),
+                                onPressed: _addEmptyItem,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                      const SizedBox(height: 16),
+
+                      // Profit Summary Section
+                      _buildProfitSummarySection(),
+
+                      // Show error banner if there's an error
+                      if (_hasError && _errorMessage != null)
+                        Container(
+                          margin: const EdgeInsets.only(top: 16),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade50,
+                            border: Border.all(color: Colors.red.shade200),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.error_outline, color: Colors.red.shade600),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _errorMessage!,
+                                  style: TextStyle(color: Colors.red.shade700),
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.close, size: 16, color: Colors.red.shade600),
+                                onPressed: () {
+                                  setState(() {
+                                    _hasError = false;
+                                    _errorMessage = null;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+
+                // Show saving overlay if saving
+                if (_isSaving)
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black.withValues(alpha: .3),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            );
           },
         ),
       ),
     );
   }
 
-  Widget _buildHeaderInfo(EstimateModel estimate) {
+  Widget _buildHeaderInfo() {
     final tr = AppLocalizations.of(context)!;
+    final estimate = _currentEstimate ?? EstimateModel(records: _records);
+    final isPending = estimate.isPending;
+
     return SizedBox(
       width: 500,
       child: ZCard(
@@ -465,11 +558,11 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: estimate.isPending ? Colors.orange : Colors.green,
+                      color: isPending ? Colors.orange : Colors.green,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      estimate.isPending ? 'PENDING' : 'COMPLETED',
+                      isPending ? 'PENDING' : 'COMPLETED',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 12,
@@ -486,7 +579,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
     );
   }
 
-  Widget _buildEditableHeaderFields(EstimateModel estimate) {
+  Widget _buildEditableHeaderFields() {
     final tr = AppLocalizations.of(context)!;
 
     return Column(
@@ -557,7 +650,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
     );
   }
 
-  Widget _buildItemsList(EstimateModel estimate) {
+  Widget _buildItemsList() {
     final records = _records;
 
     if (records.isEmpty) {
@@ -653,14 +746,12 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                     isDense: true,
                   ),
                   onChanged: (value) {
-                    // Save cursor position
                     final cursorPos = _qtyControllers[index].selection.baseOffset;
                     _qtyCursorPositions[index] = cursorPos;
 
                     final qty = double.tryParse(value) ?? 0.0;
                     _updateRecord(index, quantity: qty);
 
-                    // Restore cursor position
                     if (cursorPos != -1 && cursorPos <= _qtyControllers[index].text.length) {
                       Future.delayed(Duration.zero, () {
                         _qtyControllers[index].selection = TextSelection.collapsed(
@@ -689,14 +780,12 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                     isDense: true,
                   ),
                   onChanged: (value) {
-                    // Save cursor position
                     final cursorPos = _salePriceControllers[index].selection.baseOffset;
                     _priceCursorPositions[index] = cursorPos;
 
                     final price = double.tryParse(value.replaceAll(',', '')) ?? 0.0;
                     _updateRecord(index, salePrice: price);
 
-                    // Restore cursor position
                     if (cursorPos != -1 && cursorPos <= _salePriceControllers[index].text.length) {
                       Future.delayed(Duration.zero, () {
                         _salePriceControllers[index].selection = TextSelection.collapsed(
@@ -799,9 +888,21 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
     );
   }
 
-  Widget _buildProfitSummarySection(EstimateModel estimate) {
+  Widget _buildProfitSummarySection() {
     final color = Theme.of(context).colorScheme;
-    final profitColor = estimate.totalProfit >= 0 ? Colors.green : Colors.red;
+    final tr = AppLocalizations.of(context)!;
+    // Calculate totals from current records
+    double totalPurchaseCost = 0.0;
+    double totalSaleValue = 0.0;
+
+    for (final record in _records) {
+      totalPurchaseCost += record.totalPurchase;
+      totalSaleValue += record.total;
+    }
+
+    final totalProfit = totalSaleValue - totalPurchaseCost;
+    final profitColor = totalProfit >= 0 ? Colors.green : Colors.red;
+    final profitPercentage = totalPurchaseCost > 0 ? (totalProfit / totalPurchaseCost * 100) : 0.0;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -815,7 +916,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Profit Summary', style: TextStyle(fontWeight: FontWeight.bold)),
+               Text(tr.profitSummary, style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(width: 4),
               Icon(Icons.ssid_chart, size: 22, color: color.primary),
             ],
@@ -824,23 +925,24 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
 
           _buildProfitRow(
             label: 'Total Cost',
-            value: estimate.totalPurchaseCost,
+            value: totalPurchaseCost,
             color: color.primary.withValues(alpha: .9),
+            isBold: true
           ),
           const SizedBox(height: 5),
           _buildProfitRow(
-            label: 'Profit',
-            value: estimate.totalProfit,
+            label: tr.profit,
+            value: totalProfit.toDoubleAmount(),
             color: profitColor,
             isBold: true,
           ),
-          if (estimate.totalPurchaseCost > 0)
+          if (totalPurchaseCost > 0)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Profit %', style: TextStyle(fontSize: 16)),
+                Text('${tr.profit} %', style: TextStyle(fontSize: 16)),
                 Text(
-                  '${estimate.profitPercentage.toStringAsFixed(2)}%',
+                  '${profitPercentage.toAmount()}%',
                   style: TextStyle(
                     fontSize: 16,
                     color: profitColor,
@@ -853,7 +955,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
 
           // Grand Total
           _buildProfitRow(
-            label: 'Grand Total',
+            label: tr.grandTotal,
             value: _totalAmount,
             isBold: true,
           ),
@@ -891,18 +993,15 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
   }
 
   void _toggleEditMode() {
-    final state = context.read<EstimateBloc>().state;
-    if (state is EstimateDetailLoaded) {
-      setState(() {
-        _isEditing = !_isEditing;
-        if (!_isEditing) {
-          // Reset to original data if cancelled
-          _initializeControllers(state.estimate);
-          _totalAmount = state.estimate.grandTotal;
-          _updateRemainingAmount();
+    setState(() {
+      _isEditing = !_isEditing;
+      if (!_isEditing) {
+        // Reset to original data if cancelled
+        if (_currentEstimate != null) {
+          _initializeControllers(_currentEstimate!);
         }
-      });
-    }
+      }
+    });
   }
 
   void _saveChanges() {
@@ -940,14 +1039,13 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
       }
     }
 
-    final state = context.read<EstimateBloc>().state;
-    if (state is! EstimateDetailLoaded) return;
+    if (_currentEstimate == null) return;
 
     // Update the estimate
     context.read<EstimateBloc>().add(UpdateEstimateEvent(
       usrName: _userName!,
-      orderId: state.estimate.ordId!,
-      perID: _selectedCustomer?.perId ?? state.estimate.ordPersonal!,
+      orderId: _currentEstimate!.ordId!,
+      perID: _selectedCustomer?.perId ?? _currentEstimate!.ordPersonal!,
       xRef: _xRefController.text.isNotEmpty ? _xRefController.text : null,
       records: _records,
     ));

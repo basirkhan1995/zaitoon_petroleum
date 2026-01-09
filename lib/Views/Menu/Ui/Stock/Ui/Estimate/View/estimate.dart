@@ -53,7 +53,7 @@ class _Desktop extends StatefulWidget {
 
 class _DesktopState extends State<_Desktop> {
   String? baseCurrency;
-  EstimatesLoaded? _cachedEstimates; // Changed to nullable
+  EstimatesLoaded? _cachedEstimates;
 
   @override
   void initState() {

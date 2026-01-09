@@ -50,6 +50,11 @@ class _AddEstimateViewState extends State<AddEstimateView> {
   final List<ProductsStockModel?> _selectedProducts = [];
   final List<StorageModel?> _selectedStorages = [];
 
+  // Local state for saving
+  bool _isSaving = false;
+  bool _hasError = false;
+  String? _errorMessage;
+
   @override
   void initState() {
     super.initState();
@@ -187,6 +192,11 @@ class _AddEstimateViewState extends State<AddEstimateView> {
       listener: (context, state) {
         if (state is EstimateError) {
           Utils.showOverlayMessage(context, message: state.message, isError: true);
+          setState(() {
+            _isSaving = false;
+            _hasError = true;
+            _errorMessage = state.message;
+          });
         }
         if (state is EstimateSaved) {
           Utils.showOverlayMessage(
@@ -195,6 +205,12 @@ class _AddEstimateViewState extends State<AddEstimateView> {
             isError: false,
           );
           Navigator.pop(context);
+        }
+        if (state is EstimateSaving) {
+          setState(() {
+            _isSaving = true;
+            _hasError = false;
+          });
         }
       },
       child: Scaffold(
@@ -210,7 +226,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
               width: 110,
               height: 38,
               label: Text(tr.clear),
-              onPressed: () {
+              onPressed: _isSaving ? null : () {
                 setState(() {
                   _records.clear();
                   _productControllers.clear();
@@ -224,6 +240,8 @@ class _AddEstimateViewState extends State<AddEstimateView> {
                   _customerController.clear();
                   _xRefController.clear();
                   _selectedCustomerId = null;
+                  _hasError = false;
+                  _errorMessage = null;
                 });
               },
             ),
@@ -240,87 +258,141 @@ class _AddEstimateViewState extends State<AddEstimateView> {
               width: 110,
               height: 38,
               label: Text(tr.create),
-              onPressed: _createEstimate,
+              onPressed: _isSaving ? null : _createEstimate,
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              // Customer and Reference
-              Row(
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
                 children: [
-                  Expanded(
-                    child: GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
-                      controller: _customerController,
-                      title: tr.customer,
-                      hintText: tr.customer,
-                      isRequired: true,
-                      bloc: context.read<IndividualsBloc>(),
-                      fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
-                      searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
-                      itemBuilder: (context, ind) => Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("${ind.perName ?? ''} ${ind.perLastName ?? ''}"),
+                  // Customer and Reference
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
+                          controller: _customerController,
+                          title: tr.customer,
+                          hintText: tr.customer,
+                          isRequired: true,
+                          bloc: context.read<IndividualsBloc>(),
+                          fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
+                          searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
+                          itemBuilder: (context, ind) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text("${ind.perName ?? ''} ${ind.perLastName ?? ''}"),
+                          ),
+                          itemToString: (individual) => "${individual.perName ?? ''} ${individual.perLastName ?? ''}",
+                          stateToLoading: (state) => state is IndividualLoadingState,
+                          stateToItems: (state) {
+                            if (state is IndividualLoadedState) return state.individuals;
+                            return [];
+                          },
+                          onSelected: (value) {
+                            _selectedCustomerId = value.perId;
+                            _customerController.text = "${value.perName} ${value.perLastName}";
+                          },
+                        //  enabled: !_isSaving,
+                        ),
                       ),
-                      itemToString: (individual) => "${individual.perName ?? ''} ${individual.perLastName ?? ''}",
-                      stateToLoading: (state) => state is IndividualLoadingState,
-                      stateToItems: (state) {
-                        if (state is IndividualLoadedState) return state.individuals;
-                        return [];
-                      },
-                      onSelected: (value) {
-                        _selectedCustomerId = value.perId;
-                        _customerController.text = "${value.perName} ${value.perLastName}";
-                      },
-                    ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: ZTextFieldEntitled(
+                          title: tr.referenceNumber,
+                          controller: _xRefController,
+                        //  enabled: !_isSaving,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: ZTextFieldEntitled(
-                      title: tr.referenceNumber,
-                      controller: _xRefController,
-                    ),
+
+                  const SizedBox(height: 16),
+
+                  // Items header
+                  _buildItemsHeader(tr),
+
+                  // Items list
+                  ...List.generate(_records.length, (index) {
+                    return _buildItemRow(index, tr);
+                  }),
+
+                  // Add item button
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: ZOutlineButton(
+                          width: 120,
+                          icon: Icons.add,
+                          label: Text(tr.addItem),
+                          onPressed: _isSaving ? null : () {
+                            setState(() {
+                              _addEmptyItem();
+                            });
+                          },
+                        ),
+                      ),
+                    ],
                   ),
+
+                  const SizedBox(height: 16),
+
+                  // Show error banner if there's an error
+                  if (_hasError && _errorMessage != null)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        border: Border.all(color: Colors.red.shade200),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.error_outline, color: Colors.red.shade600),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _errorMessage!,
+                              style: TextStyle(color: Colors.red.shade700),
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.close, size: 16, color: Colors.red.shade600),
+                            onPressed: () {
+                              setState(() {
+                                _hasError = false;
+                                _errorMessage = null;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  // Summary sections in row (like sale invoice)
+                  _buildProfitSummarySection(tr)
                 ],
               ),
+            ),
 
-              const SizedBox(height: 16),
-
-              // Items header
-              _buildItemsHeader(tr),
-
-              // Items list
-              ...List.generate(_records.length, (index) {
-                return _buildItemRow(index, tr);
-              }),
-
-              // Add item button
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: ZOutlineButton(
-                      width: 120,
-                      icon: Icons.add,
-                      label: Text(tr.addItem),
-                      onPressed: () {
-                        setState(() {
-                          _addEmptyItem();
-                        });
-                      },
+            // Show saving overlay if saving
+            if (_isSaving)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withValues(alpha: .3),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                   ),
-                ],
+                ),
               ),
-
-              const SizedBox(height: 16),
-
-              // Summary sections in row (like sale invoice)
-              _buildProfitSummarySection(tr)
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -418,6 +490,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
                 );
               },
               title: '',
+             // enabled: !_isSaving,
             ),
           ),
 
@@ -439,6 +512,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
                 final qty = double.tryParse(value) ?? 0.0;
                 _updateRecord(index, quantity: qty);
               },
+              enabled: !_isSaving,
             ),
           ),
 
@@ -454,6 +528,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
                 isDense: true,
               ),
               style: TextStyle(color: Colors.blue),
+              enabled: !_isSaving,
             ),
           ),
 
@@ -476,6 +551,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
                 final price = double.tryParse(value.replaceAll(',', '')) ?? 0.0;
                 _updateRecord(index, salePrice: price);
               },
+              enabled: !_isSaving,
             ),
           ),
 
@@ -530,6 +606,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
           SizedBox(
             width: 150,
             child: GenericUnderlineTextfield<StorageModel, StorageBloc, StorageState>(
+
               controller: _storageControllers[index],
               hintText: tr.storage,
               bloc: context.read<StorageBloc>(),
@@ -550,6 +627,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
                 _updateRecord(index, storageId: storage.stgId);
               },
               title: '',
+             // enabled: !_isSaving,
             ),
           ),
 
@@ -558,7 +636,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
             width: 60,
             child: IconButton(
               icon: Icon(Icons.delete_outline, size: 18, color: color.error),
-              onPressed: () => _removeItem(index),
+              onPressed: _isSaving ? null : () => _removeItem(index),
             ),
           ),
         ],
@@ -632,8 +710,6 @@ class _AddEstimateViewState extends State<AddEstimateView> {
       ),
     );
   }
-
-
 
   Widget _buildSummaryRow({
     required String label,
