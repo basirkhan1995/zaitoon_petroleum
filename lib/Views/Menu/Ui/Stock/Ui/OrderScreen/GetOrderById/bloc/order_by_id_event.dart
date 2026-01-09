@@ -51,7 +51,7 @@ class UpdateOrderPaymentEvent extends OrderByIdEvent {
   List<Object?> get props => [cashPayment, creditAmount];
 }
 
-
+// Add to OrderByIdEvent part
 class UnAuthorizeOrderTxnEvent extends OrderByIdEvent {
   final String usrName;
   final String reference;
@@ -63,6 +63,25 @@ class UnAuthorizeOrderTxnEvent extends OrderByIdEvent {
 
   @override
   List<Object?> get props => [usrName, reference];
+}
+
+class OrderByIdUnAuthorizing extends OrderByIdState {
+  final OrderByIdModel order;
+
+  const OrderByIdUnAuthorizing(this.order);
+
+  @override
+  List<Object?> get props => [order];
+}
+
+class OrderByIdUnAuthorized extends OrderByIdState {
+  final bool success;
+  final String message;
+
+  const OrderByIdUnAuthorized(this.success, {this.message = ''});
+
+  @override
+  List<Object?> get props => [success, message];
 }
 
 

@@ -27,6 +27,7 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
     on<ClearOrderAccountEvent>(_onClearAccount);
     on<UpdateOrderPaymentEvent>(_onUpdatePayment);
     on<UpdateSaleOrderItemEvent>(_onUpdateSaleItem);
+
   }
 
 // Add this method:
