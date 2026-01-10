@@ -27,6 +27,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Orders/model/orders_mod
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/model/driver_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/model/shp_details_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/model/vehicle_model.dart';
+import '../Views/Menu/Ui/Dashboard/Views/DailyGross/model/gross_model.dart';
 import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/FetchGLAT/model/glat_model.dart';
@@ -1859,6 +1860,8 @@ class Repositories {
     }
   }
 
+
+
   Future<EstimateModel?> getEstimateById({required int orderId}) async {
     try {
       final queryParams = {'ordID': orderId};
@@ -2332,5 +2335,42 @@ class Repositories {
       throw e.toString();
     }
   }
+
+  /// Dashboard Statistics.....................................................
+  Future<List<DailyGrossModel>> getDailyGross({required String from, required String to, required int startGroup, required int stopGroup}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/reports/dailyGrossing.php",
+          data: {
+            "from": from,
+            "to": to,
+            "startGroup": startGroup,
+            "stopGroup": stopGroup
+          }
+      );
+
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>()
+            .map((json) => DailyGrossModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+
 
 }
