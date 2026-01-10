@@ -1,42 +1,43 @@
-
-
 import 'dart:convert';
 
-List<DailyGrossModel> dailyGrossModelFromMap(String str) => List<DailyGrossModel>.from(json.decode(str).map((x) => DailyGrossModel.fromMap(x)));
-
-String dailyGrossModelToMap(List<DailyGrossModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toMap())));
+List<DailyGrossModel> dailyGrossModelFromMap(String str) =>
+    List<DailyGrossModel>.from(
+      json.decode(str).map((x) => DailyGrossModel.fromMap(x)),
+    );
 
 class DailyGrossModel {
-  final DateTime? dates;
-  final String? category;
-  final String? balance;
+  final DateTime date;
+  final GrossCategory category;
+  final double balance;
 
-  DailyGrossModel({
-    this.dates,
-    this.category,
-    this.balance,
+  const DailyGrossModel({
+    required this.date,
+    required this.category,
+    required this.balance,
   });
 
-  DailyGrossModel copyWith({
-    DateTime? dates,
-    String? category,
-    String? balance,
-  }) =>
-      DailyGrossModel(
-        dates: dates ?? this.dates,
-        category: category ?? this.category,
-        balance: balance ?? this.balance,
-      );
+  factory DailyGrossModel.fromMap(Map<String, dynamic> json) {
+    return DailyGrossModel(
+      date: DateTime.parse(json['dates']),
+      category: GrossCategoryX.fromString(json['category']),
+      balance: double.tryParse(json['balance'].toString()) ?? 0.0,
+    );
+  }
+}
 
-  factory DailyGrossModel.fromMap(Map<String, dynamic> json) => DailyGrossModel(
-    dates: json["dates"] == null ? null : DateTime.parse(json["dates"]),
-    category: json["category"],
-    balance: json["balance"],
-  );
+/// Strongly typed category (no string comparison bugs)
+enum GrossCategory { profit, loss }
 
-  Map<String, dynamic> toMap() => {
-    "dates": "${dates!.year.toString().padLeft(4, '0')}-${dates!.month.toString().padLeft(2, '0')}-${dates!.day.toString().padLeft(2, '0')}",
-    "category": category,
-    "balance": balance,
-  };
+extension GrossCategoryX on GrossCategory {
+  static GrossCategory fromString(String? value) {
+    if (value == null) return GrossCategory.loss;
+
+    switch (value.toLowerCase()) {
+      case 'proffit': // API typo
+      case 'profit':
+        return GrossCategory.profit;
+      default:
+        return GrossCategory.loss;
+    }
+  }
 }

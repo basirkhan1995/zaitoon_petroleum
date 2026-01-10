@@ -28,6 +28,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/model/drive
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/model/shp_details_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/model/vehicle_model.dart';
 import '../Views/Menu/Ui/Dashboard/Views/DailyGross/model/gross_model.dart';
+import '../Views/Menu/Ui/Dashboard/Views/Stats/model/dashboard_stats.dart';
 import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/FetchGLAT/model/glat_model.dart';
@@ -2371,6 +2372,29 @@ class Repositories {
       throw "$e";
     }
   }
+  Future<DashboardStatsModel> getDashboardStats() async {
+    try {
+      final response = await api.get(
+        endpoint: "/reports/counts.php",
+      );
 
+      if (response.data is Map && response.data['msg'] != null) {
+        throw response.data['msg'];
+      }
+
+      if (response.data == null || response.data.isEmpty) {
+        throw "No data received";
+      }
+
+      return DashboardStatsModel.fromMap(
+        Map<String, dynamic>.from(response.data),
+      );
+
+    } on DioException catch (e) {
+      throw e.message ?? "Network error";
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 
 }

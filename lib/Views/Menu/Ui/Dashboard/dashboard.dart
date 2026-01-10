@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/DailyGross/daily_gross.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/Stats/stats.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/Ui/exchange_rate.dart';
 
 import '../Settings/features/Visibility/bloc/settings_visible_bloc.dart';
@@ -49,8 +51,11 @@ class _Desktop extends StatelessWidget {
              child: Column(
                crossAxisAlignment: CrossAxisAlignment.start,
                children: [
+                 SizedBox(height: 2),
                  if(visibility.dashboardClock)
                    const DigitalClock(),
+                 DashboardStatsView(),
+                 DailyGrossView()
                ],
              ),
            ),
@@ -61,6 +66,7 @@ class _Desktop extends StatelessWidget {
                  settingButton: true,
                  newRateButton: false,
                ),
+
              ],
            ) 
           ],

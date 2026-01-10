@@ -4,9 +4,11 @@
 
 import 'dart:convert';
 
-DashboardStatsModel dashboardStatsModelFromMap(String str) => DashboardStatsModel.fromMap(json.decode(str));
+DashboardStatsModel dashboardStatsModelFromMap(String str) =>
+    DashboardStatsModel.fromMap(json.decode(str));
 
-String dashboardStatsModelToMap(DashboardStatsModel data) => json.encode(data.toMap());
+String dashboardStatsModelToMap(DashboardStatsModel data) =>
+    json.encode(data.toMap());
 
 class DashboardStatsModel {
   final int? personals;
@@ -14,7 +16,7 @@ class DashboardStatsModel {
   final int? accounts;
   final int? users;
 
-  DashboardStatsModel({
+  const DashboardStatsModel({
     this.personals,
     this.employees,
     this.accounts,
@@ -26,25 +28,41 @@ class DashboardStatsModel {
     int? employees,
     int? accounts,
     int? users,
-  }) =>
-      DashboardStatsModel(
-        personals: personals ?? this.personals,
-        employees: employees ?? this.employees,
-        accounts: accounts ?? this.accounts,
-        users: users ?? this.users,
-      );
+  }) {
+    return DashboardStatsModel(
+      personals: personals ?? this.personals,
+      employees: employees ?? this.employees,
+      accounts: accounts ?? this.accounts,
+      users: users ?? this.users,
+    );
+  }
 
-  factory DashboardStatsModel.fromMap(Map<String, dynamic> json) => DashboardStatsModel(
-    personals: json["personals"],
-    employees: json["employees"],
-    accounts: json["accounts"],
-    users: json["users"],
-  );
+  /// ✅ SAFE parsing (handles int, string, null)
+  factory DashboardStatsModel.fromMap(Map<String, dynamic> json) {
+    int? parseInt(dynamic value) {
+      if (value == null) return null;
+      if (value is int) return value;
+      return int.tryParse(value.toString());
+    }
+
+    return DashboardStatsModel(
+      personals: parseInt(json['personals']),
+      employees: parseInt(json['employees']),
+      accounts: parseInt(json['accounts']),
+      users: parseInt(json['users']),
+    );
+  }
 
   Map<String, dynamic> toMap() => {
-    "personals": personals,
-    "employees": employees,
-    "accounts": accounts,
-    "users": users,
+    'personals': personals,
+    'employees': employees,
+    'accounts': accounts,
+    'users': users,
   };
+
+  /// ✅ Dashboard-friendly getters (no null in UI)
+  int get personalsCount => personals ?? 0;
+  int get employeesCount => employees ?? 0;
+  int get accountsCount => accounts ?? 0;
+  int get usersCount => users ?? 0;
 }
