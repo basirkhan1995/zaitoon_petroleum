@@ -162,7 +162,8 @@ class DailyGrossChart extends StatelessWidget {
             ),
 
             SfCartesianChart(
-              legend: Legend(isVisible: true,position: LegendPosition.top,isResponsive: true),
+             // legend: Legend(isVisible: true,position: LegendPosition.top,isResponsive: true),
+
               tooltipBehavior: TooltipBehavior(enable: true),
               primaryXAxis: DateTimeAxis(
                 intervalType: DateTimeIntervalType.days,
