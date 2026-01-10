@@ -28,7 +28,7 @@ import '../../../../../../../Features/PrintSettings/report_model.dart';
 import '../../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import 'bloc/order_by_id_bloc.dart';
-import 'model/ord_by_Id_model.dart';
+import 'model/ord_by_id_model.dart';
 import 'order_by_print.dart';
 
 class OrderByIdView extends StatefulWidget {

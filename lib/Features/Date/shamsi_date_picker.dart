@@ -19,10 +19,10 @@ class AfghanDatePicker extends StatefulWidget {
   });
 
   @override
-  _AfghanDatePickerState createState() => _AfghanDatePickerState();
+  AfghanDatePickerState createState() => AfghanDatePickerState();
 }
 
-class _AfghanDatePickerState extends State<AfghanDatePicker> {
+class AfghanDatePickerState extends State<AfghanDatePicker> {
   late Jalali _selectedDate;
   late Jalali _currentMonth;
   late Jalali _today;

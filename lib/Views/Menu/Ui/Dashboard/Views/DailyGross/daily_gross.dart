@@ -134,31 +134,35 @@ class DailyGrossChart extends StatelessWidget {
     return ZCard(
       radius: 8,
       borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: .5),
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(15),
       child: SizedBox(
-        height: 400,
+        height: 360,
         child: Column(
           children: [
-            Row(
-              children: [
-                 Expanded(child: Text(AppLocalizations.of(context)!.profitAndLoss)),
-                SizedBox(
-                  width: 150,
-                  child: DateRangeDropdown(
-                    title: '',
-                    onChanged: (fromDate, toDate) {
-                      context.read<DailyGrossBloc>().add(
-                        FetchDailyGrossEvent(
-                          from: fromDate,
-                          to: toDate,
-                          startGroup: 3,
-                          stopGroup: 4,
-                        ),
-                      );
-                    },
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                children: [
+                   Expanded(child: Text(AppLocalizations.of(context)!.profitAndLoss,style: Theme.of(context).textTheme.titleMedium,)),
+                   SizedBox(
+                    width: 150,
+                    child: DateRangeDropdown(
+                      title: '',
+                      height: 38,
+                      onChanged: (fromDate, toDate) {
+                        context.read<DailyGrossBloc>().add(
+                          FetchDailyGrossEvent(
+                            from: fromDate,
+                            to: toDate,
+                            startGroup: 3,
+                            stopGroup: 4,
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
 
             SfCartesianChart(

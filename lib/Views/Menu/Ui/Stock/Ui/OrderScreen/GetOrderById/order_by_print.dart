@@ -12,7 +12,7 @@ import 'package:zaitoon_petroleum/Features/PrintSettings/report_model.dart';
 import '../../../../Settings/Ui/Company/Storage/model/storage_model.dart';
 import '../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
 import '../../../../Stakeholders/Ui/Individuals/individual_model.dart';
-import '../GetOrderById/model/ord_by_Id_model.dart';
+import '../GetOrderById/model/ord_by_id_model.dart';
 
 class OrderPrintService extends PrintServices {
   Future<void> createDocument({

@@ -37,10 +37,10 @@ class AfghanDateRangePicker extends StatefulWidget {
   });
 
   @override
-  _AfghanDateRangePickerState createState() => _AfghanDateRangePickerState();
+  AfghanDateRangePickerState createState() => AfghanDateRangePickerState();
 }
 
-class _AfghanDateRangePickerState extends State<AfghanDateRangePicker> {
+class AfghanDateRangePickerState extends State<AfghanDateRangePicker> {
   late JalaliRange _selectedRange;
   late Jalali _currentMonth;
   late Jalali _today;
@@ -383,8 +383,9 @@ class _AfghanDateRangePickerState extends State<AfghanDateRangePicker> {
                               Color? background;
                               BoxShape shape = BoxShape.rectangle;
                               if (isStartDate || isEndDate) { background = color.primary; shape = BoxShape.circle; }
-                              else if (isInRange) background = color.primary.withAlpha(50);
-
+                              else if (isInRange) {
+                                background = color.primary.withAlpha(50);
+                              }
                               final isToday = _isSameDate(date, _today);
 
                               return GestureDetector(

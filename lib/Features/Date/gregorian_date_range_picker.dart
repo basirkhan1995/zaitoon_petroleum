@@ -34,11 +34,10 @@ class GregorianDateRangePicker extends StatefulWidget {
   });
 
   @override
-  _GregorianDateRangePickerState createState() =>
-      _GregorianDateRangePickerState();
+  GregorianDateRangePickerState createState() => GregorianDateRangePickerState();
 }
 
-class _GregorianDateRangePickerState extends State<GregorianDateRangePicker> {
+class GregorianDateRangePickerState extends State<GregorianDateRangePicker> {
   late ZGregorianRangePicker _selectedRange;
   late DateTime _currentMonth;
   late DateTime _today;
@@ -308,7 +307,9 @@ class _GregorianDateRangePickerState extends State<GregorianDateRangePicker> {
                               Border? border;
 
                               if(isStartDate || isEndDate){ bg=color.primary; shape=BoxShape.circle;}
-                              else if(isInRange) bg=color.primary.withAlpha(50);
+                              else if(isInRange){
+                                bg=color.primary.withAlpha(50);
+                              }
 
                               final isToday = _today.year == date.year &&
                                   _today.month == date.month &&

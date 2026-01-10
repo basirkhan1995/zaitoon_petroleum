@@ -6,7 +6,7 @@ import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
 import '../../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
 import '../../../../../Stakeholders/Ui/Individuals/individual_model.dart';
-import '../model/ord_by_Id_model.dart';
+import '../model/ord_by_id_model.dart';
 
 part 'order_by_id_event.dart';
 part 'order_by_id_state.dart';

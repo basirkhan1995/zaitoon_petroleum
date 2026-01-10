@@ -136,58 +136,6 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
   }
 
   // ---------------------------------------------------------------------------
-  // PAGES FIELD
-  // ---------------------------------------------------------------------------
-  Widget _buildPagesField(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            AppLocalizations.of(context)!.pages,
-            style: TextStyle(
-              fontSize: 13,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Container(
-            height: 40,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withValues(alpha: .5),
-              ),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: TextFormField(
-              controller: _pagesController,
-              decoration: const InputDecoration(
-                isCollapsed: true,
-                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                border: InputBorder.none,
-                hintText: '',
-              ),
-              onChanged: (value) {
-                updatePages(value);
-              },
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            '1,3,5 or 1-3 or 1,3-5,7',
-            style: TextStyle(
-              fontSize: 10,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
   // SIDEBAR
   // ---------------------------------------------------------------------------
   Widget _buildSidebar(BuildContext context, AppLocalizations locale) {
