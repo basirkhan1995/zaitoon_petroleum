@@ -1991,4 +1991,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get creditPayment => 'پرداخت حسابی';
+
+  @override
+  String get lastYear => 'اوسنی کال';
+
+  @override
+  String get profitAndLoss => 'سود و زیان';
+
+  @override
+  String get loss => 'نقص';
 }

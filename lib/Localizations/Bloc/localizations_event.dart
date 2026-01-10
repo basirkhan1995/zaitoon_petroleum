@@ -1,6 +1,5 @@
 part of 'localizations_bloc.dart';
 
-@immutable
 sealed class LocalizationsEvent {}
 
 class LoadLocaleEvent extends LocalizationsEvent {}

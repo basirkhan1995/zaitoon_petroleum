@@ -1997,4 +1997,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get creditPayment => 'Credit Payment';
+
+  @override
+  String get lastYear => 'Last year';
+
+  @override
+  String get profitAndLoss => 'Profit & Loss';
+
+  @override
+  String get loss => 'Loss';
 }

@@ -5,6 +5,7 @@ class ZCard extends StatelessWidget {
   final Color? color;
   final Color? shadowColor;
   final double? radius;
+  final Color? borderColor;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
 
@@ -12,6 +13,7 @@ class ZCard extends StatelessWidget {
     super.key,
     required this.child,
     this.color,
+    this.borderColor,
     this.shadowColor,
     this.radius,
     this.padding,
@@ -36,7 +38,7 @@ class ZCard extends StatelessWidget {
       margin: margin ?? EdgeInsets.zero,
       padding: padding ?? const EdgeInsets.symmetric(horizontal: 3, vertical: 0),
       decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .2)),
+        border: Border.all(color: borderColor ?? Theme.of(context).colorScheme.outline.withValues(alpha: .2)),
         boxShadow: [
           BoxShadow(
             color: shadowColor ?? Theme.of(context).colorScheme.surface,

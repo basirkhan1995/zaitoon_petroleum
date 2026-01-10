@@ -3,8 +3,6 @@ import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/TxnTypes/model/txn_types_model.dart';
 
-import '../../../../../../../Services/localization_services.dart';
-
 part 'txn_types_event.dart';
 part 'txn_types_state.dart';
 
@@ -46,7 +44,6 @@ class TxnTypesBloc extends Bloc<TxnTypesEvent, TxnTypesState> {
       }
     });
     on<UpdateTxnTypeEvent>((event, emit) async {
-      final tr = localizationService.loc;
       emit(TxnTypeLoadingState());
       try {
         final response = await _repo.updateTxnType(newType: event.newType);

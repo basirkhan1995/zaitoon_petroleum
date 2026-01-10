@@ -203,12 +203,6 @@ class _DesktopState extends State<_Desktop> {
     if (widget.model == null) {
       bloc.add(AddStorageEvent(data));
     } else {
-      print(widget.model?.stgId);
-      print(storageName.text);
-      print(storageDetails.text);
-      print(storageLocation.text);
-      print(statusValue);
-
       bloc.add(UpdateStorageEvent(data));
     }
   }

@@ -662,5 +662,8 @@
   "newSale": "New Sale",
   "party": "Party",
   "estimate": "Estimate",
-  "creditPayment": "Credit Payment"
+  "creditPayment": "Credit Payment",
+  "lastYear": "Last year",
+  "profitAndLoss": "Profit & Loss",
+  "loss": "Loss"
 }

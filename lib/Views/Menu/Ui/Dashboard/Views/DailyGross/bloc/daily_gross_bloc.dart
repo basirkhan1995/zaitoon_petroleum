@@ -10,8 +10,7 @@ part 'daily_gross_state.dart';
 class DailyGrossBloc extends Bloc<DailyGrossEvent, DailyGrossState> {
   final Repositories repository;
 
-  DailyGrossBloc(this.repository)
-      : super(DailyGrossInitial()) {
+  DailyGrossBloc(this.repository) : super(DailyGrossInitial()) {
     on<FetchDailyGrossEvent>(_onFetchDailyGross);
   }
 
@@ -19,7 +18,21 @@ class DailyGrossBloc extends Bloc<DailyGrossEvent, DailyGrossState> {
       FetchDailyGrossEvent event,
       Emitter<DailyGrossState> emit,
       ) async {
-    emit(DailyGrossLoading());
+    final currentState = state;
+
+    /// 🔹 FIRST LOAD → show loader
+    if (currentState is! DailyGrossLoaded) {
+      emit(DailyGrossLoading());
+    }
+    /// 🔹 RELOAD → silent refresh
+    else {
+      emit(
+        DailyGrossLoaded(
+          currentState.data,
+          isRefreshing: true,
+        ),
+      );
+    }
 
     try {
       final result = await repository.getDailyGross(

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+
+import '../../../HR/Ui/Users/features/date_range_string.dart';
 import 'bloc/daily_gross_bloc.dart';
 import 'model/gross_model.dart';
-
-
 
 class DailyGrossView extends StatefulWidget {
   const DailyGrossView({super.key});
@@ -21,15 +23,16 @@ class _DailyGrossViewState extends State<DailyGrossView> {
   void initState() {
     super.initState();
 
-    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final now = DateTime.now();
+    final from = DateFormat('yyyy-MM-dd').format(now.subtract(const Duration(days: 30)));
+    final to = DateFormat('yyyy-MM-dd').format(now);
 
-    /// ✅ Dispatch event only
     context.read<DailyGrossBloc>().add(
       FetchDailyGrossEvent(
-        from: today,
-        to: today,
-        startGroup: 3, // Profit
-        stopGroup: 4,  // Loss
+        from: from,
+        to: to,
+        startGroup: 3,
+        stopGroup: 4,
       ),
     );
   }
@@ -48,148 +51,35 @@ class _Mobile extends StatelessWidget {
   const _Mobile();
 
   @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(8),
-      child: _DailyGrossContent(),
-    );
-  }
+  Widget build(BuildContext context) => const Padding(
+    padding: EdgeInsets.all(8),
+    child: _DailyGrossContent(),
+  );
 }
 
 class _Tablet extends StatelessWidget {
   const _Tablet();
 
   @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(16),
-      child: _DailyGrossContent(),
-    );
-  }
+  Widget build(BuildContext context) => const Padding(
+    padding: EdgeInsets.all(16),
+    child: _DailyGrossContent(),
+  );
 }
 
 class _Desktop extends StatelessWidget {
   const _Desktop();
 
   @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(5),
-      child: _DailyGrossContent(),
-    );
-  }
+  Widget build(BuildContext context) => const Padding(
+    padding: EdgeInsets.all(5),
+    child: _DailyGrossContent(),
+  );
 }
 
-
-/// Chart widget for daily profit vs loss
-class DailyGrossChart extends StatelessWidget {
-  const DailyGrossChart({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // Get the current state (assumes state is DailyGrossLoaded)
-    final state = context.read<DailyGrossBloc>().state;
-
-    if (state is! DailyGrossLoaded || state.data.isEmpty) {
-      return const Center(child: Text('No data available'));
-    }
-
-    // Prepare chart points
-    final points = _prepareChartData(state.data);
-
-    return ZCard(
-      radius: 8,
-      padding: EdgeInsets.symmetric(horizontal: 15,vertical: 15),
-      child: SizedBox(
-        height: 300,
-        child: LineChart(
-          LineChartData(
-            gridData: FlGridData(show: true),
-            titlesData: FlTitlesData(
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  interval: 1,
-                  getTitlesWidget: (value, meta) {
-                    if (value.toInt() >= points.length) return const SizedBox();
-                    final date = points[value.toInt()].date;
-                    return Text(
-                      DateFormat('MM/dd').format(date),
-                      style: const TextStyle(fontSize: 10),
-                    );
-                  },
-                ),
-              ),
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: true, interval: null),
-              ),
-            ),
-            borderData: FlBorderData(
-              show: true,
-              border: Border.all(color: Colors.grey.withValues(alpha: .5)),
-            ),
-            lineBarsData: [
-              _lineBarData(points, profit: true), // Profit
-              _lineBarData(points, profit: false), // Loss
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Prepare points grouped by date
-  List<_ChartPoint> _prepareChartData(List<DailyGrossModel> data) {
-    final map = <DateTime, _ChartPoint>{};
-
-    for (final item in data) {
-      final date = item.date;
-      map.putIfAbsent(date, () => _ChartPoint(date: date));
-
-      if (item.category == GrossCategory.profit) {
-        map[date]!.profit += item.balance;
-      } else {
-        map[date]!.loss += item.balance;
-      }
-    }
-
-    final list = map.values.toList();
-    list.sort((a, b) => a.date.compareTo(b.date));
-    return list;
-  }
-
-  // Build individual line for profit or loss
-  LineChartBarData _lineBarData(List<_ChartPoint> points, {required bool profit}) {
-    return LineChartBarData(
-      isCurved: true,
-      color: profit ? Colors.green : Colors.red,
-      barWidth: 3,
-      dotData: FlDotData(show: true),
-      spots: List.generate(
-        points.length,
-            (i) => FlSpot(
-          i.toDouble(),
-          profit ? points[i].profit : points[i].loss,
-        ),
-      ),
-    );
-  }
-}
-
-// Internal class to hold chart data
-class _ChartPoint {
-  final DateTime date;
-  double profit;
-  double loss;
-
-  _ChartPoint({
-    required this.date,
-    this.profit = 0,
-    this.loss = 0,
-  });
-}
-
-
+/// =======================
+/// MAIN CONTENT
+/// =======================
 class _DailyGrossContent extends StatelessWidget {
   const _DailyGrossContent();
 
@@ -197,10 +87,6 @@ class _DailyGrossContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<DailyGrossBloc, DailyGrossState>(
       builder: (context, state) {
-        if (state is DailyGrossLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
         if (state is DailyGrossError) {
           return Center(child: Text(state.message));
         }
@@ -210,13 +96,147 @@ class _DailyGrossContent extends StatelessWidget {
             return const Center(child: Text('No data available'));
           }
 
-          return const DailyGrossChart();
+          return Stack(
+            children: [
+              DailyGrossChart(data: state.data),
+              if (state.isRefreshing)
+                const Positioned(
+                  top: 8,
+                  right: 8,
+                  child: SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+            ],
+          );
         }
 
-        return const SizedBox();
+        return const Center(child: CircularProgressIndicator());
       },
     );
   }
 }
 
+/// =======================
+/// SYNCFUSION CHART
+/// =======================
+class DailyGrossChart extends StatelessWidget {
+  final List<DailyGrossModel> data;
 
+  const DailyGrossChart({super.key, required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final chartData = _prepareChartData(data);
+
+    return ZCard(
+      radius: 8,
+      borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: .5),
+      padding: const EdgeInsets.all(10),
+      child: SizedBox(
+        height: 400,
+        child: Column(
+          children: [
+            Row(
+              children: [
+                 Expanded(child: Text(AppLocalizations.of(context)!.profitAndLoss)),
+                SizedBox(
+                  width: 150,
+                  child: DateRangeDropdown(
+                    title: '',
+                    onChanged: (fromDate, toDate) {
+                      context.read<DailyGrossBloc>().add(
+                        FetchDailyGrossEvent(
+                          from: fromDate,
+                          to: toDate,
+                          startGroup: 3,
+                          stopGroup: 4,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+
+            SfCartesianChart(
+              legend: Legend(isVisible: true,position: LegendPosition.top,isResponsive: true),
+              tooltipBehavior: TooltipBehavior(enable: true),
+              primaryXAxis: DateTimeAxis(
+                intervalType: DateTimeIntervalType.days,
+                dateFormat: DateFormat('MM/dd'),
+              ),
+              primaryYAxis: NumericAxis(),
+              series: <CartesianSeries<GrossChartData, DateTime>>[
+                // PROFIT LINE
+                LineSeries<GrossChartData, DateTime>(
+                  dataSource: chartData,
+                  xValueMapper: (d, _) => d.date,
+                  yValueMapper: (d, _) => d.profit,
+                  name: AppLocalizations.of(context)!.profit,
+                  color: Colors.green,
+                  width: 3,
+                  markerSettings: const MarkerSettings(isVisible: true),
+                ),
+                // LOSS LINE
+                LineSeries<GrossChartData, DateTime>(
+                  dataSource: chartData,
+                  xValueMapper: (d, _) => d.date,
+                  yValueMapper: (d, _) => d.loss,
+                  name: AppLocalizations.of(context)!.loss,
+                  color: Colors.red,
+                  width: 3,
+                  markerSettings: const MarkerSettings(isVisible: true),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<GrossChartData> _prepareChartData(List<DailyGrossModel> data) {
+    final map = <DateTime, GrossChartData>{};
+
+    for (final item in data) {
+      final date = DateTime(item.date.year, item.date.month, item.date.day);
+
+      map.putIfAbsent(
+        date,
+            () => GrossChartData(date: date, profit: 0, loss: 0),
+      );
+
+      if (item.category == GrossCategory.profit) {
+        map[date] = GrossChartData(
+          date: date,
+          profit: map[date]!.profit + item.balance,
+          loss: map[date]!.loss,
+        );
+      } else {
+        map[date] = GrossChartData(
+          date: date,
+          profit: map[date]!.profit,
+          loss: map[date]!.loss + item.balance,
+        );
+      }
+    }
+
+    final list = map.values.toList()..sort((a, b) => a.date.compareTo(b.date));
+    return list;
+  }
+}
+
+class GrossChartData {
+  final DateTime date;
+  final double profit;
+  final double loss;
+
+  GrossChartData({
+    required this.date,
+    required this.profit,
+    required this.loss,
+  });
+}

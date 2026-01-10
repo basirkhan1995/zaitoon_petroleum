@@ -3,29 +3,18 @@ import 'package:intl/intl.dart';
 import '../../../../../../../Features/Generic/zaitoon_drop.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 
-/// ─────────────────────────────────────────────────────────────
-/// 1️⃣ DateTime extension
-/// ─────────────────────────────────────────────────────────────
 extension DateFormatX on DateTime {
-  String toFormattedDate() {
-    return DateFormat('yyyy-MM-dd').format(this);
-  }
+  String toFormattedDate() => DateFormat('yyyy-MM-dd').format(this);
 }
 
-/// ─────────────────────────────────────────────────────────────
-/// 2️⃣ Date range enum
-/// ─────────────────────────────────────────────────────────────
 enum DateRangeType {
   today,
   yesterday,
   lastWeek,
   last30Days,
-  lastMonth,
+  lastYear,
 }
 
-/// ─────────────────────────────────────────────────────────────
-/// 3️⃣ Date range model
-/// ─────────────────────────────────────────────────────────────
 class DateRangeItem {
   final DateRangeType type;
   final String label;
@@ -33,9 +22,6 @@ class DateRangeItem {
   DateRangeItem(this.type, this.label);
 }
 
-/// ─────────────────────────────────────────────────────────────
-/// 4️⃣ Date range result
-/// ─────────────────────────────────────────────────────────────
 class DateRangeResult {
   final String fromDate;
   final String toDate;
@@ -43,9 +29,6 @@ class DateRangeResult {
   DateRangeResult(this.fromDate, this.toDate);
 }
 
-/// ─────────────────────────────────────────────────────────────
-/// 5️⃣ Date range resolver (BUSINESS LOGIC)
-/// ─────────────────────────────────────────────────────────────
 DateRangeResult resolveDateRange(DateRangeType type) {
   final now = DateTime.now();
 
@@ -74,39 +57,26 @@ DateRangeResult resolveDateRange(DateRangeType type) {
       to = now;
       break;
 
-    case DateRangeType.lastMonth:
-      final firstThisMonth = DateTime(now.year, now.month, 1);
-      final lastMonthEnd = firstThisMonth.subtract(const Duration(days: 1));
-      from = DateTime(lastMonthEnd.year, lastMonthEnd.month, 1);
-      to = DateTime(
-        lastMonthEnd.year,
-        lastMonthEnd.month,
-        lastMonthEnd.day,
-        23,
-        59,
-        59,
-      );
+    case DateRangeType.lastYear:
+      from = DateTime(now.year - 1, 1, 1);
+      to = DateTime(now.year - 1, 12, 31, 23, 59, 59);
       break;
   }
 
-  return DateRangeResult(
-    from.toFormattedDate(),
-    to.toFormattedDate(),
-  );
+  return DateRangeResult(from.toFormattedDate(), to.toFormattedDate());
 }
 
-/// ─────────────────────────────────────────────────────────────
-/// 6️⃣ DateRangeDropdown (USES YOUR ZDropdown)
-/// ─────────────────────────────────────────────────────────────
 class DateRangeDropdown extends StatefulWidget {
   final double height;
   final bool disableAction;
+  final String? title;
   final void Function(String fromDate, String toDate) onChanged;
 
   const DateRangeDropdown({
     super.key,
     required this.onChanged,
     this.height = 40,
+    this.title,
     this.disableAction = false,
   });
 
@@ -124,7 +94,6 @@ class _DateRangeDropdownState extends State<DateRangeDropdown> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     final loc = AppLocalizations.of(context)!;
 
     items = [
@@ -132,10 +101,14 @@ class _DateRangeDropdownState extends State<DateRangeDropdown> {
       DateRangeItem(DateRangeType.yesterday, loc.yesterday),
       DateRangeItem(DateRangeType.lastWeek, loc.lastWeek),
       DateRangeItem(DateRangeType.last30Days, loc.last30Days),
-     // DateRangeItem(DateRangeType.lastMonth, loc.lastMonth),
+      DateRangeItem(DateRangeType.lastYear, loc.lastYear),
     ];
 
-    selected ??= items.first;
+    selected ??= items.firstWhere(
+          (i) => i.type == DateRangeType.last30Days,
+      orElse: () => items.first,
+    );
+
     _applyRange(selected!);
   }
 
@@ -154,7 +127,7 @@ class _DateRangeDropdownState extends State<DateRangeDropdown> {
   @override
   Widget build(BuildContext context) {
     return ZDropdown<DateRangeItem>(
-      title: AppLocalizations.of(context)!.dateRange,
+      title: widget.title ?? AppLocalizations.of(context)!.dateRange,
       height: widget.height,
       disableAction: widget.disableAction,
       items: items,

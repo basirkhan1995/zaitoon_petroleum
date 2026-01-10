@@ -3957,6 +3957,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Credit Payment'**
   String get creditPayment;
+
+  /// No description provided for @lastYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Last year'**
+  String get lastYear;
+
+  /// No description provided for @profitAndLoss.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit & Loss'**
+  String get profitAndLoss;
+
+  /// No description provided for @loss.
+  ///
+  /// In en, this message translates to:
+  /// **'Loss'**
+  String get loss;
 }
 
 class _AppLocalizationsDelegate

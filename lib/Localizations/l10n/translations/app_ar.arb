@@ -662,5 +662,8 @@
   "newSale": "نوی فروش",
   "party": "طرف حساب",
   "estimate": "اټکل",
-  "creditPayment": "پرداخت حسابی"
+  "creditPayment": "پرداخت حسابی",
+  "lastYear": "اوسنی کال",
+  "profitAndLoss": "سود و زیان",
+  "loss": "نقص"
 }

@@ -1022,7 +1022,7 @@ class _DesktopState extends State<_Desktop> {
       try {
         company.comLogo = base64Decode(base64Logo);
       } catch (e) {
-        print('Error decoding logo: $e');
+       "";
       }
     }
 

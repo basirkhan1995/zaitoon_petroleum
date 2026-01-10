@@ -102,7 +102,9 @@ class _GregorianDateRangePickerState extends State<GregorianDateRangePicker> {
       _selectedRange = ZGregorianRangePicker(_startDate!, _endDate!);
     } else if (_startDate != null) {
       _selectedRange = ZGregorianRangePicker(_startDate!, _startDate!);
-    } else return;
+    } else {
+      return;
+    }
 
     _selectedYear = _selectedRange.start.year;
     widget.onRangeSelected(_selectedRange);

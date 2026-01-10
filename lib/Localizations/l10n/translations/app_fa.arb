@@ -662,5 +662,8 @@
   "newSale": "فروش جدید",
   "party": "طرف حساب",
   "estimate": "برآورد",
-  "creditPayment": "پرداخت حسابی"
+  "creditPayment": "پرداخت حسابی",
+  "lastYear": "سال گذشته",
+  "profitAndLoss": "سود و زیان",
+  "loss": "زیان"
 }

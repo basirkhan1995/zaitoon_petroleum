@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'bloc/dashboard_stats_bloc.dart';
 
 class DashboardStatsView extends StatelessWidget {
@@ -54,7 +55,7 @@ class _StatsContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    final tr = AppLocalizations.of(context)!;
     return BlocBuilder<DashboardStatsBloc, DashboardStatsState>(
       builder: (context, state) {
         if (state is DashboardStatsLoading) {
@@ -70,25 +71,25 @@ class _StatsContent extends StatelessWidget {
 
           final data = [
             {
-              "title": "Users",
+              "title": tr.users,
               "value": stats.usersCount,
               "color": theme.colorScheme.primary,
               "icon": Icons.person,
             },
             {
-              "title": "Employees",
+              "title": tr.employees,
               "value": stats.employeesCount,
               "color": Colors.green,
               "icon": Icons.badge,
             },
             {
-              "title": "Accounts",
+              "title": tr.accounts,
               "value": stats.accountsCount,
               "color": Colors.orange,
               "icon": Icons.account_balance,
             },
             {
-              "title": "Personals",
+              "title": tr.stakeholders,
               "value": stats.personalsCount,
               "color": Colors.teal,
               "icon": Icons.people,
