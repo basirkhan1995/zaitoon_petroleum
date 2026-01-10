@@ -1,16 +1,7 @@
-// To parse this JSON data, do
-//
-//     final dashboardStatsModel = dashboardStatsModelFromMap(jsonString);
-
 import 'dart:convert';
+import 'package:equatable/equatable.dart';
 
-DashboardStatsModel dashboardStatsModelFromMap(String str) =>
-    DashboardStatsModel.fromMap(json.decode(str));
-
-String dashboardStatsModelToMap(DashboardStatsModel data) =>
-    json.encode(data.toMap());
-
-class DashboardStatsModel {
+class DashboardStatsModel extends Equatable {
   final int? personals;
   final int? employees;
   final int? accounts;
@@ -37,7 +28,6 @@ class DashboardStatsModel {
     );
   }
 
-  /// ✅ SAFE parsing (handles int, string, null)
   factory DashboardStatsModel.fromMap(Map<String, dynamic> json) {
     int? parseInt(dynamic value) {
       if (value == null) return null;
@@ -60,9 +50,17 @@ class DashboardStatsModel {
     'users': users,
   };
 
-  /// ✅ Dashboard-friendly getters (no null in UI)
   int get personalsCount => personals ?? 0;
   int get employeesCount => employees ?? 0;
   int get accountsCount => accounts ?? 0;
   int get usersCount => users ?? 0;
+
+  @override
+  List<Object?> get props => [personals, employees, accounts, users];
 }
+
+DashboardStatsModel dashboardStatsModelFromMap(String str) =>
+    DashboardStatsModel.fromMap(json.decode(str));
+
+String dashboardStatsModelToMap(DashboardStatsModel data) =>
+    json.encode(data.toMap());

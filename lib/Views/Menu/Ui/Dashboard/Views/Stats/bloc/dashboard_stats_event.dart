@@ -7,7 +7,6 @@ sealed class DashboardStatsEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Trigger dashboard stats loading
 final class FetchDashboardStatsEvent extends DashboardStatsEvent {
   const FetchDashboardStatsEvent();
 }

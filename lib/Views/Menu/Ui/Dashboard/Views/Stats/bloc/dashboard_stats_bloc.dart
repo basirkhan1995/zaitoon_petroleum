@@ -1,8 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
-
-import '../model/dashboard_stats.dart';
+import '../model/stats_model.dart';
 
 part 'dashboard_stats_event.dart';
 part 'dashboard_stats_state.dart';
@@ -18,13 +17,21 @@ class DashboardStatsBloc extends Bloc<DashboardStatsEvent, DashboardStatsState> 
       FetchDashboardStatsEvent event,
       Emitter<DashboardStatsState> emit,
       ) async {
-    emit(DashboardStatsLoading());
+    final currentState = state;
+
+    // Silent refresh if already loaded
+    if (currentState is DashboardStatsLoaded) {
+      emit(DashboardStatsLoaded(currentState.stats, isRefreshing: true));
+    } else {
+      emit(DashboardStatsLoading());
+    }
 
     try {
       final stats = await repository.getDashboardStats();
-      emit(DashboardStatsLoaded(stats));
+      emit(DashboardStatsLoaded(stats, isRefreshing: false));
     } catch (e) {
       emit(DashboardStatsError(e.toString()));
     }
   }
+
 }

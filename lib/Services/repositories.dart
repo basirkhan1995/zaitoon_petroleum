@@ -28,7 +28,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/model/drive
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/model/shp_details_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/model/vehicle_model.dart';
 import '../Views/Menu/Ui/Dashboard/Views/DailyGross/model/gross_model.dart';
-import '../Views/Menu/Ui/Dashboard/Views/Stats/model/dashboard_stats.dart';
+import '../Views/Menu/Ui/Dashboard/Views/Stats/model/stats_model.dart';
 import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/FetchGLAT/model/glat_model.dart';
