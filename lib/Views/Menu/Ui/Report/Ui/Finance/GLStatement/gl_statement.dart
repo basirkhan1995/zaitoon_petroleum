@@ -11,6 +11,7 @@ import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/branch_dropdown.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/bloc/gl_statement_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/model/gl_statement_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
@@ -27,7 +28,6 @@ import 'package:shamsi_date/shamsi_date.dart';
 import 'dart:typed_data';
 
 import 'PDF/pdf.dart';
-
 
 class GlStatementView extends StatelessWidget {
   const GlStatementView({super.key});
@@ -71,6 +71,8 @@ class _DesktopState extends State<_Desktop> {
   final accountController = TextEditingController();
   int? accNumber;
   String? myLocale;
+  int branchCode = 1000;
+  String? baseCurrency;
   final formKey = GlobalKey<FormState>();
   Uint8List _companyLogo = Uint8List(0);
   final company = ReportModel();
@@ -82,11 +84,9 @@ class _DesktopState extends State<_Desktop> {
   List<GlStatementModel> records = [];
   GlStatementModel? accountStatementModel;
 
-
   @override
   void initState() {
     myLocale = context.read<LocalizationBloc>().state.languageCode;
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
     context.read<GlStatementBloc>().add(ResetGlStmtEvent());
     super.initState();
   }
@@ -152,7 +152,7 @@ class _DesktopState extends State<_Desktop> {
                               children: [
                                 Utils.zBackButton(context),
                                 Text(
-                                  locale.accountStatement,
+                                  locale.glStatement,
                                   style: Theme.of(context).textTheme.titleLarge,
                                 ),
                               ],
@@ -195,7 +195,7 @@ class _DesktopState extends State<_Desktop> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             SizedBox(
-                              width: 500,
+                              width: 400,
                               child:
                               GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
                                 showAllOnFocus: true,
@@ -267,6 +267,12 @@ class _DesktopState extends State<_Desktop> {
                                 showClearButton: true,
                               ),
 
+                            ),
+                            SizedBox(
+                              width: 200,
+                              child: BranchDropdown(
+                                  height: 40,
+                                  onBranchSelected: (e){}),
                             ),
                             fromDateWidget(),
                             toDateWidget(),
@@ -468,7 +474,7 @@ class _DesktopState extends State<_Desktop> {
                             }
                             return Center(
                               child: NoDataWidget(
-                                title: locale.accountStatement,
+                                title: locale.glStatement,
                                 message:
                                 locale.accountStatementMessage,
                                 enableAction: false,
@@ -528,7 +534,6 @@ class _DesktopState extends State<_Desktop> {
                               onDateSelected: (value) {
                                 setState(() {
                                   fromDate = value.toFormattedDate();
-                                  //  accountStatementModel.startDate = fromDate;
                                 });
                               },
                             );
@@ -661,8 +666,8 @@ class _DesktopState extends State<_Desktop> {
   void onSubmit(){
     context.read<GlStatementBloc>().add(
       LoadGlStatementEvent(
-        currency: "USD",
-        branchCode: 1000,
+        currency: baseCurrency ?? "USD",
+        branchCode: branchCode,
         accountNumber: accNumber!,
         fromDate: fromDate,
         toDate: toDate,

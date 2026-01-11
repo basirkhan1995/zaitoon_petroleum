@@ -187,7 +187,7 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
             },
             child: Container(
               key: _buttonKey,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               height: widget.height ?? 40,
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
