@@ -13,6 +13,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchTRPT/model/trtp_
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/txn_ref_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/model/stmt_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/model/gl_statement_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/TransactionRef/model/txn_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
@@ -2303,7 +2304,41 @@ class Repositories {
       throw e.toString();
     }
   }
+  Future<GlStatementModel> getGlStatement({required int account, required String currency, required int branchCode, required String fromDate, required String toDate}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/reports/glStatement.php",
+          data: {
+            "ccy": currency,
+            "branch": branchCode,
+            "account": account,
+            "fromDate": fromDate,
+            "toDate": toDate
+          }
+      );
 
+      // Handle message response
+      if (response.data is Map && response.data['msg'] != null) {
+        throw response.data['msg'];
+      }
+
+      // Handle empty response
+      if (response.data == null || response.data.isEmpty) {
+        throw "No data received";
+      }
+
+      // Convert response to string and back to ensure proper typing
+      final jsonString = json.encode(response.data);
+      final decodedData = json.decode(jsonString) as dynamic;
+
+      return GlStatementModel.fromApiResponse(decodedData);
+
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw e.toString();
+    }
+  }
   //Get Transaction Details By Ref
   Future<TxnReportByRefModel> getTransactionByRefReport({required String ref}) async {
     try {

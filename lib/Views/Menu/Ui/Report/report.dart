@@ -228,7 +228,7 @@ class _DesktopState extends State<_Desktop> {
 
       //Finance
       case ActionKey.accStatement: Utils.goto(context, AccountStatementView());
-      case ActionKey.glStatement: throw GlStatementView();
+      case ActionKey.glStatement: Utils.goto(context, GlStatementView());
       case ActionKey.payable: Utils.goto(context, PayablesView());
       case ActionKey.receivable: Utils.goto(context, ReceivablesView());
       case ActionKey.exchangeRate: Utils.goto(context, ExchangeRateReportView());
