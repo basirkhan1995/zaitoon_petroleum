@@ -188,99 +188,96 @@ class _DesktopState extends State<_Desktop> {
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Row(
-                          spacing: 8,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 400,
-                              child:
-                              GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
-                                showAllOnFocus: true,
-                                controller: accountController,
-                                title: locale.accounts,
-                                hintText: locale.accNameOrNumber,
-                                isRequired: true,
-                                bloc: context.read<GlAccountsBloc>(),
-                                fetchAllFunction: (bloc) => bloc.add(
-                                  LoadGlAccountEvent(),
-                                ),
-                                searchFunction: (bloc, query) => bloc.add(
-                                  LoadGlAccountEvent(
-
-                                  ),
-                                ),
-                                validator: (value) {
-                                  if (value.isEmpty) {
-                                    return locale.required(locale.accounts);
-                                  }
-                                  return null;
-                                },
-                                itemBuilder: (context, account) => Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 5,
-                                    vertical: 5,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            "${account.accNumber} | ${account.accName}",
-                                            style: Theme.of(
-                                              context,
-                                            ).textTheme.bodyLarge,
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                itemToString: (acc) =>
-                                "${acc.accNumber} | ${acc.accName}",
-                                stateToLoading: (state) =>
-                                state is AccountLoadingState,
-                                loadingBuilder: (context) => const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 3,
-                                  ),
-                                ),
-                                stateToItems: (state) {
-                                  if (state is GlAccountLoadedState) {
-                                    return state.gl;
-                                  }
-                                  return [];
-                                },
-                                onSelected: (value) {
-                                  setState(() {
-                                    accNumber = value.accNumber;
-                                  });
-                                },
-                                noResultsText: locale.noDataFound,
-                                showClearButton: true,
+                      SizedBox(width: 8),
+                      Row(
+                        spacing: 8,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          SizedBox(
+                            width: 400,
+                            child:
+                            GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
+                              showAllOnFocus: true,
+                              controller: accountController,
+                              title: locale.accounts,
+                              hintText: locale.accNameOrNumber,
+                              isRequired: true,
+                              bloc: context.read<GlAccountsBloc>(),
+                              fetchAllFunction: (bloc) => bloc.add(
+                                LoadGlAccountEvent(),
                               ),
+                              searchFunction: (bloc, query) => bloc.add(
+                                LoadGlAccountEvent(
 
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return locale.required(locale.accounts);
+                                }
+                                return null;
+                              },
+                              itemBuilder: (context, account) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 5,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "${account.accNumber} | ${account.accName}",
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyLarge,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              itemToString: (acc) =>
+                              "${acc.accNumber} | ${acc.accName}",
+                              stateToLoading: (state) =>
+                              state is AccountLoadingState,
+                              loadingBuilder: (context) => const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                ),
+                              ),
+                              stateToItems: (state) {
+                                if (state is GlAccountLoadedState) {
+                                  return state.gl;
+                                }
+                                return [];
+                              },
+                              onSelected: (value) {
+                                setState(() {
+                                  accNumber = value.accNumber;
+                                });
+                              },
+                              noResultsText: locale.noDataFound,
+                              showClearButton: true,
                             ),
-                            SizedBox(
-                              width: 200,
-                              child: BranchDropdown(
-                                  height: 40,
-                                  onBranchSelected: (e){}),
-                            ),
-                            fromDateWidget(),
-                            toDateWidget(),
-                          ],
-                        ),
+
+                          ),
+                          SizedBox(
+                            width: 200,
+                            child: BranchDropdown(
+                                height: 40,
+                                onBranchSelected: (e){}),
+                          ),
+                          fromDateWidget(),
+                          toDateWidget(),
+                        ],
                       ),
                       SizedBox(height: 10),
-
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15.0),
                         child: Row(
