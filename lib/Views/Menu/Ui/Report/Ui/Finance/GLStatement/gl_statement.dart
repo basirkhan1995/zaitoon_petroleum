@@ -15,7 +15,6 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/branch_drop
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/bloc/gl_statement_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/model/gl_statement_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import '../../../../../../../Features/Date/gregorian_date_picker.dart';
 import '../../../../../../../Features/Date/shamsi_date_picker.dart';
 import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
@@ -243,7 +242,7 @@ class _DesktopState extends State<_Desktop> {
                               itemToString: (acc) =>
                               "${acc.accNumber} | ${acc.accName}",
                               stateToLoading: (state) =>
-                              state is AccountLoadingState,
+                              state is GlAccountsLoadingState,
                               loadingBuilder: (context) => const SizedBox(
                                 width: 16,
                                 height: 16,

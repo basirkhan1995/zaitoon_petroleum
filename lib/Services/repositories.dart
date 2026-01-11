@@ -34,6 +34,7 @@ import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/FetchGLAT/model/glat_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/GetOrder/model/get_order_model.dart';
+import '../Views/Menu/Ui/Report/Ui/Finance/ArApReport/model/ar_ap_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/model/limit_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Company/Branches/model/branch_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/model/product_model.dart';
@@ -1862,8 +1863,6 @@ class Repositories {
     }
   }
 
-
-
   Future<EstimateModel?> getEstimateById({required int orderId}) async {
     try {
       final queryParams = {'ordID': orderId};
@@ -2431,5 +2430,36 @@ class Repositories {
       throw e.toString();
     }
   }
+  Future<List<ArApModel>> getArApReport({String? name, String? ccy}) async {
+    try {
+      final response = await api.post(
+        endpoint: "/reports/stakeholderBalances.php",
+        data: {
+          "name":name,
+          "ccy":ccy
+        }
+      );
 
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>()
+            .map((json) => ArApModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
 }

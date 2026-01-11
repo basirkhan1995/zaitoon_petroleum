@@ -12,9 +12,9 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/UserLogReport/user_log
 import '../../../../Features/Other/utils.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'Ui/Finance/AccountStatement/acc_statement.dart';
+import 'Ui/Finance/ArApReport/Payables/payables.dart';
+import 'Ui/Finance/ArApReport/Receivables/receivables.dart';
 import 'Ui/Finance/ExchangeRate/exchange_rate.dart';
-import 'Ui/Finance/Payables/payables.dart';
-import 'Ui/Finance/Receivables/receivables.dart';
 import 'Ui/Finance/Treasury/treasury.dart';
 
 enum ActionKey {

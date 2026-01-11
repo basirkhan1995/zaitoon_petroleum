@@ -58,12 +58,15 @@ DateRangeResult resolveDateRange(DateRangeType type) {
       break;
 
     case DateRangeType.lastYear:
-      from = DateTime(now.year - 1, 1, 1);
-      to = DateTime(now.year - 1, 12, 31, 23, 59, 59);
+      from = now.subtract(const Duration(days: 365));
+      to = now;
       break;
   }
 
-  return DateRangeResult(from.toFormattedDate(), to.toFormattedDate());
+  return DateRangeResult(
+    from.toFormattedDate(),
+    to.toFormattedDate(),
+  );
 }
 
 class DateRangeDropdown extends StatefulWidget {
