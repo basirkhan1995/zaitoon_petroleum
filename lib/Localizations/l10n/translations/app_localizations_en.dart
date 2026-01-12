@@ -2009,4 +2009,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signatory => 'Signatory';
+
+  @override
+  String get payables => 'Payables';
 }

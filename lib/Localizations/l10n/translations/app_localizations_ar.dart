@@ -2003,4 +2003,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get signatory => 'دارنده حساب';
+
+  @override
+  String get payables => 'بستانکاران';
 }

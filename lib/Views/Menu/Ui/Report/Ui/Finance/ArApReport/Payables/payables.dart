@@ -20,7 +20,10 @@ class PayablesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-        mobile: _Mobile(), tablet: _Tablet(), desktop: _Desktop());
+      mobile: _Mobile(),
+      tablet: _Tablet(),
+      desktop: _Desktop(),
+    );
   }
 }
 
@@ -49,19 +52,18 @@ class _Desktop extends StatefulWidget {
   State<_Desktop> createState() => _DesktopState();
 }
 
-
 class _DesktopState extends State<_Desktop> {
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_){
-      context.read<ArApBloc>().add(LoadArApEvent());
-    });
-    super.initState();
-  }
-
   final searchController = TextEditingController();
   final company = ReportModel();
   List<ArApModel> payables = [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ArApBloc>().add(LoadArApEvent());
+    });
+  }
 
   @override
   void dispose() {
@@ -71,18 +73,19 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle? title = Theme.of(context).textTheme.titleMedium;
-    TextStyle? subTitle = Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.outline);
-    TextStyle? subtitle1 = Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.onSurface);
+    final title = Theme.of(context).textTheme.titleMedium;
+    final subTitle = Theme.of(context)
+        .textTheme
+        .bodySmall
+        ?.copyWith(color: Theme.of(context).colorScheme.outline);
+    final subtitle1 = Theme.of(context)
+        .textTheme
+        .titleSmall
+        ?.copyWith(color: Theme.of(context).colorScheme.onSurface);
     final tr = AppLocalizations.of(context)!;
 
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        // Get company info from auth state
-        if (state is AuthenticatedState) {
-
-        }
-
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface,
           appBar: AppBar(
@@ -92,9 +95,52 @@ class _DesktopState extends State<_Desktop> {
           ),
           body: Column(
             children: [
+              // Total payables row
+              BlocBuilder<ArApBloc, ArApState>(
+                builder: (context, state) {
+                  if (state is ArApLoadedState) {
+                    final filteredList = state.apAccounts;
+                    final totalsByCurrency = calculateTotalPayableByCurrency(filteredList);
 
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          spacing: 5,
+                          children: totalsByCurrency.entries.map((entry) {
+                            return ZCard(
+                              padding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "${tr.totalTitle} (${entry.key})",
+                                    style: Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    entry.value.toAmount(),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    );
+                  }
+                  return const SizedBox();
+                },
+              ),
+
+              // Search bar and PDF button
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   spacing: 8,
@@ -104,116 +150,116 @@ class _DesktopState extends State<_Desktop> {
                         icon: FontAwesomeIcons.magnifyingGlass,
                         controller: searchController,
                         title: '',
-                        onChanged: (e){
-                          setState(() {});
-                        },
                         hint: tr.accountName,
+                        onChanged: (_) => setState(() {}),
                       ),
                     ),
                     ZOutlineButton(
                       width: 110,
                       icon: FontAwesomeIcons.solidFilePdf,
                       label: Text("PDF"),
-                      onPressed: (){
-
-
-                      },
-                    )
+                      onPressed: () {},
+                    ),
                   ],
                 ),
               ),
-              // Rest of your UI remains the same...
+
+              // Column headers
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15.0),
                 child: Row(
                   children: [
-                    SizedBox(
-                        width: 280,
-                        child: Text(tr.accounts,style: title,)),
-                    SizedBox(
-                        width: 200,
-                        child: Text(tr.accountLimit,style: title,)),
-                    Expanded(child: Text(tr.signatory,style: title,)),
-                    Text(tr.balance,style: title,),
+                    SizedBox(width: 280, child: Text(tr.accounts, style: title)),
+                    SizedBox(width: 200, child: Text(tr.accountLimit, style: title)),
+                    Expanded(child: Text(tr.signatory, style: title)),
+                    Text(tr.balance, style: title),
                   ],
                 ),
               ),
-              Divider(
-                indent: 15,endIndent: 15,
-              ),
+              Divider(indent: 15, endIndent: 15),
+
+              // Accounts list
               Expanded(
                 child: BlocBuilder<ArApBloc, ArApState>(
                   builder: (context, state) {
-                    if(state is ArApErrorState){
-                      return NoDataWidget(
-                        message: state.error,
-                      );
+                    if (state is ArApErrorState) {
+                      return NoDataWidget(message: state.error);
                     }
-                    if(state is ArApLoadingState){
-                      return Center(
-                          child: CircularProgressIndicator());
+                    if (state is ArApLoadingState) {
+                      return Center(child: CircularProgressIndicator());
                     }
-                    if(state is ArApLoadedState){
+                    if (state is ArApLoadedState) {
                       final query = searchController.text.toLowerCase().trim();
                       final filteredList = state.apAccounts.where((item) {
                         final name = item.accName?.toLowerCase() ?? '';
                         final accNumber = item.accNumber?.toString() ?? '';
                         return name.contains(query) || accNumber.contains(query);
                       }).toList();
-                      payables = filteredList; // Store for PDF
+                      payables = filteredList;
 
                       return ListView.builder(
-                          itemCount: filteredList.length,
-                          itemBuilder: (context,index){
-                            final ap = filteredList[index];
-                            return Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 8),
-                              decoration: BoxDecoration(
-                                  color: index.isOdd? Theme.of(context).colorScheme.outline.withValues(alpha: .05) : Colors.transparent
-                              ),
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 280,
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(ap.accName??"",style: title),
-                                        SizedBox(height: 2),
-                                        Row(
-                                          spacing: 5,
-                                          children: [
-                                            StatusBadge(status: ap.accStatus!,trueValue: tr.active,falseValue: tr.blocked),
-                                            ZCard(
-                                                color: Theme.of(context).colorScheme.primary.withValues(alpha: .03),
-                                                padding: EdgeInsets.symmetric(horizontal: 5,vertical: 2),
-                                                child: Text(ap.accNumber.toString(),style: subtitle1)),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                        itemCount: filteredList.length,
+                        itemBuilder: (context, index) {
+                          final ap = filteredList[index];
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: index.isOdd
+                                  ? Theme.of(context)
+                                  .colorScheme
+                                  .outline
+                                  .withValues(alpha: .05)
+                                  : Colors.transparent,
+                            ),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 280,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(ap.accName ?? "", style: title),
+                                      SizedBox(height: 2),
+                                      Row(
+                                        children: [
+                                          StatusBadge(
+                                            status: ap.accStatus!,
+                                            trueValue: tr.active,
+                                            falseValue: tr.blocked,
+                                          ),
+                                          SizedBox(width: 5),
+                                          ZCard(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary
+                                                .withValues(alpha: .03),
+                                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                                            child: Text(ap.accNumber.toString(), style: subtitle1),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-
-                                  SizedBox(
-                                    width: 200,
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(ap.accLimit.toAmount(),style: title),
-                                        Text(ap.accCurrency??"",style: subTitle),
-                                      ],
-                                    ),
+                                ),
+                                SizedBox(
+                                  width: 200,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(ap.accLimit.toAmount(), style: title),
+                                      Text(ap.accCurrency ?? "", style: subTitle),
+                                    ],
                                   ),
-
-                                  Expanded(child: Text(ap.fullName??"",style: Theme.of(context).textTheme.titleMedium)),
-                                  Text("${ap.accBalance.toAmount()} ${ap.accCurrency}",style: Theme.of(context).textTheme.titleMedium),
-
-                                ],
-                              ),
-                            );
-                          });
+                                ),
+                                Expanded(
+                                    child: Text(ap.fullName ?? "", style: Theme.of(context).textTheme.titleMedium)),
+                                Text("${ap.accBalance.toAmount()} ${ap.accCurrency}",
+                                    style: Theme.of(context).textTheme.titleMedium),
+                              ],
+                            ),
+                          );
+                        },
+                      );
                     }
                     return const SizedBox();
                   },
@@ -225,49 +271,26 @@ class _DesktopState extends State<_Desktop> {
       },
     );
   }
-  Widget totalPayableCard({
-    required BuildContext context,
-    required double amount,
-    required String currency,
-  }) {
-    final color = Theme.of(context).colorScheme;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: color.primary.withValues(alpha: .06),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.primary.withValues(alpha: .2)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Icon(FontAwesomeIcons.handHoldingDollar,
-                  color: color.primary),
-              const SizedBox(width: 10),
-              Text(
-                AppLocalizations.of(context)!.totalTitle,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ],
-          ),
-          Text(
-            "${amount.toAmount()} $currency",
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: color.primary,
-            ),
-          ),
-        ],
-      ),
-    );
+  /// Calculate total payables grouped by currency
+  Map<String, double> calculateTotalPayableByCurrency(List<ArApModel> list) {
+    final Map<String, double> totals = {};
+    for (var acc in list.where((e) => e.isAP)) {
+      final currency = acc.accCurrency ?? 'N/A';
+      totals[currency] = (totals[currency] ?? 0.0) + acc.balance;
+    }
+    return totals;
   }
-
 }
 
+
+// 🔹 EXTENSION FOR CLEANER TOTAL CALCULATION
+extension ArApExtensions on List<ArApModel> {
+  double calculateTotalPayable() {
+    return where((e) => e.isAP).fold(0.0, (sum, e) => sum + e.balance);
+  }
+
+  double calculateTotalReceivable() {
+    return where((e) => e.isAR).fold(0.0, (sum, e) => sum + e.balance);
+  }
+}

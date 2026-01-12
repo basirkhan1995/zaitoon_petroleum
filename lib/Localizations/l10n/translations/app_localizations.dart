@@ -3981,6 +3981,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Signatory'**
   String get signatory;
+
+  /// No description provided for @payables.
+  ///
+  /// In en, this message translates to:
+  /// **'Payables'**
+  String get payables;
 }
 
 class _AppLocalizationsDelegate

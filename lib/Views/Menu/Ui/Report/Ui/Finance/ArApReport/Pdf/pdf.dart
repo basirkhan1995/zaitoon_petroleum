@@ -1,5 +1,4 @@
-// payables_pdf_printer.dart
-import 'dart:typed_data';
+
 import 'package:pdf/pdf.dart' as pw;
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -173,6 +172,7 @@ class PayablesPdfPrinter extends PrintServices {
     );
   }
 
+  @override
   pw.Widget footer({
     required ReportModel report,
     required pw.Context context,
