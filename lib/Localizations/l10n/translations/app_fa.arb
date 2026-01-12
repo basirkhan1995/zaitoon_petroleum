@@ -667,5 +667,6 @@
   "profitAndLoss": "سود و زیان",
   "loss": "زیان",
   "signatory": "دارنده حساب",
-  "payables": "بستانکاران"
+  "payables": "بستانکاران",
+  "totalUpperCase": "مجموعه"
 }

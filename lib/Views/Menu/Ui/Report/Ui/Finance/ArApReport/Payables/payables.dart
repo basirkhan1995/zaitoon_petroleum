@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/status_badge.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
@@ -108,26 +109,27 @@ class _DesktopState extends State<_Desktop> {
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
-                          spacing: 5,
+                          spacing: 25,
                           children: totalsByCurrency.entries.map((entry) {
-                            return ZCard(
-                              padding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "${tr.totalTitle} (${entry.key})",
-                                    style: Theme.of(context).textTheme.titleMedium,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    entry.value.toAmount(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("${tr.totalUpperCase} ${entry.key}",style: TextStyle(color: Theme.of(context).colorScheme.outline)),
+                                Row(
+                                  children: [
+                                    Text(
+                                      entry.value.toAmount(),
+                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      entry.key,
+                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Utils.currencyColors(entry.key)),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             );
                           }).toList(),
                         ),

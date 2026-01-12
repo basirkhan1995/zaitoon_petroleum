@@ -2006,4 +2006,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get payables => 'بستانکاران';
+
+  @override
+  String get totalUpperCase => 'مجموعه';
 }

@@ -232,6 +232,25 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                               : AppLocalizations.of(context)!.edit,
                         ),
                       ),
+                      if (state.isEditing) ...[
+                        CircleAvatar(
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary.withAlpha(23),
+                          child: IconButton(
+                            hoverColor: Theme.of(
+                              context,
+                            ).colorScheme.primary.withAlpha(26),
+                            onPressed:
+                            !state.isPaymentValid ||
+                                state.selectedSupplier == null
+                                ? null
+                                : () => _saveChanges(),
+                            tooltip: AppLocalizations.of(context)!.saveChanges,
+                            icon: const Icon(Icons.check),
+                          ),
+                        ),
+                      ],
                       if(state.order.trnStateText?.toLowerCase() == 'pending')...[
                         CircleAvatar(
                           backgroundColor: Theme.of(
@@ -247,25 +266,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                             tooltip: AppLocalizations.of(context)!.delete,
                           ),
                         ),
-                        if (state.isEditing) ...[
-                          CircleAvatar(
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.primary.withAlpha(23),
-                            child: IconButton(
-                              hoverColor: Theme.of(
-                                context,
-                              ).colorScheme.primary.withAlpha(26),
-                              onPressed:
-                              !state.isPaymentValid ||
-                                  state.selectedSupplier == null
-                                  ? null
-                                  : () => _saveChanges(),
-                              tooltip: AppLocalizations.of(context)!.saveChanges,
-                              icon: const Icon(Icons.check),
-                            ),
-                          ),
-                        ],
                       ],
 
                     ],

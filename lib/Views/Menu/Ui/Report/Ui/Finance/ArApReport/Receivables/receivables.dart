@@ -7,9 +7,9 @@ import 'package:zaitoon_petroleum/Features/Widgets/status_badge.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/ArApReport/bloc/ar_ap_bloc.dart';
+import '../../../../../../../../Features/Other/utils.dart';
 import '../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../../Features/Widgets/search_field.dart';
-
 import '../model/ar_ap_model.dart';
 
 class ReceivablesView extends StatelessWidget {
@@ -71,14 +71,8 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final title = Theme.of(context).textTheme.titleMedium;
-    final subTitle = Theme.of(context)
-        .textTheme
-        .bodySmall
-        ?.copyWith(color: Theme.of(context).colorScheme.outline);
-    final subtitle1 = Theme.of(context)
-        .textTheme
-        .titleSmall
-        ?.copyWith(color: Theme.of(context).colorScheme.onSurface);
+    final subTitle = Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.outline);
+    final subtitle1 = Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.onSurface);
     final tr = AppLocalizations.of(context)!;
 
     return BlocBuilder<ArApBloc, ArApState>(
@@ -98,37 +92,33 @@ class _DesktopState extends State<_Desktop> {
                   if (state is ArApLoadedState) {
                     final filteredList = state.arAccounts;
                     final totalsByCurrency = calculateTotalReceivableByCurrency(filteredList);
-
                     return Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
+                          spacing: 25,
                           children: totalsByCurrency.entries.map((entry) {
-                            return Container(
-                              margin: const EdgeInsets.only(right: 8),
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "${tr.totalTitle} (${entry.key})",
-                                    style: Theme.of(context).textTheme.titleMedium,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    entry.value.toAmount(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("${tr.totalUpperCase} ${entry.key}",style: TextStyle(color: Theme.of(context).colorScheme.outline)),
+                                Row(
+                                  children: [
+                                    Text(
+                                      entry.value.toAmount(),
+                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      entry.key,
+                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Utils.currencyColors(entry.key)),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             );
                           }).toList(),
                         ),
@@ -158,9 +148,7 @@ class _DesktopState extends State<_Desktop> {
                       width: 110,
                       icon: FontAwesomeIcons.solidFilePdf,
                       label: const Text("PDF"),
-                      onPressed: () {
-                        // TODO: Implement PDF generation
-                      },
+                      onPressed: () {},
                     ),
                   ],
                 ),

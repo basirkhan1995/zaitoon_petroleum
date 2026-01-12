@@ -2012,4 +2012,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get payables => 'Payables';
+
+  @override
+  String get totalUpperCase => 'TOTAL';
 }

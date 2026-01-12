@@ -3987,6 +3987,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payables'**
   String get payables;
+
+  /// No description provided for @totalUpperCase.
+  ///
+  /// In en, this message translates to:
+  /// **'TOTAL'**
+  String get totalUpperCase;
 }
 
 class _AppLocalizationsDelegate
