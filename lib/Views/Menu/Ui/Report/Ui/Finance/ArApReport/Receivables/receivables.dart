@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
@@ -83,58 +84,14 @@ class _DesktopState extends State<_Desktop> {
             backgroundColor: Theme.of(context).colorScheme.surface,
             title: Text(tr.debtors),
             titleSpacing: 0,
-          ),
-          body: Column(
-            children: [
-              // Total receivables row
-              BlocBuilder<ArApBloc, ArApState>(
-                builder: (context, state) {
-                  if (state is ArApLoadedState) {
-                    final filteredList = state.arAccounts;
-                    final totalsByCurrency = calculateTotalReceivableByCurrency(filteredList);
-                    return Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          spacing: 25,
-                          children: totalsByCurrency.entries.map((entry) {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("${tr.totalUpperCase} ${entry.key}",style: TextStyle(color: Theme.of(context).colorScheme.outline)),
-                                Row(
-                                  children: [
-                                    Text(
-                                      entry.value.toAmount(),
-                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                                    ),
-                                    const SizedBox(width: 3),
-                                    Text(
-                                      entry.key,
-                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Utils.currencyColors(entry.key)),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    );
-                  }
-                  return const SizedBox();
-                },
-              ),
-
+            actions: [
               // Search bar and PDF button
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
                 child: Row(
                   children: [
-                    Expanded(
+                    SizedBox(
+                      width: 350,
                       child: ZSearchField(
                         icon: FontAwesomeIcons.magnifyingGlass,
                         controller: searchController,
@@ -153,6 +110,57 @@ class _DesktopState extends State<_Desktop> {
                   ],
                 ),
               ),
+            ],
+          ),
+          body: Column(
+            children: [
+              // Total receivables row
+              BlocBuilder<ArApBloc, ArApState>(
+                builder: (context, state) {
+                  if (state is ArApLoadedState) {
+                    final filteredList = state.arAccounts;
+                    final totalsByCurrency = calculateTotalReceivableByCurrency(filteredList);
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          spacing: 10,
+                          children: totalsByCurrency.entries.map((entry) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("${tr.totalUpperCase} ${entry.key}",style: TextStyle(color: Theme.of(context).colorScheme.outline)),
+                                ZCard(
+                                  radius: 3,
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        entry.value.toAmount(),
+                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(width: 3),
+                                      Text(
+                                        entry.key,
+                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Utils.currencyColors(entry.key)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    );
+                  }
+                  return const SizedBox();
+                },
+              ),
+
+
 
               // Column headers
               Padding(
