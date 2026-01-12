@@ -9,8 +9,12 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/ArApReport/bloc/ar_ap_bloc.dart';
 import '../../../../../../../../Features/Other/utils.dart';
+import '../../../../../../../../Features/PrintSettings/print_preview.dart';
+import '../../../../../../../../Features/PrintSettings/report_model.dart';
 import '../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../../Features/Widgets/search_field.dart';
+import '../../../../../../../Auth/bloc/auth_bloc.dart';
+import '../Pdf/pdf.dart';
 import '../model/ar_ap_model.dart';
 
 class ReceivablesView extends StatelessWidget {
@@ -105,7 +109,7 @@ class _DesktopState extends State<_Desktop> {
                       width: 110,
                       icon: FontAwesomeIcons.solidFilePdf,
                       label: const Text("PDF"),
-                      onPressed: () {},
+                      onPressed: onPDF,
                     ),
                   ],
                 ),
@@ -245,7 +249,7 @@ class _DesktopState extends State<_Desktop> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(ar.accLimit?.toAmount() ?? '0', style: title),
+                                      Text(ar.accLimit == "Unlimited"? tr.unlimited : ar.accLimit?.toAmount() ?? '0', style: title),
                                       Text(ar.accCurrency ?? "", style: subTitle),
                                     ],
                                   ),
@@ -268,7 +272,91 @@ class _DesktopState extends State<_Desktop> {
       },
     );
   }
+  void onPDF() {
+    final locale = AppLocalizations.of(context)!;
+    final state = context.read<ArApBloc>().state;
 
+    List<ArApModel> payablesList = [];
+    ReportModel company = ReportModel();
+
+    // Extract data from state
+    if (state is ArApLoadedState) {
+      payablesList = state.arAccounts;
+    }
+    // Add company info (you need to get this from your auth/company state)
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthenticatedState) {
+      // Set company info here
+
+    }
+
+    if (payablesList.isEmpty) {
+      Utils.showOverlayMessage(
+        context,
+        message: locale.noData,
+        isError: true,
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (_) => PrintPreviewDialog<List<ArApModel>>(
+        data: payablesList,
+        company: company,
+        buildPreview: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+        }) {
+          return ArApPdfServices().generateApReport(
+            apAccounts: data,
+            language: language,
+            orientation: orientation,
+            pageFormat: pageFormat,
+            report: company,
+          );
+        },
+        onPrint: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+          required selectedPrinter,
+          required copies,
+          required pages,
+        }) {
+          return ArApPdfServices().printDocument(
+            company: company,
+            accounts: data,
+            language: language,
+            orientation: orientation,
+            pageFormat: pageFormat,
+            selectedPrinter: selectedPrinter,
+            copies: copies,
+            pages: pages,
+            isAR: true, // false for AP
+          );
+        },
+        onSave: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+        }) {
+          return ArApPdfServices().createDocument(
+            company: company,
+            accounts: data,
+            language: language,
+            orientation: orientation,
+            pageFormat: pageFormat,
+            isAR: true, // false for AP
+          );
+        },
+      ),
+    );
+  }
   /// Calculate total receivables grouped by currency
   Map<String, double> calculateTotalReceivableByCurrency(List<ArApModel> list) {
     final Map<String, double> totals = {};

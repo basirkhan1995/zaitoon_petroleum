@@ -10,10 +10,12 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/ArApReport/bloc/ar_ap_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/ArApReport/model/ar_ap_model.dart';
+import '../../../../../../../../Features/PrintSettings/print_preview.dart';
 import '../../../../../../../../Features/PrintSettings/report_model.dart';
 import '../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../../Auth/bloc/auth_bloc.dart';
+import '../Pdf/pdf.dart';
 
 class PayablesView extends StatelessWidget {
   const PayablesView({super.key});
@@ -115,7 +117,7 @@ class _DesktopState extends State<_Desktop> {
                       width: 110,
                       icon: FontAwesomeIcons.solidFilePdf,
                       label: Text("PDF"),
-                      onPressed: () {},
+                      onPressed: onPDF,
                     ),
                   ],
                 ),
@@ -253,7 +255,7 @@ class _DesktopState extends State<_Desktop> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(ap.accLimit.toAmount(), style: title),
+                                      Text(ap.accLimit == "Unlimited"? tr.unlimited : ap.accLimit.toAmount(), style: title),
                                       Text(ap.accCurrency ?? "", style: subTitle),
                                     ],
                                   ),
@@ -276,6 +278,92 @@ class _DesktopState extends State<_Desktop> {
           ),
         );
       },
+    );
+  }
+
+  void onPDF() {
+    final locale = AppLocalizations.of(context)!;
+    final state = context.read<ArApBloc>().state;
+
+    List<ArApModel> payablesList = [];
+    ReportModel company = ReportModel(); // Initialize with your company data
+
+    // Extract data from state
+    if (state is ArApLoadedState) {
+      payablesList = state.apAccounts;
+    }
+    // Add company info (you need to get this from your auth/company state)
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthenticatedState) {
+      // Set company info here
+
+    }
+
+    if (payablesList.isEmpty) {
+      Utils.showOverlayMessage(
+        context,
+        message: locale.noData,
+        isError: true,
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (_) => PrintPreviewDialog<List<ArApModel>>(
+        data: payablesList,
+        company: company,
+        buildPreview: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+        }) {
+          return ArApPdfServices().generateApReport(
+            apAccounts: data,
+            language: language,
+            orientation: orientation,
+            pageFormat: pageFormat,
+            report: company,
+          );
+        },
+        onPrint: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+          required selectedPrinter,
+          required copies,
+          required pages,
+        }) {
+          return ArApPdfServices().printDocument(
+            company: company,
+            accounts: data,
+            language: language,
+            orientation: orientation,
+            pageFormat: pageFormat,
+            selectedPrinter: selectedPrinter,
+            copies: copies,
+            pages: pages,
+            isAR: false, // false for AP
+          );
+        },
+        onSave: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+        }) {
+          return ArApPdfServices().createDocument(
+            company: company,
+            accounts: data,
+            language: language,
+            orientation: orientation,
+            pageFormat: pageFormat,
+            isAR: false, // false for AP
+          );
+        },
+      ),
     );
   }
 
