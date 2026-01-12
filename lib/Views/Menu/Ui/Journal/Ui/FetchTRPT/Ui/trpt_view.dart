@@ -519,7 +519,7 @@ class _DesktopState extends State<_Desktop> {
                               context.read<TransactionsBloc>().add(
                                 AuthorizeTxnEvent(
                                   reference: trpt.shdTrnRef ?? "",
-                                  usrName: login.maker ?? "",
+                                  usrName: login.usrName ?? "",
                                 ),
                               );
                             },
