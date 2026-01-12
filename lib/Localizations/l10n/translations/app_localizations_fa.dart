@@ -1997,4 +1997,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get loss => 'زیان';
+
+  @override
+  String get signatory => 'دارنده حساب';
 }

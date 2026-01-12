@@ -3975,6 +3975,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loss'**
   String get loss;
+
+  /// No description provided for @signatory.
+  ///
+  /// In en, this message translates to:
+  /// **'Signatory'**
+  String get signatory;
 }
 
 class _AppLocalizationsDelegate

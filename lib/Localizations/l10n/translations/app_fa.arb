@@ -665,5 +665,6 @@
   "creditPayment": "پرداخت حسابی",
   "lastYear": "سال گذشته",
   "profitAndLoss": "سود و زیان",
-  "loss": "زیان"
+  "loss": "زیان",
+  "signatory": "دارنده حساب"
 }

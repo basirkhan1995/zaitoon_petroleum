@@ -20,7 +20,7 @@ class ArApModel {
   final String? accLimit;
 
   /// IMPORTANT: keep balance as double
-  final double accBalance;
+  final double? accBalance;
 
   ArApModel({
     this.perId,
@@ -31,7 +31,7 @@ class ArApModel {
     this.accCurrency,
     this.accStatus,
     this.accLimit,
-    required this.accBalance,
+    this.accBalance,
   });
 
   /// =========================
@@ -58,25 +58,23 @@ class ArApModel {
     'accCurrency': accCurrency,
     'accStatus': accStatus,
     'accLimit': accLimit,
-    'accBalance': accBalance.toStringAsFixed(4),
+    'accBalance': accBalance?.toStringAsFixed(4),
   };
 
   /// =========================
   /// HELPERS (AR / AP LOGIC)
   /// =========================
 
-  /// Accounts Receivable
-  bool get isAR => accBalance < 0;
+  double get balance => accBalance ?? 0.0;
 
-  /// Accounts Payable
-  bool get isAP => accBalance > 0;
+  bool get isAR => balance < 0;
+  bool get isAP => balance > 0;
 
-  /// Absolute amount (useful for UI)
-  double get absBalance => accBalance.abs();
+  double get absBalance => balance.abs();
 
-  /// Pretty formatted amount
   String get formattedBalance =>
-      NumberFormat('#,##0.00').format(accBalance);
+      NumberFormat('#,##0.00').format(balance);
+
 
   /// =========================
   /// COPY
@@ -116,4 +114,16 @@ class ArApModel {
     }
     return 0.0;
   }
+  double calculateTotalPayable(List<ArApModel> list) {
+    return list
+        .where((e) => e.isAP)
+        .fold(0.0, (sum, e) => sum + e.balance);
+  }
+
+  double calculateTotalReceivable(List<ArApModel> list) {
+    return list
+        .where((e) => e.isAR)
+        .fold(0.0, (sum, e) => sum + e.balance);
+  }
+
 }

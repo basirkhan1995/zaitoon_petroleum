@@ -2000,4 +2000,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get loss => 'نقص';
+
+  @override
+  String get signatory => 'دارنده حساب';
 }

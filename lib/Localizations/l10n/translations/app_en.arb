@@ -665,5 +665,6 @@
   "creditPayment": "Credit Payment",
   "lastYear": "Last year",
   "profitAndLoss": "Profit & Loss",
-  "loss": "Loss"
+  "loss": "Loss",
+  "signatory": "Signatory"
 }

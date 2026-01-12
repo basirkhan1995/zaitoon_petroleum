@@ -665,5 +665,6 @@
   "creditPayment": "پرداخت حسابی",
   "lastYear": "اوسنی کال",
   "profitAndLoss": "سود و زیان",
-  "loss": "نقص"
+  "loss": "نقص",
+  "signatory": "دارنده حساب"
 }

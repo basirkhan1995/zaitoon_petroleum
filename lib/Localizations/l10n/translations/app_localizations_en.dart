@@ -2006,4 +2006,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loss => 'Loss';
+
+  @override
+  String get signatory => 'Signatory';
 }
