@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Date/z_generic_date.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/features/currency_drop.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/branch_dropdown.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/bloc/gl_statement_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/model/gl_statement_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
-import '../../../../../../../Features/Date/gregorian_date_picker.dart';
-import '../../../../../../../Features/Date/shamsi_date_picker.dart';
 import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../../../../Features/Other/utils.dart';
 import '../../../../../../../Features/PrintSettings/print_preview.dart';
@@ -70,6 +70,7 @@ class _DesktopState extends State<_Desktop> {
   final accountController = TextEditingController();
   int? accNumber;
   String? myLocale;
+  String? currency;
   int branchCode = 1000;
   String? baseCurrency;
   final formKey = GlobalKey<FormState>();
@@ -92,7 +93,7 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
     double dateWith = 80;
     double refWidth = 180;
     double amountWidth = 130;
@@ -151,7 +152,7 @@ class _DesktopState extends State<_Desktop> {
                               children: [
                                 Utils.zBackButton(context),
                                 Text(
-                                  locale.glStatement,
+                                  tr.glStatement,
                                   style: Theme.of(context).textTheme.titleLarge,
                                 ),
                               ],
@@ -166,7 +167,7 @@ class _DesktopState extends State<_Desktop> {
                                     if(formKey.currentState!.validate()){
                                         pdf();
                                     }else{
-                                      Utils.showOverlayMessage(context, message: locale.accountStatementMessage, isError: true);
+                                      Utils.showOverlayMessage(context, message: tr.accountStatementMessage, isError: true);
                                     }
                                   },
                                 ),
@@ -180,101 +181,147 @@ class _DesktopState extends State<_Desktop> {
                                       onSubmit();
                                     }
                                   },
-                                  label: Text(locale.apply),
+                                  label: Text(tr.apply),
                                 ),
                               ],
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(width: 8),
-                      Row(
-                        spacing: 8,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          SizedBox(
-                            width: 400,
-                            child:
-                            GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
-                              showAllOnFocus: true,
-                              controller: accountController,
-                              title: locale.accounts,
-                              hintText: locale.accNameOrNumber,
-                              isRequired: true,
-                              bloc: context.read<GlAccountsBloc>(),
-                              fetchAllFunction: (bloc) => bloc.add(
-                                LoadGlAccountEvent(),
-                              ),
-                              searchFunction: (bloc, query) => bloc.add(
-                                LoadGlAccountEvent(
+                      SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          spacing: 8,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child:
+                              GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
+                                showAllOnFocus: true,
+                                controller: accountController,
+                                title: tr.accounts,
+                                hintText: tr.accNameOrNumber,
+                                isRequired: true,
+                                bloc: context.read<GlAccountsBloc>(),
+                                fetchAllFunction: (bloc) => bloc.add(
+                                  LoadGlAccountEvent(),
+                                ),
+                                searchFunction: (bloc, query) => bloc.add(
+                                  LoadGlAccountEvent(
 
+                                  ),
                                 ),
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return tr.required(tr.accounts);
+                                  }
+                                  return null;
+                                },
+                                itemBuilder: (context, account) => Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 5,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "${account.accNumber} | ${account.accName}",
+                                            style: Theme.of(
+                                              context,
+                                            ).textTheme.bodyLarge,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                itemToString: (acc) =>
+                                "${acc.accNumber} | ${acc.accName}",
+                                stateToLoading: (state) =>
+                                state is GlAccountsLoadingState,
+                                loadingBuilder: (context) => const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 3,
+                                  ),
+                                ),
+                                stateToItems: (state) {
+                                  if (state is GlAccountLoadedState) {
+                                    return state.gl;
+                                  }
+                                  return [];
+                                },
+                                onSelected: (value) {
+                                  setState(() {
+                                    accNumber = value.accNumber;
+                                  });
+                                },
+                                noResultsText: tr.noDataFound,
+                                showClearButton: true,
                               ),
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return locale.required(locale.accounts);
-                                }
-                                return null;
-                              },
-                              itemBuilder: (context, account) => Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 5,
-                                  vertical: 5,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "${account.accNumber} | ${account.accName}",
-                                          style: Theme.of(
-                                            context,
-                                          ).textTheme.bodyLarge,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+
+                            ),
+                            SizedBox(
+                              width: 200,
+                              child: BranchDropdown(
+                                  height: 40,
+                                  onBranchSelected: (e){
+                                    setState(() {
+                                      branchCode = e.brcId ?? 1000;
+                                    });
+                                  }),
+                            ),
+                            SizedBox(
+                              width: 160,
+                              child: CurrencyDropdown(
+                                   title: AppLocalizations.of(context)!.currencyTitle,
+                                  isMulti: false,
+                                  onMultiChanged: (e){},
+                                 onSingleChanged: (e){
+                                   setState(() {
+                                     currency = e?.ccyCode ??"";
+                                   });
+                                 },
                               ),
-                              itemToString: (acc) =>
-                              "${acc.accNumber} | ${acc.accName}",
-                              stateToLoading: (state) =>
-                              state is GlAccountsLoadingState,
-                              loadingBuilder: (context) => const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 3,
-                                ),
+                            ),
+                            SizedBox(
+                              width: 150,
+                              child: ZDatePicker(
+                                label: tr.fromDate,
+                                value: fromDate,
+                                onDateChanged: (v) {
+                                  setState(() {
+                                    fromDate = v;
+                                    shamsiFromDate = v.toAfghanShamsi;
+                                  });
+                                },
                               ),
-                              stateToItems: (state) {
-                                if (state is GlAccountLoadedState) {
-                                  return state.gl;
-                                }
-                                return [];
-                              },
-                              onSelected: (value) {
-                                setState(() {
-                                  accNumber = value.accNumber;
-                                });
-                              },
-                              noResultsText: locale.noDataFound,
-                              showClearButton: true,
                             ),
 
-                          ),
-                          SizedBox(
-                            width: 200,
-                            child: BranchDropdown(
-                                height: 40,
-                                onBranchSelected: (e){}),
-                          ),
-                          fromDateWidget(),
-                          toDateWidget(),
-                        ],
+                            SizedBox(
+                              width: 150,
+                              child: ZDatePicker(
+                                label: tr.toDate,
+                                value: toDate,
+                                onDateChanged: (v) {
+                                  setState(() {
+                                    toDate = v;
+                                    shamsiToDate = v.toAfghanShamsi;
+                                  });
+                                },
+                              ),
+                            ),
+
+
+                          ],
+                        ),
                       ),
                       SizedBox(height: 10),
                       Padding(
@@ -284,20 +331,20 @@ class _DesktopState extends State<_Desktop> {
                             SizedBox(
                               width: dateWith,
                               child: Text(
-                                locale.txnDate,
+                                tr.txnDate,
                                 style: Theme.of(context).textTheme.titleSmall,
                               ),
                             ),
                             SizedBox(
                               width: refWidth,
                               child: Text(
-                                locale.referenceNumber,
+                                tr.referenceNumber,
                                 style: Theme.of(context).textTheme.titleSmall,
                               ),
                             ),
                             Expanded(
                               child: Text(
-                                locale.narration,
+                                tr.narration,
                                 style: Theme.of(context).textTheme.titleSmall,
                               ),
                             ),
@@ -307,7 +354,7 @@ class _DesktopState extends State<_Desktop> {
                                 textAlign: myLocale == "en"
                                     ? TextAlign.right
                                     : TextAlign.left,
-                                locale.debitTitle,
+                                tr.debitTitle,
                                 style: Theme.of(context).textTheme.titleSmall,
                               ),
                             ),
@@ -317,7 +364,7 @@ class _DesktopState extends State<_Desktop> {
                                 textAlign: myLocale == "en"
                                     ? TextAlign.right
                                     : TextAlign.left,
-                                locale.creditTitle,
+                                tr.creditTitle,
                                 style: Theme.of(context).textTheme.titleSmall,
                               ),
                             ),
@@ -327,7 +374,7 @@ class _DesktopState extends State<_Desktop> {
                                 textAlign: myLocale == "en"
                                     ? TextAlign.right
                                     : TextAlign.left,
-                                locale.balance,
+                                tr.balance,
                                 style: Theme.of(context).textTheme.titleSmall,
                               ),
                             ),
@@ -470,9 +517,9 @@ class _DesktopState extends State<_Desktop> {
                             }
                             return Center(
                               child: NoDataWidget(
-                                title: locale.glStatement,
+                                title: tr.glStatement,
                                 message:
-                                locale.accountStatementMessage,
+                                tr.accountStatementMessage,
                                 enableAction: false,
                               ),
                             );
@@ -490,179 +537,12 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget fromDateWidget() {
-    final locale = AppLocalizations.of(context)!;
-    final color = Theme.of(context).colorScheme;
-    return Flexible(
-      flex: 2,
-      child: Column(
-        spacing: 4,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(locale.fromDate, style: TextStyle(color: color.secondary)),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            width: 160,
-            height: 40,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3),
-              border: Border.all(
-                color: color.secondary.withValues(alpha: .4),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              spacing: 8,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    //From Gregorian
-                    GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return GregorianDatePicker(
-                              onDateSelected: (value) {
-                                setState(() {
-                                  fromDate = value.toFormattedDate();
-                                });
-                              },
-                            );
-                          },
-                        );
-                      },
-                      child: Text(fromDate, style: TextStyle(fontSize: 12)),
-                    ),
 
-                    //From Shamsi
-                    GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AfghanDatePicker(
-                              onDateSelected: (value) {
-                                setState(() {
-                                  fromDate = value.toGregorianString();
-                                });
-                              },
-                            );
-                          },
-                        );
-                      },
-                      child: Text(
-                        fromDate.shamsiDateFormatted,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: color.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Icon(Icons.calendar_today_rounded, color: color.secondary),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget toDateWidget() {
-    final locale = AppLocalizations.of(context)!;
-    final color = Theme.of(context).colorScheme;
-    return Flexible(
-      flex: 2,
-      child: Column(
-        spacing: 4,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(locale.toDate, style: TextStyle(color: color.secondary)),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            width: 160,
-            height: 40,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3),
-              border: Border.all(
-                color: color.secondary.withValues(alpha: .4),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              spacing: 8,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return GregorianDatePicker(
-                              onDateSelected: (value) {
-                                setState(() {
-                                  toDate = value.toFormattedDate();
-                                  // accountStatementModel.endDate = toDate;
-                                  onSubmit();
-                                });
-                              },
-                            );
-                          },
-                        );
-                      },
-                      child: Text(toDate, style: TextStyle(fontSize: 12)),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AfghanDatePicker(
-                              onDateSelected: (value) {
-                                setState(() {
-                                  toDate = value.toGregorianString();
-                                });
-                                onSubmit();
-                              },
-                            );
-                          },
-                        );
-                      },
-                      child: Text(
-                        toDate.shamsiDateFormatted,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: color.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Icon(Icons.calendar_today_rounded, color: color.secondary),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
   void onSubmit(){
     context.read<GlStatementBloc>().add(
       LoadGlStatementEvent(
-        currency: baseCurrency ?? "USD",
+        currency: currency ?? "USD",
         branchCode: branchCode,
         accountNumber: accNumber!,
         fromDate: fromDate,

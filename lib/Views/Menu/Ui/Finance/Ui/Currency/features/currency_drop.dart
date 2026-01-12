@@ -21,7 +21,7 @@ class CurrencyDropdown extends StatefulWidget {
     super.key,
     required this.isMulti,
     required this.onMultiChanged,
-    this.height = 45,
+    this.height = 40,
     this.flag = true,
     this.disableAction = false,
     this.onSingleChanged,
@@ -66,7 +66,7 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
                   widget.title ?? AppLocalizations.of(context)!.currencyTitle,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 12),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 3),
                 const SizedBox(
                   width: 15,
                   height: 15,
@@ -86,54 +86,49 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
           return Text('Error: ${state.message}');
         }
 
-        return Column(
-          mainAxisSize: MainAxisSize.min, // Ensures minimal vertical space
-          children: [
-            ZDropdown<CurrenciesModel>(
-              disableAction: widget.disableAction,
-              title: '', // keep empty, using customTitle
-              height: widget.height,
-              leadingBuilder: (CurrenciesModel ccy) {
-                if(widget.flag) {
-                  return SizedBox(
-                  width: 30,
-                  child: Flag.fromString(
-                    ccy.ccyCountryCode ?? "",
-                    height: 20,
-                    width: 30,
-                    borderRadius: 2,
-                    fit: BoxFit.fill,
-                  ),
-                );
-                } return SizedBox.shrink();
-              },
-              items: state is CurrenciesLoadedState ? state.ccy : [],
-              multiSelect: widget.isMulti,
-              selectedItems: widget.isMulti ? _selectedMulti : [],
-              selectedItem: widget.isMulti ? null : _selectedSingle,
-              itemLabel: (item) => item.ccyCode ?? "",
-              initialValue: AppLocalizations.of(context)!.currencyTitle,
-              onMultiSelectChanged: widget.isMulti
-                  ? (selected) {
-                setState(() => _selectedMulti = selected);
-                widget.onMultiChanged(selected);
-              } : null,
+        return ZDropdown<CurrenciesModel>(
+          disableAction: widget.disableAction,
+          title: '', // keep empty, using customTitle
+          height: widget.height,
+          leadingBuilder: (CurrenciesModel ccy) {
+            if(widget.flag) {
+              return SizedBox(
+              width: 30,
+              child: Flag.fromString(
+                ccy.ccyCountryCode ?? "",
+                height: 20,
+                width: 30,
+                borderRadius: 2,
+                fit: BoxFit.fill,
+              ),
+            );
+            } return SizedBox.shrink();
+          },
+          items: state is CurrenciesLoadedState ? state.ccy : [],
+          multiSelect: widget.isMulti,
+          selectedItems: widget.isMulti ? _selectedMulti : [],
+          selectedItem: widget.isMulti ? null : _selectedSingle,
+          itemLabel: (item) => item.ccyCode ?? "",
+          initialValue: AppLocalizations.of(context)!.currencyTitle,
+          onMultiSelectChanged: widget.isMulti
+              ? (selected) {
+            setState(() => _selectedMulti = selected);
+            widget.onMultiChanged(selected);
+          } : null,
 
-              onItemSelected: widget.isMulti
-                  ? (_) {}
-                  : (item) {
-                setState(() => _selectedSingle = item);
-                widget.onSingleChanged?.call(item);
-              },
+          onItemSelected: widget.isMulti
+              ? (_) {}
+              : (item) {
+            setState(() => _selectedSingle = item);
+            widget.onSingleChanged?.call(item);
+          },
 
-              isLoading: false,
-              itemStyle: Theme.of(context).textTheme.titleMedium,
+          isLoading: false,
+          itemStyle: Theme.of(context).textTheme.titleMedium,
 
-              customTitle: (widget.title != null && widget.title!.isNotEmpty)
-                  ? buildTitle()
-                  : const SizedBox.shrink(), // No space if no title
-            ),
-          ],
+          customTitle: (widget.title != null && widget.title!.isNotEmpty)
+              ? buildTitle()
+              : const SizedBox.shrink(), // No space if no title
         );
       },
     );

@@ -11,8 +11,7 @@ import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
-import '../../../../../../../Features/Date/gregorian_date_picker.dart';
-import '../../../../../../../Features/Date/shamsi_date_picker.dart';
+import '../../../../../../../Features/Date/z_generic_date.dart';
 import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../../../../Features/Other/utils.dart';
 import '../../../../../../../Features/PrintSettings/print_preview.dart';
@@ -90,7 +89,7 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
     double dateWith = 80;
     double refWidth = 180;
     double amountWidth = 130;
@@ -149,7 +148,7 @@ class _DesktopState extends State<_Desktop> {
                           children: [
                             Utils.zBackButton(context),
                             Text(
-                              locale.accountStatement,
+                              tr.accountStatement,
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                           ],
@@ -220,7 +219,7 @@ class _DesktopState extends State<_Desktop> {
                                    ),
                                  );
                                }else{
-                                 Utils.showOverlayMessage(context, message: locale.accountStatementMessage, isError: true);
+                                 Utils.showOverlayMessage(context, message: tr.accountStatementMessage, isError: true);
                                }
                               },
                             ),
@@ -234,7 +233,7 @@ class _DesktopState extends State<_Desktop> {
                                 onSubmit();
                                 }
                               },
-                              label: Text(locale.apply),
+                              label: Text(tr.apply),
                             ),
                           ],
                         ),
@@ -253,8 +252,8 @@ class _DesktopState extends State<_Desktop> {
                               GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
                                 showAllOnFocus: true,
                                 controller: accountController,
-                                title: locale.accounts,
-                                hintText: locale.accNameOrNumber,
+                                title: tr.accounts,
+                                hintText: tr.accNameOrNumber,
                                 isRequired: true,
                                 bloc: context.read<AccountsBloc>(),
                                 fetchAllFunction: (bloc) => bloc.add(
@@ -267,7 +266,7 @@ class _DesktopState extends State<_Desktop> {
                                 ),
                                 validator: (value) {
                                   if (value.isEmpty) {
-                                    return locale.required(locale.accounts);
+                                    return tr.required(tr.accounts);
                                   }
                                   return null;
                                 },
@@ -316,13 +315,39 @@ class _DesktopState extends State<_Desktop> {
                                     accNumber = value.accnumber;
                                   });
                                 },
-                                noResultsText: locale.noDataFound,
+                                noResultsText: tr.noDataFound,
                                 showClearButton: true,
                               ),
 
                         ),
-                        fromDateWidget(),
-                        toDateWidget(),
+                        SizedBox(
+                          width: 150,
+                          child: ZDatePicker(
+                            label: tr.fromDate,
+                            value: fromDate,
+                            onDateChanged: (v) {
+                              setState(() {
+                                fromDate = v;
+                                shamsiFromDate = v.toAfghanShamsi;
+                              });
+                            },
+                          ),
+                        ),
+
+                        SizedBox(
+                          width: 150,
+                          child: ZDatePicker(
+                            label: tr.toDate,
+                            value: toDate,
+                            onDateChanged: (v) {
+                              setState(() {
+                                toDate = v;
+                                shamsiToDate = v.toAfghanShamsi;
+                              });
+                            },
+                          ),
+                        ),
+
                       ],
                     ),
                   ),
@@ -335,20 +360,20 @@ class _DesktopState extends State<_Desktop> {
                         SizedBox(
                           width: dateWith,
                           child: Text(
-                            locale.txnDate,
+                            tr.txnDate,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
                         SizedBox(
                           width: refWidth,
                           child: Text(
-                            locale.referenceNumber,
+                            tr.referenceNumber,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
                         Expanded(
                           child: Text(
-                            locale.narration,
+                            tr.narration,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
@@ -358,7 +383,7 @@ class _DesktopState extends State<_Desktop> {
                             textAlign: myLocale == "en"
                                 ? TextAlign.right
                                 : TextAlign.left,
-                            locale.debitTitle,
+                            tr.debitTitle,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
@@ -368,7 +393,7 @@ class _DesktopState extends State<_Desktop> {
                             textAlign: myLocale == "en"
                                 ? TextAlign.right
                                 : TextAlign.left,
-                            locale.creditTitle,
+                            tr.creditTitle,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
@@ -378,7 +403,7 @@ class _DesktopState extends State<_Desktop> {
                             textAlign: myLocale == "en"
                                 ? TextAlign.right
                                 : TextAlign.left,
-                            locale.balance,
+                            tr.balance,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
@@ -521,9 +546,9 @@ class _DesktopState extends State<_Desktop> {
                         }
                         return Center(
                           child: NoDataWidget(
-                            title: locale.accountStatement,
+                            title: tr.accountStatement,
                             message:
-                                locale.accountStatementMessage,
+                                tr.accountStatementMessage,
                             enableAction: false,
                           ),
                         );
@@ -541,176 +566,9 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget fromDateWidget() {
-    final locale = AppLocalizations.of(context)!;
-    final color = Theme.of(context).colorScheme;
-    return Flexible(
-      flex: 2,
-      child: Column(
-        spacing: 4,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(locale.fromDate, style: TextStyle(color: color.secondary)),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            width: 160,
-            height: 40,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3),
-              border: Border.all(
-                color: color.secondary.withValues(alpha: .4),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              spacing: 8,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    //From Gregorian
-                    GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return GregorianDatePicker(
-                              onDateSelected: (value) {
-                                setState(() {
-                                  fromDate = value.toFormattedDate();
-                                  //  accountStatementModel.startDate = fromDate;
-                                });
-                              },
-                            );
-                          },
-                        );
-                      },
-                      child: Text(fromDate, style: TextStyle(fontSize: 12)),
-                    ),
 
-                    //From Shamsi
-                    GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AfghanDatePicker(
-                              onDateSelected: (value) {
-                                setState(() {
-                                  fromDate = value.toGregorianString();
-                                });
-                              },
-                            );
-                          },
-                        );
-                      },
-                      child: Text(
-                        fromDate.shamsiDateFormatted,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: color.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Icon(Icons.calendar_today_rounded, color: color.secondary),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget toDateWidget() {
-    final locale = AppLocalizations.of(context)!;
-    final color = Theme.of(context).colorScheme;
-    return Flexible(
-      flex: 2,
-      child: Column(
-        spacing: 4,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(locale.toDate, style: TextStyle(color: color.secondary)),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            width: 160,
-            height: 40,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3),
-              border: Border.all(
-                color: color.secondary.withValues(alpha: .4),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              spacing: 8,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return GregorianDatePicker(
-                              onDateSelected: (value) {
-                                setState(() {
-                                  toDate = value.toFormattedDate();
-                                  // accountStatementModel.endDate = toDate;
-                                  onSubmit();
-                                });
-                              },
-                            );
-                          },
-                        );
-                      },
-                      child: Text(toDate, style: TextStyle(fontSize: 12)),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AfghanDatePicker(
-                              onDateSelected: (value) {
-                                setState(() {
-                                  toDate = value.toGregorianString();
-                                });
-                                onSubmit();
-                              },
-                            );
-                          },
-                        );
-                      },
-                      child: Text(
-                        toDate.shamsiDateFormatted,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: color.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Icon(Icons.calendar_today_rounded, color: color.secondary),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+
   void onSubmit(){
     context.read<AccStatementBloc>().add(
       LoadAccountStatementEvent(

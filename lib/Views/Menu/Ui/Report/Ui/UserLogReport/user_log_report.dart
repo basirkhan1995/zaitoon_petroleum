@@ -9,7 +9,7 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/UserDetail/Ui/Log/bloc/user_log_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shamsi_date/shamsi_date.dart';
-import '../../../../../../../../Features/Date/zdate_picker.dart';
+import '../../../../../../Features/Date/z_generic_date.dart';
 import '../../../HR/Ui/Users/features/date_range_string.dart';
 import '../../../HR/Ui/Users/features/users_drop.dart';
 
@@ -144,12 +144,30 @@ class _DesktopState extends State<_Desktop> {
 
                 SizedBox(
                   width: 150,
-                  child: datePicker(title: tr.fromDate, date: fromDate),
+                  child: ZDatePicker(
+                    label: tr.fromDate,
+                    value: fromDate,
+                    onDateChanged: (v) {
+                      setState(() {
+                        fromDate = v;
+                        shamsiFromDate = v.toAfghanShamsi;
+                      });
+                    },
+                  ),
                 ),
 
                 SizedBox(
                   width: 150,
-                  child: datePicker(title: tr.toDate, date: toDate),
+                  child: ZDatePicker(
+                    label: tr.toDate,
+                    value: toDate,
+                    onDateChanged: (v) {
+                      setState(() {
+                        toDate = v;
+                        shamsiToDate = v.toAfghanShamsi;
+                      });
+                    },
+                  ),
                 ),
 
                 ZOutlineButton(
@@ -373,17 +391,5 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget datePicker({required String date, String? title}) {
-    date = DateTime.now().toFormattedDate();
-    return GenericDatePicker(
-      height: 40,
-      label: title ?? AppLocalizations.of(context)!.date,
-      initialGregorianDate: date,
-      onDateChanged: (newDate) {
-        setState(() {
-          date = newDate;
-        });
-      },
-    );
-  }
+
 }
