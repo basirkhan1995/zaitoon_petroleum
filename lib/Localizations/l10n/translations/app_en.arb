@@ -671,5 +671,6 @@
   "totalUpperCase": "TOTAL",
   "trialBalance": "Trial Balance",
   "outOfBalance": "Out of Balance",
-  "orders": "Orders"
+  "orders": "Orders",
+  "notAuthorizedYet": "Not Authorized"
 }

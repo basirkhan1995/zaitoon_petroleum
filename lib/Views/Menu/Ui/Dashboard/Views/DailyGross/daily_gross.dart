@@ -202,6 +202,11 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
   /// Line chart
   SfCartesianChart _buildLineChart(List<GrossChartData> chartData, BuildContext context) {
     return SfCartesianChart(
+      legend: Legend(
+        isVisible: true,
+        overflowMode: LegendItemOverflowMode.wrap,
+        position: LegendPosition.bottom,
+      ),
       tooltipBehavior: TooltipBehavior(enable: true),
       primaryXAxis: DateTimeAxis(
         intervalType: DateTimeIntervalType.days,

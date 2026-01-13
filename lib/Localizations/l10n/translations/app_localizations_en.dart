@@ -2024,4 +2024,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orders => 'Orders';
+
+  @override
+  String get notAuthorizedYet => 'Not Authorized';
 }

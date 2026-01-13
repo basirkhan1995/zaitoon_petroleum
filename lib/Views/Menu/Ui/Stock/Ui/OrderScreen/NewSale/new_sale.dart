@@ -462,6 +462,7 @@ class _DesktopState extends State<_Desktop> {
                   fetchAllFunction: (bloc) => bloc.add(LoadProductsStockEvent(noStock: 1)),
                   searchFunction: (bloc, query) => bloc.add(LoadProductsStockEvent()),
                   itemBuilder: (context, product) => ListTile(
+                    tileColor: Colors.transparent,
                     title: Text(product.proName ?? ''),
                     subtitle: Row(
                       spacing: 5,

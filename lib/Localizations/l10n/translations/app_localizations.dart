@@ -4011,6 +4011,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Orders'**
   String get orders;
+
+  /// No description provided for @notAuthorizedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Authorized'**
+  String get notAuthorizedYet;
 }
 
 class _AppLocalizationsDelegate

@@ -2018,4 +2018,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get orders => 'فرمایشات';
+
+  @override
+  String get notAuthorizedYet => 'تایید ناشده';
 }

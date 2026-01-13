@@ -5,6 +5,7 @@ import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/features/currency_drop.dart';
 import '../../../../../../../Features/Date/z_generic_date.dart';
@@ -52,13 +53,16 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.surface,
         titleSpacing: 0,
         title: Text(tr.trialBalance),
         actionsPadding: EdgeInsets.symmetric(horizontal: 10),
         actions: [
+          ZOutlineButton(
+              width: 100,
+              icon: Icons.print,
+              label: Text(tr.print)),
+          SizedBox(width: 8),
           SizedBox(
             width: 150,
             child: CurrencyDropdown(
@@ -90,7 +94,6 @@ class _DesktopState extends State<_Desktop> {
               },
             ),
           ),
-
         ],
       ),
       body: BlocBuilder<TrialBalanceBloc, TrialBalanceState>(
@@ -118,7 +121,7 @@ class _DesktopState extends State<_Desktop> {
                 _buildHeaderRow(currency),
 
                 // Divider
-                 Divider(height: 1, thickness: 1,color: Theme.of(context).colorScheme.primary),
+                const Divider(),
 
                 // Data rows
                 Expanded(
@@ -212,6 +215,13 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ),
               ],
+            ),
+          ),
+          SizedBox(
+            width: 100,
+            child: Text(
+              tb.category,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 15),
             ),
           ),
           SizedBox(

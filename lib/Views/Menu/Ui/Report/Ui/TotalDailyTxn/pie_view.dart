@@ -32,7 +32,7 @@ class TotalDailyPieView extends StatelessWidget {
                 (sum, item) => sum + (item.totalAmount ?? 0),
           );
 
-          // Assign colors for each slice
+
           final colors = [
             Colors.purple,
             Colors.blue,
@@ -58,7 +58,6 @@ class TotalDailyPieView extends StatelessWidget {
                 position: LegendPosition.bottom,
               ),
               tooltipBehavior: TooltipBehavior(enable: true),
-
               series: <CircularSeries>[
                 DoughnutSeries<TotalDailyTxnModel, String>(
                   dataSource: data,

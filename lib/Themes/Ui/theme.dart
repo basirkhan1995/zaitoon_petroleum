@@ -121,7 +121,7 @@ class AppThemes {
     colorScheme: colorScheme,
     // Enhanced AppBar with elevation and shadow
     appBarTheme: AppBarTheme(
-      backgroundColor: colorScheme.surfaceContainerHigh,
+      backgroundColor: colorScheme.surface,
       elevation: isLight ? 1 : 0,
       shadowColor: isLight ? Colors.black12 : Colors.black38,
       surfaceTintColor: colorScheme.surfaceTint,
@@ -173,27 +173,6 @@ class AppThemes {
       ),
     ),
 
-    // Input decoration theming
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true,
-      fillColor: isLight
-          ? colorScheme.surfaceContainerLow
-          : colorScheme.surfaceContainer,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: colorScheme.primary, width: 2),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-    ),
-
     // Chip theming
     chipTheme: ChipThemeData(
       backgroundColor: colorScheme.surfaceContainerHigh,
@@ -208,7 +187,7 @@ class AppThemes {
 
     // List tile theming
     listTileTheme: ListTileThemeData(
-      tileColor: colorScheme.surfaceContainerLow,
+      tileColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -219,7 +198,7 @@ class AppThemes {
     dividerTheme: DividerThemeData(
       color: colorScheme.outlineVariant,
       thickness: 0.5,
-      space: 0,
+      space: 8,
     ),
 
     // Floating action button theming
@@ -255,7 +234,7 @@ class AppThemes {
       ),
     ),
 
-    // Snackbar theming
+    // Snack bar theming
     snackBarTheme: SnackBarThemeData(
       backgroundColor: colorScheme.inverseSurface,
       contentTextStyle: TextStyle(color: colorScheme.onInverseSurface),

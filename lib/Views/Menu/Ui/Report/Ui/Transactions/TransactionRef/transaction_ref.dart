@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
@@ -15,9 +16,9 @@ class TransactionByReferenceView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-      mobile: _Mobile(),
-      tablet: _Tablet(),
-      desktop: _Desktop(),
+      mobile: const _Mobile(),
+      tablet: const _Tablet(),
+      desktop: const _Desktop(),
     );
   }
 }
@@ -63,71 +64,69 @@ class _DesktopState extends State<_Desktop> {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final titleStyle =
-    textTheme.titleSmall?.copyWith(color: color.outline);
+    final titleStyle = textTheme.titleSmall?.copyWith(
+      color: color.onSurface,
+      fontWeight: FontWeight.w500,
+    );
 
     return Scaffold(
       backgroundColor: color.surface,
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          // Header with search
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: color.primaryContainer.withValues(alpha: .05),
+            ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                  highlightColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  child: CircleAvatar(
-                    radius: 18,
-                    backgroundColor: color.surface,
-                    child: Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      size: 16,
-                      color: color.outline.withValues(alpha: .9),
-                    ),
-                  ),
-                ),
+                BackButton(),
+                const SizedBox(width: 5),
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         tr.transactionDetails,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      Text(
-                        tr.transactionRef,
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
                 ),
-
                 Expanded(
-                  child: ZTextFieldEntitled(
-                    controller: ref,
-                    title: tr.referenceNumber,
-                    isRequired: true,
-                    onSubmit: (_) => onSubmit(),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Flexible(
+                        flex: 2,
+                        child: ZTextFieldEntitled(
+                          controller: ref,
+                          title: tr.referenceNumber,
+                          isRequired: true,
+                          hint: tr.referenceNumber,
+                          onSubmit: (_) => onSubmit(),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ZOutlineButton(
+                        width: 120,
+                        isActive: true,
+                        onPressed: onSubmit,
+                        icon: Icons.search,
+                        label: Text(tr.search),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(width: 8),
-                ZOutlineButton(
-                  width: 100,
-                  onPressed: onSubmit,
-                  label: Text(tr.apply),
                 ),
               ],
             ),
           ),
 
+          // Content
           Expanded(
             child: BlocBuilder<TxnRefReportBloc, TxnRefReportState>(
               builder: (context, state) {
@@ -145,108 +144,213 @@ class _DesktopState extends State<_Desktop> {
                 }
 
                 if (state is TxnRefReportLoadedState) {
+                  final txn = state.txn;
+                  final records = txn.records ?? [];
+
                   return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        margin: EdgeInsets.all(8),
-                        child: Row(
+                      // Transaction Summary Card
+                      ZCard(
+                        margin: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(10),
+                        radius: 5,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            SizedBox(
-                              width: 150,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(tr.date,style: titleStyle),
-                                  Text(tr.referenceNumber,style: titleStyle),
-                                  Text(tr.transactionType,style: titleStyle),
-                                  Text(tr.maker,style: titleStyle),
-                                  Text(tr.checker,style: titleStyle),
-                                  Text(tr.status,style: titleStyle),
-                                  Text(tr.txnType,style: titleStyle),
-                                ],
+                            Text(
+                              tr.details,
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: color.primary,
                               ),
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            const SizedBox(height: 16),
+                            Wrap(
+                              spacing: 32,
+                              runSpacing: 16,
                               children: [
-                                Text(state.txn.trnEntryDate?.toDateTime ?? ""),
-                                Text(state.txn.trnReference ?? ""),
-                                Text(state.txn.trntName ?? ""),
-                                Text(state.txn.maker ?? ""),
-                                Text(state.txn.checker ?? "Not Authorized yet"),
-                                Text(state.txn.trnStateText ?? ""),
-                                Text(state.txn.trnType ?? ""),
+                                _buildSummaryItem(
+                                  tr.date,
+                                  txn.trnEntryDate?.toDateTime ?? "-",
+                                  color,
+                                ),
+                                _buildSummaryItem(
+                                  tr.referenceNumber,
+                                  txn.trnReference ?? "-",
+                                  color,
+                                ),
+                                _buildSummaryItem(
+                                  tr.transactionType,
+                                  txn.trntName ?? "-",
+                                  color,
+                                ),
+                                _buildSummaryItem(
+                                  tr.maker,
+                                  txn.maker ?? "-",
+                                  color,
+                                ),
+                                _buildSummaryItem(
+                                  tr.checker,
+                                  txn.checker ?? tr.notAuthorizedYet,
+                                  color,
+                                ),
+                                _buildSummaryItem(
+                                  tr.status,
+                                  txn.trnStateText ?? "-",
+                                  color,
+                                  isStatus: true,
+                                ),
+                                _buildSummaryItem(
+                                  tr.txnType,
+                                  txn.trnType ?? "-",
+                                  color,
+                                ),
                               ],
                             ),
                           ],
                         ),
                       ),
 
-                      Padding(
+                      // Records Table Header
+                      Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 15, vertical: 5),
+                          horizontal: 10,
+                          vertical: 12,
+                        ),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 10,
+
+                        ),
+                        decoration: BoxDecoration(
+                          color: color.primary.withValues(alpha: .08),
+
+                        ),
                         child: Row(
                           children: [
                             SizedBox(
-                              width: 120,
-                              child: Text(tr.date, style: titleStyle),
+                              width: 170,
+                              child: Text(
+                                tr.date,
+                                  style: titleStyle
+                              ),
+                            ),
+                            SizedBox(
+                              width: 100,
+                              child: Text(
+                                tr.accounts,
+                                  style: titleStyle
+                              ),
+                            ),
+                            SizedBox(
+                             width: 150,
+                              child: Text(
+                                tr.accountName,
+                                  style: titleStyle
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                tr.narration,
+                                style: titleStyle
+                              ),
+                            ),
+                            SizedBox(
+                              width: 100,
+                              child: Text(
+                                "CR/DR",
+                                  style: titleStyle
+                              ),
+                            ),
+                            SizedBox(
+                              width: 150,
+                              child: Text(
+                                tr.amount,
+                                  style: titleStyle
+                              ),
                             ),
                           ],
                         ),
                       ),
 
-                      const Divider(indent: 5, endIndent: 5),
-
+                      // Records List
                       Expanded(
-                        child: ListView.builder(
-                          itemCount: state.txn.records?.length ?? 0,
+                        child: ListView.separated(
+                          itemCount: records.length,
+                          separatorBuilder: (context, index) => Divider(
+                            height: 1,
+                            color: color.outline.withValues(alpha: .1),
+                          ),
                           itemBuilder: (context, index) {
-                            final records = state.txn.records![index];
+                            final record = records[index];
+                            final isDebit = record.debitCredit == 'D';
 
                             return Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                              decoration: BoxDecoration(
-                                color: index.isEven
-                                    ? color.primary.withValues(alpha: .05)
-                                    : Colors.transparent,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 14,
                               ),
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 160,
-                                      child: Text(records.trdEntryDate?.toDateTime ?? ""),),
-                                    SizedBox(
-                                      width: 85,
-                                      child: Text(
-                                          records.trdAccount.toString()),
+                              color: index.isEven
+                                  ? color.primary.withValues(alpha: .03)
+                                  : Colors.transparent,
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 170,
+                                    child: Text(
+                                      record.trdEntryDate?.toDateTime ?? "-",
+                                      style: textTheme.bodyMedium,
                                     ),
-                                    SizedBox(
-                                      width: 170,
-                                      child: Text(records.accName ?? ""),
+                                  ),
+                                  SizedBox(
+                                    width: 100,
+                                    child: Text(
+                                      record.trdAccount?.toString() ?? "-",
+                                      style: textTheme.bodyMedium,
                                     ),
-                                    SizedBox(
-                                      width: 350,
-                                      child: Text(
-                                          records.trdNarration ?? ""),
+                                  ),
+                                  SizedBox(
+                                    width: 150,
+                                    child: Text(
+                                      record.accName ?? "-",
+                                      style: textTheme.bodyMedium,
                                     ),
-
-                                    SizedBox(
-                                      width: 80,
+                                  ),
+                                  Expanded(
+                                    child: Tooltip(
+                                      message: record.trdNarration ?? "",
                                       child: Text(
-                                          records.debitCredit.toString()),
-                                    ),
-                                    SizedBox(
-                                      width: 150,
-                                      child: Text(
-                                        "${records.trdAmount?.toAmount()} ${records.trdCcy}",
+                                        record.trdNarration ?? "-",
+                                        style: textTheme.bodyMedium,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  SizedBox(
+                                    width: 100,
+                                    child: Text(
+                                      record.debitCredit?.toString() ?? "-",
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: isDebit
+                                            ? Colors.red
+                                            : Colors.green,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 150,
+                                    child: Text(
+                                      "${record.trdAmount?.toAmount() ?? "0.00"} ${record.trdCcy ?? ""}",
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: isDebit
+                                            ? Colors.red
+                                            : Colors.green,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
                           },
@@ -256,7 +360,25 @@ class _DesktopState extends State<_Desktop> {
                   );
                 }
 
-                return const SizedBox();
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.receipt_long_outlined,
+                        size: 64,
+                        color: color.outline.withValues(alpha: .3),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        tr.search,
+                        style: textTheme.bodyLarge?.copyWith(
+                          color: color.outline.withValues(alpha: .6),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
           ),
@@ -265,7 +387,58 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
+  Widget _buildSummaryItem(
+      String title,
+      String value,
+      ColorScheme color, {
+        bool isStatus = false,
+      }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 12,
+            color: color.outline.withValues(alpha: .7),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: isStatus
+                ? _getStatusColor(value, color)
+                : color.surfaceContainerHighest.withValues(alpha: .3),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Text(
+            value,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: isStatus ? Colors.white : color.onSurface,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Color _getStatusColor(String status, ColorScheme color) {
+    status = status.toLowerCase();
+    if (status.contains('authorized') || status.contains('completed')) {
+      return Colors.green;
+    } else if (status.contains('pending')) {
+      return Colors.orange;
+    } else if (status.contains('rejected') || status.contains('failed')) {
+      return Colors.red;
+    }
+    return color.primary;
+  }
+
   void onSubmit() {
+    if (ref.text.trim().isEmpty) return;
     context
         .read<TxnRefReportBloc>()
         .add(LoadTxnReportByReferenceEvent(ref.text.trim()));

@@ -671,5 +671,6 @@
   "totalUpperCase": "مجموعه",
   "trialBalance": "بیلانس آزمایشی",
   "outOfBalance": "عدم توازن",
-  "orders": "فرمایشات"
+  "orders": "فرمایشات",
+  "notAuthorizedYet": "تایید ناشده"
 }
