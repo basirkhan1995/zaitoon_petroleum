@@ -116,7 +116,7 @@ class _StatsContent extends StatelessWidget {
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: color.withValues(alpha: .08),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(5),
                       border: Border.all(
                         color: color.withValues(alpha: .3),
                         width: 1,

@@ -133,7 +133,7 @@ class _DesktopState extends State<_Desktop> {
 
                         /// 🔹 Count
                         Text(
-                          '${item.totalCount} transactions',
+                          '${item.totalCount} TXN',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: Colors.grey.shade600,
                           ),

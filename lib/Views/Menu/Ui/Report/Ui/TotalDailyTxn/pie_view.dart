@@ -51,38 +51,33 @@ class TotalDailyPieView extends StatelessWidget {
             radius: 8,
             margin: EdgeInsets.all(3),
             borderColor: Theme.of(context).colorScheme.outline.withValues(alpha: .3),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 300,
-                  child: SfCircularChart(
-                    legend: Legend(
-                      isVisible: true,
-                      overflowMode: LegendItemOverflowMode.wrap,
-                      position: LegendPosition.left,
-                    ),
-                    tooltipBehavior: TooltipBehavior(enable: true),
-
-                    series: <CircularSeries>[
-                      DoughnutSeries<TotalDailyTxnModel, String>(
-                        dataSource: data,
-                        xValueMapper: (item, _) => item.txnName ?? '',
-                        yValueMapper: (item, _) => item.totalAmount ?? 0,
-                        pointColorMapper: (item, index) =>
-                        colors[index % colors.length],
-                        dataLabelMapper: (item, _) =>
-                        "${item.txnName} - ${((item.totalAmount! / grandTotal) * 100).toStringAsFixed(1)}%",
-                        dataLabelSettings: const DataLabelSettings(
-                          isVisible: true,
-                          labelPosition: ChartDataLabelPosition.outside,
-                        ),
-                        radius: '80%',
-                        innerRadius: '60%',
-                      ),
-                    ],
-                  ),
+            child: Expanded(
+              child: SfCircularChart(
+                legend: Legend(
+                  isVisible: true,
+                  overflowMode: LegendItemOverflowMode.wrap,
+                  position: LegendPosition.bottom,
                 ),
-              ],
+                tooltipBehavior: TooltipBehavior(enable: true),
+
+                series: <CircularSeries>[
+                  DoughnutSeries<TotalDailyTxnModel, String>(
+                    dataSource: data,
+                    xValueMapper: (item, _) => item.txnName ?? '',
+                    yValueMapper: (item, _) => item.totalAmount ?? 0,
+                    pointColorMapper: (item, index) =>
+                    colors[index % colors.length],
+                    dataLabelMapper: (item, _) =>
+                    "${item.txnName} - ${((item.totalAmount! / grandTotal) * 100).toStringAsFixed(1)}%",
+                    dataLabelSettings: const DataLabelSettings(
+                      isVisible: true,
+                      labelPosition: ChartDataLabelPosition.outside,
+                    ),
+                    radius: '80%',
+                    innerRadius: '60%',
+                  ),
+                ],
+              ),
             ),
           );
         }

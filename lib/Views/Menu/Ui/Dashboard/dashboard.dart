@@ -45,11 +45,13 @@ class _Desktop extends StatelessWidget {
 
     final visibility = context.read<SettingsVisibleBloc>().state;
     return Scaffold(
+
       body: SingleChildScrollView(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
            Expanded(
+
              child: Column(
                crossAxisAlignment: CrossAxisAlignment.start,
                children: [
@@ -92,35 +94,26 @@ class _Desktop extends StatelessWidget {
                    ),
                  ),
                  DailyGrossView(),
-                 SizedBox(height: 5),
-                 Padding(
-                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                   child: Row(
-                     spacing: 5,
-                     children: [
-                       Icon(Icons.line_axis_rounded),
-                       Text(AppLocalizations.of(context)!.transactions)
-                     ],
-                   ),
-                 ),
-                 Row(
-                   children: [
-                     Expanded(child: TotalDailyPieView()),
-                     Expanded(child: TotalDailyPieView()),
-                   ],
-                 )
                ],
              ),
            ),
             
-           Column(
-             children: [
-               ExchangeRateView(
-                 settingButton: true,
-                 newRateButton: false,
-               ),
+           SizedBox(
+             width: 400,
+             child: Column(
+               children: [
+                 ExchangeRateView(
+                   settingButton: true,
+                   newRateButton: false,
+                 ),
 
-             ],
+                 Padding(
+                   padding: const EdgeInsets.all(6.0),
+                   child: TotalDailyPieView(),
+                 )
+
+               ],
+             ),
            ) 
           ],
         ),
