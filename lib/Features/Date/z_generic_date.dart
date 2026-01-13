@@ -5,7 +5,7 @@ import 'gregorian_date_picker.dart';
 
 class ZDatePicker extends StatefulWidget {
   final String label;
-  final String? value; // ✅ controlled value
+  final String? value;
   final double? height;
   final bool isActive;
   final ValueChanged<String> onDateChanged;
@@ -57,7 +57,7 @@ class _ZDatePickerState extends State<ZDatePicker> {
     final color = Theme.of(context).colorScheme;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if(widget.label.isNotEmpty)...[

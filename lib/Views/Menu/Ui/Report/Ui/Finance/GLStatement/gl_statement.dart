@@ -67,6 +67,7 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
+  final Map<String, bool> _copiedStates = {};
   final accountController = TextEditingController();
   int? accNumber;
   String? myLocale;
@@ -94,8 +95,8 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
-    double dateWith = 80;
-    double refWidth = 180;
+    double dateWith = 100;
+    double refWidth = 240;
     double amountWidth = 130;
     double balanceWidth =  160;
 
@@ -406,7 +407,10 @@ class _DesktopState extends State<_Desktop> {
                               return ListView.builder(
                                 itemCount: records.length,
                                 itemBuilder: (context, index) {
+
                                   final stmt = records[index];
+                                  final isCopied = _copiedStates[stmt.trnReference ?? ""] ?? false;
+                                  final reference = stmt.trnReference ?? "";
                                   Color bg =
                                   stmt.trdNarration == "Opening Balance" ||
                                       stmt.trdNarration == "Closing Balance"
@@ -456,13 +460,60 @@ class _DesktopState extends State<_Desktop> {
                                           ),
                                           SizedBox(
                                             width: refWidth,
-                                            child: Text(stmt.trnReference ?? ""),
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              stmt.trdNarration ?? "",
-                                              style: TextStyle(color: bg),
+                                            child: Row(
+                                              children: [
+                                                if(stmt.trnReference !=null && stmt.trnReference!.isNotEmpty)...[
+                                                  SizedBox(
+                                                    width: 28,
+                                                    height: 28,
+                                                    child: Material(
+                                                      color: Colors.transparent,
+                                                      child: InkWell(
+                                                        onTap: () => _copyToClipboard(reference, context),
+                                                        borderRadius: BorderRadius.circular(4),
+                                                        hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
+                                                        child: AnimatedContainer(
+                                                          duration: const Duration(milliseconds: 100),
+                                                          decoration: BoxDecoration(
+                                                            color: isCopied
+                                                                ? Theme.of(context).colorScheme.primary.withAlpha(25)
+                                                                : Colors.transparent,
+                                                            border: Border.all(
+                                                              color: isCopied
+                                                                  ? Theme.of(context).colorScheme.primary
+                                                                  : Theme.of(context).colorScheme.outline.withValues(alpha: .3),
+                                                              width: 1,
+                                                            ),
+                                                            borderRadius: BorderRadius.circular(4),
+                                                          ),
+                                                          child: Center(
+                                                            child: AnimatedSwitcher(
+                                                              duration: const Duration(milliseconds: 300),
+                                                              child: Icon(
+                                                                isCopied ? Icons.check : Icons.content_copy,
+                                                                key: ValueKey<bool>(isCopied), // Important for AnimatedSwitcher
+                                                                size: 15,
+                                                                color: isCopied
+                                                                    ? Theme.of(context).colorScheme.primary
+                                                                    : Theme.of(context).colorScheme.outline.withValues(alpha: .6),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                ],
+                                                Expanded(
+                                                    child:
+                                                    Text(stmt.trnReference.toString())),
+                                              ],
                                             ),
+                                          ),
+
+                                          Expanded(
+                                            child: Text(stmt.trdNarration ?? ""),
                                           ),
 
                                           SizedBox(
@@ -609,5 +660,23 @@ class _DesktopState extends State<_Desktop> {
         },
       ),
     );
+  }
+  // Method to copy reference to clipboard
+  Future<void> _copyToClipboard(String reference, BuildContext context) async {
+    await Utils.copyToClipboard(reference);
+
+    // Set copied state to true
+    setState(() {
+      _copiedStates[reference] = true;
+    });
+
+    // Reset after 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _copiedStates.remove(reference);
+        });
+      }
+    });
   }
 }
