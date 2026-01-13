@@ -1,96 +1,63 @@
-// To parse this JSON data, do
-//
-//     final trialBalanceModel = trialBalanceModelFromMap(jsonString);
 
-import 'dart:convert';
-
-List<TrialBalanceModel> trialBalanceModelFromMap(String str) => List<TrialBalanceModel>.from(json.decode(str).map((x) => TrialBalanceModel.fromMap(x)));
-
-String trialBalanceModelToMap(List<TrialBalanceModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toMap())));
 
 class TrialBalanceModel {
-  final String? accountNumber;
-  final String? accountName;
-  final Currency? currency;
-  final Category? category;
-  final String? debit;
-  final String? credit;
+  final String accountNumber;
+  final String accountName;
+  final String currency;
+  final String category;
+  final double debit;
+  final double credit;
 
   TrialBalanceModel({
-    this.accountNumber,
-    this.accountName,
-    this.currency,
-    this.category,
-    this.debit,
-    this.credit,
+    required this.accountNumber,
+    required this.accountName,
+    required this.currency,
+    required this.category,
+    required this.debit,
+    required this.credit,
   });
 
-  TrialBalanceModel copyWith({
-    String? accountNumber,
-    String? accountName,
-    Currency? currency,
-    Category? category,
-    String? debit,
-    String? credit,
-  }) =>
-      TrialBalanceModel(
-        accountNumber: accountNumber ?? this.accountNumber,
-        accountName: accountName ?? this.accountName,
-        currency: currency ?? this.currency,
-        category: category ?? this.category,
-        debit: debit ?? this.debit,
-        credit: credit ?? this.credit,
-      );
-
   factory TrialBalanceModel.fromMap(Map<String, dynamic> json) => TrialBalanceModel(
-    accountNumber: json["account_number"],
-    accountName: json["account_name"],
-    currency: currencyValues.map[json["currency"]]!,
-    category: categoryValues.map[json["category"]]!,
-    debit: json["debit"],
-    credit: json["credit"],
+    accountNumber: json["account_number"] ?? "",
+    accountName: json["account_name"] ?? "",
+    currency: json["currency"] ?? "USD",
+    category: json["category"] ?? "",
+    debit: double.tryParse(json["debit"] ?? "0.0") ?? 0.0,
+    credit: double.tryParse(json["credit"] ?? "0.0") ?? 0.0,
   );
 
   Map<String, dynamic> toMap() => {
     "account_number": accountNumber,
     "account_name": accountName,
-    "currency": currencyValues.reverse[currency],
-    "category": categoryValues.reverse[category],
-    "debit": debit,
-    "credit": credit,
+    "currency": currency,
+    "category": category,
+    "debit": debit.toString(),
+    "credit": credit.toString(),
   };
 }
 
-enum Category {
-  ASSET,
-  EXPENSE,
-  INCOME,
-  LIABILITY
-}
+// trial_balance_helper.dart
+class TrialBalanceHelper {
+  static double getTotalDebit(List<TrialBalanceModel> data) {
+    return data.fold(0.0, (sum, item) => sum + item.debit);
+  }
 
-final categoryValues = EnumValues({
-  "Asset": Category.ASSET,
-  "Expense": Category.EXPENSE,
-  "Income": Category.INCOME,
-  "Liability": Category.LIABILITY
-});
+  static double getTotalCredit(List<TrialBalanceModel> data) {
+    return data.fold(0.0, (sum, item) => sum + item.credit);
+  }
 
-enum Currency {
-  USD
-}
+  static double getDifference(List<TrialBalanceModel> data) {
+    return getTotalDebit(data) - getTotalCredit(data);
+  }
 
-final currencyValues = EnumValues({
-  "USD": Currency.USD
-});
+  static double getDifferencePercentage(List<TrialBalanceModel> data) {
+    final totalDebit = getTotalDebit(data);
+    if (totalDebit == 0) return 0.0;
+    return (getDifference(data).abs() / totalDebit) * 100;
+  }
 
-class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
+  // Helper to format amount with thousand separators
+  static String formatAmount(double amount) {
+    return amount.toStringAsFixed(2);
   }
 }
