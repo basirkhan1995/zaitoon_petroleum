@@ -2006,4 +2006,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get totalUpperCase => 'مجموعه';
+
+  @override
+  String get trialBalance => 'بیلانس آزمایشی';
 }

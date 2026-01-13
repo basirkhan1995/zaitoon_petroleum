@@ -668,5 +668,6 @@
   "loss": "نقص",
   "signatory": "دارنده حساب",
   "payables": "بستانکاران",
-  "totalUpperCase": "مجموعه"
+  "totalUpperCase": "مجموعه",
+  "trialBalance": "د ازموینې توازن"
 }

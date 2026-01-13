@@ -668,5 +668,6 @@
   "loss": "زیان",
   "signatory": "دارنده حساب",
   "payables": "بستانکاران",
-  "totalUpperCase": "مجموعه"
+  "totalUpperCase": "مجموعه",
+  "trialBalance": "بیلانس آزمایشی"
 }

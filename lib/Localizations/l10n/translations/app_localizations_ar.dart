@@ -2009,4 +2009,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get totalUpperCase => 'مجموعه';
+
+  @override
+  String get trialBalance => 'د ازموینې توازن';
 }

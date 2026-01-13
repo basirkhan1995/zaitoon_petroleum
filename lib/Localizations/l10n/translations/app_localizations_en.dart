@@ -2015,4 +2015,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get totalUpperCase => 'TOTAL';
+
+  @override
+  String get trialBalance => 'Trial Balance';
 }

@@ -3993,6 +3993,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'TOTAL'**
   String get totalUpperCase;
+
+  /// No description provided for @trialBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial Balance'**
+  String get trialBalance;
 }
 
 class _AppLocalizationsDelegate

@@ -16,6 +16,7 @@ import 'Ui/Finance/ArApReport/Payables/payables.dart';
 import 'Ui/Finance/ArApReport/Receivables/receivables.dart';
 import 'Ui/Finance/ExchangeRate/exchange_rate.dart';
 import 'Ui/Finance/Treasury/treasury.dart';
+import 'Ui/Finance/TrialBalance/trial_balance.dart';
 
 enum ActionKey {
   //Finance
@@ -26,6 +27,7 @@ enum ActionKey {
   treasury,
   exchangeRate,
   accountsReport,
+  trialBalance,
 
   //Transactions
   balanceSheet,
@@ -86,9 +88,12 @@ class _DesktopState extends State<_Desktop> {
       {"title": locale.glStatement, "icon": FontAwesomeIcons.buildingColumns, "action": ActionKey.glStatement},
       {"title": locale.creditors, "icon": FontAwesomeIcons.arrowTrendUp, "action": ActionKey.payable},
       {"title": locale.debtors, "icon": FontAwesomeIcons.arrowTrendDown, "action": ActionKey.receivable},
+      {"title": locale.trialBalance, "icon": Icons.balance, "action": ActionKey.trialBalance},
+
       {"title": locale.exchangeRate, "icon": Icons.compare_arrows_rounded, "action": ActionKey.exchangeRate},
       {"title": locale.treasury, "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.treasury},
       {"title": locale.accounts, "icon": Icons.account_circle, "action": ActionKey.accountsReport},
+
     ];
 
     final List<Map<String, dynamic>> stockButtons = [
@@ -234,6 +239,7 @@ class _DesktopState extends State<_Desktop> {
       case ActionKey.exchangeRate: Utils.goto(context, ExchangeRateReportView());
       case ActionKey.treasury: Utils.goto(context, TreasuryView());
       case ActionKey.accountsReport: Utils.goto(context, AccountsReportView());
+      case ActionKey.trialBalance: Utils.goto(context, TrialBalanceView());
 
       //Transactions
       case ActionKey.profitAndLoss: Utils.goto(context, IncomeStatementView());

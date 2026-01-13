@@ -668,5 +668,6 @@
   "loss": "Loss",
   "signatory": "Signatory",
   "payables": "Payables",
-  "totalUpperCase": "TOTAL"
+  "totalUpperCase": "TOTAL",
+  "trialBalance": "Trial Balance"
 }

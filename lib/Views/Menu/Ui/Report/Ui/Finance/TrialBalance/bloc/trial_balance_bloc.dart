@@ -1,0 +1,23 @@
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:zaitoon_petroleum/Services/repositories.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/TrialBalance/model/trial_balance_model.dart';
+
+part 'trial_balance_event.dart';
+part 'trial_balance_state.dart';
+
+class TrialBalanceBloc extends Bloc<TrialBalanceEvent, TrialBalanceState> {
+  final Repositories _repo;
+  TrialBalanceBloc(this._repo) : super(TrialBalanceInitial()) {
+
+    on<LoadTrialBalanceEvent>((event, emit) async{
+      emit(TrialBalanceLoadingState());
+      try{
+        final balance = await _repo.getTrialBalance(date: event.date, ccy: event.currency);
+        emit(TrialBalanceLoadedState(balance));
+      }catch(e){
+        emit(TrialBalanceErrorState(e.toString()));
+      }
+    });
+  }
+}
