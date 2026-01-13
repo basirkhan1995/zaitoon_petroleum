@@ -11,6 +11,9 @@ import '../../../HR/Ui/Users/features/date_range_string.dart';
 import 'bloc/daily_gross_bloc.dart';
 import 'model/gross_model.dart';
 
+/// =======================
+/// DAILY GROSS VIEW
+/// =======================
 class DailyGrossView extends StatefulWidget {
   const DailyGrossView({super.key});
 
@@ -22,7 +25,6 @@ class _DailyGrossViewState extends State<DailyGrossView> {
   @override
   void initState() {
     super.initState();
-
     final now = DateTime.now();
     final from = DateFormat('yyyy-MM-dd').format(now.subtract(const Duration(days: 30)));
     final to = DateFormat('yyyy-MM-dd').format(now);
@@ -49,7 +51,6 @@ class _DailyGrossViewState extends State<DailyGrossView> {
 
 class _Mobile extends StatelessWidget {
   const _Mobile();
-
   @override
   Widget build(BuildContext context) => const Padding(
     padding: EdgeInsets.all(8),
@@ -59,7 +60,6 @@ class _Mobile extends StatelessWidget {
 
 class _Tablet extends StatelessWidget {
   const _Tablet();
-
   @override
   Widget build(BuildContext context) => const Padding(
     padding: EdgeInsets.all(16),
@@ -69,19 +69,26 @@ class _Tablet extends StatelessWidget {
 
 class _Desktop extends StatelessWidget {
   const _Desktop();
-
   @override
   Widget build(BuildContext context) => const Padding(
-    padding: EdgeInsets.all(5),
+    padding: EdgeInsets.all(3),
     child: _DailyGrossContent(),
   );
 }
 
 /// =======================
-/// MAIN CONTENT
+/// DAILY GROSS CONTENT
 /// =======================
-class _DailyGrossContent extends StatelessWidget {
+class _DailyGrossContent extends StatefulWidget {
   const _DailyGrossContent();
+
+  @override
+  State<_DailyGrossContent> createState() => _DailyGrossContentState();
+}
+
+class _DailyGrossContentState extends State<_DailyGrossContent> {
+  // Toggle: 0 = Line, 1 = Bar
+  int chartType = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -96,13 +103,87 @@ class _DailyGrossContent extends StatelessWidget {
             return const Center(child: Text('No data available'));
           }
 
-          return Stack(
+          final chartData = _prepareChartData(state.data);
+
+          return Column(
             children: [
-              DailyGrossChart(data: state.data),
+
+              // Chart
+              ZCard(
+                radius: 8,
+                borderColor: Theme.of(context).colorScheme.outline.withValues(alpha: .3),
+                padding: const EdgeInsets.all(15),
+                child: Column(
+                  children: [
+                    // Header: Title + Date Range + Chart Toggle
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                              child: Text(
+                                AppLocalizations.of(context)!.profitAndLoss,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              )),
+                          SizedBox(
+                            width: 140,
+                            child: DateRangeDropdown(
+                              title: '',
+                              height: 38,
+                              onChanged: (fromDate, toDate) {
+                                context.read<DailyGrossBloc>().add(
+                                  FetchDailyGrossEvent(
+                                    from: fromDate,
+                                    to: toDate,
+                                    startGroup: 3,
+                                    stopGroup: 4,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          // Toggle buttons for Line/Bar
+                          ToggleButtons(
+                            isSelected: [chartType == 0, chartType == 1],
+                            onPressed: (index) {
+                              setState(() {
+                                chartType = index;
+                              });
+                            },
+                            constraints: const BoxConstraints(
+                              minHeight: 33, // set your desired height
+                              minWidth: 40,  // optional: control width too
+                            ),
+                            children: const [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                child: Text("Line"),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                child: Text("Bar"),
+                              ),
+                            ],
+                          ),
+
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    SizedBox(
+                      height: 300,
+                      child: chartType == 0
+                          ? _buildLineChart(chartData, context)
+                          : _buildBarChart(chartData, context),
+                    ),
+                  ],
+                ),
+              ),
+
               if (state.isRefreshing)
-                const Positioned(
-                  top: 8,
-                  right: 8,
+                const Padding(
+                  padding: EdgeInsets.only(top: 8),
                   child: SizedBox(
                     width: 14,
                     height: 14,
@@ -117,92 +198,68 @@ class _DailyGrossContent extends StatelessWidget {
       },
     );
   }
-}
 
-/// =======================
-/// SYNCFUSION CHART
-/// =======================
-class DailyGrossChart extends StatelessWidget {
-  final List<DailyGrossModel> data;
-
-  const DailyGrossChart({super.key, required this.data});
-
-  @override
-  Widget build(BuildContext context) {
-    final chartData = _prepareChartData(data);
-
-    return ZCard(
-      radius: 8,
-      borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: .5),
-      padding: const EdgeInsets.all(15),
-      child: SizedBox(
-        height: 360,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: [
-                   Expanded(child: Text(AppLocalizations.of(context)!.profitAndLoss,style: Theme.of(context).textTheme.titleMedium,)),
-                   SizedBox(
-                    width: 150,
-                    child: DateRangeDropdown(
-                      title: '',
-                      height: 38,
-                      onChanged: (fromDate, toDate) {
-                        context.read<DailyGrossBloc>().add(
-                          FetchDailyGrossEvent(
-                            from: fromDate,
-                            to: toDate,
-                            startGroup: 3,
-                            stopGroup: 4,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            SfCartesianChart(
-             // legend: Legend(isVisible: true,position: LegendPosition.top,isResponsive: true),
-
-              tooltipBehavior: TooltipBehavior(enable: true),
-              primaryXAxis: DateTimeAxis(
-                intervalType: DateTimeIntervalType.days,
-                dateFormat: DateFormat('MM/dd'),
-              ),
-              primaryYAxis: NumericAxis(),
-              series: <CartesianSeries<GrossChartData, DateTime>>[
-                // PROFIT LINE
-                LineSeries<GrossChartData, DateTime>(
-                  dataSource: chartData,
-                  xValueMapper: (d, _) => d.date,
-                  yValueMapper: (d, _) => d.profit,
-                  name: AppLocalizations.of(context)!.profit,
-                  color: Colors.green,
-                  width: 3,
-                  markerSettings: const MarkerSettings(isVisible: true),
-                ),
-                // LOSS LINE
-                LineSeries<GrossChartData, DateTime>(
-                  dataSource: chartData,
-                  xValueMapper: (d, _) => d.date,
-                  yValueMapper: (d, _) => d.loss,
-                  name: AppLocalizations.of(context)!.loss,
-                  color: Colors.red,
-                  width: 3,
-                  markerSettings: const MarkerSettings(isVisible: true),
-                ),
-              ],
-            ),
-          ],
-        ),
+  /// Line chart
+  SfCartesianChart _buildLineChart(List<GrossChartData> chartData, BuildContext context) {
+    return SfCartesianChart(
+      tooltipBehavior: TooltipBehavior(enable: true),
+      primaryXAxis: DateTimeAxis(
+        intervalType: DateTimeIntervalType.days,
+        dateFormat: DateFormat('MM/dd'),
       ),
+      primaryYAxis: NumericAxis(),
+      series: [
+        LineSeries<GrossChartData, DateTime>(
+          dataSource: chartData,
+          xValueMapper: (d, _) => d.date,
+          yValueMapper: (d, _) => d.profit,
+          name: AppLocalizations.of(context)!.profit,
+          color: Colors.green,
+          width: 3,
+          markerSettings: const MarkerSettings(isVisible: true),
+        ),
+        LineSeries<GrossChartData, DateTime>(
+          dataSource: chartData,
+          xValueMapper: (d, _) => d.date,
+          yValueMapper: (d, _) => d.loss,
+          name: AppLocalizations.of(context)!.loss,
+          color: Colors.red,
+          width: 3,
+          markerSettings: const MarkerSettings(isVisible: true),
+        ),
+      ],
     );
   }
 
+  /// Bar chart
+  SfCartesianChart _buildBarChart(List<GrossChartData> chartData, BuildContext context) {
+    return SfCartesianChart(
+      tooltipBehavior: TooltipBehavior(enable: true),
+      primaryXAxis: DateTimeAxis(
+        intervalType: DateTimeIntervalType.days,
+        dateFormat: DateFormat('MM/dd'),
+      ),
+      primaryYAxis: NumericAxis(),
+      series: [
+        ColumnSeries<GrossChartData, DateTime>(
+          dataSource: chartData,
+          xValueMapper: (d, _) => d.date,
+          yValueMapper: (d, _) => d.profit,
+          name: AppLocalizations.of(context)!.profit,
+          color: Colors.green.withValues(alpha: .7),
+        ),
+        ColumnSeries<GrossChartData, DateTime>(
+          dataSource: chartData,
+          xValueMapper: (d, _) => d.date,
+          yValueMapper: (d, _) => d.loss,
+          name: AppLocalizations.of(context)!.loss,
+          color: Colors.red.withValues(alpha: .7),
+        ),
+      ],
+    );
+  }
+
+  /// Aggregate profit/loss per day
   List<GrossChartData> _prepareChartData(List<DailyGrossModel> data) {
     final map = <DateTime, GrossChartData>{};
 
@@ -234,6 +291,7 @@ class DailyGrossChart extends StatelessWidget {
   }
 }
 
+/// Chart data
 class GrossChartData {
   final DateTime date;
   final double profit;

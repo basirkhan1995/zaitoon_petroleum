@@ -1892,7 +1892,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     if (!currentState.isPaymentValid) {
       Utils.showOverlayMessage(
         context,
-        message: 'Total payment must equal grand total. Please adjust payment.',
+        message: 'TotalDailyTxn payment must equal grand total. Please adjust payment.',
         isError: true,
       );
       return;

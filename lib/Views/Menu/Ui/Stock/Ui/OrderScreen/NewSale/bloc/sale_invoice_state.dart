@@ -36,12 +36,12 @@ class SaleInvoiceLoaded extends SaleInvoiceState {
     this.storages,
   });
 
-  // Total purchase cost (total cost price)
+  // TotalDailyTxn purchase cost (total cost price)
   double get totalPurchaseCost {
     return items.fold(0.0, (sum, item) => sum + item.totalPurchase);
   }
 
-  // Total sale amount (total selling price)
+  // TotalDailyTxn sale amount (total selling price)
   double get totalSaleAmount {
     return items.fold(0.0, (sum, item) => sum + item.totalSale);
   }

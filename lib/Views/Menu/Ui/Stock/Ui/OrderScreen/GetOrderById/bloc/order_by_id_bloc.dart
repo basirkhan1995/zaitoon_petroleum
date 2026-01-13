@@ -271,7 +271,7 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
       // Validate that payments match grand total
       final total = cashPayment + creditAmount;
       if ((total - current.grandTotal).abs() > 0.01) {
-        emit(OrderByIdError('Total payment must equal grand total'));
+        emit(OrderByIdError('TotalDailyTxn payment must equal grand total'));
         return;
       }
 
@@ -565,7 +565,7 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
 
     // Validate payment
     if (!current.isPaymentValid) {
-      emit(OrderByIdError('Total payment must equal grand total. Please adjust payment.'));
+      emit(OrderByIdError('TotalDailyTxn payment must equal grand total. Please adjust payment.'));
       emit(savedState);
       event.completer.complete(false);
       return;

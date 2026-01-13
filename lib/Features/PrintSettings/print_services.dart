@@ -350,12 +350,12 @@ abstract class PrintServices {
         "ar":"پول رسید"
       },
       'totalDebits' : {
-        'en':"Total Debit",
+        'en':"TotalDailyTxn Debit",
         'fa':"مجموعه دبت",
         "ar":"مجموعه دبت"
       },
       'totalCredits' : {
-        'en':"Total Credit",
+        'en':"TotalDailyTxn Credit",
         'fa':"مجموعه دبت",
         "ar":"مجموعه دبت"
       },
@@ -410,12 +410,12 @@ abstract class PrintServices {
         "ar":"د پلورل شویو توکو لګښت"
       },
       'totalExpense' : {
-        'en':"Total Expenses",
+        'en':"TotalDailyTxn Expenses",
         'fa':"مصارف",
         "ar":"مصرفونه"
       },
       'totalRevenue' : {
-        'en':"Total Revenue",
+        'en':"TotalDailyTxn Revenue",
         'fa':"عواید",
         "ar":"عواید"
       },
@@ -475,7 +475,7 @@ abstract class PrintServices {
         "ar":"دیون"
       },
       'totalAsset' : {
-        'en':"Total Asset",
+        'en':"TotalDailyTxn Asset",
         'fa':"سرمایه",
         "ar":"سرمایه"
       },
@@ -606,7 +606,7 @@ abstract class PrintServices {
       },
 
       'total': {
-        'en': 'Total',
+        'en': 'TotalDailyTxn',
         'fa': 'جمع کل',
         'ar': 'ټول قیمت',
       },
@@ -863,12 +863,12 @@ abstract class PrintServices {
         'ar':'واحد قیمت',
       },
       'totalInvoice':{
-        'en':'Total',
+        'en':'TotalDailyTxn',
         'fa':'جمع کل',
         'ar':'ټول قیمت',
       },
       'subTotal':{
-        'en':'Total',
+        'en':'TotalDailyTxn',
         'fa':'جمع جزء',
         'ar':'فرعي مجموعه',
       },
@@ -903,7 +903,7 @@ abstract class PrintServices {
         'ar':'توکي نوم',
       },
       'grandTotal':{
-        'en':'Grand Total',
+        'en':'Grand TotalDailyTxn',
         'fa':'جمع کل نهایی',
         'ar':'ټولیز مجموعه',
       },
@@ -1043,7 +1043,7 @@ abstract class PrintServices {
         'ar': 'ملخص الشحن',
       },
       'totalShipments': {
-        'en': 'Total Shipments',
+        'en': 'TotalDailyTxn Shipments',
         'fa': 'کل حمل و نقل',
         'ar': 'إجمالي الشحنات',
       },
@@ -1053,7 +1053,7 @@ abstract class PrintServices {
         'ar': 'مكتمل',
       },
       'totalRent': {
-        'en': 'Total Rent',
+        'en': 'TotalDailyTxn Rent',
         'fa': 'کرایه کل',
         'ar': 'الإيجار الكلي',
       },
@@ -1113,7 +1113,7 @@ abstract class PrintServices {
         'ar': 'امضاء العميل',
       },
       'totalPayment': {
-        'en': 'Total Payment',
+        'en': 'TotalDailyTxn Payment',
         'fa': 'مجموع پرداخت',
         'ar': 'المبلغ الإجمالي',
       },

@@ -91,7 +91,7 @@ class _StatsContent extends StatelessWidget {
               "title": tr.accounts,
               "value": stats.accountsCount,
               "color": Colors.orange,
-              "icon": Icons.account_balance,
+              "icon": Icons.account_circle,
             },
             {
               "title": tr.stakeholders,
@@ -151,7 +151,7 @@ class _StatsContent extends StatelessWidget {
                               : Alignment.centerRight,
                           child: Text(
                             item['title'].toString(),
-                            style: theme.textTheme.titleSmall,
+                            style: theme.textTheme.bodySmall,
                           ),
                         ),
                       ],

@@ -2389,7 +2389,7 @@ class _DesktopState extends State<_Desktop> {
                                       FilteringTextInputFormatter.allow(
                                         RegExp(r'[0-9.,]*'),
                                       ),
-                                      SmartThousandsDecimalFormatter(),
+                                      SmartThousandsDecimalFormatter(decimalDigits: 4),
                                     ],
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -3089,7 +3089,7 @@ class _DesktopState extends State<_Desktop> {
         UpdateShippingExpenseEvent(
           shpId: widget.shippingId!,
           trnReference: _selectedExpenseForEdit!.trdReference!,
-          amount: expenseAmount.text,
+          amount: expenseAmount.text.cleanAmount,
           narration: expenseNarration.text,
           usrName: usrName ?? "",
         ),
@@ -3099,7 +3099,7 @@ class _DesktopState extends State<_Desktop> {
         AddShippingExpenseEvent(
           shpId: widget.shippingId!,
           accNumber: expenseAccNumber!,
-          amount: expenseAmount.text,
+          amount: expenseAmount.text.cleanAmount,
           narration: expenseNarration.text,
           usrName: usrName ?? "",
         ),

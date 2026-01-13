@@ -2,18 +2,28 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class SmartThousandsDecimalFormatter extends TextInputFormatter {
+  final int decimalDigits;
   final NumberFormat _formatter = NumberFormat("#,##0");
 
+  SmartThousandsDecimalFormatter({this.decimalDigits = 4});
+
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
-    String raw = newValue.text.replaceAll(',', '');
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    final raw = newValue.text.replaceAll(',', '');
 
-    // If empty or just a dot
-    if (raw.isEmpty || raw == '.') return newValue;
+    // Allow empty or just decimal point
+    if (raw.isEmpty || raw == '.') {
+      return newValue;
+    }
 
-    // Match valid decimal number (0 to 4 digits after dot)
-    final valid = RegExp(r'^\d*\.?\d{0,4}$');
-    if (!valid.hasMatch(raw)) return oldValue;
+    // Dynamic decimal validation
+    final valid = RegExp(r'^\d*\.?\d{0,' + decimalDigits.toString() + r'}$');
+    if (!valid.hasMatch(raw)) {
+      return oldValue;
+    }
 
     final parts = raw.split('.');
     final intPartRaw = parts[0];
@@ -23,13 +33,12 @@ class SmartThousandsDecimalFormatter extends TextInputFormatter {
     if (intPartRaw.isNotEmpty) {
       try {
         formattedInt = _formatter.format(int.parse(intPartRaw));
-      } catch (e) {
+      } catch (_) {
         return oldValue;
       }
     }
 
-    // Build final text
-    String newText = decPart != null
+    final newText = decPart != null
         ? '$formattedInt.$decPart'
         : formattedInt;
 

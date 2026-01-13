@@ -2012,4 +2012,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get trialBalance => 'د ازموینې توازن';
+
+  @override
+  String get outOfBalance => 'د توازن نشتوالی';
+
+  @override
+  String get orders => 'فرمایشات';
 }

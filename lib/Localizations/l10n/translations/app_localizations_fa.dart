@@ -2009,4 +2009,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get trialBalance => 'بیلانس آزمایشی';
+
+  @override
+  String get outOfBalance => 'عدم توازن';
+
+  @override
+  String get orders => 'فرمایشات';
 }

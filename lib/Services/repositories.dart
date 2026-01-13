@@ -15,6 +15,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_mod
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/model/stmt_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/model/gl_statement_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/TrialBalance/model/trial_balance_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/model/daily_txn_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/TransactionRef/model/txn_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
@@ -2485,6 +2486,38 @@ class Repositories {
         return (response.data as List)
             .whereType<Map<String, dynamic>>()
             .map((json) => TrialBalanceModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+  Future<List<TotalDailyTxnModel>> totalDailyTxnReport({required String fromDate, required String toDate}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/reports/dailyTotalTransactions.php",
+          data: {
+            "fromDate":fromDate,
+            "toDate":toDate
+          }
+      );
+
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>()
+            .map((json) => TotalDailyTxnModel.fromMap(json))
             .toList();
       }
 

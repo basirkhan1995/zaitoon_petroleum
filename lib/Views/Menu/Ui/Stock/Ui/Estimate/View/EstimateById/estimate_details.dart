@@ -940,7 +940,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
           Divider(color: color.outline.withValues(alpha: .2)),
 
           _buildProfitRow(
-              label: 'Total Cost',
+              label: 'TotalDailyTxn Cost',
               value: totalPurchaseCost,
               color: color.primary.withValues(alpha: .9),
               isBold: true

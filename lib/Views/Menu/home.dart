@@ -128,9 +128,9 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
       ),
       MenuDefinition(
         value: MenuName.stock,
-        label: AppLocalizations.of(context)!.inventory,
+        label: AppLocalizations.of(context)!.orderTitle,
         screen: const StockView(),
-        icon: Icons.add_shopping_cart_sharp,
+        icon: Icons.shopping_basket_outlined,
       ),
       MenuDefinition(
         value: MenuName.settings,

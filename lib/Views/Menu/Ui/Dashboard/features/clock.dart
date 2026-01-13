@@ -45,7 +45,7 @@ class _DigitalClockState extends State<DigitalClock> {
         color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(5),
           border: Border.all(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: .5)
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)
           )
       ),
       child: Column(

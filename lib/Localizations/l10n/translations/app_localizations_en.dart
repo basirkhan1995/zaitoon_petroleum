@@ -2018,4 +2018,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trialBalance => 'Trial Balance';
+
+  @override
+  String get outOfBalance => 'Out of Balance';
+
+  @override
+  String get orders => 'Orders';
 }

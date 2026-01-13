@@ -126,7 +126,7 @@ class _DesktopState extends State<_Desktop> {
                   FilteringTextInputFormatter.allow(
                     RegExp(r'[0-9.,]*'),
                   ),
-                  SmartThousandsDecimalFormatter(),
+                  SmartThousandsDecimalFormatter(decimalDigits: 6),
                 ],
 
                 validator: (value) {

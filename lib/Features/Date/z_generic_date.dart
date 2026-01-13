@@ -57,17 +57,20 @@ class _ZDatePickerState extends State<ZDatePicker> {
     final color = Theme.of(context).colorScheme;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          widget.label,
-          style: widget.labelStyle ??
-              Theme.of(context)
-                  .textTheme
-                  .titleSmall
-                  ?.copyWith(fontSize: 12),
-        ),
-        const SizedBox(height: 3),
+        if(widget.label.isNotEmpty)...[
+          Text(
+            widget.label,
+            style: widget.labelStyle ??
+                Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontSize: 12),
+          ),
+          const SizedBox(height: 3),
+        ],
         Container(
           padding: widget.padding ??
               const EdgeInsets.symmetric(horizontal: 8, vertical: 2),

@@ -669,5 +669,7 @@
   "signatory": "دارنده حساب",
   "payables": "بستانکاران",
   "totalUpperCase": "مجموعه",
-  "trialBalance": "بیلانس آزمایشی"
+  "trialBalance": "بیلانس آزمایشی",
+  "outOfBalance": "عدم توازن",
+  "orders": "فرمایشات"
 }

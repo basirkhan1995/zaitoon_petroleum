@@ -3999,6 +3999,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Trial Balance'**
   String get trialBalance;
+
+  /// No description provided for @outOfBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of Balance'**
+  String get outOfBalance;
+
+  /// No description provided for @orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get orders;
 }
 
 class _AppLocalizationsDelegate

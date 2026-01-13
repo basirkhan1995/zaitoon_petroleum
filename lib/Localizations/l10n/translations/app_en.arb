@@ -669,5 +669,7 @@
   "signatory": "Signatory",
   "payables": "Payables",
   "totalUpperCase": "TOTAL",
-  "trialBalance": "Trial Balance"
+  "trialBalance": "Trial Balance",
+  "outOfBalance": "Out of Balance",
+  "orders": "Orders"
 }
