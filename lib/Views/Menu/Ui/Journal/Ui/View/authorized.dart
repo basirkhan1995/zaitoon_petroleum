@@ -224,7 +224,6 @@ class _DesktopState extends State<_Desktop> {
       child: Stack(
         children: [
           Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.surface,
             body: Column(
               children: [
                 Padding(
@@ -238,6 +237,7 @@ class _DesktopState extends State<_Desktop> {
                       Expanded(
                           flex: 6,
                           child: ListTile(
+                            tileColor: Colors.transparent,
                             contentPadding: EdgeInsets.zero,
                             visualDensity: VisualDensity(vertical: -4, horizontal: -4),
                             title: Text(locale.todayTransaction,style: Theme.of(context).textTheme.titleMedium),
@@ -303,10 +303,11 @@ class _DesktopState extends State<_Desktop> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 8),
                 Divider(
                   indent: 10,
                   endIndent: 10,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.outline,
                 ),
                 Expanded(
                   child: BlocConsumer<TransactionsBloc, TransactionsState>(

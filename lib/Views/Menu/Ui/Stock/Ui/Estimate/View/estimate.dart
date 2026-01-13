@@ -84,7 +84,6 @@ class _DesktopState extends State<_Desktop> {
     final tr = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: color.surface,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,6 +97,7 @@ class _DesktopState extends State<_Desktop> {
                   flex: 5,
                   child: ListTile(
                     contentPadding: EdgeInsets.zero,
+                    tileColor: Colors.transparent,
                     title: Text(
                       tr.estimateTitle,
                       style: Theme.of(
@@ -157,7 +157,9 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
           ),
-          Divider(endIndent: 8, indent: 8),
+          SizedBox(height: 8),
+          const Divider(),
+          SizedBox(height: 8),
           Expanded(
             child: BlocConsumer<EstimateBloc, EstimateState>(
               listener: (context, state) {

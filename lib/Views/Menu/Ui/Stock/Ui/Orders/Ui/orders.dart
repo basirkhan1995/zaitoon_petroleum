@@ -119,6 +119,7 @@ class _DesktopState extends State<_Desktop> {
                   Expanded(
                     flex: 5,
                     child: ListTile(
+                      tileColor: Colors.transparent,
                       contentPadding: EdgeInsets.zero,
                       title: Text(
                         tr.orderTitle,
@@ -180,7 +181,10 @@ class _DesktopState extends State<_Desktop> {
                 ],
               ),
             ),
-            Divider(endIndent: 8, indent: 8),
+            SizedBox(height: 8),
+            const Divider(),
+            SizedBox(height: 8),
+
             Expanded(
               child: BlocBuilder<OrdersBloc, OrdersState>(
                 builder: (context, state) {

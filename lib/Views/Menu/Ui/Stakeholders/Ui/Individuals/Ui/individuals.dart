@@ -79,7 +79,6 @@ class _DesktopState extends State<_Desktop> {
     };
 
     return Scaffold(
-
       body: GlobalShortcuts(
         shortcuts: shortcuts,
         child: Container(
@@ -98,6 +97,7 @@ class _DesktopState extends State<_Desktop> {
                     Expanded(
                       flex: 5,
                       child: ListTile(
+                        tileColor: Colors.transparent,
                         contentPadding: EdgeInsets.zero,
                         title: Text(locale.individuals,style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontSize: 20,

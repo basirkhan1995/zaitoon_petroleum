@@ -267,7 +267,9 @@ class _DesktopState extends State<_Desktop> {
               ),
               const SizedBox(height: 5),
               _buildColumnHeaders(context),
-              const Divider(endIndent: 15, indent: 15),
+              const SizedBox(height: 8),
+              const Divider(),
+              const SizedBox(height: 8),
               Expanded(
                 child: BlocBuilder<ShippingBloc, ShippingState>(
                   builder: (context, state) {
