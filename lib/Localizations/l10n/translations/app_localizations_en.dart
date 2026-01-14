@@ -2030,4 +2030,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get subCategory => 'Sub Category';
+
+  @override
+  String get glAccountsComplete => 'General Ledger Accounts';
+
+  @override
+  String get allCurrencies => 'All Currencies';
 }

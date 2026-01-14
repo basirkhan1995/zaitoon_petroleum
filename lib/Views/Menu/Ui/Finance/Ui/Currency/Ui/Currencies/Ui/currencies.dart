@@ -51,6 +51,13 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   final searchController = TextEditingController();
   @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      context.read<CurrenciesBloc>().add(LoadCurrenciesEvent());
+    });
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     return Scaffold(
@@ -58,12 +65,17 @@ class _DesktopState extends State<_Desktop> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
               spacing: 8,
               children: [
                 Expanded(
+                    flex: 5,
+                    child: Text(locale.allCurrencies,style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.outline),)),
+                Expanded(
+                  flex: 3,
                   child: ZSearchField(
                     controller: searchController,
                     title: '',
@@ -117,6 +129,7 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
           ),
+          SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: Row(
@@ -174,7 +187,7 @@ class _DesktopState extends State<_Desktop> {
           Divider(
             endIndent: 10,
             indent: 10,
-            color: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: .3),
           ),
           Expanded(
             child: BlocBuilder<CurrenciesBloc, CurrenciesState>(

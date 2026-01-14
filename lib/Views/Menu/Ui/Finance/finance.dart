@@ -22,88 +22,85 @@ class FinanceView extends StatelessWidget {
     }
     final login = state.loginData;
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(top: 6.0),
-        child: BlocBuilder<FinanceTabBloc, FinanceTabState>(
-          builder: (context, state) {
-            final tabs = <ZTabItem<FinanceTabName>>[
-              if (login.hasPermission(33) ?? false)
-                ZTabItem(
-                  value: FinanceTabName.currencies,
-                  label: AppLocalizations.of(context)!.currencyTitle,
-                  screen: const CurrencyTabView(),
-                ),
-              if (login.hasPermission(6) ?? false)
-                ZTabItem(
-                  value: FinanceTabName.glAccounts,
-                  label: AppLocalizations.of(context)!.glAccounts,
-                  screen: const GlAccountsView(),
-                ),
-              if (login.hasPermission(7) ?? false)
-                ZTabItem(
-                  value: FinanceTabName.payroll,
-                  label: AppLocalizations.of(context)!.payRoll,
-                  screen: const PayrollView(),
-                ),
-              if (login.hasPermission(9) ?? false)
-                ZTabItem(
-                  value: FinanceTabName.endOfYear,
-                  label: AppLocalizations.of(context)!.fiscalYear,
-                  screen: const EndOfYearView(),
-                ),
-            ];
-
-            if (tabs.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.warning_amber_rounded,
-                      size: 50,
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                    Text(
-                      AppLocalizations.of(context)!.deniedPermissionTitle,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    Text(
-                      AppLocalizations.of(context)!.deniedPermissionMessage,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-              );
-            }
-
-            final availableValues = tabs.map((tab) => tab.value).toList();
-            final selected = availableValues.contains(state.tab)
-                ? state.tab
-                : availableValues.first;
-
-            return ZTabContainer<FinanceTabName>(
-              /// Tab data
-              tabs: tabs,
-              selectedValue: selected,
-              title: AppLocalizations.of(context)!.finance,
-              description: AppLocalizations.of(context)!.manageFinance,
-
-              /// Bloc update
-              onChanged: (val) => context.read<FinanceTabBloc>().add(
-                FinanceOnChangedEvent(val),
+      body: BlocBuilder<FinanceTabBloc, FinanceTabState>(
+        builder: (context, state) {
+          final tabs = <ZTabItem<FinanceTabName>>[
+            if (login.hasPermission(33) ?? false)
+              ZTabItem(
+                value: FinanceTabName.currencies,
+                label: AppLocalizations.of(context)!.currencyTitle,
+                screen: const CurrencyTabView(),
               ),
+            if (login.hasPermission(6) ?? false)
+              ZTabItem(
+                value: FinanceTabName.glAccounts,
+                label: AppLocalizations.of(context)!.glAccounts,
+                screen: const GlAccountsView(),
+              ),
+            if (login.hasPermission(7) ?? false)
+              ZTabItem(
+                value: FinanceTabName.payroll,
+                label: AppLocalizations.of(context)!.payRoll,
+                screen: const PayrollView(),
+              ),
+            if (login.hasPermission(9) ?? false)
+              ZTabItem(
+                value: FinanceTabName.endOfYear,
+                label: AppLocalizations.of(context)!.fiscalYear,
+                screen: const EndOfYearView(),
+              ),
+          ];
 
-              /// Colors and style
-              style: ZTabStyle.rounded,
-              tabBarPadding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
-              borderRadius: 0,
-              selectedColor: Theme.of(context).colorScheme.primary,
-              unselectedTextColor: Theme.of(context).colorScheme.secondary,
-              selectedTextColor: Theme.of(context).colorScheme.surface,
-              tabContainerColor: Theme.of(context).colorScheme.surface,
+          if (tabs.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    size: 50,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.deniedPermissionTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.deniedPermissionMessage,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
             );
-          },
-        ),
+          }
+
+          final availableValues = tabs.map((tab) => tab.value).toList();
+          final selected = availableValues.contains(state.tab)
+              ? state.tab
+              : availableValues.first;
+
+          return ZTabContainer<FinanceTabName>(
+            /// Tab data
+            tabs: tabs,
+            selectedValue: selected,
+            title: AppLocalizations.of(context)!.finance,
+            description: AppLocalizations.of(context)!.manageFinance,
+
+            /// Bloc update
+            onChanged: (val) => context.read<FinanceTabBloc>().add(
+              FinanceOnChangedEvent(val),
+            ),
+
+            /// Colors and style
+            style: ZTabStyle.rounded,
+            tabBarPadding: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+            borderRadius: 0,
+            selectedColor: Theme.of(context).colorScheme.primary,
+            unselectedTextColor: Theme.of(context).colorScheme.secondary,
+            selectedTextColor: Theme.of(context).colorScheme.surface,
+            tabContainerColor: Theme.of(context).colorScheme.surface,
+          );
+        },
       ),
     );
   }

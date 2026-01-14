@@ -291,14 +291,13 @@ class _DesktopState extends State<_Desktop> {
 
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                    vertical: 8,
+                    horizontal: 8.0,
                   ),
                   child: Row(
                     spacing: 8,
                     children: [
                       Expanded(
-                          flex: 6,
+                          flex: 5,
                           child: ListTile(
                             tileColor: Colors.transparent,
                             contentPadding: EdgeInsets.zero,
@@ -335,7 +334,7 @@ class _DesktopState extends State<_Desktop> {
 
                 // HEADER
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Row(
                     children: [
                       // SELECT-ALL CHECKBOX
@@ -487,8 +486,8 @@ class _DesktopState extends State<_Desktop> {
                                     ? Theme.of(context).colorScheme.primary.withAlpha(15)
                                     : Colors.transparent,
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0,
-                                  vertical: 8,
+                                  horizontal: 8.0,
+                                  vertical: 5,
                                 ),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,

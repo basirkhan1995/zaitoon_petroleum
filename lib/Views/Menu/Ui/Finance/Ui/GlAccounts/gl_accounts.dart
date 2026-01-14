@@ -67,12 +67,17 @@ class _DesktopState extends State<_Desktop> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               spacing: 8,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
+                    flex: 5,
+                    child: Text(tr.glAccountsComplete,style: textTheme.titleLarge?.copyWith(color: color.outline))),
+                Expanded(
+                  flex: 3,
                   child: ZSearchField(
                     controller: searchController,
                     hint: AppLocalizations.of(context)!.accNameOrNumber,
@@ -115,8 +120,9 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
           ),
+          SizedBox(height: 8),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
             child: Row(
               children: [
                 Text(tr.accountNumber,style: textTheme.titleMedium),
@@ -127,14 +133,14 @@ class _DesktopState extends State<_Desktop> {
                   child: Text(tr.categoryTitle,style: textTheme.titleMedium),
                 ),
                 SizedBox(
-                  width: 175,
+                  width: 185,
                   child: Text(tr.subCategory,style: textTheme.titleMedium),
                 ),
 
               ],
             ),
           ),
-          Divider(endIndent: 10,indent: 10,color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),),
+          Divider(endIndent: 2,indent: 2,color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),),
 
           Expanded(
             child: BlocConsumer<GlAccountsBloc, GlAccountsState>(
@@ -169,14 +175,16 @@ class _DesktopState extends State<_Desktop> {
                             });
                           },
                           child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
+                            padding: EdgeInsets.symmetric(vertical: 5,horizontal: 8),
                             decoration: BoxDecoration(
                               color: index.isEven ? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent,
                             ),
                             child: Row(
                               spacing: 10,
                               children: [
-                                Text(gl.accNumber.toString(),style: Theme.of(context).textTheme.titleMedium),
+                                SizedBox(
+                                    width: 80,
+                                    child: Text(gl.accNumber.toString(),style: Theme.of(context).textTheme.titleMedium)),
                                  myLocale == "en"? SizedBox(width: 50) : SizedBox(width: 20),
                                 Expanded(child: Text(gl.accName??"",style: Theme.of(context).textTheme.titleMedium)),
                                 SizedBox(
@@ -194,8 +202,8 @@ class _DesktopState extends State<_Desktop> {
                                       textAlign: TextAlign.center),
                                 ),
 
-                                CircleAvatar(
-                                  backgroundColor: color.onPrimary,
+                                SizedBox(
+                                  width: 50,
                                   child: IconButton(
                                       onPressed: (){
                                         showDialog(context: context, builder: (context){
@@ -206,7 +214,7 @@ class _DesktopState extends State<_Desktop> {
                                               });
                                         });
                                       },
-                                      icon: Icon(Icons.delete,color: color.error)),
+                                      icon: Icon(Icons.delete_outline_rounded,color: color.outline,size: 20,)),
                                 ),
                               ],
                             ),

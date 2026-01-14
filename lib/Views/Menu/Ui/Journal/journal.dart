@@ -196,21 +196,15 @@ class _DesktopState extends State<_Desktop> {
                           mainAxisSize: MainAxisSize.min,
                           spacing: 12,
                           children: [
-                            GenericTextfield<
-                              StakeholdersAccountsModel,
-                              AccountsBloc,
-                              AccountsState
-                            >(
+                            GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
                               showAllOnFocus: true,
                               controller: accountController,
                               title: locale.accounts,
                               hintText: locale.accNameOrNumber,
                               isRequired: true,
                               bloc: context.read<AccountsBloc>(),
-                              fetchAllFunction: (bloc) =>
-                                  bloc.add(LoadStkAccountsEvent()),
-                              searchFunction: (bloc, query) =>
-                                  bloc.add(LoadStkAccountsEvent(search: query)),
+                              fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
+                              searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
                               validator: (value) {
                                 if (value.isEmpty) {
                                   return locale.required(locale.accounts);
@@ -1980,11 +1974,24 @@ class _DesktopState extends State<_Desktop> {
                         // RIGHT SIDE — SHORTCUT BUTTONS PANEL
                         Container(
                           width: 190,
-                          margin: EdgeInsets.symmetric(horizontal: 3),
+                          margin: EdgeInsets.symmetric(horizontal: 5,vertical: 8),
                           height: double.infinity,
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.primary.withValues(alpha: .1,),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: 3,
+                                spreadRadius: 2,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerHighest
+                                    .withValues(alpha: .03),
+                              ),
+                            ],
                             borderRadius: BorderRadius.circular(5),
+                            color: Theme.of(context).colorScheme.surface,
                           ),
                           child: SingleChildScrollView(
                             padding: const EdgeInsets.symmetric(
@@ -2010,7 +2017,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(19) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .1,
+                                      alpha: .07,
                                     ),
                                     toolTip: "F1",
                                     label: Text(locale.deposit),
@@ -2022,7 +2029,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(18) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .1,
+                                      alpha: .07,
                                     ),
                                     toolTip: "F2",
                                     label: Text(locale.withdraw),
@@ -2034,7 +2041,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(22) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .1,
+                                      alpha: .07,
                                     ),
                                     toolTip: "F3",
                                     label: Text(locale.income),
@@ -2046,7 +2053,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(23) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .1,
+                                      alpha: .07,
                                     ),
                                     toolTip: "F4",
                                     label: Text(locale.expense),
@@ -2074,7 +2081,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(24) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .1,
+                                      alpha: .07,
                                     ),
                                     toolTip: "F5",
                                     label: Text(locale.singleAccount),
@@ -2086,7 +2093,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(24) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .1,
+                                      alpha: .07,
                                     ),
                                     toolTip: "F5",
                                     label: Text(locale.multiAccount),
@@ -2104,7 +2111,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(24) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .1,
+                                      alpha: .07,
                                     ),
                                     toolTip: "F5",
                                     label: Text(locale.fxTransaction),
@@ -2134,7 +2141,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(21) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .1,
+                                      alpha: .07,
                                     ),
                                     toolTip: "F6",
                                     label: Text(locale.glCreditTitle),
@@ -2145,7 +2152,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(20) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .1,
+                                      alpha: .07,
                                     ),
                                     toolTip: "F7",
                                     label: Text(locale.glDebitTitle),

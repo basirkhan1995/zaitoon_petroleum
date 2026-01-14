@@ -82,13 +82,12 @@ class _DesktopState extends State<_Desktop> {
       body: GlobalShortcuts(
         shortcuts: shortcuts,
         child: Container(
-          margin: EdgeInsets.symmetric(vertical: 7),
+
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
           ),
           child: Column(
             children: [
-              SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15.0),
                 child: Row(
@@ -99,14 +98,14 @@ class _DesktopState extends State<_Desktop> {
                       child: ListTile(
                         tileColor: Colors.transparent,
                         contentPadding: EdgeInsets.zero,
-                        title: Text(locale.individuals,style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        title: Text(locale.individuals,style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontSize: 20,
                         )),
                         subtitle: Text(AppLocalizations.of(context)!.stakeholderManage,style: TextStyle(fontSize: 12),),
                       ),
                     ),
                     Expanded(
-                      flex: 2,
+                      flex: 3,
                       child: ZSearchField(
                         icon: FontAwesomeIcons.magnifyingGlass,
                         controller: searchController,

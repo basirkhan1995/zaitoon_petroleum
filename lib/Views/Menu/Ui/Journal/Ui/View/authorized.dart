@@ -228,14 +228,13 @@ class _DesktopState extends State<_Desktop> {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                    vertical: 8,
+                    horizontal: 8.0,
                   ),
                   child: Row(
                     spacing: 8,
                     children: [
                       Expanded(
-                          flex: 6,
+                          flex: 5,
                           child: ListTile(
                             tileColor: Colors.transparent,
                             contentPadding: EdgeInsets.zero,
@@ -269,9 +268,9 @@ class _DesktopState extends State<_Desktop> {
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
+
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Row(
                     children: [
                       SizedBox(
@@ -287,7 +286,7 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ),
                       SizedBox(
-                        width: 110,
+                        width: 130,
                         child: Text(locale.txnType, style: textTheme.titleSmall),
                       ),
                       SizedBox(width: 20),
@@ -303,10 +302,10 @@ class _DesktopState extends State<_Desktop> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 5),
                 Divider(
-                  indent: 10,
-                  endIndent: 10,
+                  indent: 5,
+                  endIndent: 5,
                   color: Theme.of(context).colorScheme.outline,
                 ),
                 Expanded(
@@ -461,7 +460,7 @@ class _DesktopState extends State<_Desktop> {
                                         ),
                                       ),
                                       SizedBox(
-                                        width: 110,
+                                        width: 130,
                                         child: Text(
                                           Utils.getTxnCode(
                                             txn: txn.trnType ?? "",

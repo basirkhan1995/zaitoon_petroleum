@@ -4023,6 +4023,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sub Category'**
   String get subCategory;
+
+  /// No description provided for @glAccountsComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'General Ledger Accounts'**
+  String get glAccountsComplete;
+
+  /// No description provided for @allCurrencies.
+  ///
+  /// In en, this message translates to:
+  /// **'All Currencies'**
+  String get allCurrencies;
 }
 
 class _AppLocalizationsDelegate

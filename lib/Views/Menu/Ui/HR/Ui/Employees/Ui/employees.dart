@@ -64,13 +64,23 @@ class _DesktopState extends State<_Desktop> {
     return Scaffold(
       body: Column(
         children: [
-          SizedBox(height: 8),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
               spacing: 8,
               children: [
+
                 Expanded(
+                  flex: 5,
+                  child: Text(
+                    tr.employees, style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+
+                Expanded(
+                  flex: 3,
                   child: ZSearchField(
                     icon: FontAwesomeIcons.magnifyingGlass,
                     controller: searchController,

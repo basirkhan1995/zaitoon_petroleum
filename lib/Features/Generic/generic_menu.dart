@@ -175,9 +175,7 @@ class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
               padding: EdgeInsets.zero,
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.primary.withValues(
-                    alpha: .1,
-                  ),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: .1,),
                 ),
                 boxShadow: [
                   BoxShadow(

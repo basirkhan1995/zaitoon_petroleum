@@ -67,9 +67,9 @@ class _DesktopState extends State<_Desktop> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      myLocale = context.read<LocalizationBloc>().state.languageCode;
       context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('all'));
     });
+    myLocale = context.read<LocalizationBloc>().state.languageCode;
     super.initState();
   }
 
@@ -256,8 +256,7 @@ class _DesktopState extends State<_Desktop> {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                    vertical: 8,
+                    horizontal: 8.0,
                   ),
                   child: Row(
                     spacing: 8,
@@ -297,9 +296,8 @@ class _DesktopState extends State<_Desktop> {
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Row(
                     children: [
                       SizedBox(
@@ -311,7 +309,7 @@ class _DesktopState extends State<_Desktop> {
                           child: Text(tr.referenceNumber,
                               style: textTheme.titleSmall)),
                       SizedBox(
-                          width: 110,
+                          width: 130,
                           child: Text(tr.txnType,
                               style: textTheme.titleSmall)),
                       SizedBox(width: 20),
@@ -334,8 +332,8 @@ class _DesktopState extends State<_Desktop> {
                 ),
                 const SizedBox(height: 8),
                 Divider(
-                  indent: 10,
-                  endIndent: 10,
+                  indent: 5,
+                  endIndent: 5,
                   color: Theme.of(context).colorScheme.outline,
                 ),
                 Expanded(
@@ -496,7 +494,7 @@ class _DesktopState extends State<_Desktop> {
                                             ),
                                           ),
                                           SizedBox(
-                                              width: 110,
+                                              width: 130,
                                               child: Text(Utils.getTxnCode(
                                                   txn: txn.trnType ?? "",
                                                   context: context))),

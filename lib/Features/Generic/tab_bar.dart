@@ -116,7 +116,7 @@ class ZTabContainer<T> extends StatelessWidget {
 
                         if (onBack != null) const SizedBox(width: 5),
 
-                        if (title != null)
+                        if (title != null)...[
                           Row(
                             children: [
                               if (icon != null) Icon(icon),
@@ -129,6 +129,9 @@ class ZTabContainer<T> extends StatelessWidget {
                               ),
                             ],
                           ),
+                          const SizedBox(height: 10),
+                        ],
+
                       ],
                     ),
                   ),
@@ -140,15 +143,13 @@ class ZTabContainer<T> extends StatelessWidget {
                       child: Icon(Icons.close)),
                 ],
               ),
-              if (title != null)
-              SizedBox(height: 5),
               /// ---------------- Optional Description
               if (description != null) ...[
                 Text(
                   description!,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.outline),
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 10),
               ],
 
               /// ---------------- Tabs Row

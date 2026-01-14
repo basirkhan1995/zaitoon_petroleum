@@ -39,7 +39,7 @@ class _CurrencyTabViewState extends State<CurrencyTabView> {
             menuWidth: 190,
             isExpanded: false,
             padding: EdgeInsets.symmetric(vertical: 7, horizontal: 8),
-            margin: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+            margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha:.09),
             selectedTextColor: Theme.of(context).colorScheme.primary,
             unselectedTextColor: Theme.of(context).colorScheme.secondary,

@@ -164,7 +164,6 @@ class _DesktopState extends State<_Desktop> {
       const SingleActivator(LogicalKeyboardKey.f6): onPDF,
       const SingleActivator(LogicalKeyboardKey.f5): onRefresh,
     };
-
     return MultiBlocListener(
       listeners: [
         BlocListener<ShippingBloc, ShippingState>(
@@ -213,10 +212,7 @@ class _DesktopState extends State<_Desktop> {
           body: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15.0,
-                  vertical: 8,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
                 child: Row(
                   spacing: 8,
                   children: [
@@ -267,9 +263,9 @@ class _DesktopState extends State<_Desktop> {
               ),
               const SizedBox(height: 5),
               _buildColumnHeaders(context),
-              const SizedBox(height: 8),
+              const SizedBox(height: 5),
               const Divider(),
-              const SizedBox(height: 8),
+              const SizedBox(height: 0),
               Expanded(
                 child: BlocBuilder<ShippingBloc, ShippingState>(
                   builder: (context, state) {
@@ -289,7 +285,7 @@ class _DesktopState extends State<_Desktop> {
     final titleStyle = Theme.of(context).textTheme.titleSmall;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Row(
         children: [
           SizedBox(width: 40, child: Text(tr.id,style: titleStyle)),
@@ -391,7 +387,7 @@ class _DesktopState extends State<_Desktop> {
         return InkWell(
           onTap: (isLoadingThisItem || isCurrentlyViewing) ? null : () => _handleShippingTap(shp),
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             decoration: BoxDecoration(
               color: isCurrentlyViewing
                   ? Theme.of(context).colorScheme.primary.withValues(alpha: .1)

@@ -37,72 +37,69 @@ class _Desktop extends StatelessWidget {
     }
     final login = state.loginData;
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(top: 5.0),
-        child: BlocBuilder<SettingsTabBloc, SettingsTabState>(
-          builder: (context, state) {
-            final tabs = <ZTabItem<SettingsTabName>>[
-              if (login.hasPermission(31) ?? false)
-                ZTabItem(
-                  value: SettingsTabName.general,
-                  label: AppLocalizations.of(context)!.general,
-                  screen: const GeneralView(),
-                ),
-              if (login.hasPermission(32) ?? false)
-                ZTabItem(
-                  value: SettingsTabName.company,
-                  label: AppLocalizations.of(context)!.company,
-                  screen: const CompanyTabsView(),
-                ),
-
-              if (login.usrRole == "Super")
-                ZTabItem(
-                  value: SettingsTabName.txnTypes,
-                  label: AppLocalizations.of(context)!.transactionType,
-                  screen: const TxnTypesView(),
-                ),
-
+      body: BlocBuilder<SettingsTabBloc, SettingsTabState>(
+        builder: (context, state) {
+          final tabs = <ZTabItem<SettingsTabName>>[
+            if (login.hasPermission(31) ?? false)
               ZTabItem(
-                value: SettingsTabName.stock,
-                label: AppLocalizations.of(context)!.stock,
-                screen: const StockSettingsView(),
+                value: SettingsTabName.general,
+                label: AppLocalizations.of(context)!.general,
+                screen: const GeneralView(),
+              ),
+            if (login.hasPermission(32) ?? false)
+              ZTabItem(
+                value: SettingsTabName.company,
+                label: AppLocalizations.of(context)!.company,
+                screen: const CompanyTabsView(),
               ),
 
+            if (login.usrRole == "Super")
               ZTabItem(
-                value: SettingsTabName.about,
-                label: AppLocalizations.of(context)!.about,
-                screen: const AboutView(),
+                value: SettingsTabName.txnTypes,
+                label: AppLocalizations.of(context)!.transactionType,
+                screen: const TxnTypesView(),
               ),
-            ];
 
-            final availableValues = tabs.map((tab) => tab.value).toList();
-            final selected = availableValues.contains(state.tabs)
-                ? state.tabs
-                : availableValues.first;
+            ZTabItem(
+              value: SettingsTabName.stock,
+              label: AppLocalizations.of(context)!.stock,
+              screen: const StockSettingsView(),
+            ),
 
-            return ZTabContainer<SettingsTabName>(
-              /// Tab data
-              tabs: tabs,
-              selectedValue: selected,
+            ZTabItem(
+              value: SettingsTabName.about,
+              label: AppLocalizations.of(context)!.about,
+              screen: const AboutView(),
+            ),
+          ];
 
-              /// Bloc update
-              onChanged: (val) => context
-                  .read<SettingsTabBloc>()
-                  .add(SettingsOnChangeEvent(val)),
+          final availableValues = tabs.map((tab) => tab.value).toList();
+          final selected = availableValues.contains(state.tabs)
+              ? state.tabs
+              : availableValues.first;
 
-              title: AppLocalizations.of(context)!.settings,
-              description: AppLocalizations.of(context)!.settingsHint,
-              /// Colors and style
-              style: ZTabStyle.rounded,
-              tabBarPadding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
-              borderRadius: 0,
-              selectedColor: Theme.of(context).colorScheme.primary,
-              unselectedTextColor: Theme.of(context).colorScheme.secondary,
-              selectedTextColor: Theme.of(context).colorScheme.surface,
-              tabContainerColor: Theme.of(context).colorScheme.surface,
-            );
-          },
-        ),
+          return ZTabContainer<SettingsTabName>(
+            /// Tab data
+            tabs: tabs,
+            selectedValue: selected,
+
+            /// Bloc update
+            onChanged: (val) => context
+                .read<SettingsTabBloc>()
+                .add(SettingsOnChangeEvent(val)),
+
+            title: AppLocalizations.of(context)!.settings,
+            description: AppLocalizations.of(context)!.settingsHint,
+            /// Colors and style
+            style: ZTabStyle.rounded,
+            tabBarPadding: EdgeInsets.symmetric(horizontal: 5,vertical: 3),
+            borderRadius: 0,
+            selectedColor: Theme.of(context).colorScheme.primary,
+            unselectedTextColor: Theme.of(context).colorScheme.secondary,
+            selectedTextColor: Theme.of(context).colorScheme.surface,
+            tabContainerColor: Theme.of(context).colorScheme.surface,
+          );
+        },
       ),
     );
   }

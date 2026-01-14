@@ -85,7 +85,6 @@ class _DesktopState extends State<_Desktop> {
     final tr = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: color.surface,
       body: MultiBlocListener(
         listeners: [
           BlocListener<PurchaseInvoiceBloc, PurchaseInvoiceState>(
@@ -112,7 +111,7 @@ class _DesktopState extends State<_Desktop> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
               child: Row(
                 spacing: 8,
                 children: [
@@ -157,7 +156,7 @@ class _DesktopState extends State<_Desktop> {
             ),
 
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Row(
                 children: [
                   SizedBox(width: 30, child: Text("#", style: titleStyle)),
@@ -227,7 +226,7 @@ class _DesktopState extends State<_Desktop> {
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 12,
+                              horizontal: 8,
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(

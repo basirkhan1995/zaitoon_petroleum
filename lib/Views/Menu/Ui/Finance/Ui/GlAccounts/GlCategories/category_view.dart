@@ -133,7 +133,7 @@ class _GlSubCategoriesDropState extends State<GlSubCategoriesDrop> {
           },
 
           isLoading: isLoading,
-          itemStyle: Theme.of(context).textTheme.bodySmall,
+          itemStyle: Theme.of(context).textTheme.bodyMedium,
 
           customTitle:
           (widget.title != null && widget.title!.isNotEmpty)

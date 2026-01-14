@@ -64,11 +64,13 @@ class GLCategoryTranslator {
 
 class GLCategoryDropdown extends StatefulWidget {
   final int? selectedDbValue;
+  final bool disableAction;
   final Function(int dbValue) onChanged;
 
   const GLCategoryDropdown({
     super.key,
     this.selectedDbValue,
+    this.disableAction = false,
     required this.onChanged,
   });
 
@@ -102,6 +104,7 @@ class _GLCategoryDropdownState extends State<GLCategoryDropdown> {
       title: AppLocalizations.of(context)!.accountCategory,
       items: GLAccountCategory.values,
       selectedItem: _selectedCategory,
+      disableAction: widget.disableAction,
       itemLabel: (type) =>
           GLCategoryTranslator.translate(context, type),
       onItemSelected: _onSelected,

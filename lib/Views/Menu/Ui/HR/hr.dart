@@ -64,7 +64,7 @@ class HrTabView extends StatelessWidget {
 
               /// Colors and style
               style: ZTabStyle.rounded,
-              tabBarPadding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+              tabBarPadding: EdgeInsets.symmetric(horizontal: 8),
               borderRadius: 0,
               selectedColor: Theme.of(context).colorScheme.primary,
               unselectedTextColor: Theme.of(context).colorScheme.secondary,

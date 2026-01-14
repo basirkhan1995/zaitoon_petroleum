@@ -68,10 +68,10 @@ class StockView extends StatelessWidget {
                   final available = tabs.map((t) => t.value).toList();
                   final selected = available.contains(state.tabs) ? state.tabs : available.first;
                   return ZTabContainer<StockTabsName>(
-                    margin: EdgeInsets.only(top: 6),
-                    tabBarPadding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                    tabBarPadding: EdgeInsets.symmetric(horizontal: 5,vertical: 2),
                     borderRadius: 0,
-                    title: AppLocalizations.of(context)!.inventory,
+                    title: AppLocalizations.of(context)!.orders,
+                    description: "Manage Sales, Purchase Invoices & Estimates",
                     /// Tab data
                     tabs: tabs,
                     selectedValue: selected,
@@ -98,8 +98,21 @@ class StockView extends StatelessWidget {
               margin: EdgeInsets.symmetric(horizontal: 3,vertical: 5),
               height: double.infinity,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: .1,),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 3,
+                    spreadRadius: 2,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainerHighest
+                        .withValues(alpha: .03),
+                  ),
+                ],
                 borderRadius: BorderRadius.circular(5),
+                color: Theme.of(context).colorScheme.surface,
               ),
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
@@ -122,7 +135,7 @@ class StockView extends StatelessWidget {
                     ),
                     if (login.hasPermission(19) ?? false)
                       ZOutlineButton(
-                        backgroundColor: color.primary.withValues(alpha: .1),
+                        backgroundColor: color.primary.withValues(alpha: .07),
                         toolTip: "F1",
                         label: Text(locale.newPurchase),
                         icon: Icons.shopping_bag_outlined,
@@ -131,7 +144,7 @@ class StockView extends StatelessWidget {
                       ),
                     if (login.hasPermission(18) ?? false)
                       ZOutlineButton(
-                        backgroundColor: color.primary.withValues(alpha: .1),
+                        backgroundColor: color.primary.withValues(alpha: .07),
                         toolTip: "F2",
                         label: Text(locale.newSale),
                         icon: Icons.shopping_bag_outlined,
@@ -140,7 +153,7 @@ class StockView extends StatelessWidget {
                       ),
 
                     ZOutlineButton(
-                      backgroundColor: color.primary.withValues(alpha: .1),
+                      backgroundColor: color.primary.withValues(alpha: .07),
                       toolTip: "F3",
                       label: Text(locale.estimateTitle),
                       icon: Icons.file_open_outlined,
@@ -148,7 +161,7 @@ class StockView extends StatelessWidget {
                        onPressed: () => Utils.goto(context, AddEstimateView()),
                     ),
                     ZOutlineButton(
-                      backgroundColor: color.primary.withValues(alpha: .1),
+                      backgroundColor: color.primary.withValues(alpha: .07),
                       toolTip: "F4",
                       label: Text(locale.findInvoice),
                       icon: Icons.search_rounded,
@@ -167,7 +180,7 @@ class StockView extends StatelessWidget {
                       ],
                     ),
                     ZOutlineButton(
-                      backgroundColor: color.primary.withValues(alpha: .1),
+                      backgroundColor: color.primary.withValues(alpha: .07),
                       toolTip: "F5",
                       label: Text(locale.returnPurchase),
                       icon: Icons.keyboard_return_rounded,
@@ -175,7 +188,7 @@ class StockView extends StatelessWidget {
                       // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
                     ),
                     ZOutlineButton(
-                      backgroundColor: color.primary.withValues(alpha: .1),
+                      backgroundColor: color.primary.withValues(alpha: .07),
                       toolTip: "F6",
                       label: Text(locale.saleReturn),
                       icon: Icons.keyboard_return_rounded,
@@ -195,7 +208,7 @@ class StockView extends StatelessWidget {
                     ),
 
                     ZOutlineButton(
-                      backgroundColor: color.primary.withValues(alpha: .1),
+                      backgroundColor: color.primary.withValues(alpha: .07),
                       toolTip: "F7",
                       label: Text(locale.shift),
                       icon: Icons.filter_tilt_shift,
@@ -203,7 +216,7 @@ class StockView extends StatelessWidget {
                       // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
                     ),
                     ZOutlineButton(
-                      backgroundColor: color.primary.withValues(alpha: .1),
+                      backgroundColor: color.primary.withValues(alpha: .07),
                       toolTip: "F8",
                       label: Text(locale.adjustment),
                       icon: Icons.auto_fix_high,

@@ -127,6 +127,7 @@ class _DesktopState extends State<_Desktop> {
                 ),
                 SizedBox(height: 12),
                 GLCategoryDropdown(
+                  disableAction: widget.model != null,
                   selectedDbValue: categoryId,
                   onChanged: (e) {
                     setState(() {
@@ -137,6 +138,7 @@ class _DesktopState extends State<_Desktop> {
                 ),
                 SizedBox(height: 12),
                 GlSubCategoriesDrop(
+                    disableAction: widget.model != null,
                     title: tr.subCategory,
                     mainCategoryId: categoryId ?? 1,
 

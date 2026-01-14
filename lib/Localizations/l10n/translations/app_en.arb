@@ -673,5 +673,7 @@
   "outOfBalance": "Out of Balance",
   "orders": "Orders",
   "notAuthorizedYet": "Not Authorized",
-  "subCategory": "Sub Category"
+  "subCategory": "Sub Category",
+  "glAccountsComplete": "General Ledger Accounts",
+  "allCurrencies": "All Currencies"
 }

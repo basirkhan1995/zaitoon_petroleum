@@ -2021,4 +2021,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get subCategory => 'کتگوری فرعی';
+
+  @override
+  String get glAccountsComplete => 'حسابهای سیستم';
+
+  @override
+  String get allCurrencies => 'همه اسعار';
 }

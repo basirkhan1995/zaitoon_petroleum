@@ -673,5 +673,7 @@
   "outOfBalance": "عدم توازن",
   "orders": "فرمایشات",
   "notAuthorizedYet": "تایید ناشده",
-  "subCategory": "کتگوری فرعی"
+  "subCategory": "کتگوری فرعی",
+  "glAccountsComplete": "حسابهای سیستم",
+  "allCurrencies": "همه اسعار"
 }

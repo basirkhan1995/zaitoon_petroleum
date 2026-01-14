@@ -2024,4 +2024,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get subCategory => 'کتگوری فرعی';
+
+  @override
+  String get glAccountsComplete => 'سیستم حسابونه';
+
+  @override
+  String get allCurrencies => 'تول اسعار';
 }

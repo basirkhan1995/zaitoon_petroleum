@@ -14,55 +14,53 @@ class TransportView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(top: 6.0),
-        child: BlocBuilder<TransportTabBloc, TransportTabState>(
-          builder: (context, state) {
-            final tabs = <ZTabItem<TransportTabName>>[
-              ZTabItem(
-                value: TransportTabName.shipping,
-                label: AppLocalizations.of(context)!.shipping,
-                screen: const ShippingView(),
-              ),
-              ZTabItem(
-                value: TransportTabName.drivers,
-                label: AppLocalizations.of(context)!.drivers,
-                screen: const DriversView(),
-              ),
-              ZTabItem(
-                value: TransportTabName.vehicles,
-                label: AppLocalizations.of(context)!.vehicles,
-                screen: const VehiclesView(),
-              ),
-            ];
+      body: BlocBuilder<TransportTabBloc, TransportTabState>(
+        builder: (context, state) {
+          final tabs = <ZTabItem<TransportTabName>>[
+            ZTabItem(
+              value: TransportTabName.shipping,
+              label: AppLocalizations.of(context)!.shipping,
+              screen: const ShippingView(),
+            ),
+            ZTabItem(
+              value: TransportTabName.drivers,
+              label: AppLocalizations.of(context)!.drivers,
+              screen: const DriversView(),
+            ),
+            ZTabItem(
+              value: TransportTabName.vehicles,
+              label: AppLocalizations.of(context)!.vehicles,
+              screen: const VehiclesView(),
+            ),
+          ];
 
-            final available = tabs.map((t) => t.value).toList();
-            final selected = available.contains(state.tab)
-                ? state.tab
-                : available.first;
+          final available = tabs.map((t) => t.value).toList();
+          final selected = available.contains(state.tab)
+              ? state.tab
+              : available.first;
 
-            return ZTabContainer<TransportTabName>(
-              title: AppLocalizations.of(context)!.transportTitle,
-              tabBarPadding: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
-              borderRadius: 0,
-              /// Tab data
-              tabs: tabs,
-              selectedValue: selected,
+          return ZTabContainer<TransportTabName>(
+            title: AppLocalizations.of(context)!.transportTitle,
+            tabBarPadding: EdgeInsets.symmetric(horizontal: 5,vertical: 3),
+            description: "Manage Shipments, Drivers & Vehicle",
+            borderRadius: 0,
+            /// Tab data
+            tabs: tabs,
+            selectedValue: selected,
 
-              /// Bloc update
-              onChanged: (val) => context
-                  .read<TransportTabBloc>()
-                  .add(TransportOnChangedEvent(val)),
+            /// Bloc update
+            onChanged: (val) => context
+                .read<TransportTabBloc>()
+                .add(TransportOnChangedEvent(val)),
 
-              /// Colors for underline style
-              style: ZTabStyle.rounded,
-              selectedColor: Theme.of(context).colorScheme.primary,
-              unselectedTextColor: Theme.of(context).colorScheme.secondary,
-              selectedTextColor: Theme.of(context).colorScheme.surface,
-              tabContainerColor: Theme.of(context).colorScheme.surface,
-            );
-          },
-        ),
+            /// Colors for underline style
+            style: ZTabStyle.rounded,
+            selectedColor: Theme.of(context).colorScheme.primary,
+            unselectedTextColor: Theme.of(context).colorScheme.secondary,
+            selectedTextColor: Theme.of(context).colorScheme.surface,
+            tabContainerColor: Theme.of(context).colorScheme.surface,
+          );
+        },
       ),
     );
   }

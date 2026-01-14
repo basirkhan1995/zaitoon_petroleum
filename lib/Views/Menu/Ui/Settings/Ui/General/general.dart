@@ -28,7 +28,7 @@ class _Desktop extends StatelessWidget {
     if (state is! AuthenticatedState) {
       return const SizedBox();
     }
-   // final login = state.loginData;
+
     final menuItems = [
       MenuDefinition(
         value: GeneralTabName.system,
@@ -50,7 +50,7 @@ class _Desktop extends StatelessWidget {
             isExpanded: false,
             menuWidth: 190,
             padding: EdgeInsets.symmetric(vertical: 7, horizontal: 8),
-            margin: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+            margin: EdgeInsets.symmetric(vertical: 5, horizontal: 4),
             selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha:.09),
             selectedTextColor: Theme.of(context).colorScheme.onSurface,
             unselectedTextColor: Theme.of(context).colorScheme.secondary,
