@@ -2027,4 +2027,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notAuthorizedYet => 'Not Authorized';
+
+  @override
+  String get subCategory => 'Sub Category';
 }

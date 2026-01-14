@@ -672,5 +672,6 @@
   "trialBalance": "د ازموینې توازن",
   "outOfBalance": "د توازن نشتوالی",
   "orders": "فرمایشات",
-  "notAuthorizedYet": "تایید ناشده"
+  "notAuthorizedYet": "تایید ناشده",
+  "subCategory": "کتگوری فرعی"
 }

@@ -10,41 +10,47 @@ String glAccountsModelToMap(List<GlAccountsModel> data) => json.encode(List<dyna
 
 class GlAccountsModel {
   final int? accNumber;
-  final int? accCategory;
   final String? accName;
+  final int? accCategory;
+  final String? acgName;
   final String? usrName;
 
   GlAccountsModel({
     this.accNumber,
-    this.accCategory,
     this.accName,
-    this.usrName
+    this.accCategory,
+    this.acgName,
+    this.usrName,
   });
 
   GlAccountsModel copyWith({
     int? accNumber,
-    int? accCategory,
     String? accName,
+    int? accCategory,
+    String? acgName,
     String? usrName,
   }) =>
       GlAccountsModel(
         accNumber: accNumber ?? this.accNumber,
-        accCategory: accCategory ?? this.accCategory,
         accName: accName ?? this.accName,
-        usrName: usrName ?? this.usrName
+        accCategory: accCategory ?? this.accCategory,
+        acgName: acgName ?? this.acgName,
+        usrName: usrName ?? this.usrName,
       );
 
   factory GlAccountsModel.fromMap(Map<String, dynamic> json) => GlAccountsModel(
     accNumber: json["accNumber"],
-    accCategory: json["accCategory"],
     accName: json["accName"],
-    usrName: json["usrName"]
+    accCategory: json["accCategory"],
+    acgName: json["acgName"],
+    usrName: json["usrName"],
   );
 
   Map<String, dynamic> toMap() => {
     "accNumber": accNumber,
-    "accCategory": accCategory,
     "accName": accName,
-    "usrName": usrName
+    "accCategory": accCategory,
+    "acgName": acgName,
+    "usrName": usrName,
   };
 }

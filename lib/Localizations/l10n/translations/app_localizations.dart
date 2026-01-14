@@ -4017,6 +4017,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not Authorized'**
   String get notAuthorizedYet;
+
+  /// No description provided for @subCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Sub Category'**
+  String get subCategory;
 }
 
 class _AppLocalizationsDelegate

@@ -4,6 +4,8 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/GlCategories/bloc/gl_category_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/GlCategories/category_view.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/features/gl_category_drop.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
@@ -56,6 +58,7 @@ class _DesktopState extends State<_Desktop> {
 
   int? accNumber;
   int? categoryId;
+  int? subCategoryId;
   String? usrName;
 
   @override
@@ -129,8 +132,19 @@ class _DesktopState extends State<_Desktop> {
                     setState(() {
                       categoryId = e;
                     });
+                    context.read<GlCategoryBloc>().add(LoadGlCategoriesEvent(categoryId ?? 1));
                   },
                 ),
+                SizedBox(height: 12),
+                GlSubCategoriesDrop(
+                    title: tr.subCategory,
+                    mainCategoryId: categoryId ?? 1,
+
+                    onChanged: (e){
+                       setState(() {
+                         subCategoryId = e?.acgId;
+                       });
+                    }),
 
                 if(state is GlAccountsErrorState)
                 SizedBox(height: 15),
@@ -154,7 +168,7 @@ class _DesktopState extends State<_Desktop> {
 
     final data = GlAccountsModel(
       accName: accName.text,
-      accCategory: categoryId,
+      accCategory: subCategoryId,
       accNumber: accNumber,
       usrName: usrName ?? "",
     );

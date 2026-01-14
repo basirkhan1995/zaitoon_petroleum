@@ -122,6 +122,15 @@ class _DesktopState extends State<_Desktop> {
                 Text(tr.accountNumber,style: textTheme.titleMedium),
                 SizedBox(width: 55),
                 Expanded(child: Text(tr.accountName,style: textTheme.titleMedium)),
+                SizedBox(
+                  width: 150,
+                  child: Text(tr.categoryTitle,style: textTheme.titleMedium),
+                ),
+                SizedBox(
+                  width: 175,
+                  child: Text(tr.subCategory,style: textTheme.titleMedium),
+                ),
+
               ],
             ),
           ),
@@ -177,18 +186,28 @@ class _DesktopState extends State<_Desktop> {
                                       style: Theme.of(context).textTheme.bodyMedium,
                                       textAlign: TextAlign.center),
                                 ),
+                                SizedBox(
+                                  width: 150,
+                                  child: Text(
+                                      gl.acgName??"",
+                                      style: Theme.of(context).textTheme.bodyMedium,
+                                      textAlign: TextAlign.center),
+                                ),
 
-                                IconButton(
-                                    onPressed: (){
-                                      showDialog(context: context, builder: (context){
-                                        return ZAlertDialog(title: tr.areYouSure,
-                                            content: "Do wanna delete this code?",
-                                            onYes: (){
-                                              context.read<GlAccountsBloc>().add(DeleteGlEvent(gl.accNumber!));
-                                            });
-                                      });
-                                    },
-                                    icon: Icon(Icons.delete,color: color.error)),
+                                CircleAvatar(
+                                  backgroundColor: color.onPrimary,
+                                  child: IconButton(
+                                      onPressed: (){
+                                        showDialog(context: context, builder: (context){
+                                          return ZAlertDialog(title: tr.areYouSure,
+                                              content: "Do wanna delete this code?",
+                                              onYes: (){
+                                                context.read<GlAccountsBloc>().add(DeleteGlEvent(gl.accNumber!));
+                                              });
+                                        });
+                                      },
+                                      icon: Icon(Icons.delete,color: color.error)),
+                                ),
                               ],
                             ),
                           ),

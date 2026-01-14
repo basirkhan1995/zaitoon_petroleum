@@ -5,6 +5,7 @@ import 'package:http/http.dart' hide MultipartFile;
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/model/rate_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/GlCategories/model/cat_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/model/emp_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/UserDetail/Ui/Log/model/user_log_model.dart';
@@ -468,6 +469,44 @@ class Repositories {
       throw '${e.message}';
     } catch (e) {
       throw e.toString();
+    }
+  }
+
+  /// GL Sub Categories ........................................................
+  Future<List<GlCategoriesModel>> getGlSubCategories({required int catId}) async {
+    try {
+
+      // Fetch data from API
+      final response = await api.get(
+        endpoint: "/finance/accountCategory.php",
+        queryParams: {
+          "cat":catId
+        }
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => GlCategoriesModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
     }
   }
 

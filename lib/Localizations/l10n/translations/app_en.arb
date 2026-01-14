@@ -672,5 +672,6 @@
   "trialBalance": "Trial Balance",
   "outOfBalance": "Out of Balance",
   "orders": "Orders",
-  "notAuthorizedYet": "Not Authorized"
+  "notAuthorizedYet": "Not Authorized",
+  "subCategory": "Sub Category"
 }

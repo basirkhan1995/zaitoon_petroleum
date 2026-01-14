@@ -2018,4 +2018,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get notAuthorizedYet => 'تایید ناشده';
+
+  @override
+  String get subCategory => 'کتگوری فرعی';
 }
