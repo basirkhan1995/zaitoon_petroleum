@@ -34,12 +34,26 @@ class _GlSubCategoriesDropState extends State<GlSubCategoriesDrop> {
   @override
   void initState() {
     super.initState();
+    _loadSubCategories();
+  }
 
+  /// This runs when mainCategoryId changes
+  @override
+  void didUpdateWidget(covariant GlSubCategoriesDrop oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.mainCategoryId != widget.mainCategoryId) {
+      _initialized = false;
+      _selectedSingle = null;
+
+      _loadSubCategories();
+    }
+  }
+
+  void _loadSubCategories() {
     context
         .read<GlCategoryBloc>()
         .add(LoadGlCategoriesEvent(widget.mainCategoryId));
-
-    _selectedSingle = widget.initiallySelected;
   }
 
   @override
@@ -83,14 +97,13 @@ class _GlSubCategoriesDropState extends State<GlSubCategoriesDrop> {
           );
         }
 
-        /// -------- AUTO SELECT FIRST ITEM --------
+        /// -------- AUTO SELECT FIRST ITEM (PER CATEGORY) --------
         if (state is GlCategoryLoadedState &&
             !_initialized &&
             state.glCat.isNotEmpty) {
-          _selectedSingle ??= state.glCat.first;
+          _selectedSingle = state.glCat.first;
           _initialized = true;
 
-          // notify parent ONCE
           WidgetsBinding.instance.addPostFrameCallback((_) {
             widget.onChanged?.call(_selectedSingle);
           });
@@ -106,7 +119,7 @@ class _GlSubCategoriesDropState extends State<GlSubCategoriesDrop> {
         /// ---------------- DROPDOWN ----------------
         return ZDropdown<GlCategoriesModel>(
           disableAction: widget.disableAction,
-          title: '', // using customTitle
+          title: '',
           height: widget.height,
 
           items: state is GlCategoryLoadedState ? state.glCat : [],
@@ -120,7 +133,7 @@ class _GlSubCategoriesDropState extends State<GlSubCategoriesDrop> {
           },
 
           isLoading: isLoading,
-          itemStyle: Theme.of(context).textTheme.titleMedium,
+          itemStyle: Theme.of(context).textTheme.bodySmall,
 
           customTitle:
           (widget.title != null && widget.title!.isNotEmpty)
@@ -131,3 +144,4 @@ class _GlSubCategoriesDropState extends State<GlSubCategoriesDrop> {
     );
   }
 }
+
