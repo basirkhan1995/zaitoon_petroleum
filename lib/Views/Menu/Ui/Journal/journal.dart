@@ -537,6 +537,7 @@ class _DesktopState extends State<_Desktop> {
                           spacing: 12,
                           children: [
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               spacing: 5,
                               children: [
                                 Expanded(
@@ -768,6 +769,7 @@ class _DesktopState extends State<_Desktop> {
                           spacing: 12,
                           children: [
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               spacing: 8,
                               children: [
                                 Expanded(
@@ -997,6 +999,7 @@ class _DesktopState extends State<_Desktop> {
                           spacing: 12,
                           children: [
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               spacing: 8,
                               children: [
                                 Expanded(
@@ -2006,7 +2009,7 @@ class _DesktopState extends State<_Desktop> {
                                 Wrap(
                                   spacing: 5,
                                   children: [
-                                    const Icon(Icons.cached_rounded, size: 20),
+                                    const Icon(Icons.money, size: 20),
                                     Text(
                                       locale.cashFlow,
                                       style: Theme.of(
@@ -2147,7 +2150,7 @@ class _DesktopState extends State<_Desktop> {
                                     toolTip: "F6",
                                     label: Text(locale.glCreditTitle),
                                     width: double.infinity,
-                                    icon: Icons.call_to_action_outlined,
+                                    icon: Icons.menu_book_rounded,
                                     onPressed: () => onGL(trnType: "GLCR"),
                                   ),
                                 if (login.hasPermission(20) ?? false)
@@ -2158,7 +2161,7 @@ class _DesktopState extends State<_Desktop> {
                                     toolTip: "F7",
                                     label: Text(locale.glDebitTitle),
                                     width: double.infinity,
-                                    icon: Icons.call_to_action_outlined,
+                                    icon: Icons.menu_book_rounded,
                                     onPressed: () => onGL(trnType: "GLDR"),
                                   ),
                               ],

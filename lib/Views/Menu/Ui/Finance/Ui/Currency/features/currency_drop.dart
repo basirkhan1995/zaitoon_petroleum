@@ -62,16 +62,17 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
             return Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                const SizedBox(
+                  width: 13,
+                  height: 13,
+                  child: CircularProgressIndicator(strokeWidth: 1),
+                ),
+                const SizedBox(width: 8),
                 Text(
                   widget.title ?? AppLocalizations.of(context)!.currencyTitle,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 12),
                 ),
-                const SizedBox(width: 3),
-                const SizedBox(
-                  width: 15,
-                  height: 15,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
+
               ],
             );
           } else {

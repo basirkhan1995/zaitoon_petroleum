@@ -369,10 +369,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get allTransactions => 'همه معاملات';
 
   @override
-  String get deposit => 'پرداخت';
+  String get deposit => 'دریافت وجه';
 
   @override
-  String get withdraw => 'دریافت';
+  String get withdraw => 'پرداخت وجه';
 
   @override
   String get accountTransfer => 'انتقال حساب';
@@ -396,10 +396,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get systemAction => 'عملیات سیستم';
 
   @override
-  String get glCreditTitle => 'کریدت';
+  String get glCreditTitle => 'جی ال کریدت';
 
   @override
-  String get glDebitTitle => 'دبت';
+  String get glDebitTitle => 'جی ال دبت';
 
   @override
   String get transport => 'حمل و نقل';
