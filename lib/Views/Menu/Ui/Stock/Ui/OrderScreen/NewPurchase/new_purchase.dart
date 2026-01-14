@@ -283,6 +283,7 @@ class _DesktopState extends State<_Desktop> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: ZTextFieldEntitled(
+                          hint: tr.optional,
                             controller: _xRefController,
                             title: tr.invoiceNumber
                         ),

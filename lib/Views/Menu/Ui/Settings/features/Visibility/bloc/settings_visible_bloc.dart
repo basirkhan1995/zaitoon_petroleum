@@ -33,7 +33,7 @@ class SettingsVisibleBloc extends Bloc<SettingsVisibleEvent, SettingsVisibilityS
   Future<void> updateSettingsEvent(UpdateSettingsEvent event, Emitter<SettingsVisibilityState> emit) async {
     final updated = SettingsVisibilityState(
       stock: event.stock ?? state.stock,
-      currencyUsdToOther: event.currencyUsd ?? state.currencyUsdToOther,
+      currencyRates: event.currencyUsd ?? state.currencyRates,
       exchangeRate: event.exchangeRate ?? state.exchangeRate,
       dashboardClock: event.dashboardClock ?? state.dashboardClock,
       quickAccess: event.quickAccess ?? state.quickAccess,
@@ -41,6 +41,7 @@ class SettingsVisibleBloc extends Bloc<SettingsVisibleEvent, SettingsVisibilityS
       dateType: event.dateType ?? state.dateType,
       isDateExpiry: event.isDateExpiry ?? state.isDateExpiry,
       dateFormat: event.dateFormat ?? state.dateFormat,
+      profitAndLoss: event.profitAndLoss ?? state.profitAndLoss
     );
 
     final prefs = await SharedPreferences.getInstance();

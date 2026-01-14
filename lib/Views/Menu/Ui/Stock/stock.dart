@@ -31,6 +31,7 @@ class StockView extends StatelessWidget {
       return const SizedBox();
     }
     final login = state.loginData;
+    double opacity = .05;
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): () => gotoPurchase(context),
       const SingleActivator(LogicalKeyboardKey.f2): () => gotoSale(context),
@@ -135,7 +136,7 @@ class StockView extends StatelessWidget {
                     ),
                     if (login.hasPermission(19) ?? false)
                       ZOutlineButton(
-                        backgroundColor: color.primary.withValues(alpha: .07),
+                        backgroundColor: color.primary.withValues(alpha: opacity),
                         toolTip: "F1",
                         label: Text(locale.newPurchase),
                         icon: Icons.shopping_bag_outlined,
@@ -144,7 +145,7 @@ class StockView extends StatelessWidget {
                       ),
                     if (login.hasPermission(18) ?? false)
                       ZOutlineButton(
-                        backgroundColor: color.primary.withValues(alpha: .07),
+                        backgroundColor: color.primary.withValues(alpha: opacity),
                         toolTip: "F2",
                         label: Text(locale.newSale),
                         icon: Icons.shopping_bag_outlined,
@@ -153,15 +154,15 @@ class StockView extends StatelessWidget {
                       ),
 
                     ZOutlineButton(
-                      backgroundColor: color.primary.withValues(alpha: .07),
+                      backgroundColor: color.primary.withValues(alpha: opacity),
                       toolTip: "F3",
-                      label: Text(locale.estimateTitle),
+                      label: Text(locale.newEstimate),
                       icon: Icons.file_open_outlined,
                       width: double.infinity,
                        onPressed: () => Utils.goto(context, AddEstimateView()),
                     ),
                     ZOutlineButton(
-                      backgroundColor: color.primary.withValues(alpha: .07),
+                      backgroundColor: color.primary.withValues(alpha: opacity),
                       toolTip: "F4",
                       label: Text(locale.findInvoice),
                       icon: Icons.search_rounded,
@@ -180,7 +181,7 @@ class StockView extends StatelessWidget {
                       ],
                     ),
                     ZOutlineButton(
-                      backgroundColor: color.primary.withValues(alpha: .07),
+                      backgroundColor: color.primary.withValues(alpha: opacity),
                       toolTip: "F5",
                       label: Text(locale.returnPurchase),
                       icon: Icons.keyboard_return_rounded,
@@ -188,7 +189,7 @@ class StockView extends StatelessWidget {
                       // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
                     ),
                     ZOutlineButton(
-                      backgroundColor: color.primary.withValues(alpha: .07),
+                      backgroundColor: color.primary.withValues(alpha: opacity),
                       toolTip: "F6",
                       label: Text(locale.saleReturn),
                       icon: Icons.keyboard_return_rounded,
@@ -208,7 +209,7 @@ class StockView extends StatelessWidget {
                     ),
 
                     ZOutlineButton(
-                      backgroundColor: color.primary.withValues(alpha: .07),
+                      backgroundColor: color.primary.withValues(alpha: opacity),
                       toolTip: "F7",
                       label: Text(locale.shift),
                       icon: Icons.filter_tilt_shift,
@@ -216,7 +217,7 @@ class StockView extends StatelessWidget {
                       // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
                     ),
                     ZOutlineButton(
-                      backgroundColor: color.primary.withValues(alpha: .07),
+                      backgroundColor: color.primary.withValues(alpha: opacity),
                       toolTip: "F8",
                       label: Text(locale.adjustment),
                       icon: Icons.auto_fix_high,

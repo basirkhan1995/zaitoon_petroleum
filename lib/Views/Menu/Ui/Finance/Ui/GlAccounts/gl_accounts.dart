@@ -125,16 +125,16 @@ class _DesktopState extends State<_Desktop> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
             child: Row(
               children: [
-                Text(tr.accountNumber,style: textTheme.titleMedium),
+                Text(tr.accountNumber,style: textTheme.titleMedium?.copyWith(color: color.outline)),
                 SizedBox(width: 55),
-                Expanded(child: Text(tr.accountName,style: textTheme.titleMedium)),
+                Expanded(child: Text(tr.accountName,style: textTheme.titleMedium?.copyWith(color: color.outline))),
                 SizedBox(
                   width: 150,
-                  child: Text(tr.categoryTitle,style: textTheme.titleMedium),
+                  child: Text(tr.categoryTitle,style: textTheme.titleMedium?.copyWith(color: color.outline)),
                 ),
                 SizedBox(
                   width: 185,
-                  child: Text(tr.subCategory,style: textTheme.titleMedium),
+                  child: Text(tr.subCategory,style: textTheme.titleMedium?.copyWith(color: color.outline)),
                 ),
 
               ],
@@ -159,10 +159,8 @@ class _DesktopState extends State<_Desktop> {
                   final filteredList = state.gl.where((item) {
                     final name = item.accName?.toLowerCase() ?? '';
                     final number = item.accNumber?.toString() ?? '';
-
                     return name.contains(query.toLowerCase()) || number.contains(query);
                   }).toList();
-
 
                   return ListView.builder(
                       itemCount: filteredList.length,
@@ -175,7 +173,7 @@ class _DesktopState extends State<_Desktop> {
                             });
                           },
                           child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 5,horizontal: 8),
+                            padding: EdgeInsets.symmetric(vertical: 0,horizontal: 8),
                             decoration: BoxDecoration(
                               color: index.isEven ? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent,
                             ),
@@ -191,14 +189,14 @@ class _DesktopState extends State<_Desktop> {
                                   width: 150,
                                   child: Text(
                                       Utils.glCategories(category: gl.accCategory!,locale: tr),
-                                      style: Theme.of(context).textTheme.bodyMedium,
+                                      style: Theme.of(context).textTheme.titleMedium,
                                       textAlign: TextAlign.center),
                                 ),
                                 SizedBox(
                                   width: 150,
                                   child: Text(
                                       gl.acgName??"",
-                                      style: Theme.of(context).textTheme.bodyMedium,
+                                      style: Theme.of(context).textTheme.titleMedium,
                                       textAlign: TextAlign.center),
                                 ),
 

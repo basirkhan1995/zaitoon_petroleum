@@ -675,5 +675,7 @@
   "notAuthorizedYet": "Not Authorized",
   "subCategory": "Sub Category",
   "glAccountsComplete": "General Ledger Accounts",
-  "allCurrencies": "All Currencies"
+  "allCurrencies": "All Currencies",
+  "newEstimate": "New Estimate",
+  "optional": "Optional"
 }

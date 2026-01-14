@@ -675,5 +675,7 @@
   "notAuthorizedYet": "تایید ناشده",
   "subCategory": "کتگوری فرعی",
   "glAccountsComplete": "حسابهای سیستم",
-  "allCurrencies": "همه اسعار"
+  "allCurrencies": "همه اسعار",
+  "newEstimate": "بل آزمایشی",
+  "optional": "اختیاری"
 }

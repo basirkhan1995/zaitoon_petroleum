@@ -56,44 +56,52 @@ class _Desktop extends StatelessWidget {
                crossAxisAlignment: CrossAxisAlignment.start,
                children: [
                  SizedBox(height: 2),
-                 if(visibility.dashboardClock)
+                 if(visibility.dashboardClock)...[
                    const DigitalClock(),
-                 SizedBox(height: 5),
-                 Padding(
-                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                   child: Row(
-                     spacing: 5,
-                     children: [
-                       Icon(Icons.line_axis_rounded),
-                       Text(AppLocalizations.of(context)!.totalTitle)
-                     ],
+                   SizedBox(height: 5),
+                 ],
+
+                if(visibility.statsCount)...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Row(
+                      spacing: 5,
+                      children: [
+                        Icon(Icons.line_axis_rounded),
+                        Text(AppLocalizations.of(context)!.totalTitle)
+                      ],
+                    ),
+                  ),
+                  DashboardStatsView(),
+                ],
+                if(visibility.todayTotalTransactions)...[
+                  SizedBox(height: 5),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Row(
+                      spacing: 5,
+                      children: [
+                        Icon(Icons.line_axis_rounded),
+                        Text(AppLocalizations.of(context)!.today)
+                      ],
+                    ),
+                  ),
+                  TotalDailyTxnView(),
+                ],
+                 if(visibility.profitAndLoss)...[
+                   SizedBox(height: 5),
+                   Padding(
+                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                     child: Row(
+                       spacing: 5,
+                       children: [
+                         Icon(Icons.line_axis_rounded),
+                         Text(AppLocalizations.of(context)!.profitAndLoss)
+                       ],
+                     ),
                    ),
-                 ),
-                 DashboardStatsView(),
-                 SizedBox(height: 5),
-                 Padding(
-                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                   child: Row(
-                     spacing: 5,
-                     children: [
-                       Icon(Icons.line_axis_rounded),
-                       Text(AppLocalizations.of(context)!.today)
-                     ],
-                   ),
-                 ),
-                 TotalDailyTxnView(),
-                 SizedBox(height: 5),
-                 Padding(
-                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                   child: Row(
-                     spacing: 5,
-                     children: [
-                       Icon(Icons.line_axis_rounded),
-                       Text(AppLocalizations.of(context)!.profitAndLoss)
-                     ],
-                   ),
-                 ),
-                 DailyGrossView(),
+                   DailyGrossView(),
+                 ]
                ],
              ),
            ),
@@ -102,15 +110,19 @@ class _Desktop extends StatelessWidget {
              width: 400,
              child: Column(
                children: [
-                 ExchangeRateView(
-                   settingButton: true,
-                   newRateButton: false,
-                 ),
+                 if(visibility.exchangeRate)...[
+                   ExchangeRateView(
+                     settingButton: true,
+                     newRateButton: false,
+                   ),
+                 ],
 
-                 Padding(
-                   padding: const EdgeInsets.all(6.0),
-                   child: TotalDailyPieView(),
-                 )
+                if(visibility.todayTotalTxnChart)...[
+                  Padding(
+                    padding: const EdgeInsets.all(6.0),
+                    child: TotalDailyPieView(),
+                  )
+                ]
 
                ],
              ),

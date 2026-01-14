@@ -2036,4 +2036,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allCurrencies => 'All Currencies';
+
+  @override
+  String get newEstimate => 'New Estimate';
+
+  @override
+  String get optional => 'Optional';
 }

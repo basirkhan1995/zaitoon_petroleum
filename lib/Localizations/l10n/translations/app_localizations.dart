@@ -4035,6 +4035,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All Currencies'**
   String get allCurrencies;
+
+  /// No description provided for @newEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'New Estimate'**
+  String get newEstimate;
+
+  /// No description provided for @optional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get optional;
 }
 
 class _AppLocalizationsDelegate

@@ -180,9 +180,8 @@ class _DesktopState extends State<_Desktop> {
                 ],
               ),
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 5),
             const Divider(),
-            SizedBox(height: 8),
 
             Expanded(
               child: BlocBuilder<OrdersBloc, OrdersState>(

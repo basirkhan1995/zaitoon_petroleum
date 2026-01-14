@@ -73,46 +73,68 @@ class _Desktop extends StatelessWidget {
                       },
                     ),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 1),
+                  Row(
+                    spacing: 5,
+                    children: [
+                      Icon(Icons.line_axis_rounded),
+                      Text(locale.dashboard,style: Theme.of(context).textTheme.titleMedium,)
+                    ],
+                  ),
                   ZCard(
-                    padding: EdgeInsets.zero,
-                    margin: EdgeInsets.zero,
-                    color: Theme.of(context).colorScheme.surface,
                     radius: 5,
-                    child: LabeledCheckbox(
-                      title: locale.dashboardClock,
-                      value: state.dashboardClock,
-                      onChanged: (e) {
-                        context.read<SettingsVisibleBloc>().add(
-                          UpdateSettingsEvent(dashboardClock: e),
-                        );
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: bulletPoint(locale.clockHint),
-                  ),
-                  SizedBox(height: 10),
-                  ZCard(
-                    padding: EdgeInsets.zero,
-                    margin: EdgeInsets.zero,
-                    color: Theme.of(context).colorScheme.surface,
-                    radius: 5,
-                    child: LabeledCheckbox(
-                      title: locale.exchangeRateTitle,
-                      value: state.exchangeRate,
-                      onChanged: (e) {
-                        context.read<SettingsVisibleBloc>().add(
-                          UpdateSettingsEvent(exchangeRate: e),
-                        );
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: bulletPoint(locale.exhangeRateHint),
-                  ),
+                      padding: EdgeInsets.all(10),
+                      child: Column(
+                    children: [
+
+                      //Digital Clock ..........................................
+                      LabeledCheckbox(
+                        title: locale.dashboardClock,
+                        value: state.dashboardClock,
+                        onChanged: (e) {
+                          context.read<SettingsVisibleBloc>().add(
+                            UpdateSettingsEvent(dashboardClock: e),
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: bulletPoint(locale.clockHint),
+                      ),
+                      Divider(indent: 8,endIndent: 8),
+
+                      //Exchange Rate ..........................................
+                      LabeledCheckbox(
+                        title: locale.exchangeRateTitle,
+                        value: state.exchangeRate,
+                        onChanged: (e) {
+                          context.read<SettingsVisibleBloc>().add(
+                            UpdateSettingsEvent(exchangeRate: e),
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: bulletPoint(locale.exhangeRateHint),
+                      ),
+
+                      Divider(indent: 8,endIndent: 8),
+                      // Chart .................................................
+                      LabeledCheckbox(
+                        title: locale.profitAndLoss,
+                        value: state.profitAndLoss,
+                        onChanged: (e) {
+                          context.read<SettingsVisibleBloc>().add(
+                            UpdateSettingsEvent(profitAndLoss: e),
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: bulletPoint(locale.profitAndLoss),
+                      ),
+                    ],
+                  ))
                 ],
               ),
             ),

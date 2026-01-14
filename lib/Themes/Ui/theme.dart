@@ -124,7 +124,7 @@ class AppThemes {
       backgroundColor: colorScheme.surface,
       elevation: isLight ? 1 : 0,
       shadowColor: isLight ? Colors.black12 : Colors.black38,
-      surfaceTintColor: colorScheme.surfaceTint,
+      surfaceTintColor: colorScheme.surface,
     ),
     // Enhanced text theme with better typography
     textTheme: textTheme.apply(

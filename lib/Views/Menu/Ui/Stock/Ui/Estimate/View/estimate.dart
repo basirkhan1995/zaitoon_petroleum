@@ -89,7 +89,7 @@ class _DesktopState extends State<_Desktop> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            padding: const EdgeInsets.symmetric(horizontal: 5.0),
             child: Row(
               spacing: 8,
               children: [
@@ -115,7 +115,7 @@ class _DesktopState extends State<_Desktop> {
                   child: ZSearchField(
                     icon: FontAwesomeIcons.magnifyingGlass,
                     controller: searchController,
-                    hint: AppLocalizations.of(context)!.orderSearchHint,
+                    hint: AppLocalizations.of(context)!.search,
                     onChanged: (e) {
                       setState(() {});
                     },
@@ -141,7 +141,7 @@ class _DesktopState extends State<_Desktop> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               children: [
                 SizedBox(width: 30, child: Text("#", style: titleStyle)),
@@ -157,9 +157,9 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 5),
           const Divider(),
-          SizedBox(height: 8),
+
           Expanded(
             child: BlocConsumer<EstimateBloc, EstimateState>(
               listener: (context, state) {
@@ -235,8 +235,8 @@ class _DesktopState extends State<_Desktop> {
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
+                            horizontal: 8,
+                            vertical: 10,
                           ),
                           decoration: BoxDecoration(
                             color: index.isEven

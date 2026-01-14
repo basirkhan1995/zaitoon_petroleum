@@ -2027,4 +2027,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get allCurrencies => 'همه اسعار';
+
+  @override
+  String get newEstimate => 'بل آزمایشی';
+
+  @override
+  String get optional => 'اختیاری';
 }

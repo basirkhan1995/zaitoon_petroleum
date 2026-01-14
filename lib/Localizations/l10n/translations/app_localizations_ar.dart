@@ -2030,4 +2030,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get allCurrencies => 'تول اسعار';
+
+  @override
+  String get newEstimate => 'بل آزمایشی';
+
+  @override
+  String get optional => 'اختیاری';
 }

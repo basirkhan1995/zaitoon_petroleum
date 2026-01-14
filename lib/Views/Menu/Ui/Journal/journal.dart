@@ -114,6 +114,8 @@ class _DesktopState extends State<_Desktop> {
     }
   }
 
+  double opacity = .05;
+
   @override
   Widget build(BuildContext context) {
     String unlimitedValue = "999999999999";
@@ -129,7 +131,7 @@ class _DesktopState extends State<_Desktop> {
       color: color.primary,
     );
     TextStyle? titleStyle = textTheme.titleSmall?.copyWith(
-      color: color.outline.withValues(alpha: .7),
+      color: color.outline,
     );
     TextStyle? bodyStyle = textTheme.titleSmall;
 
@@ -266,7 +268,7 @@ class _DesktopState extends State<_Desktop> {
                               noResultsText: locale.noDataFound,
                               showClearButton: true,
                             ),
-                            if (accName != null && accName!.isNotEmpty)
+                            if (accName != null && accName!.isNotEmpty)...[
                               ZCard(
                                 color: color.surface,
                                 padding: EdgeInsets.symmetric(
@@ -283,7 +285,7 @@ class _DesktopState extends State<_Desktop> {
                                         child: Row(
                                           children: [
                                             Text(
-                                              locale.details,
+                                              locale.accountDetails,
                                               style: headerStyle,
                                             ),
                                           ],
@@ -299,15 +301,15 @@ class _DesktopState extends State<_Desktop> {
                                         child: Row(
                                           spacing: 5,
                                           mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                          MainAxisAlignment.start,
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                           children: [
                                             Column(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.start,
+                                              MainAxisAlignment.start,
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                               spacing: 5,
                                               children: [
                                                 SizedBox(
@@ -349,23 +351,23 @@ class _DesktopState extends State<_Desktop> {
                                                   width: 170,
                                                   child: Text(
                                                     "${locale.currentBalance}:",
-                                                    style: titleStyle,
+                                                    style: titleStyle?.copyWith(color: color.primary),
                                                   ),
                                                 ),
                                                 SizedBox(
                                                   width: 170,
                                                   child: Text(
                                                     "${locale.availableBalance}:",
-                                                    style: titleStyle,
+                                                    style: titleStyle?.copyWith(color: color.primary),
                                                   ),
                                                 ),
                                               ],
                                             ),
                                             Column(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.start,
+                                              MainAxisAlignment.start,
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                               spacing: 5,
                                               children: [
                                                 Text(
@@ -400,6 +402,8 @@ class _DesktopState extends State<_Desktop> {
                                   ],
                                 ),
                               ),
+                            ],
+
                             if (accName != null && accName!.isNotEmpty)
                               SizedBox(height: 5),
                             ZTextFieldEntitled(
@@ -480,7 +484,6 @@ class _DesktopState extends State<_Desktop> {
         },
       );
     }
-
     void onCashIncome({String? trnType}) {
       final locale = AppLocalizations.of(context)!;
       final accountController = TextEditingController();
@@ -625,7 +628,7 @@ class _DesktopState extends State<_Desktop> {
                             ),
 
                             if(accNumber != null)...[
-                              accountDetails(AccountsModel(
+                              accountDetailsView(AccountsModel(
                                   accNumber: accNumber,
                                   accAvailBalance: availableBalance?.toAmount(),
                                   accName: accountController.text,
@@ -711,7 +714,6 @@ class _DesktopState extends State<_Desktop> {
         },
       );
     }
-
     void onCashExpense({String? trnType}) {
       final locale = AppLocalizations.of(context)!;
       final accountController = TextEditingController();
@@ -855,7 +857,7 @@ class _DesktopState extends State<_Desktop> {
                             ),
 
                             if(accNumber !=null)...[
-                              accountDetails(AccountsModel(
+                              accountDetailsView(AccountsModel(
                                 accNumber: accNumber,
                                 accCategory: accCategory,
                                 accName: accName,
@@ -940,7 +942,6 @@ class _DesktopState extends State<_Desktop> {
         },
       );
     }
-
     void onGL({String? trnType}) {
       final locale = AppLocalizations.of(context)!;
       final accountController = TextEditingController();
@@ -1095,7 +1096,7 @@ class _DesktopState extends State<_Desktop> {
                               ],
                             ),
                             if(accNumber !=null)...[
-                              accountDetails(AccountsModel(
+                              accountDetailsView(AccountsModel(
                                 accNumber: accNumber,
                                 accCategory: accCategory,
                                 accName: accName,
@@ -1177,7 +1178,6 @@ class _DesktopState extends State<_Desktop> {
         },
       );
     }
-
     void accountToAccount({String? trnType}) {
       final tr = AppLocalizations.of(context)!;
 
@@ -1870,6 +1870,7 @@ class _DesktopState extends State<_Desktop> {
       const SingleActivator(LogicalKeyboardKey.f7): () => onGL(trnType: "GLDR"),
     };
 
+
     return Scaffold(
       body: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
         builder: (context, state) {
@@ -2017,7 +2018,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(19) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .07,
+                                      alpha: opacity,
                                     ),
                                     toolTip: "F1",
                                     label: Text(locale.deposit),
@@ -2029,7 +2030,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(18) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .07,
+                                      alpha: opacity,
                                     ),
                                     toolTip: "F2",
                                     label: Text(locale.withdraw),
@@ -2041,7 +2042,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(22) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .07,
+                                      alpha: opacity,
                                     ),
                                     toolTip: "F3",
                                     label: Text(locale.income),
@@ -2053,7 +2054,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(23) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .07,
+                                      alpha: opacity,
                                     ),
                                     toolTip: "F4",
                                     label: Text(locale.expense),
@@ -2081,7 +2082,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(24) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .07,
+                                      alpha: opacity,
                                     ),
                                     toolTip: "F5",
                                     label: Text(locale.singleAccount),
@@ -2093,7 +2094,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(24) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .07,
+                                      alpha: opacity,
                                     ),
                                     toolTip: "F5",
                                     label: Text(locale.multiAccount),
@@ -2111,7 +2112,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(24) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .07,
+                                      alpha: opacity,
                                     ),
                                     toolTip: "F5",
                                     label: Text(locale.fxTransaction),
@@ -2141,7 +2142,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(21) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .07,
+                                      alpha: opacity,
                                     ),
                                     toolTip: "F6",
                                     label: Text(locale.glCreditTitle),
@@ -2152,7 +2153,7 @@ class _DesktopState extends State<_Desktop> {
                                 if (login.hasPermission(20) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
-                                      alpha: .07,
+                                      alpha: opacity,
                                     ),
                                     toolTip: "F7",
                                     label: Text(locale.glDebitTitle),
@@ -2176,12 +2177,12 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget accountDetails(AccountsModel details){
+  Widget accountDetailsView(AccountsModel details){
     final tr = AppLocalizations.of(context)!;
     TextStyle? titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith();
     return ZCard(
       margin: EdgeInsets.symmetric(horizontal: 2),
-      color: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
+      color: Theme.of(context).colorScheme.primary.withValues(alpha: .02),
       padding: EdgeInsets.all(8),
       child: Column(
         children: [
