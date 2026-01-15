@@ -235,8 +235,8 @@ class BalanceSheetPrintSettings extends PrintServices {
     }).toList();
 
     return [
-      text(text: title, fontSize: 9, fontWeight: pw.FontWeight.bold), // Changed to 9
-      pw.SizedBox(height: 2), // Reduced spacing
+      text(text: title, fontSize: 9, fontWeight: pw.FontWeight.bold),
+      pw.SizedBox(height: 2),
       ...rows,
       _total("Total $title", cy, ly),
     ];
@@ -262,9 +262,9 @@ class BalanceSheetPrintSettings extends PrintServices {
   pw.Widget _total(String label, double cy, double ly) {
     return pw.Container(
       margin: const pw.EdgeInsets.only(top: 4), // Reduced from 6
-      padding: const pw.EdgeInsets.only(top: 4), // Reduced from 6
+      padding: const pw.EdgeInsets.all(2), // Reduced from 8
       decoration: const pw.BoxDecoration(
-        border: pw.Border(top: pw.BorderSide(width: 1)),
+          color: pw.PdfColors.blue50
       ),
       child: pw.Row(
         children: [
@@ -279,9 +279,9 @@ class BalanceSheetPrintSettings extends PrintServices {
   pw.Widget _grandTotal(String label, double cy, double ly) {
     return pw.Container(
       margin: const pw.EdgeInsets.only(top: 8), // Reduced from 12
-      padding: const pw.EdgeInsets.only(top: 6), // Reduced from 8
+      padding: const pw.EdgeInsets.all(2), // Reduced from 8
       decoration: const pw.BoxDecoration(
-        border: pw.Border(top: pw.BorderSide(width: 2)),
+          color: pw.PdfColors.blue50
       ),
       child: pw.Row(
         children: [
