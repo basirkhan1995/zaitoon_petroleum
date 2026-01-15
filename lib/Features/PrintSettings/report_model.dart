@@ -7,6 +7,7 @@ class ReportModel {
   String? comEmail;
   Uint8List? comLogo;
   String? comAddress;
+  String? baseCurrency;
   String? statementDate;
   String? startDate;
   String? endDate;
@@ -18,6 +19,7 @@ class ReportModel {
     this.comEmail,
     this.comLogo,
     this.comAddress,
+    this.baseCurrency,
     this.statementDate,
     this.startDate,
     this.statementPeriod,
@@ -30,6 +32,7 @@ class ReportModel {
     String? comEmail,
     Uint8List? comLogo,
     String? comAddress,
+    String? baseCurrency,
     String? statementDate,
     String? startDate,
     String? statementPeriod,
@@ -45,5 +48,6 @@ class ReportModel {
         startDate: startDate ?? this.startDate,
         statementPeriod: statementPeriod ?? this.statementPeriod,
         endDate: endDate ?? this.endDate,
+        baseCurrency: baseCurrency ?? this.baseCurrency
       );
 }

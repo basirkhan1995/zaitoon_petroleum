@@ -1999,7 +1999,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get creditPayment => 'Credit Payment';
 
   @override
-  String get lastYear => 'Last year';
+  String get lastYear => 'Prior year';
 
   @override
   String get profitAndLoss => 'Profit & Loss';

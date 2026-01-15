@@ -3961,7 +3961,7 @@ abstract class AppLocalizations {
   /// No description provided for @lastYear.
   ///
   /// In en, this message translates to:
-  /// **'Last year'**
+  /// **'Prior year'**
   String get lastYear;
 
   /// No description provided for @profitAndLoss.

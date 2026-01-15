@@ -104,7 +104,7 @@ class _DesktopState extends State<_Desktop> {
     ];
 
     final List<Map<String, dynamic>> transactionsButtons = [
-      {"title": locale.balanceSheet, "icon": Icons.scale_rounded, "action": ActionKey.balanceSheet},
+      {"title": locale.balanceSheet, "icon": Icons.balance_rounded, "action": ActionKey.balanceSheet},
       {"title": locale.referenceTransaction, "icon": Icons.qr_code_2_rounded, "action": ActionKey.transactionByRef},
       {"title": locale.activities, "icon": Icons.access_time_rounded, "action": ActionKey.sale},
       {"title": locale.incomeStatement, "icon": Icons.ssid_chart_rounded, "action": ActionKey.purchase},

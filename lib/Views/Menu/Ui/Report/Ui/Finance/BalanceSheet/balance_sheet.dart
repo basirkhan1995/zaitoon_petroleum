@@ -1,8 +1,17 @@
+import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import '../../../../../../../Features/PrintSettings/print_preview.dart';
+import '../../../../../../../Features/PrintSettings/report_model.dart';
+import 'PDF/pdf.dart';
 import 'bloc/balance_sheet_bloc.dart';
 import 'model/bs_model.dart';
 
@@ -12,54 +21,161 @@ class BalanceSheetScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String? baseCurrency;
-
+    ReportModel company = ReportModel();
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.balanceSheet)),
-      body: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
-        builder: (context, comState) {
-          if (comState is CompanyProfileLoadedState) {
-            baseCurrency = comState.company.comLocalCcy;
-          }
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.balanceSheet),
+       actionsPadding: EdgeInsets.all(8),
+       actions: [
+         BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
+           builder: (context, comState) {
+             if (comState is CompanyProfileLoadedState) {
+               baseCurrency = comState.company.comLocalCcy;
+               company.comName = comState.company.comName ?? "";
+               company.comAddress = comState.company.addName ?? "";
+               company.compPhone = comState.company.comPhone ?? "";
+               company.comEmail = comState.company.comEmail ?? "";
+               company.statementDate = DateTime.now().toFullDateTime;
 
-          return BlocBuilder<BalanceSheetBloc, BalanceSheetState>(
-            builder: (context, state) {
-              if (state is BalanceSheetLoading) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is BalanceSheetError) {
-                return Center(
-                  child: Text(
-                    state.message,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
-                  ),
+
+               // Set logo if available
+               final base64Logo = comState.company.comLogo;
+               if (base64Logo != null && base64Logo.isNotEmpty) {
+                 try {
+                   company.comLogo = base64Decode(base64Logo);
+                 } catch (e) {
+                   company.comLogo = Uint8List(0);
+                 }
+               }
+             }
+
+             return BlocBuilder<BalanceSheetBloc, BalanceSheetState>(
+               builder: (context, state) {
+                 if (state is BalanceSheetLoaded) {
+                   return ZOutlineButton(
+                     width: 110,
+                     icon: FontAwesomeIcons.solidFilePdf,
+                     label: Text("PDF"),
+                     onPressed: () {
+                       showDialog(
+                         context: context,
+                         builder: (_) => PrintPreviewDialog<BalanceSheetModel>(
+                           data: state.data,
+                           company: company,
+                           buildPreview: ({
+                             required data,
+                             required language,
+                             required orientation,
+                             required pageFormat,
+                           }) {
+                             return BalanceSheetPrintSettings().printPreview(
+                               company: company,
+                               language: language,
+                               orientation: orientation,
+                               pageFormat: pageFormat,
+                               data: data,
+                             );
+                           },
+                           onPrint: ({
+                             required data,
+                             required language,
+                             required orientation,
+                             required pageFormat,
+                             required selectedPrinter,
+                             required copies,
+                             required pages,
+                           }) {
+                             return BalanceSheetPrintSettings().printDocument(
+                               company: company,
+                               language: language,
+                               orientation: orientation,
+                               pageFormat: pageFormat,
+                               selectedPrinter: selectedPrinter,
+                               data: data,
+                               copies: copies,
+                               pages: pages,
+                             );
+                           },
+                           onSave: ({
+                             required data,
+                             required language,
+                             required orientation,
+                             required pageFormat,
+                           }) {
+                             return BalanceSheetPrintSettings().createDocument(
+                               company: company,
+                               language: language,
+                               orientation: orientation,
+                               pageFormat: pageFormat,
+                               data: data,
+                             );
+                           },
+                         ),
+                       );
+                     },
+                   );
+                 }
+                 return const SizedBox();
+               },
+             );
+           },
+         ),
+       ],
+      ),
+      body: Center(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width *.5,
+          child: ZCard(
+             radius: 8,
+            margin: EdgeInsets.all(15),
+            padding: EdgeInsets.all(10),
+            child: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
+              builder: (context, comState) {
+                if (comState is CompanyProfileLoadedState) {
+                  baseCurrency = comState.company.comLocalCcy;
+                }
+
+                return BlocBuilder<BalanceSheetBloc, BalanceSheetState>(
+                  builder: (context, state) {
+                    if (state is BalanceSheetLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is BalanceSheetError) {
+                      return Center(
+                        child: Text(
+                          state.message,
+                          style: TextStyle(color: Theme.of(context).colorScheme.error),
+                        ),
+                      );
+                    } else if (state is BalanceSheetLoaded) {
+                      final data = state.data;
+                      final t = AppLocalizations.of(context)!;
+
+                      return SingleChildScrollView(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Assets
+                            _buildMainTitle(context, t.assets),
+                            _buildYearHeader(context, t),
+                            ..._buildAssetSection(context, data.assets, baseCurrency, t),
+                            const SizedBox(height: 16),
+
+                            // Liabilities & Equity
+                            _buildMainTitle(context, t.liabilitiesEquity),
+                            _buildYearHeader(context, t),
+                            ..._buildLiabilitySection(context, data.liability, baseCurrency, t),
+                          ],
+                        ),
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  },
                 );
-              } else if (state is BalanceSheetLoaded) {
-                final data = state.data;
-                final t = AppLocalizations.of(context)!;
-
-                return SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Assets
-                      _buildMainTitle(context, t.assets),
-                      _buildYearHeader(context, t),
-                      ..._buildAssetSection(context, data.assets, baseCurrency, t),
-                      const SizedBox(height: 16),
-
-                      // Liabilities & Equity
-                      _buildMainTitle(context, t.liabilitiesEquity),
-                      _buildYearHeader(context, t),
-                      ..._buildLiabilitySection(context, data.liability, baseCurrency, t),
-                    ],
-                  ),
-                );
-              } else {
-                return const SizedBox();
-              }
-            },
-          );
-        },
+              },
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -87,8 +203,7 @@ class BalanceSheetScreen extends StatelessWidget {
             t.currentYear,
             textAlign: TextAlign.end,
             style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
@@ -98,8 +213,7 @@ class BalanceSheetScreen extends StatelessWidget {
             t.lastYear,
             textAlign: TextAlign.end,
             style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
@@ -169,7 +283,7 @@ class BalanceSheetScreen extends StatelessWidget {
         (assets.fixedAsset?.fold<double>(0, (p, e) => p + (double.tryParse(e.lastYear ?? "0") ?? 0)) ?? 0) +
         (assets.intangibleAsset?.fold<double>(0, (p, e) => p + (double.tryParse(e.lastYear ?? "0") ?? 0)) ?? 0);
 
-    sections.add(_buildTotalRow(context, t.totalAssets, totalAssetsCurrent, totalAssetsLast, currency));
+    sections.add(_buildTotalRow(context, t.totalAssets, totalAssetsCurrent, totalAssetsLast, currency,foregroundColor: Theme.of(context).colorScheme.surface, backgroundColor: Theme.of(context).colorScheme.primary));
 
     return sections;
   }
@@ -224,7 +338,7 @@ class BalanceSheetScreen extends StatelessWidget {
         (liability.stakeholders?.fold<double>(0, (p, e) => p + (double.tryParse(e.lastYear ?? "0") ?? 0)) ?? 0) +
         (liability.netProfit?.fold<double>(0, (p, e) => p + (double.tryParse(e.lastYear ?? "0") ?? 0)) ?? 0);
 
-    sections.add(_buildTotalRow(context, t.totalLiabilitiesEquity,
+    sections.add(_buildTotalRow(context, t.totalLiabilitiesEquity,foregroundColor: Theme.of(context).colorScheme.surface,backgroundColor: Theme.of(context).colorScheme.primary,
         totalLiabilitiesEquityCurrent, totalLiabilitiesEquityLast, currency));
 
     return sections;
@@ -260,20 +374,21 @@ class BalanceSheetScreen extends StatelessWidget {
   }
 
   // Total row
-  Widget _buildTotalRow(BuildContext context, String title, double currentTotal, double lastTotal, String? currency) {
+  Widget _buildTotalRow(BuildContext context, String title, double currentTotal, double lastTotal, String? currency,{Color? backgroundColor, Color? foregroundColor}) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      color: theme.colorScheme.surfaceContainerHighest.withAlpha(128),
+      margin: EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 0),
+      color: backgroundColor ?? theme.colorScheme.surfaceContainerHighest.withAlpha(128),
       child: Row(
         children: [
-          Expanded(flex: 4, child: Text(title, style: TextStyle(fontWeight: FontWeight.bold))),
+          Expanded(flex: 4, child: Text(title, style: TextStyle(fontWeight: FontWeight.bold,color: foregroundColor ?? Theme.of(context).colorScheme.onSurface))),
           Expanded(
             flex: 3,
             child: Text(
               formatNumber(currentTotal, currency),
               textAlign: TextAlign.end,
-              style: TextStyle(fontWeight: FontWeight.bold, color: currentTotal < 0 ? theme.colorScheme.error : theme.colorScheme.primary),
+              style: TextStyle(fontWeight: FontWeight.bold, color: currentTotal < 0 ? theme.colorScheme.error : foregroundColor ?? theme.colorScheme.primary),
             ),
           ),
           Expanded(
@@ -281,7 +396,7 @@ class BalanceSheetScreen extends StatelessWidget {
             child: Text(
               formatNumber(lastTotal, currency),
               textAlign: TextAlign.end,
-              style: TextStyle(fontWeight: FontWeight.bold, color: lastTotal < 0 ? theme.colorScheme.error : theme.colorScheme.primary),
+              style: TextStyle(fontWeight: FontWeight.bold, color: lastTotal < 0 ? theme.colorScheme.error : foregroundColor ?? theme.colorScheme.primary),
             ),
           ),
         ],
