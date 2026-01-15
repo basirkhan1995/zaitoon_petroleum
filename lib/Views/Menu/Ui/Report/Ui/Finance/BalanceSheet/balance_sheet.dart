@@ -184,7 +184,6 @@ class _BalanceSheetViewState extends State<BalanceSheetView> {
 
                             // Liabilities & Equity
                             _buildMainTitle(context, t.liabilitiesEquity),
-                            _buildYearHeader(context, t),
                             ..._buildLiabilitySection(context, data.liability, baseCurrency, t),
                           ],
                         ),
@@ -214,29 +213,58 @@ class _BalanceSheetViewState extends State<BalanceSheetView> {
     );
   }
 
-  // Year header (shown once at the top of balances)
+  // Year header with actual year numbers
   Widget _buildYearHeader(BuildContext context, AppLocalizations t) {
+    final currentYear = DateTime.now().year;
+    final lastYear = currentYear - 1;
+
     return Row(
       children: [
         Expanded(flex: 4, child: SizedBox()),
         Expanded(
           flex: 3,
-          child: Text(
-            t.currentYear,
-            textAlign: TextAlign.end,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                t.currentYear, // "Current Year" label
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .8),
+                ),
+              ),
+              Text(
+                currentYear.toString(),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+            ],
           ),
         ),
         Expanded(
           flex: 3,
-          child: Text(
-            t.lastYear,
-            textAlign: TextAlign.end,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                t.lastYear, // "Prior Year" label
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .8),
+                ),
+              ),
+              Text(
+                lastYear.toString(), // Actual year number
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+            ],
           ),
         ),
       ],

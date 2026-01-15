@@ -94,9 +94,9 @@ class BalanceSheetPrintSettings extends PrintServices {
         margin: const pw.EdgeInsets.symmetric(horizontal: 30,vertical: 20),
         build: (_) => [
           _header(company),
-          pw.SizedBox(height: 8), // Reduced from 15
+
+          pw.SizedBox(height: 0), // Reduced spacing
           _yearHeader(),
-          pw.SizedBox(height: 2), // Reduced spacing
           _mainTitle("ASSETS"),
           ..._assetSection(data.assets, company),
           pw.SizedBox(height: 15), // Reduced from 15
@@ -147,22 +147,57 @@ class BalanceSheetPrintSettings extends PrintServices {
   }
 
   pw.Widget _yearHeader() {
-    return pw.Row(
+    final currentYear = DateTime.now().year;
+    final lastYear = currentYear - 1;
+
+    return pw.Column(
       children: [
-        pw.Expanded(flex: 4, child: pw.SizedBox()),
-        pw.Expanded(
-          flex: 3,
-          child: text(text:"Current Year",
-              fontSize: 8, // Reduced from 9
-              fontWeight: pw.FontWeight.bold,
-              textAlign: pw.TextAlign.right),
+        // Title labels row (ABOVE)
+        pw.Row(
+          children: [
+            pw.Expanded(flex: 4, child: pw.SizedBox()),
+            pw.Expanded(
+              flex: 3,
+              child: text(
+                text: "Current Year",
+                fontSize: 7, // Smaller for labels
+                textAlign: pw.TextAlign.right,
+              ),
+            ),
+            pw.Expanded(
+              flex: 3,
+              child: text(
+                text: "Prior Year",
+                fontSize: 7,
+                textAlign: pw.TextAlign.right,
+              ),
+            ),
+          ],
         ),
-        pw.Expanded(
-          flex: 3,
-          child: text(text: "Prior Year",
-              fontSize: 8, // Reduced from 9
-              fontWeight: pw.FontWeight.bold,
-              textAlign: pw.TextAlign.right),
+
+        // Year numbers row (BENEATH)
+        pw.Row(
+          children: [
+            pw.Expanded(flex: 4, child: pw.SizedBox()),
+            pw.Expanded(
+              flex: 3,
+              child: text(
+                text: currentYear.toString(),
+                fontSize: 9, // Slightly larger for emphasis
+                fontWeight: pw.FontWeight.bold,
+                textAlign: pw.TextAlign.right,
+              ),
+            ),
+            pw.Expanded(
+              flex: 3,
+              child: text(
+                text: lastYear.toString(),
+                fontSize: 9,
+                fontWeight: pw.FontWeight.bold,
+                textAlign: pw.TextAlign.right,
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -176,13 +211,13 @@ class BalanceSheetPrintSettings extends PrintServices {
     if (assets == null) return [];
 
     return [
-      ..._subSection("Current assets", assets.currentAsset),
+      ..._subSection("Current Assets", assets.currentAsset),
       pw.SizedBox(height: 4), // Added spacing between sections
-      ..._subSection("Fixed assets", assets.fixedAsset),
+      ..._subSection("Fixed Assets", assets.fixedAsset),
       pw.SizedBox(height: 4), // Added spacing between sections
-      ..._subSection("Intangible assets", assets.intangibleAsset),
+      ..._subSection("Intangible Assets", assets.intangibleAsset),
       pw.SizedBox(height: 6), // Reduced spacing before grand total
-      _grandTotal("Total assets",
+      _grandTotal("Total Assets",
           _sumCurrent(assets), _sumLast(assets),company),
     ];
   }
@@ -198,15 +233,15 @@ class BalanceSheetPrintSettings extends PrintServices {
     final ly = _sumLiabilityLast(liab);
 
     return [
-      ..._subSection("Current liabilities", liab.currentLiability),
+      ..._subSection("Current Liabilities", liab.currentLiability),
       pw.SizedBox(height: 4), // Added spacing between sections
-      ..._subSection("Owner’s equity", liab.ownersEquity),
+      ..._subSection("Owner’s Equity", liab.ownersEquity),
       pw.SizedBox(height: 4), // Added spacing between sections
       ..._subSection("Stakeholders", liab.stakeholders),
       pw.SizedBox(height: 4), // Added spacing between sections
-      ..._subSection("Net profit", liab.netProfit),
+      ..._subSection("Net Profit", liab.netProfit),
       pw.SizedBox(height: 6), // Reduced spacing before grand total
-      _grandTotal("Total liabilities and equity", cy, ly,company),
+      _grandTotal("Total Liabilities & Equity", cy, ly,company),
     ];
   }
 
