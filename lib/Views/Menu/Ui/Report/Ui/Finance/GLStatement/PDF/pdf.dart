@@ -152,9 +152,9 @@ class GlStatementPrintSettings extends PrintServices {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  buildTextWidget(text: report.comName ?? "", fontSize: 25,tightBounds: true),
+                  text(text: report.comName ?? "", fontSize: 25,tightBounds: true),
                   pw.SizedBox(height: 3),
-                  buildTextWidget(text: report.statementDate ?? "", fontSize: 10),
+                  text(text: report.statementDate ?? "", fontSize: 10),
                 ],
               ),
             ),
@@ -189,7 +189,7 @@ class GlStatementPrintSettings extends PrintServices {
               child: pw.Image(logoImage),
             ),
             verticalDivider(height: 15, width: 0.6),
-            buildTextWidget(
+            text(
               text: getTranslation(locale: 'producedBy', language: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
@@ -201,7 +201,7 @@ class GlStatementPrintSettings extends PrintServices {
         pw.SizedBox(height: 3),
         pw.Row(
           children: [
-            buildTextWidget(text: report.comAddress ?? "", fontSize: 9),
+            text(text: report.comAddress ?? "", fontSize: 9),
           ],
         ),
         pw.SizedBox(height: 3),
@@ -211,9 +211,9 @@ class GlStatementPrintSettings extends PrintServices {
           children: [
             pw.Row(
               children: [
-                buildTextWidget(text: report.compPhone ?? "", fontSize: 9),
+                text(text: report.compPhone ?? "", fontSize: 9),
                 verticalDivider(height: 10, width: 1),
-                buildTextWidget(text: report.comEmail ?? "", fontSize: 9),
+                text(text: report.comEmail ?? "", fontSize: 9),
               ],
             ),
             pw.Row(
@@ -283,7 +283,7 @@ class GlStatementPrintSettings extends PrintServices {
               pw.SizedBox(height: 1),
               pw.Row(
                   children: [
-                    buildTextWidget(
+                    text(
                         color: pw.PdfColors.grey800,
                         text: "${reportInfo.startDate} to ${reportInfo.endDate}",fontSize: 8)
                   ]
@@ -450,7 +450,7 @@ class GlStatementPrintSettings extends PrintServices {
             children: [
               pw.SizedBox(
                 width: dateWidth,
-                child: buildTextWidget(
+                child: text(
                   text: getTranslation(locale: "date", language: language),
                   textAlign:
                   language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
@@ -460,7 +460,7 @@ class GlStatementPrintSettings extends PrintServices {
               ),
               pw.SizedBox(
                 width: trnWidth,
-                child: buildTextWidget(
+                child: text(
                   textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
                   text: getTranslation(locale: "reference", language: language),
                   fontSize: 8,
@@ -468,7 +468,7 @@ class GlStatementPrintSettings extends PrintServices {
                 ),
               ),
               pw.Expanded(child: pw.SizedBox(
-                child: buildTextWidget(
+                child: text(
                   textAlign:
                   language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
                   text: getTranslation(locale: "narration", language: language),
@@ -479,7 +479,7 @@ class GlStatementPrintSettings extends PrintServices {
 
               pw.SizedBox(
                 width: amountWidth,
-                child: buildTextWidget(
+                child: text(
                   textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                   text: getTranslation(locale: "debit", language: language),
                   fontSize: 8,
@@ -488,7 +488,7 @@ class GlStatementPrintSettings extends PrintServices {
               ),
               pw.SizedBox(
                 width: amountWidth,
-                child: buildTextWidget(
+                child: text(
                   textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                   text: getTranslation(locale: "credit", language: language),
                   fontSize: 8,
@@ -497,7 +497,7 @@ class GlStatementPrintSettings extends PrintServices {
               ),
               pw.SizedBox(
                 width: balanceWidth,
-                child: buildTextWidget(
+                child: text(
                   text:
                   getTranslation(locale: "balance", language: language),
                   fontSize: 8,
@@ -525,7 +525,7 @@ class GlStatementPrintSettings extends PrintServices {
               children: [
                 pw.SizedBox(
                   width: dateWidth,
-                  child: buildTextWidget(
+                  child: text(
                     textAlign: language == "en"
                         ? pw.TextAlign.left
                         : pw.TextAlign.right,
@@ -535,7 +535,7 @@ class GlStatementPrintSettings extends PrintServices {
                 ),
                 pw.SizedBox(
                   width: trnWidth,
-                  child: buildTextWidget(
+                  child: text(
                     textAlign:
                     language == "en"
                         ? pw.TextAlign.left
@@ -546,7 +546,7 @@ class GlStatementPrintSettings extends PrintServices {
                 ),
                 pw.Expanded(
                   child:   pw.SizedBox(
-                    child: buildTextWidget(
+                    child: text(
                       textAlign:
                       language == "en"
                           ? pw.TextAlign.left
@@ -564,7 +564,7 @@ class GlStatementPrintSettings extends PrintServices {
 
                 pw.SizedBox(
                   width: amountWidth,
-                  child: buildTextWidget(
+                  child: text(
                     textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                     text: items.records![i].debit?.toAmount()??"",
                     fontSize: 7,
@@ -572,7 +572,7 @@ class GlStatementPrintSettings extends PrintServices {
                 ),
                 pw.SizedBox(
                   width: amountWidth,
-                  child: buildTextWidget(
+                  child: text(
                     textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                     text: items.records![i].credit?.toAmount() ??"",
                     fontSize: 7,
@@ -580,7 +580,7 @@ class GlStatementPrintSettings extends PrintServices {
                 ),
                 pw.SizedBox(
                   width: balanceWidth,
-                  child: buildTextWidget(
+                  child: text(
                     textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                     fontWeight: pw.FontWeight.bold,
                     text: items.records![i].total?.toAmount() ??"",
@@ -590,7 +590,7 @@ class GlStatementPrintSettings extends PrintServices {
                 ),
                 pw.SizedBox(
                   width: 10,
-                  child: buildTextWidget(
+                  child: text(
                     textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                     text: items.records![i].status??"",
                     color: pw.PdfColors.red,

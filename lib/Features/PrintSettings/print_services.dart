@@ -9,14 +9,74 @@ import 'package:zaitoon_petroleum/Features/PrintSettings/report_model.dart';
 
 abstract class PrintServices {
 
-  // Font management
-  static late pw.Font _englishFont;
-  static late pw.Font _persianFont;
+  // Font management - separate fonts for regular and bold
+  static late pw.Font _englishRegular;
+  static late pw.Font _englishBold;
+  static late pw.Font _persianRegular;
+  static late pw.Font _persianBold;
 
   // Initialize fonts
   static Future<void> initializeFonts() async {
-    await _loadEnglishFont();
-    await _loadPersianFont();
+    await _loadEnglishFonts();
+    await _loadPersianFonts();
+  }
+
+  // Load English fonts (regular and bold)
+  static Future<void> _loadEnglishFonts() async {
+    try {
+      // Load regular font
+      final ByteData englishRegularData = await rootBundle.load(
+        'assets/fonts/OpenSans/OpenSans-Regular.ttf',
+      );
+      final Uint8List englishRegularBytes = englishRegularData.buffer.asUint8List();
+      _englishRegular = pw.Font.ttf(ByteData.sublistView(englishRegularBytes));
+
+      // Load bold font
+      final ByteData englishBoldData = await rootBundle.load(
+        'assets/fonts/OpenSans/OpenSans-Bold.ttf',
+      );
+      final Uint8List englishBoldBytes = englishBoldData.buffer.asUint8List();
+      _englishBold = pw.Font.ttf(ByteData.sublistView(englishBoldBytes));
+    } catch (e) {
+      _englishRegular = _englishBold = pw.Font.courier();
+    }
+  }
+
+  // Load Persian fonts (regular and bold)
+  static Future<void> _loadPersianFonts() async {
+    try {
+      // Load regular font
+      final ByteData persianRegularData = await rootBundle.load(
+        'assets/fonts/NotoNaskh/NotoNaskhArabic-Regular.ttf',
+      );
+      final Uint8List persianRegularBytes = persianRegularData.buffer.asUint8List();
+      _persianRegular = pw.Font.ttf(ByteData.sublistView(persianRegularBytes));
+
+      // Load bold font
+      final ByteData persianBoldData = await rootBundle.load(
+        'assets/fonts/NotoNaskh/NotoNaskhArabic-Bold.ttf',
+      );
+      final Uint8List persianBoldBytes = persianBoldData.buffer.asUint8List();
+      _persianBold = pw.Font.ttf(ByteData.sublistView(persianBoldBytes));
+    } catch (e) {
+      // Fallback to system font if custom fonts fail to load
+      _persianRegular = _persianBold = pw.Font.courier();
+    }
+  }
+
+  // Get appropriate font based on text and weight
+  static pw.Font _getFont({
+    required String text,
+    required pw.FontWeight? fontWeight,
+  }) {
+    final isPersian = _isPersian(text);
+
+    // Use bold font if fontWeight is bold or heavier
+    if (fontWeight != null && fontWeight.index >= pw.FontWeight.bold.index) {
+      return isPersian ? _persianBold : _englishBold;
+    } else {
+      return isPersian ? _persianRegular : _englishRegular;
+    }
   }
 
   // Add these methods to your InvoicePrintService class
@@ -38,10 +98,10 @@ abstract class PrintServices {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  buildTextWidget(text: report.comName ?? "", fontSize: 25, tightBounds: true),
+                  text(text: report.comName ?? "", fontSize: 25, tightBounds: true, fontWeight: pw.FontWeight.bold),
                   pw.SizedBox(height: 3),
-                  buildTextWidget(text: report.comAddress ?? "", fontSize: 10),
-                  buildTextWidget(text: "${report.compPhone ?? ""} | ${report.comEmail ?? ""}", fontSize: 9),
+                  text(text: report.comAddress ?? "", fontSize: 10),
+                  text(text: "${report.compPhone ?? ""} | ${report.comEmail ?? ""}", fontSize: 9),
                 ],
               ),
             ),
@@ -75,7 +135,7 @@ abstract class PrintServices {
               child: pw.Image(logoImage),
             ),
             verticalDivider(height: 15, width: 0.6),
-            buildTextWidget(
+            text(
               text: getTranslation(locale: 'producedBy', language: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
@@ -89,28 +149,12 @@ abstract class PrintServices {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           children: [
-            buildTextWidget(text: report.comAddress ?? "", fontSize: 9),
+            text(text: report.comAddress ?? "", fontSize: 9),
             buildPage(context.pageNumber, context.pagesCount, language),
           ],
         ),
       ],
     );
-  }
-
-  static Future<void> _loadEnglishFont() async {
-    final ByteData englishFontData = await rootBundle.load(
-      'assets/fonts/OpenSans/OpenSans-regular.ttf',
-    );
-    final Uint8List englishBytes = englishFontData.buffer.asUint8List();
-    _englishFont = pw.Font.ttf(englishBytes.buffer.asByteData());
-  }
-
-  static Future<void> _loadPersianFont() async {
-    final ByteData persianFontData = await rootBundle.load(
-      'assets/fonts/NotoNaskh/NotoNaskhArabic-regular.ttf',
-    );
-    final Uint8List persianBytes = persianFontData.buffer.asUint8List();
-    _persianFont = pw.Font.ttf(persianBytes.buffer.asByteData());
   }
 
   Future<File?> saveDocument({required String suggestedName, required pw.Document pdf}) async {
@@ -148,32 +192,41 @@ abstract class PrintServices {
   }
 
   // Common widgets
-  pw.Widget buildTextWidget({
+  pw.Widget text({
     required String text,
     double? fontSize,
     pw.FontWeight? fontWeight,
     bool? tightBounds,
     PdfColor? color,
     pw.TextAlign? textAlign,
-    pw.FontStyle? font,
+    pw.FontStyle? fontStyle,
   }) {
     return pw.Text(
       tightBounds: tightBounds ?? false,
       text,
       textAlign: textAlign,
-      style: _textStyle(text: text,color: color, fontSize: fontSize, fontWeight: fontWeight,font: font),
+      style: _textStyle(
+        text: text,
+        color: color,
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        fontStyle: fontStyle,
+      ),
       textDirection: _textDirection(text: text),
     );
   }
 
-
   Future<pw.ImageProvider?> getImage() async {
     const url = 'https://picsum.photos/500/300.jpg';
     if (url.isEmpty) return null;
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      return pw.MemoryImage(response.bodyBytes);
-    } else {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return pw.MemoryImage(response.bodyBytes);
+      } else {
+        return null;
+      }
+    } catch (e) {
       return null;
     }
   }
@@ -182,7 +235,7 @@ abstract class PrintServices {
     return pw.Container(
       alignment: pw.Alignment.centerRight,
       margin: const pw.EdgeInsets.only(top: 1),
-      child: buildTextWidget(
+      child: text(
         text: '${getTranslation(locale: 'page', language: language)} $currentPage ${getTranslation(locale: 'of', language: language)} $totalPages',
         fontSize: 8,
       ),
@@ -191,10 +244,14 @@ abstract class PrintServices {
 
   Future<pw.ImageProvider?> loadNetworkImage(String? url) async {
     if (url == null || url.isEmpty) return null;
-    final response = await http.get(Uri.parse('https://www.zaitoonsoft.com/rapi/uploads/$url'));
-    if (response.statusCode == 200) {
-      return pw.MemoryImage(response.bodyBytes);
-    } else {
+    try {
+      final response = await http.get(Uri.parse('https://www.zaitoonsoft.com/rapi/uploads/$url'));
+      if (response.statusCode == 200) {
+        return pw.MemoryImage(response.bodyBytes);
+      } else {
+        return null;
+      }
+    } catch (e) {
       return null;
     }
   }
@@ -204,14 +261,14 @@ abstract class PrintServices {
     double? fontSize,
     PdfColor? color,
     pw.FontWeight? fontWeight,
-    pw.FontStyle? font,
+    pw.FontStyle? fontStyle,
   }) {
     return pw.TextStyle(
-        color: color,
-        font: _isPersian(text) ? _persianFont : _englishFont,
-        fontWeight: fontWeight,
-        fontSize: fontSize,
-        fontStyle: font
+      color: color,
+      font: _getFont(text: text, fontWeight: fontWeight),
+      fontWeight: fontWeight,
+      fontSize: fontSize,
+      fontStyle: fontStyle,
     );
   }
 
@@ -261,17 +318,17 @@ abstract class PrintServices {
         children: [
           pw.SizedBox(
             width: distance,
-            child: buildTextWidget(
-                color: color,
-                text: label,
-                fontWeight: pw.FontWeight.normal,
-                fontSize: fontSize ?? 8
+            child: text(
+              color: color,
+              text: label,
+              fontWeight: isEmphasized ? pw.FontWeight.bold : pw.FontWeight.normal,
+              fontSize: fontSize ?? 8,
             ),
           ),
-          buildTextWidget(
-            text:value,
+          text(
+            text: value,
             fontSize: fontSize ?? 8,
-            fontWeight: pw.FontWeight.normal,
+            fontWeight: isEmphasized ? pw.FontWeight.bold : pw.FontWeight.normal,
             textAlign: pw.TextAlign.right,
           ),
         ],
@@ -281,7 +338,7 @@ abstract class PrintServices {
 
   PdfColor hexToPdfColor(String hexColor) {
     hexColor = hexColor.replaceAll('#', '');
-    hexColor = '425e91';
+    // Fixed: Removed hardcoded color override
     if (hexColor.length == 6) {
       hexColor = 'FF$hexColor'; // Add full opacity if missing
     } else if (hexColor.length == 8) {
@@ -289,7 +346,11 @@ abstract class PrintServices {
       hexColor = '${hexColor.substring(6,8)}${hexColor.substring(0,6)}';
     }
 
-    return PdfColor.fromInt(int.parse(hexColor, radix: 16));
+    try {
+      return PdfColor.fromInt(int.parse(hexColor, radix: 16));
+    } catch (e) {
+      return PdfColors.black;
+    }
   }
 
   pw.Widget buildTotalSummary({
@@ -310,11 +371,11 @@ abstract class PrintServices {
         children: [
           pw.SizedBox(
             width: width ?? 100,
-            child: buildTextWidget(
-                color: color,
-                text: label,
-                fontWeight: pw.FontWeight.normal,
-                fontSize: 9
+            child: text(
+              color: color,
+              text: label,
+              fontWeight: isEmphasized ? pw.FontWeight.bold : pw.FontWeight.normal,
+              fontSize: 9,
             ),
           ),
           pw.SizedBox(width: space ?? 30),
@@ -325,14 +386,19 @@ abstract class PrintServices {
                 style: pw.TextStyle(
                   fontSize: 9,
                   fontWeight: isEmphasized ? pw.FontWeight.bold : pw.FontWeight.normal,
+                  font: _englishBold, // Use bold font directly for consistent rendering
                 ),
                 textAlign: align ?? pw.TextAlign.center,
               ),
-              if(ccySymbol !=null)
-              pw.SizedBox(width: 3),
-              buildTextWidget(text: ccySymbol??"",tightBounds: true,fontSize: 8)
-            ]
-          )
+              if (ccySymbol != null) pw.SizedBox(width: 3),
+              text(
+                text: ccySymbol ?? "",
+                tightBounds: true,
+                fontSize: 8,
+                fontWeight: isEmphasized ? pw.FontWeight.bold : pw.FontWeight.normal,
+              )
+            ],
+          ),
         ],
       ),
     );
@@ -350,12 +416,12 @@ abstract class PrintServices {
         "ar":"پول رسید"
       },
       'totalDebits' : {
-        'en':"TotalDailyTxn Debit",
+        'en':"Total Debit",
         'fa':"مجموعه دبت",
         "ar":"مجموعه دبت"
       },
       'totalCredits' : {
-        'en':"TotalDailyTxn Credit",
+        'en':"Total Credit",
         'fa':"مجموعه دبت",
         "ar":"مجموعه دبت"
       },
@@ -410,12 +476,12 @@ abstract class PrintServices {
         "ar":"د پلورل شویو توکو لګښت"
       },
       'totalExpense' : {
-        'en':"TotalDailyTxn Expenses",
+        'en':"Total Expenses",
         'fa':"مصارف",
         "ar":"مصرفونه"
       },
       'totalRevenue' : {
-        'en':"TotalDailyTxn Revenue",
+        'en':"Total Revenue",
         'fa':"عواید",
         "ar":"عواید"
       },
@@ -475,7 +541,7 @@ abstract class PrintServices {
         "ar":"دیون"
       },
       'totalAsset' : {
-        'en':"TotalDailyTxn Asset",
+        'en':"Total Asset",
         'fa':"سرمایه",
         "ar":"سرمایه"
       },
@@ -525,7 +591,7 @@ abstract class PrintServices {
         "ar":"برگشت فروش"
       },
       'inventoryMovement' : {
-        'en':"Product CardX",
+        'en':"Product Card",
         'fa':"گردش کالا",
         "ar":"کالا گردش"
       },
@@ -606,7 +672,7 @@ abstract class PrintServices {
       },
 
       'total': {
-        'en': 'TotalDailyTxn',
+        'en': 'Total',
         'fa': 'جمع کل',
         'ar': 'ټول قیمت',
       },
@@ -863,12 +929,12 @@ abstract class PrintServices {
         'ar':'واحد قیمت',
       },
       'totalInvoice':{
-        'en':'TotalDailyTxn',
+        'en':'Total',
         'fa':'جمع کل',
         'ar':'ټول قیمت',
       },
       'subTotal':{
-        'en':'TotalDailyTxn',
+        'en':'Total',
         'fa':'جمع جزء',
         'ar':'فرعي مجموعه',
       },
@@ -903,7 +969,7 @@ abstract class PrintServices {
         'ar':'توکي نوم',
       },
       'grandTotal':{
-        'en':'Grand TotalDailyTxn',
+        'en':'Grand Total',
         'fa':'جمع کل نهایی',
         'ar':'ټولیز مجموعه',
       },
@@ -1043,7 +1109,7 @@ abstract class PrintServices {
         'ar': 'ملخص الشحن',
       },
       'totalShipments': {
-        'en': 'TotalDailyTxn Shipments',
+        'en': 'Total Shipments',
         'fa': 'کل حمل و نقل',
         'ar': 'إجمالي الشحنات',
       },
@@ -1053,7 +1119,7 @@ abstract class PrintServices {
         'ar': 'مكتمل',
       },
       'totalRent': {
-        'en': 'TotalDailyTxn Rent',
+        'en': 'Total Rent',
         'fa': 'کرایه کل',
         'ar': 'الإيجار الكلي',
       },
@@ -1113,7 +1179,7 @@ abstract class PrintServices {
         'ar': 'امضاء العميل',
       },
       'totalPayment': {
-        'en': 'TotalDailyTxn Payment',
+        'en': 'Total Payment',
         'fa': 'مجموع پرداخت',
         'ar': 'المبلغ الإجمالي',
       },
@@ -1165,6 +1231,3 @@ abstract class PrintServices {
     return languageMap[language] ?? languageMap['en']!;
   }
 }
-
-
-

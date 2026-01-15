@@ -15,17 +15,38 @@ import 'PDF/pdf.dart';
 import 'bloc/balance_sheet_bloc.dart';
 import 'model/bs_model.dart';
 
-class BalanceSheetScreen extends StatelessWidget {
-  const BalanceSheetScreen({super.key});
+class BalanceSheetView extends StatefulWidget {
+  const BalanceSheetView({super.key});
 
+  @override
+  State<BalanceSheetView> createState() => _BalanceSheetViewState();
+}
+
+class _BalanceSheetViewState extends State<BalanceSheetView> {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      context.read<BalanceSheetBloc>().add(LoadBalanceSheet());
+    });
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     String? baseCurrency;
     ReportModel company = ReportModel();
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.balanceSheet),
+       titleSpacing: 0,
        actionsPadding: EdgeInsets.all(8),
        actions: [
+         ZOutlineButton(
+             width: 100,
+             icon: Icons.refresh,
+             onPressed: (){
+               context.read<BalanceSheetBloc>().add(LoadBalanceSheet());
+             },
+             label: Text(AppLocalizations.of(context)!.refresh)),
+         SizedBox(width: 8),
          BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
            builder: (context, comState) {
              if (comState is CompanyProfileLoadedState) {
@@ -127,7 +148,7 @@ class BalanceSheetScreen extends StatelessWidget {
           child: ZCard(
              radius: 8,
             margin: EdgeInsets.all(15),
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.all(8),
             child: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
               builder: (context, comState) {
                 if (comState is CompanyProfileLoadedState) {

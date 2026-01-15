@@ -145,11 +145,11 @@ class OrderTxnPrintSettings extends PrintServices {
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.start,
                 children: [
-                  buildTextWidget(
+                  text(
                     text: getTranslation(locale: 'createdBy', language: language),
                     fontSize: 7,
                   ),
-                  buildTextWidget(
+                  text(
                     text: " ${data.maker ?? 'N/A'} ",
                     fontSize: 7,
                   ),
@@ -165,7 +165,7 @@ class OrderTxnPrintSettings extends PrintServices {
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.start,
                 children: [
-                  buildTextWidget(
+                  text(
                     text: getTranslation(locale: 'authorizedBy', language: language),
                     fontSize: 7,
                   ),
@@ -209,7 +209,7 @@ class OrderTxnPrintSettings extends PrintServices {
                 pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    buildTextWidget(
+                    text(
                       text: data.trnReference ?? 'N/A',
                       fontSize: 18,
                       fontWeight: pw.FontWeight.bold,
@@ -222,7 +222,7 @@ class OrderTxnPrintSettings extends PrintServices {
                         color: pw.PdfColors.blue50,
                         borderRadius: pw.BorderRadius.circular(3),
                       ),
-                      child: buildTextWidget(
+                      child: text(
                         text: data.trntName ?? data.trnType ?? 'N/A',
                         fontSize: 10,
                         color: pw.PdfColors.blue800,
@@ -231,11 +231,11 @@ class OrderTxnPrintSettings extends PrintServices {
                     pw.SizedBox(height: 5),
                     pw.Row(
                       children: [
-                        buildTextWidget(
+                        text(
                           text: "${getTranslation(locale: 'branch', language: language)}: ",
                           fontSize: 9,
                         ),
-                        buildTextWidget(
+                        text(
                           text: data.branch ?? 'N/A',
                           fontSize: 9,
                           fontWeight: pw.FontWeight.bold,
@@ -249,7 +249,7 @@ class OrderTxnPrintSettings extends PrintServices {
                   children: [
                     _buildStatusBadge(data.trnStatus ?? 0, language),
                     pw.SizedBox(height: 5),
-                    buildTextWidget(
+                    text(
                       text: data.trnEntryDate?.toDateTime ?? 'N/A',
                       fontSize: 9,
                     ),
@@ -273,7 +273,7 @@ class OrderTxnPrintSettings extends PrintServices {
                   pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      buildTextWidget(
+                      text(
                         text: getTranslation(locale: 'totalAmount', language: language),
                         fontSize: 11,
                         color: pw.PdfColors.grey600,
@@ -281,14 +281,14 @@ class OrderTxnPrintSettings extends PrintServices {
                       pw.SizedBox(height: 3),
                       pw.Row(
                         children: [
-                          buildTextWidget(
+                          text(
                             text: total.toAmount(),
                             fontSize: 20,
                             fontWeight: pw.FontWeight.bold,
                             color: pw.PdfColors.blue800,
                           ),
                           pw.SizedBox(width: 5),
-                          buildTextWidget(
+                          text(
                             text: data.ccy ?? 'USD',
                             fontSize: 14,
                             color: pw.PdfColors.grey700,
@@ -334,7 +334,7 @@ class OrderTxnPrintSettings extends PrintServices {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  buildTextWidget(
+                  text(
                     text: getTranslation(locale: 'userInfo', language: language),
                     fontSize: 12,
                     fontWeight: pw.FontWeight.bold,
@@ -365,14 +365,14 @@ class OrderTxnPrintSettings extends PrintServices {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    buildTextWidget(
+                    text(
                       text: getTranslation(locale: 'remark', language: language),
                       fontSize: 12,
                       fontWeight: pw.FontWeight.bold,
                       color: pw.PdfColors.blue800,
                     ),
                     pw.SizedBox(height: 8),
-                    buildTextWidget(
+                    text(
                       text: data.remark!,
                       fontSize: 9,
                     ),
@@ -406,7 +406,7 @@ class OrderTxnPrintSettings extends PrintServices {
             color: color,
           ),
           pw.SizedBox(width: 4),
-          buildTextWidget(
+          text(
             text: isAuthorized
                 ? getTranslation(locale: 'authorizedTitle', language: language)
                 : getTranslation(locale: 'pendingTitle', language: language),
@@ -437,7 +437,7 @@ class OrderTxnPrintSettings extends PrintServices {
                 color: pw.PdfColors.blue800,
               ),
               pw.SizedBox(width: 6),
-              buildTextWidget(
+              text(
                 text: getTranslation(locale: 'items', language: language),
                 fontSize: 14,
                 fontWeight: pw.FontWeight.bold,
@@ -449,7 +449,7 @@ class OrderTxnPrintSettings extends PrintServices {
 
           if (billItems.isEmpty)
             pw.Center(
-              child: buildTextWidget(
+              child: text(
                 text: getTranslation(locale: 'noItems', language: language),
                 fontSize: 9,
                 color: pw.PdfColors.grey600,
@@ -465,7 +465,7 @@ class OrderTxnPrintSettings extends PrintServices {
                   children: [
                     pw.Padding(
                       padding: pw.EdgeInsets.all(6),
-                      child: buildTextWidget(
+                      child: text(
                         text: getTranslation(locale: 'productName', language: language),
                         fontSize: 8,
                         fontWeight: pw.FontWeight.bold,
@@ -474,7 +474,7 @@ class OrderTxnPrintSettings extends PrintServices {
                     ),
                     pw.Padding(
                       padding: pw.EdgeInsets.all(6),
-                      child: buildTextWidget(
+                      child: text(
                         text: getTranslation(locale: 'storage', language: language),
                         fontSize: 8,
                         fontWeight: pw.FontWeight.bold,
@@ -483,7 +483,7 @@ class OrderTxnPrintSettings extends PrintServices {
                     ),
                     pw.Padding(
                       padding: pw.EdgeInsets.all(6),
-                      child: buildTextWidget(
+                      child: text(
                         text: getTranslation(locale: 'qty', language: language),
                         fontSize: 8,
                         fontWeight: pw.FontWeight.bold,
@@ -492,7 +492,7 @@ class OrderTxnPrintSettings extends PrintServices {
                     ),
                     pw.Padding(
                       padding: pw.EdgeInsets.all(6),
-                      child: buildTextWidget(
+                      child: text(
                         text: getTranslation(locale: 'unitPrice', language: language),
                         fontSize: 8,
                         fontWeight: pw.FontWeight.bold,
@@ -501,7 +501,7 @@ class OrderTxnPrintSettings extends PrintServices {
                     ),
                     pw.Padding(
                       padding: pw.EdgeInsets.all(6),
-                      child: buildTextWidget(
+                      child: text(
                         text: getTranslation(locale: 'totalTitle', language: language),
                         fontSize: 8,
                         fontWeight: pw.FontWeight.bold,
@@ -522,7 +522,7 @@ class OrderTxnPrintSettings extends PrintServices {
                     children: [
                       pw.Padding(
                         padding: pw.EdgeInsets.all(6),
-                        child: buildTextWidget(
+                        child: text(
                           text: item.productName ?? 'N/A',
                           fontSize: 8,
                           textAlign: pw.TextAlign.left,
@@ -530,7 +530,7 @@ class OrderTxnPrintSettings extends PrintServices {
                       ),
                       pw.Padding(
                         padding: pw.EdgeInsets.all(6),
-                        child: buildTextWidget(
+                        child: text(
                           text: item.storageName ?? 'N/A',
                           fontSize: 8,
                           textAlign: pw.TextAlign.center,
@@ -538,7 +538,7 @@ class OrderTxnPrintSettings extends PrintServices {
                       ),
                       pw.Padding(
                         padding: pw.EdgeInsets.all(6),
-                        child: buildTextWidget(
+                        child: text(
                           text: "${item.quantity ?? "0"} T",
                           fontSize: 8,
                           textAlign: pw.TextAlign.center,
@@ -546,7 +546,7 @@ class OrderTxnPrintSettings extends PrintServices {
                       ),
                       pw.Padding(
                         padding: pw.EdgeInsets.all(6),
-                        child: buildTextWidget(
+                        child: text(
                           text: item.unitPrice?.toAmount() ?? "0.00",
                           fontSize: 8,
                           textAlign: pw.TextAlign.center,
@@ -554,7 +554,7 @@ class OrderTxnPrintSettings extends PrintServices {
                       ),
                       pw.Padding(
                         padding: pw.EdgeInsets.all(6),
-                        child: buildTextWidget(
+                        child: text(
                           text: "${item.totalPrice?.toAmount()}",
                           fontSize: 8,
                           fontWeight: pw.FontWeight.bold,
@@ -589,7 +589,7 @@ class OrderTxnPrintSettings extends PrintServices {
                 color: pw.PdfColors.blue800,
               ),
               pw.SizedBox(width: 6),
-              buildTextWidget(
+              text(
                 text: getTranslation(locale: 'accountingEntries', language: language),
                 fontSize: 14,
                 fontWeight: pw.FontWeight.bold,
@@ -601,7 +601,7 @@ class OrderTxnPrintSettings extends PrintServices {
 
           if (records.isEmpty)
             pw.Center(
-              child: buildTextWidget(
+              child: text(
                 text: getTranslation(locale: 'noRecords', language: language),
                 fontSize: 9,
                 color: pw.PdfColors.grey600,
@@ -626,7 +626,7 @@ class OrderTxnPrintSettings extends PrintServices {
                           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                           children: [
                             pw.Expanded(
-                              child: buildTextWidget(
+                              child: text(
                                 text: record.accountName ?? 'N/A',
                                 fontSize: 9,
                                 fontWeight: pw.FontWeight.bold,
@@ -640,7 +640,7 @@ class OrderTxnPrintSettings extends PrintServices {
                                     : pw.PdfColors.green50,
                                 borderRadius: pw.BorderRadius.circular(3),
                               ),
-                              child: buildTextWidget(
+                              child: text(
                                 text: record.debitCredit ?? 'N/A',
                                 fontSize: 8,
                                 fontWeight: pw.FontWeight.bold,
@@ -660,7 +660,7 @@ class OrderTxnPrintSettings extends PrintServices {
                             //   fontSize: 8,
                             //   color: pw.PdfColors.grey600,
                             // ),
-                            buildTextWidget(
+                            text(
                               text: "${record.amount?.toAmount()} $currency",
                               fontSize: 10,
                               fontWeight: pw.FontWeight.bold,
@@ -689,7 +689,7 @@ class OrderTxnPrintSettings extends PrintServices {
         children: [
           pw.Expanded(
             flex: 2,
-            child: buildTextWidget(
+            child: text(
               text: '$label:',
               fontSize: 9,
               fontWeight: pw.FontWeight.bold,
@@ -697,7 +697,7 @@ class OrderTxnPrintSettings extends PrintServices {
           ),
           pw.Expanded(
             flex: 3,
-            child: buildTextWidget(
+            child: text(
               text: value,
               fontSize: 9,
             ),
@@ -729,9 +729,9 @@ class OrderTxnPrintSettings extends PrintServices {
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 mainAxisAlignment: pw.MainAxisAlignment.center,
                 children: [
-                  buildTextWidget(text: report.comName ?? "", fontSize: 20, tightBounds: true),
+                  text(text: report.comName ?? "", fontSize: 20, tightBounds: true),
                   pw.SizedBox(height: 3),
-                  buildTextWidget(text: report.statementDate ?? "", fontSize: 10),
+                  text(text: report.statementDate ?? "", fontSize: 10),
                 ],
               ),
             ),
@@ -761,7 +761,7 @@ class OrderTxnPrintSettings extends PrintServices {
               child: pw.Image(logoImage),
             ),
             verticalDivider(height: 15, width: 0.6),
-            buildTextWidget(
+            text(
               text: getTranslation(locale: 'producedBy', language: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
@@ -773,7 +773,7 @@ class OrderTxnPrintSettings extends PrintServices {
         pw.SizedBox(height: 3),
         pw.Row(
           children: [
-            buildTextWidget(text: report.comAddress ?? "", fontSize: 9),
+            text(text: report.comAddress ?? "", fontSize: 9),
           ],
         ),
         pw.SizedBox(height: 3),
@@ -783,9 +783,9 @@ class OrderTxnPrintSettings extends PrintServices {
           children: [
             pw.Row(
               children: [
-                buildTextWidget(text: report.compPhone ?? "", fontSize: 9),
+                text(text: report.compPhone ?? "", fontSize: 9),
                 verticalDivider(height: 10, width: 1),
-                buildTextWidget(text: report.comEmail ?? "", fontSize: 9),
+                text(text: report.comEmail ?? "", fontSize: 9),
               ],
             ),
             pw.Row(

@@ -239,10 +239,10 @@ class OrderPrintService extends PrintServices {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  buildTextWidget(text: report.comName ?? "", fontSize: 25, tightBounds: true),
+                  text(text: report.comName ?? "", fontSize: 25, tightBounds: true),
                   pw.SizedBox(height: 3),
-                  buildTextWidget(text: report.comAddress ?? "", fontSize: 10),
-                  buildTextWidget(text: "${report.compPhone ?? ""} | ${report.comEmail ?? ""}", fontSize: 9),
+                  text(text: report.comAddress ?? "", fontSize: 10),
+                  text(text: "${report.compPhone ?? ""} | ${report.comEmail ?? ""}", fontSize: 9),
                 ],
               ),
             ),
@@ -277,7 +277,7 @@ class OrderPrintService extends PrintServices {
               child: pw.Image(logoImage),
             ),
             verticalDivider(height: 15, width: 0.6),
-            buildTextWidget(
+            text(
               text: getTranslation(locale: 'producedBy', language: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
@@ -291,7 +291,7 @@ class OrderPrintService extends PrintServices {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           children: [
-            buildTextWidget(text: report.comAddress ?? "", fontSize: 9),
+            text(text: report.comAddress ?? "", fontSize: 9),
             buildPage(context.pageNumber, context.pagesCount, language),
           ],
         ),
@@ -320,13 +320,13 @@ class OrderPrintService extends PrintServices {
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  buildTextWidget(
+                  text(
                     text: invoiceType,
                     fontSize: 24,
                     fontWeight: pw.FontWeight.bold,
                     color: pw.PdfColors.blue700,
                   ),
-                  buildTextWidget(
+                  text(
                     text: "${getTranslation(locale: 'invoiceNumber', language: language)}: ${order.ordId}",
                     fontSize: 14,
                   ),
@@ -335,16 +335,16 @@ class OrderPrintService extends PrintServices {
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.end,
                 children: [
-                  buildTextWidget(
+                  text(
                     text: getTranslation(locale: 'date', language: language),
                     fontSize: 10,
                   ),
-                  buildTextWidget(
+                  text(
                     text: order.ordEntryDate?.toDateTime ?? DateTime.now().toFormattedDate(),
                     fontSize: 14,
                     fontWeight: pw.FontWeight.bold,
                   ),
-                  buildTextWidget(
+                  text(
                     text: order.ordEntryDate?.toAfghanShamsi.toFormattedDate() ?? "",
                     fontSize: 10,
                     color: pw.PdfColors.blue600,
@@ -357,7 +357,7 @@ class OrderPrintService extends PrintServices {
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              buildTextWidget(
+              text(
                 text: "${getTranslation(locale: 'referenceNumber', language: language)}: ${order.ordTrnRef ?? ""}",
                 fontSize: 11,
               ),
@@ -384,14 +384,14 @@ class OrderPrintService extends PrintServices {
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          buildTextWidget(
+          text(
             text: title,
             fontSize: 10,
             color: pw.PdfColors.grey600,
             fontWeight: pw.FontWeight.bold,
           ),
           pw.SizedBox(height: 2),
-          buildTextWidget(
+          text(
             text: name,
             fontSize: 13,
           ),
@@ -433,7 +433,7 @@ class OrderPrintService extends PrintServices {
           children: [
             pw.Padding(
               padding: pw.EdgeInsets.all(8),
-              child: buildTextWidget(
+              child: text(
                 text: getTranslation(locale: 'number', language: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -442,7 +442,7 @@ class OrderPrintService extends PrintServices {
             ),
             pw.Padding(
               padding: pw.EdgeInsets.all(8),
-              child: buildTextWidget(
+              child: text(
                 text: getTranslation(locale: 'productName', language: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -450,7 +450,7 @@ class OrderPrintService extends PrintServices {
             ),
             pw.Padding(
               padding: pw.EdgeInsets.all(8),
-              child: buildTextWidget(
+              child: text(
                 text: getTranslation(locale: 'qty', language: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -459,7 +459,7 @@ class OrderPrintService extends PrintServices {
             ),
             pw.Padding(
               padding: pw.EdgeInsets.all(8),
-              child: buildTextWidget(
+              child: text(
                 text: getTranslation(locale: 'unitPrice', language: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -468,7 +468,7 @@ class OrderPrintService extends PrintServices {
             ),
             pw.Padding(
               padding: pw.EdgeInsets.all(8),
-              child: buildTextWidget(
+              child: text(
                 text: getTranslation(locale: 'total', language: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -477,7 +477,7 @@ class OrderPrintService extends PrintServices {
             ),
             pw.Padding(
               padding: pw.EdgeInsets.all(8),
-              child: buildTextWidget(
+              child: text(
                 text: getTranslation(locale: 'storage', language: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -496,7 +496,7 @@ class OrderPrintService extends PrintServices {
             children: [
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
-                child: buildTextWidget(
+                child: text(
                   text: (i + 1).toString(),
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
@@ -504,14 +504,14 @@ class OrderPrintService extends PrintServices {
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
-                child: buildTextWidget(
+                child: text(
                   text: productNames[records[i].stkProduct] ?? "Unknown",
                   fontSize: 9,
                 ),
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
-                child: buildTextWidget(
+                child: text(
                   text: records[i].stkQuantity?.toString() ?? "0",
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
@@ -519,7 +519,7 @@ class OrderPrintService extends PrintServices {
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
-                child: buildTextWidget(
+                child: text(
                   text: isPurchase
                       ? (double.tryParse(records[i].stkPurPrice ?? "0") ?? 0).toAmount()
                       : (double.tryParse(records[i].stkSalePrice ?? "0") ?? 0).toAmount(),
@@ -529,7 +529,7 @@ class OrderPrintService extends PrintServices {
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
-                child: buildTextWidget(
+                child: text(
                   text: _calculateItemTotal(records[i], isPurchase).toAmount(),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
@@ -538,7 +538,7 @@ class OrderPrintService extends PrintServices {
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
-                child: buildTextWidget(
+                child: text(
                   text: storageNames[records[i].stkStorage] ?? "Unknown",
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
@@ -596,12 +596,12 @@ class OrderPrintService extends PrintServices {
             child: pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
-                buildTextWidget(
+                text(
                   text: getTranslation(locale: 'grandTotal', language: language),
                   fontSize: 14,
                   fontWeight: pw.FontWeight.bold,
                 ),
-                buildTextWidget(
+                text(
                   text: "${grandTotal.toAmount()} $ccy",
                   fontSize: 14,
                   fontWeight: pw.FontWeight.bold,
@@ -622,7 +622,7 @@ class OrderPrintService extends PrintServices {
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                buildTextWidget(
+                text(
                   text: getTranslation(locale: 'payment', language: language),
                   fontSize: 12,
                   fontWeight: pw.FontWeight.bold,
@@ -668,13 +668,13 @@ class OrderPrintService extends PrintServices {
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                buildTextWidget(
+                text(
                   text: getTranslation(locale: 'amountInWords', language: language),
                   fontSize: 10,
                   fontWeight: pw.FontWeight.bold,
                 ),
                 pw.SizedBox(height: 5),
-                buildTextWidget(
+                text(
                   text: amountInWords.isNotEmpty ? "$amountInWords $ccy" : "",
                   fontSize: 10,
                 ),
@@ -696,13 +696,13 @@ class OrderPrintService extends PrintServices {
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          buildTextWidget(
+          text(
             text: getTranslation(locale: 'termsAndConditions', language: language),
             fontSize: 12,
             fontWeight: pw.FontWeight.bold,
           ),
           pw.SizedBox(height: 5),
-          buildTextWidget(
+          text(
             text: _getTermsAndConditions(language),
             fontSize: 9,
           ),
@@ -723,7 +723,7 @@ class OrderPrintService extends PrintServices {
               height: 1,
               color: pw.PdfColors.black,
             ),
-            buildTextWidget(
+            text(
               text: getTranslation(locale: 'customerSignature', language: language),
               fontSize: 10,
             ),
@@ -737,7 +737,7 @@ class OrderPrintService extends PrintServices {
               height: 1,
               color: pw.PdfColors.black,
             ),
-            buildTextWidget(
+            text(
               text: getTranslation(locale: 'authorizedBy', language: language),
               fontSize: 10,
             ),
@@ -757,12 +757,12 @@ class OrderPrintService extends PrintServices {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [
-        buildTextWidget(
+        text(
           text: label,
           fontSize: isTotal ? 14 : 11,
           fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
         ),
-        buildTextWidget(
+        text(
           text: "${value.toAmount()} $ccy",
           fontSize: isTotal ? 14 : 11,
           fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
@@ -781,12 +781,12 @@ class OrderPrintService extends PrintServices {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [
-        buildTextWidget(
+        text(
           text: label,
           fontSize: 10,
           fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
         ),
-        buildTextWidget(
+        text(
           text: "${value.toAmount()} $ccy",
           fontSize: 10,
           fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,

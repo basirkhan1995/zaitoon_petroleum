@@ -1,14 +1,13 @@
-
-import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart' as pw;
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import '../../../../../../../../Features/PrintSettings/print_services.dart';
 import '../../../../../../../../Features/PrintSettings/report_model.dart';
 import '../model/bs_model.dart';
 
 class BalanceSheetPrintSettings extends PrintServices {
-  final NumberFormat _fmt = NumberFormat("#,##0.00");
+
 
   // =========================
   // PUBLIC METHODS
@@ -94,21 +93,22 @@ class BalanceSheetPrintSettings extends PrintServices {
       pw.MultiPage(
         pageFormat: pageFormat,
         orientation: orientation,
-        margin: const pw.EdgeInsets.all(32),
+        margin: const pw.EdgeInsets.symmetric(horizontal: 30,vertical: 20),
         build: (_) => [
           _header(company),
-          pw.SizedBox(height: 20),
+          pw.SizedBox(height: 12), // Reduced from 15
 
           _mainTitle("ASSETS"),
+          pw.SizedBox(height: 4), // Reduced spacing
           _yearHeader(),
-
+          pw.SizedBox(height: 2), // Reduced spacing
           ..._assetSection(data.assets),
 
-          pw.SizedBox(height: 25),
-
+          pw.SizedBox(height: 10), // Reduced from 15
           _mainTitle("LIABILITIES AND EQUITY"),
+          pw.SizedBox(height: 4), // Reduced spacing
           _yearHeader(),
-
+          pw.SizedBox(height: 2), // Reduced spacing
           ..._liabilitySection(data.liability),
         ],
       ),
@@ -127,13 +127,13 @@ class BalanceSheetPrintSettings extends PrintServices {
       children: [
         pw.Text(
           "Balance Sheet",
-          style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
+          style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold), // Reduced from 22
         ),
-        pw.SizedBox(height: 4),
-        pw.Text(company.comName ?? "", style: pw.TextStyle(fontSize: 12)),
+        pw.SizedBox(height: 3), // Reduced from 4
+        pw.Text(company.comName ?? "", style: pw.TextStyle(fontSize: 10)), // Reduced from 12
         pw.Text(
           "${company.statementDate}",
-          style: pw.TextStyle(fontSize: 10),
+          style: pw.TextStyle(fontSize: 8), // Reduced from 10
         ),
       ],
     );
@@ -145,10 +145,10 @@ class BalanceSheetPrintSettings extends PrintServices {
 
   pw.Widget _mainTitle(String text) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.only(bottom: 6),
+      padding: const pw.EdgeInsets.only(bottom: 4), // Reduced from 6
       child: pw.Text(
         text,
-        style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+        style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold), // Reduced from 13
       ),
     );
   }
@@ -159,15 +159,17 @@ class BalanceSheetPrintSettings extends PrintServices {
         pw.Expanded(flex: 4, child: pw.SizedBox()),
         pw.Expanded(
           flex: 3,
-          child: pw.Text("Current Year",
-              textAlign: pw.TextAlign.right,
-              style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+          child: text(text:"Current Year",
+              fontSize: 8, // Reduced from 9
+              fontWeight: pw.FontWeight.bold,
+              textAlign: pw.TextAlign.right),
         ),
         pw.Expanded(
           flex: 3,
-          child: pw.Text("Prior Year",
-              textAlign: pw.TextAlign.right,
-              style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+          child: text(text: "Prior Year",
+              fontSize: 8, // Reduced from 9
+              fontWeight: pw.FontWeight.bold,
+              textAlign: pw.TextAlign.right),
         ),
       ],
     );
@@ -182,8 +184,11 @@ class BalanceSheetPrintSettings extends PrintServices {
 
     return [
       ..._subSection("Current assets", assets.currentAsset),
+      pw.SizedBox(height: 4), // Added spacing between sections
       ..._subSection("Fixed assets", assets.fixedAsset),
+      pw.SizedBox(height: 4), // Added spacing between sections
       ..._subSection("Intangible assets", assets.intangibleAsset),
+      pw.SizedBox(height: 6), // Reduced spacing before grand total
       _grandTotal("Total assets",
           _sumCurrent(assets), _sumLast(assets)),
     ];
@@ -201,9 +206,13 @@ class BalanceSheetPrintSettings extends PrintServices {
 
     return [
       ..._subSection("Current liabilities", liab.currentLiability),
+      pw.SizedBox(height: 4), // Added spacing between sections
       ..._subSection("Owner’s equity", liab.ownersEquity),
+      pw.SizedBox(height: 4), // Added spacing between sections
       ..._subSection("Stakeholders", liab.stakeholders),
+      pw.SizedBox(height: 4), // Added spacing between sections
       ..._subSection("Net profit", liab.netProfit),
+      pw.SizedBox(height: 6), // Reduced spacing before grand total
       _grandTotal("Total liabilities and equity", cy, ly),
     ];
   }
@@ -226,8 +235,8 @@ class BalanceSheetPrintSettings extends PrintServices {
     }).toList();
 
     return [
-      pw.SizedBox(height: 10),
-      pw.Text(title, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+      text(text: title, fontSize: 9, fontWeight: pw.FontWeight.bold), // Changed to 9
+      pw.SizedBox(height: 2), // Reduced spacing
       ...rows,
       _total("Total $title", cy, ly),
     ];
@@ -238,13 +247,13 @@ class BalanceSheetPrintSettings extends PrintServices {
   // =========================
 
   pw.Widget _row(String name, double cy, double ly) {
-    return pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 2),
+    return pw.Container(
+      margin: const pw.EdgeInsets.symmetric(vertical: 1), // Reduced from 2
       child: pw.Row(
         children: [
-          pw.Expanded(flex: 4, child: pw.Text(name)),
-          pw.Expanded(flex: 3, child: pw.Text(_fmt.format(cy), textAlign: pw.TextAlign.right)),
-          pw.Expanded(flex: 3, child: pw.Text(_fmt.format(ly), textAlign: pw.TextAlign.right)),
+          pw.Expanded(flex: 4, child: pw.Text(name, style: pw.TextStyle(fontSize: 8))), // Added font size 8
+          pw.Expanded(flex: 3, child: pw.Text(cy.toAmount(), textAlign: pw.TextAlign.right, style: pw.TextStyle(fontSize: 8))), // Added font size 8
+          pw.Expanded(flex: 3, child: pw.Text(ly.toAmount(), textAlign: pw.TextAlign.right, style: pw.TextStyle(fontSize: 8))), // Added font size 8
         ],
       ),
     );
@@ -252,19 +261,25 @@ class BalanceSheetPrintSettings extends PrintServices {
 
   pw.Widget _total(String label, double cy, double ly) {
     return pw.Container(
-      margin: const pw.EdgeInsets.only(top: 6),
-      padding: const pw.EdgeInsets.only(top: 6),
+      margin: const pw.EdgeInsets.only(top: 4), // Reduced from 6
+      padding: const pw.EdgeInsets.only(top: 4), // Reduced from 6
       decoration: const pw.BoxDecoration(
         border: pw.Border(top: pw.BorderSide(width: 1)),
       ),
-      child: _row(label, cy, ly),
+      child: pw.Row(
+        children: [
+          pw.Expanded(flex: 4, child: pw.Text(label, style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold))), // Added font size 8
+          pw.Expanded(flex: 3, child: pw.Text(cy.toAmount(), textAlign: pw.TextAlign.right, style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold))), // Added font size 8
+          pw.Expanded(flex: 3, child: pw.Text(ly.toAmount(), textAlign: pw.TextAlign.right, style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold))), // Added font size 8
+        ],
+      ),
     );
   }
 
   pw.Widget _grandTotal(String label, double cy, double ly) {
     return pw.Container(
-      margin: const pw.EdgeInsets.only(top: 12),
-      padding: const pw.EdgeInsets.only(top: 8),
+      margin: const pw.EdgeInsets.only(top: 8), // Reduced from 12
+      padding: const pw.EdgeInsets.only(top: 6), // Reduced from 8
       decoration: const pw.BoxDecoration(
         border: pw.Border(top: pw.BorderSide(width: 2)),
       ),
@@ -273,19 +288,19 @@ class BalanceSheetPrintSettings extends PrintServices {
           pw.Expanded(
             flex: 4,
             child: pw.Text(label,
-                style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)), // Reduced from 12
           ),
           pw.Expanded(
             flex: 3,
-            child: pw.Text(_fmt.format(cy),
+            child: pw.Text(cy.toAmount(),
                 textAlign: pw.TextAlign.right,
-                style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)), // Reduced from 12
           ),
           pw.Expanded(
             flex: 3,
-            child: pw.Text(_fmt.format(ly),
+            child: pw.Text(ly.toAmount(),
                 textAlign: pw.TextAlign.right,
-                style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)), // Reduced from 12
           ),
         ],
       ),

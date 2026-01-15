@@ -145,8 +145,8 @@ import 'package:flutter/services.dart';
                pw.Row(
                  mainAxisAlignment: pw.MainAxisAlignment.start,
                  children: [
-                   buildTextWidget(text: getTranslation(locale: 'createdBy', language: language), fontSize: 7),
-                   buildTextWidget(text: " ${data.transaction?.maker} ", fontSize: 7),
+                   text(text: getTranslation(locale: 'createdBy', language: language), fontSize: 7),
+                   text(text: " ${data.transaction?.maker} ", fontSize: 7),
                  ],
                ),
              ],
@@ -159,8 +159,8 @@ import 'package:flutter/services.dart';
                pw.Row(
                  mainAxisAlignment: pw.MainAxisAlignment.start,
                  children: [
-                   buildTextWidget(text: getTranslation(locale: 'authorizedBy', language: language), fontSize: 7),
-                   buildTextWidget(text: data.transaction?.checker??"", fontSize: 7),
+                   text(text: getTranslation(locale: 'authorizedBy', language: language), fontSize: 7),
+                   text(text: data.transaction?.checker??"", fontSize: 7),
                  ],
                ),
 
@@ -184,7 +184,7 @@ import 'package:flutter/services.dart';
            children: [
              pw.Row(
                children: [
-                 buildTextWidget(
+                 text(
                    text: getTranslation(locale: 'vehicleDetails', language: language),
                    fontSize: 16,
                    fontWeight: pw.FontWeight.bold,
@@ -359,7 +359,7 @@ import 'package:flutter/services.dart';
          children: [
            pw.Expanded(
              flex: 2,
-             child:buildTextWidget(
+             child:text(
                text: '$label:',
                fontSize: 8,
                fontWeight: pw.FontWeight.bold,
@@ -367,7 +367,7 @@ import 'package:flutter/services.dart';
            ),
            pw.Expanded(
              flex: 3,
-             child: buildTextWidget(
+             child: text(
                text: value,
                fontSize: 8,
              ),
@@ -420,9 +420,9 @@ import 'package:flutter/services.dart';
                  crossAxisAlignment: pw.CrossAxisAlignment.start,
                  mainAxisAlignment: pw.MainAxisAlignment.center,
                  children: [
-                   buildTextWidget(text: report.comName ?? "", fontSize: 20,tightBounds: true),
+                   text(text: report.comName ?? "", fontSize: 20,tightBounds: true),
                    pw.SizedBox(height: 3),
-                   buildTextWidget(text: report.statementDate ?? "", fontSize: 10),
+                   text(text: report.statementDate ?? "", fontSize: 10),
                  ],
                ),
              ),
@@ -451,7 +451,7 @@ import 'package:flutter/services.dart';
                child: pw.Image(logoImage),
              ),
              verticalDivider(height: 15, width: 0.6),
-             buildTextWidget(
+             text(
                text: getTranslation(locale: 'producedBy', language: language),
                fontWeight: pw.FontWeight.normal,
                fontSize: 8,
@@ -463,7 +463,7 @@ import 'package:flutter/services.dart';
          pw.SizedBox(height: 3),
          pw.Row(
            children: [
-             buildTextWidget(text: report.comAddress ?? "", fontSize: 9),
+             text(text: report.comAddress ?? "", fontSize: 9),
            ],
          ),
          pw.SizedBox(height: 3),
@@ -473,9 +473,9 @@ import 'package:flutter/services.dart';
            children: [
              pw.Row(
                children: [
-                 buildTextWidget(text: report.compPhone ?? "", fontSize: 9),
+                 text(text: report.compPhone ?? "", fontSize: 9),
                  verticalDivider(height: 10, width: 1),
-                 buildTextWidget(text: report.comEmail ?? "", fontSize: 9),
+                 text(text: report.comEmail ?? "", fontSize: 9),
                ],
              ),
              pw.Row(

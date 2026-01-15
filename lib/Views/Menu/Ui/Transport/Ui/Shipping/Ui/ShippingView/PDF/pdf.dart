@@ -161,9 +161,9 @@ class AllShippingPdfServices extends PrintServices {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  buildTextWidget(text: report.comName ?? "", fontSize: 25, tightBounds: true),
+                  text(text: report.comName ?? "", fontSize: 25, tightBounds: true),
                   pw.SizedBox(height: 3),
-                  buildTextWidget(text: report.statementDate ?? "", fontSize: 10),
+                  text(text: report.statementDate ?? "", fontSize: 10),
                 ],
               ),
             ),
@@ -198,7 +198,7 @@ class AllShippingPdfServices extends PrintServices {
               child: pw.Image(logoImage),
             ),
             verticalDivider(height: 15, width: 0.6),
-            buildTextWidget(
+            text(
               text: getTranslation(locale: 'producedBy', language: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
@@ -210,7 +210,7 @@ class AllShippingPdfServices extends PrintServices {
         pw.SizedBox(height: 3),
         pw.Row(
           children: [
-            buildTextWidget(text: report.comAddress ?? "", fontSize: 9),
+            text(text: report.comAddress ?? "", fontSize: 9),
           ],
         ),
         pw.SizedBox(height: 3),
@@ -220,9 +220,9 @@ class AllShippingPdfServices extends PrintServices {
           children: [
             pw.Row(
               children: [
-                buildTextWidget(text: report.compPhone ?? "", fontSize: 9),
+                text(text: report.compPhone ?? "", fontSize: 9),
                 verticalDivider(height: 10, width: 1),
-                buildTextWidget(text: report.comEmail ?? "", fontSize: 9),
+                text(text: report.comEmail ?? "", fontSize: 9),
               ],
             ),
             pw.Row(
@@ -290,7 +290,7 @@ class AllShippingPdfServices extends PrintServices {
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          buildTextWidget(
+          text(
             text: getTranslation(locale: 'shippingSummary', language: language),
             fontSize: 14,
             fontWeight: pw.FontWeight.bold,
@@ -347,13 +347,13 @@ class AllShippingPdfServices extends PrintServices {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        buildTextWidget(
+        text(
           text: label,
           fontSize: 9,
           color: pw.PdfColors.grey600,
         ),
         pw.SizedBox(height: 2),
-        buildTextWidget(
+        text(
           text: value,
           fontSize: 12,
           fontWeight: pw.FontWeight.bold,
@@ -392,7 +392,7 @@ class AllShippingPdfServices extends PrintServices {
             children: [
               pw.SizedBox(
                 width: idWidth,
-                child: buildTextWidget(
+                child: text(
                   text: getTranslation(locale: "id", language: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
@@ -401,14 +401,14 @@ class AllShippingPdfServices extends PrintServices {
               ),
               pw.SizedBox(
                 width: dateWidth,
-                child: buildTextWidget(
+                child: text(
                   text: getTranslation(locale: "date", language: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
               pw.Expanded(
-                child: buildTextWidget(
+                child: text(
                   text: getTranslation(locale: "vehicles", language: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
@@ -416,7 +416,7 @@ class AllShippingPdfServices extends PrintServices {
               ),
               pw.SizedBox(
                 width: productWidth,
-                child: buildTextWidget(
+                child: text(
                   text: getTranslation(locale: "products", language: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
@@ -424,7 +424,7 @@ class AllShippingPdfServices extends PrintServices {
               ),
               pw.SizedBox(
                 width: customerWidth,
-                child: buildTextWidget(
+                child: text(
                   text: getTranslation(locale: "customer", language: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
@@ -432,7 +432,7 @@ class AllShippingPdfServices extends PrintServices {
               ),
               pw.SizedBox(
                 width: rentWidth,
-                child: buildTextWidget(
+                child: text(
                   text: getTranslation(locale: "shippingRent", language: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
@@ -450,7 +450,7 @@ class AllShippingPdfServices extends PrintServices {
               // ),
               pw.SizedBox(
                 width: unloadWidth,
-                child: buildTextWidget(
+                child: text(
                   text: getTranslation(locale: "unloadingSize", language: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
@@ -459,7 +459,7 @@ class AllShippingPdfServices extends PrintServices {
               ),
               pw.SizedBox(
                 width: totalWidth,
-                child: buildTextWidget(
+                child: text(
                   text: getTranslation(locale: "total", language: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
@@ -495,7 +495,7 @@ class AllShippingPdfServices extends PrintServices {
                 // ID
                 pw.SizedBox(
                   width: idWidth,
-                  child: buildTextWidget(
+                  child: text(
                     text: shippingList[i].shpId?.toString() ?? "-",
                     fontSize: 8,
                     textAlign: pw.TextAlign.center,
@@ -505,7 +505,7 @@ class AllShippingPdfServices extends PrintServices {
                 // Date
                 pw.SizedBox(
                   width: dateWidth,
-                  child: buildTextWidget(
+                  child: text(
                     text: shippingList[i].shpMovingDate?.toFormattedDate() ?? "-",
                     fontSize: 8,
                   ),
@@ -514,7 +514,7 @@ class AllShippingPdfServices extends PrintServices {
                 // Vehicle
                 pw.Expanded(
 
-                  child: buildTextWidget(
+                  child: text(
                     text: shippingList[i].vehicle ?? "-",
                     fontSize: 8,
                   ),
@@ -523,7 +523,7 @@ class AllShippingPdfServices extends PrintServices {
                 // Product
                 pw.SizedBox(
                   width: productWidth,
-                  child: buildTextWidget(
+                  child: text(
                     text: shippingList[i].proName ?? "-",
                     fontSize: 8,
                   ),
@@ -532,7 +532,7 @@ class AllShippingPdfServices extends PrintServices {
                 // Customer
                 pw.SizedBox(
                   width: customerWidth,
-                  child: buildTextWidget(
+                  child: text(
                     text: shippingList[i].customer ?? "-",
                     fontSize: 8,
                   ),
@@ -541,7 +541,7 @@ class AllShippingPdfServices extends PrintServices {
                 // Rent
                 pw.SizedBox(
                   width: rentWidth,
-                  child: buildTextWidget(
+                  child: text(
                     text: shippingList[i].shpRent?.toAmount() ?? "0.00",
                     fontSize: 8,
                     textAlign: pw.TextAlign.right,
@@ -561,7 +561,7 @@ class AllShippingPdfServices extends PrintServices {
                 // Unload Size
                 pw.SizedBox(
                   width: unloadWidth,
-                  child: buildTextWidget(
+                  child: text(
                     text: "${shippingList[i].shpUnloadSize?.toAmount()} ${shippingList[i].shpUnit ?? ""}",
                     fontSize: 8,
                     textAlign: pw.TextAlign.right,
@@ -571,7 +571,7 @@ class AllShippingPdfServices extends PrintServices {
                 // Total
                 pw.SizedBox(
                   width: totalWidth,
-                  child: buildTextWidget(
+                  child: text(
                     text: "${shippingList[i].total?.toAmount()} $baseCurrency",
                     fontSize: 8,
                     fontWeight: pw.FontWeight.bold,

@@ -150,9 +150,9 @@ class TransactionReferencePrintSettings extends PrintServices{
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 mainAxisAlignment: pw.MainAxisAlignment.center,
                 children: [
-                  buildTextWidget(text: report.comName ?? "", fontSize: 20,tightBounds: true),
+                  text(text: report.comName ?? "", fontSize: 20,tightBounds: true),
                   pw.SizedBox(height: 3),
-                  buildTextWidget(text: report.statementDate ?? "", fontSize: 10),
+                  text(text: report.statementDate ?? "", fontSize: 10),
                 ],
               ),
             ),
@@ -181,7 +181,7 @@ class TransactionReferencePrintSettings extends PrintServices{
               child: pw.Image(logoImage),
             ),
             verticalDivider(height: 15, width: 0.6),
-            buildTextWidget(
+            text(
               text: getTranslation(locale: 'producedBy', language: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
@@ -193,7 +193,7 @@ class TransactionReferencePrintSettings extends PrintServices{
         pw.SizedBox(height: 3),
         pw.Row(
           children: [
-            buildTextWidget(text: report.comAddress ?? "", fontSize: 9),
+            text(text: report.comAddress ?? "", fontSize: 9),
           ],
         ),
         pw.SizedBox(height: 3),
@@ -203,9 +203,9 @@ class TransactionReferencePrintSettings extends PrintServices{
           children: [
             pw.Row(
               children: [
-                buildTextWidget(text: report.compPhone ?? "", fontSize: 9),
+                text(text: report.compPhone ?? "", fontSize: 9),
                 verticalDivider(height: 10, width: 1),
-                buildTextWidget(text: report.comEmail ?? "", fontSize: 9),
+                text(text: report.comEmail ?? "", fontSize: 9),
               ],
             ),
             pw.Row(
@@ -249,8 +249,8 @@ class TransactionReferencePrintSettings extends PrintServices{
         pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              buildTextWidget(text: getTranslation(locale: 'moneyReceipt', language: language),fontWeight: pw.FontWeight.bold),
-              buildTextWidget(text: getTranslation(locale: data.trnType??"", language: language),fontWeight: pw.FontWeight.bold),
+              text(text: getTranslation(locale: 'moneyReceipt', language: language),fontWeight: pw.FontWeight.bold),
+              text(text: getTranslation(locale: data.trnType??"", language: language),fontWeight: pw.FontWeight.bold),
             ]
         ),
         pw.SizedBox(height: 5),
@@ -275,7 +275,7 @@ class TransactionReferencePrintSettings extends PrintServices{
 
                   pw.Container(
                     width: 90,
-                    child: buildTextWidget(
+                    child: text(
                         text: "${getTranslation(locale: r["title"]!, language: language)}:",
                         fontSize: 8
                     ),
@@ -283,7 +283,7 @@ class TransactionReferencePrintSettings extends PrintServices{
 
                   pw.SizedBox(width: 5),
 
-                  buildTextWidget(
+                  text(
                     text: r["value"]!,
                     fontSize: 8,
                   ),
@@ -297,13 +297,13 @@ class TransactionReferencePrintSettings extends PrintServices{
 
         pw.SizedBox(height: 5),
 
-        buildTextWidget(
+        text(
           text: getTranslation(locale: 'amountInWords', language: language),
           fontSize:8,
         ),
         horizontalDivider(),
 
-        buildTextWidget(
+        text(
           text: "${NumberToWords.convert(parsedAmount, lang)} ${data.currency}",
           fontSize: 7,
         ),
@@ -332,8 +332,8 @@ class TransactionReferencePrintSettings extends PrintServices{
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.start,
                 children: [
-                  buildTextWidget(text: getTranslation(locale: 'createdBy', language: language), fontSize: 7),
-                  buildTextWidget(text: " ${data.maker} ", fontSize: 7),
+                  text(text: getTranslation(locale: 'createdBy', language: language), fontSize: 7),
+                  text(text: " ${data.maker} ", fontSize: 7),
                 ],
               ),
             ],
@@ -346,8 +346,8 @@ class TransactionReferencePrintSettings extends PrintServices{
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.start,
                 children: [
-                  buildTextWidget(text: getTranslation(locale: 'authorizedBy', language: language), fontSize: 7),
-                  buildTextWidget(text: data.checker??"", fontSize: 7),
+                  text(text: getTranslation(locale: 'authorizedBy', language: language), fontSize: 7),
+                  text(text: data.checker??"", fontSize: 7),
                 ],
               ),
 

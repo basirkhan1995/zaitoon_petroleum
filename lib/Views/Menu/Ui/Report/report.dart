@@ -244,7 +244,7 @@ class _DesktopState extends State<_Desktop> {
 
       //Transactions
       case ActionKey.profitAndLoss: Utils.goto(context, IncomeStatementView());
-      case ActionKey.balanceSheet: Utils.goto(context, BalanceSheetScreen());
+      case ActionKey.balanceSheet: Utils.goto(context, BalanceSheetView());
       case ActionKey.generalReport:  Utils.goto(context, SystemGeneralReportView());
       case ActionKey.activities:  Utils.goto(context, ActivitiesView());
       case ActionKey.transactionByRef:  Utils.goto(context, TransactionByReferenceView());
