@@ -56,7 +56,7 @@ class _BalanceSheetViewState extends State<BalanceSheetView> {
                company.compPhone = comState.company.comPhone ?? "";
                company.comEmail = comState.company.comEmail ?? "";
                company.statementDate = DateTime.now().toFullDateTime;
-
+               company.baseCurrency = comState.company.comLocalCcy;
 
                // Set logo if available
                final base64Logo = comState.company.comLogo;
@@ -94,6 +94,7 @@ class _BalanceSheetViewState extends State<BalanceSheetView> {
                                orientation: orientation,
                                pageFormat: pageFormat,
                                data: data,
+
                              );
                            },
                            onPrint: ({
