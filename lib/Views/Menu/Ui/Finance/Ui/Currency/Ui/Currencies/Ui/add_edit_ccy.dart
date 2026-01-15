@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/desktop_form_nav.dart';
 import '../../../../../../../../../Features/Other/utils.dart';
 import '../../../../../../../../../Features/Other/zform_dialog.dart';
 import '../../../../../../../../../Features/Widgets/textfield_entitled.dart';
@@ -140,108 +141,110 @@ class _AddEditCurrencyViewState extends State<AddEditCurrencyView> {
               absorbing: isLoading,
               child: Opacity(
                 opacity: isLoading ? 0.5 : 1,
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    spacing: 10,
-                    children: [
-                      ZTextFieldEntitled(
-                        title: locale.ccyName,
-                        controller: ccyName,
-                        isRequired: true,
-                        onSubmit: (_) => onSubmit(isUpdate),
-                        validator: (value) => value.isEmpty
-                            ? locale.required(locale.ccyName)
-                            : null,
-                      ),
-                      Row(
-                        spacing: 5,
-                        children: [
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              title: locale.currencyCode,
-                              controller: ccyCode,
-                              isRequired: true,
-                              onSubmit: (_) => onSubmit(isUpdate),
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return locale.required(locale.currencyCode);
-                                }
-                                if (value.length > 4) {
-                                  return "${locale.currencyCode} not allowed more than 4.";
-                                }
-                                return null;
-                              },
-                              inputFormat: [
-                                LengthLimitingTextInputFormatter(4),
-                                FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z]')),
-                              ],
+                child: FormNavigation(
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 10,
+                      children: [
+                        ZTextFieldEntitled(
+                          title: locale.ccyName,
+                          controller: ccyName,
+                          isRequired: true,
+                          onSubmit: (_) => onSubmit(isUpdate),
+                          validator: (value) => value.isEmpty
+                              ? locale.required(locale.ccyName)
+                              : null,
+                        ),
+                        Row(
+                          spacing: 5,
+                          children: [
+                            Expanded(
+                              child: ZTextFieldEntitled(
+                                title: locale.currencyCode,
+                                controller: ccyCode,
+                                isRequired: true,
+                                onSubmit: (_) => onSubmit(isUpdate),
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return locale.required(locale.currencyCode);
+                                  }
+                                  if (value.length > 4) {
+                                    return "${locale.currencyCode} not allowed more than 4.";
+                                  }
+                                  return null;
+                                },
+                                inputFormat: [
+                                  LengthLimitingTextInputFormatter(4),
+                                  FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z]')),
+                                ],
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              title: locale.ccySymbol,
-                              controller: ccySymbol,
-                              isRequired: true,
-                              onSubmit: (_) => onSubmit(isUpdate),
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return locale.required(locale.ccySymbol);
-                                }
-                                if (value.length > 3) {
-                                  return "${locale.ccySymbol} not allowed more than 3.";
-                                }
-                                return null;
-                              },
-                              inputFormat: [
-                                LengthLimitingTextInputFormatter(3),
-                                FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z]')),
-                              ],
+                            Expanded(
+                              child: ZTextFieldEntitled(
+                                title: locale.ccySymbol,
+                                controller: ccySymbol,
+                                isRequired: true,
+                                onSubmit: (_) => onSubmit(isUpdate),
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return locale.required(locale.ccySymbol);
+                                  }
+                                  if (value.length > 3) {
+                                    return "${locale.ccySymbol} not allowed more than 3.";
+                                  }
+                                  return null;
+                                },
+                                inputFormat: [
+                                  LengthLimitingTextInputFormatter(3),
+                                  FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z]')),
+                                ],
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              title: locale.countryCode,
-                              controller: ccyCountryCode,
-                              isRequired: true,
-                              onSubmit: (_) => onSubmit(isUpdate),
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return locale.required(locale.countryCode);
-                                }
-                                if (value.length > 4) {
-                                  return "${locale.countryCode} not allowed more than 4.";
-                                }
-                                return null;
-                              },
-                              inputFormat: [
-                                LengthLimitingTextInputFormatter(4),
-                                FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z]')),
-                              ],
+                            Expanded(
+                              child: ZTextFieldEntitled(
+                                title: locale.countryCode,
+                                controller: ccyCountryCode,
+                                isRequired: true,
+                                onSubmit: (_) => onSubmit(isUpdate),
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return locale.required(locale.countryCode);
+                                  }
+                                  if (value.length > 4) {
+                                    return "${locale.countryCode} not allowed more than 4.";
+                                  }
+                                  return null;
+                                },
+                                inputFormat: [
+                                  LengthLimitingTextInputFormatter(4),
+                                  FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z]')),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      ZTextFieldEntitled(
-                        title: locale.country,
-                        controller: country,
-                        isRequired: true,
-                        onSubmit: (_) => onSubmit(isUpdate),
-                        validator: (value) => value.isEmpty
-                            ? locale.required(locale.country)
-                            : null,
-                      ),
-                      ZTextFieldEntitled(
-                        title: locale.ccyLocalName,
-                        controller: ccyLocalName,
-                        isRequired: true,
-                        onSubmit: (_) => onSubmit(isUpdate),
-                        validator: (value) => value.isEmpty
-                            ? locale.required(locale.ccyLocalName)
-                            : null,
-                      ),
-                    ],
+                          ],
+                        ),
+                        ZTextFieldEntitled(
+                          title: locale.country,
+                          controller: country,
+                          isRequired: true,
+                          onSubmit: (_) => onSubmit(isUpdate),
+                          validator: (value) => value.isEmpty
+                              ? locale.required(locale.country)
+                              : null,
+                        ),
+                        ZTextFieldEntitled(
+                          title: locale.ccyLocalName,
+                          controller: ccyLocalName,
+                          isRequired: true,
+                          onSubmit: (_) => onSubmit(isUpdate),
+                          validator: (value) => value.isEmpty
+                              ? locale.required(locale.ccyLocalName)
+                              : null,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

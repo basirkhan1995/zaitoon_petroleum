@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../../Features/Generic/zaitoon_drop.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../bloc/individuals_bloc.dart';
-import '../individual_model.dart';
+import '../model/individual_model.dart';
 
 class StakeholdersDropdown extends StatefulWidget {
   final String? title;

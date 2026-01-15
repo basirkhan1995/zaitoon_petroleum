@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/desktop_form_nav.dart';
 import 'package:zaitoon_petroleum/Features/Other/image_helper.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
@@ -9,7 +10,7 @@ import '../../../../../../../Features/Other/crop.dart';
 import '../../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'package:flutter/services.dart';
-import '../individual_model.dart';
+import '../model/individual_model.dart';
 
 class IndividualAddEditView extends StatelessWidget {
   final IndividualsModel? model;
@@ -145,174 +146,176 @@ class _DesktopState extends State<_Desktop> {
 
       onAction: onSubmit,
 
-      child: Form(
-        key: formKey,
-        child: BlocConsumer<IndividualsBloc, IndividualsState>(
-          listener: (context, state) {
-            if (state is IndividualSuccessState) {
-              Navigator.of(context).pop();
-            }
-          },
-          builder: (context, state) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 8,
-              children: [
-                if (isEdit)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-
-                    GestureDetector(
-                      onTap: () => pickAndCropImage(widget.model!.perId!),
-                      child: ImageHelper.stakeholderProfile(
-                        imageName: imageName,
-                        localImageBytes: selectedImageBytes,
-                        size: 110,
-                        border: Border.all(
-                            color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)
+      child: FormNavigation(
+        child: Form(
+          key: formKey,
+          child: BlocConsumer<IndividualsBloc, IndividualsState>(
+            listener: (context, state) {
+              if (state is IndividualSuccessState) {
+                Navigator.of(context).pop();
+              }
+            },
+            builder: (context, state) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 8,
+                children: [
+                  if (isEdit)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+        
+                      GestureDetector(
+                        onTap: () => pickAndCropImage(widget.model!.perId!),
+                        child: ImageHelper.stakeholderProfile(
+                          imageName: imageName,
+                          localImageBytes: selectedImageBytes,
+                          size: 110,
+                          border: Border.all(
+                              color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)
+                          ),
+                          shapeStyle: ShapeStyle.roundedRectangle,
+                          showCameraIcon: true,
                         ),
-                        shapeStyle: ShapeStyle.roundedRectangle,
-                        showCameraIcon: true,
+                      )
+        
+                    ],
+                  ),
+                  SizedBox(height: 5),
+                  Row(
+                    spacing: 5,
+                    children: [
+                      Expanded(
+                        child: ZTextFieldEntitled(
+                          controller: firstName,
+                          isRequired: true,
+                          title: locale.firstName,
+                          onSubmit: (_) => onSubmit(),
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return locale.required(locale.firstName);
+                            }
+                            return null;
+                          },
+                        ),
                       ),
-                    )
-
-                  ],
-                ),
-                SizedBox(height: 10),
-                Row(
-                  spacing: 5,
-                  children: [
-                    Expanded(
-                      child: ZTextFieldEntitled(
-                        controller: firstName,
-                        isRequired: true,
-                        title: locale.firstName,
-                        onSubmit: (_) => onSubmit(),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return locale.required(locale.firstName);
-                          }
-                          return null;
+                      Expanded(
+                        child: ZTextFieldEntitled(
+                          controller: lastName,
+                          isRequired: true,
+                          title: locale.lastName,
+                          onSubmit: (_) => onSubmit(),
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return locale.required(locale.lastName);
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+        
+                  ZTextFieldEntitled(
+                    controller: email,
+                    validator: (value)=> Utils.validateEmail(email: value,context: context),
+                    title: locale.email,
+                    onSubmit: (_) => onSubmit(),
+                  ),
+        
+                  Row(
+                    spacing: 5,
+                    children: [
+                      Expanded(
+                        child: ZTextFieldEntitled(
+                          controller: phone,
+                          inputFormat: [FilteringTextInputFormatter.digitsOnly],
+                          title: locale.cellNumber,
+                          onSubmit: (_) => onSubmit(),
+                        ),
+                      ),
+                      Expanded(
+                        child: ZTextFieldEntitled(
+                          controller: nationalId,
+                          inputFormat: [FilteringTextInputFormatter.digitsOnly],
+                          title: locale.nationalId,
+                          onSubmit: (_) => onSubmit(),
+                        ),
+                      ),
+                    ],
+                  ),
+        
+        
+                  ZTextFieldEntitled(
+                    controller: address,
+                    title: locale.address,
+                    onSubmit: (_) => onSubmit(),
+                  ),
+        
+                  Row(
+                    spacing: 5,
+                    children: [
+                      Expanded(
+                        child: ZTextFieldEntitled(
+                          controller: city,
+                          title: locale.city,
+                          onSubmit: (_) => onSubmit(),
+                        ),
+                      ),
+                      Expanded(
+                        child: ZTextFieldEntitled(
+                          controller: province,
+                          title: locale.province,
+                          onSubmit: (_) => onSubmit(),
+                        ),
+                      ),
+                    ],
+                  ),
+        
+                  Row(
+                    spacing: 5,
+                    children: [
+                      Expanded(
+                        flex: 5,
+                        child: ZTextFieldEntitled(
+                          controller: country,
+                          title: locale.country,
+                          onSubmit: (_) => onSubmit(),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: ZTextFieldEntitled(
+                          controller: zipCode,
+                          title: locale.zipCode,
+                          inputFormat: [FilteringTextInputFormatter.digitsOnly],
+                          onSubmit: (_) => onSubmit(),
+                        ),
+                      ),
+                    ],
+                  ),
+        
+        
+                  Row(
+                    spacing: 8,
+                    children: [
+                      Checkbox(
+                        visualDensity: VisualDensity(horizontal: -4),
+                        value: isMailingAddress,
+                        onChanged: (value) {
+                          setState(() {
+                            isMailingAddress = value ?? true;
+                            mailingValue = isMailingAddress ? 1 : 0;
+                          });
                         },
                       ),
-                    ),
-                    Expanded(
-                      child: ZTextFieldEntitled(
-                        controller: lastName,
-                        isRequired: true,
-                        title: locale.lastName,
-                        onSubmit: (_) => onSubmit(),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return locale.required(locale.lastName);
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-
-                ZTextFieldEntitled(
-                  controller: email,
-                  validator: (value)=> Utils.validateEmail(email: value,context: context),
-                  title: locale.email,
-                  onSubmit: (_) => onSubmit(),
-                ),
-
-                Row(
-                  spacing: 5,
-                  children: [
-                    Expanded(
-                      child: ZTextFieldEntitled(
-                        controller: phone,
-                        inputFormat: [FilteringTextInputFormatter.digitsOnly],
-                        title: locale.cellNumber,
-                        onSubmit: (_) => onSubmit(),
-                      ),
-                    ),
-                    Expanded(
-                      child: ZTextFieldEntitled(
-                        controller: nationalId,
-                        inputFormat: [FilteringTextInputFormatter.digitsOnly],
-                        title: locale.nationalId,
-                        onSubmit: (_) => onSubmit(),
-                      ),
-                    ),
-                  ],
-                ),
-
-
-                ZTextFieldEntitled(
-                  controller: address,
-                  title: locale.address,
-                  onSubmit: (_) => onSubmit(),
-                ),
-
-                Row(
-                  spacing: 5,
-                  children: [
-                    Expanded(
-                      child: ZTextFieldEntitled(
-                        controller: city,
-                        title: locale.city,
-                        onSubmit: (_) => onSubmit(),
-                      ),
-                    ),
-                    Expanded(
-                      child: ZTextFieldEntitled(
-                        controller: province,
-                        title: locale.province,
-                        onSubmit: (_) => onSubmit(),
-                      ),
-                    ),
-                  ],
-                ),
-
-                Row(
-                  spacing: 5,
-                  children: [
-                    Expanded(
-                      flex: 5,
-                      child: ZTextFieldEntitled(
-                        controller: country,
-                        title: locale.country,
-                        onSubmit: (_) => onSubmit(),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: ZTextFieldEntitled(
-                        controller: zipCode,
-                        title: locale.zipCode,
-                        inputFormat: [FilteringTextInputFormatter.digitsOnly],
-                        onSubmit: (_) => onSubmit(),
-                      ),
-                    ),
-                  ],
-                ),
-
-
-                Row(
-                  spacing: 8,
-                  children: [
-                    Checkbox(
-                      visualDensity: VisualDensity(horizontal: -4),
-                      value: isMailingAddress,
-                      onChanged: (value) {
-                        setState(() {
-                          isMailingAddress = value ?? true;
-                          mailingValue = isMailingAddress ? 1 : 0;
-                        });
-                      },
-                    ),
-                    Text(locale.isMilling),
-                  ],
-                ),
-              ],
-            );
-          },
+                      Text(locale.isMilling),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

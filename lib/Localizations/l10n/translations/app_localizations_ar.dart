@@ -2036,4 +2036,46 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get optional => 'اختیاری';
+
+  @override
+  String get customerInformation => 'معلومات مشتری';
+
+  @override
+  String get productDetails => 'جزئیات کالا';
+
+  @override
+  String get currentYear => 'امسال';
+
+  @override
+  String get number => 'ردیف';
+
+  @override
+  String get currentAssets => 'اوسنۍ شتمنۍ';
+
+  @override
+  String get fixedAssets => 'ثابته شتمنۍ';
+
+  @override
+  String get intangibleAssets => 'غیر ملموسه شتمنۍ';
+
+  @override
+  String get currentLiabilities => 'اوسنۍ پورونه';
+
+  @override
+  String get ownerEquity => 'د مالک حق';
+
+  @override
+  String get totalAssets => 'ټول شتمنۍ';
+
+  @override
+  String get totalLiabilitiesEquity => 'ټول پورونه او د مالک حق';
+
+  @override
+  String get assets => 'شتمنۍ';
+
+  @override
+  String get liabilitiesEquity => 'پورونه او د مالک حقونه';
+
+  @override
+  String get netProfit => 'خالصه ګټه';
 }

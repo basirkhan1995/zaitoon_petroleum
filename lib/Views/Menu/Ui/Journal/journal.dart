@@ -1869,8 +1869,10 @@ class _DesktopState extends State<_Desktop> {
       const SingleActivator(LogicalKeyboardKey.f3): () => onCashIncome(trnType: "INCM"),
       const SingleActivator(LogicalKeyboardKey.f4): () => onCashExpense(trnType: "XPNS"),
       const SingleActivator(LogicalKeyboardKey.f5): () => accountToAccount(trnType: "ATAT"),
-      const SingleActivator(LogicalKeyboardKey.f6): () => onGL(trnType: "GLCR"),
-      const SingleActivator(LogicalKeyboardKey.f7): () => onGL(trnType: "GLDR"),
+      const SingleActivator(LogicalKeyboardKey.f6): () => onMultiATAT(),
+      const SingleActivator(LogicalKeyboardKey.f7): () => onFxTxn(),
+      const SingleActivator(LogicalKeyboardKey.f8): () => onGL(trnType: "GLCR"),
+      const SingleActivator(LogicalKeyboardKey.f9): () => onGL(trnType: "GLDR"),
     };
 
 
@@ -2099,31 +2101,22 @@ class _DesktopState extends State<_Desktop> {
                                     backgroundColor: color.primary.withValues(
                                       alpha: opacity,
                                     ),
-                                    toolTip: "F5",
+                                    toolTip: "F6",
                                     label: Text(locale.multiAccount),
                                     icon: Icons.swap_horiz_rounded,
                                     width: double.infinity,
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return BulkTransferScreen();
-                                        },
-                                      );
-                                    },
+                                    onPressed: onMultiATAT
                                   ),
                                 if (login.hasPermission(24) ?? false)
                                   ZOutlineButton(
                                     backgroundColor: color.primary.withValues(
                                       alpha: opacity,
                                     ),
-                                    toolTip: "F5",
+                                    toolTip: "F7",
                                     label: Text(locale.fxTransaction),
                                     icon: Icons.swap_horiz_rounded,
                                     width: double.infinity,
-                                    onPressed: () {
-                                       Utils.goto(context, FxTransactionScreen());
-                                    },
+                                    onPressed: onFxTxn
                                   ),
                                 SizedBox(height: 5),
                                 Wrap(
@@ -2147,7 +2140,7 @@ class _DesktopState extends State<_Desktop> {
                                     backgroundColor: color.primary.withValues(
                                       alpha: opacity,
                                     ),
-                                    toolTip: "F6",
+                                    toolTip: "F8",
                                     label: Text(locale.glCreditTitle),
                                     width: double.infinity,
                                     icon: Icons.menu_book_rounded,
@@ -2158,7 +2151,7 @@ class _DesktopState extends State<_Desktop> {
                                     backgroundColor: color.primary.withValues(
                                       alpha: opacity,
                                     ),
-                                    toolTip: "F7",
+                                    toolTip: "F9",
                                     label: Text(locale.glDebitTitle),
                                     width: double.infinity,
                                     icon: Icons.menu_book_rounded,
@@ -2227,6 +2220,19 @@ class _DesktopState extends State<_Desktop> {
         ],
       ),
     );
+  }
+
+  void onMultiATAT(){
+    showDialog(
+      context: context,
+      builder: (context) {
+        return BulkTransferScreen();
+      },
+    );
+  }
+
+  void onFxTxn(){
+    Utils.goto(context, FxTransactionScreen());
   }
 
   void getPrinted({required TransactionsModel data, required ReportModel company}) {

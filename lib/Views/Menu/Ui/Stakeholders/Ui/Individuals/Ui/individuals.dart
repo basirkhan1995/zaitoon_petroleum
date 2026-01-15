@@ -71,7 +71,7 @@ class _DesktopState extends State<_Desktop> {
   }
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
 
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): onAdd,
@@ -98,7 +98,7 @@ class _DesktopState extends State<_Desktop> {
                       child: ListTile(
                         tileColor: Colors.transparent,
                         contentPadding: EdgeInsets.zero,
-                        title: Text(locale.individuals,style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        title: Text(tr.individuals,style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontSize: 20,
                         )),
                         subtitle: Text(AppLocalizations.of(context)!.stakeholderManage,style: TextStyle(fontSize: 12),),
@@ -123,14 +123,14 @@ class _DesktopState extends State<_Desktop> {
                         width: 120,
                         icon: Icons.refresh,
                         onPressed: onRefresh,
-                        label: Text(locale.refresh)),
+                        label: Text(tr.refresh)),
                     ZOutlineButton(
                       toolTip: "F1",
                         width: 120,
                         icon: Icons.add,
                         isActive: true,
                         onPressed: onAdd,
-                        label: Text(locale.newKeyword)),
+                        label: Text(tr.newKeyword)),
                   ],
                 ),
               ),
@@ -165,7 +165,7 @@ class _DesktopState extends State<_Desktop> {
 
                       if(filteredList.isEmpty){
                         return NoDataWidget(
-                          message: locale.noDataFound,
+                          message: tr.noDataFound,
                         );
                       }
                      return GridView.builder(
@@ -196,7 +196,7 @@ class _DesktopState extends State<_Desktop> {
                             status: InfoStatus(
                               label: Utils.genderType(
                                 gender: stk.perGender ?? "",
-                                locale: locale,
+                                locale: tr,
                               ),
                               color: Theme.of(context).colorScheme.primary,
                             ),

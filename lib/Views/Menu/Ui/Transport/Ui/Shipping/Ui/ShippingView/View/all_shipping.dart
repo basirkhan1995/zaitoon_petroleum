@@ -9,19 +9,19 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:flutter/services.dart';
 import 'package:zaitoon_petroleum/Features/Other/shortcut.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingById/shipping_by_id.dart';
-import '../../../../../../../../Features/Other/utils.dart';
-import '../../../../../../../../Features/PrintSettings/print_preview.dart';
-import '../../../../../../../../Features/PrintSettings/report_model.dart';
-import '../../../../../../../../Features/Widgets/outline_button.dart';
-import '../../../../../../../../Features/Widgets/search_field.dart';
-import '../../../../../../../../Localizations/Bloc/localizations_bloc.dart';
-import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
-import '../../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
-import 'PDF/pdf.dart';
-import 'bloc/shipping_bloc.dart';
-import 'model/shipping_model.dart';
-import 'model/shp_details_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/View/add_edit_shipping.dart';
+import '../../../../../../../../../Features/Other/utils.dart';
+import '../../../../../../../../../Features/PrintSettings/print_preview.dart';
+import '../../../../../../../../../Features/PrintSettings/report_model.dart';
+import '../../../../../../../../../Features/Widgets/outline_button.dart';
+import '../../../../../../../../../Features/Widgets/search_field.dart';
+import '../../../../../../../../../Localizations/Bloc/localizations_bloc.dart';
+import '../../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import '../PDF/pdf.dart';
+import '../bloc/shipping_bloc.dart';
+import '../model/shipping_model.dart';
+import '../model/shp_details_model.dart';
 
 class ShippingView extends StatelessWidget {
   const ShippingView({super.key});
@@ -303,84 +303,11 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget _buildShippingList(BuildContext context, ShippingState state) {
-    final tr = AppLocalizations.of(context)!;
-
-    // Handle loading state for entire list
-    if (state is ShippingListLoadingState && state.isLoading && state.shippingList.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    // Handle error state
-    if (state is ShippingErrorState) {
-      return NoDataWidget(
-        message: state.error,
-        onRefresh: onRefresh,
-      );
-    }
-
-    // Get shipping list from state
-    List<ShippingModel> shippingList = [];
-    int? loadingShpId;
-
-    if (state is ShippingListLoadingState) {
-      shippingList = state.shippingList;
-      loadingShpId = state.loadingShpId;
-    } else if (state is ShippingDetailLoadingState) {
-      shippingList = state.shippingList;
-      loadingShpId = state.loadingShpId;
-    } else if (state is ShippingDetailLoadedState) {
-      shippingList = state.shippingList;
-      loadingShpId = state.loadingShpId;
-    } else if (state is ShippingListLoadedState) {
-      shippingList = state.shippingList;
-      loadingShpId = state.loadingShpId;
-    } else if (state is ShippingInitial) {
-      return const Center(child: CircularProgressIndicator());
-    } else if (state is ShippingErrorState) {
-      shippingList = state.shippingList;
-      loadingShpId = state.loadingShpId;
-    } else if (state is ShippingSuccessState) {
-      shippingList = state.shippingList;
-      loadingShpId = state.loadingShpId;
-    }
-
-    // Handle empty list
-    if (shippingList.isEmpty && state is! ShippingListLoadingState) {
-      return NoDataWidget(
-        message: tr.noDataFound,
-        onRefresh: onRefresh,
-      );
-    }
-
-    // Filter based on search
-    final query = searchController.text.toLowerCase().trim();
-    final filteredList = shippingList.where((shp) {
-      final id = shp.shpId?.toString() ?? '';
-      final vehicle = shp.vehicle?.toLowerCase() ?? '';
-      final product = shp.proName?.toLowerCase() ?? '';
-      final customer = shp.customer?.toLowerCase() ?? '';
-      final status = (shp.shpStatus == 1
-          ? tr.completedTitle
-          : tr.pendingTitle).toLowerCase();
-
-      return id.contains(query) ||
-          vehicle.contains(query) ||
-          product.contains(query) ||
-          customer.contains(query) ||
-          status.contains(query);
-    }).toList();
-
-    // Show loading if filtering while loading
-    if (filteredList.isEmpty && query.isNotEmpty && state is ShippingListLoadingState && state.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    // Build list view
+  Widget _buildShippingListView(List<ShippingModel> shippingList, int? loadingShpId) {
     return ListView.builder(
-      itemCount: filteredList.length,
+      itemCount: shippingList.length,
       itemBuilder: (context, index) {
-        final shp = filteredList[index];
+        final shp = shippingList[index];
         final isLoadingThisItem = loadingShpId == shp.shpId;
         final isCurrentlyViewing = _loadingShpId == shp.shpId && _isDialogOpen;
 
@@ -426,45 +353,96 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ),
 
-
                 // Other columns
-                SizedBox(
-                  width: 100,
-                  child: Text(shp.shpMovingDate.toFormattedDate()),
-                ),
+                SizedBox(width: 100, child: Text(shp.shpMovingDate.toFormattedDate())),
                 Expanded(child: Text(shp.vehicle ?? "")),
                 SizedBox(width: 200, child: Text(shp.proName ?? "")),
                 SizedBox(width: 130, child: Text(shp.customer ?? "")),
-                SizedBox(
-                  width: 110,
-                  child: Text("${shp.shpRent?.toAmount()} $_baseCurrency"),
-                ),
-                SizedBox(
-                  width: 110,
-                  child: Text("${shp.shpLoadSize?.toAmount()} ${shp.shpUnit}"),
-                ),
-                SizedBox(
-                  width: 110,
-                  child: Text("${shp.shpUnloadSize?.toAmount()} ${shp.shpUnit}"),
-                ),
-                SizedBox(
-                  width: 120,
-                  child: Text("${shp.total?.toAmount()} $_baseCurrency"),
-                ),
+                SizedBox(width: 110, child: Text("${shp.shpRent?.toAmount()} $_baseCurrency")),
+                SizedBox(width: 110, child: Text("${shp.shpLoadSize?.toAmount()} ${shp.shpUnit}")),
+                SizedBox(width: 110, child: Text("${shp.shpUnloadSize?.toAmount()} ${shp.shpUnit}")),
+                SizedBox(width: 120, child: Text("${shp.total?.toAmount()} $_baseCurrency")),
                 SizedBox(
                   width: 100,
                   child: ShippingStatusBadge(
                     status: shp.shpStatus ?? 0,
-                    tr: tr,
+                    tr: AppLocalizations.of(context)!,
                   ),
                 )
-
               ],
             ),
           ),
         );
       },
     );
+  }
+
+
+  Widget _buildShippingList(BuildContext context, ShippingState state) {
+    final tr = AppLocalizations.of(context)!;
+
+    // Determine the shipping list and loading ID
+    List<ShippingModel> shippingList = [];
+    int? loadingShpId;
+    bool isLoading = false;
+
+    if (state is ShippingInitial) {
+      // First time opening the screen
+      return const Center(child: CircularProgressIndicator());
+    } else if (state is ShippingListLoadingState) {
+      shippingList = state.shippingList;
+      loadingShpId = state.loadingShpId;
+      isLoading = state.isLoading;
+    } else if (state is ShippingDetailLoadingState ||
+        state is ShippingDetailLoadedState ||
+        state is ShippingListLoadedState ||
+        state is ShippingSuccessState) {
+      shippingList = state.shippingList;
+      loadingShpId = state.loadingShpId;
+    } else if (state is ShippingErrorState) {
+      shippingList = state.shippingList;
+      loadingShpId = state.loadingShpId;
+    }
+
+    // Handle empty list (no data)
+    if (shippingList.isEmpty && !isLoading) {
+      return NoDataWidget(
+        message: tr.noDataFound,
+        onRefresh: onRefresh,
+      );
+    }
+
+    // Filter list based on search
+    final query = searchController.text.toLowerCase().trim();
+    final filteredList = shippingList.where((shp) {
+      final id = shp.shpId?.toString() ?? '';
+      final vehicle = shp.vehicle?.toLowerCase() ?? '';
+      final product = shp.proName?.toLowerCase() ?? '';
+      final customer = shp.customer?.toLowerCase() ?? '';
+      final status = (shp.shpStatus == 1 ? tr.completedTitle : tr.pendingTitle).toLowerCase();
+      return id.contains(query) || vehicle.contains(query) || product.contains(query) || customer.contains(query) || status.contains(query);
+    }).toList();
+
+    // Show loader overlay if loading
+    if (isLoading && shippingList.isNotEmpty) {
+      return Stack(
+        children: [
+          _buildShippingListView(filteredList, loadingShpId),
+          Positioned.fill(
+            child: SizedBox(
+              child: const Center(child: CircularProgressIndicator()),
+            ),
+          ),
+        ],
+      );
+    }
+
+    // If list empty but loading (first load), show full screen loader
+    if (isLoading && shippingList.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return _buildShippingListView(filteredList, loadingShpId);
   }
 
   void onPDF() {

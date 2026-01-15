@@ -9,6 +9,7 @@ import '../ProductCategory/features/pro_cat_drop.dart';
 import '../ProductCategory/model/pro_cat_model.dart';
 import 'bloc/products_bloc.dart';
 import 'model/product_model.dart';
+import 'dart:math';
 
 class AddEditProductView extends StatelessWidget {
   final ProductsModel? model;
@@ -68,7 +69,10 @@ class _DesktopState extends State<_Desktop> {
       madeIn.text = widget.model?.proMadeIn??"";
       details.text = widget.model?.proDetails??"";
       catId = widget.model?.proCategory;
+    }if(widget.model == null){
+      productCode.text = generateProductCode();
     }
+
     super.initState();
   }
 
@@ -99,6 +103,7 @@ class _DesktopState extends State<_Desktop> {
                     ZTextFieldEntitled(
                       title: tr.productCode,
                       controller: productCode,
+                      maxLength: 13,
                       isRequired: true,
                       validator: (value){
                         if(value.isEmpty){
@@ -135,6 +140,8 @@ class _DesktopState extends State<_Desktop> {
                     ZTextFieldEntitled(
                       title: tr.details,
                       controller: details,
+                      keyboardInputType: TextInputType.multiline,
+                      maxLength: 100,
                     ),
                   ],
                 ),
@@ -144,6 +151,22 @@ class _DesktopState extends State<_Desktop> {
       },
     );
   }
+
+
+
+
+  String generateProductCode({String prefix = 'PRD'}) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    final rand = Random.secure();
+    final now = DateTime.now();
+
+    final batch = List.generate(3, (_) => chars[rand.nextInt(chars.length)],).join();
+    final date = '${now.year % 100}${now.month.toString().padLeft(2, '0')}';
+    return '$prefix-$date-$batch';
+  }
+
+
+
 
   void onSubmit(){
     if (!formKey.currentState!.validate()) return;

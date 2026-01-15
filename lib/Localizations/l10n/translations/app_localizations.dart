@@ -4047,6 +4047,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Optional'**
   String get optional;
+
+  /// No description provided for @customerInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer Information'**
+  String get customerInformation;
+
+  /// No description provided for @productDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Product Details'**
+  String get productDetails;
+
+  /// No description provided for @currentYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Year'**
+  String get currentYear;
+
+  /// No description provided for @number.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get number;
+
+  /// No description provided for @currentAssets.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Assets'**
+  String get currentAssets;
+
+  /// No description provided for @fixedAssets.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed Assets'**
+  String get fixedAssets;
+
+  /// No description provided for @intangibleAssets.
+  ///
+  /// In en, this message translates to:
+  /// **'Intangible Assets'**
+  String get intangibleAssets;
+
+  /// No description provided for @currentLiabilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Liabilities'**
+  String get currentLiabilities;
+
+  /// No description provided for @ownerEquity.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner\'s Equity'**
+  String get ownerEquity;
+
+  /// No description provided for @totalAssets.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Assets'**
+  String get totalAssets;
+
+  /// No description provided for @totalLiabilitiesEquity.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Liabilities & Equity'**
+  String get totalLiabilitiesEquity;
+
+  /// No description provided for @assets.
+  ///
+  /// In en, this message translates to:
+  /// **'Assets'**
+  String get assets;
+
+  /// No description provided for @liabilitiesEquity.
+  ///
+  /// In en, this message translates to:
+  /// **'Liabilities & Equity'**
+  String get liabilitiesEquity;
+
+  /// No description provided for @netProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Net Profit'**
+  String get netProfit;
 }
 
 class _AppLocalizationsDelegate

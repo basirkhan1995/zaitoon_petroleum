@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Accounts/accounts.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/balance_sheet.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/gl_statement.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/Activities/activities.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/BalanceSheet/balance_sheet.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/GeneralReport/general_report.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/IncomeStatement/income_statement.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/TransactionRef/transaction_ref.dart';
@@ -28,6 +28,7 @@ enum ActionKey {
   exchangeRate,
   accountsReport,
   trialBalance,
+
 
   //Transactions
   balanceSheet,
@@ -103,7 +104,7 @@ class _DesktopState extends State<_Desktop> {
     ];
 
     final List<Map<String, dynamic>> transactionsButtons = [
-      {"title": locale.balanceSheet, "icon": Icons.scale_rounded, "action": ActionKey.products},
+      {"title": locale.balanceSheet, "icon": Icons.scale_rounded, "action": ActionKey.balanceSheet},
       {"title": locale.referenceTransaction, "icon": Icons.qr_code_2_rounded, "action": ActionKey.transactionByRef},
       {"title": locale.activities, "icon": Icons.access_time_rounded, "action": ActionKey.sale},
       {"title": locale.incomeStatement, "icon": Icons.ssid_chart_rounded, "action": ActionKey.purchase},
@@ -243,7 +244,7 @@ class _DesktopState extends State<_Desktop> {
 
       //Transactions
       case ActionKey.profitAndLoss: Utils.goto(context, IncomeStatementView());
-      case ActionKey.balanceSheet: Utils.goto(context, BalanceSheetView());
+      case ActionKey.balanceSheet: Utils.goto(context, BalanceSheetScreen());
       case ActionKey.generalReport:  Utils.goto(context, SystemGeneralReportView());
       case ActionKey.activities:  Utils.goto(context, ActivitiesView());
       case ActionKey.transactionByRef:  Utils.goto(context, TransactionByReferenceView());

@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/shortcut.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/Ui/add_edit_employee.dart';
@@ -12,6 +13,7 @@ import '../../../../../../../Features/Other/image_helper.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
 import '../features/emp_card.dart';
+import 'package:flutter/services.dart';
 
 class EmployeesView extends StatelessWidget {
   const EmployeesView({super.key});
@@ -61,140 +63,149 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
+    final shortcuts = {
+      const SingleActivator(LogicalKeyboardKey.f1): onAdd,
+      const SingleActivator(LogicalKeyboardKey.f5): onRefresh,
+    };
     return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              spacing: 8,
-              children: [
+      body: GlobalShortcuts(
+        shortcuts: shortcuts,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                spacing: 8,
+                children: [
 
-                Expanded(
-                  flex: 5,
-                  child: Text(
-                    tr.employees, style: Theme.of(context).textTheme.titleLarge,
+                  Expanded(
+                    flex: 5,
+                    child: Text(
+                      tr.employees, style: Theme.of(context).textTheme.titleLarge,
+                    ),
                   ),
-                ),
 
-                Expanded(
-                  flex: 3,
-                  child: ZSearchField(
-                    icon: FontAwesomeIcons.magnifyingGlass,
-                    controller: searchController,
-                    hint: tr.search,
-                    onChanged: (e) {
-                      setState(() {
+                  Expanded(
+                    flex: 3,
+                    child: ZSearchField(
+                      icon: FontAwesomeIcons.magnifyingGlass,
+                      controller: searchController,
+                      hint: tr.search,
+                      onChanged: (e) {
+                        setState(() {
 
-                      });
-                    },
-                    title: "",
+                        });
+                      },
+                      title: "",
+                    ),
                   ),
-                ),
-                ZOutlineButton(
-                    width: 120,
-                    icon: Icons.refresh,
-                    onPressed: onRefresh,
-                    label: Text(tr.refresh)),
-                ZOutlineButton(
-                    width: 120,
-                    icon: Icons.add,
-                    isActive: true,
-
-                    onPressed: (){
-                      showDialog(context: context, builder: (context){
-                        return AddEditEmployeeView();
-                      });
-                    },
-                    label: Text(tr.newKeyword)),
-              ],
+                  ZOutlineButton(
+                      toolTip: 'F5',
+                      width: 120,
+                      icon: Icons.refresh,
+                      onPressed: onRefresh,
+                      label: Text(tr.refresh)),
+                  ZOutlineButton(
+                      toolTip: 'F1',
+                      width: 120,
+                      icon: Icons.add,
+                      isActive: true,
+                      onPressed: onAdd,
+                      label: Text(tr.newKeyword)),
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: BlocConsumer<EmployeeBloc, EmployeeState>(
-              listener: (context, state) {
-                if(state is EmployeeSuccessState){
-                  Navigator.of(context).pop();
-                }
-              },
-              builder: (context, state) {
-                if(state is EmployeeLoadingState){
-                  return Center(child: CircularProgressIndicator());
-                }
-                if(state is EmployeeErrorState){
-                  return NoDataWidget(
-                    title: tr.accessDenied,
-                    message: state.message,
-                  );
-                }
-                if(state is EmployeeLoadedState){
-                  final query = searchController.text.toLowerCase().trim();
-                  final filteredList = state.employees.where((item) {
-                    final name = item.perName?.toLowerCase() ?? '';
-                    return name.contains(query);
-                  }).toList();
-
-                  if(filteredList.isEmpty){
+            Expanded(
+              child: BlocConsumer<EmployeeBloc, EmployeeState>(
+                listener: (context, state) {
+                  if(state is EmployeeSuccessState){
+                    Navigator.of(context).pop();
+                  }
+                },
+                builder: (context, state) {
+                  if(state is EmployeeLoadingState){
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if(state is EmployeeErrorState){
                     return NoDataWidget(
-                      title: tr.noData,
-                      message: tr.noDataFound,
+                      title: tr.accessDenied,
+                      message: state.message,
                     );
                   }
-                  return GridView.builder(
-                    padding: const EdgeInsets.all(8),
-                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 200,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.85,
-                    ),
-                    itemCount: filteredList.length,
-                    itemBuilder: (context, index) {
-                      final emp = filteredList[index];
-                      return ZCard(
-                        image: ImageHelper.stakeholderProfile(
-                          imageName: emp.empImage,
-                          size: 46,
-                        ),
-                        title: "${emp.perName} ${emp.perLastName}",
-                        subtitle: emp.empPosition,
-                        status: InfoStatus(
-                          label: emp.empStatus == 1 ? tr.active : tr.inactive,
-                          color: emp.empStatus == 1 ? Colors.green : Colors.red,
-                        ),
-                        infoItems: [
-                          InfoItem(
-                            icon: Icons.apartment,
-                            text: emp.empDepartment ?? "-",
-                          ),
-                          InfoItem(
-                            icon: Icons.payments,
-                            text: emp.empSalary?.toAmount() ?? "-",
-                          ),
-                          InfoItem(
-                            icon: Icons.date_range,
-                            text: emp.empHireDate?.toFormattedDate() ?? "",
-                          ),
-                        ],
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (_) => AddEditEmployeeView(model: emp),
-                          );
-                        },
+                  if(state is EmployeeLoadedState){
+                    final query = searchController.text.toLowerCase().trim();
+                    final filteredList = state.employees.where((item) {
+                      final name = item.perName?.toLowerCase() ?? '';
+                      return name.contains(query);
+                    }).toList();
+
+                    if(filteredList.isEmpty){
+                      return NoDataWidget(
+                        title: tr.noData,
+                        message: tr.noDataFound,
                       );
-                    },
-                  );
-                }
-                return const SizedBox();
-              },
+                    }
+                    return GridView.builder(
+                      padding: const EdgeInsets.all(8),
+                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 200,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.85,
+                      ),
+                      itemCount: filteredList.length,
+                      itemBuilder: (context, index) {
+                        final emp = filteredList[index];
+                        return ZCard(
+                          image: ImageHelper.stakeholderProfile(
+                            imageName: emp.empImage,
+                            size: 46,
+                          ),
+                          title: "${emp.perName} ${emp.perLastName}",
+                          subtitle: emp.empPosition,
+                          status: InfoStatus(
+                            label: emp.empStatus == 1 ? tr.active : tr.inactive,
+                            color: emp.empStatus == 1 ? Colors.green : Colors.red,
+                          ),
+                          infoItems: [
+                            InfoItem(
+                              icon: Icons.apartment,
+                              text: emp.empDepartment ?? "-",
+                            ),
+                            InfoItem(
+                              icon: Icons.payments,
+                              text: emp.empSalary?.toAmount() ?? "-",
+                            ),
+                            InfoItem(
+                              icon: Icons.date_range,
+                              text: emp.empHireDate?.toFormattedDate() ?? "",
+                            ),
+                          ],
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => AddEditEmployeeView(model: emp),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  }
+                  return const SizedBox();
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+  void onAdd(){
+    showDialog(context: context, builder: (context){
+      return AddEditEmployeeView();
+    });
   }
   void onRefresh(){
     context.read<EmployeeBloc>().add(LoadEmployeeEvent());

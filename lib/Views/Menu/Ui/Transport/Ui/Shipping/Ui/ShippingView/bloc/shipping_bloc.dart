@@ -29,15 +29,13 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       LoadShippingEvent event,
       Emitter<ShippingState> emit,
       ) async {
-    // Only show loading if we don't have data yet
-    if (state.shippingList.isEmpty) {
-      emit(ShippingListLoadingState(
-        shippingList: state.shippingList,
-        currentShipping: state.currentShipping,
-        loadingShpId: state.loadingShpId,
-        isLoading: true,
-      ));
-    }
+    // Always emit a "loading" state for refresh
+    emit(ShippingListLoadingState(
+      shippingList: state.shippingList, // keep old data
+      currentShipping: state.currentShipping,
+      loadingShpId: state.loadingShpId,
+      isLoading: true, // this triggers the loader
+    ));
 
     try {
       final shippingList = await _repo.getAllShipping();
@@ -55,6 +53,7 @@ class ShippingBloc extends Bloc<ShippingEvent, ShippingState> {
       ));
     }
   }
+
 
   Future<void> _onLoadShippingDetail(
       LoadShippingDetailEvent event,

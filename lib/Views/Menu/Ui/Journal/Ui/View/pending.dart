@@ -18,6 +18,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_blo
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../Localizations/Bloc/localizations_bloc.dart';
+import '../GetOrder/bloc/order_txn_bloc.dart';
 
 class PendingTransactionsView extends StatelessWidget {
   const PendingTransactionsView({super.key});
@@ -84,36 +85,26 @@ class _DesktopState extends State<_Desktop> {
     super.dispose();
   }
 
-  void _handleTransactionTap(dynamic txn) async {
-    if (_selectionMode) {
-      _toggleSelection(txn);
-      return;
-    }
-
+  void _handleTransactionTap(dynamic txn) {
     setState(() {
       _isLoadingDialog = true;
       _loadingRef = txn.trnReference;
     });
 
-    try {
-      if (txn.trnType == "ATAT" || txn.trnType == "CRFX") {
-        context.read<FetchAtatBloc>().add(
-          FetchAccToAccEvent(txn.trnReference ?? ""),
-        );
-      } else if (txn.trnType == "GLAT") {
-        context.read<GlatBloc>().add(LoadGlatEvent(txn.trnReference ?? ""));
-      } else if(txn.trnType == "TRPT"){
-        context.read<TrptBloc>().add(LoadTrptEvent(txn.trnReference ?? ""));
-      } else {
-        context.read<TxnReferenceBloc>().add(
-          FetchTxnByReferenceEvent(txn.trnReference ?? ""),
-        );
-      }
-    } catch (e) {
-      setState(() {
-        _isLoadingDialog = false;
-        _loadingRef = null;
-      });
+    final handlers = <String, void Function(String)>{
+      "ATAT": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
+      "CRFX": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
+      "TRPT": (ref) => context.read<TrptBloc>().add(LoadTrptEvent(ref)),
+      "GLAT": (ref) => context.read<GlatBloc>().add(LoadGlatEvent(ref)),
+      "SALE": (ref) => context.read<OrderTxnBloc>().add(FetchOrderTxnEvent(reference: ref)),
+      "PRCH": (ref) => context.read<OrderTxnBloc>().add(FetchOrderTxnEvent(reference: ref)),
+    };
+
+    final handler = handlers[txn.trnType];
+    if (handler != null) {
+      handler(txn.trnReference ?? "");
+    } else {
+      context.read<TxnReferenceBloc>().add(FetchTxnByReferenceEvent(txn.trnReference ?? ""));
     }
   }
 
@@ -318,7 +309,6 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ),
                       ZOutlineButton(
-                        toolTip: "F5",
                         width: 120,
                         icon: Icons.refresh,
                         onPressed: () {

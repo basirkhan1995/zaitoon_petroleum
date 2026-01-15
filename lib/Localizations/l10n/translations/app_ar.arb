@@ -677,5 +677,19 @@
   "glAccountsComplete": "سیستم حسابونه",
   "allCurrencies": "تول اسعار",
   "newEstimate": "بل آزمایشی",
-  "optional": "اختیاری"
+  "optional": "اختیاری",
+  "customerInformation": "معلومات مشتری",
+  "productDetails": "جزئیات کالا",
+  "currentYear": "امسال",
+  "number": "ردیف",
+  "currentAssets": "اوسنۍ شتمنۍ",
+  "fixedAssets": "ثابته شتمنۍ",
+  "intangibleAssets": "غیر ملموسه شتمنۍ",
+  "currentLiabilities": "اوسنۍ پورونه",
+  "ownerEquity": "د مالک حق",
+  "totalAssets": "ټول شتمنۍ",
+  "totalLiabilitiesEquity": "ټول پورونه او د مالک حق",
+  "assets": "شتمنۍ",
+  "liabilitiesEquity": "پورونه او د مالک حقونه",
+  "netProfit": "خالصه ګټه"
 }

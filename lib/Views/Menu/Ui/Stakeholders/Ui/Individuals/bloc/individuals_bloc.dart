@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
-import '../individual_model.dart';
+import '../model/individual_model.dart';
 part 'individuals_event.dart';
 part 'individuals_state.dart';
 

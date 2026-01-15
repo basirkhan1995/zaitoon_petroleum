@@ -11,7 +11,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualDetail
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/add_edit.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import '../../../../../../../../Features/Other/image_helper.dart';
-import '../../../Individuals/individual_model.dart';
+import '../../../Individuals/model/individual_model.dart';
 
 class IndividualProfileView extends StatelessWidget {
   final IndividualsModel ind;

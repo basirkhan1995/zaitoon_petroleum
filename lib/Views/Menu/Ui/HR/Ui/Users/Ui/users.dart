@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/shortcut.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/Ui/add_user.dart';
 import '../../../../../../../Features/Other/image_helper.dart';
 import '../../../../../../../Features/Widgets/no_data_widget.dart';
@@ -12,7 +13,7 @@ import '../../../../../../Auth/bloc/auth_bloc.dart';
 import '../../Employees/features/emp_card.dart';
 import '../../UserDetail/user_details.dart';
 import '../bloc/users_bloc.dart';
-
+import 'package:flutter/services.dart';
 
 class UsersView extends StatelessWidget {
   const UsersView({super.key});
@@ -64,6 +65,10 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
+    final shortcuts = {
+      const SingleActivator(LogicalKeyboardKey.f1): onAdd,
+      const SingleActivator(LogicalKeyboardKey.f5): onRefresh,
+    };
     final locale = AppLocalizations.of(context)!;
     final state = context.watch<AuthBloc>().state;
 
@@ -72,145 +77,150 @@ class _DesktopState extends State<_Desktop> {
     }
    // final login = state.loginData;
     return Scaffold(
-     // backgroundColor: color.surface,
-      body: Column(
-        children: [
+      body: GlobalShortcuts(
+        shortcuts: shortcuts,
+        child: Column(
+          children: [
+            SizedBox(height: 5),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8),
+              child: Row(
+                spacing: 8,
+                children: [
+                  Expanded(
+                    child: ZSearchField(
+                      icon: FontAwesomeIcons.magnifyingGlass,
+                      controller: searchController,
+                      hint: locale.search,
+                      onChanged: (e) {
+                        setState(() {
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8),
-            child: Row(
-              spacing: 8,
-              children: [
-                Expanded(
-                  child: ZSearchField(
-                    icon: FontAwesomeIcons.magnifyingGlass,
-                    controller: searchController,
-                    hint: locale.search,
-                    onChanged: (e) {
-                      setState(() {
-
-                      });
-                    },
-                    title: "",
+                        });
+                      },
+                      title: "",
+                    ),
                   ),
-                ),
-                ZOutlineButton(
-                    width: 120,
-                    icon: Icons.refresh,
-                    onPressed: onRefresh,
-                    label: Text(locale.refresh)),
-                ZOutlineButton(
-                    width: 120,
-                    icon: Icons.add,
-                    isActive: true,
-
-                    onPressed: (){
-                       showDialog(context: context, builder: (context){
-                         return AddUserView();
-                       });
-                    },
-                    label: Text(locale.newKeyword)),
-              ],
+                  ZOutlineButton(
+                      toolTip: 'F1',
+                      width: 120,
+                      icon: Icons.refresh,
+                      onPressed: onRefresh,
+                      label: Text(locale.refresh)),
+                  ZOutlineButton(
+                      toolTip: 'F5',
+                      width: 120,
+                      icon: Icons.add,
+                      isActive: true,
+                      onPressed: onAdd,
+                      label: Text(locale.newKeyword)),
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: BlocConsumer<UsersBloc, UsersState>(
-              listener: (context,state){
-                if(state is UserSuccessState){
-                  Navigator.of(context).pop();
-                }
-              },
-              builder: (context, state) {
-                if (state is UsersLoadingState) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (state is UsersErrorState) {
-                  return NoDataWidget(
-                    message: state.message,
-                    onRefresh: () {
-                      context.read<UsersBloc>().add(
-                        LoadUsersEvent(),
-                      );
-                    },
-                  );
-                }
-                if (state is UsersLoadedState) {
-                  final query = searchController.text.toLowerCase().trim();
-                  final filteredList = state.users.where((item) {
-                    final name = item.usrName?.toLowerCase() ?? '';
-                    return name.contains(query);
-                  }).toList();
-
-                  if(filteredList.isEmpty){
+            Expanded(
+              child: BlocConsumer<UsersBloc, UsersState>(
+                listener: (context,state){
+                  if(state is UserSuccessState){
+                    Navigator.of(context).pop();
+                  }
+                },
+                builder: (context, state) {
+                  if (state is UsersLoadingState) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (state is UsersErrorState) {
                     return NoDataWidget(
-                      message: locale.noDataFound,
+                      message: state.message,
+                      onRefresh: () {
+                        context.read<UsersBloc>().add(
+                          LoadUsersEvent(),
+                        );
+                      },
                     );
                   }
-                  return GridView.builder(
-                    padding: const EdgeInsets.all(8),
-                    itemCount: filteredList.length,
-                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 200,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.85,
-                    ),
-                    itemBuilder: (context, index) {
-                      final usr = filteredList[index];
+                  if (state is UsersLoadedState) {
+                    final query = searchController.text.toLowerCase().trim();
+                    final filteredList = state.users.where((item) {
+                      final name = item.usrName?.toLowerCase() ?? '';
+                      return name.contains(query);
+                    }).toList();
 
-                      return ZCard(
-                        // ---------- Avatar ----------
-                        image: ImageHelper.stakeholderProfile(
-                        imageName: usr.usrPhoto,
-                        size: 46,
+                    if(filteredList.isEmpty){
+                      return NoDataWidget(
+                        message: locale.noDataFound,
+                      );
+                    }
+                    return GridView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: filteredList.length,
+                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 200,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.85,
                       ),
+                      itemBuilder: (context, index) {
+                        final usr = filteredList[index];
 
-                        // ---------- Title ----------
-                        title: usr.usrName ?? "-",
-                        subtitle: usr.usrEmail,
-
-                        // ---------- Status ----------
-                        status: InfoStatus(
-                          label: usr.usrStatus == 1 ? locale.active : locale.blocked,
-                          color: usr.usrStatus == 1 ? Colors.green : Colors.red,
+                        return ZCard(
+                          // ---------- Avatar ----------
+                          image: ImageHelper.stakeholderProfile(
+                          imageName: usr.usrPhoto,
+                          size: 46,
                         ),
 
-                        // ---------- Info Rows ----------
-                        infoItems: [
-                          InfoItem(
-                            icon: Icons.person,
-                            text: usr.usrFullName ?? "-",
-                          ),
-                          InfoItem(
-                            icon: Icons.apartment,
-                            text: usr.usrBranch?.toString() ?? "-",
-                          ),
-                          InfoItem(
-                            icon: Icons.security,
-                            text: usr.usrRole ?? "-",
-                          ),
-                        ],
+                          // ---------- Title ----------
+                          title: usr.usrName ?? "-",
+                          subtitle: usr.usrEmail,
 
-                        // ---------- Action ----------
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (_) => UserDetailsView(usr: usr),
-                          );
-                        },
-                      );
-                    },
-                  );
+                          // ---------- Status ----------
+                          status: InfoStatus(
+                            label: usr.usrStatus == 1 ? locale.active : locale.blocked,
+                            color: usr.usrStatus == 1 ? Colors.green : Colors.red,
+                          ),
+
+                          // ---------- Info Rows ----------
+                          infoItems: [
+                            InfoItem(
+                              icon: Icons.person,
+                              text: usr.usrFullName ?? "-",
+                            ),
+                            InfoItem(
+                              icon: Icons.apartment,
+                              text: usr.usrBranch?.toString() ?? "-",
+                            ),
+                            InfoItem(
+                              icon: Icons.security,
+                              text: usr.usrRole ?? "-",
+                            ),
+                          ],
+
+                          // ---------- Action ----------
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => UserDetailsView(usr: usr),
+                            );
+                          },
+                        );
+                      },
+                    );
 
 
-                }
-                return const SizedBox();
-              },
+                  }
+                  return const SizedBox();
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  void onAdd(){
+    showDialog(context: context, builder: (context){
+      return AddUserView();
+    });
   }
 
   void onRefresh(){

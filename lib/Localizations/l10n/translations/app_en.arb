@@ -677,5 +677,19 @@
   "glAccountsComplete": "General Ledger Accounts",
   "allCurrencies": "All Currencies",
   "newEstimate": "New Estimate",
-  "optional": "Optional"
+  "optional": "Optional",
+  "customerInformation": "Customer Information",
+  "productDetails": "Product Details",
+  "currentYear": "Current Year",
+  "number": "No",
+  "currentAssets": "Current Assets",
+  "fixedAssets": "Fixed Assets",
+  "intangibleAssets": "Intangible Assets",
+  "currentLiabilities": "Current Liabilities",
+  "ownerEquity": "Owner's Equity",
+  "totalAssets": "Total Assets",
+  "totalLiabilitiesEquity": "Total Liabilities & Equity",
+  "assets": "Assets",
+  "liabilitiesEquity": "Liabilities & Equity",
+  "netProfit": "Net Profit"
 }

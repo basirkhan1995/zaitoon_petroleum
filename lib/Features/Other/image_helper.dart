@@ -26,7 +26,7 @@ class ImageHelper {
 
     // Shape
     ShapeStyle shapeStyle = ShapeStyle.circle,
-    double borderRadius = 10,
+    double borderRadius = 5,
     BoxBorder? border,
 
     // Camera icon

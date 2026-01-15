@@ -38,10 +38,11 @@ import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/FetchGLAT/model/glat_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/GetOrder/model/get_order_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/ArApReport/model/ar_ap_model.dart';
+import '../Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/model/bs_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/model/limit_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Company/Branches/model/branch_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/model/product_model.dart';
-import '../Views/Menu/Ui/Stakeholders/Ui/Individuals/individual_model.dart';
+import '../Views/Menu/Ui/Stakeholders/Ui/Individuals/model/individual_model.dart';
 import '../Views/Menu/Ui/Stock/Ui/OrderScreen/GetOrderById/model/ord_by_id_model.dart';
 import '../Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/model/purchase_invoice_items.dart';
 import '../Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/model/shipping_model.dart';
@@ -2567,4 +2568,34 @@ class Repositories {
       throw "$e";
     }
   }
+
+  Future<BalanceSheetModel> balanceSheet() async {
+    try {
+      final response = await api.get(
+        endpoint: "/reports/balanceSheet.php",
+      );
+
+      // Check if API returned a message
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If response is null
+      if (response.data == null) {
+        throw Exception("No data found");
+      }
+
+      // Convert the JSON to BalanceSheetModel
+      if (response.data is Map<String, dynamic>) {
+        return BalanceSheetModel.fromMap(response.data);
+      }
+
+      throw Exception("Unexpected response format");
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+
 }

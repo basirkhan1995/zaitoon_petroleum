@@ -16,6 +16,7 @@ import '../FetchATAT/bloc/fetch_atat_bloc.dart';
 import '../FetchATAT/fetch_atat.dart';
 import '../FetchTRPT/Ui/trpt_view.dart';
 import '../FetchTRPT/bloc/trpt_bloc.dart';
+import '../GetOrder/bloc/order_txn_bloc.dart';
 import '../TxnByReference/bloc/txn_reference_bloc.dart';
 import '../TxnByReference/txn_reference.dart';
 
@@ -86,18 +87,20 @@ class _DesktopState extends State<_Desktop> {
       _loadingRef = txn.trnReference;
     });
 
-    if (txn.trnType == "ATAT" || txn.trnType == "CRFX") {
-      context.read<FetchAtatBloc>().add(
-        FetchAccToAccEvent(txn.trnReference ?? ""),
-      );
-    }else if(txn.trnType == "TRPT"){
-      context.read<TrptBloc>().add(LoadTrptEvent(txn.trnReference ?? ""));
-    } else if (txn.trnType == "GLAT") {
-      context.read<GlatBloc>().add(LoadGlatEvent(txn.trnReference ?? ""));
+    final handlers = <String, void Function(String)>{
+      "ATAT": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
+      "CRFX": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
+      "TRPT": (ref) => context.read<TrptBloc>().add(LoadTrptEvent(ref)),
+      "GLAT": (ref) => context.read<GlatBloc>().add(LoadGlatEvent(ref)),
+      "SALE": (ref) => context.read<OrderTxnBloc>().add(FetchOrderTxnEvent(reference: ref)),
+      "PRCH": (ref) => context.read<OrderTxnBloc>().add(FetchOrderTxnEvent(reference: ref)),
+    };
+
+    final handler = handlers[txn.trnType];
+    if (handler != null) {
+      handler(txn.trnReference ?? "");
     } else {
-      context.read<TxnReferenceBloc>().add(
-        FetchTxnByReferenceEvent(txn.trnReference ?? ""),
-      );
+      context.read<TxnReferenceBloc>().add(FetchTxnByReferenceEvent(txn.trnReference ?? ""));
     }
   }
 

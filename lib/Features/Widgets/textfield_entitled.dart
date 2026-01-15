@@ -113,6 +113,7 @@ class ZTextFieldEntitled extends StatelessWidget {
                          filled: !isEnabled,
                         suffixIcon: trailing,
                         suffix: end,
+                        counterText: '',
                         suffixIconConstraints: BoxConstraints(maxWidth: 35,maxHeight: 35),
                         disabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(3),

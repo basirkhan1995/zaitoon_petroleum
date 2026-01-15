@@ -87,22 +87,23 @@ class _DesktopState extends State<_Desktop> {
       _loadingRef = txn.trnReference;
     });
 
-    if (txn.trnType == "ATAT" || txn.trnType == "CRFX") {
-      context.read<FetchAtatBloc>().add(
-        FetchAccToAccEvent(txn.trnReference ?? ""),
-      );
-    }else if(txn.trnType == "TRPT"){
-      context.read<TrptBloc>().add(LoadTrptEvent(txn.trnReference ?? ""));
-    } else if (txn.trnType == "GLAT") {
-      context.read<GlatBloc>().add(LoadGlatEvent(txn.trnReference ?? ""));
-    } else if (txn.trnType == "SALE" || txn.trnType == "PRCH"){
-       context.read<OrderTxnBloc>().add(FetchOrderTxnEvent(reference: txn.trnReference ?? ""));
+    final handlers = <String, void Function(String)>{
+      "ATAT": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
+      "CRFX": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
+      "TRPT": (ref) => context.read<TrptBloc>().add(LoadTrptEvent(ref)),
+      "GLAT": (ref) => context.read<GlatBloc>().add(LoadGlatEvent(ref)),
+      "SALE": (ref) => context.read<OrderTxnBloc>().add(FetchOrderTxnEvent(reference: ref)),
+      "PRCH": (ref) => context.read<OrderTxnBloc>().add(FetchOrderTxnEvent(reference: ref)),
+    };
+
+    final handler = handlers[txn.trnType];
+    if (handler != null) {
+      handler(txn.trnReference ?? "");
     } else {
-      context.read<TxnReferenceBloc>().add(
-        FetchTxnByReferenceEvent(txn.trnReference ?? ""),
-      );
+      context.read<TxnReferenceBloc>().add(FetchTxnByReferenceEvent(txn.trnReference ?? ""));
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -283,7 +284,6 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ),
                       ZOutlineButton(
-                        toolTip: "F5",
                         width: 120,
                         icon: Icons.refresh,
                         onPressed: () {
@@ -537,7 +537,7 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-  // Method to copy reference to clipboard
+
   Future<void> _copyToClipboard(String reference, BuildContext context) async {
     await Utils.copyToClipboard(reference);
 

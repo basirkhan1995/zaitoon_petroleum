@@ -2033,4 +2033,46 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get optional => 'اختیاری';
+
+  @override
+  String get customerInformation => 'معلومات مشتری';
+
+  @override
+  String get productDetails => 'جزئیات کالا';
+
+  @override
+  String get currentYear => 'امسال';
+
+  @override
+  String get number => 'ردیف';
+
+  @override
+  String get currentAssets => 'دارایی‌های جاری';
+
+  @override
+  String get fixedAssets => 'دارایی‌های ثابت';
+
+  @override
+  String get intangibleAssets => 'دارایی‌های نامشهود';
+
+  @override
+  String get currentLiabilities => 'بدهی‌های جاری';
+
+  @override
+  String get ownerEquity => 'حقوق صاحبان سهام';
+
+  @override
+  String get totalAssets => 'جمع دارایی‌ها';
+
+  @override
+  String get totalLiabilitiesEquity => 'جمع بدهی‌ها و حقوق صاحبان سهام';
+
+  @override
+  String get assets => 'دارایی‌ها';
+
+  @override
+  String get liabilitiesEquity => 'بدهی‌ها و حقوق صاحبان سهام';
+
+  @override
+  String get netProfit => 'سود خالص';
 }

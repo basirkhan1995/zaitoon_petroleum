@@ -677,5 +677,19 @@
   "glAccountsComplete": "حسابهای سیستم",
   "allCurrencies": "همه اسعار",
   "newEstimate": "بل آزمایشی",
-  "optional": "اختیاری"
+  "optional": "اختیاری",
+  "customerInformation": "معلومات مشتری",
+  "productDetails": "جزئیات کالا",
+  "currentYear": "امسال",
+  "number": "ردیف",
+  "currentAssets": "دارایی‌های جاری",
+  "fixedAssets": "دارایی‌های ثابت",
+  "intangibleAssets": "دارایی‌های نامشهود",
+  "currentLiabilities": "بدهی‌های جاری",
+  "ownerEquity": "حقوق صاحبان سهام",
+  "totalAssets": "جمع دارایی‌ها",
+  "totalLiabilitiesEquity": "جمع بدهی‌ها و حقوق صاحبان سهام",
+  "assets": "دارایی‌ها",
+  "liabilitiesEquity": "بدهی‌ها و حقوق صاحبان سهام",
+  "netProfit": "سود خالص"
 }
