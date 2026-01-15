@@ -267,7 +267,6 @@ class BalanceSheetPrintSettings extends PrintServices {
     );
   }
 
-
   pw.Widget _grandTotal(String label, double cy, double ly) {
     return pw.Container(
       margin: const pw.EdgeInsets.only(top: 3),
