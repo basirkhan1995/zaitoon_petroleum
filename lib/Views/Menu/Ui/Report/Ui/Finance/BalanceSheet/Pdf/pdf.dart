@@ -96,19 +96,14 @@ class BalanceSheetPrintSettings extends PrintServices {
         margin: const pw.EdgeInsets.symmetric(horizontal: 30,vertical: 20),
         build: (_) => [
           _header(company),
-          pw.SizedBox(height: 12), // Reduced from 15
-
-          _mainTitle("ASSETS"),
-          pw.SizedBox(height: 4), // Reduced spacing
+          pw.SizedBox(height: 8), // Reduced from 15
           _yearHeader(),
           pw.SizedBox(height: 2), // Reduced spacing
+          _mainTitle("ASSETS"),
           ..._assetSection(data.assets),
-
-          pw.SizedBox(height: 10), // Reduced from 15
+          pw.SizedBox(height: 15), // Reduced from 15
           _mainTitle("LIABILITIES AND EQUITY"),
           pw.SizedBox(height: 4), // Reduced spacing
-          _yearHeader(),
-          pw.SizedBox(height: 2), // Reduced spacing
           ..._liabilitySection(data.liability),
         ],
       ),
@@ -251,7 +246,7 @@ class BalanceSheetPrintSettings extends PrintServices {
       margin: const pw.EdgeInsets.symmetric(vertical: 1), // Reduced from 2
       child: pw.Row(
         children: [
-          pw.Expanded(flex: 4, child: pw.Text(name, style: pw.TextStyle(fontSize: 8))), // Added font size 8
+          pw.Expanded(flex: 4, child: text(text: name, fontSize: 8)), // Added font size 8
           pw.Expanded(flex: 3, child: pw.Text(cy.toAmount(), textAlign: pw.TextAlign.right, style: pw.TextStyle(fontSize: 8))), // Added font size 8
           pw.Expanded(flex: 3, child: pw.Text(ly.toAmount(), textAlign: pw.TextAlign.right, style: pw.TextStyle(fontSize: 8))), // Added font size 8
         ],
@@ -261,14 +256,10 @@ class BalanceSheetPrintSettings extends PrintServices {
 
   pw.Widget _total(String label, double cy, double ly) {
     return pw.Container(
-      margin: const pw.EdgeInsets.only(top: 4), // Reduced from 6
-      padding: const pw.EdgeInsets.all(2), // Reduced from 8
-      decoration: const pw.BoxDecoration(
-          color: pw.PdfColors.blue50
-      ),
+      margin: const pw.EdgeInsets.only(bottom: 5,top: 3),
       child: pw.Row(
         children: [
-          pw.Expanded(flex: 4, child: pw.Text(label, style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold))), // Added font size 8
+          pw.Expanded(flex: 4, child: text(text: label, fontSize: 8, fontWeight: pw.FontWeight.bold)), // Added font size 8
           pw.Expanded(flex: 3, child: pw.Text(cy.toAmount(), textAlign: pw.TextAlign.right, style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold))), // Added font size 8
           pw.Expanded(flex: 3, child: pw.Text(ly.toAmount(), textAlign: pw.TextAlign.right, style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold))), // Added font size 8
         ],
@@ -276,10 +267,11 @@ class BalanceSheetPrintSettings extends PrintServices {
     );
   }
 
+
   pw.Widget _grandTotal(String label, double cy, double ly) {
     return pw.Container(
-      margin: const pw.EdgeInsets.only(top: 8), // Reduced from 12
-      padding: const pw.EdgeInsets.all(2), // Reduced from 8
+      margin: const pw.EdgeInsets.only(top: 3),
+      padding: const pw.EdgeInsets.symmetric(vertical: 5,horizontal: 2),
       decoration: const pw.BoxDecoration(
           color: pw.PdfColors.blue50
       ),
