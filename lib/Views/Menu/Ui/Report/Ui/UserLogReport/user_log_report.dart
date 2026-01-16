@@ -169,11 +169,10 @@ class _DesktopState extends State<_Desktop> {
                     },
                   ),
                 ),
-
                 ZOutlineButton(
                   height: 40,
                   width: 100,
-                  icon: Icons.folder_open_rounded,
+                  icon: Icons.call_to_action_outlined,
                   isActive: true,
                   label: Text(tr.apply),
                   onPressed: () {

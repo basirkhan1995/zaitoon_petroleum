@@ -164,7 +164,7 @@
   "incomeStatement": "سود و زیان",
   "glReport": "صورتحساب سیستم",
   "transactions": "معاملات",
-  "glStatement": "صورتحساب سیستم",
+  "glStatement": "صورتحساب جی ال",
   "branches": "شعبات",
   "shift": "انتقال کالا",
   "sales": "فروشات",
@@ -693,5 +693,5 @@
   "liabilitiesEquity": "بدهی‌ها و حقوق صاحبان سهام",
   "netProfit": "سود خالص",
   "actualBalance": "بیلانس اصلی",
-  "glStatementSingleDate": "بیلانس جی ال"
+  "glStatementSingleDate": "صورتحساب جی ال"
 }

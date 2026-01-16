@@ -77,8 +77,9 @@ class _ZDatePickerState extends State<ZDatePicker> {
           height: widget.height ?? 40,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3),
+            color: Theme.of(context).colorScheme.surface,
             border: Border.all(
-              color: color.outline.withValues(alpha: .4),
+              color: color.outline.withValues(alpha: .3),
               width: 1,
             ),
           ),

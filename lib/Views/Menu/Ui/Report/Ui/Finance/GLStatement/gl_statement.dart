@@ -194,140 +194,137 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ),
                       SizedBox(height: 8),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          spacing: 8,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child:
-                              GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
-                                showAllOnFocus: true,
-                                controller: accountController,
-                                title: tr.accounts,
-                                hintText: tr.accNameOrNumber,
-                                isRequired: true,
-                                bloc: context.read<GlAccountsBloc>(),
-                                fetchAllFunction: (bloc) => bloc.add(
-                                  LoadGlAccountEvent(),
-                                ),
-                                searchFunction: (bloc, query) => bloc.add(
-                                  LoadGlAccountEvent(),
-                                ),
-                                validator: (value) {
-                                  if (value.isEmpty) {
-                                    return tr.required(tr.accounts);
-                                  }
-                                  return null;
-                                },
-                                itemBuilder: (context, account) => Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 5,
-                                    vertical: 5,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            "${account.accNumber} | ${account.accName}",
-                                            style: Theme.of(
-                                              context,
-                                            ).textTheme.bodyLarge,
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                itemToString: (acc) =>
-                                "${acc.accNumber} | ${acc.accName}",
-                                stateToLoading: (state) =>
-                                state is GlAccountsLoadingState,
-                                loadingBuilder: (context) => const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 3,
-                                  ),
-                                ),
-                                stateToItems: (state) {
-                                  if (state is GlAccountLoadedState) {
-                                    return state.gl;
-                                  }
-                                  return [];
-                                },
-                                onSelected: (value) {
-                                  setState(() {
-                                    accNumber = value.accNumber;
-                                  });
-                                },
-                                noResultsText: tr.noDataFound,
-                                showClearButton: true,
+                      Row(
+                        spacing: 8,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child:
+                            GenericTextfield<GlAccountsModel, GlAccountsBloc, GlAccountsState>(
+                              showAllOnFocus: true,
+                              controller: accountController,
+                              title: tr.accounts,
+                              hintText: tr.accNameOrNumber,
+                              isRequired: true,
+                              bloc: context.read<GlAccountsBloc>(),
+                              fetchAllFunction: (bloc) => bloc.add(
+                                LoadGlAccountEvent(),
                               ),
+                              searchFunction: (bloc, query) => bloc.add(
+                                LoadGlAccountEvent(),
+                              ),
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return tr.required(tr.accounts);
+                                }
+                                return null;
+                              },
+                              itemBuilder: (context, account) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 5,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "${account.accNumber} | ${account.accName}",
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyLarge,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              itemToString: (acc) =>
+                              "${acc.accNumber} | ${acc.accName}",
+                              stateToLoading: (state) =>
+                              state is GlAccountsLoadingState,
+                              loadingBuilder: (context) => const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                ),
+                              ),
+                              stateToItems: (state) {
+                                if (state is GlAccountLoadedState) {
+                                  return state.gl;
+                                }
+                                return [];
+                              },
+                              onSelected: (value) {
+                                setState(() {
+                                  accNumber = value.accNumber;
+                                });
+                              },
+                              noResultsText: tr.noDataFound,
+                              showClearButton: true,
+                            ),
 
+                          ),
+                          SizedBox(
+                            width: 200,
+                            child: BranchDropdown(
+                                height: 40,
+                                onBranchSelected: (e){
+                                  setState(() {
+                                    branchCode = e.brcId ?? 1000;
+                                  });
+                                }),
+                          ),
+                          SizedBox(
+                            width: 160,
+                            child: CurrencyDropdown(
+                              initiallySelectedSingle: CurrenciesModel(ccyCode: baseCurrency),
+                                 title: AppLocalizations.of(context)!.currencyTitle,
+                                isMulti: false,
+                                onMultiChanged: (e){},
+                               onSingleChanged: (e){
+                                 setState(() {
+                                   currency = e?.ccyCode ??"";
+                                 });
+                                 onSubmit();
+                               },
                             ),
-                            SizedBox(
-                              width: 200,
-                              child: BranchDropdown(
-                                  height: 40,
-                                  onBranchSelected: (e){
-                                    setState(() {
-                                      branchCode = e.brcId ?? 1000;
-                                    });
-                                  }),
+                          ),
+                          SizedBox(
+                            width: 150,
+                            child: ZDatePicker(
+                              label: widget.isSingleDate? tr.date : tr.fromDate,
+                              value: fromDate,
+                              onDateChanged: (v) {
+                                setState(() {
+                                  fromDate = v;
+                                  shamsiFromDate = v.toAfghanShamsi;
+                                });
+                                onSubmit();
+                              },
                             ),
-                            SizedBox(
-                              width: 160,
-                              child: CurrencyDropdown(
-                                initiallySelectedSingle: CurrenciesModel(ccyCode: baseCurrency),
-                                   title: AppLocalizations.of(context)!.currencyTitle,
-                                  isMulti: false,
-                                  onMultiChanged: (e){},
-                                 onSingleChanged: (e){
-                                   setState(() {
-                                     currency = e?.ccyCode ??"";
-                                   });
-                                   onSubmit();
-                                 },
-                              ),
-                            ),
+                          ),
+                          if(widget.isSingleDate != true)...[
                             SizedBox(
                               width: 150,
                               child: ZDatePicker(
-                                label: widget.isSingleDate? tr.date : tr.fromDate,
-                                value: fromDate,
+                                label: tr.toDate,
+                                value: toDate,
                                 onDateChanged: (v) {
                                   setState(() {
-                                    fromDate = v;
-                                    shamsiFromDate = v.toAfghanShamsi;
+                                    toDate = v;
+                                    shamsiToDate = v.toAfghanShamsi;
                                   });
                                   onSubmit();
                                 },
                               ),
                             ),
-                            if(widget.isSingleDate != true)...[
-                              SizedBox(
-                                width: 150,
-                                child: ZDatePicker(
-                                  label: tr.toDate,
-                                  value: toDate,
-                                  onDateChanged: (v) {
-                                    setState(() {
-                                      toDate = v;
-                                      shamsiToDate = v.toAfghanShamsi;
-                                    });
-                                    onSubmit();
-                                  },
-                                ),
-                              ),
-                            ]
-                          ],
-                        ),
+                          ]
+                        ],
                       ),
                       SizedBox(height: 10),
                       Padding(
@@ -593,15 +590,19 @@ class _DesktopState extends State<_Desktop> {
 
 
   void onSubmit(){
-    context.read<GlStatementBloc>().add(
-      LoadGlStatementEvent(
-        currency: currency ?? baseCurrency ?? "",
-        branchCode: branchCode,
-        accountNumber: accNumber!,
-        fromDate: fromDate,
-        toDate: widget.isSingleDate? fromDate : toDate,
-      ),
-    );
+    if(accNumber !=null){
+      context.read<GlStatementBloc>().add(
+        LoadGlStatementEvent(
+          currency: currency ?? baseCurrency ?? "",
+          branchCode: branchCode,
+          accountNumber: accNumber!,
+          fromDate: fromDate,
+          toDate: widget.isSingleDate? fromDate : toDate,
+        ),
+      );
+    }else{
+      Utils.showOverlayMessage(context, message: "Please select an account", isError: true);
+    }
   }
 
   void pdf(){

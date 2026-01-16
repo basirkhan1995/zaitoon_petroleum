@@ -161,8 +161,8 @@ class GlStatementPrintSettings extends PrintServices {
             // Logo (right side)
             if (image != null)
               pw.Container(
-                width: 50,
-                height: 50,
+                width: 40,
+                height: 40,
                 child: pw.Image(image, fit: pw.BoxFit.contain),
               ),
           ],
@@ -361,7 +361,7 @@ class GlStatementPrintSettings extends PrintServices {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               buildSummary(
-                distance: 130,
+                distance: 150,
                 label: getTranslation(
                   locale: 'statementAccount',
                   language: language,
@@ -514,11 +514,11 @@ class GlStatementPrintSettings extends PrintServices {
         for (var i = 0; i < (items.records?.length ?? 0); i++)
           pw.Container(
             width: double.infinity,
-            padding: const pw.EdgeInsets.symmetric(vertical: 4),
+            padding: const pw.EdgeInsets.symmetric(vertical: 6),
             decoration: pw.BoxDecoration(
-              color: i.isOdd ? pw.PdfColors.grey100 : null,
+             // color: i.isOdd ? pw.PdfColors.grey100 : null,
               border: pw.Border(
-                // bottom: pw.BorderSide(width: 0.25, color: pw.PdfColors.grey300),
+                 bottom: pw.BorderSide(width: 0.6, color: pw.PdfColors.grey300),
               ),
             ),
             child: pw.Row(

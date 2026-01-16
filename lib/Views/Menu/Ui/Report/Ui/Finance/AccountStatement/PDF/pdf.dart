@@ -153,7 +153,7 @@ class AccountStatementPrintSettings extends PrintServices {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  text(text: report.comName ?? "", fontSize: 25,tightBounds: true),
+                  text(text: report.comName ?? "", fontSize: 25,fontWeight: pw.FontWeight.bold, tightBounds: true),
                   pw.SizedBox(height: 3),
                   text(text: report.statementDate ?? "", fontSize: 10),
                 ],
@@ -162,8 +162,8 @@ class AccountStatementPrintSettings extends PrintServices {
             // Logo (right side)
             if (image != null)
               pw.Container(
-                width: 50,
-                height: 50,
+                width: 40,
+                height: 40,
                 child: pw.Image(image, fit: pw.BoxFit.contain),
               ),
           ],
@@ -362,7 +362,7 @@ class AccountStatementPrintSettings extends PrintServices {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               buildSummary(
-                distance: 130,
+                distance: 150,
                 label: getTranslation(
                   locale: 'statementAccount',
                   language: language,
@@ -542,11 +542,11 @@ class AccountStatementPrintSettings extends PrintServices {
         for (var i = 0; i < (items.records?.length ?? 0); i++)
           pw.Container(
             width: double.infinity,
-            padding: const pw.EdgeInsets.symmetric(vertical: 4),
+            padding: const pw.EdgeInsets.symmetric(vertical: 6),
             decoration: pw.BoxDecoration(
-              color: i.isOdd ? pw.PdfColors.grey100 : null,
+             // color: i.isOdd ? pw.PdfColors.grey100 : null,
               border: pw.Border(
-                // bottom: pw.BorderSide(width: 0.25, color: pw.PdfColors.grey300),
+               bottom: pw.BorderSide(width: 0.6, color: pw.PdfColors.grey300),
               ),
             ),
             child: pw.Row(

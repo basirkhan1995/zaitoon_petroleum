@@ -447,7 +447,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get transactions => 'معاملات';
 
   @override
-  String get glStatement => 'صورتحساب سیستم';
+  String get glStatement => 'صورتحساب جی ال';
 
   @override
   String get branches => 'شعبات';
@@ -2083,5 +2083,5 @@ class AppLocalizationsAr extends AppLocalizations {
   String get actualBalance => 'بیلانس اصلی';
 
   @override
-  String get glStatementSingleDate => 'بیلانس جی ال';
+  String get glStatementSingleDate => 'صورتحساب جی ال';
 }

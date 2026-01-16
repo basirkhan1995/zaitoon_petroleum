@@ -164,7 +164,7 @@
   "incomeStatement": "د عایداتو راپور",
   "glReport": "صورتحساب سیستم",
   "transactions": "معاملات",
-  "glStatement": "صورتحساب سیستم",
+  "glStatement": "صورتحساب جی ال",
   "branches": "شعبات",
   "shift": "انتقال کالا",
   "sales": "خرڅلاو",
@@ -693,5 +693,5 @@
   "liabilitiesEquity": "پورونه او د مالک حقونه",
   "netProfit": "خالصه ګټه",
   "actualBalance": "بیلانس اصلی",
-  "glStatementSingleDate": "بیلانس جی ال"
+  "glStatementSingleDate": "صورتحساب جی ال"
 }
