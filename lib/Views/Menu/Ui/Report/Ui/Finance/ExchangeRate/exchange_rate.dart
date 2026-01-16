@@ -54,24 +54,10 @@ class _DesktopState extends State<_Desktop> {
   String? _selectedFromCurrency;
   String? _selectedToCurrency;
 
-
   String fromDate = DateTime.now().subtract(Duration(days: 7)).toFormattedDate();
   String toDate = DateTime.now().toFormattedDate();
   Jalali shamsiFromDate = DateTime.now().subtract(Duration(days: 7)).toAfghanShamsi;
   Jalali shamsiToDate = DateTime.now().toAfghanShamsi;
-
-  @override
-  void initState() {
-    super.initState();
-
-  }
-
-  @override
-  void dispose() {
-
-    super.dispose();
-  }
-
 
 
   void _onFilterChanged(BuildContext context) {
@@ -463,3 +449,4 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 }
+
