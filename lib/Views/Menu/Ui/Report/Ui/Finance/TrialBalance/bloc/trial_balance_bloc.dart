@@ -13,7 +13,7 @@ class TrialBalanceBloc extends Bloc<TrialBalanceEvent, TrialBalanceState> {
     on<LoadTrialBalanceEvent>((event, emit) async{
       emit(TrialBalanceLoadingState());
       try{
-        final balance = await _repo.getTrialBalance(date: event.date, ccy: event.currency);
+        final balance = await _repo.getTrialBalance(date: event.date);
         emit(TrialBalanceLoadedState(balance));
       }catch(e){
         emit(TrialBalanceErrorState(e.toString()));

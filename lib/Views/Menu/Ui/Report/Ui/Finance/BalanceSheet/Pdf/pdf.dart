@@ -7,15 +7,12 @@ import '../../../../../../../../Features/PrintSettings/report_model.dart';
 import '../model/bs_model.dart';
 
 class BalanceSheetPrintSettings extends PrintServices {
-
-
   Future<pw.Document> printPreview({
     required BalanceSheetModel data,
     required String language,
     required pw.PageOrientation orientation,
     required ReportModel company,
     required pw.PdfPageFormat pageFormat,
-
   }) {
     return _generate(
       data: data,
@@ -32,7 +29,6 @@ class BalanceSheetPrintSettings extends PrintServices {
     required pw.PageOrientation orientation,
     required ReportModel company,
     required pw.PdfPageFormat pageFormat,
-
   }) async {
     final doc = await printPreview(
       data: data,
@@ -87,23 +83,32 @@ class BalanceSheetPrintSettings extends PrintServices {
   }) async {
     final doc = pw.Document();
 
+
+    final prebuiltHeader = await header(report: company);
+
     doc.addPage(
       pw.MultiPage(
         pageFormat: pageFormat,
         orientation: orientation,
-        margin: const pw.EdgeInsets.symmetric(horizontal: 30,vertical: 20),
-        build: (_) => [
-          _header(company),
-
-          pw.SizedBox(height: 0), // Reduced spacing
-          _yearHeader(),
-          _mainTitle("ASSETS"),
-          ..._assetSection(data.assets, company),
-          pw.SizedBox(height: 15), // Reduced from 15
-          _mainTitle("LIABILITIES AND EQUITY"),
-          pw.SizedBox(height: 4), // Reduced spacing
-          ..._liabilitySection(data.liability,company),
+        margin: const pw.EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+        textDirection: documentLanguage(language: language),
+        build: (context) => [
+          balanceSheetHeader(data: data, company: company, language: language),
+          _yearHeader(language: language),
+          _mainTitle(getTranslation(locale: 'assets', language: language)),
+          ..._assetSection(data.assets, company, language),
+          pw.SizedBox(height: 15),
+          _mainTitle(getTranslation(locale: 'liabilitiesEquity', language: language)),
+          pw.SizedBox(height: 8),
+          ..._liabilitySection(data.liability, company, language),
         ],
+        header: (context) => prebuiltHeader,
+        // footer: (context) => footer(
+        //   report: company,
+        //   context: context,
+        //   language: language,
+        //   logoImage: logoImage,
+        // ),
       ),
     );
 
@@ -111,71 +116,87 @@ class BalanceSheetPrintSettings extends PrintServices {
   }
 
   // =========================
-  // HEADER
+  // HEADER SECTION
   // =========================
 
-  pw.Widget _header(ReportModel company) {
+  pw.Widget balanceSheetHeader({
+    required BalanceSheetModel data,
+    required ReportModel company,
+    required String language,
+  }) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text(
-          "Balance Sheet",
-          style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold), // Reduced from 22
+        text(
+          text: getTranslation(locale: 'balanceSheet', language: language),
+          fontSize: 24,
+          tightBounds: true,
+          fontWeight: pw.FontWeight.bold,
         ),
-        pw.SizedBox(height: 3), // Reduced from 4
-        pw.Text(company.comName ?? "", style: pw.TextStyle(fontSize: 12)), // Reduced from 12
-        pw.Text(
-          "${company.statementDate}",
-          style: pw.TextStyle(fontSize: 8), // Reduced from 10
+        pw.SizedBox(height: 5),
+        pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          children: [
+            text(
+              text: company.statementDate ?? '',
+              fontSize: 9,
+              color: pw.PdfColors.grey600,
+            ),
+          ],
         ),
       ],
     );
   }
 
   // =========================
-  // HEADERS
+  // MAIN TITLE
   // =========================
 
   pw.Widget _mainTitle(String text) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.only(bottom: 4), // Reduced from 6
+      padding: const pw.EdgeInsets.only(bottom: 6),
       child: pw.Text(
         text,
-        style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold), // Reduced from 13
+        style: pw.TextStyle(
+          fontSize: 15,
+          fontWeight: pw.FontWeight.bold,
+          color: pw.PdfColors.grey800,
+        ),
       ),
     );
   }
 
-  pw.Widget _yearHeader() {
+  pw.Widget _yearHeader({required String language}) {
     final currentYear = DateTime.now().year;
     final lastYear = currentYear - 1;
 
     return pw.Column(
       children: [
-        // Title labels row (ABOVE)
+        // Title labels row
         pw.Row(
           children: [
             pw.Expanded(flex: 4, child: pw.SizedBox()),
             pw.Expanded(
               flex: 3,
               child: text(
-                text: "Current Year",
-                fontSize: 7, // Smaller for labels
+                text: getTranslation(locale: 'currentYear', language: language),
+                fontSize: 8,
                 textAlign: pw.TextAlign.right,
+                color: pw.PdfColors.grey600,
               ),
             ),
             pw.Expanded(
               flex: 3,
               child: text(
-                text: "Prior Year",
-                fontSize: 7,
+                text: getTranslation(locale: 'lastYear', language: language),
+                fontSize: 8,
                 textAlign: pw.TextAlign.right,
+                color: pw.PdfColors.grey600,
               ),
             ),
           ],
         ),
-
-        // Year numbers row (BENEATH)
+        // Year numbers row
         pw.Row(
           children: [
             pw.Expanded(flex: 4, child: pw.SizedBox()),
@@ -183,7 +204,7 @@ class BalanceSheetPrintSettings extends PrintServices {
               flex: 3,
               child: text(
                 text: currentYear.toString(),
-                fontSize: 9, // Slightly larger for emphasis
+                fontSize: 10,
                 fontWeight: pw.FontWeight.bold,
                 textAlign: pw.TextAlign.right,
               ),
@@ -192,7 +213,7 @@ class BalanceSheetPrintSettings extends PrintServices {
               flex: 3,
               child: text(
                 text: lastYear.toString(),
-                fontSize: 9,
+                fontSize: 10,
                 fontWeight: pw.FontWeight.bold,
                 textAlign: pw.TextAlign.right,
               ),
@@ -204,44 +225,81 @@ class BalanceSheetPrintSettings extends PrintServices {
   }
 
   // =========================
-  // ASSETS
+  // ASSETS SECTION
   // =========================
 
-  List<pw.Widget> _assetSection(Assets? assets, ReportModel company) {
+  List<pw.Widget> _assetSection(Assets? assets, ReportModel company, String language) {
     if (assets == null) return [];
 
     return [
-      ..._subSection("Current Assets", assets.currentAsset),
-      pw.SizedBox(height: 4), // Added spacing between sections
-      ..._subSection("Fixed Assets", assets.fixedAsset),
-      pw.SizedBox(height: 4), // Added spacing between sections
-      ..._subSection("Intangible Assets", assets.intangibleAsset),
-      pw.SizedBox(height: 6), // Reduced spacing before grand total
-      _grandTotal("Total Assets",
-          _sumCurrent(assets), _sumLast(assets),company),
+      ..._subSection(
+        getTranslation(locale: 'currentAssets', language: language),
+        assets.currentAsset,
+        language,
+      ),
+      pw.SizedBox(height: 5),
+      ..._subSection(
+        getTranslation(locale: 'fixedAssets', language: language),
+        assets.fixedAsset,
+        language,
+      ),
+      pw.SizedBox(height: 5),
+      ..._subSection(
+        getTranslation(locale: 'intangibleAssets', language: language),
+        assets.intangibleAsset,
+        language,
+      ),
+      pw.SizedBox(height: 3),
+      _grandTotal(
+        getTranslation(locale: 'totalAssets', language: language),
+        _sumCurrent(assets),
+        _sumLast(assets),
+        company,
+      ),
     ];
   }
 
   // =========================
-  // LIABILITIES
+  // LIABILITIES SECTION
   // =========================
 
-  List<pw.Widget> _liabilitySection(Liability? liab, ReportModel company) {
+  List<pw.Widget> _liabilitySection(Liability? liab, ReportModel company, String language) {
     if (liab == null) return [];
 
     final cy = _sumLiabilityCurrent(liab);
     final ly = _sumLiabilityLast(liab);
 
     return [
-      ..._subSection("Current Liabilities", liab.currentLiability),
-      pw.SizedBox(height: 4), // Added spacing between sections
-      ..._subSection("Owner’s Equity", liab.ownersEquity),
-      pw.SizedBox(height: 4), // Added spacing between sections
-      ..._subSection("Stakeholders", liab.stakeholders),
-      pw.SizedBox(height: 4), // Added spacing between sections
-      ..._subSection("Net Profit", liab.netProfit),
-      pw.SizedBox(height: 6), // Reduced spacing before grand total
-      _grandTotal("Total Liabilities & Equity", cy, ly,company),
+      ..._subSection(
+        getTranslation(locale: 'currentLiabilities', language: language),
+        liab.currentLiability,
+        language,
+      ),
+      pw.SizedBox(height: 5),
+      ..._subSection(
+        getTranslation(locale: 'ownerEquity', language: language),
+        liab.ownersEquity,
+        language,
+      ),
+      pw.SizedBox(height: 5),
+      ..._subSection(
+        getTranslation(locale: 'stakeholders', language: language),
+        liab.stakeholders,
+        language,
+      ),
+      pw.SizedBox(height: 5),
+      ..._subSection(
+        getTranslation(locale: 'netProfit', language: language),
+        liab.netProfit,
+        language,
+      ),
+      pw.SizedBox(height: 3),
+      _grandTotal(
+        getTranslation(locale: 'totalLiabilitiesEquity', language: language),
+        cy,
+        ly,
+        company,
+      ),
     ];
   }
 
@@ -249,7 +307,7 @@ class BalanceSheetPrintSettings extends PrintServices {
   // SUB-SECTIONS
   // =========================
 
-  List<pw.Widget> _subSection(String title, List<AssetItem>? items) {
+  List<pw.Widget> _subSection(String title, List<AssetItem>? items, String language) {
     if (items == null || items.isEmpty) return [];
 
     double cy = 0, ly = 0;
@@ -263,10 +321,15 @@ class BalanceSheetPrintSettings extends PrintServices {
     }).toList();
 
     return [
-      text(text: title, fontSize: 9, fontWeight: pw.FontWeight.bold),
-      pw.SizedBox(height: 2),
+      text(
+        text: title,
+        fontSize: 9,
+        fontWeight: pw.FontWeight.bold,
+        color: pw.PdfColors.grey700,
+      ),
+      pw.SizedBox(height: 4),
       ...rows,
-      _total("Total $title", cy, ly),
+      _total("${getTranslation(locale: 'totalTitle', language: language)} $title", cy, ly),
     ];
   }
 
@@ -276,12 +339,29 @@ class BalanceSheetPrintSettings extends PrintServices {
 
   pw.Widget _row(String name, double cy, double ly) {
     return pw.Container(
-      margin: const pw.EdgeInsets.symmetric(vertical: 1), // Reduced from 2
+      margin: const pw.EdgeInsets.symmetric(vertical: 2),
       child: pw.Row(
         children: [
-          pw.Expanded(flex: 4, child: text(text: name, fontSize: 8)), // Added font size 8
-          pw.Expanded(flex: 3, child: pw.Text(cy.toAmount(), textAlign: pw.TextAlign.right, style: pw.TextStyle(fontSize: 8))), // Added font size 8
-          pw.Expanded(flex: 3, child: pw.Text(ly.toAmount(), textAlign: pw.TextAlign.right, style: pw.TextStyle(fontSize: 8))), // Added font size 8
+          pw.Expanded(
+            flex: 4,
+            child: text(text: name, fontSize: 8),
+          ),
+          pw.Expanded(
+            flex: 3,
+            child: pw.Text(
+              cy.toAmount(),
+              textAlign: pw.TextAlign.right,
+              style: pw.TextStyle(fontSize: 8),
+            ),
+          ),
+          pw.Expanded(
+            flex: 3,
+            child: pw.Text(
+              ly.toAmount(),
+              textAlign: pw.TextAlign.right,
+              style: pw.TextStyle(fontSize: 8),
+            ),
+          ),
         ],
       ),
     );
@@ -289,12 +369,43 @@ class BalanceSheetPrintSettings extends PrintServices {
 
   pw.Widget _total(String label, double cy, double ly) {
     return pw.Container(
-      margin: const pw.EdgeInsets.only(bottom: 5,top: 3),
+      margin: const pw.EdgeInsets.only(bottom: 5, top: 3),
+      padding: const pw.EdgeInsets.symmetric(vertical: 4,horizontal: 2),
+      decoration: const pw.BoxDecoration(
+        color: pw.PdfColors.grey100,
+      ),
       child: pw.Row(
         children: [
-          pw.Expanded(flex: 4, child: text(text: label, fontSize: 8, fontWeight: pw.FontWeight.bold)), // Added font size 8
-          pw.Expanded(flex: 3, child: pw.Text(cy.toAmount(), textAlign: pw.TextAlign.right, style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold))), // Added font size 8
-          pw.Expanded(flex: 3, child: pw.Text(ly.toAmount(), textAlign: pw.TextAlign.right, style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold))), // Added font size 8
+          pw.Expanded(
+            flex: 4,
+            child: text(
+              text: label,
+              fontSize: 9,
+              fontWeight: pw.FontWeight.bold,
+            ),
+          ),
+          pw.Expanded(
+            flex: 3,
+            child: pw.Text(
+              cy.toAmount(),
+              textAlign: pw.TextAlign.right,
+              style: pw.TextStyle(
+                fontSize: 9,
+                fontWeight: pw.FontWeight.bold,
+              ),
+            ),
+          ),
+          pw.Expanded(
+            flex: 3,
+            child: pw.Text(
+              ly.toAmount(),
+              textAlign: pw.TextAlign.right,
+              style: pw.TextStyle(
+                fontSize: 9,
+                fontWeight: pw.FontWeight.bold,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -303,28 +414,47 @@ class BalanceSheetPrintSettings extends PrintServices {
   pw.Widget _grandTotal(String label, double cy, double ly, ReportModel company) {
     return pw.Container(
       margin: const pw.EdgeInsets.only(top: 3),
-      padding: const pw.EdgeInsets.symmetric(vertical: 5,horizontal: 2),
-      decoration: const pw.BoxDecoration(
-          color: pw.PdfColors.blue50
+      padding: const pw.EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+      decoration: pw.BoxDecoration(
+        color: pw.PdfColors.blue50,
+        borderRadius: pw.BorderRadius.circular(2),
       ),
       child: pw.Row(
         children: [
           pw.Expanded(
             flex: 4,
-            child: pw.Text(label,
-                style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)), // Reduced from 12
+            child: pw.Text(
+              label,
+              style: pw.TextStyle(
+                fontSize: 11,
+                fontWeight: pw.FontWeight.bold,
+                color: pw.PdfColors.blue900,
+              ),
+            ),
           ),
           pw.Expanded(
             flex: 3,
-            child: pw.Text("${cy.toAmount()} ${company.baseCurrency}",
-                textAlign: pw.TextAlign.right,
-                style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)), // Reduced from 12
+            child: pw.Text(
+              "${cy.toAmount()} ${company.baseCurrency ?? 'USD'}",
+              textAlign: pw.TextAlign.right,
+              style: pw.TextStyle(
+                fontSize: 11,
+                fontWeight: pw.FontWeight.bold,
+                color: pw.PdfColors.blue900,
+              ),
+            ),
           ),
           pw.Expanded(
             flex: 3,
-            child: pw.Text("${ly.toAmount()} ${company.baseCurrency}",
-                textAlign: pw.TextAlign.right,
-                style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)), // Reduced from 12
+            child: pw.Text(
+              "${ly.toAmount()} ${company.baseCurrency ?? 'USD'}",
+              textAlign: pw.TextAlign.right,
+              style: pw.TextStyle(
+                fontSize: 11,
+                fontWeight: pw.FontWeight.bold,
+                color: pw.PdfColors.blue900,
+              ),
+            ),
           ),
         ],
       ),

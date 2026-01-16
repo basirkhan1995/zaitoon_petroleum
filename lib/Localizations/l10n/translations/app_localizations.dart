@@ -4131,6 +4131,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Net Profit'**
   String get netProfit;
+
+  /// No description provided for @actualBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Actual Balance'**
+  String get actualBalance;
+
+  /// No description provided for @glStatementSingleDate.
+  ///
+  /// In en, this message translates to:
+  /// **'GL Statement Single Date'**
+  String get glStatementSingleDate;
 }
 
 class _AppLocalizationsDelegate

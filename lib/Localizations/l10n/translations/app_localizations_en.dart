@@ -2084,4 +2084,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get netProfit => 'Net Profit';
+
+  @override
+  String get actualBalance => 'Actual Balance';
+
+  @override
+  String get glStatementSingleDate => 'GL Statement Single Date';
 }

@@ -691,5 +691,7 @@
   "totalLiabilitiesEquity": "ټول پورونه او د مالک حق",
   "assets": "شتمنۍ",
   "liabilitiesEquity": "پورونه او د مالک حقونه",
-  "netProfit": "خالصه ګټه"
+  "netProfit": "خالصه ګټه",
+  "actualBalance": "بیلانس اصلی",
+  "glStatementSingleDate": "بیلانس جی ال"
 }

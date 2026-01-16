@@ -10,6 +10,7 @@ import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/features/currency_drop.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
@@ -29,14 +30,15 @@ import 'dart:typed_data';
 import 'PDF/pdf.dart';
 
 class GlStatementView extends StatelessWidget {
-  const GlStatementView({super.key});
+  final bool isSingleDate;
+  const GlStatementView({super.key, this.isSingleDate = false});
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobile: _Mobile(),
       tablet: _Tablet(),
-      desktop: _Desktop(),
+      desktop: _Desktop(isSingleDate: isSingleDate),
     );
   }
 }
@@ -60,7 +62,8 @@ class _Tablet extends StatelessWidget {
 }
 
 class _Desktop extends StatefulWidget {
-  const _Desktop();
+  final bool isSingleDate;
+  const _Desktop({this.isSingleDate = false});
 
   @override
   State<_Desktop> createState() => _DesktopState();
@@ -111,6 +114,7 @@ class _DesktopState extends State<_Desktop> {
             company.comEmail = state.company.comEmail??"";
             company.startDate = fromDate;
             company.endDate = toDate;
+            baseCurrency = state.company.comLocalCcy;
             company.statementDate = DateTime.now().toFullDateTime;
             final base64Logo = state.company.comLogo;
             if (base64Logo != null && base64Logo.isNotEmpty) {
@@ -209,9 +213,7 @@ class _DesktopState extends State<_Desktop> {
                                   LoadGlAccountEvent(),
                                 ),
                                 searchFunction: (bloc, query) => bloc.add(
-                                  LoadGlAccountEvent(
-
-                                  ),
+                                  LoadGlAccountEvent(),
                                 ),
                                 validator: (value) {
                                   if (value.isEmpty) {
@@ -282,6 +284,7 @@ class _DesktopState extends State<_Desktop> {
                             SizedBox(
                               width: 160,
                               child: CurrencyDropdown(
+                                initiallySelectedSingle: CurrenciesModel(ccyCode: baseCurrency),
                                    title: AppLocalizations.of(context)!.currencyTitle,
                                   isMulti: false,
                                   onMultiChanged: (e){},
@@ -289,38 +292,40 @@ class _DesktopState extends State<_Desktop> {
                                    setState(() {
                                      currency = e?.ccyCode ??"";
                                    });
+                                   onSubmit();
                                  },
                               ),
                             ),
                             SizedBox(
                               width: 150,
                               child: ZDatePicker(
-                                label: tr.fromDate,
+                                label: widget.isSingleDate? tr.date : tr.fromDate,
                                 value: fromDate,
                                 onDateChanged: (v) {
                                   setState(() {
                                     fromDate = v;
                                     shamsiFromDate = v.toAfghanShamsi;
                                   });
+                                  onSubmit();
                                 },
                               ),
                             ),
-
-                            SizedBox(
-                              width: 150,
-                              child: ZDatePicker(
-                                label: tr.toDate,
-                                value: toDate,
-                                onDateChanged: (v) {
-                                  setState(() {
-                                    toDate = v;
-                                    shamsiToDate = v.toAfghanShamsi;
-                                  });
-                                },
+                            if(widget.isSingleDate != true)...[
+                              SizedBox(
+                                width: 150,
+                                child: ZDatePicker(
+                                  label: tr.toDate,
+                                  value: toDate,
+                                  onDateChanged: (v) {
+                                    setState(() {
+                                      toDate = v;
+                                      shamsiToDate = v.toAfghanShamsi;
+                                    });
+                                    onSubmit();
+                                  },
+                                ),
                               ),
-                            ),
-
-
+                            ]
                           ],
                         ),
                       ),
@@ -547,11 +552,8 @@ class _DesktopState extends State<_Desktop> {
                                               textAlign: myLocale == "en"
                                                   ? TextAlign.right
                                                   : TextAlign.left,
-                                              "${stmt.total?.toAmount()}",
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleSmall
-                                                  ?.copyWith(color: bg),
+                                              "${stmt.total?.toAmount()} ${currency ?? baseCurrency}",
+                                              style: Theme.of(context).textTheme.titleSmall?.copyWith(color: bg),
                                             ),
                                           ),
                                           SizedBox(
@@ -593,11 +595,11 @@ class _DesktopState extends State<_Desktop> {
   void onSubmit(){
     context.read<GlStatementBloc>().add(
       LoadGlStatementEvent(
-        currency: currency ?? "USD",
+        currency: currency ?? baseCurrency ?? "",
         branchCode: branchCode,
         accountNumber: accNumber!,
         fromDate: fromDate,
-        toDate: toDate,
+        toDate: widget.isSingleDate? fromDate : toDate,
       ),
     );
   }

@@ -691,5 +691,7 @@
   "totalLiabilitiesEquity": "جمع بدهی‌ها و حقوق صاحبان سهام",
   "assets": "دارایی‌ها",
   "liabilitiesEquity": "بدهی‌ها و حقوق صاحبان سهام",
-  "netProfit": "سود خالص"
+  "netProfit": "سود خالص",
+  "actualBalance": "بیلانس اصلی",
+  "glStatementSingleDate": "بیلانس جی ال"
 }

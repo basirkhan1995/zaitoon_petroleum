@@ -2504,13 +2504,12 @@ class Repositories {
       throw "$e";
     }
   }
-  Future<List<TrialBalanceModel>> getTrialBalance({required String date, required String ccy}) async {
+  Future<List<TrialBalanceModel>> getTrialBalance({required String date}) async {
     try {
       final response = await api.post(
           endpoint: "/reports/trialBalance.php",
           data: {
             "date":date,
-            "ccy":ccy
           }
       );
 

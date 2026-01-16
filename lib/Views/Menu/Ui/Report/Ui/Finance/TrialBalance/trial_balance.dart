@@ -1,14 +1,21 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/features/currency_drop.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import '../../../../../../../Features/PrintSettings/print_preview.dart';
+import '../../../../../../../Features/PrintSettings/report_model.dart';
 import '../../../../../../../Features/Date/z_generic_date.dart';
+import 'package:flutter/services.dart';
+import 'PDF/trial_print.dart';
 import 'bloc/trial_balance_bloc.dart';
 import 'model/trial_balance_model.dart';
 import 'package:shamsi_date/shamsi_date.dart';
@@ -34,16 +41,16 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
-
   String ccy = "USD";
   String todayDate = DateTime.now().toFormattedDate();
   Jalali shamsiTodayDate = DateTime.now().toAfghanShamsi;
+  ReportModel company = ReportModel();
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<TrialBalanceBloc>().add(
-          LoadTrialBalanceEvent(currency: ccy, date: todayDate)
+        LoadTrialBalanceEvent(date: todayDate),
       );
     });
     super.initState();
@@ -58,24 +65,110 @@ class _DesktopState extends State<_Desktop> {
         title: Text(tr.trialBalance),
         actionsPadding: EdgeInsets.symmetric(horizontal: 10),
         actions: [
-          ZOutlineButton(
-              width: 100,
-              icon: Icons.print,
-              label: Text(tr.print)),
-          SizedBox(width: 8),
-          SizedBox(
-            width: 150,
-            child: CurrencyDropdown(
-                isMulti: false,
-                onSingleChanged: (e){
-                  setState(() {
-                    ccy = e?.ccyCode ??"";
-                    context.read<TrialBalanceBloc>().add(
-                        LoadTrialBalanceEvent(currency: ccy, date: todayDate)
-                    );
-                  });
+          BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
+            builder: (context, comState) {
+              if (comState is CompanyProfileLoadedState) {
+                company.comName = comState.company.comName ?? "";
+                company.comAddress = comState.company.addName ?? "";
+                company.compPhone = comState.company.comPhone ?? "";
+                company.comEmail = comState.company.comEmail ?? "";
+                company.statementDate = DateTime.now().toFullDateTime;
+                company.baseCurrency = comState.company.comLocalCcy;
+
+                // Set logo if available
+                final base64Logo = comState.company.comLogo;
+                if (base64Logo != null && base64Logo.isNotEmpty) {
+                  try {
+                    company.comLogo = base64Decode(base64Logo);
+                  } catch (e) {
+                    company.comLogo = Uint8List(0);
+                  }
+                }
+              }
+
+              return BlocBuilder<TrialBalanceBloc, TrialBalanceState>(
+                builder: (context, state) {
+                  return ZOutlineButton(
+                    width: 110,
+                    icon: FontAwesomeIcons.solidFilePdf,
+                    label: Text("PDF"),
+                    onPressed: () {
+                      if (state is TrialBalanceLoadedState) {
+                        showDialog(
+                          context: context,
+                          builder: (_) => PrintPreviewDialog<List<TrialBalanceModel>>(
+                            data: state.balance,
+                            company: company,
+                            buildPreview: ({
+                              required data,
+                              required language,
+                              required orientation,
+                              required pageFormat,
+                            }) {
+                              return TrialBalancePrintSettings().printPreview(
+                                trialBalance: data,
+                                date: todayDate,
+                                company: company,
+                                language: language,
+                                orientation: orientation,
+                                pageFormat: pageFormat,
+                              );
+                            },
+                            onPrint: ({
+                              required data,
+                              required language,
+                              required orientation,
+                              required pageFormat,
+                              required selectedPrinter,
+                              required copies,
+                              required pages,
+                            }) {
+                              return TrialBalancePrintSettings().printDocument(
+                                trialBalance: data,
+                                date: todayDate,
+                                company: company,
+                                language: language,
+                                orientation: orientation,
+                                pageFormat: pageFormat,
+                                selectedPrinter: selectedPrinter,
+                                copies: copies,
+                                pages: pages,
+                              );
+                            },
+                            onSave: ({
+                              required data,
+                              required language,
+                              required orientation,
+                              required pageFormat,
+                            }) {
+                              return TrialBalancePrintSettings().createDocument(
+                                trialBalance: data,
+                                date: todayDate,
+                                company: company,
+                                language: language,
+                                orientation: orientation,
+                                pageFormat: pageFormat,
+                              );
+                            },
+                          ),
+                        );
+                      }
+                    },
+                  );
                 },
-                onMultiChanged: (e){}),
+              );
+            },
+          ),
+          SizedBox(width: 8),
+          ZOutlineButton(
+            width: 100,
+            icon: Icons.refresh,
+            label: Text(tr.refresh),
+            onPressed: () {
+              context.read<TrialBalanceBloc>().add(
+                LoadTrialBalanceEvent(date: todayDate),
+              );
+            },
           ),
           SizedBox(width: 8),
           SizedBox(
@@ -89,67 +182,76 @@ class _DesktopState extends State<_Desktop> {
                   shamsiTodayDate = v.toAfghanShamsi;
                 });
                 context.read<TrialBalanceBloc>().add(
-                    LoadTrialBalanceEvent(currency: ccy, date: todayDate)
+                  LoadTrialBalanceEvent(date: todayDate),
                 );
               },
             ),
           ),
         ],
       ),
-      body: BlocBuilder<TrialBalanceBloc, TrialBalanceState>(
-        builder: (context, state) {
-          if(state is TrialBalanceErrorState){
-            return NoDataWidget(
-              message: state.message,
-            );
-          }
-          if(state is TrialBalanceLoadingState){
-            return const Center(child: CircularProgressIndicator());
-          }
-          if(state is TrialBalanceLoadedState){
-            final data = state.balance;
-            // Get currency from first item (assuming all items have same currency)
-            final currency = data.isNotEmpty ? data.first.currency : ccy;
-            final totalDebit = TrialBalanceHelper.getTotalDebit(data);
-            final totalCredit = TrialBalanceHelper.getTotalCredit(data);
-            final difference = TrialBalanceHelper.getDifference(data);
-            final differencePercentage = TrialBalanceHelper.getDifferencePercentage(data);
+      body: Container(
+        padding: EdgeInsets.all(5),
+        margin: EdgeInsets.all(5),
+        child: ZCard(
+          child: BlocBuilder<TrialBalanceBloc, TrialBalanceState>(
+            builder: (context, state) {
+              if (state is TrialBalanceErrorState) {
+                return NoDataWidget(
+                  message: state.message,
+                );
+              }
+              if (state is TrialBalanceLoadingState) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state is TrialBalanceLoadedState) {
+                final data = state.balance;
+                // Get currency from first item (assuming all items have same currency)
+                final currency = data.isNotEmpty ? data.first.currency : ccy;
+                final totalDebit = TrialBalanceHelper.getTotalDebit(data);
+                final totalCredit = TrialBalanceHelper.getTotalCredit(data);
+                final difference = TrialBalanceHelper.getDifference(data);
+                final differencePercentage = TrialBalanceHelper.getDifferencePercentage(data);
 
-            return Column(
-              children: [
-                // Header row
-                _buildHeaderRow(currency),
+                return Column(
+                  children: [
+                    // Header row
+                    _buildHeaderRow(currency),
 
-                // Divider
-                const Divider(),
+                    // Divider
+                    const Divider(),
 
-                // Data rows
-                Expanded(
-                  child: ListView.separated(
-                    itemCount: data.length,
-                    separatorBuilder: (context, index) => Divider(height: 1,color: Theme.of(context).colorScheme.outline.withValues(alpha: .2),),
-                    itemBuilder: (context, index) {
-                      final tb = data[index];
-                      final rowDifference = tb.debit - tb.credit;
-                      return _buildDataRow(context, tb, rowDifference);
-                    },
-                  ),
-                ),
+                    // Data rows
+                    Expanded(
+                      child: ListView.separated(
+                        itemCount: data.length,
+                        separatorBuilder: (context, index) => Divider(
+                          height: 1,
+                          color: Theme.of(context).colorScheme.outline.withValues(alpha: .2),
+                        ),
+                        itemBuilder: (context, index) {
+                          final tb = data[index];
+                          final rowDifference = tb.debit - tb.credit;
+                          return _buildDataRow(context, tb, rowDifference);
+                        },
+                      ),
+                    ),
 
-                // Total row
-                _buildTotalRow(
-                  context,
-                  totalDebit,
-                  totalCredit,
-                  difference,
-                  differencePercentage,
-                  ccy,
-                ),
-              ],
-            );
-          }
-          return const SizedBox();
-        },
+                    // Total row
+                    _buildTotalRow(
+                      context,
+                      totalDebit,
+                      totalCredit,
+                      difference,
+                      differencePercentage,
+                      ccy,
+                    ),
+                  ],
+                );
+              }
+              return const SizedBox();
+            },
+          ),
+        ),
       ),
     );
   }
@@ -187,6 +289,16 @@ class _DesktopState extends State<_Desktop> {
               textAlign: TextAlign.right,
             ),
           ),
+          SizedBox(
+            width: 200,
+            child: Text(
+              AppLocalizations.of(context)!.actualBalance,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.right,
+            ),
+          ),
         ],
       ),
     );
@@ -218,10 +330,10 @@ class _DesktopState extends State<_Desktop> {
             ),
           ),
           SizedBox(
-            width: 100,
+            width: 80,
             child: Text(
               tb.category,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 15),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 14),
             ),
           ),
           SizedBox(
@@ -238,17 +350,26 @@ class _DesktopState extends State<_Desktop> {
               Theme.of(context).colorScheme.secondary,
             ),
           ),
+          SizedBox(
+            width: 200,
+            child: _buildAmountCell(
+              tb.actualBalance,
+              ccy: tb.currency,
+              Theme.of(context).colorScheme.secondary,
+            ),
+          ),
         ],
       ),
     );
   }
-  Widget _buildAmountCell(double amount,Color color) {
+
+  Widget _buildAmountCell(double amount, Color color, {String? ccy}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Flexible(
           child: Text(
-            amount.toAmount(),
+            amount == 0 ? "-" : amount.toAmount(),
             style: TextStyle(
               fontWeight: FontWeight.w500,
               color: color,
@@ -257,10 +378,30 @@ class _DesktopState extends State<_Desktop> {
             overflow: TextOverflow.ellipsis,
           ),
         ),
+        if (ccy != null) ...[
+          SizedBox(width: 5),
+          Text(
+            ccy,
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              color: Utils.currencyColors(ccy),
+            ),
+            textAlign: TextAlign.right,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ]
       ],
     );
   }
-  Widget _buildTotalRow(BuildContext context, double totalDebit, double totalCredit, double difference, double differencePercentage, String currency) {
+
+  Widget _buildTotalRow(
+      BuildContext context,
+      double totalDebit,
+      double totalCredit,
+      double difference,
+      double differencePercentage,
+      String currency,
+      ) {
     final isBalanced = difference == 0;
     final theme = Theme.of(context);
 
@@ -279,7 +420,7 @@ class _DesktopState extends State<_Desktop> {
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
-                    color: Theme.of(context).colorScheme.outline
+                    color: Theme.of(context).colorScheme.outline,
                   ),
                 ),
                 if (!isBalanced) ...[
@@ -319,11 +460,23 @@ class _DesktopState extends State<_Desktop> {
           ),
           SizedBox(
             width: 150,
-            child: _buildTotalAmountCell(totalDebit, currency, theme.colorScheme.primary, theme,AppLocalizations.of(context)!.totalDebit),
+            child: _buildTotalAmountCell(
+              totalDebit,
+              currency,
+              theme.colorScheme.primary,
+              theme,
+              AppLocalizations.of(context)!.totalDebit,
+            ),
           ),
           SizedBox(
             width: 150,
-            child: _buildTotalAmountCell(totalCredit, currency, theme.colorScheme.secondary, theme,AppLocalizations.of(context)!.totalCredit),
+            child: _buildTotalAmountCell(
+              totalCredit,
+              currency,
+              theme.colorScheme.secondary,
+              theme,
+              AppLocalizations.of(context)!.totalCredit,
+            ),
           ),
           SizedBox(
             width: 150,
@@ -331,7 +484,7 @@ class _DesktopState extends State<_Desktop> {
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text(AppLocalizations.of(context)!.difference,style: theme.textTheme.bodySmall),
+                Text(AppLocalizations.of(context)!.difference, style: theme.textTheme.bodySmall),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -339,9 +492,7 @@ class _DesktopState extends State<_Desktop> {
                       difference.abs().toAmount(),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: isBalanced
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.error,
+                        color: isBalanced ? theme.colorScheme.primary : theme.colorScheme.error,
                       ),
                     ),
                     const SizedBox(width: 4),
@@ -355,7 +506,6 @@ class _DesktopState extends State<_Desktop> {
                     ],
                   ],
                 ),
-
               ],
             ),
           ),
@@ -363,12 +513,19 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-  Widget _buildTotalAmountCell(double amount, String currency, Color color, ThemeData theme,String title) {
+
+  Widget _buildTotalAmountCell(
+      double amount,
+      String currency,
+      Color color,
+      ThemeData theme,
+      String title,
+      ) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text(title,style: theme.textTheme.bodySmall),
+        Text(title, style: theme.textTheme.bodySmall),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -409,5 +566,26 @@ class _Mobile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
+  }
+}
+
+// Helper class for calculations
+class TrialBalanceHelper {
+  static double getTotalDebit(List<TrialBalanceModel> data) {
+    return data.fold(0.0, (sum, item) => sum + item.debit);
+  }
+
+  static double getTotalCredit(List<TrialBalanceModel> data) {
+    return data.fold(0.0, (sum, item) => sum + item.credit);
+  }
+
+  static double getDifference(List<TrialBalanceModel> data) {
+    return getTotalDebit(data) - getTotalCredit(data);
+  }
+
+  static double getDifferencePercentage(List<TrialBalanceModel> data) {
+    final totalDebit = getTotalDebit(data);
+    final difference = getDifference(data);
+    return totalDebit > 0 ? (difference.abs() / totalDebit * 100) : 0;
   }
 }

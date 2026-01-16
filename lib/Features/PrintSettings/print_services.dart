@@ -108,8 +108,8 @@ abstract class PrintServices {
             // Logo (right side)
             if (image != null)
               pw.Container(
-                width: 80,
-                height: 80,
+                width: 50,
+                height: 50,
                 child: pw.Image(image, fit: pw.BoxFit.contain),
               ),
           ],
@@ -1024,6 +1024,11 @@ abstract class PrintServices {
         'fa': 'نوع بدنه',
         'ar': 'د بدن ډول',
       },
+      'balanced': {
+        'en': 'Balanced',
+        'fa': 'متعادل',
+        'ar': 'متوازن',
+      },
       'plateNumber': {
         'en': 'Plate Number',
         'fa': 'شماره پلاک',
@@ -1203,6 +1208,21 @@ abstract class PrintServices {
         'fa': 'شماره مرجع',
         'ar': 'رقم المرجع',
       },
+      'trialBalance': {
+        'en': 'Trial Balance',
+        'fa': 'بیلانس آزمایشی',
+        'ar': 'آزمایشی بیلانس',
+      },
+      'outOfBalance':{
+        'en': 'Out of balance',
+        'fa': 'عدم تعادل',
+        'ar': 'عدم تعادل',
+      },
+      'difference':{
+        'en': 'Difference',
+        'fa': 'تفاوت',
+        'ar': 'تفاوت',
+      },
       'orderDate': {
         'en': 'Order Date',
         'fa': 'تاریخ سفارش',
@@ -1212,6 +1232,11 @@ abstract class PrintServices {
         'en': 'Qty',
         'fa': 'تعداد',
         'ar': 'الكمية',
+      },
+      'actualBalance': {
+        'en': 'Actual Balance',
+        'fa': 'بیلانس اصلی',
+        'ar': 'بیلانس اصلی',
       },
       'storage': {
         'en': 'Storage',
@@ -1224,6 +1249,72 @@ abstract class PrintServices {
         'ar': 'الوصف',
       },
 
+      'assets': {
+        'en': 'ASSETS',
+        'fa': 'دارایی ها',
+        'ar': 'الأصول',
+      },
+      'liabilitiesEquity': {
+        'en': 'LIABILITIES AND EQUITY',
+        'fa': 'بدهی ها و حقوق صاحبان سهام',
+        'ar': 'الالتزامات وحقوق الملكية',
+      },
+      'currentAssets': {
+        'en': 'Current Assets',
+        'fa': 'دارایی های جاری',
+        'ar': 'الأصول المتداولة',
+      },
+      'fixedAssets': {
+        'en': 'Fixed Assets',
+        'fa': 'دارایی های ثابت',
+        'ar': 'الأصول الثابتة',
+      },
+      'intangibleAssets': {
+        'en': 'Intangible Assets',
+        'fa': 'دارایی های نامشهود',
+        'ar': 'الأصول غير الملموسة',
+      },
+      'currentLiabilities': {
+        'en': 'Current Liabilities',
+        'fa': 'بدهی های جاری',
+        'ar': 'الالتزامات المتداولة',
+      },
+      'ownerEquity': {
+        'en': "Owner's Equity",
+        'fa': 'حقوق صاحبان سهام',
+        'ar': 'حقوق الملكية',
+      },
+      'stakeholders': {
+        'en': 'Stakeholders',
+        'fa': 'ذینفعان',
+        'ar': 'أصحاب المصلحة',
+      },
+
+      'totalAssets': {
+        'en': 'TOTAL ASSETS',
+        'fa': 'کل دارایی ها',
+        'ar': 'إجمالي الأصول',
+      },
+      'totalLiabilitiesEquity': {
+        'en': 'TOTAL LIABILITIES & EQUITY',
+        'fa': 'کل بدهی ها و حقوق صاحبان سهام',
+        'ar': 'إجمالي الالتزامات وحقوق الملكية',
+      },
+      'currentYear': {
+        'en': 'Current Year',
+        'fa': 'سال جاری',
+        'ar': 'السنة الحالية',
+      },
+      'lastYear': {
+        'en': 'Prior Year',
+        'fa': 'سال گذشته',
+        'ar': 'السنة السابقة',
+      },
+      'totalTitle': {
+        'en': 'Total',
+        'fa': 'مجموع',
+        'ar': 'المجموع',
+      }
     };
 
     // Default to English if language not found

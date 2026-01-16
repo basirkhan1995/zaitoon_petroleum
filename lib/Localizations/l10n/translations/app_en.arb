@@ -691,5 +691,7 @@
   "totalLiabilitiesEquity": "Total Liabilities & Equity",
   "assets": "Assets",
   "liabilitiesEquity": "Liabilities & Equity",
-  "netProfit": "Net Profit"
+  "netProfit": "Net Profit",
+  "actualBalance": "Actual Balance",
+  "glStatementSingleDate": "GL Statement Single Date"
 }

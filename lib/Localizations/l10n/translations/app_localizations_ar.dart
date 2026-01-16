@@ -2078,4 +2078,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get netProfit => 'خالصه ګټه';
+
+  @override
+  String get actualBalance => 'بیلانس اصلی';
+
+  @override
+  String get glStatementSingleDate => 'بیلانس جی ال';
 }

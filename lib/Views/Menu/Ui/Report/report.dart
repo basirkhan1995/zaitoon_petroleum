@@ -22,6 +22,7 @@ enum ActionKey {
   //Finance
   accStatement,
   glStatement,
+  glStatementSingleDate,
   payable,
   receivable,
   treasury,
@@ -87,14 +88,12 @@ class _DesktopState extends State<_Desktop> {
     final List<Map<String, dynamic>> financeButtons = [
       {"title": locale.accountStatement, "icon": FontAwesomeIcons.buildingColumns, "action": ActionKey.accStatement},
       {"title": locale.glStatement, "icon": FontAwesomeIcons.buildingColumns, "action": ActionKey.glStatement},
+      {"title": locale.glStatementSingleDate, "icon": FontAwesomeIcons.buildingColumns, "action": ActionKey.glStatementSingleDate},
       {"title": locale.creditors, "icon": FontAwesomeIcons.arrowTrendUp, "action": ActionKey.payable},
       {"title": locale.debtors, "icon": FontAwesomeIcons.arrowTrendDown, "action": ActionKey.receivable},
-      {"title": locale.trialBalance, "icon": Icons.balance, "action": ActionKey.trialBalance},
 
       {"title": locale.exchangeRate, "icon": Icons.compare_arrows_rounded, "action": ActionKey.exchangeRate},
       {"title": locale.treasury, "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.treasury},
-      {"title": locale.accounts, "icon": Icons.account_circle, "action": ActionKey.accountsReport},
-
     ];
 
     final List<Map<String, dynamic>> stockButtons = [
@@ -105,10 +104,8 @@ class _DesktopState extends State<_Desktop> {
 
     final List<Map<String, dynamic>> transactionsButtons = [
       {"title": locale.balanceSheet, "icon": Icons.balance_rounded, "action": ActionKey.balanceSheet},
-      {"title": locale.referenceTransaction, "icon": Icons.qr_code_2_rounded, "action": ActionKey.transactionByRef},
-      {"title": locale.activities, "icon": Icons.access_time_rounded, "action": ActionKey.sale},
-      {"title": locale.incomeStatement, "icon": Icons.ssid_chart_rounded, "action": ActionKey.purchase},
-      {"title": locale.glReport, "icon": Icons.add_chart_rounded, "action": ActionKey.sale},
+      {"title": locale.trialBalance, "icon": Icons.balance, "action": ActionKey.trialBalance},
+      {"title": locale.transactionDetails, "icon": Icons.qr_code_2_rounded, "action": ActionKey.transactionByRef},
     ];
 
     final List<Map<String, dynamic>> activitiesButtons = [
@@ -256,6 +253,7 @@ class _DesktopState extends State<_Desktop> {
 
       // Activity
       case ActionKey.userLog: Utils.goto(context, UserLogReportView());
+      case ActionKey.glStatementSingleDate: Utils.goto(context, GlStatementView(isSingleDate: true));
     }
   }
 }

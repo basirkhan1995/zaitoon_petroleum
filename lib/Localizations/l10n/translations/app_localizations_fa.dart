@@ -2075,4 +2075,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get netProfit => 'سود خالص';
+
+  @override
+  String get actualBalance => 'بیلانس اصلی';
+
+  @override
+  String get glStatementSingleDate => 'بیلانس جی ال';
 }
