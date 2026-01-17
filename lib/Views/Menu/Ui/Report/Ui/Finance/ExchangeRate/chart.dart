@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
@@ -11,6 +12,9 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/ExchangeRate/m
 
 import '../../../../HR/Ui/Users/features/date_range_string.dart';
 
+/// =======================================================
+/// FX RATE DASHBOARD CHART (AREA + LINE)
+/// =======================================================
 class FxRateDashboardChart extends StatelessWidget {
   const FxRateDashboardChart({super.key});
 
@@ -34,7 +38,6 @@ class _ChartContent extends StatefulWidget {
 class _ChartContentState extends State<_ChartContent> {
   String? fromCcy = 'USD';
   String? toCcy = 'AFN';
-  int rangeDays = 30;
 
   @override
   void initState() {
@@ -44,8 +47,8 @@ class _ChartContentState extends State<_ChartContent> {
 
   void _loadData({String? fromDate, String? toDate}) {
     final now = DateTime.now();
-    final from =
-    DateFormat('yyyy-MM-dd').format(now.subtract(Duration(days: rangeDays)));
+    final from = DateFormat('yyyy-MM-dd')
+        .format(now.subtract(const Duration(days: 30)));
     final to = DateFormat('yyyy-MM-dd').format(now);
 
     context.read<FxRateReportBloc>().add(
@@ -62,90 +65,104 @@ class _ChartContentState extends State<_ChartContent> {
   Widget build(BuildContext context) {
     return ZCard(
       radius: 8,
-      margin: EdgeInsets.all(4),
-      padding: EdgeInsets.all(10),
-      child: SizedBox(
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
+      margin: const EdgeInsets.all(4),
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
 
-            /// Filters
-            Row(
-              children: [
-                Flexible(
-                  child: CurrencyDropdown(
-                    title: 'From',
-                    initiallySelectedSingle: CurrenciesModel(ccyCode: fromCcy),
-                    isMulti: false,
-                    onSingleChanged: (e) {
-                      setState(() => fromCcy = e?.ccyCode);
-                      _loadData();
-                    },
-                    onMultiChanged: (_) {},
-                  ),
+          /// ---------------- FILTER ROW ----------------
+          Row(
+            children: [
+              const Spacer(flex: 3),
+
+              Flexible(
+                child: CurrencyDropdown(
+                  title: 'From',
+                  initiallySelectedSingle:
+                  CurrenciesModel(ccyCode: fromCcy),
+                  isMulti: false,
+                  onSingleChanged: (e) {
+                    setState(() => fromCcy = e?.ccyCode);
+                    _loadData();
+                  },
+                  onMultiChanged: (_) {},
                 ),
-                const SizedBox(width: 10),
-                Flexible(
-                  child: CurrencyDropdown(
-                    title: 'To',
-                    initiallySelectedSingle: CurrenciesModel(ccyCode: toCcy),
-                    isMulti: false,
-                    onSingleChanged: (e) {
-                      setState(() => toCcy = e?.ccyCode);
-                      _loadData();
-                    },
-                    onMultiChanged: (_) {},
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Flexible(
-                  child: DateRangeDropdown(
-                    title: 'Date Range',
-                    height: 38,
-                    onChanged: (fromDate, toDate) {
-                      _loadData(fromDate: fromDate, toDate: toDate);
-                    },
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            /// Chart (FIXED HEIGHT)
-            SizedBox(
-              height: 280,
-              child: BlocBuilder<FxRateReportBloc, FxRateReportState>(
-                builder: (context, state) {
-                  if (state is FxRateReportLoadingState) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (state is FxRateReportErrorState) {
-                    return Center(child: Text(state.message));
-                  }
-
-                  if (state is FxRateReportLoadedState) {
-                    if (state.rates.isEmpty) {
-                      return const Center(child: Text('No data'));
-                    }
-                    return _buildLineChart(state.rates);
-                  }
-
-                  return const Center(child: Text('Select filters'));
-                },
               ),
+
+              const SizedBox(width: 10),
+
+              Flexible(
+                child: CurrencyDropdown(
+                  title: 'To',
+                  initiallySelectedSingle:
+                  CurrenciesModel(ccyCode: toCcy),
+                  isMulti: false,
+                  onSingleChanged: (e) {
+                    setState(() => toCcy = e?.ccyCode);
+                    _loadData();
+                  },
+                  onMultiChanged: (_) {},
+                ),
+              ),
+
+              const SizedBox(width: 10),
+
+              Flexible(
+                child: DateRangeDropdown(
+                  title: 'Date Range',
+                  height: 38,
+                  onChanged: (fromDate, toDate) {
+                    _loadData(fromDate: fromDate, toDate: toDate);
+                  },
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          /// ---------------- CHART ----------------
+          SizedBox(
+            height: 280,
+            width: double.infinity,
+            child: BlocBuilder<FxRateReportBloc, FxRateReportState>(
+              builder: (context, state) {
+                if (state is FxRateReportLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (state is FxRateReportErrorState) {
+                  return Center(child: Text(state.message));
+                }
+
+                if (state is FxRateReportLoadedState) {
+                  if (state.rates.isEmpty) {
+                    return const Center(child: Text('No data'));
+                  }
+                  return _buildAreaChart(context, state.rates);
+                }
+
+                return const SizedBox.shrink();
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  SfCartesianChart _buildLineChart(List<ExchangeRateReportModel> rates) {
-    final chartData = rates
+  /// =======================================================
+  /// AREA + LINE CHART
+  /// =======================================================
+  SfCartesianChart _buildAreaChart(
+      BuildContext context,
+      List<ExchangeRateReportModel> rates,
+      ) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
+    final data = rates
         .map(
           (e) => _ChartPoint(
         date: e.rateDate,
@@ -157,17 +174,33 @@ class _ChartContentState extends State<_ChartContent> {
 
     return SfCartesianChart(
       tooltipBehavior: TooltipBehavior(enable: true),
-      primaryXAxis: DateTimeAxis(
-        dateFormat: DateFormat('MM/dd'),
-        intervalType: DateTimeIntervalType.days,
+      trackballBehavior: TrackballBehavior(
+        enable: true,
+        activationMode: ActivationMode.singleTap,
+        tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
       ),
-      primaryYAxis: NumericAxis(),
-      series: [
-        LineSeries<_ChartPoint, DateTime>(
-          dataSource: chartData,
+      primaryXAxis: DateTimeAxis(
+        intervalType: DateTimeIntervalType.days,
+        dateFormat: DateFormat('MM/dd'),
+      ),
+      primaryYAxis: NumericAxis(
+        numberFormat: NumberFormat('#,##0.00'),
+      ),
+      series: <CartesianSeries>[
+        AreaSeries<_ChartPoint, DateTime>(
+          dataSource: data,
           xValueMapper: (d, _) => d.date,
           yValueMapper: (d, _) => d.value,
-          width: 3,
+          borderColor: primaryColor,
+          borderWidth: 2,
+          gradient: LinearGradient(
+            colors: [
+              primaryColor.withValues(alpha: 0.35),
+              Colors.transparent,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
           markerSettings: const MarkerSettings(isVisible: true),
           name: '$fromCcy → $toCcy',
         ),
@@ -176,10 +209,15 @@ class _ChartContentState extends State<_ChartContent> {
   }
 }
 
+/// =======================================================
+/// INTERNAL CHART POINT
+/// =======================================================
 class _ChartPoint {
   final DateTime date;
   final double value;
 
-  _ChartPoint({required this.date, required this.value});
+  _ChartPoint({
+    required this.date,
+    required this.value,
+  });
 }
-
