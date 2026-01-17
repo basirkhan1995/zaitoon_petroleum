@@ -8,7 +8,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeR
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/pie_view.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/total_daily_txn.dart';
 import '../Report/Ui/Finance/ExchangeRate/chart.dart';
-import '../Report/Ui/TotalDailyTxn/bloc/total_daily_bloc.dart';
+
 import '../Settings/features/Visibility/bloc/settings_visible_bloc.dart';
 import 'features/clock.dart';
 
@@ -17,7 +17,11 @@ class DashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(mobile: _Mobile(), tablet: _Tablet(), desktop: _Desktop());
+    return ResponsiveLayout(
+      mobile: _Mobile(),
+      tablet: _Tablet(),
+      desktop: _Desktop(),
+    );
   }
 }
 
@@ -44,107 +48,83 @@ class _Desktop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final visibility = context.read<SettingsVisibleBloc>().state;
     return Scaffold(
-
       body: SingleChildScrollView(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-           Expanded(
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 2),
+                  if (visibility.dashboardClock) ...[
+                    const DigitalClock(),
+                    SizedBox(height: 5),
+                  ],
 
-             child: Column(
-               crossAxisAlignment: CrossAxisAlignment.start,
-               children: [
-                 SizedBox(height: 2),
-                 if(visibility.dashboardClock)...[
-                   const DigitalClock(),
-                   SizedBox(height: 5),
-                 ],
-
-                if(visibility.statsCount)...[
+                  if (visibility.statsCount) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        spacing: 5,
+                        children: [
+                          Icon(Icons.line_axis_rounded),
+                          Text(AppLocalizations.of(context)!.dashbordOverview),
+                        ],
+                      ),
+                    ),
+                    DashboardStatsView(),
+                  ],
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                    ),
                     child: Row(
                       spacing: 5,
                       children: [
-                        Icon(Icons.line_axis_rounded),
-                        Text(AppLocalizations.of(context)!.dashbordOverview)
+                        const Icon(Icons.line_axis_rounded),
+                        Text(
+                          AppLocalizations.of(
+                            context,
+                          )!.todayTransactionSummary,
+                        ),
                       ],
                     ),
                   ),
-                  DashboardStatsView(),
+                  const TotalDailyTxnView(),
+
+                  if (visibility.profitAndLoss) ...[
+                    SizedBox(height: 5),
+                    DailyGrossView(),
+                  ],
+
+                  SizedBox(height: 5),
+                  SizedBox(height: 400, child: FxRateDashboardChart()),
                 ],
-                 if (visibility.todayTotalTransactions)
-                   BlocBuilder<TotalDailyBloc, TotalDailyState>(
-                     builder: (context, state) {
-                       if (state is TotalDailyLoaded && state.data.isEmpty) {
-                         return const SizedBox.shrink();
-                       }
+              ),
+            ),
 
-                       if (state is TotalDailyLoaded) {
-                         return Column(
-                           crossAxisAlignment: CrossAxisAlignment.start,
-                           children: [
-                             const SizedBox(height: 5),
-                             Padding(
-                               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                               child: Row(
-                                 spacing: 5,
-                                 children: [
-                                   const Icon(Icons.line_axis_rounded),
-                                   Text(AppLocalizations.of(context)!.todayTransactionSummary),
-                                 ],
-                               ),
-                             ),
-                             const TotalDailyTxnView(),
-                           ],
-                         );
-                       }
-
-                       return const SizedBox.shrink(); // loading / error handled inside view
-                     },
-                   ),
-
-                 if(visibility.profitAndLoss)...[
-                   SizedBox(height: 5),
-                   DailyGrossView(),
-                 ],
-
-                 SizedBox(height: 5),
-                 SizedBox(
-                     height: 400,
-                     child: FxRateDashboardChart()),
-               ],
-             ),
-           ),
-            
-           SizedBox(
-             width: 400,
-             child: Column(
-               children: [
-                 if(visibility.exchangeRate)...[
-                   ExchangeRateView(
-                     settingButton: true,
-                     newRateButton: false,
-                   ),
-                 ],
-
-                if(visibility.todayTotalTxnChart)...[
-                  Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: TotalDailyPieView(),
-                  )
+            SizedBox(
+              width: 400,
+              child: Column(
+                children: [
+                  if (visibility.exchangeRate) ...[
+                    ExchangeRateView(settingButton: true, newRateButton: false),
+                  ],
+                  if (visibility.todayTotalTxnChart) ...[
+                    Padding(
+                      padding: const EdgeInsets.all(6.0),
+                      child: TotalDailyPieView(),
+                    ),
+                  ],
                 ],
-               ],
-             ),
-           ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 }
-
-

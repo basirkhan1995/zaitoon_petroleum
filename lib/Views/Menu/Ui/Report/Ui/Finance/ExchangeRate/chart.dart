@@ -74,54 +74,59 @@ class _ChartContentState extends State<_ChartContent> {
         children: [
 
           /// ---------------- FILTER ROW ----------------
-          Row(
-            children: [
-              Text(AppLocalizations.of(context)!.exchangeRate,style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              ),),
-              const Spacer(flex: 2),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Row(
+              children: [
+                Text(AppLocalizations.of(context)!.exchangeRate,style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                ),),
+                const Spacer(flex: 2),
 
-              Flexible(
-                child: CurrencyDropdown(
-                  title: AppLocalizations.of(context)!.from,
-                  initiallySelectedSingle:
-                  CurrenciesModel(ccyCode: fromCcy),
-                  isMulti: false,
-                  onSingleChanged: (e) {
-                    setState(() => fromCcy = e?.ccyCode);
-                    _loadData();
-                  },
-                  onMultiChanged: (_) {},
+                Flexible(
+                  child: CurrencyDropdown(
+                    title: AppLocalizations.of(context)!.from,
+                    height: 35,
+                    initiallySelectedSingle:
+                    CurrenciesModel(ccyCode: fromCcy),
+                    isMulti: false,
+                    onSingleChanged: (e) {
+                      setState(() => fromCcy = e?.ccyCode);
+                      _loadData();
+                    },
+                    onMultiChanged: (_) {},
+                  ),
                 ),
-              ),
 
-              const SizedBox(width: 10),
+                const SizedBox(width: 10),
 
-              Flexible(
-                child: CurrencyDropdown(
-                  title: AppLocalizations.of(context)!.toCurrency,
-                  initiallySelectedSingle:
-                  CurrenciesModel(ccyCode: toCcy),
-                  isMulti: false,
-                  onSingleChanged: (e) {
-                    setState(() => toCcy = e?.ccyCode);
-                    _loadData();
-                  },
-                  onMultiChanged: (_) {},
+                Flexible(
+                  child: CurrencyDropdown(
+                    height: 35,
+                    title: AppLocalizations.of(context)!.toCurrency,
+                    initiallySelectedSingle:
+                    CurrenciesModel(ccyCode: toCcy),
+                    isMulti: false,
+                    onSingleChanged: (e) {
+                      setState(() => toCcy = e?.ccyCode);
+                      _loadData();
+                    },
+                    onMultiChanged: (_) {},
+                  ),
                 ),
-              ),
 
-              const SizedBox(width: 10),
+                const SizedBox(width: 10),
 
-              Flexible(
-                child: DateRangeDropdown(
-                  title: AppLocalizations.of(context)!.dateRange,
-                  height: 38,
-                  onChanged: (fromDate, toDate) {
-                    _loadData(fromDate: fromDate, toDate: toDate);
-                  },
+                Flexible(
+                  child: DateRangeDropdown(
+                    title: AppLocalizations.of(context)!.dateRange,
+                    height: 35,
+                    onChanged: (fromDate, toDate) {
+                      _loadData(fromDate: fromDate, toDate: toDate);
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
           const SizedBox(height: 8),

@@ -32,6 +32,7 @@ import '../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'package:flutter/services.dart';
 import '../../../Auth/bloc/auth_bloc.dart';
+import '../Report/Ui/Transactions/TransactionRef/transaction_ref.dart';
 import '../Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import '../Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
 import 'PDF/cash_flow_print.dart';
@@ -1863,6 +1864,11 @@ class _DesktopState extends State<_Desktop> {
       );
     }
 
+    void show(){
+      showDialog(context: context, builder: (context){
+        return TransactionByReferenceView();
+      });
+    }
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): () => onCashDepositWithdraw(trnType: "CHDP"),
       const SingleActivator(LogicalKeyboardKey.f2): () => onCashDepositWithdraw(trnType: "CHWL"),
@@ -1873,6 +1879,7 @@ class _DesktopState extends State<_Desktop> {
       const SingleActivator(LogicalKeyboardKey.f7): () => onFxTxn(),
       const SingleActivator(LogicalKeyboardKey.f8): () => onGL(trnType: "GLCR"),
       const SingleActivator(LogicalKeyboardKey.f9): () => onGL(trnType: "GLDR"),
+      const SingleActivator(LogicalKeyboardKey.keyR,control: true, shift: true): () => show(),
     };
 
 

@@ -2093,4 +2093,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noTransactionFound => 'هیچ معامله یافت نشد';
+
+  @override
+  String get transactionByRef => 'راکړه ورکړه د مراجعې له مخې';
+
+  @override
+  String get transactionSummary => 'خلاصه معامله';
 }

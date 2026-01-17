@@ -4161,6 +4161,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No Transaction Found'**
   String get noTransactionFound;
+
+  /// No description provided for @transactionByRef.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction By Reference'**
+  String get transactionByRef;
+
+  /// No description provided for @transactionSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Summary'**
+  String get transactionSummary;
 }
 
 class _AppLocalizationsDelegate

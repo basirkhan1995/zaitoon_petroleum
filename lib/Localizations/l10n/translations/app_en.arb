@@ -696,5 +696,7 @@
   "glStatementSingleDate": "GL Statement Single Date",
   "todayTransactionSummary": "Today’s Transaction Summary",
   "dashbordOverview": "Dashboard Overview",
-  "noTransactionFound": "No Transaction Found"
+  "noTransactionFound": "No Transaction Found",
+  "transactionByRef": "Transaction By Reference",
+  "transactionSummary": "Transaction Summary"
 }

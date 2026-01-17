@@ -2090,4 +2090,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get noTransactionFound => 'هیچ معامله یافت نشد';
+
+  @override
+  String get transactionByRef => 'تراکنش بر اساس مرجع';
+
+  @override
+  String get transactionSummary => 'خلاصه معامله';
 }

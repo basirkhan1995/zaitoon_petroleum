@@ -2099,4 +2099,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noTransactionFound => 'No Transaction Found';
+
+  @override
+  String get transactionByRef => 'Transaction By Reference';
+
+  @override
+  String get transactionSummary => 'Transaction Summary';
 }

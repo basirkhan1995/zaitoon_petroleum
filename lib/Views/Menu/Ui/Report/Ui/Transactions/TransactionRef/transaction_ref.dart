@@ -65,7 +65,7 @@ class _DesktopState extends State<_Desktop> {
     final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final titleStyle = textTheme.titleSmall?.copyWith(
-      color: color.onSurface,
+      color: color.surface,
       fontWeight: FontWeight.w500,
     );
 
@@ -76,9 +76,6 @@ class _DesktopState extends State<_Desktop> {
           // Header with search
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: color.primaryContainer.withValues(alpha: .05),
-            ),
             child: Row(
               children: [
                 BackButton(),
@@ -88,9 +85,8 @@ class _DesktopState extends State<_Desktop> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        tr.transactionDetails,
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                        tr.transactionByRef,
+                        style: textTheme.titleLarge?.copyWith(
                         ),
                       ),
                     ],
@@ -105,19 +101,20 @@ class _DesktopState extends State<_Desktop> {
                         flex: 2,
                         child: ZTextFieldEntitled(
                           controller: ref,
-                          title: tr.referenceNumber,
+                          icon: Icons.qr_code_2_outlined,
+                          title: '',
                           isRequired: true,
                           hint: tr.referenceNumber,
                           onSubmit: (_) => onSubmit(),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 5),
                       ZOutlineButton(
                         width: 120,
                         isActive: true,
                         onPressed: onSubmit,
-                        icon: Icons.search,
-                        label: Text(tr.search),
+                        icon: Icons.call_to_action_outlined,
+                        label: Text(tr.submit),
                       ),
                     ],
                   ),
@@ -157,13 +154,18 @@ class _DesktopState extends State<_Desktop> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
-                              tr.details,
-                              style: textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: color.primary,
-                              ),
+                            Row(
+                              spacing:5,
+                              children: [
+                                Icon(Icons.qr_code_2_outlined),
+                                Text(
+                                  tr.transactionDetails,
+                                  style: textTheme.titleMedium
+                                ),
+                              ],
                             ),
+                            const SizedBox(height: 5),
+                            Divider(),
                             const SizedBox(height: 16),
                             Wrap(
                               spacing: 32,
@@ -195,16 +197,17 @@ class _DesktopState extends State<_Desktop> {
                                   color,
                                 ),
                                 _buildSummaryItem(
+                                  tr.txnType,
+                                  txn.trnType ?? "-",
+                                  color,
+                                ),
+                                _buildSummaryItem(
                                   tr.status,
                                   txn.trnStateText ?? "-",
                                   color,
                                   isStatus: true,
                                 ),
-                                _buildSummaryItem(
-                                  tr.txnType,
-                                  txn.trnType ?? "-",
-                                  color,
-                                ),
+
                               ],
                             ),
                           ],
@@ -222,7 +225,7 @@ class _DesktopState extends State<_Desktop> {
 
                         ),
                         decoration: BoxDecoration(
-                          color: color.primary.withValues(alpha: .08),
+                          color: color.primary.withValues(alpha: .9),
 
                         ),
                         child: Row(
@@ -282,7 +285,6 @@ class _DesktopState extends State<_Desktop> {
                           ),
                           itemBuilder: (context, index) {
                             final record = records[index];
-                            final isDebit = record.debitCredit == 'D';
 
                             return Container(
                               padding: const EdgeInsets.symmetric(
@@ -330,24 +332,14 @@ class _DesktopState extends State<_Desktop> {
                                     width: 100,
                                     child: Text(
                                       record.debitCredit?.toString() ?? "-",
-                                      style: textTheme.bodyMedium?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: isDebit
-                                            ? Colors.red
-                                            : Colors.green,
-                                      ),
+                                      style: textTheme.bodyMedium,
                                     ),
                                   ),
                                   SizedBox(
                                     width: 150,
                                     child: Text(
                                       "${record.trdAmount?.toAmount() ?? "0.00"} ${record.trdCcy ?? ""}",
-                                      style: textTheme.bodyMedium?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: isDebit
-                                            ? Colors.red
-                                            : Colors.green,
-                                      ),
+                                      style: textTheme.bodyMedium
                                     ),
                                   ),
                                 ],
@@ -369,9 +361,9 @@ class _DesktopState extends State<_Desktop> {
                         size: 64,
                         color: color.outline.withValues(alpha: .3),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
                       Text(
-                        tr.search,
+                        tr.transactionSummary,
                         style: textTheme.bodyLarge?.copyWith(
                           color: color.outline.withValues(alpha: .6),
                         ),
@@ -403,38 +395,19 @@ class _DesktopState extends State<_Desktop> {
             color: color.outline.withValues(alpha: .7),
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: isStatus
-                ? _getStatusColor(value, color)
-                : color.surfaceContainerHighest.withValues(alpha: .3),
-            borderRadius: BorderRadius.circular(6),
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 3),
           child: Text(
             value,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: isStatus ? Colors.white : color.onSurface,
             ),
           ),
         ),
       ],
     );
-  }
-
-  Color _getStatusColor(String status, ColorScheme color) {
-    status = status.toLowerCase();
-    if (status.contains('authorized') || status.contains('completed')) {
-      return Colors.green;
-    } else if (status.contains('pending')) {
-      return Colors.orange;
-    } else if (status.contains('rejected') || status.contains('failed')) {
-      return Colors.red;
-    }
-    return color.primary;
   }
 
   void onSubmit() {

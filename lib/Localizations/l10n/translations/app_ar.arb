@@ -696,5 +696,7 @@
   "glStatementSingleDate": "صورتحساب جی ال",
   "todayTransactionSummary": "د نن ورځې د معاملو راپور",
   "dashbordOverview": "د ډشبورډ عمومي کتنه",
-  "noTransactionFound": "هیچ معامله یافت نشد"
+  "noTransactionFound": "هیچ معامله یافت نشد",
+  "transactionByRef": "راکړه ورکړه د مراجعې له مخې",
+  "transactionSummary": "خلاصه معامله"
 }

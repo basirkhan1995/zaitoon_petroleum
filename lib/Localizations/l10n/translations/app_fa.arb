@@ -696,5 +696,7 @@
   "glStatementSingleDate": "صورتحساب جی ال",
   "todayTransactionSummary": "خلاصهٔ معاملات امروز",
   "dashbordOverview": "نمای کلی داشبورد",
-  "noTransactionFound": "هیچ معامله یافت نشد"
+  "noTransactionFound": "هیچ معامله یافت نشد",
+  "transactionByRef": "تراکنش بر اساس مرجع",
+  "transactionSummary": "خلاصه معامله"
 }
