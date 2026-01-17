@@ -182,11 +182,11 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
                   label: Text(locale.print),
                   onPressed: () {
                     final printer = context.read<PrinterCubit>().state!;
-                    final language =
-                        context.read<PrintLanguageCubit>().state ?? sysLanguage;
+                    final language = context.read<PrintLanguageCubit>().state ?? sysLanguage;
                     final size = context.read<PaperSizeCubit>().state;
                     final orientation = context.read<PageOrientationCubit>().state;
 
+                    Navigator.of(context).pop();
                     widget.onPrint(
                       data: widget.data,
                       language: language,
