@@ -2090,4 +2090,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get glStatementSingleDate => 'GL Statement Single Date';
+
+  @override
+  String get todayTransactionSummary => 'Today’s Transaction Summary';
+
+  @override
+  String get dashbordOverview => 'Dashboard Overview';
+
+  @override
+  String get noTransactionFound => 'No Transaction Found';
 }

@@ -327,7 +327,7 @@ class BalanceSheetPrintSettings extends PrintServices {
         fontWeight: pw.FontWeight.bold,
         color: pw.PdfColors.grey700,
       ),
-      pw.SizedBox(height: 4),
+      pw.SizedBox(height: 2),
       ...rows,
       _total("${getTranslation(locale: 'totalTitle', language: language)} $title", cy, ly),
     ];
@@ -339,7 +339,7 @@ class BalanceSheetPrintSettings extends PrintServices {
 
   pw.Widget _row(String name, double cy, double ly) {
     return pw.Container(
-      margin: const pw.EdgeInsets.symmetric(vertical: 2),
+      margin: const pw.EdgeInsets.symmetric(vertical: 1),
       child: pw.Row(
         children: [
           pw.Expanded(
@@ -369,8 +369,8 @@ class BalanceSheetPrintSettings extends PrintServices {
 
   pw.Widget _total(String label, double cy, double ly) {
     return pw.Container(
-      margin: const pw.EdgeInsets.only(bottom: 5, top: 3),
-      padding: const pw.EdgeInsets.symmetric(vertical: 4,horizontal: 2),
+      margin: const pw.EdgeInsets.only(bottom: 3, top: 3),
+      padding: const pw.EdgeInsets.symmetric(vertical: 2,horizontal: 1),
       decoration: const pw.BoxDecoration(
         color: pw.PdfColors.grey100,
       ),
@@ -414,7 +414,7 @@ class BalanceSheetPrintSettings extends PrintServices {
   pw.Widget _grandTotal(String label, double cy, double ly, ReportModel company) {
     return pw.Container(
       margin: const pw.EdgeInsets.only(top: 3),
-      padding: const pw.EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+      padding: const pw.EdgeInsets.symmetric(vertical: 3, horizontal: 1),
       decoration: pw.BoxDecoration(
         color: pw.PdfColors.blue50,
         borderRadius: pw.BorderRadius.circular(2),
@@ -428,7 +428,6 @@ class BalanceSheetPrintSettings extends PrintServices {
               style: pw.TextStyle(
                 fontSize: 11,
                 fontWeight: pw.FontWeight.bold,
-                color: pw.PdfColors.blue900,
               ),
             ),
           ),
@@ -440,7 +439,6 @@ class BalanceSheetPrintSettings extends PrintServices {
               style: pw.TextStyle(
                 fontSize: 11,
                 fontWeight: pw.FontWeight.bold,
-                color: pw.PdfColors.blue900,
               ),
             ),
           ),
@@ -452,7 +450,6 @@ class BalanceSheetPrintSettings extends PrintServices {
               style: pw.TextStyle(
                 fontSize: 11,
                 fontWeight: pw.FontWeight.bold,
-                color: pw.PdfColors.blue900,
               ),
             ),
           ),

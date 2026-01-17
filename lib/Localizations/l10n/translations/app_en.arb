@@ -693,5 +693,8 @@
   "liabilitiesEquity": "Liabilities & Equity",
   "netProfit": "Net Profit",
   "actualBalance": "Actual Balance",
-  "glStatementSingleDate": "GL Statement Single Date"
+  "glStatementSingleDate": "GL Statement Single Date",
+  "todayTransactionSummary": "Today’s Transaction Summary",
+  "dashbordOverview": "Dashboard Overview",
+  "noTransactionFound": "No Transaction Found"
 }

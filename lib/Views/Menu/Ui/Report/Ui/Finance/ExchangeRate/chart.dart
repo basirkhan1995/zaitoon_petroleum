@@ -5,6 +5,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/features/currency_drop.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/ExchangeRate/bloc/fx_rate_report_bloc.dart';
@@ -66,7 +67,7 @@ class _ChartContentState extends State<_ChartContent> {
     return ZCard(
       radius: 8,
       margin: const EdgeInsets.all(4),
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -75,11 +76,13 @@ class _ChartContentState extends State<_ChartContent> {
           /// ---------------- FILTER ROW ----------------
           Row(
             children: [
-              const Spacer(flex: 3),
+              Text(AppLocalizations.of(context)!.exchangeRate,style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              ),),
+              const Spacer(flex: 2),
 
               Flexible(
                 child: CurrencyDropdown(
-                  title: 'From',
+                  title: AppLocalizations.of(context)!.from,
                   initiallySelectedSingle:
                   CurrenciesModel(ccyCode: fromCcy),
                   isMulti: false,
@@ -95,7 +98,7 @@ class _ChartContentState extends State<_ChartContent> {
 
               Flexible(
                 child: CurrencyDropdown(
-                  title: 'To',
+                  title: AppLocalizations.of(context)!.toCurrency,
                   initiallySelectedSingle:
                   CurrenciesModel(ccyCode: toCcy),
                   isMulti: false,
@@ -111,7 +114,7 @@ class _ChartContentState extends State<_ChartContent> {
 
               Flexible(
                 child: DateRangeDropdown(
-                  title: 'Date Range',
+                  title: AppLocalizations.of(context)!.dateRange,
                   height: 38,
                   onChanged: (fromDate, toDate) {
                     _loadData(fromDate: fromDate, toDate: toDate);
@@ -121,7 +124,7 @@ class _ChartContentState extends State<_ChartContent> {
             ],
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
 
           /// ---------------- CHART ----------------
           SizedBox(
@@ -195,7 +198,7 @@ class _ChartContentState extends State<_ChartContent> {
           borderWidth: 2,
           gradient: LinearGradient(
             colors: [
-              primaryColor.withValues(alpha: 0.35),
+              primaryColor.withValues(alpha: 0.15),
               Colors.transparent,
             ],
             begin: Alignment.topCenter,

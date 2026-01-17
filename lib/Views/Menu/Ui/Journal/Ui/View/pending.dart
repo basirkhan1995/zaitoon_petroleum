@@ -19,6 +19,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../Localizations/Bloc/localizations_bloc.dart';
 import '../GetOrder/bloc/order_txn_bloc.dart';
+import '../GetOrder/txn_oder.dart';
 
 class PendingTransactionsView extends StatelessWidget {
   const PendingTransactionsView({super.key});
@@ -129,11 +130,36 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
 
     return MultiBlocListener(
       listeners: [
+        BlocListener<OrderTxnBloc, OrderTxnState>(
+          listener: (context, state) {
+            if (state is OrderTxnLoadedState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              showDialog(
+                context: context,
+                builder: (context) => OrderTxnView(reference: state.data.trnReference ?? ""),
+              );
+            } else if (state is OrderTxnErrorState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              Utils.showOverlayMessage(
+                context,
+                title: tr.noData,
+                message: state.message,
+                isError: true,
+              );
+            }
+          },
+        ),
         BlocListener<TrptBloc, TrptState>(
           listener: (context, state) {
             if (state is TrptLoadedState) {
@@ -152,7 +178,7 @@ class _DesktopState extends State<_Desktop> {
               });
               Utils.showOverlayMessage(
                 context,
-                title: locale.noData,
+                title: tr.noData,
                 message: state.error,
                 isError: true,
               );
@@ -177,7 +203,7 @@ class _DesktopState extends State<_Desktop> {
               });
               Utils.showOverlayMessage(
                 context,
-                title: locale.noData,
+                title: tr.noData,
                 message: state.message,
                 isError: true,
               );
@@ -202,7 +228,7 @@ class _DesktopState extends State<_Desktop> {
               });
               Utils.showOverlayMessage(
                 context,
-                title: locale.noData,
+                title: tr.noData,
                 message: state.message,
                 isError: true,
               );
@@ -227,7 +253,7 @@ class _DesktopState extends State<_Desktop> {
               });
               Utils.showOverlayMessage(
                 context,
-                title: locale.noData,
+                title: tr.noData,
                 message: state.error,
                 isError: true,
               );
@@ -251,7 +277,7 @@ class _DesktopState extends State<_Desktop> {
                           width: 150,
                           icon: Icons.check_box_rounded,
                           label: Text(
-                            "${locale.authorize} (${_selectedRefs.length})",
+                            "${tr.authorize} (${_selectedRefs.length})",
                           ),
                         ),
                         ZOutlineButton(
@@ -262,7 +288,7 @@ class _DesktopState extends State<_Desktop> {
                           width: 120,
                           icon: Icons.delete_outline_rounded,
                           label: Text(
-                            "${locale.delete} (${_selectedRefs.length})",
+                            "${tr.delete} (${_selectedRefs.length})",
                           ),
                         ),
                         ZOutlineButton(
@@ -274,7 +300,7 @@ class _DesktopState extends State<_Desktop> {
                             });
                           },
                           isActive: true,
-                          label: Text(locale.cancel),
+                          label: Text(tr.cancel),
                         ),
                       ],
                     ),
@@ -293,8 +319,8 @@ class _DesktopState extends State<_Desktop> {
                             tileColor: Colors.transparent,
                             contentPadding: EdgeInsets.zero,
                             visualDensity: VisualDensity(vertical: -4, horizontal: -4),
-                            title: Text(locale.pendingTransactions,style: Theme.of(context).textTheme.titleMedium),
-                            subtitle: Text(locale.pendingTransactionHint),
+                            title: Text(tr.pendingTransactions,style: Theme.of(context).textTheme.titleMedium),
+                            subtitle: Text(tr.pendingTransactionHint),
                           )),
                       Expanded(
                         flex: 3,
@@ -316,7 +342,7 @@ class _DesktopState extends State<_Desktop> {
                             LoadAllTransactionsEvent('pending'),
                           );
                         },
-                        label: Text(locale.refresh),
+                        label: Text(tr.refresh),
                       ),
                     ],
                   ),
@@ -351,7 +377,7 @@ class _DesktopState extends State<_Desktop> {
                       SizedBox(
                         width: 162,
                         child: Text(
-                          locale.txnDate,
+                          tr.txnDate,
                           style: textTheme.titleSmall,
                         ),
                       ),
@@ -360,7 +386,7 @@ class _DesktopState extends State<_Desktop> {
                         child: Row(
                           children: [
                             Text(
-                              locale.referenceNumber,
+                              tr.referenceNumber,
                               style: textTheme.titleSmall,
                             ),
                             const SizedBox(width: 4),
@@ -375,7 +401,7 @@ class _DesktopState extends State<_Desktop> {
                       SizedBox(
                         width: 110,
                         child: Text(
-                          locale.txnType,
+                          tr.txnType,
                           style: textTheme.titleSmall,
                         ),
                       ),
@@ -383,7 +409,7 @@ class _DesktopState extends State<_Desktop> {
                       SizedBox(
                         width: 110,
                         child: Text(
-                          locale.maker,
+                          tr.maker,
                           style: textTheme.titleSmall,
                         ),
                       ),
@@ -404,7 +430,7 @@ class _DesktopState extends State<_Desktop> {
                       if (state is TransactionErrorState) {
                         Utils.showOverlayMessage(
                           context,
-                          title: locale.accessDenied,
+                          title: tr.accessDenied,
                           message: state.message,
                           isError: true,
                         );
@@ -445,7 +471,7 @@ class _DesktopState extends State<_Desktop> {
 
                         if (filteredList.isEmpty) {
                           return NoDataWidget(
-                            message: locale.noDataFound,
+                            message: tr.noTransactionFound,
                             onRefresh: () {
                               context.read<TransactionsBloc>().add(
                                 LoadAllTransactionsEvent('pending'),

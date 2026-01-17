@@ -2081,4 +2081,13 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get glStatementSingleDate => 'صورتحساب جی ال';
+
+  @override
+  String get todayTransactionSummary => 'خلاصهٔ معاملات امروز';
+
+  @override
+  String get dashbordOverview => 'نمای کلی داشبورد';
+
+  @override
+  String get noTransactionFound => 'هیچ معامله یافت نشد';
 }

@@ -17,6 +17,7 @@ import '../FetchATAT/fetch_atat.dart';
 import '../FetchTRPT/Ui/trpt_view.dart';
 import '../FetchTRPT/bloc/trpt_bloc.dart';
 import '../GetOrder/bloc/order_txn_bloc.dart';
+import '../GetOrder/txn_oder.dart';
 import '../TxnByReference/bloc/txn_reference_bloc.dart';
 import '../TxnByReference/txn_reference.dart';
 
@@ -106,11 +107,36 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
 
     return MultiBlocListener(
       listeners: [
+        BlocListener<OrderTxnBloc, OrderTxnState>(
+          listener: (context, state) {
+            if (state is OrderTxnLoadedState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              showDialog(
+                context: context,
+                builder: (context) => OrderTxnView(reference: state.data.trnReference ?? ""),
+              );
+            } else if (state is OrderTxnErrorState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              Utils.showOverlayMessage(
+                context,
+                title: tr.noData,
+                message: state.message,
+                isError: true,
+              );
+            }
+          },
+        ),
         BlocListener<TrptBloc, TrptState>(
           listener: (context, state) {
             if (state is TrptLoadedState) {
@@ -129,7 +155,7 @@ class _DesktopState extends State<_Desktop> {
               });
               Utils.showOverlayMessage(
                 context,
-                title: locale.noData,
+                title: tr.noData,
                 message: state.error,
                 isError: true,
               );
@@ -154,7 +180,7 @@ class _DesktopState extends State<_Desktop> {
               });
               Utils.showOverlayMessage(
                 context,
-                title: locale.noData,
+                title: tr.noData,
                 message: state.message,
                 isError: true,
               );
@@ -183,7 +209,7 @@ class _DesktopState extends State<_Desktop> {
               });
               Utils.showOverlayMessage(
                 context,
-                title: locale.noData,
+                title: tr.noData,
                 message: state.message,
                 isError: true,
               );
@@ -212,7 +238,7 @@ class _DesktopState extends State<_Desktop> {
               });
               Utils.showOverlayMessage(
                 context,
-                title: locale.noData,
+                title: tr.noData,
                 message: state.error,
                 isError: true,
               );
@@ -242,7 +268,7 @@ class _DesktopState extends State<_Desktop> {
                             tileColor: Colors.transparent,
                             contentPadding: EdgeInsets.zero,
                             visualDensity: VisualDensity(vertical: -4, horizontal: -4),
-                            title: Text(locale.todayTransaction,style: Theme.of(context).textTheme.titleMedium),
+                            title: Text(tr.todayTransaction,style: Theme.of(context).textTheme.titleMedium),
                             subtitle: Text(DateTime.now().toFormattedDate()),
                           )),
                       Expanded(
@@ -266,7 +292,7 @@ class _DesktopState extends State<_Desktop> {
                               .read<TransactionsBloc>()
                               .add(LoadAllTransactionsEvent('auth'));
                         },
-                        label: Text(locale.refresh),
+                        label: Text(tr.refresh),
                       ),
                     ],
                   ),
@@ -279,27 +305,27 @@ class _DesktopState extends State<_Desktop> {
                       SizedBox(
                         width: 162,
                         child:
-                        Text(locale.txnDate, style: textTheme.titleSmall),
+                        Text(tr.txnDate, style: textTheme.titleSmall),
                       ),
                       SizedBox(width: 20),
                       Expanded(
                         child: Text(
-                          locale.referenceNumber,
+                          tr.referenceNumber,
                           style: textTheme.titleSmall,
                         ),
                       ),
                       SizedBox(
                         width: 130,
-                        child: Text(locale.txnType, style: textTheme.titleSmall),
+                        child: Text(tr.txnType, style: textTheme.titleSmall),
                       ),
                       SizedBox(width: 20),
                       SizedBox(
                         width: 110,
-                        child: Text(locale.maker, style: textTheme.titleSmall),
+                        child: Text(tr.maker, style: textTheme.titleSmall),
                       ),
                       SizedBox(
                         width: 110,
-                        child: Text(locale.checker, style: textTheme.titleSmall),
+                        child: Text(tr.checker, style: textTheme.titleSmall),
                       ),
                       SizedBox(width: 20),
                     ],
@@ -347,7 +373,7 @@ class _DesktopState extends State<_Desktop> {
                         }).toList();
                         if (filteredList.isEmpty) {
                           return NoDataWidget(
-                            message: locale.noDataFound,
+                            message: tr.noDataFound,
                             onRefresh: () {
                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                 context.read<TransactionsBloc>().add(

@@ -143,7 +143,6 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
                             ),
                           ),
                           const SizedBox(width: 10),
-                          // Toggle buttons for Line/Bar
                           ToggleButtons(
                             isSelected: [chartType == 0, chartType == 1],
                             onPressed: (index) {
@@ -152,9 +151,10 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
                               });
                             },
                             constraints: const BoxConstraints(
-                              minHeight: 33, // set your desired height
-                              minWidth: 40,  // optional: control width too
+                              minHeight: 35, // set your desired height
+                              minWidth: 50,  // optional: control width too
                             ),
+                            borderRadius: BorderRadius.circular(4),
                             children: const [
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 8),

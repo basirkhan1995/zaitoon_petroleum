@@ -4143,6 +4143,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'GL Statement Single Date'**
   String get glStatementSingleDate;
+
+  /// No description provided for @todayTransactionSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Today’s Transaction Summary'**
+  String get todayTransactionSummary;
+
+  /// No description provided for @dashbordOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard Overview'**
+  String get dashbordOverview;
+
+  /// No description provided for @noTransactionFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No Transaction Found'**
+  String get noTransactionFound;
 }
 
 class _AppLocalizationsDelegate

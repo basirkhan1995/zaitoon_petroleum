@@ -2084,4 +2084,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get glStatementSingleDate => 'صورتحساب جی ال';
+
+  @override
+  String get todayTransactionSummary => 'د نن ورځې د معاملو راپور';
+
+  @override
+  String get dashbordOverview => 'د ډشبورډ عمومي کتنه';
+
+  @override
+  String get noTransactionFound => 'هیچ معامله یافت نشد';
 }

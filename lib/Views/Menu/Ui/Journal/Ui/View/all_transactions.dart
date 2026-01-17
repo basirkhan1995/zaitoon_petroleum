@@ -104,7 +104,6 @@ class _DesktopState extends State<_Desktop> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;

@@ -693,5 +693,8 @@
   "liabilitiesEquity": "پورونه او د مالک حقونه",
   "netProfit": "خالصه ګټه",
   "actualBalance": "بیلانس اصلی",
-  "glStatementSingleDate": "صورتحساب جی ال"
+  "glStatementSingleDate": "صورتحساب جی ال",
+  "todayTransactionSummary": "د نن ورځې د معاملو راپور",
+  "dashbordOverview": "د ډشبورډ عمومي کتنه",
+  "noTransactionFound": "هیچ معامله یافت نشد"
 }

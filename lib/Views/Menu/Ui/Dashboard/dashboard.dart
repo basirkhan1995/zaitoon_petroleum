@@ -8,6 +8,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeR
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/pie_view.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/total_daily_txn.dart';
 import '../Report/Ui/Finance/ExchangeRate/chart.dart';
+import '../Report/Ui/TotalDailyTxn/bloc/total_daily_bloc.dart';
 import '../Settings/features/Visibility/bloc/settings_visible_bloc.dart';
 import 'features/clock.dart';
 
@@ -69,53 +70,49 @@ class _Desktop extends StatelessWidget {
                       spacing: 5,
                       children: [
                         Icon(Icons.line_axis_rounded),
-                        Text(AppLocalizations.of(context)!.totalTitle)
+                        Text(AppLocalizations.of(context)!.dashbordOverview)
                       ],
                     ),
                   ),
                   DashboardStatsView(),
                 ],
-                if(visibility.todayTotalTransactions)...[
-                  SizedBox(height: 5),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Row(
-                      spacing: 5,
-                      children: [
-                        Icon(Icons.line_axis_rounded),
-                        Text(AppLocalizations.of(context)!.today)
-                      ],
-                    ),
-                  ),
-                  TotalDailyTxnView(),
-                ],
+                 if (visibility.todayTotalTransactions)
+                   BlocBuilder<TotalDailyBloc, TotalDailyState>(
+                     builder: (context, state) {
+                       if (state is TotalDailyLoaded && state.data.isEmpty) {
+                         return const SizedBox.shrink();
+                       }
+
+                       if (state is TotalDailyLoaded) {
+                         return Column(
+                           crossAxisAlignment: CrossAxisAlignment.start,
+                           children: [
+                             const SizedBox(height: 5),
+                             Padding(
+                               padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                               child: Row(
+                                 spacing: 5,
+                                 children: [
+                                   const Icon(Icons.line_axis_rounded),
+                                   Text(AppLocalizations.of(context)!.todayTransactionSummary),
+                                 ],
+                               ),
+                             ),
+                             const TotalDailyTxnView(),
+                           ],
+                         );
+                       }
+
+                       return const SizedBox.shrink(); // loading / error handled inside view
+                     },
+                   ),
+
                  if(visibility.profitAndLoss)...[
                    SizedBox(height: 5),
-                   Padding(
-                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                     child: Row(
-                       spacing: 5,
-                       children: [
-                         Icon(Icons.line_axis_rounded),
-                         Text(AppLocalizations.of(context)!.profitAndLoss)
-                       ],
-                     ),
-                   ),
                    DailyGrossView(),
                  ],
 
-
                  SizedBox(height: 5),
-                 Padding(
-                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                   child: Row(
-                     spacing: 5,
-                     children: [
-                       Icon(Icons.line_axis_rounded),
-                       Text(AppLocalizations.of(context)!.exchangeRate)
-                     ],
-                   ),
-                 ),
                  SizedBox(
                      height: 400,
                      child: FxRateDashboardChart()),

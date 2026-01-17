@@ -693,5 +693,8 @@
   "liabilitiesEquity": "بدهی‌ها و حقوق صاحبان سهام",
   "netProfit": "سود خالص",
   "actualBalance": "بیلانس اصلی",
-  "glStatementSingleDate": "صورتحساب جی ال"
+  "glStatementSingleDate": "صورتحساب جی ال",
+  "todayTransactionSummary": "خلاصهٔ معاملات امروز",
+  "dashbordOverview": "نمای کلی داشبورد",
+  "noTransactionFound": "هیچ معامله یافت نشد"
 }
