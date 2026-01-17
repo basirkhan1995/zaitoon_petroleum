@@ -7,6 +7,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/Stats/stats.dart
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/Ui/exchange_rate.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/pie_view.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/total_daily_txn.dart';
+import '../Report/Ui/Finance/ExchangeRate/chart.dart';
 import '../Settings/features/Visibility/bloc/settings_visible_bloc.dart';
 import 'features/clock.dart';
 
@@ -101,7 +102,23 @@ class _Desktop extends StatelessWidget {
                      ),
                    ),
                    DailyGrossView(),
-                 ]
+                 ],
+
+
+                 SizedBox(height: 5),
+                 Padding(
+                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                   child: Row(
+                     spacing: 5,
+                     children: [
+                       Icon(Icons.line_axis_rounded),
+                       Text(AppLocalizations.of(context)!.exchangeRate)
+                     ],
+                   ),
+                 ),
+                 SizedBox(
+                     height: 400,
+                     child: FxRateDashboardChart()),
                ],
              ),
            ),
@@ -122,15 +139,15 @@ class _Desktop extends StatelessWidget {
                     padding: const EdgeInsets.all(6.0),
                     child: TotalDailyPieView(),
                   )
-                ]
-
+                ],
                ],
              ),
-           ) 
+           ),
           ],
         ),
       ),
     );
   }
 }
+
 
