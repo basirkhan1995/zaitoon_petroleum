@@ -465,14 +465,14 @@ class _DesktopState extends State<_Desktop> {
                       children: [
                        Wrap(
                          children: [
-                           ZCard(radius: 0,child: Text(tr.purchasePrice,style: title),),
-                           ZCard(radius: 0,child: Text(product.purchasePrice?.toAmount()??"")),
+                           ZCover(radius: 0,child: Text(tr.purchasePrice,style: title),),
+                           ZCover(radius: 0,child: Text(product.purchasePrice?.toAmount()??"")),
                          ],
                        ),
                         Wrap(
                           children: [
-                            ZCard(radius: 0,child: Text(tr.salePriceBrief,style: title)),
-                            ZCard(radius: 0,child: Text(product.sellPrice?.toAmount()??"")),
+                            ZCover(radius: 0,child: Text(tr.salePriceBrief,style: title)),
+                            ZCover(radius: 0,child: Text(product.sellPrice?.toAmount()??"")),
                           ],
                         ),
                       ],

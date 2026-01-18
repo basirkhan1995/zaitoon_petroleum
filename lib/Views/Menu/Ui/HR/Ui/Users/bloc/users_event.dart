@@ -12,6 +12,18 @@ class LoadUsersEvent extends UsersEvent{
   List<Object?> get props => [usrOwner];
 }
 
+class LoadUsersReportEvent extends UsersEvent{
+  final int? branchId;
+  final String? usrName;
+  final String? role;
+  final int? status;
+  const LoadUsersReportEvent({this.branchId,this.usrName, this.role,this.status});
+
+  @override
+  List<Object?> get props => [branchId, usrName, role, status];
+}
+
+
 class AddUserEvent extends UsersEvent{
   final UsersModel newUser;
   const AddUserEvent(this.newUser);

@@ -146,7 +146,7 @@ class _BalanceSheetViewState extends State<BalanceSheetView> {
       body: Center(
         child: SizedBox(
           width: MediaQuery.of(context).size.width *.5,
-          child: ZCard(
+          child: ZCover(
              radius: 8,
             margin: EdgeInsets.all(15),
             padding: EdgeInsets.all(8),

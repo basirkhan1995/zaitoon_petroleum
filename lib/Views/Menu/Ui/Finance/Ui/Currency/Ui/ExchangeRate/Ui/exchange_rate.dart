@@ -254,7 +254,7 @@ class _DesktopState extends State<_Desktop> {
                                         ).textTheme.titleMedium,
                                       ),
                                     ),
-                                    ZCard(
+                                    ZCover(
                                       margin: EdgeInsets.symmetric(
                                         horizontal: 0,
                                         vertical: 3,
@@ -293,7 +293,7 @@ class _DesktopState extends State<_Desktop> {
                                   ).textTheme.titleMedium,
                                 ),
                               ),
-                              ZCard(
+                              ZCover(
                                 margin: const EdgeInsets.symmetric(
                                   horizontal: 1,
                                   vertical: 3,

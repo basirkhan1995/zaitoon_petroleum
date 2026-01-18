@@ -289,7 +289,7 @@ abstract class AppLocalizations {
   /// No description provided for @report.
   ///
   /// In en, this message translates to:
-  /// **'Reports'**
+  /// **'Report'**
   String get report;
 
   /// No description provided for @journal.

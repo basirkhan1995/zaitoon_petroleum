@@ -178,18 +178,9 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         ],
 
-                        // On tap action
-                        // onTap: () {
-                        //   // Open driver details dialog or navigate
-                        //   showDialog(
-                        //     context: context,
-                        //     builder: (_) => AddEditEmployeeView(),
-                        //   );
-                        // },
-
                         // Optional customization
-                        minHeight: 200,
-                        maxHeight: 300,
+                        // minHeight: 200,
+                        // maxHeight: 300,
                       );
                     },
                   );

@@ -221,7 +221,7 @@ class _DesktopState extends State<_Desktop> {
                                         children: [
                                           Padding(
                                             padding: const EdgeInsets.only(right: 3.0),
-                                            child: ZCard(
+                                            child: ZCover(
                                               color: color.surface,
                                               child: Text(acc.accNumber.toString()),
                                             ),
@@ -229,7 +229,7 @@ class _DesktopState extends State<_Desktop> {
 
                                           Padding(
                                             padding: const EdgeInsets.only(right: 3.0),
-                                            child: ZCard(
+                                            child: ZCover(
                                               color: color.surface,
                                               child: Text(acc.actCurrency.toString()),
                                             ),

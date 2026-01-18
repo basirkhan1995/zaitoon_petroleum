@@ -192,7 +192,7 @@ class _DesktopState extends State<_Desktop> {
       body: Container(
         padding: EdgeInsets.all(5),
         margin: EdgeInsets.all(5),
-        child: ZCard(
+        child: ZCover(
           child: BlocBuilder<TrialBalanceBloc, TrialBalanceState>(
             builder: (context, state) {
               if (state is TrialBalanceErrorState) {
@@ -405,7 +405,7 @@ class _DesktopState extends State<_Desktop> {
     final isBalanced = difference == 0;
     final theme = Theme.of(context);
 
-    return ZCard(
+    return ZCover(
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 18),
       margin: EdgeInsets.all(8),
       radius: 5,

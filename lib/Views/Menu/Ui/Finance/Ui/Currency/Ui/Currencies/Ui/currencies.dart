@@ -276,7 +276,7 @@ class _DesktopState extends State<_Desktop> {
                                   ),
                                 ),
                                 Spacer(),
-                                ZCard(
+                                ZCover(
                                   margin: EdgeInsets.symmetric(horizontal: 5),
                                   child: Text(
                                     ccy.ccySymbol ?? "",

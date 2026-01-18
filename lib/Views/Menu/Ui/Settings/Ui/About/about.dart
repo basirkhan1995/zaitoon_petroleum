@@ -70,7 +70,7 @@ class _DesktopState extends State<_Desktop> {
                   child: Row(
                     spacing: 10,
                     children: [
-                      ZCard(
+                      ZCover(
                           padding: EdgeInsets.symmetric(vertical: 2,horizontal: 3),
                           color: Theme.of(context).colorScheme.surface,
                           child: Icon(FontAwesomeIcons.whatsapp,color: Theme.of(context).colorScheme.primary)),
@@ -83,7 +83,7 @@ class _DesktopState extends State<_Desktop> {
                   spacing: 8,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    ZCard(
+                    ZCover(
                         padding: EdgeInsets.symmetric(vertical: 2,horizontal: 3),
                         color: Theme.of(context).colorScheme.surface,
                         child: Icon(Icons.phone,color: Theme.of(context).colorScheme.primary)),
@@ -95,7 +95,7 @@ class _DesktopState extends State<_Desktop> {
                   spacing: 8,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    ZCard(
+                    ZCover(
                         padding: EdgeInsets.symmetric(vertical: 2,horizontal: 3),
                         color: Theme.of(context).colorScheme.surface,
                         child: Icon(Icons.language_rounded,color: Theme.of(context).colorScheme.primary)),
@@ -108,7 +108,7 @@ class _DesktopState extends State<_Desktop> {
                   spacing: 8,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    ZCard(
+                    ZCover(
                         padding: EdgeInsets.symmetric(vertical: 2,horizontal: 3),
                         color: Theme.of(context).colorScheme.surface,
                         child: Icon(Icons.email,color: Theme.of(context).colorScheme.primary)),

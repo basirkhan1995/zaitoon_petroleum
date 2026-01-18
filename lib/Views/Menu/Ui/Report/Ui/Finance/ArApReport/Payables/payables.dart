@@ -146,7 +146,7 @@ class _DesktopState extends State<_Desktop> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text("${tr.totalUpperCase} ${entry.key}",style: TextStyle(color: Theme.of(context).colorScheme.outline)),
-                                ZCard(
+                                ZCover(
                                   radius: 3,
                                   child: Row(
                                     children: [
@@ -237,7 +237,7 @@ class _DesktopState extends State<_Desktop> {
                                             falseValue: tr.blocked,
                                           ),
                                           SizedBox(width: 5),
-                                          ZCard(
+                                          ZCover(
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .primary

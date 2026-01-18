@@ -312,7 +312,7 @@ class _DesktopState extends State<_Desktop> {
                     children: [
                       // Transport Information Card
                       Expanded(
-                        child: ZCard(
+                        child: ZCover(
                           color: color.surface,
                           radius: 8,
                           child: Padding(
@@ -348,7 +348,7 @@ class _DesktopState extends State<_Desktop> {
 
                       // Shipping Details Card
                       Expanded(
-                        child: ZCard(
+                        child: ZCover(
                           color: color.surface,
                           radius: 8,
                           child: Padding(
@@ -387,7 +387,7 @@ class _DesktopState extends State<_Desktop> {
                 if (transaction != null)...[
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16),
-                    child: ZCard(
+                    child: ZCover(
                       color: color.surface,
                       radius: 8,
                       child: Padding(
@@ -444,7 +444,7 @@ class _DesktopState extends State<_Desktop> {
                 if (transaction?.narration?.isNotEmpty == true)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16),
-                    child: ZCard(
+                    child: ZCover(
                       color: color.surface,
                       radius: 8,
                       child: Padding(

@@ -9,6 +9,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/GeneralRe
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/IncomeStatement/income_statement.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/TransactionRef/transaction_ref.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/UserLogReport/user_log_report.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/UserLogReport/users_report.dart';
 import '../../../../Features/Other/utils.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'Ui/Finance/AccountStatement/acc_statement.dart';
@@ -30,6 +31,7 @@ enum ActionKey {
   accountsReport,
   trialBalance,
 
+  users,
 
   //Transactions
   balanceSheet,
@@ -94,6 +96,7 @@ class _DesktopState extends State<_Desktop> {
 
       {"title": locale.exchangeRate, "icon": Icons.compare_arrows_rounded, "action": ActionKey.exchangeRate},
       {"title": locale.treasury, "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.treasury},
+
     ];
 
     final List<Map<String, dynamic>> stockButtons = [
@@ -109,6 +112,7 @@ class _DesktopState extends State<_Desktop> {
     ];
 
     final List<Map<String, dynamic>> activitiesButtons = [
+      {"title": locale.users, "icon": FontAwesomeIcons.users, "action": ActionKey.users},
       {"title": locale.userLog, "icon": Icons.scale_rounded, "action": ActionKey.userLog},
     ];
 
@@ -136,7 +140,7 @@ class _DesktopState extends State<_Desktop> {
 
               const SizedBox(height: 15),
 
-              _buildSectionTitle(title: locale.activities,icon: Icons.access_time),
+              _buildSectionTitle(title: "${locale.users} & ${locale.activities}",icon: Icons.access_time),
               _buildButtonGroup(activitiesButtons, color),
             ],
           ),
@@ -238,6 +242,7 @@ class _DesktopState extends State<_Desktop> {
       case ActionKey.treasury: Utils.goto(context, TreasuryView());
       case ActionKey.accountsReport: Utils.goto(context, AccountsReportView());
       case ActionKey.trialBalance: Utils.goto(context, TrialBalanceView());
+      case ActionKey.glStatementSingleDate: Utils.goto(context, GlStatementView(isSingleDate: true));
 
       //Transactions
       case ActionKey.profitAndLoss: Utils.goto(context, IncomeStatementView());
@@ -253,7 +258,7 @@ class _DesktopState extends State<_Desktop> {
 
       // Activity
       case ActionKey.userLog: Utils.goto(context, UserLogReportView());
-      case ActionKey.glStatementSingleDate: Utils.goto(context, GlStatementView(isSingleDate: true));
+      case ActionKey.users: Utils.goto(context, UsersReportView());
     }
   }
 }

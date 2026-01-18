@@ -97,7 +97,7 @@ class _DigitalClockState extends State<DigitalClock> {
 
           SizedBox(height: 5),
 
-          ZCard(
+          ZCover(
             margin: EdgeInsets.zero,
             padding: EdgeInsets.symmetric(horizontal: 3,vertical: 2),
             color: Theme.of(context).colorScheme.surface,

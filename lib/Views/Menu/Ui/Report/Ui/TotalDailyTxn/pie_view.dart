@@ -47,7 +47,7 @@ class TotalDailyPieView extends StatelessWidget {
             Colors.lime,
             Colors.brown,
           ];
-          return ZCard(
+          return ZCover(
             radius: 8,
             margin: EdgeInsets.all(3),
             borderColor: Theme.of(context).colorScheme.outline.withValues(alpha: .3),

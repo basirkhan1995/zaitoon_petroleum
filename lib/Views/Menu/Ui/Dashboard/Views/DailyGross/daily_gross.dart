@@ -109,7 +109,7 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
             children: [
 
               // Chart
-              ZCard(
+              ZCover(
                 radius: 8,
                 borderColor: Theme.of(context).colorScheme.outline.withValues(alpha: .3),
                 padding: const EdgeInsets.all(15),

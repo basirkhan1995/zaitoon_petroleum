@@ -33,3 +33,11 @@ final class UsersLoadedState extends UsersState {
   @override
   List<Object> get props => [users];
 }
+
+
+final class UsersReportLoadedState extends UsersState {
+  final List<UsersReportModel> users;
+  const UsersReportLoadedState(this.users);
+  @override
+  List<Object> get props => [users];
+}

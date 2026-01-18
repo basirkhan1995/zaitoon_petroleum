@@ -24,12 +24,6 @@ class ZCard extends StatefulWidget {
   /// Whether the card is hoverable
   final bool hoverable;
 
-  /// Minimum height of the card
-  final double minHeight;
-
-  /// Maximum height of the card
-  final double maxHeight;
-
   /// Border radius
   final double borderRadius;
 
@@ -57,8 +51,6 @@ class ZCard extends StatefulWidget {
     this.status,
     this.onTap,
     this.hoverable = true,
-    this.minHeight = 180,
-    this.maxHeight = 280,
     this.borderRadius = 8,
     this.padding = const EdgeInsets.all(12),
     this.showDivider = true,
@@ -109,11 +101,17 @@ class _ZCardState extends State<ZCard> {
     final color = Theme.of(context).colorScheme;
 
     return MouseRegion(
-      cursor: widget.onTap != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
-      onEnter: widget.hoverable ? (_) => setState(() => _isHovering = true) : null,
-      onExit: widget.hoverable ? (_) => setState(() => _isHovering = false) : null,
+      cursor: widget.onTap != null
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
+      onEnter: widget.hoverable
+          ? (_) => setState(() => _isHovering = true)
+          : null,
+      onExit: widget.hoverable
+          ? (_) => setState(() => _isHovering = false)
+          : null,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 400),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
         decoration: BoxDecoration(
           color: color.surface,
@@ -124,51 +122,38 @@ class _ZCardState extends State<ZCard> {
                 : color.outline.withValues(alpha: .25),
             width: 1.2,
           ),
-          boxShadow: _isHovering && widget.hoverable
-              ? [
+          boxShadow: [
             BoxShadow(
-              color: color.primary.withValues(alpha: .35),
-              blurRadius: 3,
+              color: _isHovering && widget.hoverable
+                  ? color.primary.withValues(alpha: .35)
+                  : color.outline.withValues(alpha: .15),
+              blurRadius: _isHovering ? 4 : 1,
               offset: const Offset(0, 2),
-            )
-          ] : [
-            BoxShadow(
-              color: color.outline.withValues(alpha: .15),
-              spreadRadius: 0,
-              blurRadius: 1,
-              offset: const Offset(0, 1),
             )
           ],
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(widget.borderRadius),
           onTap: widget.onTap,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: widget.minHeight,
-              maxHeight: widget.maxHeight,
-            ),
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: widget.padding,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header section (Image + Title + Status)
-                    _buildHeaderSection(context),
+          child: Padding(
+            padding: widget.padding,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// Header (Image + Title + Status)
+                _buildHeaderSection(context),
 
-                    if (widget.showDivider && widget.infoItems.isNotEmpty) ...[
-                      const SizedBox(height: 10),
-                      const Divider(height: 1),
-                      const SizedBox(height: 8),
-                    ],
+                if (widget.showDivider && widget.infoItems.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  const Divider(height: 1),
+                  const SizedBox(height: 8),
+                ],
 
-                    // Info items section
-                    if (widget.infoItems.isNotEmpty) _buildInfoItemsSection(context),
-                  ],
-                ),
-              ),
+                /// Info Items
+                if (widget.infoItems.isNotEmpty)
+                  _buildInfoItemsSection(context),
+              ],
             ),
           ),
         ),
@@ -177,7 +162,6 @@ class _ZCardState extends State<ZCard> {
   }
 
   Widget _buildHeaderSection(BuildContext context) {
-    // Use custom builder if provided
     if (widget.imageBuilder != null) {
       return widget.imageBuilder!(context);
     }
@@ -187,22 +171,18 @@ class _ZCardState extends State<ZCard> {
       children: [
         Expanded(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Image
               if (widget.image != null) ...[
                 widget.image!,
                 const SizedBox(height: 10),
               ],
-
-              // Title - use custom builder or default
               if (widget.titleBuilder != null)
                 widget.titleBuilder!(context)
               else
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       widget.title,
@@ -212,11 +192,13 @@ class _ZCardState extends State<ZCard> {
                           ?.copyWith(fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (widget.subtitle != null && widget.subtitle!.isNotEmpty) ...[
+                    if (widget.subtitle != null &&
+                        widget.subtitle!.isNotEmpty) ...[
                       const SizedBox(height: 2),
                       Text(
                         widget.subtitle!,
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style:
+                        Theme.of(context).textTheme.bodySmall,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
@@ -226,14 +208,13 @@ class _ZCardState extends State<ZCard> {
           ),
         ),
 
-        // Status badge
-        if (widget.status != null) _buildStatusBadge(widget.status!),
+        if (widget.status != null)
+          _buildStatusBadge(widget.status!),
       ],
     );
   }
 
   Widget _buildInfoItemsSection(BuildContext context) {
-    // Use custom builder if provided
     if (widget.infoItemsBuilder != null) {
       return widget.infoItemsBuilder!(context);
     }
@@ -241,12 +222,12 @@ class _ZCardState extends State<ZCard> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (int i = 0; i < widget.infoItems.length; i++) ...[
-          if (i > 0) const SizedBox(height: 6),
-          _buildInfoRow(widget.infoItems[i], context),
-        ],
-      ],
+      children: widget.infoItems
+          .map((item) => Padding(
+        padding: const EdgeInsets.only(bottom: 6),
+        child: _buildInfoRow(item, context),
+      ))
+          .toList(),
     );
   }
 
@@ -254,7 +235,8 @@ class _ZCardState extends State<ZCard> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: status.backgroundColor ?? status.color.withValues(alpha: .12),
+        color: status.backgroundColor ??
+            status.color.withValues(alpha: .12),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
@@ -262,8 +244,8 @@ class _ZCardState extends State<ZCard> {
         style: status.labelStyle ??
             TextStyle(
               fontSize: 11,
-              color: status.color,
               fontWeight: FontWeight.w600,
+              color: status.color,
             ),
       ),
     );
@@ -275,13 +257,15 @@ class _ZCardState extends State<ZCard> {
         Icon(
           item.icon,
           size: 14,
-          color: item.iconColor ?? Theme.of(context).hintColor,
+          color: item.iconColor ??
+              Theme.of(context).hintColor,
         ),
         const SizedBox(width: 6),
         Expanded(
           child: Text(
             item.text,
-            style: item.textStyle ?? Theme.of(context).textTheme.bodySmall,
+            style: item.textStyle ??
+                Theme.of(context).textTheme.bodySmall,
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -289,4 +273,3 @@ class _ZCardState extends State<ZCard> {
     );
   }
 }
-

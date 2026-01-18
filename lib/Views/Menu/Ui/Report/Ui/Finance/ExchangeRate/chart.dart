@@ -62,7 +62,7 @@ class _ChartContentState extends State<_ChartContent> {
 
   @override
   Widget build(BuildContext context) {
-    return ZCard(
+    return ZCover(
       radius: 8,
       margin: const EdgeInsets.all(4),
       padding: const EdgeInsets.all(8),

@@ -203,7 +203,7 @@ class _DesktopState extends State<_Desktop> {
                                       const SizedBox(height: 4),
                                         Padding(
                                           padding: const EdgeInsets.only(right: 6.0),
-                                          child: ZCard(
+                                          child: ZCover(
                                             color: color.surface,
                                             child: Text(stk.accNumber.toString()),
                                           ),

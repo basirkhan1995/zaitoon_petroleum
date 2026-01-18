@@ -140,7 +140,7 @@ class _DesktopState extends State<_Desktop> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         // Main Amount Card
-                        ZCard(
+                        ZCover(
                           color: color.surface,
                           child: Padding(
                             padding: const EdgeInsets.all(8),
@@ -187,7 +187,7 @@ class _DesktopState extends State<_Desktop> {
                       children: [
                         // Vehicle Details Card
                         Expanded(
-                          child: ZCard(
+                          child: ZCover(
                             color: color.surface,
                             child: Padding(
                               padding: const EdgeInsets.all(16),
@@ -226,7 +226,7 @@ class _DesktopState extends State<_Desktop> {
 
                         // Transaction Details Card
                         Expanded(
-                          child: ZCard(
+                          child: ZCover(
                             color: color.surface,
                             child: Padding(
                               padding: const EdgeInsets.all(16),
@@ -268,7 +268,7 @@ class _DesktopState extends State<_Desktop> {
                   if (transaction?.narration?.isNotEmpty == true)
                     Padding(
                       padding: const EdgeInsets.all(5.0),
-                      child: ZCard(
+                      child: ZCover(
                         color: color.surface,
                         child: Padding(
                           padding: const EdgeInsets.all(16),

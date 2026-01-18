@@ -81,7 +81,7 @@ class _Desktop extends StatelessWidget {
                       Text(locale.dashboard,style: Theme.of(context).textTheme.titleMedium,)
                     ],
                   ),
-                  ZCard(
+                  ZCover(
                     radius: 5,
                       padding: EdgeInsets.all(10),
                       child: Column(

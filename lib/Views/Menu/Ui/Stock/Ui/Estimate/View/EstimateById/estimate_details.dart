@@ -522,7 +522,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
 
     return SizedBox(
       width: 500,
-      child: ZCard(
+      child: ZCover(
         radius: 5,
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -694,14 +694,14 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                       children: [
                         Wrap(
                           children: [
-                            ZCard(radius: 0,child: Text(tr.purchasePrice,style: title),),
-                            ZCard(radius: 0,child: Text(product.purchasePrice?.toAmount()??"")),
+                            ZCover(radius: 0,child: Text(tr.purchasePrice,style: title),),
+                            ZCover(radius: 0,child: Text(product.purchasePrice?.toAmount()??"")),
                           ],
                         ),
                         Wrap(
                           children: [
-                            ZCard(radius: 0,child: Text(tr.salePriceBrief,style: title)),
-                            ZCard(radius: 0,child: Text(product.sellPrice?.toAmount()??"")),
+                            ZCover(radius: 0,child: Text(tr.salePriceBrief,style: title)),
+                            ZCover(radius: 0,child: Text(product.sellPrice?.toAmount()??"")),
                           ],
                         ),
                       ],

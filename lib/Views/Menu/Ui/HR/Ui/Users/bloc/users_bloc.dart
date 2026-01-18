@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/localization_services.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/model/usr_report_model.dart';
 import '../model/user_model.dart';
 
 
@@ -17,6 +18,16 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
       try{
        final users = await _repo.getUsers(usrOwner: event.usrOwner);
        emit(UsersLoadedState(users));
+      }catch(e){
+        emit(UsersErrorState(e.toString()));
+      }
+    });
+
+    on<LoadUsersReportEvent>((event, emit) async{
+      emit(UsersLoadingState());
+      try{
+        final users = await _repo.getUsersReport(branch: event.branchId, usrName: event.usrName, role: event.role,status: event.status);
+        emit(UsersReportLoadedState(users));
       }catch(e){
         emit(UsersErrorState(e.toString()));
       }
