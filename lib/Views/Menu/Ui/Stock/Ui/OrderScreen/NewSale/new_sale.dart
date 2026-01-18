@@ -61,6 +61,7 @@ class _DesktopState extends State<_Desktop> {
   String? _userName;
   String? baseCurrency;
 
+  int? signatory;
   // Track controllers for each row
   final Map<String, TextEditingController> _priceControllers = {};
   final Map<String, TextEditingController> _qtyControllers = {};
@@ -197,6 +198,9 @@ class _DesktopState extends State<_Desktop> {
                                 end: 5,
                                 exclude: ''
                             ));
+                            setState(() {
+                              signatory = value.perId;
+                            });
                           },
                           showClearButton: true,
                         ),
@@ -220,13 +224,8 @@ class _DesktopState extends State<_Desktop> {
                                   return null;
                                 },
                                 bloc: context.read<AccountsBloc>(),
-                                fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 5, end: 5, exclude: '')),
-                                searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(
-                                    input: query,
-                                    start: 5,
-                                    end: 5,
-                                    exclude: ''
-                                )),
+                                fetchAllFunction: (bloc) => bloc.add(LoadAccountsEvent(ownerId: signatory)),
+                                searchFunction: (bloc, query) => bloc.add(LoadAccountsEvent(ownerId: signatory)),
                                 itemBuilder: (context, account) => ListTile(
                                   title: Text(account.accName ?? ''),
                                   subtitle: Text('${account.accNumber} - ${tr.balance}: ${account.accAvailBalance?.toAmount() ?? "0.0"}'),
