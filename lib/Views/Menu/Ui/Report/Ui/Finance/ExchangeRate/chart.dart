@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
@@ -48,8 +47,7 @@ class _ChartContentState extends State<_ChartContent> {
 
   void _loadData({String? fromDate, String? toDate}) {
     final now = DateTime.now();
-    final from = DateFormat('yyyy-MM-dd')
-        .format(now.subtract(const Duration(days: 30)));
+    final from = DateFormat('yyyy-MM-dd').format(now.subtract(const Duration(days: 30)));
     final to = DateFormat('yyyy-MM-dd').format(now);
 
     context.read<FxRateReportBloc>().add(

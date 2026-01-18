@@ -32,6 +32,8 @@ import '../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'package:flutter/services.dart';
 import '../../../Auth/bloc/auth_bloc.dart';
+import '../Report/Ui/Finance/AccountStatement/acc_statement.dart';
+import '../Report/Ui/Finance/GLStatement/gl_statement.dart';
 import '../Report/Ui/Transactions/TransactionRef/transaction_ref.dart';
 import '../Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import '../Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
@@ -1864,9 +1866,20 @@ class _DesktopState extends State<_Desktop> {
       );
     }
 
-    void show(){
+    void showTxnDetails(){
       showDialog(context: context, builder: (context){
         return TransactionByReferenceView();
+      });
+    }
+    void showGlStatement(){
+      showDialog(context: context, builder: (context){
+        return GlStatementView();
+      });
+    }
+
+    void showAccountStatement(){
+      showDialog(context: context, builder: (context){
+        return AccountStatementView();
       });
     }
     final shortcuts = {
@@ -1879,7 +1892,9 @@ class _DesktopState extends State<_Desktop> {
       const SingleActivator(LogicalKeyboardKey.f7): () => onFxTxn(),
       const SingleActivator(LogicalKeyboardKey.f8): () => onGL(trnType: "GLCR"),
       const SingleActivator(LogicalKeyboardKey.f9): () => onGL(trnType: "GLDR"),
-      const SingleActivator(LogicalKeyboardKey.keyR,control: true, shift: true): () => show(),
+      const SingleActivator(LogicalKeyboardKey.keyR,control: true, shift: true): () => showTxnDetails(),
+      const SingleActivator(LogicalKeyboardKey.keyG,control: true, shift: true): () => showGlStatement(),
+      const SingleActivator(LogicalKeyboardKey.keyA,control: true, shift: true): () => showAccountStatement(),
     };
 
 
