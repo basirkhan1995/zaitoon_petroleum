@@ -553,14 +553,14 @@ class _DesktopState extends State<_Desktop> {
                                     isRequired: true,
                                     bloc: context.read<AccountsBloc>(),
                                     fetchAllFunction: (bloc) => bloc.add(
-                                      LoadAccountsFilterEvent(start: 3, end: 3,ccy: baseCurrency,exclude: ""),
+                                      LoadAccountsFilterEvent(include: '9,10',ccy: baseCurrency,exclude: ""),
                                     ),
                                     searchFunction: (bloc, query) => bloc.add(
                                       LoadAccountsFilterEvent(
-                                        start: 3,
-                                        end: 3,
+                                        include: "9,10",
                                         ccy: baseCurrency,
-                                        input: query, exclude: ""
+                                        input: query,
+                                        exclude: ""
                                       ),
                                     ),
                                     validator: (value) {
@@ -785,12 +785,11 @@ class _DesktopState extends State<_Desktop> {
                                     isRequired: true,
                                     bloc: context.read<AccountsBloc>(),
                                     fetchAllFunction: (bloc) => bloc.add(
-                                      LoadAccountsFilterEvent(start: 4, end: 4,ccy: baseCurrency,exclude: ""),
+                                      LoadAccountsFilterEvent(include: "11,12",ccy: baseCurrency,exclude: ""),
                                     ),
                                     searchFunction: (bloc, query) => bloc.add(
                                       LoadAccountsFilterEvent(
-                                          start: 4,
-                                          end: 4,
+                                          include: "11,12",
                                           ccy: baseCurrency,
                                           input: query, exclude: ""
                                       ),
@@ -1016,16 +1015,14 @@ class _DesktopState extends State<_Desktop> {
                                     bloc: context.read<AccountsBloc>(),
                                     fetchAllFunction: (bloc) => bloc.add(
                                       LoadAccountsFilterEvent(
-                                        start: 1,
-                                        end: 4,
+                                        include: '1,2,3,4,5,6,7,8,9,10,11,12',
                                         ccy: baseCurrency,
                                         exclude: "10101010, 10101011",
                                       ),
                                     ),
                                     searchFunction: (bloc, query) => bloc.add(
                                       LoadAccountsFilterEvent(
-                                        start: 1,
-                                        end: 4,
+                                        include: '1,2,3,4,5,6,7,8,9,10,11,12',
                                         ccy: baseCurrency,
                                         input: query,
                                         exclude: "10101010, 10101011",
@@ -1273,8 +1270,7 @@ class _DesktopState extends State<_Desktop> {
                                         bloc: context.read<AccountsBloc>(),
                                         fetchAllFunction: (bloc) => bloc.add(
                                           LoadAccountsFilterEvent(
-                                            start: 1,
-                                            end: 5,
+                                            include: '',
                                             exclude: "10101010,10101011",
                                             ccy: baseCurrency,
                                           ),
@@ -1283,8 +1279,7 @@ class _DesktopState extends State<_Desktop> {
                                             bloc.add(
                                               LoadAccountsFilterEvent(
                                                 input: query,
-                                                start: 1,
-                                                end: 5,
+                                                include: '',
                                                 exclude: "10101010,10101011",
                                                 ccy: baseCurrency,
                                               ),
@@ -1529,8 +1524,7 @@ class _DesktopState extends State<_Desktop> {
                                         bloc: context.read<AccountsBloc>(),
                                         fetchAllFunction: (bloc) => bloc.add(
                                           LoadAccountsFilterEvent(
-                                            start: 1,
-                                            end: 5,
+                                            include: '1,2,3,4,5,6,7,8,9,10,11,12',
                                             exclude: "10101010,10101011",
                                             ccy: baseCurrency,
                                           ),
@@ -1539,8 +1533,7 @@ class _DesktopState extends State<_Desktop> {
                                             bloc.add(
                                               LoadAccountsFilterEvent(
                                                 input: query,
-                                                start: 1,
-                                                end: 5,
+                                                include: '1,2,3,4,5,6,7,8,9,10,11,12',
                                                 exclude: "10101010,10101011",
                                                 ccy: baseCurrency,
                                               ),

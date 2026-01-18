@@ -70,9 +70,8 @@ class _DesktopState extends State<_Desktop> {
   void _loadAccounts() {
     context.read<AccountsBloc>().add(
       LoadAccountsFilterEvent(
-        start: 1,
-        end: 5,
-        ccy: baseCurrency,
+          include: '1,2,3,4,5,6,7,8,9,10,11,12',
+          ccy: baseCurrency,
         exclude: '',
         input: ''
       ),

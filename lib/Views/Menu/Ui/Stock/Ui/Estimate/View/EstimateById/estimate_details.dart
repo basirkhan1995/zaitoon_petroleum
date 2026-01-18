@@ -1164,11 +1164,10 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                       isRequired: _selectedPaymentMethod != PaymentMethod.cash,
                       bloc: context.read<AccountsBloc>(),
                       controller: accountController,
-                      fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 5, end: 5, exclude: '')),
+                      fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(include: '8', exclude: '')),
                       searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(
                         input: query,
-                        start: 5,
-                        end: 5,
+                        include: '8',
                         exclude: '',
                       )),
                       itemBuilder: (context, account) => ListTile(

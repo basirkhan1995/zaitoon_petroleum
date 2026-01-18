@@ -19,16 +19,16 @@ class LoadStkAccountsEvent extends AccountsEvent{
 }
 
 class LoadAccountsFilterEvent extends AccountsEvent{
-  final int? start;
-  final int? end;
+  final String? include;
+
   final String? input;
 
   final String? exclude;
   final String? ccy;
 
-  const LoadAccountsFilterEvent({this.start, this.end, this.input, this.exclude, this.ccy});
+  const LoadAccountsFilterEvent({this.include, this.input, this.exclude, this.ccy});
   @override
-  List<Object?> get props => [start,end,input,exclude, ccy];
+  List<Object?> get props => [include,input,exclude, ccy];
 }
 
 class AddAccountEvent extends AccountsEvent{

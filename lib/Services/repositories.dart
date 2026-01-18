@@ -358,7 +358,7 @@ class Repositories {
       throw e.toString();
     }
   }
-  Future<List<AccountsModel>> getAccountFilter({final int? start, final int? end, final String? input,final String? exclude, final String? ccy,}) async {
+  Future<List<AccountsModel>> getAccountFilter({final String? include, final String? input,final String? exclude, final String? ccy,}) async {
     try {
 
       // Fetch data from API
@@ -367,8 +367,7 @@ class Repositories {
         data: {
           "ccy": ccy,
           "input": input,
-          "groupStart": start,
-          "groupStop": end,
+          "include": include,
           "account": exclude
         }
       );

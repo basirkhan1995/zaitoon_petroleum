@@ -248,11 +248,10 @@ class _DesktopState extends State<_Desktop> {
                               hintText: tr.selectAccount,
                               isRequired: false,
                               bloc: context.read<AccountsBloc>(),
-                              fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(start: 5, end: 5, exclude: '')),
+                              fetchAllFunction: (bloc) => bloc.add(LoadAccountsFilterEvent(include: '8', exclude: '')),
                               searchFunction: (bloc, query) => bloc.add(LoadAccountsFilterEvent(
                                   input: query,
-                                  start: 5,
-                                  end: 5,
+                                  include: '8',
                                   exclude: ''
                               )),
                               itemBuilder: (context, account) => ListTile(

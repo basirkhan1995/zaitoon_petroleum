@@ -1217,16 +1217,14 @@ class __EntryRowState extends State<_EntryRow> {
                 bloc: context.read<AccountsBloc>(),
                 fetchAllFunction: (bloc) => bloc.add(
                   LoadAccountsFilterEvent(
-                    start: 1,
-                    end: 5,
+                    include: '1,2,3,4,5,6,7,8,9,10,11,12',
                     exclude: "10101011",
                   ),
                 ),
                 searchFunction: (bloc, query) => bloc.add(
                   LoadAccountsFilterEvent(
                     input: query,
-                    start: 1,
-                    end: 5,
+                    include: '1,2,3,4,5,6,7,8,9,10,11,12',
                     exclude: "10101011",
                   ),
                 ),

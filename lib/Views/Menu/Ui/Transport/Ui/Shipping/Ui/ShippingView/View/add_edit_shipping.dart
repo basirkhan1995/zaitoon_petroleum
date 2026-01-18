@@ -2405,16 +2405,14 @@ class _DesktopState extends State<_Desktop> {
                                     bloc: context.read<AccountsBloc>(),
                                     fetchAllFunction: (bloc) => bloc.add(
                                       LoadAccountsFilterEvent(
-                                          start: 4,
-                                          end: 4,
+                                          include: '11,12',
                                           ccy: "$baseCurrency",
                                           exclude: ""
                                       ),
                                     ),
                                     searchFunction: (bloc, query) => bloc.add(
                                       LoadAccountsFilterEvent(
-                                          start: 4,
-                                          end: 4,
+                                          include: '11,12',
                                           ccy: "$baseCurrency",
                                           exclude: "",
                                           input: query
