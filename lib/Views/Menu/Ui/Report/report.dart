@@ -8,6 +8,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/Activitie
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/GeneralReport/general_report.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/IncomeStatement/income_statement.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/TransactionRef/transaction_ref.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/shipping_report.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/UserLogReport/user_log_report.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/UserLogReport/users_report.dart';
 import '../../../../Features/Other/utils.dart';
@@ -32,6 +33,9 @@ enum ActionKey {
   trialBalance,
 
   users,
+
+  //Transport
+  shipping,
 
   //Transactions
   balanceSheet,
@@ -116,6 +120,10 @@ class _DesktopState extends State<_Desktop> {
       {"title": locale.userLog, "icon": Icons.scale_rounded, "action": ActionKey.userLog},
     ];
 
+    final List<Map<String, dynamic>> transportButtons = [
+      {"title": locale.shipping, "icon": Icons.local_shipping_outlined, "action": ActionKey.shipping},
+    ];
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -142,6 +150,11 @@ class _DesktopState extends State<_Desktop> {
 
               _buildSectionTitle(title: "${locale.users} & ${locale.activities}",icon: Icons.access_time),
               _buildButtonGroup(activitiesButtons, color),
+
+              const SizedBox(height: 15),
+
+              _buildSectionTitle(title: locale.transport,icon: Icons.local_shipping_outlined),
+              _buildButtonGroup(transportButtons, color),
             ],
           ),
         ),
@@ -181,7 +194,7 @@ class _DesktopState extends State<_Desktop> {
   }
   Widget _buildButton(Map<String, dynamic> button) {
     final color = Theme.of(context).colorScheme;
-    final hoverNotifier = ValueNotifier(false); // Local state holder
+    final hoverNotifier = ValueNotifier(false);
 
     return MouseRegion(
       onEnter: (_) => hoverNotifier.value = true,
@@ -259,6 +272,9 @@ class _DesktopState extends State<_Desktop> {
       // Activity
       case ActionKey.userLog: Utils.goto(context, UserLogReportView());
       case ActionKey.users: Utils.goto(context, UsersReportView());
+
+      //Transport
+      case ActionKey.shipping: Utils.goto(context, ShippingReportView());
     }
   }
 }

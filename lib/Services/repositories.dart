@@ -41,6 +41,7 @@ import '../Views/Menu/Ui/Journal/Ui/GetOrder/model/get_order_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/ArApReport/model/ar_ap_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/model/bs_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/ExchangeRate/model/rate_report_model.dart';
+import '../Views/Menu/Ui/Report/Ui/Transport/model/shp_report_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/model/limit_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Company/Branches/model/branch_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/model/product_model.dart';
@@ -2654,6 +2655,41 @@ class Repositories {
         return (response.data as List)
             .whereType<Map<String, dynamic>>()
             .map((json) => UsersReportModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+  Future<List<ShippingReportModel>> getShippingReport({int? vehicle, int? status, int? customer, String? fromDate, String? toDate}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/reports/usersList.php",
+          data: {
+            "fromDate": fromDate ?? "2025-01-01",
+            "toDate": toDate ?? "2026-01-31",
+            "vehicle": vehicle,
+            "customer": customer,
+            "status": status ?? 1
+          }
+      );
+
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>()
+            .map((json) => ShippingReportModel.fromMap(json))
             .toList();
       }
 
