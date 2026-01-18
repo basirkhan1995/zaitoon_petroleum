@@ -192,12 +192,7 @@ class _DesktopState extends State<_Desktop> {
                           onSelected: (value) {
                             _personController.text = "${value.perName} ${value.perLastName}";
                             context.read<SaleInvoiceBloc>().add(SelectCustomerEvent(value));
-                            context.read<AccountsBloc>().add(LoadAccountsFilterEvent(
-                                input: value.perId.toString(),
-                                start: 5,
-                                end: 5,
-                                exclude: ''
-                            ));
+                            context.read<AccountsBloc>().add(LoadAccountsEvent(ownerId: value.perId));
                             setState(() {
                               signatory = value.perId;
                             });
@@ -227,9 +222,11 @@ class _DesktopState extends State<_Desktop> {
                                 fetchAllFunction: (bloc) => bloc.add(LoadAccountsEvent(ownerId: signatory)),
                                 searchFunction: (bloc, query) => bloc.add(LoadAccountsEvent(ownerId: signatory)),
                                 itemBuilder: (context, account) => ListTile(
+                                  visualDensity: VisualDensity(vertical: -4,horizontal: -4),
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 5),
                                   title: Text(account.accName ?? ''),
-                                  subtitle: Text('${account.accNumber} - ${tr.balance}: ${account.accAvailBalance?.toAmount() ?? "0.0"}'),
-                                  trailing: Text(account.actCurrency ?? ""),
+                                  subtitle: Text('${account.accNumber}'),
+                                  trailing: Text("${tr.balance}: ${account.accAvailBalance?.toAmount() ?? "0.0"} ${account.actCurrency}"),
                                 ),
                                 itemToString: (account) => '${account.accName} (${account.accNumber})',
                                 stateToLoading: (state) => state is AccountLoadingState,
