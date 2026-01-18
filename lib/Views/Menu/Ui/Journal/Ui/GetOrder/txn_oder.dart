@@ -84,10 +84,7 @@ class _OrderTxnDialogState extends State<_OrderTxnDialog> {
           title: tr.transactionDetails,
           isActionTrue: false,
           width: MediaQuery.of(context).size.width *.7,
-          child: BlocConsumer<OrderTxnBloc, OrderTxnState>(
-            listener: (context, state) {
-              // Handle state changes if needed
-            },
+          child: BlocBuilder<OrderTxnBloc, OrderTxnState>(
             builder: (context, state) {
               if (state is OrderTxnErrorState) {
                 return NoDataWidget(

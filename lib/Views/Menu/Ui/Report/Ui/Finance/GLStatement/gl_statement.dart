@@ -26,8 +26,6 @@ import '../../../../../../../Features/PrintSettings/report_model.dart';
 import '../../../../Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import '../../../../Journal/Ui/TxnByReference/txn_reference.dart';
 import 'package:shamsi_date/shamsi_date.dart';
-import 'dart:typed_data';
-
 import '../../Transactions/TransactionRef/transaction_ref.dart';
 import 'PDF/pdf.dart';
 import 'package:flutter/services.dart';
@@ -112,11 +110,11 @@ class _DesktopState extends State<_Desktop> {
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.keyR,control: true, shift: true): () => showTxnDetails(),
     };
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: GlobalShortcuts(
-        shortcuts: shortcuts,
-        child: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
+    return GlobalShortcuts(
+      shortcuts: shortcuts,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        body: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
           builder: (context, state) {
             if(state is CompanyProfileLoadedState){
               company.comName = state.company.comName??"";

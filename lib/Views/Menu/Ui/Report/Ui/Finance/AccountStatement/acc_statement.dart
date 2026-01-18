@@ -121,16 +121,15 @@ class _DesktopState extends State<_Desktop> {
     double amountWidth = 130;
     double balanceWidth =  160;
 
-
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.keyR,control: true, shift: true): () => showTxnDetails(),
     };
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: GlobalShortcuts(
-        shortcuts: shortcuts,
-        child: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
+    return GlobalShortcuts(
+      shortcuts: shortcuts,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        body: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
         builder: (context, state) {
           if(state is CompanyProfileLoadedState){
             company.comName = state.company.comName??"";
@@ -650,9 +649,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
-
-
 
   void onSubmit(){
     context.read<AccStatementBloc>().add(
