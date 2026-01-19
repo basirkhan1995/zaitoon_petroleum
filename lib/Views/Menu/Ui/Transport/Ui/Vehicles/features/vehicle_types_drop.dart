@@ -116,21 +116,21 @@ class VehicleTranslator {
 /// Vehicle Dropdown UI
 /// =======================
 
-class VehicleDropdown extends StatefulWidget {
+class VehicleCategoryDropdown extends StatefulWidget {
   final String? selectedVehicle;
   final Function(VehicleType) onVehicleSelected;
 
-  const VehicleDropdown({
+  const VehicleCategoryDropdown({
     super.key,
     this.selectedVehicle,
     required this.onVehicleSelected,
   });
 
   @override
-  State<VehicleDropdown> createState() => _VehicleDropdownState();
+  State<VehicleCategoryDropdown> createState() => _VehicleCategoryDropdownState();
 }
 
-class _VehicleDropdownState extends State<VehicleDropdown> {
+class _VehicleCategoryDropdownState extends State<VehicleCategoryDropdown> {
   late VehicleType _selectedVehicle;
 
   @override
@@ -147,7 +147,7 @@ class _VehicleDropdownState extends State<VehicleDropdown> {
   }
 
   @override
-  void didUpdateWidget(covariant VehicleDropdown oldWidget) {
+  void didUpdateWidget(covariant VehicleCategoryDropdown oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.selectedVehicle != null &&
         VehicleType.fromDatabaseValue(widget.selectedVehicle!) != _selectedVehicle) {

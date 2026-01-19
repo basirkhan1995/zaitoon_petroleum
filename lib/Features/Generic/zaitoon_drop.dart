@@ -9,36 +9,40 @@ class ZDropdown<T> extends StatefulWidget {
   final String? initialValue;
   final bool disableAction;
   final TextStyle? itemStyle;
+
+  /// SINGLE
   final T? selectedItem;
+  final ValueChanged<T> onItemSelected; // ✅ REQUIRED
+
+  /// MULTI
   final List<T>? selectedItems;
+  final ValueChanged<List<T>>? onMultiSelectChanged; // ✅ OPTIONAL
+  final bool multiSelect;
+
   final Widget Function(T)? leadingBuilder;
   final String Function(T) itemLabel;
-  final Function(T) onItemSelected;
-  final Function(List<T>)? onMultiSelectChanged;
-  final bool multiSelect;
   final bool isLoading;
   final Widget? customTitle;
 
   const ZDropdown({
     super.key,
     required this.title,
+    required this.items,
+    required this.itemLabel,
+    required this.onItemSelected, // 👈 REQUIRED
+    this.selectedItem,
+    this.selectedItems,
+    this.onMultiSelectChanged,
+    this.multiSelect = false,
     this.height,
     this.itemStyle,
     this.radius,
     this.leadingBuilder,
     this.disableAction = false,
     this.initialValue,
-    this.selectedItem,
-    this.selectedItems,
-    this.onMultiSelectChanged,
-    this.multiSelect = false,
-    required this.items,
-    required this.itemLabel,
-    required this.onItemSelected,
     this.isLoading = false,
-    this.customTitle, // Add this line
+    this.customTitle,
   });
-
 
   @override
   State<ZDropdown<T>> createState() => _ZDropdownState<T>();
@@ -48,27 +52,28 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
   bool _isOpen = false;
   OverlayEntry? _overlayEntry;
   final GlobalKey _buttonKey = GlobalKey();
+  final FocusNode _focusNode = FocusNode();
 
   T? _selectedItem;
   late List<T> _selectedItems;
-  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _selectedItem = widget.selectedItem;
-    _selectedItems = widget.selectedItems != null ? List.from(widget.selectedItems!) : [];
+    _selectedItems =
+    widget.selectedItems != null ? List.from(widget.selectedItems!) : [];
     _focusNode.addListener(_onFocusChange);
   }
 
   void _onFocusChange() {
     if (!_focusNode.hasFocus && _isOpen) {
-      removeOverlay();
+      _removeOverlay();
     }
   }
 
-  void removeOverlay() {
-    if (_overlayEntry != null && _isOpen) {
+  void _removeOverlay() {
+    if (_overlayEntry != null) {
       _overlayEntry!.remove();
       _overlayEntry = null;
       setState(() => _isOpen = false);
@@ -76,109 +81,82 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
   }
 
   @override
+  void didUpdateWidget(covariant ZDropdown<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (!widget.multiSelect &&
+        widget.selectedItem != oldWidget.selectedItem) {
+      _selectedItem = widget.selectedItem;
+    }
+
+    if (widget.multiSelect &&
+        widget.selectedItems != oldWidget.selectedItems) {
+      _selectedItems =
+      widget.selectedItems != null ? List.from(widget.selectedItems!) : [];
+    }
+  }
+
+  @override
   void dispose() {
-    _focusNode.removeListener(_onFocusChange);
     _focusNode.dispose();
     super.dispose();
   }
 
-  @override
-  void didUpdateWidget(covariant ZDropdown<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    // SINGLE SELECT
-    if (!widget.multiSelect &&
-        widget.selectedItem != oldWidget.selectedItem) {
-      setState(() {
-        _selectedItem = widget.selectedItem;
-      });
-    }
-
-    // MULTI SELECT
-    if (widget.multiSelect &&
-        widget.selectedItems != oldWidget.selectedItems) {
-      setState(() {
-        _selectedItems =
-        widget.selectedItems != null ? List.from(widget.selectedItems!) : [];
-      });
-    }
-  }
-
-
-
   void _onItemTapped(T item) {
     if (widget.multiSelect) {
       setState(() {
-        if (_selectedItems.contains(item)) {
-          _selectedItems.remove(item);
-        } else {
-          _selectedItems.add(item);
-        }
+        _selectedItems.contains(item)
+            ? _selectedItems.remove(item)
+            : _selectedItems.add(item);
       });
       widget.onMultiSelectChanged?.call(_selectedItems);
       _refreshOverlay();
     } else {
-      // SINGLE SELECT MODE
       setState(() => _selectedItem = item);
       widget.onItemSelected(item);
-
-      // Close the dropdown overlay
-      removeOverlay();
+      _removeOverlay();
     }
   }
 
-
   void _refreshOverlay() {
     if (_isOpen) {
-      removeOverlay();
+      _removeOverlay();
       _overlayEntry = _createOverlayEntry(context);
       Overlay.of(context).insert(_overlayEntry!);
       setState(() => _isOpen = true);
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-
-    // Display the selected items nicely for multi-select
-    String displayText;
-    if (widget.multiSelect) {
-      if (_selectedItems.isEmpty) {
-        displayText = widget.initialValue ?? "";
-      } else {
-        displayText = _selectedItems.map(widget.itemLabel).join(", ");
-      }
-    } else {
-      displayText = _selectedItem != null
-          ? widget.itemLabel(_selectedItem as T)
-          : (widget.initialValue ?? "");
-    }
+    final displayText = widget.multiSelect
+        ? (_selectedItems.isEmpty
+        ? widget.initialValue ?? ''
+        : _selectedItems.map(widget.itemLabel).join(', '))
+        : (_selectedItem != null
+        ? widget.itemLabel(_selectedItem as T)
+        : widget.initialValue ?? '');
 
     return Focus(
       focusNode: _focusNode,
       child: Column(
-        mainAxisSize: MainAxisSize.min, // <-- minimize vertical space
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Only show title if it actually has content
-          if (widget.customTitle != null && widget.customTitle is! SizedBox)
+          if (widget.customTitle != null)
             widget.customTitle!
           else if (widget.title.isNotEmpty)
-            Text(widget.title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 12)),
+            Text(widget.title,
+                style: Theme.of(context).textTheme.titleSmall),
 
-          // Only add spacing if title is present
-          if ((widget.customTitle != null && widget.customTitle is! SizedBox) || widget.title.isNotEmpty)
-            const SizedBox(height: 3),
+          const SizedBox(height: 4),
 
           GestureDetector(
-            onTap: widget.disableAction
+            onTap: widget.disableAction || widget.isLoading
                 ? null
                 : () {
-              if (widget.isLoading) return;
               _focusNode.requestFocus();
               if (_isOpen) {
-                removeOverlay();
+                _removeOverlay();
               } else {
                 _overlayEntry = _createOverlayEntry(context);
                 Overlay.of(context).insert(_overlayEntry!);
@@ -187,37 +165,30 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
             },
             child: Container(
               key: _buttonKey,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
               height: widget.height ?? 40,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(widget.radius ?? 4),
-                border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
+                border: Border.all(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .outline
+                      .withAlpha(80),
+                ),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  widget.isLoading
-                      ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                      : Expanded(
+                  Expanded(
                     child: Text(
                       displayText,
-                      style: widget.itemStyle ?? Theme.of(context).textTheme.bodyMedium,
-                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                      style: widget.itemStyle ??
+                          Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
-                  widget.disableAction
-                      ? const SizedBox()
-                      : Icon(
-                    size: 20,
-                    _isOpen ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                    color: Theme.of(context).colorScheme.outline.withValues(alpha: .9),
-                  ),
+                  Icon(_isOpen
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down),
                 ],
               ),
             ),
@@ -228,148 +199,82 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
   }
 
   OverlayEntry _createOverlayEntry(BuildContext context) {
-    final renderBox = _buttonKey.currentContext!.findRenderObject() as RenderBox;
+    final renderBox =
+    _buttonKey.currentContext!.findRenderObject() as RenderBox;
     final offset = renderBox.localToGlobal(Offset.zero);
     final color = Theme.of(context).colorScheme;
-    const maxHeight = 260.0;
 
     return OverlayEntry(
-      builder: (context) => GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: removeOverlay,
-        child: Stack(
-          children: [
-            Positioned(
-              left: offset.dx,
-              top: offset.dy + renderBox.size.height + 5,
-              width: renderBox.size.width,
-              child: Material(
-                elevation: 1,
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(widget.radius ?? 4), // <-- also here
-                clipBehavior: Clip.antiAlias, // <-- ensures clipping
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: color.surface,
-                    border: Border.all(
-                      color: color.outline.withValues(alpha: .3),
-                      width: 1,
-                    ),
-
-                    borderRadius: BorderRadius.circular(widget.radius ?? 4),
-                  ),
-                  constraints: const BoxConstraints(maxHeight: maxHeight),
-                  child: ClipRRect( // <-- clip content to radius
-                    borderRadius: BorderRadius.circular(widget.radius ?? 4),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (widget.multiSelect)
-                            Material(
-                              color: Colors.transparent, // keep radius visible
-                              child: InkWell(
-                                onTap: () {
-                                  final allSelected = _selectedItems.length == widget.items.length;
-                                  setState(() {
-                                    if (allSelected) {
-                                      _selectedItems.clear();
-                                    } else {
-                                      _selectedItems = List.from(widget.items);
-                                    }
-                                  });
-                                  widget.onMultiSelectChanged?.call(_selectedItems);
-                                  _refreshOverlay();
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-                                  child: Row(
-                                    children: [
-                                      Checkbox(
-                                        value: _selectedItems.length == widget.items.length && widget.items.isNotEmpty,
-                                        tristate: true,
-                                        onChanged: (checked) {
-                                          final allSelected = _selectedItems.length == widget.items.length;
-                                          setState(() {
-                                            if (allSelected) {
-                                              _selectedItems.clear();
-                                            } else {
-                                              _selectedItems = List.from(widget.items);
-                                            }
-                                          });
-                                          widget.onMultiSelectChanged?.call(_selectedItems);
-                                          _refreshOverlay();
-                                        },
-                                        visualDensity: const VisualDensity(vertical: -2),
-                                      ),
-                                      Text(
-                                        AppLocalizations.of(context)!.selectAll,
-                                        style: widget.itemStyle ?? Theme.of(context).textTheme.bodyMedium,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ...widget.items.map((item) {
-                            final isSelected = widget.multiSelect
-                                ? _selectedItems.contains(item)
-                                : item == _selectedItem;
-
-                            return Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () => _onItemTapped(item),
-                                hoverColor: color.primary.withAlpha(12),
-                                highlightColor: color.primary.withAlpha(12),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(vertical: widget.multiSelect ? 0 :  5, horizontal: 8),
-                                  decoration: BoxDecoration(
-                                    color: isSelected ? color.primary.withAlpha(12) : Colors.transparent,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      widget.multiSelect
-                                          ? Checkbox(
-                                        value: isSelected,
-                                        onChanged: (_) => _onItemTapped(item),
-                                      )
-                                          : const SizedBox(),
-                                      if (widget.leadingBuilder != null)
-                                        widget.leadingBuilder!(item)
-                                      else
-                                        const SizedBox.shrink(),
-                                      if(widget.leadingBuilder !=null)
-                                        SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          widget.itemLabel(item),
-                                          style: widget.itemStyle ?? Theme.of(context).textTheme.bodyMedium,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      if (isSelected && !widget.multiSelect)
-                                        const Icon(Icons.check_rounded, size: 17)
-                                      else
-                                        const SizedBox.shrink(),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
-                        ],
+      builder: (_) => Positioned(
+        left: offset.dx,
+        top: offset.dy + renderBox.size.height + 4,
+        width: renderBox.size.width,
+        child: Material(
+          elevation: 2,
+          borderRadius: BorderRadius.circular(widget.radius ?? 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.multiSelect)
+                InkWell(
+                  onTap: () {
+                    final allSelected =
+                        _selectedItems.length == widget.items.length;
+                    setState(() {
+                      _selectedItems = allSelected
+                          ? []
+                          : List.from(widget.items);
+                    });
+                    widget.onMultiSelectChanged?.call(_selectedItems);
+                    _refreshOverlay();
+                  },
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: _selectedItems.length ==
+                            widget.items.length &&
+                            widget.items.isNotEmpty,
+                        onChanged: (_) {},
                       ),
-                    ),
+                      Text(AppLocalizations.of(context)!.selectAll),
+                    ],
                   ),
                 ),
-              ),
-            ),
-          ],
+              ...widget.items.map((item) {
+                final isSelected = widget.multiSelect
+                    ? _selectedItems.contains(item)
+                    : item == _selectedItem;
+
+                return InkWell(
+                  onTap: () => _onItemTapped(item),
+                  child: Container(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    color: isSelected
+                        ? color.primary.withAlpha(15)
+                        : null,
+                    child: Row(
+                      children: [
+                        if (widget.multiSelect)
+                          Checkbox(
+                            value: isSelected,
+                            onChanged: (_) => _onItemTapped(item),
+                          ),
+                        if (widget.leadingBuilder != null)
+                          widget.leadingBuilder!(item),
+                        const SizedBox(width: 6),
+                        Expanded(child: Text(widget.itemLabel(item))),
+                        if (isSelected && !widget.multiSelect)
+                          const Icon(Icons.check, size: 16),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ),
         ),
       ),
     );
   }
-
 }

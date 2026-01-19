@@ -330,7 +330,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         ),
                         Expanded(
-                          child: VehicleDropdown(
+                          child: VehicleCategoryDropdown(
                             selectedVehicle: widget.model?.vclBodyType,
                             onVehicleSelected: (e) {
                               setState(() {

@@ -10,11 +10,12 @@ class StakeholdersDropdown extends StatefulWidget {
   final bool isMulti;
   final double height;
   final bool disableAction;
+  final String? initialValue;
   final ValueChanged<List<IndividualsModel>> onMultiChanged;
   final ValueChanged<IndividualsModel?>? onSingleChanged;
   final List<IndividualsModel>? initiallySelected;
   final IndividualsModel? initiallySelectedSingle;
-  final String? indId; // Optional: to load specific individual
+  final String? indId;
 
   const StakeholdersDropdown({
     super.key,
@@ -27,6 +28,7 @@ class StakeholdersDropdown extends StatefulWidget {
     this.initiallySelected,
     this.initiallySelectedSingle,
     this.indId,
+    this.initialValue,
   });
 
   @override
@@ -67,12 +69,12 @@ class _StakeholdersDropdownState extends State<StakeholdersDropdown> {
                   widget.title ?? AppLocalizations.of(context)!.stakeholders,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
-                const SizedBox(width: 8),
-                const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
+                // const SizedBox(width: 8),
+                // const SizedBox(
+                //   width: 16,
+                //   height: 16,
+                //   child: CircularProgressIndicator(strokeWidth: 2),
+                // ),
               ],
             );
           } else {
@@ -96,20 +98,13 @@ class _StakeholdersDropdownState extends State<StakeholdersDropdown> {
           disableAction: widget.disableAction,
           title: '', // We'll handle title separately
           height: widget.height,
-          leadingBuilder: (IndividualsModel stakeholder) {
-            // You can customize the leading icon based on stakeholder type
-            return Icon(
-              Icons.lock_clock,
-              size: 20,
-              color: Theme.of(context).colorScheme.primary,
-            );
-          },
+
           items: stakeholders,
           multiSelect: widget.isMulti,
           selectedItems: widget.isMulti ? _selectedMulti : [],
           selectedItem: widget.isMulti ? null : _selectedSingle,
           itemLabel: (item) => _getStakeholderDisplayName(item),
-          initialValue: AppLocalizations.of(context)!.individuals,
+          initialValue: widget.initialValue ?? AppLocalizations.of(context)!.all,
 
           // MULTI-SELECT HANDLER
           onMultiSelectChanged: widget.isMulti

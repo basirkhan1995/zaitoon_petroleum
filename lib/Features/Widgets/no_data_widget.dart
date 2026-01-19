@@ -6,12 +6,15 @@ import 'outline_button.dart';
 class NoDataWidget extends StatelessWidget {
   final String? title;
   final String? message;
+  final String? imageName;
   final VoidCallback? onRefresh;
   final bool enableAction;
-  const NoDataWidget({super.key,this.title, this.message,this.onRefresh,this.enableAction = true});
+  const NoDataWidget({super.key,this.title, this.message,this.onRefresh,this.imageName, this.enableAction = true});
 
   @override
   Widget build(BuildContext context) {
+    String defaultImage = "noData.png";
+    String imagePath = "assets/images/${imageName??defaultImage}";
     return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -19,7 +22,7 @@ class NoDataWidget extends StatelessWidget {
           children: [
             SizedBox(
                 width: 300,
-                child:Image.asset("assets/images/noData.png")
+                child:Image.asset(imagePath)
             ),
             if(title !=null && title!.isNotEmpty)
             Text(title??"", style: Theme.of(context).textTheme.titleMedium),

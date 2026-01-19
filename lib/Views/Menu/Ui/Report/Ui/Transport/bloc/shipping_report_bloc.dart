@@ -12,8 +12,9 @@ class ShippingReportBloc extends Bloc<ShippingReportEvent, ShippingReportState> 
 
 
     on<LoadShippingReportEvent>((event, emit) async{
+      emit(ShippingReportLoadingState());
       try{
-        final shp = await _repo.getShippingReport();
+        final shp = await _repo.getShippingReport(fromDate: event.fromDate, toDate: event.toDate, status: event.status, customer: event.customerId, vehicle: event.vehicleId);
         emit(ShippingReportLoadedState(shp));
       }catch(e){
         emit(ShippingReportErrorState(e.toString()));

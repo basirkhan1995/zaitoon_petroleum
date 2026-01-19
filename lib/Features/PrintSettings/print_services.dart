@@ -1314,7 +1314,89 @@ abstract class PrintServices {
         'en': 'Total',
         'fa': 'مجموع',
         'ar': 'المجموع',
-      }
+      },
+      // Add these new entries to your translation map
+      'shippingReport': {
+        'en': 'Shipping Report',
+        'fa': 'راپور ترانسپورت',
+        'ar': 'راپور ترانسپورت'
+      },
+      'appliedFilters': {
+        'en': 'Applied Filters',
+        'fa': 'فیلترهای اعمال شده',
+        'ar': 'فیلترهای اعمال شده'
+      },
+      'dateRange': {
+        'en': 'Date Range',
+        'fa': 'محدوده تاریخ',
+        'ar': 'محدوده تاریخ'
+      },
+      'vehicle': {
+        'en': 'Vehicle',
+        'fa': 'وسله نقلیه',
+        'ar': 'وسله نقلیه'
+      },
+      'shippingReportSummary': {
+        'en': 'Shipping Report Summary',
+        'fa': 'خلاصه راپور ترانسپورت',
+        'ar': 'خلاصه راپور ترانسپورت'
+      },
+      'totalLoadSize': {
+        'en': 'Total Load Size',
+        'fa': 'مجموع حجم بارگیری',
+        'ar': 'مجموع حجم بارگیری'
+      },
+      'totalUnLoadSize': {
+        'en': 'Total Unload Size',
+        'fa': 'مجموع حجم تخلیه',
+        'ar': 'مجموع حجم تخلیه'
+      },
+      'avgDifference': {
+        'en': 'Avg Difference',
+        'fa': 'متوسط تفاوت',
+        'ar': 'متوسط تفاوت'
+      },
+      'avgRentPerUnit': {
+        'en': 'Avg Rent Per Unit',
+        'fa': 'متوسط کرایه فی واحد',
+        'ar': 'متوسط کرایه فی واحد'
+      },
+
+      'product': {
+        'en': 'Product',
+        'fa': 'محصول',
+        'ar': 'محصول'
+      },
+      'from': {
+        'en': 'From',
+        'fa': 'از',
+        'ar': 'از'
+      },
+      'to': {
+        'en': 'To',
+        'fa': 'به',
+        'ar': 'به'
+      },
+      'loadSize': {
+        'en': 'Load Size',
+        'fa': 'حجم بارگیری',
+        'ar': 'حجم بارگیری'
+      },
+      'unloadSize': {
+        'en': 'Unload Size',
+        'fa': 'حجم تخلیه',
+        'ar': 'حجم تخلیه'
+      },
+      'rent': {
+        'en': 'Rent',
+        'fa': 'کرایه',
+        'ar': 'کرایه'
+      },
+      'no': {
+        'en': '#',
+        'fa': 'شماره',
+        'ar': 'شمیرہ'
+      },
     };
 
     // Default to English if language not found
