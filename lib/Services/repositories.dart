@@ -2665,7 +2665,7 @@ class Repositories {
       throw "$e";
     }
   }
-  Future<List<ShippingReportModel>> getShippingReport({int? vehicle, int? status, int? customer, String? fromDate, String? toDate}) async {
+  Future<List<ShippingReportModel>> getShippingReport({int? vehicle, int? status, int? customer, String? fromDate, int? driverId, String? toDate}) async {
     try {
       final response = await api.post(
           endpoint: "/reports/shippingList.php",
@@ -2674,6 +2674,7 @@ class Repositories {
             "toDate": toDate,
             "vehicle": vehicle,
             "customer": customer,
+            "driver": driverId,
             "status": status
           }
       );

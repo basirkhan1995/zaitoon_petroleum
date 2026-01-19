@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/bloc/shipping_report_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/features/individuals_dropdown.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/driver_drop.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/features/vehicle_drop.dart';
 import '../../../../../../../../../Features/PrintSettings/report_model.dart';
 import '../../../../../../../../../Features/Widgets/outline_button.dart';
@@ -65,14 +66,19 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
-  String fromDate = DateTime.now().subtract(Duration(days: 7)).toFormattedDate();
+  String fromDate = DateTime.now()
+      .subtract(Duration(days: 7))
+      .toFormattedDate();
   String toDate = DateTime.now().toFormattedDate();
-  Jalali shamsiFromDate = DateTime.now().subtract(Duration(days: 7)).toAfghanShamsi;
+  Jalali shamsiFromDate = DateTime.now()
+      .subtract(Duration(days: 7))
+      .toAfghanShamsi;
   Jalali shamsiToDate = DateTime.now().toAfghanShamsi;
   final TextEditingController searchController = TextEditingController();
   int? perId;
   int? vehicleId;
   int? status;
+  int? driverId;
   String _baseCurrency = "";
   String? myLocale;
 
@@ -86,7 +92,6 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   void initState() {
-
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -113,162 +118,185 @@ class _DesktopState extends State<_Desktop> {
         }
       }
     });
-
   }
 
+   int flexDate = 2;
+   int flexCustomer = 3;
+   int flexProduct = 3;
+   int flexVehicle = 3;
+   int flexDriver = 3;
+   int flexShipping = 2;
+   int flexLoad = 2;
+   int flexUnload = 2;
+   int flexTotal = 2;
+   int flexStatus = 2;
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
 
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(   tr.allShipping,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),),
-          titleSpacing: 0,
+        title: Text(
+          tr.allShipping,
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        actionsPadding: EdgeInsets.symmetric(horizontal: 15),
+        titleSpacing: 0,
+        actions: [
+          if (perId != null || vehicleId != null || driverId !=null)...[
+            ZOutlineButton(
+              toolTip: "F5",
+              width: 120,
+              icon: Icons.filter_alt_off_outlined,
+              onPressed: () {
+                setState(() {
+                  perId = null;
+                  vehicleId = null;
+                  driverId = null;
+                });
+                context.read<ShippingReportBloc>().add(ResetShippingReportEvent());
+              },
+              label: Text(tr.clear),
+            ),
+            SizedBox(width: 8),
+          ],
+          ZOutlineButton(
+            toolTip: "F6",
+            width: 120,
+            icon: FontAwesomeIcons.solidFilePdf,
+            onPressed: onPdf,
+            label: Text("PDF"),
+          ),
+          SizedBox(width: 8),
+          ZOutlineButton(
+            toolTip: "F5",
+            width: 120,
+            isActive: true,
+            icon: Icons.filter_alt,
+            onPressed: onRefresh,
+            label: Text(tr.apply),
+          ),
+        ],
       ),
       body: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15.0,
-                  vertical: 8,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              spacing: 8,
+              children: [
+                SizedBox(
+                  width: 150,
+                  child: ZDatePicker(
+                    label: tr.fromDate,
+                    value: fromDate,
+                    onDateChanged: (v) {
+                      setState(() {
+                        fromDate = v;
+                        shamsiFromDate = v.toAfghanShamsi;
+                      });
+                    },
+                  ),
                 ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  spacing: 8,
-                  children: [
-                    SizedBox(
-                      width: 150,
-                      child: ZDatePicker(
-                        label: tr.fromDate,
-                        value: fromDate,
-                        onDateChanged: (v) {
-                          setState(() {
-                            fromDate = v;
-                            shamsiFromDate = v.toAfghanShamsi;
-                          });
-                        },
-                      ),
-                    ),
 
-                    SizedBox(
-                      width: 150,
-                      child: ZDatePicker(
-                        label: tr.toDate,
-                        value: toDate,
-                        onDateChanged: (v) {
-                          setState(() {
-                            toDate = v;
-                            shamsiToDate = v.toAfghanShamsi;
-                          });
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: VehicleDropdown(
-                        onSingleChanged: (vehicle) {
-                          setState(() {
-                            vehicleId = vehicle?.vclId;
-                          });
-                        },
-                      ),
-
-                    ),
-
-                    Expanded(
-                      flex: 2,
-                      child: StakeholdersDropdown(
-                          title: tr.customer,
-
-                          height: 40,
-                          isMulti: false,
-                          onMultiChanged: (e){},
-                          onSingleChanged: (e){
-                            setState(() {
-                              perId = e!.perId;
-                            });
-                          },
-                      ),
-                    ),
-                    Expanded(
-                      child: StatusDropdown(
-                        value: status,
-                        onChanged: (v) {
-                          setState(() => status = v); // v is 1 or 0
-                        },
-                      ),
-                    ),
-                    if(perId !=null || vehicleId !=null)
-                    ZOutlineButton(
-                      toolTip: "F5",
-                      width: 100,
-                      icon: Icons.filter_alt_off_outlined,
-                      onPressed: (){
-                       setState(() {
-                         perId = null;
-                         vehicleId = null;
-                       });
-                      },
-                      label: Text(tr.clear),
-                    ),
-                    ZOutlineButton(
-                      toolTip: "F6",
-                      width: 120,
-                      icon: FontAwesomeIcons.solidFilePdf,
-                      onPressed: onPdf,
-                      label: Text("PDF"),
-                    ),
-                    ZOutlineButton(
-                      toolTip: "F5",
-                      width: 120,
-                      isActive: true,
-                      icon: Icons.filter_alt,
-                      onPressed: onRefresh,
-                      label: Text(tr.apply),
-                    ),
-                  ],
+                SizedBox(
+                  width: 150,
+                  child: ZDatePicker(
+                    label: tr.toDate,
+                    value: toDate,
+                    onDateChanged: (v) {
+                      setState(() {
+                        toDate = v;
+                        shamsiToDate = v.toAfghanShamsi;
+                      });
+                    },
+                  ),
                 ),
-              ),
-              const SizedBox(height: 15),
-              _buildColumnHeaders(),
-              const SizedBox(height: 5),
-              const Divider(endIndent: 15, indent: 15),
-              const SizedBox(height: 0),
-
-              Expanded(
-                child: BlocBuilder<ShippingReportBloc, ShippingReportState>(
-                  builder: (context, state) {
-                    if(state is ShippingReportLoadingState){
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    if(state is ShippingReportErrorState){
-                      return NoDataWidget(
-                        message: state.message,
-                      );
-                    }
-                    if( state is ShippingReportInitial){
-                      return NoDataWidget(
-                        imageName: "shipment.png",
-                        title: "Shipments Overview",
-                        message: "Select filters and generate the report.",
-                        enableAction: false,
-                      );
-                    }
-                    if(state is ShippingReportLoadedState){
-                      if(state.shp.isEmpty){
-                        return NoDataWidget(
-                          title: tr.noData,
-                        );
-                      }
-                      return _buildReportListView(context, state.shp);
-                    }
-                    return const SizedBox();
-                  },
+                Expanded(
+                  flex: 2,
+                  child: DriversDropdown(
+                    onSingleChanged: (vehicle) {
+                      setState(() {
+                        driverId = vehicle?.empId;
+                      });
+                    },
+                  ),
                 ),
-              ),
-            ],
+                Expanded(
+                  flex: 2,
+                  child: VehicleDropdown(
+                    onSingleChanged: (vehicle) {
+                      setState(() {
+                        vehicleId = vehicle?.vclId;
+                      });
+                    },
+                  ),
+                ),
+
+                Expanded(
+                  flex: 2,
+                  child: StakeholdersDropdown(
+                    title: tr.customer,
+                    height: 40,
+                    isMulti: false,
+                    onMultiChanged: (e) {},
+                    onSingleChanged: (e) {
+                      setState(() {
+                        perId = e!.perId;
+                      });
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: StatusDropdown(
+                    value: status,
+                    onChanged: (v) {
+                      setState(() => status = v); // v is 1 or 0
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(height: 15),
+          _buildColumnHeaders(),
+          const SizedBox(height: 5),
+          const Divider(endIndent: 15, indent: 15),
+          const SizedBox(height: 0),
+
+          Expanded(
+            child: BlocBuilder<ShippingReportBloc, ShippingReportState>(
+              builder: (context, state) {
+                if (state is ShippingReportLoadingState) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (state is ShippingReportErrorState) {
+                  return NoDataWidget(message: state.message);
+                }
+                if (state is ShippingReportInitial) {
+                  return NoDataWidget(
+                    imageName: "shipment.png",
+                    title: "Shipments Overview",
+                    message: "Select filters and generate the report.",
+                    enableAction: false,
+                  );
+                }
+                if (state is ShippingReportLoadedState) {
+                  if (state.shp.isEmpty) {
+                    return NoDataWidget(title: tr.noData,enableAction: false,message: tr.noDataFound);
+                  }
+                  return _buildReportListView(context, state.shp);
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -277,23 +305,24 @@ class _DesktopState extends State<_Desktop> {
     final titleStyle = Theme.of(context).textTheme.titleSmall;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+      padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Row(
         children: [
-          SizedBox(width: 40, child: Text(tr.id, style: titleStyle)),
-          SizedBox(width: 100, child: Text(tr.date, style: titleStyle)),
-          Expanded(child: Text(tr.customer, style: titleStyle)),
-          SizedBox(width: 200, child: Text(tr.products, style: titleStyle)),
-          SizedBox(width: 200, child: Text(tr.vehicle, style: titleStyle)),
-          SizedBox(width: 110, child: Text(tr.shippingRent, style: titleStyle)),
-          SizedBox(width: 110, child: Text(tr.loadingSize, style: titleStyle)),
-          SizedBox(width: 110, child: Text(tr.unloadingSize, style: titleStyle),),
-          SizedBox(width: 120, child: Text(tr.totalTitle, style: titleStyle)),
+          Expanded(flex: flexDate, child: Text(tr.date, style: titleStyle)),
+          Expanded(flex: flexCustomer, child: Text(tr.customer, style: titleStyle)),
+          Expanded(flex: flexProduct, child: Text(tr.products, style: titleStyle)),
+          Expanded(flex: flexVehicle, child: Text(tr.vehicle, style: titleStyle)),
+          Expanded(flex: flexDriver, child: Text(tr.driver, style: titleStyle)),
+          Expanded(flex: flexShipping, child: Text(tr.shippingRent, style: titleStyle)),
+          Expanded(flex: flexLoad, child: Text(tr.loadingSize, style: titleStyle)),
+          Expanded(flex: flexUnload, child: Text(tr.unloadingSize, style: titleStyle)),
+          Expanded(flex: flexTotal, child: Text(tr.totalTitle, style: titleStyle)),
           SizedBox(width: 100, child: Text(tr.status, style: titleStyle)),
         ],
       ),
     );
   }
+
 
   Widget _buildReportListView(BuildContext context, List<ShippingReportModel> list) {
     final tr = AppLocalizations.of(context)!;
@@ -308,85 +337,64 @@ class _DesktopState extends State<_Desktop> {
             showDialog(
               context: context,
               barrierDismissible: true,
-              builder: (_) => ShippingByIdView(
-                shippingId: shp.shpId,
-                perId: perId,
-              ),
+              builder: (_) =>
+                  ShippingByIdView(shippingId: shp.shpId, perId: perId),
             );
           },
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
             decoration: BoxDecoration(
               color: index.isEven
-                  ? Theme.of(context)
-                  .colorScheme
-                  .primary
-                  .withValues(alpha: .05)
+                  ? Theme.of(context).colorScheme.primary.withValues(alpha: .05)
                   : Colors.transparent,
             ),
             child: Row(
               children: [
-                /// NO / ID
-                SizedBox(
-                  width: 40,
-                  child: Text(shp.shpId.toString()),
-                ),
-
                 /// DATE
-                SizedBox(
-                  width: 100,
-                  child: Text(
-                    shp.shpMovingDate?.toFormattedDate() ?? "",
-                  ),
+                Expanded(
+                  flex: flexDate,
+                  child: Text(shp.shpMovingDate?.toFormattedDate() ?? ""),
                 ),
 
                 /// CUSTOMER
                 Expanded(
-                  child: Text(shp.customerName ?? ""),
-                ),
+                    flex: flexCustomer,
+                    child: Text(shp.customerName ?? "")),
 
                 /// PRODUCT
-                SizedBox(
-                  width: 200,
-                  child: Text(shp.proName ?? ""),
-                ),
+                Expanded(
+                    flex: flexProduct, child: Text(shp.proName ?? "")),
 
                 /// VEHICLE
-                SizedBox(
-                  width: 200,
-                  child: Text(shp.vehicle ?? ""),
-                ),
-
+                Expanded(flex: flexVehicle, child: Text(shp.vehicle ?? "")),
+                /// Driver
+                Expanded(flex: flexDriver, child: Text(shp.driverName ?? "")),
                 /// SHIPPING RENT
-                SizedBox(
-                  width: 110,
-                  child: Text(
-                    "${shp.shpRent?.toAmount()} $_baseCurrency",
-                  ),
+                Expanded(
+                  flex: flexShipping,
+                  child: Text("${shp.shpRent?.toAmount()} $_baseCurrency"),
                 ),
 
                 /// LOADING SIZE
-                SizedBox(
-                  width: 110,
+                Expanded(
+                  flex: flexLoad,
                   child: Text(
                     "${shp.shpLoadSize?.toDoubleAmount()} ${shp.shpUnit}",
                   ),
                 ),
 
                 /// UNLOADING SIZE
-                SizedBox(
-                  width: 110,
+                Expanded(
+                  flex: flexUnload,
                   child: Text(
                     "${shp.shpUnloadSize?.toDoubleAmount()} ${shp.shpUnit}",
                   ),
                 ),
 
                 /// TOTAL
-                SizedBox(
-                  width: 120,
-                  child: Text(
-                    "${shp.total?.toAmount()} $_baseCurrency",
-                  ),
+                Expanded(
+                  flex: flexTotal,
+                  child: Text("${shp.total?.toAmount()} $_baseCurrency"),
                 ),
 
                 /// STATUS
@@ -405,15 +413,17 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-
   void onRefresh() {
-    context.read<ShippingReportBloc>().add(LoadShippingReportEvent(
-      status: status,
-      customerId: perId,
-      fromDate: fromDate,
-      toDate: toDate,
-      vehicleId: vehicleId
-    ));
+    context.read<ShippingReportBloc>().add(
+      LoadShippingReportEvent(
+        status: status,
+        customerId: perId,
+        fromDate: fromDate,
+        toDate: toDate,
+        vehicleId: vehicleId,
+        driverId: driverId
+      ),
+    );
   }
 
   // Add this PDF function
@@ -434,11 +444,7 @@ class _DesktopState extends State<_Desktop> {
     }
 
     if (shippingList.isEmpty) {
-      Utils.showOverlayMessage(
-        context,
-        message: tr.noData,
-        isError: true,
-      );
+      Utils.showOverlayMessage(context, message: tr.noData, isError: true);
       return;
     }
 
@@ -458,74 +464,74 @@ class _DesktopState extends State<_Desktop> {
       filterStatus = status == 1 ? tr.delivered : tr.pendingTitle;
     }
 
-    // Get customer and vehicle names from dropdowns if available
-    // You might need to store these names in state when selecting dropdowns
-
     showDialog(
       context: context,
       builder: (_) => PrintPreviewDialog<List<ShippingReportModel>>(
         data: shippingList,
         company: company,
-        buildPreview: ({
-          required data,
-          required language,
-          required orientation,
-          required pageFormat,
-        }) {
-          return ShippingReportPdfServices().printPreview(
-            company: company,
-            language: language,
-            pageFormat: pageFormat,
-            shippingList: data,
-            filterFromDate: fromDate,
-            filterToDate: toDate,
-            filterCustomer: filterCustomer,
-            filterVehicle: filterVehicle,
-            filterStatus: filterStatus?.toString(),
-          );
-        },
-        onPrint: ({
-          required data,
-          required language,
-          required orientation,
-          required pageFormat,
-          required selectedPrinter,
-          required copies,
-          required pages,
-        }) {
-          return ShippingReportPdfServices().printDocument(
-            company: company,
-            language: language,
-            pageFormat: pageFormat,
-            selectedPrinter: selectedPrinter,
-            shippingList: data,
-            copies: copies,
-            pages: pages,
-            filterFromDate: fromDate,
-            filterToDate: toDate,
-            filterCustomer: filterCustomer,
-            filterVehicle: filterVehicle,
-            filterStatus: filterStatus?.toString(),
-          );
-        },
-        onSave: ({
-          required data,
-          required language,
-          required orientation,
-          required pageFormat,
-        }) {
-          return ShippingReportPdfServices().createDocument(
-            company: company,
-            language: language,
-            pageFormat: pageFormat,
-            shippingList: data,
-            filterFromDate: fromDate,
-            filterToDate: toDate,
-            filterCustomer: filterCustomer,
-            filterVehicle: filterVehicle,
-            filterStatus: filterStatus?.toString(),
-          );
-        },
+        buildPreview:
+            ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+            }) {
+              return ShippingReportPdfServices().printPreview(
+                company: company,
+                language: language,
+                pageFormat: pageFormat,
+                shippingList: data,
+                filterFromDate: fromDate,
+                filterToDate: toDate,
+                filterCustomer: filterCustomer,
+                filterVehicle: filterVehicle,
+                filterStatus: filterStatus?.toString(),
+              );
+            },
+        onPrint:
+            ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+              required selectedPrinter,
+              required copies,
+              required pages,
+            }) {
+              return ShippingReportPdfServices().printDocument(
+                company: company,
+                language: language,
+                pageFormat: pageFormat,
+                selectedPrinter: selectedPrinter,
+                shippingList: data,
+                copies: copies,
+                pages: pages,
+                filterFromDate: fromDate,
+                filterToDate: toDate,
+                filterCustomer: filterCustomer,
+                filterVehicle: filterVehicle,
+                filterStatus: filterStatus?.toString(),
+              );
+            },
+        onSave:
+            ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+            }) {
+              return ShippingReportPdfServices().createDocument(
+                company: company,
+                language: language,
+                pageFormat: pageFormat,
+                shippingList: data,
+                filterFromDate: fromDate,
+                filterToDate: toDate,
+                filterCustomer: filterCustomer,
+                filterVehicle: filterVehicle,
+                filterStatus: filterStatus?.toString(),
+              );
+            },
       ),
     );
   }

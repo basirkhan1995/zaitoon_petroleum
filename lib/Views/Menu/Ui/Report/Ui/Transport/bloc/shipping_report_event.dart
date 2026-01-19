@@ -9,8 +9,9 @@ class LoadShippingReportEvent extends ShippingReportEvent{
   final String? toDate;
   final int? customerId;
   final int? vehicleId;
+  final int? driverId;
   final int? status;
-  const LoadShippingReportEvent({this.fromDate, this.toDate, this.customerId, this.vehicleId, this.status});
+  const LoadShippingReportEvent({this.fromDate, this.toDate, this.customerId, this.vehicleId, this.driverId, this.status});
   @override
   List<Object?> get props => [fromDate, toDate, customerId, vehicleId, status];
 }
