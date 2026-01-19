@@ -1015,17 +1015,17 @@ class _DesktopState extends State<_Desktop> {
                                     bloc: context.read<AccountsBloc>(),
                                     fetchAllFunction: (bloc) => bloc.add(
                                       LoadAccountsFilterEvent(
-                                        include: '1,2,3,4,5,6,7,9,10,11,12',
+                                        include: '1,2,3,4,5,6,7',
                                         ccy: baseCurrency,
-                                        exclude: "10101010, 10101011",
+                                        exclude: "10101010,10101011",
                                       ),
                                     ),
                                     searchFunction: (bloc, query) => bloc.add(
                                       LoadAccountsFilterEvent(
-                                        include: '1,2,3,4,5,6,7,9,10,11,12',
+                                        include: '1,2,3,4,5,6,7',
                                         ccy: baseCurrency,
                                         input: query,
-                                        exclude: "10101010, 10101011",
+                                        exclude: "10101010,10101011",
                                       ),
                                     ),
                                     validator: (value) {
@@ -1858,7 +1858,6 @@ class _DesktopState extends State<_Desktop> {
         },
       );
     }
-
     void showTxnDetails(){
       showDialog(context: context, builder: (context){
         return TransactionByReferenceView();
@@ -1874,6 +1873,7 @@ class _DesktopState extends State<_Desktop> {
         return AccountStatementView();
       });
     }
+
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): () => onCashDepositWithdraw(trnType: "CHDP"),
       const SingleActivator(LogicalKeyboardKey.f2): () => onCashDepositWithdraw(trnType: "CHWL"),
