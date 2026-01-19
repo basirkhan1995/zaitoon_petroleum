@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/Ui/add_user.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/branch_dropdown.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/role_dropdown.dart';
 import '../../../../../../../Features/Widgets/no_data_widget.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
-import '../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../HR/Ui/Users/bloc/users_bloc.dart';
 import '../../../HR/Ui/Employees/features/emp_card.dart';
 
 class UsersReportView extends StatelessWidget {
   const UsersReportView({super.key});
-
   @override
   Widget build(BuildContext context) {
     return const ResponsiveLayout(
@@ -79,13 +76,12 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
-
-    final locale = AppLocalizations.of(context)!;
-
-
-
+    final tr = AppLocalizations.of(context)!;
     return Scaffold(
-
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: Text("User Report"),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
@@ -99,27 +95,8 @@ class _DesktopState extends State<_Desktop> {
                 spacing: 8,
                 children: [
                   Expanded(
-                      flex: 3,
-                      child: Row(
-                        spacing: 5,
-                        children: [
-                          BackButton(
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.primary.withValues(alpha: .07))
-                            ),
-                          ),
-                          Text("${locale.users} ${locale.report}",style: Theme.of(context).textTheme.titleLarge),
-                        ],
-                      ),),
-                  Expanded(
                     flex: 3,
-                    child: ZSearchField(
-                      icon: FontAwesomeIcons.magnifyingGlass,
-                      controller: searchController,
-                      hint: "${locale.search} ${locale.username}",
-                      onChanged: (_) => setState(() {}),
-                      title: "",
-                    ),
+                    child: Text(""),
                   ),
                   Expanded(
                       child: UserRoleDropdown(onRoleSelected: (e){
@@ -139,9 +116,9 @@ class _DesktopState extends State<_Desktop> {
                   ZOutlineButton(
                     toolTip: 'F1',
                     width: 120,
-                    icon: Icons.refresh,
+                    icon: Icons.filter_alt_off,
                     onPressed: onRefresh,
-                    label: Text("${locale.all} ${locale.users}"),
+                    label: Text("${tr.all} ${tr.users}"),
                   ),
                 ],
               ),
@@ -173,7 +150,7 @@ class _DesktopState extends State<_Desktop> {
 
                     if (filteredList.isEmpty) {
                       return NoDataWidget(
-                        message: locale.noDataFound,
+                        message: tr.noDataFound,
                       );
                     }
 

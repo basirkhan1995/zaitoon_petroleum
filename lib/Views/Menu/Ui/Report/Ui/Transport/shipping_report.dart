@@ -133,8 +133,6 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
-
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -264,8 +262,6 @@ class _DesktopState extends State<_Desktop> {
           ),
           const SizedBox(height: 15),
           _buildColumnHeaders(),
-          const SizedBox(height: 5),
-          const Divider(endIndent: 15, indent: 15),
           const SizedBox(height: 0),
 
           Expanded(
@@ -302,10 +298,13 @@ class _DesktopState extends State<_Desktop> {
 
   Widget _buildColumnHeaders() {
     final tr = AppLocalizations.of(context)!;
-    final titleStyle = Theme.of(context).textTheme.titleSmall;
-
-    return Padding(
+    final titleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.surface);
+    return Container(
+      height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 15),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: .9)
+      ),
       child: Row(
         children: [
           Expanded(flex: flexDate, child: Text(tr.date, style: titleStyle)),
