@@ -620,7 +620,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get overview => 'معلومات';
 
   @override
-  String get userLog => 'فعالیت';
+  String get userLog => 'فعالیت کاربر';
 
   @override
   String get permissions => 'دسترسی ها';
@@ -2118,4 +2118,7 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get plMessage =>
       'د ګټې او تاوان بستل به د اوسني مالي دورې د ټولو عاید او مصرف حسابونه بشپړ کړي.';
+
+  @override
+  String get openingBalance => 'مانده افتتاحیه';
 }

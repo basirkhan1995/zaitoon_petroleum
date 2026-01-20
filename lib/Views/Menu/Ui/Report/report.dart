@@ -98,9 +98,6 @@ class _DesktopState extends State<_Desktop> {
       {"title": locale.creditors, "icon": FontAwesomeIcons.arrowTrendUp, "action": ActionKey.payable},
       {"title": locale.debtors, "icon": FontAwesomeIcons.arrowTrendDown, "action": ActionKey.receivable},
 
-      {"title": locale.exchangeRate, "icon": Icons.compare_arrows_rounded, "action": ActionKey.exchangeRate},
-      {"title": locale.treasury, "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.treasury},
-
     ];
 
     final List<Map<String, dynamic>> stockButtons = [
@@ -110,9 +107,12 @@ class _DesktopState extends State<_Desktop> {
     ];
 
     final List<Map<String, dynamic>> transactionsButtons = [
+      {"title": locale.treasury, "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.treasury},
+      {"title": locale.exchangeRate, "icon": Icons.compare_arrows_rounded, "action": ActionKey.exchangeRate},
       {"title": locale.balanceSheet, "icon": Icons.balance_rounded, "action": ActionKey.balanceSheet},
-      {"title": locale.trialBalance, "icon": Icons.balance, "action": ActionKey.trialBalance},
+      {"title": locale.trialBalance, "icon": Icons.balance_rounded, "action": ActionKey.trialBalance},
       {"title": locale.transactionDetails, "icon": Icons.qr_code_2_rounded, "action": ActionKey.transactionByRef},
+
     ];
 
     final List<Map<String, dynamic>> activitiesButtons = [
@@ -138,12 +138,12 @@ class _DesktopState extends State<_Desktop> {
               _buildButtonGroup(financeButtons, color),
               const SizedBox(height: 15),
 
-              _buildSectionTitle(title: locale.stock,icon: Icons.shopping_cart_checkout_rounded),
+              _buildSectionTitle(title: locale.inventory,icon: Icons.shopping_cart_checkout_rounded),
               _buildButtonGroup(stockButtons, color),
 
               const SizedBox(height: 15),
 
-              _buildSectionTitle(title: locale.transactions,icon: Icons.ssid_chart),
+              _buildSectionTitle(title: "Cash & Balances",icon: Icons.ssid_chart),
               _buildButtonGroup(transactionsButtons, color),
 
               const SizedBox(height: 15),

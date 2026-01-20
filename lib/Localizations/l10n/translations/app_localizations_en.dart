@@ -415,7 +415,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get debtors => 'Debtors';
 
   @override
-  String get treasury => 'Treasury';
+  String get treasury => 'Cash Balances';
 
   @override
   String get exchangeRate => 'Exchange Rate';
@@ -621,7 +621,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get overview => 'Overview';
 
   @override
-  String get userLog => 'Activity';
+  String get userLog => 'User Log';
 
   @override
   String get permissions => 'Permissions';
@@ -2124,4 +2124,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get plMessage =>
       'Closing Profit & Loss will finalize all income and expense accounts for the current fiscal period.';
+
+  @override
+  String get openingBalance => 'Opening Balance';
 }

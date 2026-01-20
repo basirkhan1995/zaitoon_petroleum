@@ -153,7 +153,7 @@
   "accountStatement": "Account Statement",
   "creditors": "Creditors",
   "debtors": "Debtors",
-  "treasury": "Treasury",
+  "treasury": "Cash Balances",
   "exchangeRate": "Exchange Rate",
   "products": "Products",
   "salesInvoice": "Sales Invoice",
@@ -221,7 +221,7 @@
   "female": "Female",
   "socialMedia": "Social Profile",
   "overview": "Overview",
-  "userLog": "Activity",
+  "userLog": "User Log",
   "permissions": "Permissions",
   "deniedPermissionMessage": "Access Denied! You don’t have permission to view this section.",
   "deniedPermissionTitle": "Restricted Section",
@@ -704,5 +704,6 @@
   "expenses": "Expenses",
   "retainedEarnings": "Retained Earnings",
   "eoyClosing": "EOY CLOSING",
-  "plMessage": "Closing Profit & Loss will finalize all income and expense accounts for the current fiscal period."
+  "plMessage": "Closing Profit & Loss will finalize all income and expense accounts for the current fiscal period.",
+  "openingBalance": "Opening Balance"
 }

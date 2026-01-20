@@ -901,7 +901,7 @@ abstract class AppLocalizations {
   /// No description provided for @treasury.
   ///
   /// In en, this message translates to:
-  /// **'Treasury'**
+  /// **'Cash Balances'**
   String get treasury;
 
   /// No description provided for @exchangeRate.
@@ -1309,7 +1309,7 @@ abstract class AppLocalizations {
   /// No description provided for @userLog.
   ///
   /// In en, this message translates to:
-  /// **'Activity'**
+  /// **'User Log'**
   String get userLog;
 
   /// No description provided for @permissions.
@@ -4209,6 +4209,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Closing Profit & Loss will finalize all income and expense accounts for the current fiscal period.'**
   String get plMessage;
+
+  /// No description provided for @openingBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening Balance'**
+  String get openingBalance;
 }
 
 class _AppLocalizationsDelegate

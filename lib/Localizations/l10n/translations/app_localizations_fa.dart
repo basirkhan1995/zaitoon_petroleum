@@ -619,7 +619,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get overview => 'معلومات';
 
   @override
-  String get userLog => 'فعالیت';
+  String get userLog => 'فعالیت کاربر';
 
   @override
   String get permissions => 'دسترسی ها';
@@ -2115,4 +2115,7 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get plMessage =>
       'بستن سود و زیان تمام حساب‌های درآمد و هزینه دوره مالی جاری را نهایی خواهد کرد.';
+
+  @override
+  String get openingBalance => 'مانده افتتاحیه';
 }
