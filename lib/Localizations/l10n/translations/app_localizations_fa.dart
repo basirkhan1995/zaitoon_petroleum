@@ -2111,4 +2111,8 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get eoyClosing => 'بستن دوره مالی';
+
+  @override
+  String get plMessage =>
+      'بستن سود و زیان تمام حساب‌های درآمد و هزینه دوره مالی جاری را نهایی خواهد کرد.';
 }

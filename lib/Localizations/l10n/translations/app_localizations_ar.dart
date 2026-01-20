@@ -2114,4 +2114,8 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get eoyClosing => 'بستن دوره مالی';
+
+  @override
+  String get plMessage =>
+      'د ګټې او تاوان بستل به د اوسني مالي دورې د ټولو عاید او مصرف حسابونه بشپړ کړي.';
 }

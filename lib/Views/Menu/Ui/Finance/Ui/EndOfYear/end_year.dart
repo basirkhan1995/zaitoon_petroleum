@@ -257,6 +257,16 @@ class _DesktopState extends State<_Desktop> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Row(
+                spacing: 5,
+                children: [
+                  Icon(Icons.warning,color: Theme.of(context).colorScheme.error),
+                  Text(tr.attentionTitle,style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.error
+                  ),)
+                ],
+              ),
+              SizedBox(height: 3),
               Container(
                 padding: const EdgeInsets.all(8),
                 width: double.infinity,
@@ -265,8 +275,8 @@ class _DesktopState extends State<_Desktop> {
                   borderRadius: BorderRadius.circular(3),
                   border: Border.all(color: Colors.yellow.shade700),
                 ),
-                child: const Text(
-                  "⚠️ Closing P&L will finalize all accounts for this year. ",
+                child: Text(
+                   tr.plMessage,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -284,7 +294,7 @@ class _DesktopState extends State<_Desktop> {
                       (e) => _InfoRow(label: e.key, amount: e.value),
                 ),
                 const SizedBox(height: 8),
-                const Text("Retained Earnings", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(tr.retainedEarnings, style: TextStyle(fontWeight: FontWeight.bold)),
                 Divider(),
                 ...summary.retainedByCurrency.entries.map(
                       (e) => _InfoRow(
@@ -298,7 +308,7 @@ class _DesktopState extends State<_Desktop> {
               ZTextFieldEntitled(
                 controller: remark,
                 keyboardInputType: TextInputType.multiline,
-                title: "Remark",
+                title: tr.remark,
               ),
             ],
           ),

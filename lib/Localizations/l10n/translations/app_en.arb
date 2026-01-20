@@ -703,5 +703,6 @@
   "retained": "Retained Earnings",
   "expenses": "Expenses",
   "retainedEarnings": "Retained Earnings",
-  "eoyClosing": "EOY CLOSING"
+  "eoyClosing": "EOY CLOSING",
+  "plMessage": "Closing Profit & Loss will finalize all income and expense accounts for the current fiscal period."
 }

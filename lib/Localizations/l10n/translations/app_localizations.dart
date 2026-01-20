@@ -4203,6 +4203,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'EOY CLOSING'**
   String get eoyClosing;
+
+  /// No description provided for @plMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Closing Profit & Loss will finalize all income and expense accounts for the current fiscal period.'**
+  String get plMessage;
 }
 
 class _AppLocalizationsDelegate

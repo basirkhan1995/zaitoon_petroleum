@@ -2120,4 +2120,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eoyClosing => 'EOY CLOSING';
+
+  @override
+  String get plMessage =>
+      'Closing Profit & Loss will finalize all income and expense accounts for the current fiscal period.';
 }
