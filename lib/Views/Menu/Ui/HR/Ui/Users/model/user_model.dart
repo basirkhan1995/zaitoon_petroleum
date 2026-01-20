@@ -78,7 +78,8 @@ class UsersModel {
     usrEmail: json["usrEmail"],
     usrToken: json["usrToken"],
     usrEntryDate: json["usrEntryDate"] == null ? null : DateTime.parse(json["usrEntryDate"]),
-    usrPhoto: json["perPhoto"]
+    usrPhoto: json["perPhoto"],
+    usrFcp: json["usrFCP"]
   );
 
   Map<String, dynamic> toMap() => {

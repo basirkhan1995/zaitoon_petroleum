@@ -74,6 +74,7 @@ class _DesktopState extends State<_Desktop> {
     branchCode = widget.user.usrBranch;
     usrFcp = widget.user.usrFcp == true;
     usrStatus = widget.user.usrStatus;
+    print(usrFcp);
     super.initState();
   }
 

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/search_field.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/bloc/cash_balances_bloc.dart';
 import 'model/cash_balance_model.dart';
 
@@ -64,9 +66,12 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: Text("Cash Balances"),
+        titleSpacing: 0,
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -75,8 +80,8 @@ class _DesktopState extends State<_Desktop> {
             const SizedBox(height: 20),
 
             // Search and Filter
-            _buildSearchFilter(),
-            const SizedBox(height: 20),
+            // _buildSearchFilter(),
+            // const SizedBox(height: 20),
 
             // Main Content
             Expanded(
@@ -123,40 +128,26 @@ class _DesktopState extends State<_Desktop> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
+         Text(
           'Treasury - Cash Balances',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.blue,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         Row(
           children: [
-            ElevatedButton.icon(
+            ZOutlineButton(
+              width: 120,
               onPressed: () {
                 context.read<CashBalancesBloc>().add(const LoadAllCashBalancesEvent());
               },
-              icon: const Icon(Icons.refresh, size: 20),
+              icon:  Icons.refresh,
               label: const Text('Refresh'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-              ),
+
             ),
-            const SizedBox(width: 10),
-            ElevatedButton.icon(
-              onPressed: () {
-                // Export functionality
-                _exportToExcel();
-              },
-              icon: const Icon(Icons.download, size: 20),
-              label: const Text('Export'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
-              ),
-            ),
+
           ],
         ),
       ],
@@ -167,65 +158,40 @@ class _DesktopState extends State<_Desktop> {
     return Row(
       children: [
         Expanded(
-          child: TextField(
+          child: ZSearchField(
+            hint: "Search",
             controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'Search by branch name or currency...',
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              filled: true,
-              fillColor: Colors.white,
-            ),
             onChanged: (value) {
               setState(() {
                 _searchQuery = value.toLowerCase();
               });
-            },
+            }, title: '',
           ),
-        ),
-        const SizedBox(width: 10),
-        DropdownButton<String>(
-          hint: const Text('Filter by Status'),
-          items: const [
-            DropdownMenuItem(value: 'all', child: Text('All Branches')),
-            DropdownMenuItem(value: 'active', child: Text('Active Only')),
-          ],
-          onChanged: (value) {
-            // Handle filter
-          },
         ),
       ],
     );
   }
 
   Widget _buildCashBalancesTable(List<CashBalancesModel> cashList) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Summary Cards
-            _buildSummaryCards(cashList),
-            const SizedBox(height: 20),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          // Summary Cards
+          _buildSummaryCards(cashList),
+          const SizedBox(height: 20),
 
-            // Main Table
-            Expanded(
-              child: ListView.builder(
-                itemCount: cashList.length,
-                itemBuilder: (context, index) {
-                  final branch = cashList[index];
-                  return _buildBranchCard(branch);
-                },
-              ),
+          // Main Table
+          Expanded(
+            child: ListView.builder(
+              itemCount: cashList.length,
+              itemBuilder: (context, index) {
+                final branch = cashList[index];
+                return _buildBranchCard(branch);
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -233,7 +199,7 @@ class _DesktopState extends State<_Desktop> {
   Widget _buildSummaryCards(List<CashBalancesModel> cashList) {
     double totalClosingUSD = 0;
     double totalClosingAFN = 0;
-    int totalBranches = cashList.length;
+
 
     for (var branch in cashList) {
       if (branch.records != null) {
@@ -458,15 +424,6 @@ class _DesktopState extends State<_Desktop> {
     }).toList();
   }
 
-  void _exportToExcel() {
-    // Implement export functionality here
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Export feature coming soon!'),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
 }
 
 class _Desktop extends StatefulWidget {

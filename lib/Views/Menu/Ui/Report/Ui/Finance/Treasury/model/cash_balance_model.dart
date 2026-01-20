@@ -84,6 +84,7 @@ class Record {
   final int? trdAccount;
   final String? ccyName;
   final String? trdCcy;
+  final String? ccySymbol;
   final String? openingBalance;
   final String? openingSysEquivalent;
   final String? closingBalance;
@@ -94,6 +95,7 @@ class Record {
     this.trdAccount,
     this.ccyName,
     this.trdCcy,
+    this.ccySymbol,
     this.openingBalance,
     this.openingSysEquivalent,
     this.closingBalance,
@@ -105,6 +107,7 @@ class Record {
     int? trdAccount,
     String? ccyName,
     String? trdCcy,
+    String? ccySymbol,
     String? openingBalance,
     String? openingSysEquivalent,
     String? closingBalance,
@@ -115,6 +118,7 @@ class Record {
         trdAccount: trdAccount ?? this.trdAccount,
         ccyName: ccyName ?? this.ccyName,
         trdCcy: trdCcy ?? this.trdCcy,
+        ccySymbol: ccySymbol ?? this.ccySymbol,
         openingBalance: openingBalance ?? this.openingBalance,
         openingSysEquivalent: openingSysEquivalent ?? this.openingSysEquivalent,
         closingBalance: closingBalance ?? this.closingBalance,
@@ -126,6 +130,7 @@ class Record {
     trdAccount: json["trdAccount"],
     ccyName: json["ccyName"],
     trdCcy: json["trdCcy"],
+    ccySymbol: json["ccySymbol"],
     openingBalance: json["opening_balance"],
     openingSysEquivalent: json["opening_sys_equivalent"],
     closingBalance: json["closing_balance"],
@@ -137,6 +142,7 @@ class Record {
     "trdAccount": trdAccount,
     "ccyName": ccyName,
     "trdCcy": trdCcy,
+    "ccySymbol": ccySymbol,
     "opening_balance": openingBalance,
     "opening_sys_equivalent": openingSysEquivalent,
     "closing_balance": closingBalance,
