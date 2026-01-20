@@ -246,7 +246,7 @@ class Utils{
   static Color currencyColors(String ccy) {
     final lowerCategory = ccy.toLowerCase();
     if (lowerCategory == 'usd') {
-      return Colors.orange.withValues(alpha: .6);
+      return Colors.orange.withValues(alpha: .86);
     } else if (lowerCategory == 'afn') {
       return Colors.cyan.withValues(alpha: .6);
     } else if (lowerCategory == 'eur') {

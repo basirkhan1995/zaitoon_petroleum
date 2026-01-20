@@ -698,5 +698,6 @@
   "dashbordOverview": "Dashboard Overview",
   "noTransactionFound": "No Transaction Found",
   "transactionByRef": "Transaction By Reference",
-  "transactionSummary": "Transaction Summary"
+  "transactionSummary": "Transaction Summary",
+  "PAndL": "P&L Closing"
 }

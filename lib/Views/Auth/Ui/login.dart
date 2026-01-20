@@ -367,13 +367,6 @@ class _Desktop extends StatefulWidget {
 
 class _DesktopState extends State<_Desktop> {
 
-
-  @override
-  void initState() {
-    checkAutoLogin();
-    super.initState();
-  }
-
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool isPasswordSecure = true;
@@ -483,7 +476,7 @@ class _DesktopState extends State<_Desktop> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 30),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(8),
@@ -522,7 +515,7 @@ class _DesktopState extends State<_Desktop> {
                     return null;
                   },
                 ),
-                SizedBox(height: 5),
+                SizedBox(height: 10),
 
                 ZTextFieldEntitled(
                   controller: _passwordController,
@@ -549,23 +542,23 @@ class _DesktopState extends State<_Desktop> {
                   },
                 ),
 
-                Row(
-                  spacing: 5,
-                  children: [
-                    Checkbox(
-                      visualDensity: VisualDensity(horizontal: -4),
-                      value: isRememberMe,
-                      onChanged: (e) {
-                        setState(() {
-                          isRememberMe = !isRememberMe;
-                        });
-                      },
-                    ),
-                    Text(locale.rememberMe),
-                  ],
-                ),
+                // Row(
+                //   spacing: 5,
+                //   children: [
+                //     Checkbox(
+                //       visualDensity: VisualDensity(horizontal: -4),
+                //       value: isRememberMe,
+                //       onChanged: (e) {
+                //         setState(() {
+                //           isRememberMe = !isRememberMe;
+                //         });
+                //       },
+                //     ),
+                //     Text(locale.rememberMe),
+                //   ],
+                // ),
 
-                SizedBox(height: 10),
+                SizedBox(height: 15),
 
                 ZButton(
                   onPressed: onSubmit,
@@ -588,7 +581,6 @@ class _DesktopState extends State<_Desktop> {
             ),
           ),
         ),
-      //  SizedBox(height: 450, child: Image.asset('assets/images/login.png')),
       ],
     );
   }
@@ -611,7 +603,7 @@ class _DesktopState extends State<_Desktop> {
     if (formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
         LoginEvent(
-          usrName: _emailController.text,
+          usrName: _emailController.text.trim(),
           usrPassword: _passwordController.text,
           rememberMe: isRememberMe
         ),

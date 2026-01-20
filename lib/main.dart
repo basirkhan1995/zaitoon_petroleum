@@ -13,6 +13,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/Stats/bloc/dashb
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/bloc/currencies_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/bloc/exchange_rate_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/bloc/currency_tab_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/EndOfYear/bloc/eoy_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/GlCategories/bloc/gl_category_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/bloc/gl_accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/bloc/financial_tab_bloc.dart';
@@ -120,6 +121,7 @@ class MyApp extends StatelessWidget {
 
         /// Data Management ....................................................
         BlocProvider(create: (context) => IndividualsBloc(Repositories(ApiServices()))..add(LoadIndividualsEvent())),
+        BlocProvider(create: (context) => EoyBloc(Repositories(ApiServices()))..add(LoadPLEvent())),
         BlocProvider(create: (context) => AccountsBloc(Repositories(ApiServices()))..add(LoadAccountsEvent())),
         BlocProvider(create: (context) => UsersBloc(Repositories(ApiServices()))..add(LoadUsersEvent())),
         BlocProvider(create: (context) => CurrenciesBloc(Repositories(ApiServices()))..add(LoadCurrenciesEvent())),

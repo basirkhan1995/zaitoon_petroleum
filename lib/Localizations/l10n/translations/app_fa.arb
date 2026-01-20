@@ -698,5 +698,6 @@
   "dashbordOverview": "نمای کلی داشبورد",
   "noTransactionFound": "هیچ معامله یافت نشد",
   "transactionByRef": "تراکنش بر اساس مرجع",
-  "transactionSummary": "خلاصه معامله"
+  "transactionSummary": "خلاصه معامله",
+  "PAndL": "بستن سود و زیان"
 }

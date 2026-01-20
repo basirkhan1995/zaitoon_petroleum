@@ -51,6 +51,16 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
+
+  String getTitle(BuildContext context, String code) {
+    switch (code) {
+      case "ATAT": return AppLocalizations.of(context)!.accountTransfer;
+      case "CRFX": return AppLocalizations.of(context)!.fxTransaction;
+      case "PLCL": return AppLocalizations.of(context)!.profitAndLoss;
+      default: return "";
+    }
+  }
+
   FetchAtatModel? loadedAtat;
   @override
   Widget build(BuildContext context) {
@@ -72,7 +82,7 @@ class _DesktopState extends State<_Desktop> {
       isActionTrue: false,
       onAction: null,
       icon: Icons.home_repair_service_outlined,
-      title: loadedAtat?.trnType == "ATAT"? tr.accountTransfer : tr.fxTransaction,
+      title: getTitle(context, loadedAtat?.trnType??""),
       child: BlocConsumer<FetchAtatBloc, FetchAtatState>(
   listener: (context, state) {
     if (state is FetchATATLoadedState) {

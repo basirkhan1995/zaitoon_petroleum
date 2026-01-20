@@ -34,6 +34,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Shipping/Ui/Shippin
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/model/vehicle_model.dart';
 import '../Views/Menu/Ui/Dashboard/Views/DailyGross/model/gross_model.dart';
 import '../Views/Menu/Ui/Dashboard/Views/Stats/model/stats_model.dart';
+import '../Views/Menu/Ui/Finance/Ui/EndOfYear/model/eoy_model.dart';
 import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/FetchGLAT/model/glat_model.dart';
@@ -70,6 +71,57 @@ class Repositories {
     }
   }
 
+  ///Finance ...................................................................
+  Future<Map<String, dynamic>> eoyOperationProcess({required String usrName, required String remark, required int branchCode}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/finance/eoyOperation.php",
+          data: {
+              "usrName": usrName,
+              "remark": remark,
+              "parkingBranch": branchCode
+          }
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  Future<List<PAndLModel>> getProfitAndLoss() async {
+    try {
+
+      // Fetch data from API
+      final response = await api.get(
+        endpoint: "/finance/eoyOperation.php",
+      );
+
+      // Handle error messages from server
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // If data is null or empty, return empty list
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      // Parse list of stakeholders safely
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>() // ensure map type
+            .map((json) => PAndLModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
   ///Get Company ...............................................................
   Future<CompanySettingsModel> getCompanyProfile() async {
     try {

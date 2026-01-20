@@ -698,5 +698,6 @@
   "dashbordOverview": "د ډشبورډ عمومي کتنه",
   "noTransactionFound": "هیچ معامله یافت نشد",
   "transactionByRef": "راکړه ورکړه د مراجعې له مخې",
-  "transactionSummary": "خلاصه معامله"
+  "transactionSummary": "خلاصه معامله",
+  "PAndL": "د ګټې او تاوان تړل"
 }
