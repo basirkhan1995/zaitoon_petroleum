@@ -81,7 +81,7 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   String? currentLocale;
   String? usrName;
-  String? baseCurrency;
+
   String? trnCurrency;
   Uint8List _companyLogo = Uint8List(0);
   final company = ReportModel();
@@ -92,10 +92,6 @@ class _DesktopState extends State<_Desktop> {
     super.initState();
     // Delay context access until after initState
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final state = context.read<CompanyProfileBloc>().state;
-      if(state is CompanyProfileLoadedState){
-        baseCurrency = state.company.comLocalCcy;
-      }
       if (mounted) {
         setState(() {
           currentLocale = context.read<LocalizationBloc>().state.languageCode;
@@ -105,7 +101,7 @@ class _DesktopState extends State<_Desktop> {
   }
 
   // Safe method to get base currency with fallback
-  String? _getBaseCurrency(BuildContext context) {
+  String? _getBaseCurrency() {
     try {
       final companyState = context.read<CompanyProfileBloc>().state;
       if (companyState is CompanyProfileLoadedState) {
@@ -122,7 +118,7 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     String unlimitedValue = "999999999999";
-    final baseCurrency = _getBaseCurrency(context);
+    final baseCurrency = _getBaseCurrency();
     final locale = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
