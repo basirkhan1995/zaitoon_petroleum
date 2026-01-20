@@ -220,6 +220,8 @@ class _DesktopState extends State<_Desktop> {
 
   void eoyClosing() {
     final eoyState = context.read<EoyBloc>().state;
+    final color = Theme.of(context).colorScheme;
+    final txt = Theme.of(context).textTheme;
     PAndLSummary? summary;
     if (eoyState is EoyLoadedState) summary = eoyState.eoy.summary;
     final tr = AppLocalizations.of(context)!;
@@ -232,6 +234,7 @@ class _DesktopState extends State<_Desktop> {
     return ZFormDialog(
           padding: const EdgeInsets.all(12),
           title: tr.eoyClosing,
+      icon: Icons.line_axis,
       actionLabel: isLoading
           ? const SizedBox(
         height: 18,
@@ -257,27 +260,32 @@ class _DesktopState extends State<_Desktop> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                spacing: 5,
-                children: [
-                  Icon(Icons.warning,color: Theme.of(context).colorScheme.error),
-                  Text(tr.attentionTitle,style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.error
-                  ),)
-                ],
-              ),
-              SizedBox(height: 3),
+
               Container(
                 padding: const EdgeInsets.all(8),
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.yellow.shade100,
+                  color: Colors.yellow.shade50,
                   borderRadius: BorderRadius.circular(3),
-                  border: Border.all(color: Colors.yellow.shade700),
+                  border: Border.all(color: color.outline.withValues(alpha: .3)),
                 ),
-                child: Text(
-                   tr.plMessage,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                child: Column(
+                  children: [
+                    Row(
+                      spacing: 5,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Icon(Icons.warning_amber_rounded,color: color.error),
+                        Text(tr.attentionTitle,style: txt.titleSmall?.copyWith(color: color.error),)
+                      ],
+                    ),
+                    Divider(color: color.error),
+                    SizedBox(height: 5),
+                    Text(
+                       tr.plMessage,
+                      style: txt.bodyMedium?.copyWith(color: color.error),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 16),

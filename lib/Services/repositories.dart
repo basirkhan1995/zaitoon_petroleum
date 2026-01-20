@@ -16,6 +16,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/model/stmt_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/model/gl_statement_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/model/cash_balance_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/TrialBalance/model/trial_balance_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/model/daily_txn_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/TransactionRef/model/txn_report_model.dart';
@@ -2747,6 +2748,70 @@ class Repositories {
       }
 
       return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+
+  ///Cash Balances .............................................................
+  Future<CashBalancesModel> cashBalances({int? branchId}) async {
+    try {
+      final response = await api.get(
+        endpoint: "/reports/cashBalance.php",
+        queryParams: {
+          "brcID": branchId
+        }
+      );
+      // Check if API returned a message
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+      // If response is null
+      if (response.data == null) {
+        throw Exception("No data found");
+      }
+      // Convert the JSON to BalanceSheetModel
+      if (response.data is Map<String, dynamic>) {
+        return CashBalancesModel.fromMap(response.data);
+      }
+      throw Exception("Unexpected response format");
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+
+  // In your Repositories class
+  Future<List<CashBalancesModel>> allCashBalances() async {
+    try {
+      final response = await api.get(
+        endpoint: "/reports/cashBalance.php",
+      );
+
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      if (response.data == null) {
+        throw Exception("No data found");
+      }
+
+      // Parse as list
+      if (response.data is List) {
+        return List<CashBalancesModel>.from(
+            response.data.map((x) => CashBalancesModel.fromMap(x))
+        );
+      }
+
+      // If single object, wrap in list
+      if (response.data is Map<String, dynamic>) {
+        return [CashBalancesModel.fromMap(response.data)];
+      }
+
+      throw Exception("Unexpected response format");
     } on DioException catch (e) {
       throw "${e.message}";
     } catch (e) {
