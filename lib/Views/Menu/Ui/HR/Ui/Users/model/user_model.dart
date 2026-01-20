@@ -21,6 +21,7 @@ class UsersModel {
   final int? usrOwner;
   final String? usrPass;
   final bool? usrFcp;
+  final String? loggedInUser;
   final bool? usrFev;
   final String? usrPhoto;
 
@@ -35,6 +36,7 @@ class UsersModel {
     this.usrPass,
     this.usrStatus,
     this.usrBranch,
+    this.loggedInUser,
     this.usrEmail,
     this.usrToken,
     this.usrEntryDate,
@@ -92,6 +94,7 @@ class UsersModel {
     "usrBranch": usrBranch,
     "usrEmail": usrEmail,
     "usrToken": usrToken,
+    "loggedInUser":loggedInUser,
     "usrEntryDate": usrEntryDate?.toIso8601String(),
   };
 }

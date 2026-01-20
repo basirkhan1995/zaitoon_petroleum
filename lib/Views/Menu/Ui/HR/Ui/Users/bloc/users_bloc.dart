@@ -44,6 +44,8 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
           add(LoadUsersEvent());
         }else if(msg == "email exists"){
           emit(UsersErrorState(locale.emailExists));
+        }else if(msg == "not allowed"){
+          emit(UsersErrorState("You're not allowed to do this."));
         }else if(msg == "user exists"){
           emit(UsersErrorState(locale.usernameExists));
         }

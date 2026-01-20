@@ -6,6 +6,7 @@ import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Other/zform_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/bloc/users_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/role_dropdown.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
@@ -69,14 +70,22 @@ class _DesktopState extends State<_Desktop> {
 
   final formKey = GlobalKey<FormState>();
   String? errorMessage;
-
-
-
+  // Safe method to get base currency with fallback
+  String? currentUser() {
+    try {
+      final companyState = context.read<AuthBloc>().state;
+      if (companyState is AuthenticatedState) {
+        return companyState.loginData.usrName;
+      }
+      return ""; // Fallback currency
+    } catch (e) {
+      return ""; // Fallback if provider not available
+    }
+  }
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     final isLoading = context.watch<UsersBloc>().state is UsersLoadingState;
-
     return ZFormDialog(
       width: 650,
       icon: Icons.lock_clock_sharp,
@@ -378,6 +387,7 @@ class _DesktopState extends State<_Desktop> {
             usrFcp: fcpValue,
             usrFev: fevValue,
             usrOwner: usrOwnerId,
+            loggedInUser: currentUser()
           ),
         ),
       );

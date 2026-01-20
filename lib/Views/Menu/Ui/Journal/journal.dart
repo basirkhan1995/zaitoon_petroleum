@@ -80,7 +80,6 @@ class _Desktop extends StatefulWidget {
 
 class _DesktopState extends State<_Desktop> {
   String? currentLocale;
-  String? usrName;
 
   String? trnCurrency;
   Uint8List _companyLogo = Uint8List(0);

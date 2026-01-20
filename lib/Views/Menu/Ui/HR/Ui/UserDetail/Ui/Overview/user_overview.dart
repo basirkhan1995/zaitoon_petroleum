@@ -10,6 +10,8 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/branch_drop
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/role_dropdown.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 
+import '../../../../../../../Auth/bloc/auth_bloc.dart';
+
 class UserOverviewView extends StatelessWidget {
   final UsersModel user;
   const UserOverviewView({super.key, required this.user});
@@ -78,7 +80,17 @@ class _DesktopState extends State<_Desktop> {
       isEditMode = true;
     });
   }
-
+  String? currentUser() {
+    try {
+      final companyState = context.read<AuthBloc>().state;
+      if (companyState is AuthenticatedState) {
+        return companyState.loginData.usrName;
+      }
+      return ""; // Fallback currency
+    } catch (e) {
+      return ""; // Fallback if provider not available
+    }
+  }
   void saveChanges() {
     final updatedUser = UsersModel(
       usrName: usrName.text,
@@ -87,6 +99,7 @@ class _DesktopState extends State<_Desktop> {
       usrRole: usrRole ?? widget.user.usrRole,
       usrBranch: branchCode ?? widget.user.usrBranch,
       usrFcp: usrFcp,
+      loggedInUser: currentUser(),
       usrStatus: usrStatus ?? widget.user.usrStatus,
     );
 
