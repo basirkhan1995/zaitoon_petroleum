@@ -374,7 +374,12 @@ class _DesktopState extends State<_Desktop> {
                 })),
               ],
             ),
-            SizedBox(height: 5),
+            SizedBox(height: 8),
+            Row(
+              children: [
+                Text("RESET PASSWORD")
+              ],
+            ),
             Row(
               spacing: 5,
               children: [
@@ -383,7 +388,7 @@ class _DesktopState extends State<_Desktop> {
                     controller: usrPass,
                     isRequired: false,
                     validator: (value) {
-                      if (value != null && value.isNotEmpty) {
+                      if (value.isEmpty) {
                         return locale.required(locale.password);
                       }
                       return null;
