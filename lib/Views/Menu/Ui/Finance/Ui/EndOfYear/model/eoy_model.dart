@@ -1,10 +1,3 @@
-
-import 'dart:convert';
-
-List<PAndLModel> pAndLModelFromMap(String str) => List<PAndLModel>.from(json.decode(str).map((x) => PAndLModel.fromMap(x)));
-
-String pAndLModelToMap(List<PAndLModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toMap())));
-
 class PAndLModel {
   final int? trdBranch;
   final int? accountNumber;
@@ -24,6 +17,18 @@ class PAndLModel {
     this.credit,
   });
 
+  /// ==========================
+  /// Computed values
+  /// ==========================
+  double get debitAmount => double.tryParse(debit ?? "0") ?? 0;
+  double get creditAmount => double.tryParse(credit ?? "0") ?? 0;
+
+  bool get isIncome => (category ?? "").toLowerCase() == "income";
+  bool get isExpense => (category ?? "").toLowerCase() == "expense";
+
+  /// ==========================
+  /// copy / map
+  /// ==========================
   PAndLModel copyWith({
     int? trdBranch,
     int? accountNumber,
@@ -62,4 +67,36 @@ class PAndLModel {
     "debit": debit,
     "credit": credit,
   };
+}
+
+class PAndLSummary {
+  final double totalIncome;
+  final double totalExpense;
+
+  const PAndLSummary({
+    required this.totalIncome,
+    required this.totalExpense,
+  });
+
+  double get retainedEarnings => totalIncome - totalExpense;
+}
+
+extension PAndLListExtension on List<PAndLModel> {
+  PAndLSummary get summary {
+    double income = 0;
+    double expense = 0;
+
+    for (final item in this) {
+      if (item.isIncome) {
+        income += item.creditAmount;
+      } else if (item.isExpense) {
+        expense += item.debitAmount;
+      }
+    }
+
+    return PAndLSummary(
+      totalIncome: income,
+      totalExpense: expense,
+    );
+  }
 }
