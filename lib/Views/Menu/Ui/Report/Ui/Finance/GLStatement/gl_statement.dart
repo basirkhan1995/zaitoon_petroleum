@@ -81,9 +81,9 @@ class _DesktopState extends State<_Desktop> {
   final formKey = GlobalKey<FormState>();
   Uint8List _companyLogo = Uint8List(0);
   final company = ReportModel();
-  String fromDate = DateTime.now().subtract(Duration(days: 7)).toFormattedDate();
+  String fromDate = DateTime.now().toFormattedDate();
   String toDate = DateTime.now().toFormattedDate();
-  Jalali shamsiFromDate = DateTime.now().subtract(Duration(days: 7)).toAfghanShamsi;
+  Jalali shamsiFromDate = DateTime.now().toAfghanShamsi;
   Jalali shamsiToDate = DateTime.now().toAfghanShamsi;
 
   List<GlStatementModel> records = [];
