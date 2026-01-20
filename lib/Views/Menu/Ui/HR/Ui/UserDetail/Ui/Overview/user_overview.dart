@@ -77,7 +77,7 @@ class _DesktopState extends State<_Desktop> {
 
   void toggleEdit() {
     setState(() {
-      isEditMode = true;
+      isEditMode = !isEditMode;
     });
   }
   String? currentUser() {
@@ -157,7 +157,13 @@ class _DesktopState extends State<_Desktop> {
     TextStyle? myStyleBody,
     required ThemeData color,
   }) {
-    return Container(
+    return BlocListener<UsersBloc, UsersState>(
+  listener: (context, state) {
+    if(state is UsersErrorState){
+       Utils.showOverlayMessage(context,title: tr.accessDenied, message: state.message, isError: true);
+    }
+  },
+  child: Container(
       padding: const EdgeInsets.all(12),
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
       decoration: BoxDecoration(
@@ -275,20 +281,15 @@ class _DesktopState extends State<_Desktop> {
           ),
         ],
       ),
-    );
+    ),
+);
   }
 
   Widget _editView({required AppLocalizations locale, required bool isLoading,}) {
     return Container(
-      padding: const EdgeInsets.all(12),
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: .4),
-        ),
-      ),
+      padding: const EdgeInsets.all(8),
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+
       child: Form(
         key: formKey,
         child: Column(
@@ -304,31 +305,46 @@ class _DesktopState extends State<_Desktop> {
                 ),
 
                 Material(
-                  child: SizedBox(
-                    height: 30,
-                    width: 30,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(5),
-                      hoverColor: Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: .08),
-                      highlightColor: Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: .08),
-                      onTap: isLoading ? null : saveChanges,
-                      child: isLoading
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Icon(Icons.save),
-                    ),
+                  child: Row(
+                    spacing: 5,
+                    children: [
+                      InkWell(
+                        borderRadius: BorderRadius.circular(5),
+                        hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .08),
+                        highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: .08),
+                        onTap: toggleEdit,
+                        child: SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: Icon(Icons.clear),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30,
+                        width: 30,
+                        child: Tooltip(
+                          message: locale.saveChanges,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(5),
+                            hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .08),
+                            highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: .08),
+                            onTap: isLoading ? null : saveChanges,
+                            child: isLoading
+                                ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  )
+                                : Icon(Icons.check),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-
+            Divider(),
             SizedBox(height: 5),
             ZTextFieldEntitled(
               title: locale.username,
@@ -351,7 +367,8 @@ class _DesktopState extends State<_Desktop> {
                     branchCode = e.brcId;
                   });
                 })),
-                Expanded(child: UserRoleDropdown(onRoleSelected: (e) {
+                Expanded(child: UserRoleDropdown(
+                    onRoleSelected: (e) {
                   setState(() {
                     usrRole = e.name;
                   });
@@ -428,6 +445,7 @@ class _DesktopState extends State<_Desktop> {
                 Text(locale.forceChangePasswordTitle),
               ],
             ),
+            
           ],
         ),
       ),

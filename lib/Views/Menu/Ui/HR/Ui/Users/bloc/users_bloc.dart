@@ -33,26 +33,36 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
       }
     });
 
-    on<AddUserEvent>((event, emit) async{
+    on<AddUserEvent>((event, emit) async {
       final locale = localizationService.loc;
       emit(UsersLoadingState());
-      try{
+
+      try {
         final response = await _repo.addUser(newUser: event.newUser);
         final String msg = response['msg'];
-        if (msg == "success") {
-          emit(UserSuccessState());
-          add(LoadUsersEvent());
-        }else if(msg == "email exists"){
-          emit(UsersErrorState(locale.emailExists));
-        }else if(msg == "not allowed"){
-          emit(UsersErrorState("You're not allowed to do this."));
-        }else if(msg == "user exists"){
-          emit(UsersErrorState(locale.usernameExists));
+
+        switch (msg) {
+          case "success":
+            emit(UserSuccessState());
+            add(LoadUsersEvent());
+            break;
+
+          case "email exists":
+            emit(UsersErrorState(locale.emailExists));
+            break;
+
+          case "user exists":
+            emit(UsersErrorState(locale.usernameExists));
+            break;
+
+          default:
+            emit(UsersErrorState("Unexpected response: $msg"));
         }
-      }catch(e){
+      } catch (e) {
         emit(UsersErrorState(e.toString()));
       }
     });
+
 
     on<UpdateUserEvent>((event, emit) async{
       emit(UsersLoadingState());
@@ -62,6 +72,8 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
         if (msg == "success") {
           emit(UserSuccessState());
           add(LoadUsersEvent());
+        }else if(msg == "not allowed"){
+          emit(UsersErrorState("Password or role changes are not allowed. Contact your admin."));
         }else{
           emit(UsersErrorState(msg));
         }
