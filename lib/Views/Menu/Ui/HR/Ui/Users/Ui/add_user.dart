@@ -264,12 +264,6 @@ class _DesktopState extends State<_Desktop> {
                               if (e.isEmpty) {
                                 return locale.required(locale.password);
                               }
-                              if (e.isNotEmpty) {
-                                return Utils.validatePassword(
-                                  value: e,
-                                  context: context,
-                                );
-                              }
                               return null;
                             },
                             title: locale.password,

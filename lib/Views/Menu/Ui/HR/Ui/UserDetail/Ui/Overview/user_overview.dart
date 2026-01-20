@@ -349,14 +349,13 @@ class _DesktopState extends State<_Desktop> {
             ZTextFieldEntitled(
               title: locale.username,
               controller: usrName,
-              isRequired: true,
               readOnly: true,
             ),
+            SizedBox(height: 5),
             ZTextFieldEntitled(
               title: locale.email,
               controller: email,
               readOnly: true,
-              isRequired: true,
             ),
             SizedBox(height: 5),
             Row(
@@ -385,7 +384,7 @@ class _DesktopState extends State<_Desktop> {
                     isRequired: false,
                     validator: (value) {
                       if (value != null && value.isNotEmpty) {
-                        return Utils.validatePassword(value: value,context: context);
+                        return locale.required(locale.password);
                       }
                       return null;
                     },
