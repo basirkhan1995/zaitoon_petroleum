@@ -2099,4 +2099,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get transactionSummary => 'خلاصه معامله';
+
+  @override
+  String get pandl => 'د ګټې او تاوان تړل';
+
+  @override
+  String get retained => 'سود انباشته';
+
+  @override
+  String get expenses => 'مصارف';
+
+  @override
+  String get retainedEarnings => 'سود انباشته';
+
+  @override
+  String get eoyClosing => 'بستن دوره مالی';
 }

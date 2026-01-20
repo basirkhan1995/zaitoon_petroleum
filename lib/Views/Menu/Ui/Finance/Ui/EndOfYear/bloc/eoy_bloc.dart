@@ -47,6 +47,7 @@ class EoyBloc extends Bloc<EoyEvent, EoyState> {
 
           case "success":
             add(LoadPLEvent());
+            emit(EoySuccessState());
             break;
 
           default:

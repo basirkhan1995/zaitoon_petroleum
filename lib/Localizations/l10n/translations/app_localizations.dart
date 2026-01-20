@@ -4173,6 +4173,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Transaction Summary'**
   String get transactionSummary;
+
+  /// No description provided for @pandl.
+  ///
+  /// In en, this message translates to:
+  /// **'P&L Closing'**
+  String get pandl;
+
+  /// No description provided for @retained.
+  ///
+  /// In en, this message translates to:
+  /// **'Retained Earnings'**
+  String get retained;
+
+  /// No description provided for @expenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get expenses;
+
+  /// No description provided for @retainedEarnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Retained Earnings'**
+  String get retainedEarnings;
+
+  /// No description provided for @eoyClosing.
+  ///
+  /// In en, this message translates to:
+  /// **'EOY CLOSING'**
+  String get eoyClosing;
 }
 
 class _AppLocalizationsDelegate

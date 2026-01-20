@@ -699,7 +699,9 @@
   "noTransactionFound": "هیچ معامله یافت نشد",
   "transactionByRef": "راکړه ورکړه د مراجعې له مخې",
   "transactionSummary": "خلاصه معامله",
-  "PAndL": "د ګټې او تاوان تړل",
+  "pandl": "د ګټې او تاوان تړل",
+  "retained": "سود انباشته",
+  "expenses": "مصارف",
   "retainedEarnings": "سود انباشته",
-  "retained": "سود انباشته"
+  "eoyClosing": "بستن دوره مالی"
 }

@@ -2096,4 +2096,19 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get transactionSummary => 'خلاصه معامله';
+
+  @override
+  String get pandl => 'بستن سود و زیان';
+
+  @override
+  String get retained => 'سود انباشته';
+
+  @override
+  String get expenses => 'مصارف';
+
+  @override
+  String get retainedEarnings => 'سود انباشته';
+
+  @override
+  String get eoyClosing => 'بستن دوره مالی';
 }

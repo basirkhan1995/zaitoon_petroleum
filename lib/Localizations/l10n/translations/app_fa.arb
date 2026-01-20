@@ -699,7 +699,9 @@
   "noTransactionFound": "هیچ معامله یافت نشد",
   "transactionByRef": "تراکنش بر اساس مرجع",
   "transactionSummary": "خلاصه معامله",
-  "PAndL": "بستن سود و زیان",
+  "pandl": "بستن سود و زیان",
+  "retained": "سود انباشته",
+  "expenses": "مصارف",
   "retainedEarnings": "سود انباشته",
-  "retained": "سود انباشته"
+  "eoyClosing": "بستن دوره مالی"
 }

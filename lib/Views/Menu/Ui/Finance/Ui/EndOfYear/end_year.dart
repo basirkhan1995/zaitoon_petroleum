@@ -68,7 +68,16 @@ class _DesktopState extends State<_Desktop> {
   @override
   void initState() {
     myLocale = context.read<LocalizationBloc>().state.languageCode;
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      context.read<EoyBloc>().add(LoadPLEvent());
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    remark.dispose();
+    super.dispose();
   }
 
   @override
@@ -85,16 +94,25 @@ class _DesktopState extends State<_Desktop> {
         actionsPadding: const EdgeInsets.all(8),
         actions: [
           ZOutlineButton(
-            width: 100,
+            width: 110,
             label: Text(tr.print),
             icon: Icons.print,
             onPressed: () {},
           ),
           const SizedBox(width: 8),
           ZOutlineButton(
+            width: 110,
+            label: Text(tr.refresh),
+            icon: Icons.refresh,
+            onPressed: () {
+              context.read<EoyBloc>().add(LoadPLEvent());
+            },
+          ),
+          const SizedBox(width: 8),
+          ZOutlineButton(
             isActive: true,
             width: 150,
-            label: const Text("EOY CLOSING"),
+            label: Text(tr.eoyClosing),
             icon: Icons.access_time_outlined,
             onPressed: eoyClosing,
           ),
@@ -128,10 +146,22 @@ class _DesktopState extends State<_Desktop> {
                 children: [
                   _HeaderRow(titleStyle: titleStyle, tr: tr),
                   Expanded(
-                    child: BlocBuilder<EoyBloc, EoyState>(
+                    child: BlocConsumer<EoyBloc, EoyState>(
+                      listener: (context,state){
+                        if(state is EoySuccessState){
+                          Navigator.of(context).pop();
+                        }if(state is EoyErrorState){
+                          Utils.showOverlayMessage(context, message: state.error, isError: true);
+                        }
+                      },
                       builder: (context, state) {
+
                         if (state is EoyErrorState) {
-                          return NoDataWidget(message: state.error);
+                          return NoDataWidget(
+                              onRefresh: (){
+                                context.read<EoyBloc>().add(LoadPLEvent());
+                              },
+                              message: state.error);
                         }
                         if (state is EoyLoadingState) {
                           return const Center(child: CircularProgressIndicator());
@@ -192,51 +222,70 @@ class _DesktopState extends State<_Desktop> {
     final eoyState = context.read<EoyBloc>().state;
     PAndLSummary? summary;
     if (eoyState is EoyLoadedState) summary = eoyState.eoy.summary;
-
+    final tr = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) {
-        return ZFormDialog(
+        return BlocBuilder<EoyBloc, EoyState>(
+  builder: (context, state) {
+    final isLoading = state is EoyLoadingState;
+    return ZFormDialog(
           padding: const EdgeInsets.all(12),
-          title: "EOY CLOSING",
-          actionLabel: const Text("PROCEED"),
-          onAction: () {
-            if (usrName != null && branchCode != null) {
-              context.read<EoyBloc>().add(
-                ProcessPLEvent(usrName ?? "", remark.text, branchCode!),
-              );
-            }
-          },
+          title: tr.eoyClosing,
+      actionLabel: isLoading
+          ? const SizedBox(
+        height: 18,
+        width: 18,
+        child: CircularProgressIndicator(strokeWidth: 2),
+      )
+          : Text(tr.proceed),
+      /// ✅ DISABLE ACTION WHEN LOADING
+      onAction: isLoading
+          ? null
+          : () {
+        if (usrName != null && branchCode != null) {
+          context.read<EoyBloc>().add(
+            ProcessPLEvent(
+              usrName!,
+              remark.text,
+              branchCode!,
+            ),
+          );
+        }
+      },
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
+                width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.yellow.shade100,
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(3),
                   border: Border.all(color: Colors.yellow.shade700),
                 ),
                 child: const Text(
-                  "⚠️ Closing P&L will finalize all accounts for this year. "
-                      "This action cannot be undone.",
+                  "⚠️ Closing P&L will finalize all accounts for this year. ",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               const SizedBox(height: 16),
               if (summary != null) ...[
-                const Text("Income by Currency:", style: TextStyle(fontWeight: FontWeight.bold)),
+                 Text(tr.income, style: TextStyle(fontWeight: FontWeight.bold)),
+                Divider(),
                 ...summary.incomeByCurrency.entries.map(
                       (e) => _InfoRow(label: e.key, amount: e.value),
                 ),
                 const SizedBox(height: 8),
-                const Text("Expense by Currency:", style: TextStyle(fontWeight: FontWeight.bold)),
+                 Text(tr.expense, style: TextStyle(fontWeight: FontWeight.bold)),
+                Divider(),
                 ...summary.expenseByCurrency.entries.map(
                       (e) => _InfoRow(label: e.key, amount: e.value),
                 ),
                 const SizedBox(height: 8),
-                const Text("Retained Earnings by Currency:", style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text("Retained Earnings", style: TextStyle(fontWeight: FontWeight.bold)),
+                Divider(),
                 ...summary.retainedByCurrency.entries.map(
                       (e) => _InfoRow(
                     label: e.key,
@@ -254,6 +303,8 @@ class _DesktopState extends State<_Desktop> {
             ],
           ),
         );
+  },
+);
       },
     );
   }
@@ -273,9 +324,10 @@ class _InfoRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
+        spacing: 5,
         children: [
-          Text(label, style: theme.textTheme.bodyMedium),
+          Text(label, style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: Utils.currencyColors(label))),
           Text(
             amount.toAmount(),
             style: theme.textTheme.bodyMedium?.copyWith(
@@ -401,8 +453,6 @@ class _BottomSummary extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-
-      /// ✅ TOP BORDER FOR ENTIRE ROW
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
@@ -411,7 +461,6 @@ class _BottomSummary extends StatelessWidget {
           ),
         ),
       ),
-
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
 
       child: Row(
@@ -420,7 +469,7 @@ class _BottomSummary extends StatelessWidget {
           /// ================= LEFT: TOTAL (EXPANDED) =================
           Expanded(
             child: Text(
-              tr.totalTitle,
+              tr.totalTitle,  // Make sure this exists in translations
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -434,19 +483,19 @@ class _BottomSummary extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 currencyColumn(
-                  tr.income,
+                  tr.income,  // This should work if 'income' key exists
                   incomeByCurrency,
                   amountColor: Colors.green,
                 ),
                 const SizedBox(width: 40),
                 currencyColumn(
-                  tr.expense,
+                  tr.expense,  // Changed from tr.expense to tr.expenses
                   expenseByCurrency,
                   amountColor: Colors.red,
                 ),
                 const SizedBox(width: 40),
                 currencyColumn(
-                  "Retained Earnings",
+                  tr.retainedEarnings,  // Make sure this key exists
                   retainedByCurrency,
                   amountColor: Colors.green,
                   highlightNegative: true,

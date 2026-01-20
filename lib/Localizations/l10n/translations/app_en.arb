@@ -699,7 +699,9 @@
   "noTransactionFound": "No Transaction Found",
   "transactionByRef": "Transaction By Reference",
   "transactionSummary": "Transaction Summary",
-  "PAndL": "P&L Closing",
+  "pandl": "P&L Closing",
+  "retained": "Retained Earnings",
+  "expenses": "Expenses",
   "retainedEarnings": "Retained Earnings",
-  "retained": "Retained Earnings"
+  "eoyClosing": "EOY CLOSING"
 }

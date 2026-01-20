@@ -2105,4 +2105,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transactionSummary => 'Transaction Summary';
+
+  @override
+  String get pandl => 'P&L Closing';
+
+  @override
+  String get retained => 'Retained Earnings';
+
+  @override
+  String get expenses => 'Expenses';
+
+  @override
+  String get retainedEarnings => 'Retained Earnings';
+
+  @override
+  String get eoyClosing => 'EOY CLOSING';
 }
