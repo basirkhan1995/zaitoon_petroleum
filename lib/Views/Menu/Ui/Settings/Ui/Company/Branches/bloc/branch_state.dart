@@ -20,14 +20,12 @@ final class BranchSuccessState extends BranchState {
   List<Object> get props => [];
 }
 
-
 final class BranchErrorState extends BranchState {
   final String message;
   const BranchErrorState(this.message);
   @override
   List<Object> get props => [message];
 }
-
 
 final class BranchLoadedState extends BranchState {
   final List<BranchModel> branches;

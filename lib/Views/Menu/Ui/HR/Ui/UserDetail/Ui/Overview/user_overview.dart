@@ -72,6 +72,7 @@ class _DesktopState extends State<_Desktop> {
     usrStatus = widget.user.usrStatus;
     usrRole = widget.user.usrRole;
     branchCode = widget.user.usrBranch;
+
     super.initState();
   }
 
@@ -96,8 +97,8 @@ class _DesktopState extends State<_Desktop> {
       usrName: usrName.text,
       usrEmail: email.text,
       usrPass: usrPass.text,
-      usrRole: usrRole ?? widget.user.usrRole,
-      usrBranch: branchCode ?? widget.user.usrBranch,
+      usrRole: usrRole,
+      usrBranch: branchCode,
       usrFcp: usrFcp,
       loggedInUser: currentUser(),
       usrStatus: usrStatus ?? widget.user.usrStatus,
@@ -349,10 +350,12 @@ class _DesktopState extends State<_Desktop> {
             ZTextFieldEntitled(
               title: locale.username,
               controller: usrName,
+              isEnabled: false,
               readOnly: true,
             ),
             SizedBox(height: 5),
             ZTextFieldEntitled(
+              isEnabled: false,
               title: locale.email,
               controller: email,
               readOnly: true,
@@ -361,12 +364,16 @@ class _DesktopState extends State<_Desktop> {
             Row(
               spacing: 8,
               children: [
-                Expanded(child: BranchDropdown(onBranchSelected: (e) {
+                Expanded(
+                    child: BranchDropdown(
+                      currentBranchId: branchCode,
+                    onBranchSelected: (e) {
                   setState(() {
                     branchCode = e.brcId;
                   });
                 })),
                 Expanded(child: UserRoleDropdown(
+                  selectedDatabaseValue: widget.user.usrRole,
                     onRoleSelected: (e) {
                   setState(() {
                     usrRole = e.name;
@@ -387,12 +394,6 @@ class _DesktopState extends State<_Desktop> {
                   child: ZTextFieldEntitled(
                     controller: usrPass,
                     isRequired: false,
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return locale.required(locale.password);
-                      }
-                      return null;
-                    },
                     title: locale.newPasswordTitle,
                   ),
                 ),

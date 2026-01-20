@@ -78,12 +78,16 @@ class RoleTranslator {
 }
 
 class UserRoleDropdown extends StatefulWidget {
+  /// Optional: pass the selected role as UserRole OR as database string
   final UserRole? selectedRole;
+  final String? selectedDatabaseValue;
+
   final Function(UserRole) onRoleSelected;
 
   const UserRoleDropdown({
     super.key,
     this.selectedRole,
+    this.selectedDatabaseValue,
     required this.onRoleSelected,
   });
 
@@ -97,10 +101,18 @@ class _UserRoleDropdownState extends State<UserRoleDropdown> {
   @override
   void initState() {
     super.initState();
-    // If no role is provided, select the first one by default
-    _selectedRole = widget.selectedRole ?? UserRole.values.first;
 
-    // Notify parent about the initial selection
+    // Determine the initial selected role
+    if (widget.selectedRole != null) {
+      _selectedRole = widget.selectedRole!;
+    } else if (widget.selectedDatabaseValue != null) {
+      _selectedRole =
+          UserRole.fromDatabaseValue(widget.selectedDatabaseValue!);
+    } else {
+      _selectedRole = UserRole.values.first;
+    }
+
+    // Notify parent about initial selection
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onRoleSelected(_selectedRole);
     });
@@ -109,11 +121,17 @@ class _UserRoleDropdownState extends State<UserRoleDropdown> {
   @override
   void didUpdateWidget(covariant UserRoleDropdown oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Update if the selectedRole from parent changes
-    if (widget.selectedRole != null && widget.selectedRole != _selectedRole) {
-      setState(() {
-        _selectedRole = widget.selectedRole!;
-      });
+
+    UserRole? newRole;
+
+    if (widget.selectedRole != null) {
+      newRole = widget.selectedRole!;
+    } else if (widget.selectedDatabaseValue != null) {
+      newRole = UserRole.fromDatabaseValue(widget.selectedDatabaseValue!);
+    }
+
+    if (newRole != null && newRole != _selectedRole) {
+      setState(() => _selectedRole = newRole!);
     }
   }
 
@@ -128,9 +146,9 @@ class _UserRoleDropdownState extends State<UserRoleDropdown> {
   Widget build(BuildContext context) {
     return ZDropdown<UserRole>(
       title: AppLocalizations.of(context)!.selectRole,
-      items: UserRole.values.toList(),
+      items: UserRole.values,
       itemLabel: (role) => RoleTranslator.getTranslatedRole(context, role),
-      selectedItem: _selectedRole,
+      selectedItem: _selectedRole, // ✅ show the correct role
       onItemSelected: _handleRoleSelected,
       leadingBuilder: (role) => _getRoleIcon(role),
     );

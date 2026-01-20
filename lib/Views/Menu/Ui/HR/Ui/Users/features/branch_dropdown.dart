@@ -11,6 +11,7 @@ class BranchDropdown extends StatelessWidget {
   final String title;
   final double? radius;
   final double? height;
+  final int? currentBranchId; // ✅ the brcId of the current user
 
   const BranchDropdown({
     super.key,
@@ -18,13 +19,13 @@ class BranchDropdown extends StatelessWidget {
     this.title = "Branch",
     this.radius,
     this.height,
+    this.currentBranchId,
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<BranchBloc, BranchState>(
       builder: (context, state) {
-        // 1️⃣ Loading state
         if (state is BranchLoadingState) {
           return ZDropdown<BranchModel>(
             title: title,
@@ -35,7 +36,6 @@ class BranchDropdown extends StatelessWidget {
           );
         }
 
-        // 2️⃣ Loaded state
         if (state is BranchLoadedState) {
           final branches = state.branches;
 
@@ -43,13 +43,19 @@ class BranchDropdown extends StatelessWidget {
             return const Text("No branches found");
           }
 
-          // Automatically select first branch
-          final initialBranch = branches.first;
+          // Find the branch that matches currentBranchId
+          BranchModel? initialBranch;
+          if (currentBranchId != null) {
+            initialBranch =
+                branches.firstWhere((b) => b.brcId == currentBranchId, orElse: () => branches.first);
+          } else {
+            initialBranch = branches.first;
+          }
 
           return ZDropdown<BranchModel>(
             title: title,
             items: branches,
-            selectedItem: initialBranch,
+            selectedItem: initialBranch, // ✅ show branchName instead of code
             height: height,
             radius: radius,
             itemLabel: (b) => b.brcName ?? "",
@@ -59,7 +65,6 @@ class BranchDropdown extends StatelessWidget {
           );
         }
 
-        // 3️⃣ Error state
         if (state is BranchErrorState) {
           return Text("Error: ${state.message}");
         }

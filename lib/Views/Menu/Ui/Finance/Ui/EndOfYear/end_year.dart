@@ -1,13 +1,22 @@
+import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
+import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
+import 'package:zaitoon_petroleum/Features/PrintSettings/report_model.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/EndOfYear/bloc/eoy_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/EndOfYear/model/eoy_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import '../../../../../../Localizations/Bloc/localizations_bloc.dart';
 
 class EndOfYearView extends StatelessWidget {
   const EndOfYearView({super.key});
@@ -40,24 +49,39 @@ class _Tablet extends StatelessWidget {
   }
 }
 
-class _Desktop extends StatelessWidget {
+class _Desktop extends StatefulWidget {
   const _Desktop();
+
+  @override
+  State<_Desktop> createState() => _DesktopState();
+}
+
+class _DesktopState extends State<_Desktop> {
+  final company = ReportModel();
+  String? myLocale;
+  final formKey = GlobalKey<FormState>();
+  Uint8List _companyLogo = Uint8List(0);
+  String? usrName;
+  int? branchCode;
+  final TextEditingController remark = TextEditingController();
+
+  @override
+  void initState() {
+    myLocale = context.read<LocalizationBloc>().state.languageCode;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-
     final titleStyle = theme.textTheme.titleMedium?.copyWith(
       color: theme.colorScheme.onSurface,
     );
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "P&L",
-          style: titleStyle?.copyWith(fontSize: 25),
-        ),
+        title: Text("P&L", style: titleStyle?.copyWith(fontSize: 25)),
         actionsPadding: const EdgeInsets.all(8),
         actions: [
           ZOutlineButton(
@@ -72,96 +96,191 @@ class _Desktop extends StatelessWidget {
             width: 150,
             label: const Text("EOY CLOSING"),
             icon: Icons.access_time_outlined,
-            onPressed: () {},
+            onPressed: eoyClosing,
           ),
         ],
       ),
+      body: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          if (state is AuthenticatedState) {
+            usrName = state.loginData.usrName;
+            branchCode = state.loginData.usrBranch;
+          }
+          return BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
+            builder: (context, state) {
+              if (state is CompanyProfileLoadedState) {
+                company.comName = state.company.comName ?? "";
+                company.comAddress = state.company.addName ?? "";
+                company.compPhone = state.company.comPhone ?? "";
+                company.comEmail = state.company.comEmail ?? "";
+                company.statementDate = DateTime.now().toFullDateTime;
+                final base64Logo = state.company.comLogo;
+                if (base64Logo != null && base64Logo.isNotEmpty) {
+                  try {
+                    _companyLogo = base64Decode(base64Logo);
+                    company.comLogo = _companyLogo;
+                  } catch (e) {
+                    _companyLogo = Uint8List(0);
+                  }
+                }
+              }
+              return Column(
+                children: [
+                  _HeaderRow(titleStyle: titleStyle, tr: tr),
+                  Expanded(
+                    child: BlocBuilder<EoyBloc, EoyState>(
+                      builder: (context, state) {
+                        if (state is EoyErrorState) {
+                          return NoDataWidget(message: state.error);
+                        }
+                        if (state is EoyLoadingState) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        if (state is EoyLoadedState) {
+                          final summary = state.eoy.summary;
+                          return Column(
+                            children: [
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount: state.eoy.length,
+                                  itemBuilder: (context, index) {
+                                    final eoy = state.eoy[index];
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        color: index.isEven
+                                            ? theme.colorScheme.primary.withValues(alpha: .05)
+                                            : Colors.transparent,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      child: Row(
+                                        children: [
+                                          SizedBox(width: 120, child: Text(eoy.accountNumber.toString())),
+                                          Expanded(child: Text(eoy.accountName ?? "")),
+                                          SizedBox(width: 100, child: Text(eoy.trdBranch.toString())),
+                                          SizedBox(width: 100, child: Text(eoy.category ?? "")),
+                                          _AmountCell(amount: eoy.debitAmount, currency: eoy.currency),
+                                          _AmountCell(amount: eoy.creditAmount, currency: eoy.currency),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              _BottomSummary(
+                                tr: tr,
+                                incomeByCurrency: summary.incomeByCurrency,
+                                expenseByCurrency: summary.expenseByCurrency,
+                                retainedByCurrency: summary.retainedByCurrency,
+                              ),
+                            ],
+                          );
+                        }
+                        return const SizedBox();
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
 
-      body: Column(
+  void eoyClosing() {
+    final eoyState = context.read<EoyBloc>().state;
+    PAndLSummary? summary;
+    if (eoyState is EoyLoadedState) summary = eoyState.eoy.summary;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ZFormDialog(
+          padding: const EdgeInsets.all(12),
+          title: "EOY CLOSING",
+          actionLabel: const Text("PROCEED"),
+          onAction: () {
+            if (usrName != null && branchCode != null) {
+              context.read<EoyBloc>().add(
+                ProcessPLEvent(usrName ?? "", remark.text, branchCode!),
+              );
+            }
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.yellow.shade100,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.yellow.shade700),
+                ),
+                child: const Text(
+                  "⚠️ Closing P&L will finalize all accounts for this year. "
+                      "This action cannot be undone.",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 16),
+              if (summary != null) ...[
+                const Text("Income by Currency:", style: TextStyle(fontWeight: FontWeight.bold)),
+                ...summary.incomeByCurrency.entries.map(
+                      (e) => _InfoRow(label: e.key, amount: e.value),
+                ),
+                const SizedBox(height: 8),
+                const Text("Expense by Currency:", style: TextStyle(fontWeight: FontWeight.bold)),
+                ...summary.expenseByCurrency.entries.map(
+                      (e) => _InfoRow(label: e.key, amount: e.value),
+                ),
+                const SizedBox(height: 8),
+                const Text("Retained Earnings by Currency:", style: TextStyle(fontWeight: FontWeight.bold)),
+                ...summary.retainedByCurrency.entries.map(
+                      (e) => _InfoRow(
+                    label: e.key,
+                    amount: e.value,
+                    isPositive: e.value >= 0,
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+              ZTextFieldEntitled(
+                controller: remark,
+                keyboardInputType: TextInputType.multiline,
+                title: "Remark",
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Info row widget
+class _InfoRow extends StatelessWidget {
+  final String label;
+  final double amount;
+  final bool? isPositive;
+
+  const _InfoRow({required this.label, required this.amount, this.isPositive});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          /// ================= HEADER =================
-          _HeaderRow(titleStyle: titleStyle, tr: tr),
-
-          /// ================= BODY =================
-          Expanded(
-            child: BlocBuilder<EoyBloc, EoyState>(
-              builder: (context, state) {
-                if (state is EoyErrorState) {
-                  return NoDataWidget(message: state.error);
-                }
-
-                if (state is EoyLoadingState) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (state is EoyLoadedState) {
-                  final summary = state.eoy.summary;
-
-                  return Column(
-                    children: [
-                      /// LIST
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: state.eoy.length,
-                          itemBuilder: (context, index) {
-                            final eoy = state.eoy[index];
-
-                            return Container(
-                              decoration: BoxDecoration(
-                                color: index.isEven
-                                    ? theme.colorScheme.primary
-                                    .withValues(alpha: .05)
-                                    : Colors.transparent,
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 120,
-                                    child: Text(eoy.accountNumber.toString()),
-                                  ),
-                                  Expanded(
-                                    child: Text(eoy.accountName ?? ""),
-                                  ),
-                                  SizedBox(
-                                    width: 100,
-                                    child: Text(eoy.trdBranch.toString()),
-                                  ),
-                                  SizedBox(
-                                    width: 100,
-                                    child: Text(eoy.category ?? ""),
-                                  ),
-                                  _AmountCell(
-                                    amount: eoy.debitAmount,
-                                    currency: eoy.currency,
-                                  ),
-                                  _AmountCell(
-                                    amount: eoy.creditAmount,
-                                    currency: eoy.currency,
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-
-                      /// ================= FOOTER SUMMARY =================
-                      _BottomSummary(
-                        tr: tr,
-                        income: summary.totalIncome,
-                        expense: summary.totalExpense,
-                        retained: summary.retainedEarnings,
-                      ),
-                    ],
-                  );
-                }
-
-                return const SizedBox();
-              },
+          Text(label, style: theme.textTheme.bodyMedium),
+          Text(
+            amount.toAmount(),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: isPositive != null ? (isPositive! ? Colors.green : Colors.red) : null,
             ),
           ),
         ],
@@ -170,27 +289,21 @@ class _Desktop extends StatelessWidget {
   }
 }
 
-/// ================= HEADER ROW =================
+/// Header Row
 class _HeaderRow extends StatelessWidget {
   final TextStyle? titleStyle;
   final AppLocalizations tr;
 
-  const _HeaderRow({
-    required this.titleStyle,
-    required this.tr,
-  });
+  const _HeaderRow({required this.titleStyle, required this.tr});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(
-            color: theme.colorScheme.outline.withValues(alpha: .5),
-          ),
+          bottom: BorderSide(color: theme.colorScheme.outline.withValues(alpha: .5)),
         ),
       ),
       child: Padding(
@@ -201,16 +314,8 @@ class _HeaderRow extends StatelessWidget {
             Expanded(child: Text(tr.accountName, style: titleStyle)),
             SizedBox(width: 100, child: Text(tr.branch, style: titleStyle)),
             SizedBox(width: 100, child: Text(tr.categoryTitle, style: titleStyle)),
-            SizedBox(
-              width: 150,
-              child: Text(tr.debitTitle,
-                  textAlign: TextAlign.right, style: titleStyle),
-            ),
-            SizedBox(
-              width: 150,
-              child: Text(tr.creditTitle,
-                  textAlign: TextAlign.right, style: titleStyle),
-            ),
+            SizedBox(width: 150, child: Text(tr.debitTitle, textAlign: TextAlign.right, style: titleStyle)),
+            SizedBox(width: 150, child: Text(tr.creditTitle, textAlign: TextAlign.right, style: titleStyle)),
           ],
         ),
       ),
@@ -218,15 +323,12 @@ class _HeaderRow extends StatelessWidget {
   }
 }
 
-/// ================= AMOUNT CELL =================
+/// Amount Cell
 class _AmountCell extends StatelessWidget {
   final double amount;
   final String? currency;
 
-  const _AmountCell({
-    required this.amount,
-    required this.currency,
-  });
+  const _AmountCell({required this.amount, required this.currency});
 
   @override
   Widget build(BuildContext context) {
@@ -237,122 +339,119 @@ class _AmountCell extends StatelessWidget {
         children: [
           Text(amount.toAmount()),
           const SizedBox(width: 5),
-          Text(
-            currency ?? "",
-            style: TextStyle(
-              color: Utils.currencyColors(currency ?? ""),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          Text(currency ?? "", style: TextStyle(color: Utils.currencyColors(currency ?? ""), fontWeight: FontWeight.w500)),
         ],
       ),
     );
   }
 }
 
-/// ================= BOTTOM SUMMARY =================
+/// Bottom Summary (multi-currency) - Full row with expanded Total
 class _BottomSummary extends StatelessWidget {
   final AppLocalizations tr;
-  final double income;
-  final double expense;
-  final double retained;
+  final Map<String, double> incomeByCurrency;
+  final Map<String, double> expenseByCurrency;
+  final Map<String, double> retainedByCurrency;
 
   const _BottomSummary({
     required this.tr,
-    required this.income,
-    required this.expense,
-    required this.retained,
+    required this.incomeByCurrency,
+    required this.expenseByCurrency,
+    required this.retainedByCurrency,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    Widget currencyColumn(
+        String title,
+        Map<String, double> data, {
+          required Color amountColor,
+          bool highlightNegative = false,
+        }) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /// Title
+          Text(
+            title,
+            style: theme.textTheme.labelMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface.withValues(alpha: .7),
+            ),
+          ),
+          const SizedBox(height: 4),
+
+          /// Values
+          ...data.entries.map(
+                (e) => Text(
+              "${e.key}: ${e.value.toAmount()}",
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: highlightNegative && e.value < 0
+                    ? Colors.red
+                    : amountColor,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      width: double.infinity,
+
+      /// ✅ TOP BORDER FOR ENTIRE ROW
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
         border: Border(
           top: BorderSide(
-            color: theme.colorScheme.primary.withValues(alpha: .3),
+            color: theme.colorScheme.primary.withValues(alpha: .8),
+            width: 2,
           ),
         ),
       ),
+
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// LEFT TITLE
+          /// ================= LEFT: TOTAL (EXPANDED) =================
           Expanded(
             child: Text(
               tr.totalTitle,
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
 
-          /// TOTAL EXPENSE
-          _TotalColumn(
-            title: "${tr.totalTitle} ${tr.expense}", // "Total Expense"
-            amount: expense,
-            color: Colors.red,
-          ),
-
-          const SizedBox(width: 16),
-
-          /// TOTAL INCOME
-          _TotalColumn(
-            title: "${tr.totalTitle} ${tr.income}", // "Total Income"
-            amount: income,
-            color: Colors.green,
-          ),
-
-          const SizedBox(width: 32),
-
-          /// RETAINED EARNINGS
-          _TotalColumn(
-            title: "Retained Earnings",
-            amount: retained,
-            color: retained >= 0 ? Colors.green : Colors.red,
-            isBold: true,
-          ),
-        ],
-      )
-    );
-  }
-}
-
-class _TotalColumn extends StatelessWidget {
-  final String title;
-  final double amount;
-  final Color color;
-  final bool isBold;
-
-  const _TotalColumn({
-    required this.title,
-    required this.amount,
-    required this.color,
-    this.isBold = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return SizedBox(
-      width: 150,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            title,
-            style: theme.textTheme.labelMedium,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            amount.toAmount(),
-            textAlign: TextAlign.right,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-              color: color,
+          /// ================= RIGHT: SUMMARY COLUMNS =================
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                currencyColumn(
+                  tr.income,
+                  incomeByCurrency,
+                  amountColor: Colors.green,
+                ),
+                const SizedBox(width: 40),
+                currencyColumn(
+                  tr.expense,
+                  expenseByCurrency,
+                  amountColor: Colors.red,
+                ),
+                const SizedBox(width: 40),
+                currencyColumn(
+                  "Retained Earnings",
+                  retainedByCurrency,
+                  amountColor: Colors.green,
+                  highlightNegative: true,
+                ),
+              ],
             ),
           ),
         ],
@@ -360,3 +459,9 @@ class _TotalColumn extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+

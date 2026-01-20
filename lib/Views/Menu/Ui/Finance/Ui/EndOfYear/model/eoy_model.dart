@@ -1,3 +1,4 @@
+/// ================= P&L Models =================
 class PAndLModel {
   final int? trdBranch;
   final int? accountNumber;
@@ -17,86 +18,78 @@ class PAndLModel {
     this.credit,
   });
 
-  /// ==========================
-  /// Computed values
-  /// ==========================
+  /// ================= Computed values =================
   double get debitAmount => double.tryParse(debit ?? "0") ?? 0;
   double get creditAmount => double.tryParse(credit ?? "0") ?? 0;
-
   bool get isIncome => (category ?? "").toLowerCase() == "income";
   bool get isExpense => (category ?? "").toLowerCase() == "expense";
 
-  /// ==========================
-  /// copy / map
-  /// ==========================
-  PAndLModel copyWith({
-    int? trdBranch,
-    int? accountNumber,
-    String? accountName,
-    String? currency,
-    String? category,
-    String? debit,
-    String? credit,
-  }) =>
-      PAndLModel(
-        trdBranch: trdBranch ?? this.trdBranch,
-        accountNumber: accountNumber ?? this.accountNumber,
-        accountName: accountName ?? this.accountName,
-        currency: currency ?? this.currency,
-        category: category ?? this.category,
-        debit: debit ?? this.debit,
-        credit: credit ?? this.credit,
-      );
+  /// ================= Map / JSON =================
+  factory PAndLModel.fromMap(Map<String, dynamic> json) {
+    return PAndLModel(
+      trdBranch: json["trdBranch"] as int?,
+      accountNumber: json["account_number"] as int?,
+      accountName: json["account_name"] as String?,
+      currency: json["currency"] as String?,
+      category: json["category"] as String?,
+      debit: json["debit"]?.toString(),
+      credit: json["credit"]?.toString(),
+    );
+  }
 
-  factory PAndLModel.fromMap(Map<String, dynamic> json) => PAndLModel(
-    trdBranch: json["trdBranch"],
-    accountNumber: json["account_number"],
-    accountName: json["account_name"],
-    currency: json["currency"],
-    category: json["category"],
-    debit: json["debit"],
-    credit: json["credit"],
-  );
-
-  Map<String, dynamic> toMap() => {
-    "trdBranch": trdBranch,
-    "account_number": accountNumber,
-    "account_name": accountName,
-    "currency": currency,
-    "category": category,
-    "debit": debit,
-    "credit": credit,
-  };
+  Map<String, dynamic> toMap() {
+    return {
+      "trdBranch": trdBranch,
+      "account_number": accountNumber,
+      "account_name": accountName,
+      "currency": currency,
+      "category": category,
+      "debit": debit,
+      "credit": credit,
+    };
+  }
 }
 
+/// ================= P&L Summary (multi-currency) =================
 class PAndLSummary {
-  final double totalIncome;
-  final double totalExpense;
+  final Map<String, double> incomeByCurrency;
+  final Map<String, double> expenseByCurrency;
 
-  const PAndLSummary({
-    required this.totalIncome,
-    required this.totalExpense,
+  PAndLSummary({
+    required this.incomeByCurrency,
+    required this.expenseByCurrency,
   });
 
-  double get retainedEarnings => totalIncome - totalExpense;
+  Map<String, double> get retainedByCurrency {
+    final retained = <String, double>{};
+    final allCurrencies = {...incomeByCurrency.keys, ...expenseByCurrency.keys};
+    for (final cur in allCurrencies) {
+      final income = incomeByCurrency[cur] ?? 0;
+      final expense = expenseByCurrency[cur] ?? 0;
+      retained[cur] = income - expense;
+    }
+    return retained;
+  }
 }
 
+/// ================= Extension to compute summary =================
 extension PAndLListExtension on List<PAndLModel> {
   PAndLSummary get summary {
-    double income = 0;
-    double expense = 0;
+    final incomeByCurrency = <String, double>{};
+    final expenseByCurrency = <String, double>{};
 
     for (final item in this) {
+      final cur = item.currency ?? "N/A";
       if (item.isIncome) {
-        income += item.creditAmount;
+        incomeByCurrency[cur] = (incomeByCurrency[cur] ?? 0) + item.creditAmount;
       } else if (item.isExpense) {
-        expense += item.debitAmount;
+        expenseByCurrency[cur] = (expenseByCurrency[cur] ?? 0) + item.debitAmount;
       }
     }
 
     return PAndLSummary(
-      totalIncome: income,
-      totalExpense: expense,
+      incomeByCurrency: incomeByCurrency,
+      expenseByCurrency: expenseByCurrency,
     );
   }
 }
