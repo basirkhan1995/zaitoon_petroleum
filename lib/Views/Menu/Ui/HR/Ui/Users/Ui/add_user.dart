@@ -378,7 +378,7 @@ class _DesktopState extends State<_Desktop> {
             usrBranch: selectedBranch?.brcId ?? 1000,
             usrRole: _selectedRole?.name,
             usrEmail: usrEmail.text,
-            usrFcp: fcpValue,
+            usrFcp: fcpValue? 1 : 0,
             usrFev: fevValue,
             usrOwner: usrOwnerId,
             loggedInUser: currentUser()

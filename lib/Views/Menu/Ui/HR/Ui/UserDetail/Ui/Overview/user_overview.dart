@@ -72,9 +72,8 @@ class _DesktopState extends State<_Desktop> {
     usrStatus = widget.user.usrStatus;
     usrRole = widget.user.usrRole;
     branchCode = widget.user.usrBranch;
-    usrFcp = widget.user.usrFcp == true;
+    usrFcp = widget.user.usrFcp == 1;
     usrStatus = widget.user.usrStatus;
-    print(usrFcp);
     super.initState();
   }
 
@@ -101,7 +100,7 @@ class _DesktopState extends State<_Desktop> {
       usrPass: usrPass.text,
       usrRole: usrRole,
       usrBranch: branchCode,
-      usrFcp: usrFcp,
+      usrFcp: usrFcp ? 1 : 0,
       loggedInUser: currentUser(),
       usrStatus: usrStatus ?? widget.user.usrStatus,
     );

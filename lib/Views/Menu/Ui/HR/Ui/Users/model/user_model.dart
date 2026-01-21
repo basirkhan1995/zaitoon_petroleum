@@ -20,7 +20,7 @@ class UsersModel {
   final DateTime? usrEntryDate;
   final int? usrOwner;
   final String? usrPass;
-  final bool? usrFcp;
+  final int? usrFcp;
   final String? loggedInUser;
   final bool? usrFev;
   final String? usrPhoto;
