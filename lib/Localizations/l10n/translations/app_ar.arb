@@ -705,5 +705,12 @@
   "retainedEarnings": "سود انباشته",
   "eoyClosing": "بستن دوره مالی",
   "plMessage": "د ګټې او تاوان بستل به د اوسني مالي دورې د ټولو عاید او مصرف حسابونه بشپړ کړي.",
-  "openingBalance": "مانده افتتاحیه"
+  "openingBalance": "مانده افتتاحیه",
+  "currencyBalances": "موجودی - اسعار",
+  "opening": "افتتاحیه",
+  "closing": "اختتامیه",
+  "sys": "سیستم",
+  "closingBalance": "بیلانس اختتامیه",
+  "systemEquivalent": "معادل سیستم",
+  "cashBalances": "موجودی نقدی"
 }

@@ -168,7 +168,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => BalanceSheetBloc(Repositories(ApiServices()))..add(LoadBalanceSheet())),
         BlocProvider(create: (context) => FxRateReportBloc(Repositories(ApiServices()))..add(LoadFxRateReportEvent())),
         BlocProvider(create: (context) => ShippingReportBloc(Repositories(ApiServices()))),
-        BlocProvider(create: (context) => CashBalancesBloc(Repositories(ApiServices()))..add(LoadCashBalancesEvent())),
+        BlocProvider(create: (context) => CashBalancesBloc(Repositories(ApiServices()))..add(LoadCashBalanceBranchWiseEvent())),
         ///Dashboard
         BlocProvider(create: (context) => DashboardStatsBloc(Repositories(ApiServices()))..add(FetchDashboardStatsEvent())),
         BlocProvider(create: (context) => DailyGrossBloc(Repositories(ApiServices()))),

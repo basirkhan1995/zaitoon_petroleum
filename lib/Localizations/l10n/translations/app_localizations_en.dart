@@ -835,7 +835,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get branchLimits => 'Branch Limit';
 
   @override
-  String get branchInformation => 'Branch Information';
+  String get branchInformation => 'BRANCH INFORMATION';
 
   @override
   String get currentBalance => 'Current Balance';
@@ -2127,4 +2127,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openingBalance => 'Opening Balance';
+
+  @override
+  String get currencyBalances => 'CURRENCY BALANCES';
+
+  @override
+  String get opening => 'Opening';
+
+  @override
+  String get closing => 'Closing';
+
+  @override
+  String get sys => 'SYS';
+
+  @override
+  String get closingBalance => 'Closing Balance';
+
+  @override
+  String get systemEquivalent => 'SYSTEM EQUIVALENT';
+
+  @override
+  String get cashBalances => 'Cash Balances';
 }

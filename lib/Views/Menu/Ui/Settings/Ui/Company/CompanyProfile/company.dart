@@ -63,6 +63,7 @@ class _DesktopState extends State<_Desktop> {
   final TextEditingController comInsta = TextEditingController();
   final TextEditingController comWhatsApp = TextEditingController();
   final TextEditingController comZipCode = TextEditingController();
+  final TextEditingController comLocalCcy = TextEditingController();
   final TextEditingController country = TextEditingController();
   final TextEditingController comLicense = TextEditingController();
 
@@ -124,6 +125,7 @@ class _DesktopState extends State<_Desktop> {
     province.text = state.company.addProvince??"";
     country.text = state.company.addCountry??"";
     loadedCompany = state.company;
+    comLocalCcy.text = state.company.comLocalCcy??"";
     final base64Logo = state.company.comLogo;
     if (base64Logo != null && base64Logo.isNotEmpty) {
       try {
@@ -166,10 +168,6 @@ class _DesktopState extends State<_Desktop> {
         comAddress: loadedCompany?.comAddress,
       ),
     ));
-  }
-
-  void changeImage(){
-
   }
 
   @override
@@ -340,6 +338,7 @@ class _DesktopState extends State<_Desktop> {
                           return null;
                         },
                       ),
+                      SizedBox(height: 5),
                       Row(
                         spacing: 5,
                         children: [
@@ -367,6 +366,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         ],
                       ),
+                      SizedBox(height: 5),
                       Row(
                         spacing: 5,
                         children: [
@@ -386,7 +386,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         ],
                       ),
-
+                      SizedBox(height: 5),
                     ],
                   ),
                   SizedBox(height: 5),
@@ -417,6 +417,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         ],
                       ),
+                      SizedBox(height: 5),
                       Row(
                         spacing: 5,
                         children: [
@@ -437,6 +438,7 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         ],
                       ),
+                      SizedBox(height: 5),
                     ],
                   ),
                   SizedBox(height: 5),
@@ -452,6 +454,8 @@ class _DesktopState extends State<_Desktop> {
                         children: [
                           Expanded(
                             child: ZTextFieldEntitled(
+                              readOnly: true,
+                              isEnabled: false,
                               controller: comLicense,
                               title: locale.comLicense,
                             ),
@@ -462,8 +466,17 @@ class _DesktopState extends State<_Desktop> {
                               title: locale.zipCode,
                             ),
                           ),
+                          Expanded(
+                            child: ZTextFieldEntitled(
+                              readOnly: true,
+                              isEnabled: false,
+                              controller: comLocalCcy,
+                              title: locale.baseCurrency,
+                            ),
+                          ),
                         ],
                       ),
+                      SizedBox(height: 5),
                       ZTextFieldEntitled(
                         readOnly: !isUpdateMode,
                         controller: comDetails,

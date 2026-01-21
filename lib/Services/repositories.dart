@@ -2756,34 +2756,49 @@ class Repositories {
   }
 
   ///Cash Balances .............................................................
+// In your Repositories class
   Future<CashBalancesModel> cashBalances({int? branchId}) async {
     try {
       final response = await api.get(
-        endpoint: "/reports/cashBalance.php",
-        queryParams: {
-          "brcID": branchId
-        }
+          endpoint: "/reports/cashBalance.php",
+          queryParams: {
+            "brcID": branchId
+          }
       );
+
       // Check if API returned a message
       if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
         throw Exception(response.data['msg']);
       }
+
       // If response is null
       if (response.data == null) {
         throw Exception("No data found");
       }
-      // Convert the JSON to BalanceSheetModel
+
+      // Handle the List response from API
+      if (response.data is List) {
+        final List dataList = response.data;
+        if (dataList.isEmpty) {
+          throw Exception("No cash balance data found for this branch");
+        }
+
+        // Convert the first item in the list to CashBalancesModel
+        return CashBalancesModel.fromMap(dataList.first);
+      }
+
+      // Handle single Map response (fallback)
       if (response.data is Map<String, dynamic>) {
         return CashBalancesModel.fromMap(response.data);
       }
-      throw Exception("Unexpected response format");
+
+      throw Exception("Unexpected response format: ${response.data.runtimeType}");
     } on DioException catch (e) {
       throw "${e.message}";
     } catch (e) {
       throw "$e";
     }
   }
-
   // In your Repositories class
   Future<List<CashBalancesModel>> allCashBalances() async {
     try {

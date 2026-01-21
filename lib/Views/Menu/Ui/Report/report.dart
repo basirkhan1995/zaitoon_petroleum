@@ -4,6 +4,7 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Accounts/accounts.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/balance_sheet.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/gl_statement.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/cash_branch.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/Activities/activities.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/GeneralReport/general_report.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/IncomeStatement/income_statement.dart';
@@ -17,7 +18,7 @@ import 'Ui/Finance/AccountStatement/acc_statement.dart';
 import 'Ui/Finance/ArApReport/Payables/payables.dart';
 import 'Ui/Finance/ArApReport/Receivables/receivables.dart';
 import 'Ui/Finance/ExchangeRate/exchange_rate.dart';
-import 'Ui/Finance/Treasury/treasury.dart';
+import 'Ui/Finance/Treasury/all_cash.dart';
 import 'Ui/Finance/TrialBalance/trial_balance.dart';
 
 enum ActionKey {
@@ -28,6 +29,7 @@ enum ActionKey {
   payable,
   receivable,
   treasury,
+  cashBalanceBranchWise,
   exchangeRate,
   accountsReport,
   trialBalance,
@@ -107,7 +109,8 @@ class _DesktopState extends State<_Desktop> {
     ];
 
     final List<Map<String, dynamic>> transactionsButtons = [
-      {"title": locale.treasury, "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.treasury},
+      {"title": "${locale.treasury} (${locale.all} ${locale.branches})", "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.treasury},
+      {"title": "${locale.treasury} (${locale.branch} Wise)", "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.cashBalanceBranchWise},
       {"title": locale.exchangeRate, "icon": Icons.compare_arrows_rounded, "action": ActionKey.exchangeRate},
       {"title": locale.balanceSheet, "icon": Icons.balance_rounded, "action": ActionKey.balanceSheet},
       {"title": locale.trialBalance, "icon": Icons.balance_rounded, "action": ActionKey.trialBalance},
@@ -253,6 +256,7 @@ class _DesktopState extends State<_Desktop> {
       case ActionKey.receivable: Utils.goto(context, ReceivablesView());
       case ActionKey.exchangeRate: Utils.goto(context, FxRateReportView());
       case ActionKey.treasury: Utils.goto(context, TreasuryView());
+      case ActionKey.cashBalanceBranchWise: Utils.goto(context, CashBalancesBranchWiseView());
       case ActionKey.accountsReport: Utils.goto(context, AccountsReportView());
       case ActionKey.trialBalance: Utils.goto(context, TrialBalanceView());
       case ActionKey.glStatementSingleDate: Utils.goto(context, GlStatementView(isSingleDate: true));

@@ -10,7 +10,7 @@ part 'cash_balances_state.dart';
 class CashBalancesBloc extends Bloc<CashBalancesEvent, CashBalancesState> {
   final Repositories _repo;
   CashBalancesBloc(this._repo) : super(CashBalancesInitial()) {
-    on<LoadCashBalancesEvent>((event, emit) async {
+    on<LoadCashBalanceBranchWiseEvent>((event, emit) async {
       emit(CashBalancesLoadingState());
       try {
         final cash = await _repo.cashBalances(branchId: event.branchId);

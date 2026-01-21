@@ -2121,4 +2121,25 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get openingBalance => 'مانده افتتاحیه';
+
+  @override
+  String get currencyBalances => 'موجودی - اسعار';
+
+  @override
+  String get opening => 'افتتاحیه';
+
+  @override
+  String get closing => 'اختتامیه';
+
+  @override
+  String get sys => 'سیستم';
+
+  @override
+  String get closingBalance => 'بیلانس اختتامیه';
+
+  @override
+  String get systemEquivalent => 'معادل سیستم';
+
+  @override
+  String get cashBalances => 'موجودی نقدی';
 }

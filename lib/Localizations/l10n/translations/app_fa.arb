@@ -705,5 +705,12 @@
   "retainedEarnings": "سود انباشته",
   "eoyClosing": "بستن دوره مالی",
   "plMessage": "بستن سود و زیان تمام حساب‌های درآمد و هزینه دوره مالی جاری را نهایی خواهد کرد.",
-  "openingBalance": "مانده افتتاحیه"
+  "openingBalance": "مانده افتتاحیه",
+  "currencyBalances": "موجودی - اسعار",
+  "opening": "افتتاحیه",
+  "closing": "اختتامیه",
+  "sys": "سیستم",
+  "closingBalance": "بیلانس اختتامیه",
+  "systemEquivalent": "معادل سیستم",
+  "cashBalances": "موجودی نقدی"
 }

@@ -1723,7 +1723,7 @@ abstract class AppLocalizations {
   /// No description provided for @branchInformation.
   ///
   /// In en, this message translates to:
-  /// **'Branch Information'**
+  /// **'BRANCH INFORMATION'**
   String get branchInformation;
 
   /// No description provided for @currentBalance.
@@ -4215,6 +4215,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Opening Balance'**
   String get openingBalance;
+
+  /// No description provided for @currencyBalances.
+  ///
+  /// In en, this message translates to:
+  /// **'CURRENCY BALANCES'**
+  String get currencyBalances;
+
+  /// No description provided for @opening.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening'**
+  String get opening;
+
+  /// No description provided for @closing.
+  ///
+  /// In en, this message translates to:
+  /// **'Closing'**
+  String get closing;
+
+  /// No description provided for @sys.
+  ///
+  /// In en, this message translates to:
+  /// **'SYS'**
+  String get sys;
+
+  /// No description provided for @closingBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Closing Balance'**
+  String get closingBalance;
+
+  /// No description provided for @systemEquivalent.
+  ///
+  /// In en, this message translates to:
+  /// **'SYSTEM EQUIVALENT'**
+  String get systemEquivalent;
+
+  /// No description provided for @cashBalances.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash Balances'**
+  String get cashBalances;
 }
 
 class _AppLocalizationsDelegate

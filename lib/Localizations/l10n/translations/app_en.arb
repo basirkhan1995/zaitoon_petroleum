@@ -290,7 +290,7 @@
   "checker": "Authorized By",
   "maker": "Created By",
   "branchLimits": "Branch Limit",
-  "branchInformation": "Branch Information",
+  "branchInformation": "BRANCH INFORMATION",
   "currentBalance": "Current Balance",
   "availableBalance": "Available Balance",
   "txnDetails": "Transaction Details",
@@ -705,5 +705,12 @@
   "retainedEarnings": "Retained Earnings",
   "eoyClosing": "EOY CLOSING",
   "plMessage": "Closing Profit & Loss will finalize all income and expense accounts for the current fiscal period.",
-  "openingBalance": "Opening Balance"
+  "openingBalance": "Opening Balance",
+  "currencyBalances": "CURRENCY BALANCES",
+  "opening": "Opening",
+  "closing": "Closing",
+  "sys": "SYS",
+  "closingBalance": "Closing Balance",
+  "systemEquivalent": "SYSTEM EQUIVALENT",
+  "cashBalances": "Cash Balances"
 }
