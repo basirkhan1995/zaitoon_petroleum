@@ -63,7 +63,6 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     if (_baseCurrency == null) return 1.0;
 
     final key = '$fromCcy:$toCcy';
-
     // Don't fetch rate if same currency
     if (fromCcy == toCcy) {
       _exchangeRates[key] = 1.0;
