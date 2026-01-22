@@ -5,7 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 enum ShapeStyle { circle, roundedRectangle }
 
 class ImageHelper {
-  static const String baseUrl = "http://100.30.64.72/images/personal/";
+  static const String baseUrl = "http://52.21.3.100/images/personal/";
 
   /// Full widget with optional camera overlay
   static Widget stakeholderProfile({
