@@ -10,7 +10,6 @@ part 'accounts_state.dart';
 class AccountsBloc extends Bloc<AccountsEvent, AccountsState> {
   final Repositories _repo;
   AccountsBloc(this._repo) : super(AccountsInitial()) {
-
     on<LoadAccountsFilterEvent>((event, emit) async{
       emit(AccountLoadingState());
       try{
