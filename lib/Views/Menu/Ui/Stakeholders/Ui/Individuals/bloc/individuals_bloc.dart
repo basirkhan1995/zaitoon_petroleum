@@ -64,7 +64,6 @@ class IndividualsBloc extends Bloc<IndividualsEvent, IndividualsState> {
 
     on<UploadIndProfileImageEvent>((event,emit)async{
       try{
-
        final res = await _repo.uploadPersonalPhoto(perID: event.perId, image: event.image);
        final msg = res['msg'];
        if(msg == "success"){
