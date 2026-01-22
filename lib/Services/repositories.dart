@@ -2756,7 +2756,6 @@ class Repositories {
   }
 
   ///Cash Balances .............................................................
-// In your Repositories class
   Future<CashBalancesModel> cashBalances({int? branchId}) async {
     try {
       final response = await api.get(
@@ -2799,7 +2798,6 @@ class Repositories {
       throw "$e";
     }
   }
-  // In your Repositories class
   Future<List<CashBalancesModel>> allCashBalances() async {
     try {
       final response = await api.get(
