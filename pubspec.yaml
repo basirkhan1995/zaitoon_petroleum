@@ -37,7 +37,6 @@ dependencies:
   image: ^4.5.4
   http: ^1.6.0
   pdf: ^3.11.3
-  web: ^1.1.1
   cached_network_image: ^3.4.1
   fl_chart: ^1.1.1
   syncfusion_flutter_charts: ^32.1.22
