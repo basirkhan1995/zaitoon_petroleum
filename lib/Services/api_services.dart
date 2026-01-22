@@ -3,7 +3,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'localization_services.dart';
 
 class ApiServices {
-  final String ip = "100.30.64.72";
+  final String ip = "52.21.3.100";
 
   late Dio _dio;
 
