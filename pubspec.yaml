@@ -41,7 +41,7 @@ dependencies:
   cached_network_image: ^3.4.1
   fl_chart: ^1.1.1
   syncfusion_flutter_charts: ^32.1.22
-
+  window_manager: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -81,3 +81,10 @@ flutter:
         - asset: assets/fonts/NotoNaskh/NotoNaskhArabic-bold.ttf
         - asset: assets/fonts/NotoNaskh/NotoNaskhArabic-semiBold.ttf
         - asset: assets/fonts/NotoNaskh/NotoNaskhArabic-medium.ttf
+
+    - family: Ubuntu
+      fonts:
+        - asset: assets/fonts/Ubuntu/Ubuntu-Regular.ttf
+        - asset: assets/fonts/Ubuntu/Ubuntu-Bold.ttf
+        - asset: assets/fonts/Ubuntu/Ubuntu-Medium.ttf
+        - asset: assets/fonts/Ubuntu/Ubuntu-Light.ttf

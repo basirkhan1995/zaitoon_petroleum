@@ -84,6 +84,11 @@ import 'Views/PasswordSettings/bloc/password_bloc.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await PrintServices.initializeFonts();
+
+  // if (Platform.isWindows || Platform.isMacOS) {
+  //   await windowManager.ensureInitialized();
+  //   windowManager.setMinimumSize(const Size(900, 700));
+  // }
   runApp(const MyApp());
 }
 

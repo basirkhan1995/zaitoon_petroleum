@@ -49,25 +49,36 @@ class _MobileState extends State<_Mobile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(child: Column(children: [_body()])),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Title section at the top
+              _zaitoonTitle(context: context),
+
+              // Centered login form
+              Center(
+                child: _loginForm(),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  Widget _body() {
+  Widget _loginForm() {
     final locale = AppLocalizations.of(context)!;
+
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 30),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      constraints: const BoxConstraints(maxWidth: 500), // Optional: limit max width for better centering on large screens
       child: Form(
         key: formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
-              width: 150,
-              child: Image.asset('assets/images/zaitoonLogo.png'),
-            ),
             ListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(
@@ -75,19 +86,18 @@ class _MobileState extends State<_Mobile> {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ZTextFieldEntitled(
               controller: _emailController,
               title: locale.emailOrUsrname,
               validator: (value) {
-                if (value.isEmpty) {
+                if (value == null || value.isEmpty) {
                   return locale.required(locale.emailOrUsrname);
                 }
                 return null;
               },
             ),
-            SizedBox(height: 5),
-
+            const SizedBox(height: 10),
             ZTextFieldEntitled(
               controller: _passwordController,
               securePassword: isPasswordSecure,
@@ -103,44 +113,28 @@ class _MobileState extends State<_Mobile> {
                 ),
               ),
               validator: (value) {
-                if (value.isEmpty) {
+                if (value == null || value.isEmpty) {
                   return locale.required(locale.password);
                 }
                 return null;
               },
             ),
-
-            Row(
-              spacing: 5,
-              children: [
-                Checkbox(
-                  visualDensity: VisualDensity(horizontal: -4),
-                  value: isRememberMe,
-                  onChanged: (e) {
-                    setState(() {
-                      isRememberMe = !isRememberMe;
-                    });
-                  },
-                ),
-                Text(locale.rememberMe),
-              ],
-            ),
-
-            SizedBox(height: 10),
-
+            const SizedBox(height: 20),
             ZButton(
               onPressed: () {
                 if (formKey.currentState!.validate()) {
                   context.read<AuthBloc>().add(
-                      LoginEvent(
-                          usrName: _emailController.text,
-                          usrPassword: _passwordController.text,
-                          rememberMe: isRememberMe));
+                    LoginEvent(
+                      usrName: _emailController.text,
+                      usrPassword: _passwordController.text,
+                      rememberMe: isRememberMe,
+                    ),
+                  );
                 }
               },
               label: Text(AppLocalizations.of(context)!.login),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             TextButton(
               onPressed: () {
                 Utils.goto(context, ForgotPasswordView());
@@ -149,6 +143,71 @@ class _MobileState extends State<_Mobile> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _zaitoonTitle({required BuildContext context}) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      width: double.infinity,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Theme and Language selectors
+          Padding(
+            padding: const EdgeInsets.all(3.0),
+            child: Row(
+              children: [
+                const Flexible(child: ThemeSelector()),
+                const SizedBox(width: 10),
+                const Flexible(child: LanguageSelector()),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          // Logo and title
+          Row(
+            children: [
+              Container(
+                width: 70,
+                height: 70,
+                padding: const EdgeInsets.all(3),
+                margin: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: .09),
+                  ),
+                ),
+                child: Image.asset('assets/images/zaitoonLogo.png'),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.zPetroleum.toUpperCase(),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontFamily: "NotoSans",
+                        fontSize: 25,
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      AppLocalizations.of(context)!.zaitoonSlogan,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 30),
+        ],
       ),
     );
   }
@@ -198,162 +257,151 @@ class _TabletState extends State<_Tablet> {
 
   Widget _zaitoonTitle({required BuildContext context}) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Header - Localization & Theme Selector
-        Row(
-          spacing: 5,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [ThemeSelector(width: 150), LanguageSelector(width: 150)],
+        Padding(
+          padding: const EdgeInsets.all(3.0),
+          child: Row(
+            spacing: 5,
+            children: [ThemeSelector(width: 150), LanguageSelector(width: 150)],
+          ),
         ),
+        SizedBox(height: 10),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
           children: [
-            Row(
-              spacing: 8,
-              children: [
-                SizedBox(
-                  width: 140,
-                  height: 140,
-                  child: Image.asset('assets/images/zaitoonLogo.png'),
+            Container(
+              width: 90,
+              height: 90,
+              padding: const EdgeInsets.all(3),
+              margin: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(
+                  color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: .09),
                 ),
+              ),
+              child: Image.asset('assets/images/zaitoonLogo.png'),
+            ),
 
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 5,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.zPetroleum,
-                      style: TextStyle(
-                        fontFamily: "OpenSans",
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30,
-                      ),
-                    ),
-                    Text(
-                      AppLocalizations.of(context)!.zaitoonSlogan,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  ],
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              spacing: 0,
+              children: [
+                Text(
+                    AppLocalizations.of(context)!.zPetroleum.toUpperCase(),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontFamily: "NotoSans",
+                        fontSize: 40,
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold
+                    )
+                ),
+                Text(
+                  AppLocalizations.of(context)!.zaitoonSlogan,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],
             ),
           ],
         ),
+
       ],
     );
   }
 
   Widget _body() {
     final locale = AppLocalizations.of(context)!;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 30),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(
-                  context,
-                ).colorScheme.primary.withValues(alpha: .5),
-                blurRadius: 3,
-                spreadRadius: .5,
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 30),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: .5),
+            blurRadius: 3,
+            spreadRadius: .5,
+          ),
+        ],
+      ),
+      width: 400,
+      child: Form(
+        key: formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                locale.welcomeBoss,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-            ],
-          ),
-          width: 400,
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    locale.welcomeBoss,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-                SizedBox(height: 10),
-                ZTextFieldEntitled(
-                  controller: _emailController,
-                  title: locale.emailOrUsrname,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return locale.required(locale.emailOrUsrname);
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 5),
-
-                ZTextFieldEntitled(
-                  controller: _passwordController,
-                  securePassword: isPasswordSecure,
-                  title: locale.password,
-                  trailing: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        isPasswordSecure = !isPasswordSecure;
-                      });
-                    },
-                    icon: Icon(
-                      isPasswordSecure
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return locale.required(locale.password);
-                    }
-                    return null;
-                  },
-                ),
-
-                Row(
-                  spacing: 5,
-                  children: [
-                    Checkbox(
-                      visualDensity: VisualDensity(horizontal: -4),
-                      value: isRememberMe,
-                      onChanged: (e) {
-                        setState(() {
-                          isRememberMe = !isRememberMe;
-                        });
-                      },
-                    ),
-                    Text(locale.rememberMe),
-                  ],
-                ),
-
-                SizedBox(height: 10),
-
-                ZButton(
-                  onPressed: () {
-                    if (formKey.currentState!.validate()) {
-                      Utils.gotoReplacement(context, HomeView());
-                    }
-                  },
-                  label: Text(AppLocalizations.of(context)!.login),
-                ),
-                SizedBox(height: 15),
-                TextButton(
-                  onPressed: () {
-                    Utils.goto(context, ForgotPasswordView());
-                  },
-                  child: Text(locale.forgotPassword),
-                ),
-              ],
             ),
-          ),
+            SizedBox(height: 10),
+            ZTextFieldEntitled(
+              controller: _emailController,
+              title: locale.emailOrUsrname,
+              validator: (value) {
+                if (value.isEmpty) {
+                  return locale.required(locale.emailOrUsrname);
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 5),
+
+            ZTextFieldEntitled(
+              controller: _passwordController,
+              securePassword: isPasswordSecure,
+              title: locale.password,
+              trailing: IconButton(
+                onPressed: () {
+                  setState(() {
+                    isPasswordSecure = !isPasswordSecure;
+                  });
+                },
+                icon: Icon(
+                  isPasswordSecure
+                      ? Icons.visibility_off
+                      : Icons.visibility,
+                ),
+              ),
+              validator: (value) {
+                if (value.isEmpty) {
+                  return locale.required(locale.password);
+                }
+                return null;
+              },
+            ),
+
+            SizedBox(height: 20),
+
+            ZButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  Utils.gotoReplacement(context, HomeView());
+                }
+              },
+              label: Text(AppLocalizations.of(context)!.login),
+            ),
+            SizedBox(height: 15),
+            TextButton(
+              onPressed: () {
+                Utils.goto(context, ForgotPasswordView());
+              },
+              child: Text(locale.forgotPassword),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
@@ -364,7 +412,6 @@ class _Desktop extends StatefulWidget {
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> {
 
   final TextEditingController _emailController = TextEditingController();
@@ -446,7 +493,7 @@ class _DesktopState extends State<_Desktop> {
                 Text(
                   AppLocalizations.of(context)!.zPetroleum.toUpperCase(),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontFamily: "OpenSans",
+                    fontFamily: "NotoSans",
                     fontSize: 40,
                     color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold
