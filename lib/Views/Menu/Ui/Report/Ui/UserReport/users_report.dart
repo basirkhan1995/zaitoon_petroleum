@@ -9,9 +9,11 @@ import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../HR/Ui/Users/bloc/users_bloc.dart';
 import '../../../HR/Ui/Employees/features/emp_card.dart';
+import '../Transport/features/status_drop.dart';
 
 class UsersReportView extends StatelessWidget {
   const UsersReportView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return const ResponsiveLayout(
@@ -50,16 +52,14 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   final TextEditingController searchController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<UsersBloc>().add(LoadUsersReportEvent());
-    });
-  }
-
   String? role;
   int? branchId;
+  int? status;
+
+  /// 🔹 Derived state (NO stored bool)
+  bool get isFilterActive =>
+      role != null || branchId != null || status != null;
+
   @override
   void dispose() {
     searchController.dispose();
@@ -70,121 +70,162 @@ class _DesktopState extends State<_Desktop> {
     showDialog(context: context, builder: (_) => const AddUserView());
   }
 
-  void onRefresh() {
-    context.read<UsersBloc>().add(LoadUsersReportEvent());
+  void onApply() {
+    context.read<UsersBloc>().add(
+      LoadUsersReportEvent(
+        status: status,
+        role: role,
+        branchId: branchId,
+      ),
+    );
+  }
+
+  void onClearFilters() {
+    setState(() {
+      role = null;
+      branchId = null;
+      status = null;
+    });
+
+    context.read<UsersBloc>().add(ResetUserEvent());
   }
 
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
-        title: Text("User Report"),
+        title: Text("${tr.users} ${tr.report}"),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(10),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            /// 🔹 FILTER BAR
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 spacing: 8,
                 children: [
+                  const Expanded(flex: 3, child: SizedBox()),
+
                   Expanded(
-                    flex: 3,
-                    child: Text(""),
+                    child: UserRoleDropdown(
+                      onRoleSelected: (e) {
+                        setState(() => role = e.name);
+                      },
+                    ),
                   ),
+
                   Expanded(
-                      child: UserRoleDropdown(onRoleSelected: (e){
-                    setState(() {
-                      role = e.name;
-                    });
-                    context.read<UsersBloc>().add(LoadUsersReportEvent(role: role));
-                  })),
-                  Expanded(
-                    child: BranchDropdown(onBranchSelected: (e){
-                      setState(() {
-                       branchId = e.brcId;
-                      });
-                      context.read<UsersBloc>().add(LoadUsersReportEvent(branchId: branchId));
-                    }),
+                    child: BranchDropdown(
+                      onBranchSelected: (e) {
+                        setState(() => branchId = e.brcId);
+                      },
+                    ),
                   ),
+
+                  Expanded(
+                    child: StatusDropdown(
+                      value: status,
+                      onChanged: (v) {
+                        setState(() => status = v);
+                      },
+                    ),
+                  ),
+
+                  /// 🔹 CLEAR FILTERS (only when active)
+                  if (isFilterActive)
+                    ZOutlineButton(
+                      isActive: true,
+                      width: 140,
+                      icon: Icons.filter_alt_off,
+                      onPressed: onClearFilters,
+                      label: Text(tr.clearFilters),
+                    ),
+
+                  /// 🔹 APPLY BUTTON
                   ZOutlineButton(
-                    toolTip: 'F1',
                     width: 120,
-                    icon: Icons.filter_alt_off,
-                    onPressed: onRefresh,
-                    label: Text("${tr.all} ${tr.users}"),
+                    icon: Icons.filter_alt,
+                    onPressed: onApply,
+                    label: Text(tr.apply),
                   ),
                 ],
               ),
             ),
+
+            /// 🔹 DATA AREA
             Expanded(
               child: BlocBuilder<UsersBloc, UsersState>(
                 builder: (context, state) {
                   if (state is UsersLoadingState) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (state is UsersInitial) {
+                    return NoDataWidget(
+                      title: "${tr.users} ${tr.report}",
+                      message: tr.usersHintReport,
+                      enableAction: false,
                     );
                   }
 
                   if (state is UsersErrorState) {
                     return NoDataWidget(
                       message: state.message,
-                      onRefresh: () =>
-                          context.read<UsersBloc>().add(LoadUsersEvent()),
+                      onRefresh: onApply,
                     );
                   }
 
                   if (state is UsersReportLoadedState) {
                     final query =
                     searchController.text.toLowerCase().trim();
-                    final filteredList = state.users.where((item) {
-                      final name = item.username?.toLowerCase() ?? '';
+
+                    final users = state.users.where((u) {
+                      final name = u.username?.toLowerCase() ?? '';
                       return name.contains(query);
                     }).toList();
 
-                    if (filteredList.isEmpty) {
-                      return NoDataWidget(
-                        message: tr.noDataFound,
-                      );
+                    if (users.isEmpty) {
+                      return NoDataWidget(message: tr.noDataFound,enableAction: false);
                     }
 
                     return SingleChildScrollView(
                       padding: const EdgeInsets.all(8),
                       child: Wrap(
-                        alignment: WrapAlignment.start,
-                        runAlignment: WrapAlignment.start,
                         spacing: 12,
                         runSpacing: 12,
-                        children: filteredList.map((usr) {
+                        children: users.map((usr) {
                           return SizedBox(
                             width: 250,
                             child: ZCard(
                               title: usr.username ?? "-",
                               subtitle: usr.email,
                               status: InfoStatus(
-                                label: usr.status??"",
+                                label: usr.status ?? "",
                                 color: usr.status == "Active"
                                     ? Colors.green
                                     : Colors.red,
                               ),
                               infoItems: [
                                 InfoItem(
-                                    icon: Icons.person,
-                                    text: usr.fullName ?? "-"),
+                                  icon: Icons.person,
+                                  text: usr.fullName ?? "-",
+                                ),
                                 InfoItem(
-                                    icon: Icons.apartment,
-                                    text: usr.branch?.toString() ?? "-"),
+                                  icon: Icons.apartment,
+                                  text: usr.branch?.toString() ?? "-",
+                                ),
                                 InfoItem(
-                                    icon: Icons.security,
-                                    text: usr.role ?? "-"),
+                                  icon: Icons.security,
+                                  text: usr.role ?? "-",
+                                ),
                               ],
-                              onTap: () {},
                             ),
                           );
                         }).toList(),

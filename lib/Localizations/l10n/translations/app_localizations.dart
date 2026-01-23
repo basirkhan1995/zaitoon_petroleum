@@ -4257,6 +4257,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cash Balances'**
   String get cashBalances;
+
+  /// No description provided for @usersHintReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the filters above to quickly find the users you need.'**
+  String get usersHintReport;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Filters'**
+  String get clearFilters;
 }
 
 class _AppLocalizationsDelegate

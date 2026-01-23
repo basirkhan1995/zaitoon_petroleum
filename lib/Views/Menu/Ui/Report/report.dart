@@ -10,8 +10,6 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/GeneralRe
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/IncomeStatement/income_statement.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/TransactionRef/transaction_ref.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/shipping_report.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/UserLogReport/user_log_report.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/UserLogReport/users_report.dart';
 import '../../../../Features/Other/utils.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'Ui/Finance/AccountStatement/acc_statement.dart';
@@ -20,6 +18,8 @@ import 'Ui/Finance/ArApReport/Receivables/receivables.dart';
 import 'Ui/Finance/ExchangeRate/exchange_rate.dart';
 import 'Ui/Finance/Treasury/all_cash.dart';
 import 'Ui/Finance/TrialBalance/trial_balance.dart';
+import 'Ui/UserReport/user_log_report.dart';
+import 'Ui/UserReport/users_report.dart';
 
 enum ActionKey {
   //Finance

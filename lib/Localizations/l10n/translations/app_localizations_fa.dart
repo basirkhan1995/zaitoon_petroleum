@@ -2139,4 +2139,11 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get cashBalances => 'موجودی نقدی';
+
+  @override
+  String get usersHintReport =>
+      'با انتخاب وضعیت، شعبه یا نقش، فهرست کاربران مورد نظر خود را مشاهده کنید.';
+
+  @override
+  String get clearFilters => 'حذف فلتر';
 }

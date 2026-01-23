@@ -2142,4 +2142,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cashBalances => 'موجودی نقدی';
+
+  @override
+  String get usersHintReport =>
+      'فلټرونه وکاروئ څو ژر هغه کاروونکي پیدا کړئ چې تاسو ورته اړتیا لرئ.\n';
+
+  @override
+  String get clearFilters => 'حذف فلتر';
 }

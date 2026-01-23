@@ -59,15 +59,6 @@ class _DesktopState extends State<_Desktop> {
   Jalali shamsiFromDate = DateTime.now().toAfghanShamsi;
   Jalali shamsiToDate = DateTime.now().toAfghanShamsi;
   String? usrName;
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<UserLogBloc>().add(
-        LoadUserLogEvent(usrName: usrName, fromDate: fromDate, toDate: toDate),
-      );
-    });
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,6 +185,7 @@ class _DesktopState extends State<_Desktop> {
                 if (state is UserLogLoadingState) {
                   return Center(child: CircularProgressIndicator());
                 }
+
                 if (state is UserLogErrorState) {
                   return NoDataWidget(
                     message: state.error,

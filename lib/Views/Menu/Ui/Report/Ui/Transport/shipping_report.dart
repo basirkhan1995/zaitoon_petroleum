@@ -217,9 +217,9 @@ class _DesktopState extends State<_Desktop> {
                 Expanded(
                   flex: 2,
                   child: DriversDropdown(
-                    onSingleChanged: (vehicle) {
+                    onSingleChanged: (driver) {
                       setState(() {
-                        driverId = vehicle?.empId;
+                        driverId = driver?.empId;
                       });
                     },
                   ),

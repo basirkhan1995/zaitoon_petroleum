@@ -69,12 +69,6 @@ class _StakeholdersDropdownState extends State<StakeholdersDropdown> {
                   widget.title ?? AppLocalizations.of(context)!.stakeholders,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
-                // const SizedBox(width: 8),
-                // const SizedBox(
-                //   width: 16,
-                //   height: 16,
-                //   child: CircularProgressIndicator(strokeWidth: 2),
-                // ),
               ],
             );
           } else {

@@ -2148,4 +2148,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cashBalances => 'Cash Balances';
+
+  @override
+  String get usersHintReport =>
+      'Use the filters above to quickly find the users you need.';
+
+  @override
+  String get clearFilters => 'Clear Filters';
 }

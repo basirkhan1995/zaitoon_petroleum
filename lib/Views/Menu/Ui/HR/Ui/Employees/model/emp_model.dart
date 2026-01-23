@@ -33,7 +33,7 @@ class EmployeeModel {
   final int? perAddress;
   final String? perPhone;
   final String? perEmail;
-
+  final bool? isDriver;
   EmployeeModel({
     this.empId,
     this.empPersonal,
@@ -59,6 +59,7 @@ class EmployeeModel {
     this.perAddress,
     this.perPhone,
     this.perEmail,
+    this.isDriver = false
   });
 
   EmployeeModel copyWith({

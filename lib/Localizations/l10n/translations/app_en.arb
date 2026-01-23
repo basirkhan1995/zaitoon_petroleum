@@ -712,5 +712,7 @@
   "sys": "SYS",
   "closingBalance": "Closing Balance",
   "systemEquivalent": "SYSTEM EQUIVALENT",
-  "cashBalances": "Cash Balances"
+  "cashBalances": "Cash Balances",
+  "usersHintReport": "Use the filters above to quickly find the users you need.",
+  "clearFilters": "Clear Filters"
 }
