@@ -51,7 +51,9 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   @override
   void initState() {
-    context.read<AccountsBloc>().add(LoadAccountsEvent(ownerId: widget.ind.perId));
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      context.read<AccountsBloc>().add(LoadAccountsEvent(ownerId: widget.ind.perId));
+    });
     super.initState();
   }
   final TextEditingController searchController = TextEditingController();

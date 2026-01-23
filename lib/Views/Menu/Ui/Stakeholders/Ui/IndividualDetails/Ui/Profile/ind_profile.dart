@@ -82,13 +82,10 @@ class _DesktopState extends State<_Desktop> {
           return Column(
             children: [
               SizedBox(height: 5),
-              BlurLoader(
-                isLoading: state is StakeholderByIdLoadingState,
-                child: ZCover(
-                  radius: 5,
-                  margin: EdgeInsets.symmetric(horizontal: 8),
-                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                  color: color.surface,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                child: BlurLoader(
+                  isLoading: state is StakeholderByIdLoadingState,
                   child: Column(
                     children: [
                       Row(
@@ -157,10 +154,7 @@ class _DesktopState extends State<_Desktop> {
                 ),
               ),
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: IndividualsDetailsTabView(ind: widget.ind),
-                ),
+                child: IndividualsDetailsTabView(ind: widget.ind),
               ),
             ],
           );

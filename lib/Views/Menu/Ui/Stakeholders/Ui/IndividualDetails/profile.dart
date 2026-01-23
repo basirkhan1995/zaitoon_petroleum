@@ -36,8 +36,6 @@ class IndividualsDetailsTabView extends StatelessWidget {
               : available.first;
 
           return ZTabContainer<IndividualDetailTabName>(
-           // title: AppLocalizations.of(context)!.stakeholders,
-
             /// Tab data
             tabs: tabs,
             selectedValue: selected,
@@ -47,10 +45,11 @@ class IndividualsDetailsTabView extends StatelessWidget {
 
             /// Colors for underline style
             style: ZTabStyle.rounded,
-            tabBarPadding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+            tabBarPadding: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
             borderRadius: 0,
             title: AppLocalizations.of(context)!.details,
             selectedColor: Theme.of(context).colorScheme.primary,
+            description: "Accounts & Users",
             unselectedTextColor: Theme.of(context).colorScheme.secondary,
             selectedTextColor: Theme.of(context).colorScheme.surface,
             tabContainerColor: Theme.of(context).colorScheme.surface,
