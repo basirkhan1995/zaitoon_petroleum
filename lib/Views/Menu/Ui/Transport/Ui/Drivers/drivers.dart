@@ -9,6 +9,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/bloc/driver
 import '../../../../../../../Features/Other/image_helper.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
+import '../../../HR/Ui/Employees/Ui/add_edit_employee.dart';
 import '../../../HR/Ui/Employees/features/emp_card.dart';
 
 class DriversView extends StatelessWidget {
@@ -93,6 +94,13 @@ class _DesktopState extends State<_Desktop> {
                     icon: Icons.refresh,
                     onPressed: onRefresh,
                     label: Text(locale.refresh)),
+                ZOutlineButton(
+                    toolTip: 'F1',
+                    width: 120,
+                    icon: Icons.add,
+                    isActive: true,
+                    onPressed: onAdd,
+                    label: Text(locale.newKeyword)),
               ],
             ),
           ),
@@ -178,9 +186,6 @@ class _DesktopState extends State<_Desktop> {
                           ),
                         ],
 
-                        // Optional customization
-                        // minHeight: 200,
-                        // maxHeight: 300,
                       );
                     },
                   );
@@ -192,6 +197,12 @@ class _DesktopState extends State<_Desktop> {
         ],
       ),
     );
+  }
+
+  void onAdd(){
+    showDialog(context: context, builder: (context){
+      return AddEditEmployeeView(isDriver: true,);
+    });
   }
   void onRefresh(){
     context.read<DriverBloc>().add(LoadDriverEvent());

@@ -22,13 +22,14 @@ import '../../../../../../../Features/Other/thousand_separator.dart';
 
 class AddEditEmployeeView extends StatelessWidget {
   final EmployeeModel? model;
-  const AddEditEmployeeView({super.key, this.model});
+  final bool? isDriver;
+  const AddEditEmployeeView({super.key, this.model,this.isDriver = false});
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobile: _Mobile(),
-      desktop: _Desktop(model: model),
+      desktop: _Desktop(model: model,isDriver: isDriver),
       tablet: _Tablet(),
     );
   }
@@ -55,7 +56,8 @@ class _Mobile extends StatelessWidget {
 
 class _Desktop extends StatefulWidget {
   final EmployeeModel? model;
-  const _Desktop({this.model});
+  final bool? isDriver;
+  const _Desktop({this.model,this.isDriver = false});
 
   @override
   State<_Desktop> createState() => _DesktopState();
@@ -93,6 +95,12 @@ class _DesktopState extends State<_Desktop> {
       perId = widget.model!.perId!;
       jobTitle.text = widget.model?.empPosition??"";
     }
+    if(widget.isDriver == true){
+      jobTitle.text = "Driver";
+    }else{
+        jobTitle.text = '';
+    }
+
     super.initState();
   }
   @override
@@ -275,7 +283,10 @@ class _DesktopState extends State<_Desktop> {
                 Row(
                   spacing: 5,
                   children: [
-                    Expanded(child: ZTextFieldEntitled(controller: jobTitle, title: locale.jobTitle)),
+                    Expanded(
+                        child: ZTextFieldEntitled(
+                          isEnabled: widget.isDriver == true,
+                        controller: jobTitle, title: locale.jobTitle)),
                     Expanded(
                       child: ZTextFieldEntitled(
                         isRequired: true,

@@ -75,22 +75,20 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
-    final state = context.watch<AuthBloc>().state;
+    final authState = context.watch<AuthBloc>().state;
+    final glState = context.watch<GlAccountsBloc>().state;
     final color = Theme.of(context).colorScheme;
 
-    if (state is! AuthenticatedState) {
+    if (authState is! AuthenticatedState) {
       return const SizedBox();
     }
-    final login = state.loginData;
+    final login = authState.loginData;
     usrName = login.usrName ?? "";
-
     bool isEdit = widget.model != null;
-
-
     return ZFormDialog(
       onAction: onSubmit,
       padding: EdgeInsets.symmetric(vertical: 15,horizontal: 15),
-      actionLabel: state is GlAccountsLoadingState? SizedBox(
+      actionLabel: glState is GlAccountsLoadingState? SizedBox(
         height: 16,
         width: 16,
         child: CircularProgressIndicator(

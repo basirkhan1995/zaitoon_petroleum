@@ -149,6 +149,9 @@ class _DesktopState extends State<_Desktop> {
             Expanded(
               child: BlocConsumer<GlAccountsBloc, GlAccountsState>(
                 listener: (context,state){
+                  if(state is GlSuccessState){
+                    Navigator.of(context).pop();
+                  }
                   if(state is GlAccountsErrorState){
                     Utils.showOverlayMessage(context, message: state.message, isError: true);
                   }
