@@ -172,9 +172,7 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(widget.radius ?? 4),
                 border: Border.all(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .outline
+                  color: Theme.of(context).colorScheme.outline
                       .withAlpha(80),
                 ),
               ),
@@ -185,7 +183,7 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
                       displayText,
                       overflow: TextOverflow.ellipsis,
                       style: widget.itemStyle ??
-                          Theme.of(context).textTheme.bodyMedium,
+                          Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 14),
                     ),
                   ),
                   Icon(_isOpen

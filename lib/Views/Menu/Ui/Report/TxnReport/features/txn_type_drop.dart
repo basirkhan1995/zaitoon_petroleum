@@ -103,24 +103,18 @@ class _TxnTypeDropDownState extends State<TxnTypeDropDown> {
               itemLabel: (user) => user.trntCode ?? '',
               initialValue:
               widget.title ?? AppLocalizations.of(context)!.users,
-
               onMultiSelectChanged: widget.isMulti
                   ? (selected) {
                 setState(() => _selectedMulti = selected);
                 widget.onMultiChanged(selected);
-              }
-                  : null,
-
+              } : null,
               onItemSelected: widget.isMulti
                   ? (_) {}
                   : (user) {
                 setState(() => _selectedSingle = user);
                 widget.onSingleChanged?.call(user);
               },
-
               isLoading: false,
-              itemStyle: Theme.of(context).textTheme.titleMedium,
-
               customTitle: (widget.title != null && widget.title!.isNotEmpty)
                   ? buildTitle()
                   : const SizedBox.shrink(),

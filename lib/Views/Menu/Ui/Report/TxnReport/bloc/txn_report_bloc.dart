@@ -18,7 +18,15 @@ class TxnReportBloc extends Bloc<TxnReportEvent, TxnReportState> {
        }catch(e){
          emit(TxnReportErrorState(e.toString()));
        }
+    });
 
+    on<ResetTxnReportEvent>((event, emit) async{
+      emit(TxnReportLoadingState());
+      try{
+        emit(TxnReportInitial());
+      }catch(e){
+        emit(TxnReportErrorState(e.toString()));
+      }
     });
   }
 }

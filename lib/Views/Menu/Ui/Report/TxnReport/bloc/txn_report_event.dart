@@ -4,7 +4,6 @@ sealed class TxnReportEvent extends Equatable {
   const TxnReportEvent();
 }
 
-
 class LoadTxnReportEvent extends TxnReportEvent{
   final String? fromDate;
   final String? toDate;
@@ -17,4 +16,9 @@ class LoadTxnReportEvent extends TxnReportEvent{
 
   @override
   List<Object?> get props => [fromDate, toDate, txnType, status, maker, checker,currency];
+}
+
+class ResetTxnReportEvent extends TxnReportEvent{
+  @override
+  List<Object?> get props => [];
 }

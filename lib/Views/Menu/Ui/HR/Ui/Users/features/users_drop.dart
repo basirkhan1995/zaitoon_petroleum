@@ -80,10 +80,7 @@ class _UserDropdownState extends State<UserDropdown> {
           }
           return Text(
             widget.title ?? AppLocalizations.of(context)!.users,
-            style: Theme.of(context)
-                .textTheme
-                .titleSmall
-                ?.copyWith(fontSize: 12),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 12),
           );
         }
 
@@ -103,15 +100,13 @@ class _UserDropdownState extends State<UserDropdown> {
               selectedItems: widget.isMulti ? _selectedMulti : [],
               selectedItem: widget.isMulti ? null : _selectedSingle,
               itemLabel: (user) => user.usrName ?? '',
-              initialValue:
-              widget.title ?? AppLocalizations.of(context)!.users,
+              initialValue: widget.title ?? AppLocalizations.of(context)!.users,
 
               onMultiSelectChanged: widget.isMulti
                   ? (selected) {
                 setState(() => _selectedMulti = selected);
                 widget.onMultiChanged(selected);
-              }
-                  : null,
+              } : null,
 
               onItemSelected: widget.isMulti
                   ? (_) {}
@@ -121,8 +116,6 @@ class _UserDropdownState extends State<UserDropdown> {
               },
 
               isLoading: false,
-              itemStyle: Theme.of(context).textTheme.titleMedium,
-
               customTitle: (widget.title != null && widget.title!.isNotEmpty)
                   ? buildTitle()
                   : const SizedBox.shrink(),

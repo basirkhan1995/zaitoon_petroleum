@@ -125,8 +125,6 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
           },
 
           isLoading: false,
-          itemStyle: Theme.of(context).textTheme.titleMedium,
-
           customTitle: (widget.title != null && widget.title!.isNotEmpty)
               ? buildTitle()
               : const SizedBox.shrink(), // No space if no title

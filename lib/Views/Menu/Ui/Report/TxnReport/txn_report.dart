@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
@@ -51,24 +52,39 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
+  late String fromDate;
+  late String toDate;
 
   @override
-  Widget build(BuildContext context) {
-    final tr = AppLocalizations.of(context)!;
-    String fromDate = DateTime.now().toFormattedDate();
-    String toDate = DateTime.now().toFormattedDate();
+  void initState() {
+    super.initState();
+    fromDate = DateTime.now().toFormattedDate();
+    toDate   = DateTime.now().toFormattedDate();
+  }
+  bool get hasAnyFilter {
+    return status != null ||
+        currency != null ||
+        maker != null ||
+        checker != null ||
+        txnType != null;
+  }
 
-    int? status;
-    String? currency;
-    String? maker;
-    String? checker;
-    String? txnType;
+  int? status;
+  String? currency;
+  String? maker;
+  String? checker;
+  String? txnType;
+  @override
+  Widget build(BuildContext context) {
+    TextStyle? titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.onSurface);
+    final tr = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: Text("TXN REPORT"),
+      appBar: AppBar(title: Text("${tr.transactions} ${tr.report}"),
+       titleSpacing: 0,
        actionsPadding: EdgeInsets.symmetric(horizontal: 10),
         actions: [
-
+          if (hasAnyFilter)
           ZOutlineButton(
               isActive: true,
               onPressed: (){
@@ -77,13 +93,21 @@ class _DesktopState extends State<_Desktop> {
                   checker = null;
                   txnType = null;
                   currency = null;
+                  status = null;
                    fromDate = DateTime.now().toFormattedDate();
                    toDate = DateTime.now().toFormattedDate();
                 });
+                context.read<TxnReportBloc>().add(ResetTxnReportEvent());
               },
               width: 140,
               icon: Icons.filter_alt_off_outlined,
               label: Text(tr.clearFilters)),
+          SizedBox(width: 8),
+          ZOutlineButton(
+              onPressed: (){},
+              width: 120,
+              icon: Icons.print,
+              label: Text(tr.print)),
           SizedBox(width: 8),
           ZOutlineButton(
               onPressed: (){
@@ -97,150 +121,204 @@ class _DesktopState extends State<_Desktop> {
                   currency: currency,
                 ));
               },
+              isActive: true,
               width: 120,
               icon: Icons.filter_alt,
               label: Text(tr.apply)),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              spacing: 8,
-              children: [
-                SizedBox(
-                  width: 150,
-                  child: ZDatePicker(
-                    label: tr.fromDate,
-                    value: fromDate,
-                    onDateChanged: (v) {
-                      setState(() {
-                        fromDate = v;
-                      });
-                    },
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                spacing: 8,
+                children: [
+                  Expanded(
+                    child: ZDatePicker(
+                      label: tr.fromDate,
+                      value: fromDate,
+                      onDateChanged: (v) {
+                        setState(() {
+                          fromDate = v;
+                        });
+                      },
+                    ),
                   ),
-                ),
-                SizedBox(
-                  width: 150,
-                  child: ZDatePicker(
-                    label: tr.toDate,
-                    value: toDate,
-                    onDateChanged: (v) {
-                      setState(() {
-                        toDate = v;
-                      });
-                    },
+                  Expanded(
+                    child: ZDatePicker(
+                      label: tr.toDate,
+                      value: toDate,
+                      onDateChanged: (v) {
+                        setState(() {
+                          toDate = v;
+                        });
+                      },
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: UserDropdown(
-                    title: tr.maker,
-                    isMulti: false,
-                    onSingleChanged: (e) {
-                      setState(() {
-                        maker = e?.usrName;
-                      });
-                    },
-                    onMultiChanged: (e) {},
+                  Expanded(
+                    child: UserDropdown(
+                      title: tr.maker,
+                      isMulti: false,
+                      onSingleChanged: (e) {
+                        setState(() {
+                          maker = e?.usrName;
+                        });
+                      },
+                      onMultiChanged: (e) {},
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: TxnTypeDropDown(
-                    title: tr.txnType,
-                    isMulti: false,
-                    onSingleChanged: (e) {
-                     setState(() {
-                       txnType = e?.trntCode;
-                     });
-                    },
-                    onMultiChanged: (e) {},
+                  Expanded(
+                    child: TxnTypeDropDown(
+                      title: tr.txnType,
+                      isMulti: false,
+                      onSingleChanged: (e) {
+                       setState(() {
+                         txnType = e?.trntCode;
+                       });
+                      },
+                      onMultiChanged: (e) {},
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: UserDropdown(
-                    isMulti: false,
-                    title: tr.checker,
-                    onSingleChanged: (e) {
-                      setState(() {
-                        checker = e?.usrName;
-                      });
-                    },
-                    onMultiChanged: (e) {},
+                  Expanded(
+                    child: UserDropdown(
+                      isMulti: false,
+                      title: tr.checker,
+                      onSingleChanged: (e) {
+                        setState(() {
+                          checker = e?.usrName;
+                        });
+                      },
+                      onMultiChanged: (e) {},
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: CurrencyDropdown(
-                    isMulti: false,
-                    title: tr.currencyTitle,
-                    onSingleChanged: (e) {
-                      setState(() {
-                        currency = e?.ccyCode;
-                      });
-                    },
-                    onMultiChanged: (e) {},
+                  Expanded(
+                    child: CurrencyDropdown(
+                      isMulti: false,
+                      title: tr.currencyTitle,
+                      onSingleChanged: (e) {
+                        setState(() {
+                          currency = e?.ccyCode;
+                        });
+                      },
+                      onMultiChanged: (e) {},
+                    ),
                   ),
-                ),
 
-                Expanded(
-                  child: StatusDropdown(
-                    value: status,
-                    onChanged: (v) {
-                      setState(() => status = v);
-                    },
+                  Expanded(
+                    child: StatusDropdown(
+                      value: status,
+                      onChanged: (v) {
+                        setState(() => status = v);
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
 
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                SizedBox(
-                    width: 180,
-                    child: Text(tr.referenceNumber)),
-              ],
+            SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 5),
+              child: Row(
+                children: [
+                  SizedBox(
+                      width: 180,
+                      child: Text(tr.date,style: titleStyle)),
+                  Expanded(
+                      child: Text(tr.referenceNumber,style: titleStyle)),
+                  SizedBox(
+                      width: 160,
+                      child: Text(tr.txnType,style: titleStyle)),
+                  SizedBox(
+                      width: 120,
+                      child: Text(tr.maker,style: titleStyle)),
+                  SizedBox(
+                      width: 120,
+                      child: Text(tr.checker,style: titleStyle)),
+                  SizedBox(
+                      width: 120,
+                      child: Text(tr.status,style: titleStyle)),
+                  SizedBox(
+                      width: 150,
+                      child: Text(tr.amount,style: titleStyle)),
+                  SizedBox(
+                      width: 150,
+                      child: Text("${tr.amount} (${tr.sys})",style: titleStyle)),
+                ],
+              ),
             ),
-          ),
-          Divider(indent: 10,endIndent: 5),
-          SizedBox(height: 3),
-          Expanded(
-            child: BlocBuilder<TxnReportBloc, TxnReportState>(
-              builder: (context, state) {
-                if(state is TxnReportLoadingState){
-                  return Center(child: CircularProgressIndicator());
-                }
-                if(state is TxnReportErrorState){
-                  return NoDataWidget(
-                    title: "Error",
-                    message: state.error,
-                    enableAction: false,
-                  );
-                }if(state is TxnReportLoadedState){
-                  return ListView.builder(
-                      itemCount: state.txn.length,
-                      itemBuilder: (context,index){
-                      final txn = state.txn[index];
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                                width: 180,
-                                child: Text(txn.reference.toString())),
-                          ],
-                        ),
-                      );
-                  });
-                }
-                return const SizedBox();
-              },
+            Divider(),
+            Expanded(
+              child: BlocBuilder<TxnReportBloc, TxnReportState>(
+                builder: (context, state) {
+                  if(state is TxnReportInitial){
+                    return NoDataWidget(
+                      title: "Transaction Report",
+                      message: "Select filters above and click Apply to view transactions.",
+                      enableAction: false,
+                    );
+                  }
+                  if(state is TxnReportLoadingState){
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if(state is TxnReportErrorState){
+                    return NoDataWidget(
+                      title: "Error",
+                      message: state.error,
+                      enableAction: false,
+                    );
+                  }if(state is TxnReportLoadedState){
+                    return ListView.builder(
+                        itemCount: state.txn.length,
+                        itemBuilder: (context,index){
+                        final txn = state.txn[index];
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: index.isEven? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                    width: 180,
+                                    child: Text(txn.timing?.toDateTime ?? "")),
+                                Expanded(
+                                    child: Text(txn.reference.toString())),
+                                SizedBox(
+                                    width: 160,
+                                    child: Text(txn.type.toString())),
+                                SizedBox(
+                                    width: 120,
+                                    child: Text(txn.maker.toString())),
+                                SizedBox(
+                                    width: 120,
+                                    child: Text(txn.checker.toString())),
+                                SizedBox(
+                                    width: 120,
+                                    child: Text(txn.statusText??"")),
+                                SizedBox(
+                                    width: 150,
+                                    child: Text("${txn.actualAmount.toAmount()} ${txn.currency}")),
+                                SizedBox(
+                                    width: 150,
+                                    child: Text(txn.sysEquavalint.toAmount())),
+                              ],
+                            ),
+                          ),
+                        );
+                    });
+                  }
+                  return const SizedBox();
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

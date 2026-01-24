@@ -2848,15 +2848,10 @@ class Repositories {
             "checker": checker,
             "currency": currency
           }
-
       );
 
       if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
         throw Exception(response.data['msg']);
-      }
-
-      if (response.data == null) {
-        throw Exception("No data found");
       }
 
       // Parse as list
