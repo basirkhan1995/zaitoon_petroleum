@@ -56,6 +56,7 @@ class _DesktopState extends State<_Desktop> {
     final tr = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
+        titleSpacing: 0,
         title: Text("All Balances"),
         actionsPadding: EdgeInsets.symmetric(horizontal: 10),
         actions: [
