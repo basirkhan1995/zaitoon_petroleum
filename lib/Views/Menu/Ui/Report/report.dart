@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/AllBalances/Ui/all_balances.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Accounts/accounts.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/balance_sheet.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/gl_statement.dart';
@@ -42,6 +43,7 @@ enum ActionKey {
   activities,
   transactionByRef,
   transactionReport,
+  allBalances,
 
   //Stock
   products,
@@ -263,6 +265,7 @@ class _DesktopState extends State<_Desktop> {
       case ActionKey.activities:  Utils.goto(context, TransactionReportView());
       case ActionKey.transactionByRef:  Utils.goto(context, TransactionByReferenceView());
       case ActionKey.transactionReport: Utils.goto(context, TransactionReportView());
+      case ActionKey.allBalances: Utils.goto(context, AllBalancesView());
 
       // Stock
       case ActionKey.products: throw UnimplementedError();

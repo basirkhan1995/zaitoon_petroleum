@@ -41,6 +41,7 @@ import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/FetchGLAT/model/glat_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/GetOrder/model/get_order_model.dart';
 import '../Views/Menu/Ui/Report/TransactionRef/model/txn_report_model.dart';
+import '../Views/Menu/Ui/Report/Ui/AllBalances/model/all_balances_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/ArApReport/model/ar_ap_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/model/bs_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/ExchangeRate/model/rate_report_model.dart';
@@ -2624,7 +2625,6 @@ class Repositories {
       throw "$e";
     }
   }
-
   Future<BalanceSheetModel> balanceSheet() async {
     try {
       final response = await api.get(
@@ -2834,7 +2834,6 @@ class Repositories {
       throw "$e";
     }
   }
-
   Future<List<TransactionReportModel>> transactionReport({String? fromDate, String? toDate, String? txnType, int? status, String? maker, String? checker, String? currency}) async {
     try {
       final response = await api.post(
@@ -2873,4 +2872,37 @@ class Repositories {
       throw "$e";
     }
   }
+  Future<List<AllBalancesModel>> allBalances({int? catId}) async {
+    try {
+      final response = await api.get(
+          endpoint: "/reports/allBalances.php",
+          queryParams: {
+            "cat": catId,
+          }
+      );
+
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // Parse as list
+      if (response.data is List) {
+        return List<AllBalancesModel>.from(
+            response.data.map((x) => AllBalancesModel.fromMap(x))
+        );
+      }
+
+      // If single object, wrap in list
+      if (response.data is Map<String, dynamic>) {
+        return [AllBalancesModel.fromMap(response.data)];
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+
 }

@@ -65,28 +65,28 @@ class TransactionReportModel {
   factory TransactionReportModel.fromMap(Map<String, dynamic> json) => TransactionReportModel(
     no: json["No"],
     reference: json["reference"],
-    type: json["type"],
-    status: json["status"],
+    type: json["trnType"],
+    status: json["trnStatus"],
     statusText: json["statusText"],
     maker: json["maker"],
-    checker: json["checker"],
+    checker: json["checker"] ?? "",
     currency: json["currency"],
     actualAmount: json["actual_amount"],
-    sysEquavalint: json["sys_equavalint"],
+    sysEquavalint: json["sys_equivalent"],
     timing: json["timing"] == null ? null : DateTime.parse(json["timing"]),
   );
 
   Map<String, dynamic> toMap() => {
     "No": no,
     "reference": reference,
-    "type": type,
-    "status": status,
+    "trnType": type,
+    "trnStatus": status,
     "statusText": statusText,
     "maker": maker,
     "checker": checker,
     "currency": currency,
     "actual_amount": actualAmount,
-    "sys_equavalint": sysEquavalint,
+    "sys_equivalent": sysEquavalint,
     "timing": timing?.toIso8601String(),
   };
 }

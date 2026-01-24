@@ -1,0 +1,21 @@
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:zaitoon_petroleum/Services/repositories.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/AllBalances/model/all_balances_model.dart';
+
+part 'all_balances_event.dart';
+part 'all_balances_state.dart';
+
+class AllBalancesBloc extends Bloc<AllBalancesEvent, AllBalancesState> {
+  final Repositories _repo;
+  AllBalancesBloc(this._repo) : super(AllBalancesInitial()) {
+    on<LoadAllBalancesEvent>((event, emit) async{
+      try{
+        final balances = await _repo.allBalances(catId: event.catId);
+        emit(AllBalancesLoadedState(balances));
+      }catch(e){
+        emit(AllBalancesErrorState(e.toString()));
+      }
+    });
+  }
+}

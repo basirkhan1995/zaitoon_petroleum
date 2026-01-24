@@ -7,6 +7,7 @@ import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/branch_dropdown.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/bloc/cash_balances_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/model/cash_balance_model.dart';
 import '../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
@@ -75,6 +76,7 @@ class _DesktopState extends State<_Desktop> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.cashBalances),
+        actionsPadding: EdgeInsets.symmetric(horizontal: 8),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -174,13 +176,34 @@ class _DesktopState extends State<_Desktop> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              tr.branchInformation,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    tr.branchInformation,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 300,
+                  child: BranchDropdown(
+                    currentBranchId: branchId,
+                    height: 40,
+                      title: "",
+                      onBranchSelected: (e){
+                      setState(() {
+                        branchId = e.brcId;
+                      });
+                      context.read<CashBalancesBloc>().add(
+                        LoadCashBalanceBranchWiseEvent(branchId: branchId),
+                      );
+                      }),
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             Divider(),

@@ -31,6 +31,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/GetOrder/bloc/order_t
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/bloc/transaction_tab_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/AllBalances/bloc/all_balances_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/bloc/acc_statement_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/ArApReport/bloc/ar_ap_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/bloc/balance_sheet_bloc.dart';
@@ -176,6 +177,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ShippingReportBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => CashBalancesBloc(Repositories(ApiServices()))..add(LoadCashBalanceBranchWiseEvent())),
         BlocProvider(create: (context) => TxnReportBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => AllBalancesBloc(Repositories(ApiServices()))),
         ///Dashboard
         BlocProvider(create: (context) => DashboardStatsBloc(Repositories(ApiServices()))..add(FetchDashboardStatsEvent())),
         BlocProvider(create: (context) => DailyGrossBloc(Repositories(ApiServices()))),
