@@ -61,35 +61,64 @@ class _DesktopState extends State<_Desktop> {
   String? usrName;
 
   @override
+  void initState() {
+    context.read<UserLogBloc>().add(ResetUserLogEvent());
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
     return Scaffold(
+      appBar: AppBar(
+        title: Text(tr.userLog),
+        titleSpacing: 0,
+        actionsPadding: EdgeInsets.symmetric(horizontal: 10),
+        actions: [
+          ZOutlineButton(
+            height: 40,
+            width: 140,
+            icon: Icons.filter_alt_off_outlined,
+            isActive: false,
+            backgroundHover: Theme.of(context).colorScheme.error,
+            label: Text(tr.clearFilters),
+            onPressed: () {
+              setState(() {
+                usrName = null;
+                fromDate = DateTime.now().toFormattedDate();
+                toDate = DateTime.now().toFormattedDate();
+              });
+              context.read<UserLogBloc>().add(ResetUserLogEvent());
+            },
+          ),
+          SizedBox(width: 8),
+          ZOutlineButton(
+            height: 40,
+            width: 120,
+            icon: Icons.filter_alt,
+            isActive: true,
+            label: Text(tr.apply),
+            onPressed: () {
+              context.read<UserLogBloc>().add(
+                LoadUserLogEvent(
+                  usrName: usrName,
+                  fromDate: fromDate,
+                  toDate: toDate,
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.end,
               spacing: 8,
               children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                  highlightColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  child: CircleAvatar(
-                    radius: 18,
-                    backgroundColor: color.surface,
-                    child: Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      size: 16,
-                      color: color.outline.withValues(alpha: .9),
-                    ),
-                  ),
-                ),
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -160,28 +189,19 @@ class _DesktopState extends State<_Desktop> {
                     },
                   ),
                 ),
-                ZOutlineButton(
-                  height: 40,
-                  width: 100,
-                  icon: Icons.call_to_action_outlined,
-                  isActive: true,
-                  label: Text(tr.apply),
-                  onPressed: () {
-                    context.read<UserLogBloc>().add(
-                      LoadUserLogEvent(
-                        usrName: usrName,
-                        fromDate: fromDate,
-                        toDate: toDate,
-                      ),
-                    );
-                  },
-                ),
+
               ],
             ),
           ),
           Expanded(
             child: BlocBuilder<UserLogBloc, UserLogState>(
               builder: (context, state) {
+                if(state is UserLogInitial){
+                  return NoDataWidget(
+                    title: "USER LOG",
+                    message: "Find user activities here",
+                  );
+                }
                 if (state is UserLogLoadingState) {
                   return Center(child: CircularProgressIndicator());
                 }
@@ -198,7 +218,7 @@ class _DesktopState extends State<_Desktop> {
                 }
                 if (state is UserLogLoadedState) {
                   if (state.log.isEmpty) {
-                    return NoDataWidget(message: tr.noDataFound);
+                    return NoDataWidget(message: tr.noDataFound,enableAction: false);
                   }
                   return ListView.builder(
                     itemCount: state.log.length,

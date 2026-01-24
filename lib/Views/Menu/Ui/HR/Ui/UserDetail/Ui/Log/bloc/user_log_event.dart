@@ -13,3 +13,8 @@ class LoadUserLogEvent extends UserLogEvent{
   @override
   List<Object?> get props => [usrName, fromDate, toDate];
 }
+
+class ResetUserLogEvent extends UserLogEvent{
+  @override
+  List<Object?> get props => [];
+}

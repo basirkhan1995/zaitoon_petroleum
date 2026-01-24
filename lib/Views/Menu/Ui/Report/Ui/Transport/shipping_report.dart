@@ -298,7 +298,7 @@ class _DesktopState extends State<_Desktop> {
 
   Widget _buildColumnHeaders() {
     final tr = AppLocalizations.of(context)!;
-    final titleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.surface);
+    final titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.surface);
     return Container(
       height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 15),

@@ -62,6 +62,7 @@ class _DesktopState extends State<_Desktop> {
     fromDate = DateTime.now().toFormattedDate();
     toDate   = DateTime.now().toFormattedDate();
     myLocale = context.read<LocalizationBloc>().state.languageCode;
+    context.read<TxnReportBloc>().add(ResetTxnReportEvent());
   }
   bool get hasAnyFilter {
     return status != null ||
@@ -78,7 +79,7 @@ class _DesktopState extends State<_Desktop> {
   String? txnType;
   @override
   Widget build(BuildContext context) {
-    TextStyle? titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.onSurface);
+    TextStyle? titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.surface);
     final tr = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -219,12 +220,18 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
           ),
-
           SizedBox(height: 8),
-          Padding(
+          Container(
+            height: 40,
+            decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: .9)
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 5),
             child: Row(
               children: [
+                SizedBox(
+                    width: 40,
+                    child: Text(tr.id,style: titleStyle)),
                 SizedBox(
                     width: 180,
                     child: Text(tr.date,style: titleStyle)),
@@ -248,7 +255,6 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
           ),
-          Divider(indent: 12,endIndent: 12),
           Expanded(
             child: BlocBuilder<TxnReportBloc, TxnReportState>(
               builder: (context, state) {
@@ -269,6 +275,13 @@ class _DesktopState extends State<_Desktop> {
                     enableAction: false,
                   );
                 }if(state is TxnReportLoadedState){
+                  if(state.txn.isEmpty){
+                    return NoDataWidget(
+                      title: tr.noData,
+                      message: tr.noDataFound,
+                      enableAction: false,
+                    );
+                  }
                   return ListView.builder(
                       itemCount: state.txn.length,
                       itemBuilder: (context,index){
@@ -281,6 +294,9 @@ class _DesktopState extends State<_Desktop> {
                           padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 8),
                           child: Row(
                             children: [
+                              SizedBox(
+                                  width: 40,
+                                  child: Text(txn.no.toString())),
                               SizedBox(
                                   width: 180,
                                   child: Text(txn.timing?.toDateTime ?? "")),

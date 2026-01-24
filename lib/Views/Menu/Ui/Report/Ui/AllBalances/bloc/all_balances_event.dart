@@ -10,3 +10,8 @@ class LoadAllBalancesEvent extends AllBalancesEvent{
   @override
   List<Object?> get props => [catId];
 }
+
+class ResetAllBalancesEvent extends AllBalancesEvent{
+  @override
+  List<Object?> get props => [];
+}

@@ -19,6 +19,12 @@ class UserLogBloc extends Bloc<UserLogEvent, UserLogState> {
         emit(UserLogErrorState(e.toString()));
       }
     });
-
+    on<ResetUserLogEvent>((event, emit) async{
+      try{
+        emit(UserLogInitial());
+      }catch(e){
+        emit(UserLogErrorState(e.toString()));
+      }
+    });
   }
 }

@@ -115,6 +115,7 @@ class _DesktopState extends State<_Desktop> {
       {"title": tr.trialBalance, "icon": Icons.balance_rounded, "action": ActionKey.trialBalance},
       {"title": tr.transactionDetails, "icon": Icons.qr_code_2_rounded, "action": ActionKey.transactionByRef},
       {"title": "${tr.transactions} ${tr.report}", "icon": Icons.line_axis_sharp, "action": ActionKey.transactionReport},
+      {"title": "All Balances", "icon": Icons.line_axis_sharp, "action": ActionKey.allBalances},
     ];
 
     final List<Map<String, dynamic>> activitiesButtons = [
@@ -136,6 +137,16 @@ class _DesktopState extends State<_Desktop> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+               Row(
+                 spacing: 5,
+                 children: [
+                   Icon(Icons.add_chart),
+                   Text(tr.report,style: Theme.of(context).textTheme.titleLarge?.copyWith()),
+                 ],
+               ),
+              SizedBox(height: 8),
+              Divider(endIndent: 3,indent: 3,color: Theme.of(context).colorScheme.outline.withValues(alpha: .2),thickness: 1.5,),
+               SizedBox(height: 15),
               _buildSectionTitle(title: tr.finance,icon: Icons.money_rounded),
               _buildButtonGroup(financeButtons, color),
               const SizedBox(height: 15),
