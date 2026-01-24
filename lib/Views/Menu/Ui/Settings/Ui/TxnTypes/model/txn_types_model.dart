@@ -1,6 +1,4 @@
-// To parse this JSON data, do
-//
-//     final txnTypeModel = txnTypeModelFromMap(jsonString);
+
 
 import 'dart:convert';
 

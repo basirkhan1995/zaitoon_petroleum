@@ -5,13 +5,11 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Accounts/accou
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/balance_sheet.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/gl_statement.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/cash_branch.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/Activities/activities.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/GeneralReport/general_report.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/IncomeStatement/income_statement.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/TransactionRef/transaction_ref.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/shipping_report.dart';
 import '../../../../Features/Other/utils.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
+import 'TransactionRef/transaction_ref.dart';
+import 'TxnReport/txn_report.dart';
 import 'Ui/Finance/AccountStatement/acc_statement.dart';
 import 'Ui/Finance/ArApReport/Payables/payables.dart';
 import 'Ui/Finance/ArApReport/Receivables/receivables.dart';
@@ -41,10 +39,9 @@ enum ActionKey {
 
   //Transactions
   balanceSheet,
-  generalReport,
-  profitAndLoss,
   activities,
   transactionByRef,
+  transactionReport,
 
   //Stock
   products,
@@ -91,40 +88,40 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
-    final locale = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
 
     final List<Map<String, dynamic>> financeButtons = [
-      {"title": locale.accountStatement, "icon": FontAwesomeIcons.buildingColumns, "action": ActionKey.accStatement},
-      {"title": locale.glStatement, "icon": FontAwesomeIcons.buildingColumns, "action": ActionKey.glStatement},
-      {"title": locale.glStatementSingleDate, "icon": FontAwesomeIcons.buildingColumns, "action": ActionKey.glStatementSingleDate},
-      {"title": locale.creditors, "icon": FontAwesomeIcons.arrowTrendUp, "action": ActionKey.payable},
-      {"title": locale.debtors, "icon": FontAwesomeIcons.arrowTrendDown, "action": ActionKey.receivable},
+      {"title": tr.accountStatement, "icon": FontAwesomeIcons.buildingColumns, "action": ActionKey.accStatement},
+      {"title": tr.glStatement, "icon": FontAwesomeIcons.buildingColumns, "action": ActionKey.glStatement},
+      {"title": tr.glStatementSingleDate, "icon": FontAwesomeIcons.buildingColumns, "action": ActionKey.glStatementSingleDate},
+      {"title": tr.creditors, "icon": FontAwesomeIcons.arrowTrendUp, "action": ActionKey.payable},
+      {"title": tr.debtors, "icon": FontAwesomeIcons.arrowTrendDown, "action": ActionKey.receivable},
 
     ];
 
     final List<Map<String, dynamic>> stockButtons = [
-      {"title": locale.products, "icon": Icons.shopping_bag_outlined, "action": ActionKey.products},
-      {"title": locale.purchaseInvoice, "icon": Icons.add_shopping_cart_sharp, "action": ActionKey.purchase},
-      {"title": locale.salesInvoice, "icon": Icons.add_shopping_cart_sharp, "action": ActionKey.sale},
+      {"title": tr.products, "icon": Icons.shopping_bag_outlined, "action": ActionKey.products},
+      {"title": tr.purchaseInvoice, "icon": Icons.add_shopping_cart_sharp, "action": ActionKey.purchase},
+      {"title": tr.salesInvoice, "icon": Icons.add_shopping_cart_sharp, "action": ActionKey.sale},
     ];
 
     final List<Map<String, dynamic>> transactionsButtons = [
-      {"title": "${locale.treasury} (${locale.all} ${locale.branches})", "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.treasury},
-      {"title": "${locale.treasury} (${locale.branch} Wise)", "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.cashBalanceBranchWise},
-      {"title": locale.exchangeRate, "icon": Icons.compare_arrows_rounded, "action": ActionKey.exchangeRate},
-      {"title": locale.balanceSheet, "icon": Icons.balance_rounded, "action": ActionKey.balanceSheet},
-      {"title": locale.trialBalance, "icon": Icons.balance_rounded, "action": ActionKey.trialBalance},
-      {"title": locale.transactionDetails, "icon": Icons.qr_code_2_rounded, "action": ActionKey.transactionByRef},
-
+      {"title": "${tr.treasury} (${tr.all} ${tr.branches})", "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.treasury},
+      {"title": "${tr.treasury} (${tr.branch} Wise)", "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.cashBalanceBranchWise},
+      {"title": tr.exchangeRate, "icon": Icons.compare_arrows_rounded, "action": ActionKey.exchangeRate},
+      {"title": tr.balanceSheet, "icon": Icons.balance_rounded, "action": ActionKey.balanceSheet},
+      {"title": tr.trialBalance, "icon": Icons.balance_rounded, "action": ActionKey.trialBalance},
+      {"title": tr.transactionDetails, "icon": Icons.qr_code_2_rounded, "action": ActionKey.transactionByRef},
+      {"title": "${tr.transactions} ${tr.report}", "icon": Icons.line_axis_sharp, "action": ActionKey.transactionReport},
     ];
 
     final List<Map<String, dynamic>> activitiesButtons = [
-      {"title": locale.users, "icon": FontAwesomeIcons.users, "action": ActionKey.users},
-      {"title": locale.userLog, "icon": Icons.scale_rounded, "action": ActionKey.userLog},
+      {"title": tr.users, "icon": FontAwesomeIcons.users, "action": ActionKey.users},
+      {"title": tr.userLog, "icon": Icons.scale_rounded, "action": ActionKey.userLog},
     ];
 
     final List<Map<String, dynamic>> transportButtons = [
-      {"title": locale.shipping, "icon": Icons.local_shipping_outlined, "action": ActionKey.shipping},
+      {"title": tr.shipping, "icon": Icons.local_shipping_outlined, "action": ActionKey.shipping},
     ];
 
     return Scaffold(
@@ -137,11 +134,11 @@ class _DesktopState extends State<_Desktop> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionTitle(title: locale.finance,icon: Icons.money_rounded),
+              _buildSectionTitle(title: tr.finance,icon: Icons.money_rounded),
               _buildButtonGroup(financeButtons, color),
               const SizedBox(height: 15),
 
-              _buildSectionTitle(title: locale.inventory,icon: Icons.shopping_cart_checkout_rounded),
+              _buildSectionTitle(title: tr.inventory,icon: Icons.shopping_cart_checkout_rounded),
               _buildButtonGroup(stockButtons, color),
 
               const SizedBox(height: 15),
@@ -151,12 +148,12 @@ class _DesktopState extends State<_Desktop> {
 
               const SizedBox(height: 15),
 
-              _buildSectionTitle(title: "${locale.users} & ${locale.activities}",icon: Icons.access_time),
+              _buildSectionTitle(title: "${tr.users} & ${tr.activities}",icon: Icons.access_time),
               _buildButtonGroup(activitiesButtons, color),
 
               const SizedBox(height: 15),
 
-              _buildSectionTitle(title: locale.transport,icon: Icons.local_shipping_outlined),
+              _buildSectionTitle(title: tr.transport,icon: Icons.local_shipping_outlined),
               _buildButtonGroup(transportButtons, color),
             ],
           ),
@@ -262,11 +259,10 @@ class _DesktopState extends State<_Desktop> {
       case ActionKey.glStatementSingleDate: Utils.goto(context, GlStatementView(isSingleDate: true));
 
       //Transactions
-      case ActionKey.profitAndLoss: Utils.goto(context, IncomeStatementView());
       case ActionKey.balanceSheet: Utils.goto(context, BalanceSheetView());
-      case ActionKey.generalReport:  Utils.goto(context, SystemGeneralReportView());
-      case ActionKey.activities:  Utils.goto(context, ActivitiesView());
+      case ActionKey.activities:  Utils.goto(context, TransactionReportView());
       case ActionKey.transactionByRef:  Utils.goto(context, TransactionByReferenceView());
+      case ActionKey.transactionReport: Utils.goto(context, TransactionReportView());
 
       // Stock
       case ActionKey.products: throw UnimplementedError();

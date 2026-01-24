@@ -26,7 +26,7 @@ import '../../../../../../../Features/PrintSettings/report_model.dart';
 import '../../../../Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import '../../../../Journal/Ui/TxnByReference/txn_reference.dart';
 import 'package:shamsi_date/shamsi_date.dart';
-import '../../Transactions/TransactionRef/transaction_ref.dart';
+import '../../../TransactionRef/transaction_ref.dart';
 import 'PDF/pdf.dart';
 import 'package:flutter/services.dart';
 

@@ -7,8 +7,9 @@ import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/TransactionRef/bloc/txn_ref_report_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'bloc/txn_ref_report_bloc.dart';
 
 class TransactionByReferenceView extends StatelessWidget {
   const TransactionByReferenceView({super.key});

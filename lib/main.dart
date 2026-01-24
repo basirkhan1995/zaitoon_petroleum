@@ -39,7 +39,6 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/bl
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/bloc/cash_balances_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/TrialBalance/bloc/trial_balance_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/bloc/total_daily_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/TransactionRef/bloc/txn_ref_report_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/bloc/shipping_report_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/bloc/branch_limit_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Branch/bloc/brc_tab_bloc.dart';
@@ -73,6 +72,8 @@ import 'Themes/Bloc/themes_bloc.dart';
 import 'Themes/Ui/theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/bloc/permissions_bloc.dart';
+import 'Views/Menu/Ui/Report/TransactionRef/bloc/txn_ref_report_bloc.dart';
+import 'Views/Menu/Ui/Report/TxnReport/bloc/txn_report_bloc.dart';
 import 'Views/Menu/Ui/Settings/Ui/Company/Branches/bloc/branch_bloc.dart';
 import 'Views/Menu/Ui/Settings/Ui/General/bloc/general_tab_bloc.dart';
 import 'Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/bloc/products_bloc.dart';
@@ -174,6 +175,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => FxRateReportBloc(Repositories(ApiServices()))..add(LoadFxRateReportEvent())),
         BlocProvider(create: (context) => ShippingReportBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => CashBalancesBloc(Repositories(ApiServices()))..add(LoadCashBalanceBranchWiseEvent())),
+        BlocProvider(create: (context) => TxnReportBloc(Repositories(ApiServices()))),
         ///Dashboard
         BlocProvider(create: (context) => DashboardStatsBloc(Repositories(ApiServices()))..add(FetchDashboardStatsEvent())),
         BlocProvider(create: (context) => DailyGrossBloc(Repositories(ApiServices()))),

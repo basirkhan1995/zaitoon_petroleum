@@ -14,12 +14,12 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/model/fetch
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchTRPT/model/trtp_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/txn_ref_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TxnReport/model/txn_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/model/stmt_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/model/gl_statement_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/model/cash_balance_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/TrialBalance/model/trial_balance_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/model/daily_txn_model.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transactions/TransactionRef/model/txn_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/ProductCategory/model/pro_cat_model.dart';
@@ -40,6 +40,7 @@ import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/FetchGLAT/model/glat_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/GetOrder/model/get_order_model.dart';
+import '../Views/Menu/Ui/Report/TransactionRef/model/txn_report_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/ArApReport/model/ar_ap_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/model/bs_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/ExchangeRate/model/rate_report_model.dart';
@@ -2827,6 +2828,50 @@ class Repositories {
       }
 
       throw Exception("Unexpected response format");
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+
+  Future<List<TransactionReportModel>> transactionReport({String? fromDate, String? toDate, String? txnType, int? status, String? maker, String? checker, String? currency}) async {
+    try {
+      final response = await api.post(
+        endpoint: "/reports/transactionsReport.php",
+        data: {
+            "fromDate": fromDate,
+            "toDate": toDate,
+            "type": txnType,
+            "status": status,
+            "maker": maker,
+            "checker": checker,
+            "currency": currency
+          }
+
+      );
+
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      if (response.data == null) {
+        throw Exception("No data found");
+      }
+
+      // Parse as list
+      if (response.data is List) {
+        return List<TransactionReportModel>.from(
+            response.data.map((x) => TransactionReportModel.fromMap(x))
+        );
+      }
+
+      // If single object, wrap in list
+      if (response.data is Map<String, dynamic>) {
+        return [TransactionReportModel.fromMap(response.data)];
+      }
+
+      return [];
     } on DioException catch (e) {
       throw "${e.message}";
     } catch (e) {
