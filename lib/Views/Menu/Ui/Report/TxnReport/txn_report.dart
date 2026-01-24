@@ -51,6 +51,7 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
+
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
@@ -62,10 +63,28 @@ class _DesktopState extends State<_Desktop> {
     String? maker;
     String? checker;
     String? txnType;
+
     return Scaffold(
       appBar: AppBar(title: Text("TXN REPORT"),
        actionsPadding: EdgeInsets.symmetric(horizontal: 10),
         actions: [
+
+          ZOutlineButton(
+              isActive: true,
+              onPressed: (){
+                setState(() {
+                  maker = null;
+                  checker = null;
+                  txnType = null;
+                  currency = null;
+                   fromDate = DateTime.now().toFormattedDate();
+                   toDate = DateTime.now().toFormattedDate();
+                });
+              },
+              width: 140,
+              icon: Icons.filter_alt_off_outlined,
+              label: Text(tr.clearFilters)),
+          SizedBox(width: 8),
           ZOutlineButton(
               onPressed: (){
                 context.read<TxnReportBloc>().add(LoadTxnReportEvent(
@@ -78,7 +97,9 @@ class _DesktopState extends State<_Desktop> {
                   currency: currency,
                 ));
               },
-              label: Text(tr.apply))
+              width: 120,
+              icon: Icons.filter_alt,
+              label: Text(tr.apply)),
         ],
       ),
       body: Column(
