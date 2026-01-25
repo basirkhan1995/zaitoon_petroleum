@@ -581,7 +581,7 @@ abstract class PrintServices {
         "ar":"بل برگشتی"
       },
       'RTPU' : {
-        'en':"PurchaseReport Return",
+        'en':"OrderReport Return",
         'fa':"برگشت خرید",
         "ar":"برگشت خرید"
       },

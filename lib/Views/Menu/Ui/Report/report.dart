@@ -6,6 +6,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Accounts/accou
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/balance_sheet.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/gl_statement.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/cash_branch.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/OrdersReport/Ui/order_report.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/shipping_report.dart';
 import '../../../../Features/Other/utils.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
@@ -22,19 +23,17 @@ import 'Ui/UserReport/user_log_report.dart';
 import 'Ui/UserReport/users_report.dart';
 
 enum ActionKey {
+
   //Finance
   accStatement,
   glStatement,
   glStatementSingleDate,
   payable,
   receivable,
-  treasury,
-  cashBalanceBranchWise,
-  exchangeRate,
   accountsReport,
   trialBalance,
 
-  users,
+
 
   //Transport
   shipping,
@@ -45,13 +44,18 @@ enum ActionKey {
   transactionByRef,
   transactionReport,
   allBalances,
+  allCashBalances,
+  cashBalanceBranchWise,
+  exchangeRate,
 
   //Stock
   products,
   purchase,
   sale,
+  estimate,
 
-  userLog
+  userLog,
+  users,
 }
 class ReportView extends StatelessWidget {
   const ReportView({super.key});
@@ -103,13 +107,14 @@ class _DesktopState extends State<_Desktop> {
     ];
 
     final List<Map<String, dynamic>> stockButtons = [
-      {"title": tr.products, "icon": Icons.shopping_bag_outlined, "action": ActionKey.products},
+      {"title": "${tr.inventory} ${tr.report}", "icon": Icons.shopping_bag_outlined, "action": ActionKey.products},
       {"title": tr.purchaseInvoice, "icon": Icons.add_shopping_cart_sharp, "action": ActionKey.purchase},
       {"title": tr.salesInvoice, "icon": Icons.add_shopping_cart_sharp, "action": ActionKey.sale},
+      {"title": tr.estimateTitle, "icon": Icons.file_copy_outlined, "action": ActionKey.estimate},
     ];
 
     final List<Map<String, dynamic>> transactionsButtons = [
-      {"title": "${tr.treasury} (${tr.all} ${tr.branches})", "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.treasury},
+      {"title": "${tr.treasury} (${tr.all} ${tr.branches})", "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.allCashBalances},
       {"title": "${tr.treasury} (${tr.branch} Wise)", "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.cashBalanceBranchWise},
       {"title": tr.exchangeRate, "icon": Icons.compare_arrows_rounded, "action": ActionKey.exchangeRate},
       {"title": tr.balanceSheet, "icon": Icons.balance_rounded, "action": ActionKey.balanceSheet},
@@ -145,29 +150,37 @@ class _DesktopState extends State<_Desktop> {
                    Text(tr.report,style: Theme.of(context).textTheme.titleLarge?.copyWith()),
                  ],
                ),
-              SizedBox(height: 8),
-              Divider(endIndent: 3,indent: 3,color: Theme.of(context).colorScheme.outline.withValues(alpha: .2),thickness: 1.5,),
                SizedBox(height: 15),
               _buildSectionTitle(title: tr.finance,icon: Icons.money_rounded),
+              Divider(),
+              SizedBox(height: 8),
               _buildButtonGroup(financeButtons, color),
               const SizedBox(height: 15),
 
               _buildSectionTitle(title: tr.inventory,icon: Icons.shopping_cart_checkout_rounded),
+              Divider(),
+              SizedBox(height: 8),
               _buildButtonGroup(stockButtons, color),
 
               const SizedBox(height: 15),
 
               _buildSectionTitle(title: "Cash & Balances",icon: Icons.ssid_chart),
+              Divider(),
+              SizedBox(height: 8),
               _buildButtonGroup(transactionsButtons, color),
 
               const SizedBox(height: 15),
 
-              _buildSectionTitle(title: "${tr.users} & ${tr.activities}",icon: Icons.access_time),
+              _buildSectionTitle(title: "${tr.users} & ${tr.activities}",icon: Icons.supervised_user_circle_sharp),
+              Divider(),
+              SizedBox(height: 8),
               _buildButtonGroup(activitiesButtons, color),
 
               const SizedBox(height: 15),
 
               _buildSectionTitle(title: tr.transport,icon: Icons.local_shipping_outlined),
+              Divider(),
+              SizedBox(height: 8),
               _buildButtonGroup(transportButtons, color),
             ],
           ),
@@ -178,18 +191,15 @@ class _DesktopState extends State<_Desktop> {
 
   /// Title widget for each section
   Widget _buildSectionTitle({required String title, required IconData icon}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        spacing: 5,
-        children: [
-          Icon(icon,color: Theme.of(context).colorScheme.secondary,size: 20),
-          Text(
-            title,
-            style: const TextStyle(fontSize: 15),
-          ),
-        ],
-      ),
+    return Row(
+      spacing: 5,
+      children: [
+        Icon(icon,color: Theme.of(context).colorScheme.secondary,size: 20),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 15),
+        ),
+      ],
     );
   }
   /// Wrap-based button layout for compact and responsive placement
@@ -266,7 +276,7 @@ class _DesktopState extends State<_Desktop> {
       case ActionKey.payable: Utils.goto(context, PayablesView());
       case ActionKey.receivable: Utils.goto(context, ReceivablesView());
       case ActionKey.exchangeRate: Utils.goto(context, FxRateReportView());
-      case ActionKey.treasury: Utils.goto(context, TreasuryView());
+      case ActionKey.allCashBalances: Utils.goto(context, TreasuryView());
       case ActionKey.cashBalanceBranchWise: Utils.goto(context, CashBalancesBranchWiseView());
       case ActionKey.accountsReport: Utils.goto(context, AccountsReportView());
       case ActionKey.trialBalance: Utils.goto(context, TrialBalanceView());
@@ -281,9 +291,9 @@ class _DesktopState extends State<_Desktop> {
 
       // Stock
       case ActionKey.products:  Utils.goto(context, ProductReportView());
-      case ActionKey.purchase: Utils.goto(context, ProductReportView());
-      case ActionKey.sale: Utils.goto(context, ProductReportView());
-
+      case ActionKey.purchase: Utils.goto(context, OrderReportView(orderName: "Purchase"));
+      case ActionKey.sale: Utils.goto(context, OrderReportView(orderName: "Sale"));
+      case ActionKey.estimate: Utils.goto(context, OrderReportView(orderName: "Estimate"));
       // Activity
       case ActionKey.userLog: Utils.goto(context, UserLogReportView());
       case ActionKey.users: Utils.goto(context, UsersReportView());

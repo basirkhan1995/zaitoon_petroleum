@@ -714,5 +714,7 @@
   "systemEquivalent": "SYSTEM EQUIVALENT",
   "cashBalances": "Cash Balances",
   "usersHintReport": "Use the filters above to quickly find the users you need.",
-  "clearFilters": "Clear Filters"
+  "clearFilters": "Clear Filters",
+  "outOfStock": "Out of stock",
+  "available": "Available"
 }

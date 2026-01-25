@@ -2155,4 +2155,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clearFilters => 'Clear Filters';
+
+  @override
+  String get outOfStock => 'Out of stock';
+
+  @override
+  String get available => 'Available';
 }

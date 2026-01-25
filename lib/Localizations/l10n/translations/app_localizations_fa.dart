@@ -2146,4 +2146,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get clearFilters => 'حذف فلتر';
+
+  @override
+  String get outOfStock => 'عدم موجودی';
+
+  @override
+  String get available => 'موجود';
 }

@@ -714,5 +714,7 @@
   "systemEquivalent": "معادل سیستم",
   "cashBalances": "موجودی نقدی",
   "usersHintReport": "فلټرونه وکاروئ څو ژر هغه کاروونکي پیدا کړئ چې تاسو ورته اړتیا لرئ.\n",
-  "clearFilters": "حذف فلتر"
+  "clearFilters": "حذف فلتر",
+  "outOfStock": "عدم موجودی",
+  "available": "موجود"
 }

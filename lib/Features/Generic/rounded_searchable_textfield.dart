@@ -40,6 +40,9 @@ class GenericTextfield<T, B extends BlocBase<S>, S> extends StatefulWidget {
   final bool readOnly;
   final bool showClearButton;
   final bool showAllOnFocus;
+  final T? allOption; // Add "All" option
+  final bool showAllOption; // Whether to show "All" option
+  final String allOptionText; // Text for "All" option
 
   const GenericTextfield({
     super.key,
@@ -70,6 +73,9 @@ class GenericTextfield<T, B extends BlocBase<S>, S> extends StatefulWidget {
     this.padding,
     this.showClearButton = true,
     this.showAllOnFocus = true,
+    this.allOption,
+    this.showAllOption = false,
+    this.allOptionText = 'All',
   }) : assert(bloc != null || searchFunction == null, 'If searchFunction is provided, bloc must also be provided');
 
   @override
@@ -174,7 +180,14 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
   }
 
   Widget _buildSuggestionsList(List<T> items) {
-    if (items.isEmpty) {
+    final allItems = [...items];
+
+    // Add "All" option at the beginning if enabled
+    if (widget.showAllOption && widget.allOption != null) {
+      allItems.insert(0, widget.allOption as T);
+    }
+
+    if (allItems.isEmpty) {
       final isLoading = widget.bloc != null && widget.stateToLoading != null && widget.stateToLoading!(widget.bloc!.state);
       return SizedBox(
         height: 60,
@@ -200,16 +213,17 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
       child: ListView.builder(
         shrinkWrap: true,
         padding: EdgeInsets.zero,
-        itemCount: items.length,
+        itemCount: allItems.length,
         itemBuilder: (context, index) {
-          final item = items[index];
+          final item = allItems[index];
           return InkWell(
             hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
             highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
             onTap: () {
-              widget.controller?.text = widget.itemToString(item);
+              final itemText = widget.itemToString(item);
+              widget.controller?.text = itemText;
               widget.onSelected?.call(item);
-              widget.onChanged?.call(widget.itemToString(item));
+              widget.onChanged?.call(itemText);
               _removeOverlay();
               _focusNode.unfocus();
             },
@@ -222,7 +236,7 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
 
   String? _customValidator(String? value) {
     if (widget.isRequired && (value == null || value.isEmpty)) {
-       return AppLocalizations.of(context)!.required(widget.title);
+      return AppLocalizations.of(context)!.required(widget.title);
     }
     if (widget.itemValidator != null) {
       final selectedItem = _currentSuggestions.firstWhere(
@@ -314,7 +328,6 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
                 link: _layerLink,
                 child: TextFormField(
                   focusNode: _focusNode,
-
                   key: _fieldKey,
                   controller: widget.controller,
                   onChanged: (value) {
@@ -341,7 +354,7 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
                     final input = value.trim();
                     // Call the optional external submit handler
                     widget.onSubmitted?.call(name: input);
-          
+
                     // Try to match item by product code (proCode)
                     final match = _currentSuggestions.firstWhere(
                           (item) {
@@ -409,7 +422,6 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
               if (widget.end != null) widget.end!,
               if (widget.bloc != null)
                 BlocListener<B, S>(
-
                   bloc: widget.bloc,
                   listener: (context, state) {
                     if (widget.readOnly) return;

@@ -17,3 +17,8 @@ class LoadOrderReportEvent extends OrderReportEvent{
 
   List<Object?> get props => [fromDate, toDate, orderName, customerId, branchId];
 }
+
+class ResetOrderReportEvent extends OrderReportEvent{
+  @override
+  List<Object?> get props => [];
+}

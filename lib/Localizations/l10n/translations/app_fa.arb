@@ -714,5 +714,7 @@
   "systemEquivalent": "معادل سیستم",
   "cashBalances": "موجودی نقدی",
   "usersHintReport": "با انتخاب وضعیت، شعبه یا نقش، فهرست کاربران مورد نظر خود را مشاهده کنید.",
-  "clearFilters": "حذف فلتر"
+  "clearFilters": "حذف فلتر",
+  "outOfStock": "عدم موجودی",
+  "available": "موجود"
 }
