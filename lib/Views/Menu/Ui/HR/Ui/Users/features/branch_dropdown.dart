@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 
 import '../../../../../../../Features/Generic/zaitoon_drop.dart';
 import '../../../../Settings/Ui/Company/Branches/bloc/branch_bloc.dart';
@@ -55,7 +56,10 @@ class BranchDropdown extends StatelessWidget {
           return ZDropdown<BranchModel>(
             title: title,
             items: branches,
-            selectedItem: initialBranch, // ✅ show branchName instead of code
+            selectedItem: initialBranch,
+            customTitle: Text(AppLocalizations.of(context)!.branch,style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontSize: 12,
+            ),),
             height: height,
             radius: radius,
             itemLabel: (b) => b.brcName ?? "",
