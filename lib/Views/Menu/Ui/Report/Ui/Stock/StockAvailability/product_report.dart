@@ -142,36 +142,6 @@ class _DesktopState extends State<_Desktop> {
               crossAxisAlignment: CrossAxisAlignment.end,
               spacing: 8,
               children: [
-                SizedBox(
-                  width: 250,
-                  child: StorageDropDown(
-                    height: 40,
-                    title: tr.storage,
-                    selectedId: storageId, // Pass current storageId
-                    onChanged: (e){
-                      setState(() {
-                        storageId = e?.stgId;
-                      });
-                    },
-                  ),
-                ),
-                SizedBox(
-                  width: 250,
-                  child: StatusDropdown(
-                    height: 40,
-                    items: [
-                      StatusItem(null, tr.all),
-                      StatusItem(1, tr.available),
-                      StatusItem(0, tr.outOfStock),
-                    ],
-                    value: isNoStock,
-                    onChanged: (e) {
-                      setState(() {
-                        isNoStock = e;
-                      });
-                    },
-                  ),
-                ),
                 // Product Selection
                 Expanded(
                   child: GenericTextfield<ProductsModel, ProductsBloc, ProductsState>(
@@ -219,6 +189,36 @@ class _DesktopState extends State<_Desktop> {
                       proName: tr.all,
                       proCode: '',
                     ),
+                  ),
+                ),
+                SizedBox(
+                  width: 250,
+                  child: StorageDropDown(
+                    height: 40,
+                    title: tr.storage,
+                    selectedId: storageId, // Pass current storageId
+                    onChanged: (e){
+                      setState(() {
+                        storageId = e?.stgId;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: 250,
+                  child: StatusDropdown(
+                    height: 40,
+                    items: [
+                      StatusItem(null, tr.all),
+                      StatusItem(1, tr.available),
+                      StatusItem(2, tr.outOfStock),
+                    ],
+                    value: isNoStock,
+                    onChanged: (e) {
+                      setState(() {
+                        isNoStock = e;
+                      });
+                    },
                   ),
                 ),
               ],
