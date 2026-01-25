@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/branch_dropdown.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/OrdersReport/bloc/order_report_bloc.dart';
 import '../../../../../../../../Features/Date/z_generic_date.dart';
 import '../../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
+import '../../../../../../../../Features/Other/utils.dart';
 import '../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../../Localizations/Bloc/localizations_bloc.dart';
 import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import '../../../../../Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import '../../../../../Stakeholders/Ui/Individuals/model/individual_model.dart';
+import '../../../../../Stock/Ui/OrderScreen/GetOrderById/order_by_id.dart';
 
 class OrderReportView extends StatelessWidget {
   final String? orderName;
@@ -61,6 +65,8 @@ class _DesktopState extends State<_Desktop> {
   int? branchId;
   int? customerId;
   final _personController = TextEditingController();
+  final orderId = TextEditingController();
+
   String? myLocale;
   String? baseCcy;
   @override
@@ -106,6 +112,7 @@ class _DesktopState extends State<_Desktop> {
                 setState(() {
                   customerId = null;
                   branchId = null;
+                  orderId.clear();
                   _personController.clear();
                   fromDate = DateTime.now().toFormattedDate();
                   toDate = DateTime.now().toFormattedDate();
@@ -132,6 +139,7 @@ class _DesktopState extends State<_Desktop> {
                     fromDate: fromDate,
                     toDate: toDate,
                     branchId: branchId,
+                    orderId: int.tryParse(orderId.text),
                     customerId: customerId,
                     orderName: widget.orderName
                 ));
@@ -158,15 +166,8 @@ class _DesktopState extends State<_Desktop> {
                   child: GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
                     key: const ValueKey('person_field'),
                     controller: _personController,
-                    title: tr.supplier,
-                    hintText: tr.supplier,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return tr.required(tr.supplier);
-                      }
-                      return null;
-                    },
-
+                    title: tr.party,
+                    hintText: tr.party,
                     bloc: context.read<IndividualsBloc>(),
                     fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
                     searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
@@ -219,6 +220,15 @@ class _DesktopState extends State<_Desktop> {
                       }),
                 ),
                 Expanded(
+                  child: ZTextFieldEntitled(
+                      controller: orderId,
+                      title: tr.orderId,
+                      hint: "#",
+                      inputFormat: [FilteringTextInputFormatter.digitsOnly],
+                      onChanged: (e){},
+                  ),
+                ),
+                Expanded(
                   child: ZDatePicker(
                     label: tr.fromDate,
                     value: fromDate,
@@ -246,7 +256,7 @@ class _DesktopState extends State<_Desktop> {
           SizedBox(height: 15),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 15,vertical: 8),
-            margin: EdgeInsets.symmetric(horizontal: 0),
+            margin: EdgeInsets.symmetric(horizontal: 15),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary.withValues(alpha: .8),
             ),
@@ -254,7 +264,7 @@ class _DesktopState extends State<_Desktop> {
               children: [
                 SizedBox(
                     width: 50,
-                    child: Text("#",style: titleStyle)),
+                    child: Text(tr.id,style: titleStyle)),
 
                 SizedBox(
                     width: 100,
@@ -264,7 +274,14 @@ class _DesktopState extends State<_Desktop> {
                     width: 180,
                     child: Text(tr.referenceNumber,style: titleStyle)),
                 Expanded(
-                    child: Text(tr.customer,style: titleStyle)),
+                    child: Text(tr.party,style: titleStyle)),
+
+                SizedBox(
+                    width: 150,
+                    child: Text(tr.branch,style: titleStyle,)),
+                SizedBox(
+                    width: 150,
+                    child: Text(tr.totalTitle,style: titleStyle,)),
               ],
             ),
           ),
@@ -299,32 +316,41 @@ class _DesktopState extends State<_Desktop> {
                       itemCount: state.orders.length,
                       itemBuilder: (context,index){
                        final ord = state.orders[index];
-                    return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15,vertical: 8),
-                      decoration: BoxDecoration(
-                        color: index.isEven? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent
-                      ),
-                      child: Row(
-                        children: [
-                          SizedBox(
-                              width: 50,
-                              child: Text(ord.ordId.toString())),
-                          SizedBox(
-                              width: 100,
-                              child: Text(ord.timing.toFormattedDate())),
-                          SizedBox(
-                              width: 180,
-                              child: Text(ord.ordTrnRef ??"")),
-                          Expanded(
-                              child: Text(ord.fullName??"")),
+                    return InkWell(
+                      onTap: (){
+                        Utils.goto(
+                          context,
+                          OrderByIdView(orderId: ord.ordId!,ordName: ord.ordName),
+                        );
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 15,vertical: 8),
+                        margin: EdgeInsets.symmetric(horizontal: 15),
+                        decoration: BoxDecoration(
+                          color: index.isEven? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent
+                        ),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                                width: 50,
+                                child: Text(ord.ordId.toString())),
+                            SizedBox(
+                                width: 100,
+                                child: Text(ord.timing.toFormattedDate())),
+                            SizedBox(
+                                width: 180,
+                                child: Text(ord.ordTrnRef ??"")),
+                            Expanded(
+                                child: Text(ord.fullName??"")),
 
-                          SizedBox(
-                              width: 150,
-                              child: Text(ord.ordBranchName ??"")),
-                          SizedBox(
-                              width: 150,
-                              child: Text("${ord.totalBill.toAmount()} $baseCcy" )),
-                        ],
+                            SizedBox(
+                                width: 150,
+                                child: Text(ord.ordBranchName ??"")),
+                            SizedBox(
+                                width: 150,
+                                child: Text("${ord.totalBill.toAmount()} $baseCcy" )),
+                          ],
+                        ),
                       ),
                     );
                   });

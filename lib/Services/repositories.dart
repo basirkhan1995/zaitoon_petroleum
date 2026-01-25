@@ -2940,7 +2940,7 @@ class Repositories {
       throw "$e";
     }
   }
-  Future<List<OrderReportModel>> ordersReport({String? fromDate, String? toDate, int? customerId, int? branchId, String? orderName}) async {
+  Future<List<OrderReportModel>> ordersReport({String? fromDate, String? toDate, int? ordID, int? customerId, int? branchId, String? orderName}) async {
     try {
       final response = await api.post(
           endpoint: "/reports/allOrders.php",
@@ -2948,6 +2948,7 @@ class Repositories {
             "fromDate": fromDate,
             "toDate": toDate,
             "orderName": orderName,
+            "ordID": ordID,
             "customer": customerId,
             "branch": branchId
           }

@@ -12,7 +12,7 @@ class OrderReportBloc extends Bloc<OrderReportEvent, OrderReportState> {
     on<LoadOrderReportEvent>((event, emit) async{
       emit(OrderReportLoadingState());
       try{
-        final orders = await _repo.ordersReport(fromDate: event.fromDate, toDate: event.toDate, orderName: event.orderName, customerId: event.customerId, branchId: event.branchId);
+        final orders = await _repo.ordersReport(fromDate: event.fromDate, toDate: event.toDate, orderName: event.orderName, ordID: event.orderId, customerId: event.customerId, branchId: event.branchId);
         emit(OrderReportLoadedSate(orders));
       }catch(e){
         emit(OrderReportErrorState(e.toString()));
