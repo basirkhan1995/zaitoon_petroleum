@@ -187,33 +187,7 @@ class _DesktopState extends State<_Desktop> {
               crossAxisAlignment: CrossAxisAlignment.end,
               spacing: 8,
               children: [
-                SizedBox(
-                  width: 150,
-                  child: ZDatePicker(
-                    label: tr.fromDate,
-                    value: fromDate,
-                    onDateChanged: (v) {
-                      setState(() {
-                        fromDate = v;
-                        shamsiFromDate = v.toAfghanShamsi;
-                      });
-                    },
-                  ),
-                ),
 
-                SizedBox(
-                  width: 150,
-                  child: ZDatePicker(
-                    label: tr.toDate,
-                    value: toDate,
-                    onDateChanged: (v) {
-                      setState(() {
-                        toDate = v;
-                        shamsiToDate = v.toAfghanShamsi;
-                      });
-                    },
-                  ),
-                ),
                 Expanded(
                   flex: 2,
                   child: DriversDropdown(
@@ -254,6 +228,31 @@ class _DesktopState extends State<_Desktop> {
                     value: status,
                     onChanged: (v) {
                       setState(() => status = v); // v is 1 or 0
+                    },
+                  ),
+                ),
+
+                Expanded(
+                  child: ZDatePicker(
+                    label: tr.fromDate,
+                    value: fromDate,
+                    onDateChanged: (v) {
+                      setState(() {
+                        fromDate = v;
+                        shamsiFromDate = v.toAfghanShamsi;
+                      });
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: ZDatePicker(
+                    label: tr.toDate,
+                    value: toDate,
+                    onDateChanged: (v) {
+                      setState(() {
+                        toDate = v;
+                        shamsiToDate = v.toAfghanShamsi;
+                      });
                     },
                   ),
                 ),
@@ -300,8 +299,9 @@ class _DesktopState extends State<_Desktop> {
     final tr = AppLocalizations.of(context)!;
     final titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.surface);
     return Container(
-      height: 40,
+      height: 35,
       padding: const EdgeInsets.symmetric(horizontal: 15),
+      margin: const EdgeInsets.symmetric(horizontal: 15),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary.withValues(alpha: .9)
       ),
@@ -342,6 +342,7 @@ class _DesktopState extends State<_Desktop> {
           },
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            margin: const EdgeInsets.symmetric(horizontal: 15),
             decoration: BoxDecoration(
               color: index.isEven
                   ? Theme.of(context).colorScheme.primary.withValues(alpha: .05)

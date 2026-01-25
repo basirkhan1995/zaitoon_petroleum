@@ -99,10 +99,22 @@ class _DesktopState extends State<_Desktop> {
       color: Theme.of(context).colorScheme.surface,
     );
     final tr = AppLocalizations.of(context)!;
-
+    String header(String? orderName) {
+      if (orderName == null) return "";
+      switch (orderName) {
+        case "Purchase":
+          return "${tr.purchaseTitle} ${tr.invoiceTitle}";
+        case "Sale":
+          return "${tr.saleTitle} ${tr.invoiceTitle}";
+        case "Estimate":
+          return "${tr.estimateTitle} ${tr.invoiceTitle}";
+        default:
+          return "";
+      }
+    }
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.orderName == "Purchase"? "${tr.purchaseTitle} ${tr.invoiceTitle}" : widget.orderName == "Sale"? "${tr.saleTitle} ${tr.invoiceTitle}" : "${tr.estimateTitle} ${tr.invoiceTitle}"),
+        title: Text(header(widget.orderName??"")),
         titleSpacing: 0,
         actionsPadding: EdgeInsets.symmetric(horizontal: 10),
         actions: [
@@ -290,8 +302,8 @@ class _DesktopState extends State<_Desktop> {
               builder: (context, state) {
                 if(state is OrderReportInitial){
                   return NoDataWidget(
-                    title: "Purchased Orders",
-                    message: "Reports",
+                    title: header(widget.orderName),
+                    message: "Filter and review orders by branch, date, order ID, or party.",
                     enableAction: false,
                   );
                 }
