@@ -1,0 +1,21 @@
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:zaitoon_petroleum/Services/repositories.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/OrdersReport/model/order_report_model.dart';
+
+part 'order_report_event.dart';
+part 'order_report_state.dart';
+
+class OrderReportBloc extends Bloc<OrderReportEvent, OrderReportState> {
+  final Repositories _repo;
+  OrderReportBloc(this._repo) : super(OrderReportInitial()) {
+    on<LoadOrderReportEvent>((event, emit) async{
+      try{
+        final orders = await _repo.ordersReport(fromDate: event.fromDate, toDate: event.toDate, orderName: event.orderName, customerId: event.customerId, branchId: event.branchId);
+        emit(OrderReportLoadedSate(orders));
+      }catch(e){
+        emit(OrderReportErrorState(e.toString()));
+      }
+    });
+  }
+}

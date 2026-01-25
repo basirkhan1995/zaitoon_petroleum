@@ -233,7 +233,7 @@
   "incorrectPassword": "Password is incorrect.",
   "accessDenied": "Access Denied!",
   "unverified": "You haven't verified your email yet.",
-  "blockedMessage": "You're blocked, contact your administrator please.",
+  "blockedMessage": "The targeted account is blocked, kindly contact administrator for reason.",
   "ceo": "CEO",
   "deputy": "Deputy",
   "authoriser": "Authoriser",

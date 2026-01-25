@@ -659,7 +659,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get blockedMessage =>
-      'You\'re blocked, contact your administrator please.';
+      'The targeted account is blocked, kindly contact administrator for reason.';
 
   @override
   String get ceo => 'CEO';

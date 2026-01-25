@@ -566,7 +566,7 @@ abstract class PrintServices {
         "ar":"صراف"
       },
       'products' : {
-        'en':"Products",
+        'en':"StockAvailability",
         'fa':"محصولات",
         "ar":"محصولات"
       },
@@ -581,12 +581,12 @@ abstract class PrintServices {
         "ar":"بل برگشتی"
       },
       'RTPU' : {
-        'en':"Buy Return",
+        'en':"PurchaseReport Return",
         'fa':"برگشت خرید",
         "ar":"برگشت خرید"
       },
       'RTSL' : {
-        'en':"Sell Return",
+        'en':"SaleReport Return",
         'fa':"برگشت فروش",
         "ar":"برگشت فروش"
       },
@@ -954,7 +954,7 @@ abstract class PrintServices {
         'ar':'خرید',
       },
       'SEL':{
-        'en':'Sell',
+        'en':'SaleReport',
         'fa':'فروش',
         'ar':'فروش',
       },

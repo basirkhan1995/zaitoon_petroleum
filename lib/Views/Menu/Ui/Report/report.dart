@@ -17,6 +17,7 @@ import 'Ui/Finance/ArApReport/Receivables/receivables.dart';
 import 'Ui/Finance/ExchangeRate/exchange_rate.dart';
 import 'Ui/Finance/Treasury/all_cash.dart';
 import 'Ui/Finance/TrialBalance/trial_balance.dart';
+import 'Ui/Stock/StockAvailability/product_report.dart';
 import 'Ui/UserReport/user_log_report.dart';
 import 'Ui/UserReport/users_report.dart';
 
@@ -279,9 +280,9 @@ class _DesktopState extends State<_Desktop> {
       case ActionKey.allBalances: Utils.goto(context, AllBalancesView());
 
       // Stock
-      case ActionKey.products: throw UnimplementedError();
-      case ActionKey.purchase: throw UnimplementedError();
-      case ActionKey.sale: throw UnimplementedError();
+      case ActionKey.products:  Utils.goto(context, ProductReportView());
+      case ActionKey.purchase: Utils.goto(context, ProductReportView());
+      case ActionKey.sale: Utils.goto(context, ProductReportView());
 
       // Activity
       case ActionKey.userLog: Utils.goto(context, UserLogReportView());

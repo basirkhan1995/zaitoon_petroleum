@@ -1381,7 +1381,7 @@ abstract class AppLocalizations {
   /// No description provided for @blockedMessage.
   ///
   /// In en, this message translates to:
-  /// **'You\'re blocked, contact your administrator please.'**
+  /// **'The targeted account is blocked, kindly contact administrator for reason.'**
   String get blockedMessage;
 
   /// No description provided for @ceo.

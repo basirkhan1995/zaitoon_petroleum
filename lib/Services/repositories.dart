@@ -45,6 +45,8 @@ import '../Views/Menu/Ui/Report/Ui/AllBalances/model/all_balances_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/ArApReport/model/ar_ap_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/model/bs_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/ExchangeRate/model/rate_report_model.dart';
+import '../Views/Menu/Ui/Report/Ui/Stock/OrdersReport/model/order_report_model.dart';
+import '../Views/Menu/Ui/Report/Ui/Stock/StockAvailability/model/product_report_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Transport/model/shp_report_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/model/limit_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Company/Branches/model/branch_model.dart';
@@ -1682,7 +1684,7 @@ class Repositories {
     }
   }
 
-  /// Products .................................................................
+  /// StockAvailability .................................................................
   Future<Map<String, dynamic>> addProduct({required ProductsModel newProduct}) async {
     try {
       final response = await api.post(
@@ -2895,6 +2897,76 @@ class Repositories {
       // If single object, wrap in list
       if (response.data is Map<String, dynamic>) {
         return [AllBalancesModel.fromMap(response.data)];
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+  Future<List<ProductReportModel>> stockAvailabilityReport({int? productId, int? storageId, int? isNoStock}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/reports/stockAvailability.php",
+          data: {
+            "product": productId,
+            "storage": storageId,
+            "availability": isNoStock,
+          }
+      );
+
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // Parse as list
+      if (response.data is List) {
+        return List<ProductReportModel>.from(
+            response.data.map((x) => ProductReportModel.fromMap(x))
+        );
+      }
+
+      // If single object, wrap in list
+      if (response.data is Map<String, dynamic>) {
+        return [ProductReportModel.fromMap(response.data)];
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+  Future<List<OrderReportModel>> ordersReport({String? fromDate, String? toDate, int? customerId, int? branchId, String? orderName}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/reports/allOrders.php",
+          data: {
+            "fromDate": fromDate,
+            "toDate": toDate,
+            "orderName": orderName,
+            "customer": customerId,
+            "branch": branchId
+          }
+      );
+
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // Parse as list
+      if (response.data is List) {
+        return List<OrderReportModel>.from(
+            response.data.map((x) => OrderReportModel.fromMap(x))
+        );
+      }
+
+      // If single object, wrap in list
+      if (response.data is Map<String, dynamic>) {
+        return [OrderReportModel.fromMap(response.data)];
       }
 
       return [];
