@@ -4311,6 +4311,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'IN/OUT'**
   String get inAndOut;
+
+  /// No description provided for @ongoingBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing Balance'**
+  String get ongoingBalance;
+
+  /// No description provided for @accountsAndUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounts & Users'**
+  String get accountsAndUsers;
 }
 
 class _AppLocalizationsDelegate

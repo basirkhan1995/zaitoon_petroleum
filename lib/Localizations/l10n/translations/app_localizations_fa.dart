@@ -2167,4 +2167,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get inAndOut => 'ورود/خروج';
+
+  @override
+  String get ongoingBalance => 'موجودی';
+
+  @override
+  String get accountsAndUsers => 'حسابها و کاربران';
 }

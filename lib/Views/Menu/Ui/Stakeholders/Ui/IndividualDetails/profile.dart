@@ -49,7 +49,7 @@ class IndividualsDetailsTabView extends StatelessWidget {
             borderRadius: 0,
             title: AppLocalizations.of(context)!.details,
             selectedColor: Theme.of(context).colorScheme.primary,
-            description: "Accounts & Users",
+            description: AppLocalizations.of(context)!.accountsAndUsers,
             unselectedTextColor: Theme.of(context).colorScheme.secondary,
             selectedTextColor: Theme.of(context).colorScheme.surface,
             tabContainerColor: Theme.of(context).colorScheme.surface,

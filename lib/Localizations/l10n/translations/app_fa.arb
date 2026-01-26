@@ -721,5 +721,7 @@
   "verified": "وضعیت تأیید",
   "fcp": "تغییر رمز",
   "weight": "وزن",
-  "inAndOut": "ورود/خروج"
+  "inAndOut": "ورود/خروج",
+  "ongoingBalance": "موجودی",
+  "accountsAndUsers": "حسابها و کاربران"
 }

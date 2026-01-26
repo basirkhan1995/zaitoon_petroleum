@@ -172,10 +172,8 @@ class _DesktopState extends State<_Desktop> {
                         title: tr.products,
                         hintText: tr.products,
                         bloc: context.read<ProductsBloc>(),
-                        fetchAllFunction: (bloc) =>
-                            bloc.add(LoadProductsEvent()),
-                        searchFunction: (bloc, query) =>
-                            bloc.add(LoadProductsEvent()),
+                        fetchAllFunction: (bloc) => bloc.add(LoadProductsEvent()),
+                        searchFunction: (bloc, query) => bloc.add(LoadProductsEvent()),
                         // showAllOption: true,
                         // allOption: ProductsModel(
                         //   proId: null,
@@ -198,13 +196,12 @@ class _DesktopState extends State<_Desktop> {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              "${ind.proName ?? ''} ${ind.proCode ?? ''}",
+                              "${ind.proCode} | ${ind.proName ?? ''}",
                             ),
                           );
                         },
-                        itemToString: (pro) => "${pro.proName} ${pro.proCode}",
-                        stateToLoading: (state) =>
-                            state is ProductsLoadingState,
+                        itemToString: (pro) => "${pro.proCode} | ${pro.proName ?? ''}",
+                        stateToLoading: (state) => state is ProductsLoadingState,
                         stateToItems: (state) {
                           if (state is ProductsLoadedState) {
                             return state.products;
@@ -301,7 +298,7 @@ class _DesktopState extends State<_Desktop> {
                       child: Text(tr.unitPrice,style: titleStyle)),
                   SizedBox(
                       width: 100,
-                      child: Text(tr.balance,style: titleStyle)),
+                      child: Text(tr.totalTitle,style: titleStyle)),
             ]),
           ),
 
@@ -381,11 +378,11 @@ class _DesktopState extends State<_Desktop> {
 
                               SizedBox(
                                   width: 120,
-                                  child: Text(stock.price.toAmount())),
+                                  child: Text("${stock.price.toAmount()} $baseCcy")),
 
                               SizedBox(
                                   width: 100,
-                                  child: Text("${stock.runningQuantity.toAmount(decimal: 4)} $baseCcy")),
+                                  child: Text(stock.runningQuantity.toAmount(decimal: 4))),
                             ],
                           ),
                                                 ),

@@ -173,8 +173,8 @@ class _DesktopState extends State<_Desktop> {
                         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 200,
                           crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 0.85,
+                          mainAxisSpacing: 22,
+                          childAspectRatio: 0.95,
                         ),
                         itemCount: filteredList.length,
                         itemBuilder: (context, index) {

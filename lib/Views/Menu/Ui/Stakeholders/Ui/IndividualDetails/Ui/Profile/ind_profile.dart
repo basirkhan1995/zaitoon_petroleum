@@ -104,7 +104,7 @@ class _DesktopState extends State<_Desktop> {
                         children: [
                           ImageHelper.stakeholderProfile(
                               shapeStyle: ShapeStyle.roundedRectangle,
-                              imageName:  individual?.imageProfile,
+                              imageName: individual?.imageProfile,
                               border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
                               borderRadius: 5,
                               size: 115),

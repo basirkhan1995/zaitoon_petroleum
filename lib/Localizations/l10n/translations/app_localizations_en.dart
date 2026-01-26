@@ -2176,4 +2176,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inAndOut => 'IN/OUT';
+
+  @override
+  String get ongoingBalance => 'Ongoing Balance';
+
+  @override
+  String get accountsAndUsers => 'Accounts & Users';
 }

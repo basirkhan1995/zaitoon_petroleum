@@ -52,7 +52,7 @@ class ZCard extends StatefulWidget {
     this.onTap,
     this.hoverable = true,
     this.borderRadius = 8,
-    this.padding = const EdgeInsets.all(12),
+    this.padding = const EdgeInsets.all(10),
     this.showDivider = true,
     this.imageBuilder,
     this.titleBuilder,
@@ -189,7 +189,7 @@ class _ZCardState extends State<ZCard> {
                       style: Theme.of(context)
                           .textTheme
                           .titleSmall
-                          ?.copyWith(fontWeight: FontWeight.bold),
+                          ?.copyWith(fontWeight: FontWeight.bold,fontSize: 12),
                       overflow: TextOverflow.ellipsis,
                     ),
                     if (widget.subtitle != null &&
@@ -198,7 +198,7 @@ class _ZCardState extends State<ZCard> {
                       Text(
                         widget.subtitle!,
                         style:
-                        Theme.of(context).textTheme.bodySmall,
+                        Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 10),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],

@@ -721,5 +721,7 @@
   "verified": "Verified",
   "fcp": "FCP",
   "weight": "Weight",
-  "inAndOut": "IN/OUT"
+  "inAndOut": "IN/OUT",
+  "ongoingBalance": "Ongoing Balance",
+  "accountsAndUsers": "Accounts & Users"
 }

@@ -169,33 +169,7 @@ class StockView extends StatelessWidget {
                       width: double.infinity,
                        onPressed: () => getInvoiceById(context),
                     ),
-                    SizedBox(height: 3),
-                    Wrap(
-                      spacing: 5,
-                      children: [
-                        const Icon(Icons.keyboard_return, size: 20),
-                        Text(
-                          locale.returnGoods,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                      ],
-                    ),
-                    ZOutlineButton(
-                      backgroundColor: color.primary.withValues(alpha: opacity),
-                      toolTip: "F5",
-                      label: Text(locale.returnPurchase),
-                      icon: Icons.keyboard_return_rounded,
-                      width: double.infinity,
-                      // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
-                    ),
-                    ZOutlineButton(
-                      backgroundColor: color.primary.withValues(alpha: opacity),
-                      toolTip: "F6",
-                      label: Text(locale.saleReturn),
-                      icon: Icons.keyboard_return_rounded,
-                      width: double.infinity,
-                      // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
-                    ),
+
                     SizedBox(height: 3),
                     Wrap(
                       spacing: 5,
