@@ -370,14 +370,14 @@ class _DesktopState extends State<_Desktop> {
                       currentBranchId: branchCode,
                     onBranchSelected: (e) {
                   setState(() {
-                    branchCode = e.brcId;
+                    branchCode = e?.brcId;
                   });
                 })),
                 Expanded(child: UserRoleDropdown(
                   selectedDatabaseValue: widget.user.usrRole,
                     onRoleSelected: (e) {
                   setState(() {
-                    usrRole = e.name;
+                    usrRole = e?.name;
                   });
                 })),
               ],

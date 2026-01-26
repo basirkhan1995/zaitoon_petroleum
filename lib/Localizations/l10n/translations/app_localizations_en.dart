@@ -2161,4 +2161,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get available => 'Available';
+
+  @override
+  String get driverRegistration => 'Driver Registration';
+
+  @override
+  String get verified => 'Verified';
+
+  @override
+  String get fcp => 'FCP';
 }

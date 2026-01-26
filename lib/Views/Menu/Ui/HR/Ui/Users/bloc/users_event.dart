@@ -23,6 +23,12 @@ class LoadUsersReportEvent extends UsersEvent{
   List<Object?> get props => [branchId, usrName, role, status];
 }
 
+class ResetUsersEvent extends UsersEvent{
+  @override
+  List<Object?> get props => [];
+
+}
+
 
 class AddUserEvent extends UsersEvent{
   final UsersModel newUser;

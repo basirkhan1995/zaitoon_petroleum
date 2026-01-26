@@ -196,7 +196,7 @@ class _DesktopState extends State<_Desktop> {
                       title: "",
                       onBranchSelected: (e){
                       setState(() {
-                        branchId = e.brcId;
+                        branchId = e?.brcId;
                       });
                       context.read<CashBalancesBloc>().add(
                         LoadCashBalanceBranchWiseEvent(branchId: branchId),

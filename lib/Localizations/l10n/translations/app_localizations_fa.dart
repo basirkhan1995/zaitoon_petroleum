@@ -2152,4 +2152,13 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get available => 'موجود';
+
+  @override
+  String get driverRegistration => 'ثبت راننده';
+
+  @override
+  String get verified => 'وضعیت تأیید';
+
+  @override
+  String get fcp => 'تغییر رمز';
 }

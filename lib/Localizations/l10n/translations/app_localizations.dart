@@ -4281,6 +4281,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Available'**
   String get available;
+
+  /// No description provided for @driverRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver Registration'**
+  String get driverRegistration;
+
+  /// No description provided for @verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get verified;
+
+  /// No description provided for @fcp.
+  ///
+  /// In en, this message translates to:
+  /// **'FCP'**
+  String get fcp;
 }
 
 class _AppLocalizationsDelegate

@@ -42,6 +42,14 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
       }
     });
 
+    on<LoadUsersReportEvent>((event, emit) async{
+      try{
+        emit(UsersInitial());
+      }catch(e){
+        emit(UsersErrorState(e.toString()));
+      }
+    });
+
     on<AddUserEvent>((event, emit) async {
       final locale = localizationService.loc;
       emit(UsersLoadingState());

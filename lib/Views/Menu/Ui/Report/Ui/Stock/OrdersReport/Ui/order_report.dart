@@ -131,6 +131,8 @@ class _DesktopState extends State<_Desktop> {
                 });
                 context.read<OrderReportBloc>().add(ResetOrderReportEvent());
               },
+              backgroundHover: Theme.of(context).colorScheme.error,
+              isActive: true,
               width: 140,
               icon: Icons.filter_alt_off_outlined,
               label: Text(tr.clearFilters),
@@ -224,10 +226,11 @@ class _DesktopState extends State<_Desktop> {
                 Expanded(
                   flex: 2,
                   child: BranchDropdown(
+                      showAllOption: true,
                       title: tr.branch,
                       onBranchSelected: (e){
                         setState(() {
-                          branchId = e.brcId;
+                          branchId = e?.brcId;
                         });
                       }),
                 ),
@@ -237,7 +240,6 @@ class _DesktopState extends State<_Desktop> {
                       title: tr.orderId,
                       hint: "#",
                       inputFormat: [FilteringTextInputFormatter.digitsOnly],
-                      onChanged: (e){},
                   ),
                 ),
                 Expanded(
@@ -282,6 +284,7 @@ class _DesktopState extends State<_Desktop> {
                     width: 100,
                     child: Text(tr.date,style: titleStyle)),
 
+                if(widget.orderName != "Estimate")
                 SizedBox(
                     width: 180,
                     child: Text(tr.referenceNumber,style: titleStyle)),
@@ -349,6 +352,7 @@ class _DesktopState extends State<_Desktop> {
                             SizedBox(
                                 width: 100,
                                 child: Text(ord.timing.toFormattedDate())),
+                            if(widget.orderName != "Estimate")
                             SizedBox(
                                 width: 180,
                                 child: Text(ord.ordTrnRef ??"")),

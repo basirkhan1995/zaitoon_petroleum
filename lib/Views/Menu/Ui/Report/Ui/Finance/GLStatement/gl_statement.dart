@@ -284,7 +284,7 @@ class _DesktopState extends State<_Desktop> {
                                   height: 40,
                                   onBranchSelected: (e){
                                     setState(() {
-                                      branchCode = e.brcId ?? 1000;
+                                      branchCode = e?.brcId ?? 1000;
                                     });
                                   }),
                             ),

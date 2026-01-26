@@ -24,6 +24,9 @@ class TotalDailyPieView extends StatelessWidget {
         }
 
         if (state is TotalDailyLoaded) {
+          if(state.data.isEmpty){
+            return const SizedBox();
+          }
           final data = state.data;
 
           // Total for calculating percentages

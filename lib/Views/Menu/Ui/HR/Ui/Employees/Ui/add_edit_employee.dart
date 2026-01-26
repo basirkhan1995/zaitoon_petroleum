@@ -19,24 +19,28 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/mode
 import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../../../../Features/Other/thousand_separator.dart';
 
-
 class AddEditEmployeeView extends StatelessWidget {
   final EmployeeModel? model;
   final bool? isDriver;
-  const AddEditEmployeeView({super.key, this.model,this.isDriver = false});
+  final String? employeeType; // New parameter for employee type
+  const AddEditEmployeeView({
+    super.key,
+    this.model,
+    this.isDriver = false,
+    this.employeeType, // Add this parameter
+  });
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobile: _Mobile(),
-      desktop: _Desktop(model: model,isDriver: isDriver),
+      desktop: _Desktop(model: model, isDriver: isDriver, employeeType: employeeType),
       tablet: _Tablet(),
     );
   }
 }
 
 class _Tablet extends StatelessWidget {
-
   const _Tablet();
 
   @override
@@ -57,7 +61,12 @@ class _Mobile extends StatelessWidget {
 class _Desktop extends StatefulWidget {
   final EmployeeModel? model;
   final bool? isDriver;
-  const _Desktop({this.model,this.isDriver = false});
+  final String? employeeType;
+  const _Desktop({
+    this.model,
+    this.isDriver = false,
+    this.employeeType,
+  });
 
   @override
   State<_Desktop> createState() => _DesktopState();
@@ -78,13 +87,11 @@ class _DesktopState extends State<_Desktop> {
   String? department;
   DateTime? startDate;
 
-
-
   final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    if(widget.model != null){
+    if (widget.model != null) {
       department = widget.model?.empDepartment ?? "";
       paymentBase = widget.model?.empPmntMethod ?? "";
       salaryCalBase = widget.model?.empSalCalcBase ?? "";
@@ -93,16 +100,21 @@ class _DesktopState extends State<_Desktop> {
       empEmail.text = widget.model?.empEmail ?? "";
       empTaxInfo.text = widget.model?.empTaxInfo ?? "";
       perId = widget.model!.perId!;
-      jobTitle.text = widget.model?.empPosition??"";
+      jobTitle.text = widget.model?.empPosition ?? "";
     }
-    if(widget.isDriver == true){
+
+    // Handle job title based on parameters
+    if (widget.isDriver == true || widget.employeeType == 'driver') {
       jobTitle.text = "Driver";
-    }else{
-        jobTitle.text = '';
+    } else if (widget.model?.empPosition != null && widget.model!.empPosition!.isNotEmpty) {
+      jobTitle.text = widget.model!.empPosition!;
+    } else {
+      jobTitle.text = '';
     }
 
     super.initState();
   }
+
   @override
   void dispose() {
     super.dispose();
@@ -115,16 +127,24 @@ class _DesktopState extends State<_Desktop> {
 
     return ZFormDialog(
       width: 550,
-      actionLabel: isLoading? SizedBox(
+      actionLabel: isLoading
+          ? SizedBox(
           width: 16,
           height: 16,
           child: CircularProgressIndicator(
             color: Theme.of(context).colorScheme.surface,
             strokeWidth: 2,
-          )) : widget.model == null ? Text(locale.create) : Text(locale.update),
+          ))
+          : widget.model == null
+          ? Text(locale.create)
+          : Text(locale.update),
       icon: Icons.perm_contact_calendar_rounded,
       onAction: onSubmit,
-      title: widget.model == null ? locale.employeeRegistration : locale.update,
+      title: widget.model == null
+          ? (widget.isDriver == true || widget.employeeType == 'driver'
+          ? locale.driverRegistration // Custom title for driver
+          : locale.employeeRegistration)
+          : locale.update,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -133,124 +153,130 @@ class _DesktopState extends State<_Desktop> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if(widget.model == null)
-                GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
-                  showAllOnFocus: true,
-                  controller: individualCtrl,
-                  title: locale.individuals,
-                  hintText: locale.individuals,
-                  isRequired: true,
-                  bloc: context.read<IndividualsBloc>(),
-                  fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
-                  searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return locale.required(locale.individuals);
-                    }
-                    return null;
-                  },
-                  itemBuilder: (context, account) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 5,
+                if (widget.model == null)
+                  GenericTextfield<IndividualsModel, IndividualsBloc,
+                      IndividualsState>(
+                    showAllOnFocus: true,
+                    controller: individualCtrl,
+                    title: locale.individuals,
+                    hintText: locale.individuals,
+                    isRequired: true,
+                    bloc: context.read<IndividualsBloc>(),
+                    fetchAllFunction: (bloc) =>
+                        bloc.add(LoadIndividualsEvent()),
+                    searchFunction: (bloc, query) =>
+                        bloc.add(LoadIndividualsEvent()),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return locale.required(locale.individuals);
+                      }
+                      return null;
+                    },
+                    itemBuilder: (context, account) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 5,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "${account.perName} ${account.perLastName}",
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "${account.perName} ${account.perLastName}",
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ],
-                        ),
-                      ],
+                    itemToString: (acc) => "${acc.perName} ${acc.perLastName}",
+                    stateToLoading: (state) => state is IndividualLoadingState,
+                    loadingBuilder: (context) => const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
                     ),
+                    stateToItems: (state) {
+                      if (state is IndividualLoadedState) {
+                        return state.individuals;
+                      }
+                      return [];
+                    },
+                    onSelected: (value) {
+                      setState(() {
+                        perId = value.perId!;
+                        indAccountCtrl.clear();
+                        context
+                            .read<AccountsBloc>()
+                            .add(LoadAccountsEvent(ownerId: perId));
+                      });
+                    },
+                    noResultsText: locale.noDataFound,
+                    showClearButton: true,
                   ),
-                  itemToString: (acc) => "${acc.perName} ${acc.perLastName}",
-                  stateToLoading: (state) => state is IndividualLoadingState,
-                  loadingBuilder: (context) => const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                  stateToItems: (state) {
-                    if (state is IndividualLoadedState) {
-                      return state.individuals;
-                    }
-                    return [];
-                  },
-                  onSelected: (value) {
-                    setState(() {
-                      perId = value.perId!;
-                      indAccountCtrl.clear();
-                      context.read<AccountsBloc>().add(LoadAccountsEvent(ownerId: perId));
-                    });
-                  },
-                  noResultsText: locale.noDataFound,
-                  showClearButton: true,
-                ),
-                if(widget.model == null)
-                SizedBox(height: 10),
-                if(widget.model == null)
-                GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
-                  showAllOnFocus: true,
-                  controller: indAccountCtrl,
-                  title: locale.accounts,
-                  hintText: locale.accNameOrNumber,
-                  isRequired: true,
-                  bloc: context.read<AccountsBloc>(),
-                  fetchAllFunction: (bloc) => bloc.add(LoadAccountsEvent(ownerId: perId)),
-                  searchFunction: (bloc, query) => bloc.add(LoadAccountsEvent(ownerId: perId)),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return locale.required(locale.accounts);
-                    }
-                    return null;
-                  },
-                  itemBuilder: (context, account) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 5,
+                if (widget.model == null) SizedBox(height: 10),
+                if (widget.model == null)
+                  GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
+                    showAllOnFocus: true,
+                    controller: indAccountCtrl,
+                    title: locale.accounts,
+                    hintText: locale.accNameOrNumber,
+                    isRequired: true,
+                    bloc: context.read<AccountsBloc>(),
+                    fetchAllFunction: (bloc) =>
+                        bloc.add(LoadAccountsEvent(ownerId: perId)),
+                    searchFunction: (bloc, query) =>
+                        bloc.add(LoadAccountsEvent(ownerId: perId)),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return locale.required(locale.accounts);
+                      }
+                      return null;
+                    },
+                    itemBuilder: (context, account) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 5,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "${account.accNumber} | ${account.accName}",
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "${account.accNumber} | ${account.accName}",
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ],
-                        ),
-                      ],
+                    itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
+                    stateToLoading: (state) => state is AccountLoadingState,
+                    loadingBuilder: (context) => const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
                     ),
+                    stateToItems: (state) {
+                      if (state is AccountLoadedState) {
+                        return state.accounts;
+                      }
+                      return [];
+                    },
+                    onSelected: (value) {
+                      setState(() {
+                        accNumber = value.accNumber ?? 1;
+                      });
+                    },
+                    noResultsText: locale.noDataFound,
+                    showClearButton: true,
                   ),
-                  itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
-                  stateToLoading: (state) => state is AccountLoadingState,
-                  loadingBuilder: (context) => const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                  stateToItems: (state) {
-                    if (state is AccountLoadedState) {
-                      return state.accounts;
-                    }
-                    return [];
-                  },
-                  onSelected: (value) {
-                    setState(() {
-                      accNumber = value.accNumber ?? 1;
-                    });
-                  },
-                  noResultsText: locale.noDataFound,
-                  showClearButton: true,
-                ),
                 SizedBox(height: 10),
                 DepartmentDropdown(
                   onDepartmentSelected: (e) {
@@ -284,18 +310,29 @@ class _DesktopState extends State<_Desktop> {
                   spacing: 5,
                   children: [
                     Expanded(
-                        child: ZTextFieldEntitled(
-                          isEnabled: widget.isDriver == true,
-                        controller: jobTitle, title: locale.jobTitle)),
+                      child: ZTextFieldEntitled(
+                        isEnabled: !(widget.isDriver == true ||
+                            widget.employeeType == 'driver'),
+                        controller: jobTitle,
+                        title: locale.jobTitle,
+                        isRequired: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return locale.required(locale.jobTitle);
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
                     Expanded(
                       child: ZTextFieldEntitled(
                         isRequired: true,
-                        // onSubmit: (_)=> onSubmit(),
                         keyboardInputType: TextInputType.numberWithOptions(
                           decimal: true,
                         ),
                         inputFormat: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'[0-9.,]*')),
                           SmartThousandsDecimalFormatter(),
                         ],
                         validator: (value) {
@@ -320,7 +357,8 @@ class _DesktopState extends State<_Desktop> {
                   ],
                 ),
                 SizedBox(height: 10),
-                ZTextFieldEntitled(controller: empTaxInfo, title: locale.taxInfo),
+                ZTextFieldEntitled(
+                    controller: empTaxInfo, title: locale.taxInfo),
                 SizedBox(height: 10),
                 ZTextFieldEntitled(
                   controller: empEmail,
@@ -336,8 +374,18 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  void onSubmit(){
+  void onSubmit() {
     if (!formKey.currentState!.validate()) return;
+
+    // Determine job title based on parameters
+    String? finalJobTitle;
+    if (widget.isDriver == true || widget.employeeType == 'driver') {
+      finalJobTitle = "Driver";
+    } else if (jobTitle.text.isNotEmpty) {
+      finalJobTitle = jobTitle.text;
+    } else if (widget.model?.empPosition != null) {
+      finalJobTitle = widget.model!.empPosition;
+    }
 
     final data = EmployeeModel(
       empId: widget.model?.empId,
@@ -346,7 +394,7 @@ class _DesktopState extends State<_Desktop> {
       empEmail: empEmail.text,
       empHireDate: DateTime.now(),
       empDepartment: department,
-      empPosition: jobTitle.text,
+      empPosition: finalJobTitle, // Use determined job title
       empSalCalcBase: salaryCalBase,
       empPmntMethod: paymentBase,
       empStatus: 1,
@@ -358,10 +406,16 @@ class _DesktopState extends State<_Desktop> {
 
     final bloc = context.read<EmployeeBloc>();
     if (widget.model == null) {
-      bloc.add(AddEmployeeEvent(data));
+      // If adding a driver, you might want to trigger a driver-specific event
+      if (widget.isDriver == true || widget.employeeType == 'driver') {
+        // Check if your EmployeeBloc has a specific event for adding drivers
+        // If not, use the regular AddEmployeeEvent - the API will handle the type based on job title
+        bloc.add(AddEmployeeEvent(data));
+      } else {
+        bloc.add(AddEmployeeEvent(data));
+      }
     } else {
       bloc.add(UpdateEmployeeEvent(data));
     }
-
   }
 }

@@ -48,7 +48,6 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
-
   final TextEditingController searchController = TextEditingController();
 
   @override
@@ -68,143 +67,157 @@ class _DesktopState extends State<_Desktop> {
     final locale = AppLocalizations.of(context)!;
 
     return Scaffold(
-      body: Column(
-        children: [
-          SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8),
-            child: Row(
-              spacing: 8,
-              children: [
-                Expanded(
-                  child: ZSearchField(
-                    icon: FontAwesomeIcons.magnifyingGlass,
-                    controller: searchController,
-                    hint: locale.search,
-                    onChanged: (e) {
-                      setState(() {
-
-                      });
-                    },
-                    title: "",
+      body: BlocListener<EmployeeBloc, EmployeeState>(
+        listener: (context, state) {
+          if (state is EmployeeSuccessState) {
+            Navigator.of(context).pop();
+          }
+        },
+        child: Column(
+          children: [
+            SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
+              child: Row(
+                spacing: 8,
+                children: [
+                  Expanded(
+                    child: ZSearchField(
+                      icon: FontAwesomeIcons.magnifyingGlass,
+                      controller: searchController,
+                      hint: locale.search,
+                      onChanged: (e) {
+                        setState(() {});
+                      },
+                      title: "",
+                    ),
                   ),
-                ),
-                ZOutlineButton(
-                    width: 120,
-                    icon: Icons.refresh,
-                    onPressed: onRefresh,
-                    label: Text(locale.refresh)),
-                ZOutlineButton(
-                    toolTip: 'F1',
-                    width: 120,
-                    icon: Icons.add,
-                    isActive: true,
-                    onPressed: onAdd,
-                    label: Text(locale.newKeyword)),
-              ],
+                  ZOutlineButton(
+                      width: 120,
+                      icon: Icons.refresh,
+                      onPressed: onRefresh,
+                      label: Text(locale.refresh)),
+                  ZOutlineButton(
+                      toolTip: 'F1',
+                      width: 120,
+                      icon: Icons.add,
+                      isActive: true,
+                      onPressed: onAdd,
+                      label: Text(locale.newKeyword)),
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: BlocConsumer<DriverBloc, DriverState>(
-              listener: (context, state) {
-                if(state is EmployeeSuccessState){
-                  Navigator.of(context).pop();
-                }
-              },
-              builder: (context, state) {
-                if(state is DriverLoadingState){
-                  return Center(child: CircularProgressIndicator());
-                }
-                if(state is DriverErrorState){
-                  return NoDataWidget(
-                    title: locale.accessDenied,
-                    message: state.message,
-                  );
-                }
-                if(state is DriverLoadedState){
-                  final query = searchController.text.toLowerCase().trim();
-                  final filteredList = state.drivers.where((item) {
-                    final name = item.perfullName?.toLowerCase() ?? '';
-                    return name.contains(query);
-                  }).toList();
+            Expanded(
+              child: BlocBuilder<DriverBloc, DriverState>(
 
-                  if(filteredList.isEmpty){
+                builder: (context, state) {
+                  if (state is DriverLoadingState) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (state is DriverErrorState) {
                     return NoDataWidget(
-                      title: locale.noData,
-                      message: locale.noDataFound,
+                      title: locale.accessDenied,
+                      message: state.message,
                     );
                   }
-                  return GridView.builder(
-                    padding: const EdgeInsets.all(8),
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 200,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.85,
-                    ),
-                    itemCount: filteredList.length,
-                    itemBuilder: (context, index) {
-                      final driver = filteredList[index];
+                  if (state is DriverLoadedState) {
+                    final query = searchController.text.toLowerCase().trim();
+                    final filteredList = state.drivers.where((item) {
+                      final name = item.perfullName?.toLowerCase() ?? '';
+                      return name.contains(query);
+                    }).toList();
 
-                      return ZCard(
-                        // Image
-                        image: ImageHelper.stakeholderProfile(
-                          imageName: driver.perPhoto,
-                          size: 46,
-                        ),
-
-                        // Title and Subtitle
-                        title: driver.perfullName ?? "Unnamed Driver",
-                        subtitle: driver.vehicle ?? "No Vehicle",
-
-                        // Status
-                        status: InfoStatus(
-                          label: driver.empStatus == 1 ? locale.active : locale.inactive,
-                          color: driver.empStatus == 1 ? Colors.green : Colors.red,
-                        ),
-
-                        // Information items
-                        infoItems: [
-                          if (driver.perPhone != null && driver.perPhone!.isNotEmpty)
-                            InfoItem(
-                              icon: Icons.phone,
-                              text: driver.perPhone!,
-                            ),
-
-                          if (driver.address != null && driver.address!.isNotEmpty)
-                            InfoItem(
-                              icon: Icons.location_on,
-                              text: driver.address??"",
-                              iconColor: Colors.blue,
-                            ),
-
-                          InfoItem(
-                            icon: Icons.directions_car,
-                            text: driver.vehicle ?? "No Vehicle",
-                            iconColor: Colors.deepPurple,
-                          ),
-                        ],
-
+                    if (filteredList.isEmpty) {
+                      return NoDataWidget(
+                        title: locale.noData,
+                        message: locale.noDataFound,
                       );
-                    },
-                  );
-                }
-                return const SizedBox();
-              },
+                    }
+                    return GridView.builder(
+                      padding: const EdgeInsets.all(8),
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                      const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 200,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.85,
+                      ),
+                      itemCount: filteredList.length,
+                      itemBuilder: (context, index) {
+                        final driver = filteredList[index];
+
+                        return ZCard(
+                          // Image
+                          image: ImageHelper.stakeholderProfile(
+                            imageName: driver.perPhoto,
+                            size: 46,
+                          ),
+
+                          // Title and Subtitle
+                          title: driver.perfullName ?? "Unnamed Driver",
+                          subtitle: driver.vehicle ?? "No Vehicle",
+
+                          // Status
+                          status: InfoStatus(
+                            label: driver.empStatus == 1
+                                ? locale.active
+                                : locale.inactive,
+                            color:
+                            driver.empStatus == 1 ? Colors.green : Colors.red,
+                          ),
+
+                          // Information items
+                          infoItems: [
+                            if (driver.perPhone != null &&
+                                driver.perPhone!.isNotEmpty)
+                              InfoItem(
+                                icon: Icons.phone,
+                                text: driver.perPhone!,
+                              ),
+
+                            if (driver.address != null &&
+                                driver.address!.isNotEmpty)
+                              InfoItem(
+                                icon: Icons.location_on,
+                                text: driver.address ?? "",
+                                iconColor: Colors.blue,
+                              ),
+
+                            InfoItem(
+                              icon: Icons.directions_car,
+                              text: driver.vehicle ?? "No Vehicle",
+                              iconColor: Colors.deepPurple,
+                            ),
+                          ],
+
+                        );
+                      },
+                    );
+                  }
+                  return const SizedBox();
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  void onAdd(){
-    showDialog(context: context, builder: (context){
-      return AddEditEmployeeView(isDriver: true,);
-    });
+  void onAdd() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AddEditEmployeeView(
+          isDriver: true, // This will auto-set job title to "Driver"
+          employeeType: 'driver', // Additional parameter for clarity
+        );
+      },
+    );
   }
-  void onRefresh(){
+
+  void onRefresh() {
     context.read<DriverBloc>().add(LoadDriverEvent());
   }
 }

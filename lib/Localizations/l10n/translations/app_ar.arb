@@ -716,5 +716,8 @@
   "usersHintReport": "فلټرونه وکاروئ څو ژر هغه کاروونکي پیدا کړئ چې تاسو ورته اړتیا لرئ.\n",
   "clearFilters": "حذف فلتر",
   "outOfStock": "عدم موجودی",
-  "available": "موجود"
+  "available": "موجود",
+  "driverRegistration": "ثبت راننده",
+  "verified": "وضعیت تأیید",
+  "fcp": "تغییر رمز"
 }

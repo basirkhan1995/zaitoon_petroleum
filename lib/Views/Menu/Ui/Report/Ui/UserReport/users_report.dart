@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/Ui/add_user.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/branch_dropdown.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/role_dropdown.dart';
 import '../../../../../../../Features/Widgets/no_data_widget.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../HR/Ui/Users/bloc/users_bloc.dart';
-import '../../../HR/Ui/Employees/features/emp_card.dart';
 import '../Transport/features/status_drop.dart';
 
 class UsersReportView extends StatelessWidget {
@@ -60,15 +60,9 @@ class _DesktopState extends State<_Desktop> {
   bool get isFilterActive =>
       role != null || branchId != null || status != null;
 
-  @override
-  void dispose() {
-    searchController.dispose();
-    super.dispose();
-  }
 
-  void onAdd() {
-    showDialog(context: context, builder: (_) => const AddUserView());
-  }
+
+
 
   void onApply() {
     context.read<UsersBloc>().add(
@@ -91,13 +85,51 @@ class _DesktopState extends State<_Desktop> {
   }
 
   @override
+  void initState() {
+    context.read<UsersBloc>().add(ResetUserEvent());
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
-
+    TextStyle? titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.surface);
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
         title: Text("${tr.users} ${tr.report}"),
+        actionsPadding: EdgeInsets.symmetric(horizontal: 8),
+        actions: [
+          /// 🔹 CLEAR FILTERS (only when active)
+          if (isFilterActive)
+            ZOutlineButton(
+              backgroundHover: Theme.of(context).colorScheme.error,
+              isActive: true,
+              width: 140,
+              icon: Icons.filter_alt_off,
+              onPressed: onClearFilters,
+              label: Text(tr.clearFilters),
+            ),
+
+          SizedBox(width: 8),
+          /// 🔹 APPLY BUTTON
+          ZOutlineButton(
+            width: 100,
+            icon: FontAwesomeIcons.solidFilePdf,
+            onPressed: onApply,
+            label: Text("PDF"),
+          ),
+          SizedBox(width: 8),
+
+          /// 🔹 APPLY BUTTON
+          ZOutlineButton(
+            width: 100,
+            isActive: true,
+            icon: Icons.filter_alt,
+            onPressed: onApply,
+            label: Text(tr.apply),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
@@ -111,20 +143,22 @@ class _DesktopState extends State<_Desktop> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 spacing: 8,
                 children: [
-                  const Expanded(flex: 3, child: SizedBox()),
+                 // const Expanded(flex: 3, child: SizedBox()),
 
                   Expanded(
                     child: UserRoleDropdown(
+                      showAllOption: true,
                       onRoleSelected: (e) {
-                        setState(() => role = e.name);
+                        setState(() => role = e?.name);
                       },
                     ),
                   ),
 
                   Expanded(
                     child: BranchDropdown(
+                      showAllOption: true,
                       onBranchSelected: (e) {
-                        setState(() => branchId = e.brcId);
+                        setState(() => branchId = e?.brcId);
                       },
                     ),
                   ),
@@ -137,24 +171,45 @@ class _DesktopState extends State<_Desktop> {
                       },
                     ),
                   ),
+                ],
+              ),
+            ),
 
-                  /// 🔹 CLEAR FILTERS (only when active)
-                  if (isFilterActive)
-                    ZOutlineButton(
-                      isActive: true,
-                      width: 140,
-                      icon: Icons.filter_alt_off,
-                      onPressed: onClearFilters,
-                      label: Text(tr.clearFilters),
-                    ),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 8,horizontal: 8),
+              margin: EdgeInsets.symmetric(horizontal: 5),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: .8),
+              ),
+              child: Row(
+                children: [
+                 SizedBox(
+                     width: 100,
+                     child: Text(tr.date,style: titleStyle)),
+                  Expanded(
+                      child: Text(tr.userInformation,style: titleStyle)),
+                  SizedBox(
+                      width: 150,
+                      child: Text(tr.userOwner,style: titleStyle)),
+                  SizedBox(
+                      width: 120,
+                      child: Text(tr.usrRole,style: titleStyle)),
+                  SizedBox(
+                      width: 80,
+                      child: Text(tr.branch,style: titleStyle)),
+                  SizedBox(
+                      width: 80,
+                      child: Text("AFL",style: titleStyle)),
+                  SizedBox(
+                      width: 80,
+                      child: Text(tr.fcp,style: titleStyle)),
+                  SizedBox(
+                      width: 80,
+                      child: Text(tr.verified,style: titleStyle)),
+                  SizedBox(
+                      width: 80,
+                      child: Text(tr.status,style: titleStyle)),
 
-                  /// 🔹 APPLY BUTTON
-                  ZOutlineButton(
-                    width: 120,
-                    icon: Icons.filter_alt,
-                    onPressed: onApply,
-                    label: Text(tr.apply),
-                  ),
                 ],
               ),
             ),
@@ -183,54 +238,58 @@ class _DesktopState extends State<_Desktop> {
                   }
 
                   if (state is UsersReportLoadedState) {
-                    final query =
-                    searchController.text.toLowerCase().trim();
 
-                    final users = state.users.where((u) {
-                      final name = u.username?.toLowerCase() ?? '';
-                      return name.contains(query);
-                    }).toList();
+                    return ListView.builder(
+                        itemCount: state.users.length,
+                        itemBuilder: (context,index){
+                          final usr = state.users[index];
+                        return Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8,vertical: 8),
+                          margin: EdgeInsets.symmetric(horizontal: 5),
+                          decoration: BoxDecoration(
+                            color: index.isEven? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent,
+                          ),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                  width: 100,
+                                  child: Text(usr.createDate.toFormattedDate())),
+                              Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(usr.username??"",style: Theme.of(context).textTheme.titleSmall),
+                                      Text(usr.email??"",style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.outline),),
+                                    ],
+                                  )),
+                              SizedBox(
+                                  width: 150,
+                                  child: Text(usr.fullName??"")),
 
-                    if (users.isEmpty) {
-                      return NoDataWidget(message: tr.noDataFound,enableAction: false);
-                    }
+                              SizedBox(
+                                  width: 120,
+                                  child: Text(usr.role??"")),
+                              SizedBox(
+                                  width: 80,
+                                  child: Text(usr.branch.toString())),
+                              SizedBox(
+                                  width: 80,
+                                  child: Text(usr.afl.toString())),
 
-                    return SingleChildScrollView(
-                      padding: const EdgeInsets.all(8),
-                      child: Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
-                        children: users.map((usr) {
-                          return SizedBox(
-                            width: 250,
-                            child: ZCard(
-                              title: usr.username ?? "-",
-                              subtitle: usr.email,
-                              status: InfoStatus(
-                                label: usr.status ?? "",
-                                color: usr.status == "Active"
-                                    ? Colors.green
-                                    : Colors.red,
-                              ),
-                              infoItems: [
-                                InfoItem(
-                                  icon: Icons.person,
-                                  text: usr.fullName ?? "-",
-                                ),
-                                InfoItem(
-                                  icon: Icons.apartment,
-                                  text: usr.branch?.toString() ?? "-",
-                                ),
-                                InfoItem(
-                                  icon: Icons.security,
-                                  text: usr.role ?? "-",
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    );
+                              SizedBox(
+                                  width: 80,
+                                  child: Text(usr.fcp??"")),
+                              SizedBox(
+                                  width: 80,
+                                  child: Text(usr.verification??"")),
+                              SizedBox(
+                                  width: 80,
+                                  child: Text(usr.status??"")),
+                            ],
+                          ),
+                        );
+                    });
                   }
 
                   return const SizedBox();

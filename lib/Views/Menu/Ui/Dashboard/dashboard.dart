@@ -5,6 +5,7 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/DailyGross/daily_gross.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/Stats/stats.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/Ui/exchange_rate.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/bloc/total_daily_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/pie_view.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/total_daily_txn.dart';
 import '../Report/Ui/Finance/ExchangeRate/chart.dart';
@@ -48,7 +49,9 @@ class _Desktop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final visibility = context.read<SettingsVisibleBloc>().state;
+    final visibility = context
+        .read<SettingsVisibleBloc>()
+        .state;
     return Scaffold(
       body: SingleChildScrollView(
         child: Row(
@@ -77,21 +80,31 @@ class _Desktop extends StatelessWidget {
                     ),
                     DashboardStatsView(),
                   ],
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                    ),
-                    child: Row(
-                      spacing: 5,
-                      children: [
-                        const Icon(Icons.line_axis_rounded),
-                        Text(
-                          AppLocalizations.of(
-                            context,
-                          )!.todayTransactionSummary,
-                        ),
-                      ],
-                    ),
+                  BlocBuilder<TotalDailyBloc, TotalDailyState>(
+                    builder: (context, state) {
+                      if(state is TotalDailyLoaded){
+                        if(state.data.isEmpty){
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 5
+                          ),
+                          child: Row(
+                            spacing: 5,
+                            children: [
+                              const Icon(Icons.line_axis_rounded),
+                              Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!.todayTransactionSummary,
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return const SizedBox();
+                    },
                   ),
                   const TotalDailyTxnView(),
 

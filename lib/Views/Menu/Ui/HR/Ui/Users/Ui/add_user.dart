@@ -61,7 +61,7 @@ class _DesktopState extends State<_Desktop> {
   final TextEditingController passConfirm = TextEditingController();
   final TextEditingController usrOwner = TextEditingController();
 
-  UserRole? _selectedRole;
+  String? _selectedRole;
   bool isPasswordSecure = true;
   bool fcpValue = true;
   bool fevValue = true;
@@ -148,9 +148,9 @@ class _DesktopState extends State<_Desktop> {
                         Expanded(
                           flex: 2,
                           child: UserRoleDropdown(
-                            onRoleSelected: (UserRole role) {
+                            onRoleSelected: (e) {
                               setState(() {
-                                _selectedRole = role;
+                                _selectedRole = e?.name;
                               });
                             },
                           ),
@@ -376,7 +376,7 @@ class _DesktopState extends State<_Desktop> {
             usrName: usrName.text.trim(),
             usrPass: usrPas.text,
             usrBranch: selectedBranch?.brcId ?? 1000,
-            usrRole: _selectedRole?.name,
+            usrRole: _selectedRole,
             usrEmail: usrEmail.text,
             usrFcp: fcpValue? 1 : 0,
             usrFev: fevValue,
