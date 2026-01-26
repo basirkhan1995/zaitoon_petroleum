@@ -22,7 +22,7 @@ final class StockRecordErrorState extends StockRecordState {
 }
 
 final class StockRecordLoadedState extends StockRecordState {
-  final List<CardxModel> cardX;
+  final List<StockRecordModel> cardX;
   const StockRecordLoadedState(this.cardX);
   @override
   List<Object> get props => [cardX];

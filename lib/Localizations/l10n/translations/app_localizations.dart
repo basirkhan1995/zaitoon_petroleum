@@ -4299,6 +4299,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'FCP'**
   String get fcp;
+
+  /// No description provided for @weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weight;
+
+  /// No description provided for @inAndOut.
+  ///
+  /// In en, this message translates to:
+  /// **'IN/OUT'**
+  String get inAndOut;
 }
 
 class _AppLocalizationsDelegate

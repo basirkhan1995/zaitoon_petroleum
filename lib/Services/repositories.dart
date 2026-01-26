@@ -2978,7 +2978,7 @@ class Repositories {
       throw "$e";
     }
   }
-  Future<List<CardxModel>> stockRecord({String? fromDate, String? toDate, int? proId, int? storageId}) async {
+  Future<List<StockRecordModel>> stockRecord({String? fromDate, String? toDate, int? proId, int? storageId}) async {
     try {
       final response = await api.post(
           endpoint: "/reports/runningStock.php",
@@ -2996,14 +2996,14 @@ class Repositories {
 
       // Parse as list
       if (response.data is List) {
-        return List<CardxModel>.from(
-            response.data.map((x) => CardxModel.fromMap(x))
+        return List<StockRecordModel>.from(
+            response.data.map((x) => StockRecordModel.fromMap(x))
         );
       }
 
       // If single object, wrap in list
       if (response.data is Map<String, dynamic>) {
-        return [CardxModel.fromMap(response.data)];
+        return [StockRecordModel.fromMap(response.data)];
       }
 
       return [];

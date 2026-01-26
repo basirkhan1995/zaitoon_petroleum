@@ -719,5 +719,7 @@
   "available": "Available",
   "driverRegistration": "Driver Registration",
   "verified": "Verified",
-  "fcp": "FCP"
+  "fcp": "FCP",
+  "weight": "Weight",
+  "inAndOut": "IN/OUT"
 }

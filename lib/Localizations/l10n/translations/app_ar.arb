@@ -719,5 +719,7 @@
   "available": "موجود",
   "driverRegistration": "ثبت راننده",
   "verified": "وضعیت تأیید",
-  "fcp": "تغییر رمز"
+  "fcp": "تغییر رمز",
+  "weight": "وزن",
+  "inAndOut": "ورود/خروج"
 }

@@ -2170,4 +2170,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fcp => 'FCP';
+
+  @override
+  String get weight => 'Weight';
+
+  @override
+  String get inAndOut => 'IN/OUT';
 }

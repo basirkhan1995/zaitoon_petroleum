@@ -2161,4 +2161,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get fcp => 'تغییر رمز';
+
+  @override
+  String get weight => 'وزن';
+
+  @override
+  String get inAndOut => 'ورود/خروج';
 }

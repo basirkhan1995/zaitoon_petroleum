@@ -17,6 +17,7 @@ import '../../../../../../../../Features/Generic/rounded_searchable_textfield.da
 import '../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../../Localizations/Bloc/localizations_bloc.dart';
 import '../../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import '../../../../../Stock/Ui/OrderScreen/GetOrderById/order_by_id.dart';
 
 class StockRecordReportView extends StatelessWidget {
   const StockRecordReportView({super.key});
@@ -98,6 +99,7 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     TextStyle? titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.surface);
+    final color = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
           title: Text("Stock Record"),
@@ -235,7 +237,7 @@ class _DesktopState extends State<_Desktop> {
                     title: tr.storage,
                     onChanged: (e) {
                       setState(() {
-                        productId = e?.stgId;
+                        storageId = e?.stgId;
                       });
                     },
                   ),
@@ -282,9 +284,24 @@ class _DesktopState extends State<_Desktop> {
                   SizedBox(
                       width: 100,
                       child: Text(tr.date,style: titleStyle)),
-              SizedBox(
-                  width: 150,
-                  child: Text(tr.storage,style: titleStyle)),
+
+                  Expanded(
+                      child: Text(tr.party,style: titleStyle)),
+                  SizedBox(
+                      width: 180,
+                      child: Text(tr.storage,style: titleStyle)),
+                  SizedBox(
+                      width: 80,
+                      child: Text(tr.inAndOut,style: titleStyle)),
+                  SizedBox(
+                      width: 100,
+                      child: Text(tr.weight,style: titleStyle)),
+                  SizedBox(
+                      width: 120,
+                      child: Text(tr.unitPrice,style: titleStyle)),
+                  SizedBox(
+                      width: 100,
+                      child: Text(tr.balance,style: titleStyle)),
             ]),
           ),
 
@@ -323,43 +340,57 @@ class _DesktopState extends State<_Desktop> {
                       itemCount: state.cardX.length,
                       itemBuilder: (context,index){
                        final stock = state.cardX[index];
-                        return Container(
-                        padding: EdgeInsets.symmetric(horizontal: 15,vertical: 8),
-                        margin: EdgeInsets.symmetric(horizontal: 15),
-                        decoration: BoxDecoration(
-                          color: index.isEven ? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent
-                        ),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                                width: 40,
-                                child: Text(stock.orderId.toString())),
-                            SizedBox(
-                                width: 100,
-                                child: Text(stock.entryDate.toFormattedDate())),
+                        return InkWell(
+                          highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
+                          onTap: (){
+                            Utils.goto(
+                              context,
+                              OrderByIdView(orderId: stock.orderId!,ordName: stock.entryType == "IN"? "Purchase" : "Sale"),
+                            );
+                          },
+                          child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 15,vertical: 8),
+                          margin: EdgeInsets.symmetric(horizontal: 15),
+                          decoration: BoxDecoration(
+                            color: index.isEven ? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent
+                          ),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                  width: 40,
+                                  child: Text(stock.orderId.toString())),
+                              SizedBox(
+                                  width: 100,
+                                  child: Text(stock.entryDate.toFormattedDate())),
+                              Expanded(
+                                  child: Text(stock.fullname.toString())),
 
-                            SizedBox(
-                                width: 150,
-                                child: Text(stock.storageName.toString())),
+                              SizedBox(
+                                  width: 180,
+                                  child: Text(stock.storageName.toString())),
 
-                            SizedBox(
-                                width: 80,
-                                child: Text(stock.entryType.toString())),
+                              SizedBox(
+                                  width: 80,
+                                  child: Text(stock.entryType.toString(),style: TextStyle(
+                                    color: stock.entryType == "IN"? Colors.green : color.error,
+                                  )),
+                              ),
 
-                            SizedBox(
-                                width: 80,
-                                child: Text(stock.quantity.toString())),
+                              SizedBox(
+                                  width: 100,
+                                  child: Text(stock.quantity.toString())),
 
-                            SizedBox(
-                                width: 80,
-                                child: Text(stock.price.toAmount())),
+                              SizedBox(
+                                  width: 120,
+                                  child: Text(stock.price.toAmount())),
 
-                            SizedBox(
-                                width: 80,
-                                child: Text(stock.runningQuantity.toAmount(decimal: 4))),
-                          ],
-                        ),
-                      );
+                              SizedBox(
+                                  width: 100,
+                                  child: Text("${stock.runningQuantity.toAmount(decimal: 4)} $baseCcy")),
+                            ],
+                          ),
+                                                ),
+                        );
                   });
                 }
                 return const SizedBox();

@@ -1,16 +1,18 @@
 // To parse this JSON data, do
 //
-//     final cardxModel = cardxModelFromMap(jsonString);
+//     final stockRecordModel = stockRecordModelFromMap(jsonString);
 
 import 'dart:convert';
 
-List<CardxModel> cardxModelFromMap(String str) => List<CardxModel>.from(json.decode(str).map((x) => CardxModel.fromMap(x)));
+List<StockRecordModel> stockRecordModelFromMap(String str) => List<StockRecordModel>.from(json.decode(str).map((x) => StockRecordModel.fromMap(x)));
 
-String cardxModelToMap(List<CardxModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toMap())));
+String stockRecordModelToMap(List<StockRecordModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toMap())));
 
-class CardxModel {
+class StockRecordModel {
   final int? no;
   final int? orderId;
+  final int? perId;
+  final String? fullname;
   final int? productId;
   final String? productName;
   final int? storageId;
@@ -21,9 +23,11 @@ class CardxModel {
   final String? price;
   final String? runningQuantity;
 
-  CardxModel({
+  StockRecordModel({
     this.no,
     this.orderId,
+    this.perId,
+    this.fullname,
     this.productId,
     this.productName,
     this.storageId,
@@ -35,9 +39,11 @@ class CardxModel {
     this.runningQuantity,
   });
 
-  CardxModel copyWith({
+  StockRecordModel copyWith({
     int? no,
     int? orderId,
+    int? perId,
+    String? fullname,
     int? productId,
     String? productName,
     int? storageId,
@@ -48,9 +54,11 @@ class CardxModel {
     String? price,
     String? runningQuantity,
   }) =>
-      CardxModel(
+      StockRecordModel(
         no: no ?? this.no,
         orderId: orderId ?? this.orderId,
+        perId: perId ?? this.perId,
+        fullname: fullname ?? this.fullname,
         productId: productId ?? this.productId,
         productName: productName ?? this.productName,
         storageId: storageId ?? this.storageId,
@@ -62,9 +70,11 @@ class CardxModel {
         runningQuantity: runningQuantity ?? this.runningQuantity,
       );
 
-  factory CardxModel.fromMap(Map<String, dynamic> json) => CardxModel(
+  factory StockRecordModel.fromMap(Map<String, dynamic> json) => StockRecordModel(
     no: json["No"],
     orderId: json["orderID"],
+    perId: json["perID"],
+    fullname: json["fullname"],
     productId: json["productID"],
     productName: json["productName"],
     storageId: json["storageID"],
@@ -79,6 +89,8 @@ class CardxModel {
   Map<String, dynamic> toMap() => {
     "No": no,
     "orderID": orderId,
+    "perID": perId,
+    "fullname": fullname,
     "productID": productId,
     "productName": productName,
     "storageID": storageId,
