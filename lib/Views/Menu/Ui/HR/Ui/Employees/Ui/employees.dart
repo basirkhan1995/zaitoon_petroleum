@@ -61,6 +61,14 @@ class _DesktopState extends State<_Desktop> {
   }
 
   @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      context.read<EmployeeBloc>().add(LoadEmployeeEvent());
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final shortcuts = {
@@ -130,8 +138,12 @@ class _DesktopState extends State<_Desktop> {
                   }
                   if(state is EmployeeErrorState){
                     return NoDataWidget(
+                      imageName: "error.png",
                       title: tr.accessDenied,
                       message: state.message,
+                      onRefresh: (){
+                        context.read<EmployeeBloc>().add(LoadEmployeeEvent());
+                      },
                     );
                   }
                   if(state is EmployeeLoadedState){
@@ -163,6 +175,7 @@ class _DesktopState extends State<_Desktop> {
                             imageName: emp.empImage,
                             size: 46,
                           ),
+
                           title: "${emp.perName} ${emp.perLastName}",
                           subtitle: emp.empPosition,
                           status: InfoStatus(

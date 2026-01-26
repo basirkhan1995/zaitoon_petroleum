@@ -120,23 +120,6 @@ class _DesktopState extends State<_Desktop> {
               spacing: 8,
               children: [
                 Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        tr.userLog,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      Text(
-                        tr.userLogActivity,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  width: 200,
                   child: UserDropdown(
                     title: tr.users,
                     isMulti: false,
@@ -147,8 +130,7 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ),
 
-                SizedBox(
-                  width: 200,
+                Expanded(
                   child: DateRangeDropdown(
                     onChanged: (fromDate, toDate) {
                       context.read<UserLogBloc>().add(
@@ -162,8 +144,7 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ),
 
-                SizedBox(
-                  width: 150,
+                Expanded(
                   child: ZDatePicker(
                     label: tr.fromDate,
                     value: fromDate,
@@ -176,8 +157,7 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ),
 
-                SizedBox(
-                  width: 150,
+                Expanded(
                   child: ZDatePicker(
                     label: tr.toDate,
                     value: toDate,

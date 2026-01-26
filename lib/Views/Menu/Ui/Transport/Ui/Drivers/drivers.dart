@@ -194,8 +194,8 @@ class _DesktopState extends State<_Desktop> {
       context: context,
       builder: (context) {
         return AddEditEmployeeView(
-          isDriver: true, // This will auto-set job title to "Driver"
-          employeeType: 'driver', // Additional parameter for clarity
+          isDriver: true,
+          employeeType: 'driver',
         );
       },
     );

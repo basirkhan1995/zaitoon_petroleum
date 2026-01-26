@@ -6,6 +6,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Accounts/accou
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/balance_sheet.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/gl_statement.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/cash_branch.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/Cardx/Ui/cardx.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/OrdersReport/Ui/order_report.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/shipping_report.dart';
 import '../../../../Features/Other/utils.dart';
@@ -50,6 +51,7 @@ enum ActionKey {
 
   //Stock
   products,
+  stockRecord,
   purchase,
   sale,
   estimate,
@@ -108,6 +110,7 @@ class _DesktopState extends State<_Desktop> {
 
     final List<Map<String, dynamic>> stockButtons = [
       {"title": "${tr.inventory} ${tr.report}", "icon": Icons.shopping_bag_outlined, "action": ActionKey.products},
+      {"title": "Stock Record", "icon": Icons.inventory_rounded, "action": ActionKey.stockRecord},
       {"title": tr.purchaseInvoice, "icon": Icons.add_shopping_cart_sharp, "action": ActionKey.purchase},
       {"title": tr.salesInvoice, "icon": Icons.add_shopping_cart_sharp, "action": ActionKey.sale},
       {"title": tr.estimateTitle, "icon": Icons.file_copy_outlined, "action": ActionKey.estimate},
@@ -291,6 +294,7 @@ class _DesktopState extends State<_Desktop> {
 
       // Stock
       case ActionKey.products:  Utils.goto(context, ProductReportView());
+      case ActionKey.stockRecord:  Utils.goto(context, StockRecordReportView());
       case ActionKey.purchase: Utils.goto(context, OrderReportView(orderName: "Purchase"));
       case ActionKey.sale: Utils.goto(context, OrderReportView(orderName: "Sale"));
       case ActionKey.estimate: Utils.goto(context, OrderReportView(orderName: "Estimate"));

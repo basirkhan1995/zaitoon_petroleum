@@ -19,6 +19,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStateme
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/model/gl_statement_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/model/cash_balance_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/TrialBalance/model/trial_balance_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/Cardx/model/cardx_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/model/daily_txn_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
@@ -2968,6 +2969,41 @@ class Repositories {
       // If single object, wrap in list
       if (response.data is Map<String, dynamic>) {
         return [OrderReportModel.fromMap(response.data)];
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+  Future<List<CardxModel>> stockRecord({String? fromDate, String? toDate, int? proId, int? storageId}) async {
+    try {
+      final response = await api.post(
+          endpoint: "/reports/runningStock.php",
+          data: {
+            "fromDate": fromDate,
+            "toDate": toDate,
+            "proID": proId,
+            "stgID": storageId
+          }
+      );
+
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      // Parse as list
+      if (response.data is List) {
+        return List<CardxModel>.from(
+            response.data.map((x) => CardxModel.fromMap(x))
+        );
+      }
+
+      // If single object, wrap in list
+      if (response.data is Map<String, dynamic>) {
+        return [CardxModel.fromMap(response.data)];
       }
 
       return [];

@@ -88,32 +88,36 @@ class _DesktopState extends State<_Desktop> {
   DateTime? startDate;
 
   final formKey = GlobalKey<FormState>();
+  bool get isDriverEmployee {
+    return widget.isDriver == true ||
+        widget.employeeType == 'driver' ||
+        widget.model?.empPosition?.toLowerCase() == 'driver';
+  }
+
 
   @override
   void initState() {
+    super.initState();
+
     if (widget.model != null) {
-      department = widget.model?.empDepartment ?? "";
-      paymentBase = widget.model?.empPmntMethod ?? "";
-      salaryCalBase = widget.model?.empSalCalcBase ?? "";
+      department = widget.model?.empDepartment;
+      paymentBase = widget.model?.empPmntMethod;
+      salaryCalBase = widget.model?.empSalCalcBase;
       accNumber = widget.model?.empSalAccount;
       empSalary.text = widget.model?.empSalary?.toAmount() ?? "";
       empEmail.text = widget.model?.empEmail ?? "";
       empTaxInfo.text = widget.model?.empTaxInfo ?? "";
-      perId = widget.model!.perId!;
+      perId = widget.model?.perId;
+    }
+
+    // 🔒 Force Driver job title
+    if (isDriverEmployee) {
+      jobTitle.text = "Driver";
+    } else {
       jobTitle.text = widget.model?.empPosition ?? "";
     }
-
-    // Handle job title based on parameters
-    if (widget.isDriver == true || widget.employeeType == 'driver') {
-      jobTitle.text = "Driver";
-    } else if (widget.model?.empPosition != null && widget.model!.empPosition!.isNotEmpty) {
-      jobTitle.text = widget.model!.empPosition!;
-    } else {
-      jobTitle.text = '';
-    }
-
-    super.initState();
   }
+
 
   @override
   void dispose() {
@@ -311,8 +315,7 @@ class _DesktopState extends State<_Desktop> {
                   children: [
                     Expanded(
                       child: ZTextFieldEntitled(
-                        isEnabled: !(widget.isDriver == true ||
-                            widget.employeeType == 'driver'),
+                        isEnabled: !isDriverEmployee,
                         controller: jobTitle,
                         title: locale.jobTitle,
                         isRequired: true,
@@ -377,16 +380,6 @@ class _DesktopState extends State<_Desktop> {
   void onSubmit() {
     if (!formKey.currentState!.validate()) return;
 
-    // Determine job title based on parameters
-    String? finalJobTitle;
-    if (widget.isDriver == true || widget.employeeType == 'driver') {
-      finalJobTitle = "Driver";
-    } else if (jobTitle.text.isNotEmpty) {
-      finalJobTitle = jobTitle.text;
-    } else if (widget.model?.empPosition != null) {
-      finalJobTitle = widget.model!.empPosition;
-    }
-
     final data = EmployeeModel(
       empId: widget.model?.empId,
       empPersonal: perId,
@@ -394,7 +387,7 @@ class _DesktopState extends State<_Desktop> {
       empEmail: empEmail.text,
       empHireDate: DateTime.now(),
       empDepartment: department,
-      empPosition: finalJobTitle, // Use determined job title
+      empPosition: isDriverEmployee ? "Driver" : jobTitle.text,
       empSalCalcBase: salaryCalBase,
       empPmntMethod: paymentBase,
       empStatus: 1,
@@ -405,17 +398,12 @@ class _DesktopState extends State<_Desktop> {
     );
 
     final bloc = context.read<EmployeeBloc>();
+
     if (widget.model == null) {
-      // If adding a driver, you might want to trigger a driver-specific event
-      if (widget.isDriver == true || widget.employeeType == 'driver') {
-        // Check if your EmployeeBloc has a specific event for adding drivers
-        // If not, use the regular AddEmployeeEvent - the API will handle the type based on job title
-        bloc.add(AddEmployeeEvent(data));
-      } else {
-        bloc.add(AddEmployeeEvent(data));
-      }
+      bloc.add(AddEmployeeEvent(data));
     } else {
       bloc.add(UpdateEmployeeEvent(data));
     }
   }
+
 }
