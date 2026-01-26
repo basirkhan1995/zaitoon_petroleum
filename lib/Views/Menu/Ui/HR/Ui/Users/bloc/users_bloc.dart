@@ -33,7 +33,7 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
       }
     });
 
-    on<LoadUsersReportEvent>((event, emit) async{
+    on<ResetUserEvent>((event, emit) async{
       try{
         emit(UsersInitial());
       }catch(e){
