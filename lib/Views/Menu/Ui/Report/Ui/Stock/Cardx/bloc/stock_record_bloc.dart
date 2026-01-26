@@ -12,7 +12,7 @@ class StockRecordBloc extends Bloc<StockRecordEvent, StockRecordState> {
     on<LoadStockRecordEvent>((event, emit) async{
       emit(StockRecordLoadingState());
        try{
-         final cardX = await _repo.stockRecord(fromDate: event.fromDate, toDate: event.toDate, proId: event.productId,storageId: event.storageId);
+         final cardX = await _repo.stockRecord(fromDate: event.fromDate, toDate: event.toDate, proId: event.productId,storageId: event.storageId,partyId: event.partyId);
          emit(StockRecordLoadedState(cardX));
        }catch(e){
          emit(StockRecordErrorState(e.toString()));

@@ -2978,7 +2978,7 @@ class Repositories {
       throw "$e";
     }
   }
-  Future<List<StockRecordModel>> stockRecord({String? fromDate, String? toDate, int? proId, int? storageId}) async {
+  Future<List<StockRecordModel>> stockRecord({String? fromDate, String? toDate, int? proId, int? storageId, int? partyId}) async {
     try {
       final response = await api.post(
           endpoint: "/reports/runningStock.php",
@@ -2986,7 +2986,8 @@ class Repositories {
             "fromDate": fromDate,
             "toDate": toDate,
             "proID": proId,
-            "stgID": storageId
+            "stgID": storageId,
+            "perID":partyId,
           }
       );
 
@@ -3013,5 +3014,4 @@ class Repositories {
       throw "$e";
     }
   }
-
 }
