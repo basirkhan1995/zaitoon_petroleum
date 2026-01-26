@@ -109,8 +109,8 @@ class _DesktopState extends State<_Desktop> {
     ];
 
     final List<Map<String, dynamic>> stockButtons = [
-      {"title": "${tr.inventory} ${tr.report}", "icon": Icons.shopping_bag_outlined, "action": ActionKey.products},
-      {"title": "Stock Record", "icon": Icons.inventory_rounded, "action": ActionKey.stockRecord},
+      {"title": "${tr.products} ${tr.report}", "icon": Icons.shopping_bag_outlined, "action": ActionKey.products},
+      {"title": "${tr.inventory} ${tr.report}", "icon": Icons.inventory_2_outlined, "action": ActionKey.stockRecord},
       {"title": tr.purchaseInvoice, "icon": Icons.add_shopping_cart_sharp, "action": ActionKey.purchase},
       {"title": tr.salesInvoice, "icon": Icons.add_shopping_cart_sharp, "action": ActionKey.sale},
       {"title": tr.estimateTitle, "icon": Icons.file_copy_outlined, "action": ActionKey.estimate},
