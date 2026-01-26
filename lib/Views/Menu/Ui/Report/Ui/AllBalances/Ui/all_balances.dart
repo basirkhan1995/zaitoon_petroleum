@@ -98,11 +98,11 @@ class _DesktopState extends State<_Desktop> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(15.0),
             child: Row(
               children: [
                 SizedBox(
-                  width: 250,
+                  width: 300,
                   child: GlSubCategoriesDrop(
                       title: tr.accountCategory,
                       mainCategoryId: 0,
@@ -117,7 +117,8 @@ class _DesktopState extends State<_Desktop> {
             ),
           ),
           Container(
-            padding: EdgeInsets.symmetric(vertical: 5,horizontal: 8),
+            padding: EdgeInsets.symmetric(vertical: 8,horizontal: 5),
+            margin: EdgeInsets.symmetric(horizontal: 15),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary.withValues(alpha: .9),
             ),
@@ -169,7 +170,8 @@ class _DesktopState extends State<_Desktop> {
                       itemBuilder: (context,index){
                       final ab = state.balances[index];
                         return Container(
-                          padding: EdgeInsets.symmetric(vertical: 5,horizontal: 10),
+                          padding: EdgeInsets.symmetric(vertical: 8,horizontal: 5),
+                          margin: EdgeInsets.symmetric(horizontal: 15),
                           decoration: BoxDecoration(
                             color: index.isOdd? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent
                           ),
