@@ -189,10 +189,8 @@ class _DesktopState extends State<_Desktop> {
                               imageName: stk.imageProfile,
                               size: 46,
                             ),
-
                             title: fullName.isNotEmpty ? fullName : "—",
                             subtitle: stk.perEmail,
-
                             status: InfoStatus(
                               label: Utils.genderType(
                                 gender: stk.perGender ?? "",
