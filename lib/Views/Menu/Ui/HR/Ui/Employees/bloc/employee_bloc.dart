@@ -13,7 +13,7 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
     on<LoadEmployeeEvent>((event, emit)async {
       emit(EmployeeLoadingState());
      try{
-      final emp = await _repo.getEmployees(empId: event.empId);
+      final emp = await _repo.getEmployees(cat: event.cat);
       emit(EmployeeLoadedState(emp));
      }catch(e){
        emit(EmployeeErrorState(e.toString()));

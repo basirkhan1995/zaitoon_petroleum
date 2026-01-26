@@ -19,7 +19,7 @@ class UsersReportModel {
   final String? role;
   final String? verification;
   final String? fcp;
-  final int? afl;
+  final int? alf;
   final String? status;
   final DateTime? createDate;
 
@@ -34,7 +34,7 @@ class UsersReportModel {
     this.role,
     this.verification,
     this.fcp,
-    this.afl,
+    this.alf,
     this.status,
     this.createDate,
   });
@@ -50,7 +50,7 @@ class UsersReportModel {
     String? role,
     String? verification,
     String? fcp,
-    int? afl,
+    int? alf,
     String? status,
     DateTime? createDate,
   }) =>
@@ -65,7 +65,7 @@ class UsersReportModel {
         role: role ?? this.role,
         verification: verification ?? this.verification,
         fcp: fcp ?? this.fcp,
-        afl: afl ?? this.afl,
+        alf: alf ?? this.alf,
         status: status ?? this.status,
         createDate: createDate ?? this.createDate,
       );
@@ -81,7 +81,7 @@ class UsersReportModel {
     role: json["role"],
     verification: json["verification"],
     fcp: json["fcp"],
-    afl: json["afl"],
+    alf: json["alf"],
     status: json["status"],
     createDate: json["createDate"] == null ? null : DateTime.parse(json["createDate"]),
   );
@@ -97,7 +97,7 @@ class UsersReportModel {
     "role": role,
     "verification": verification,
     "fcp": fcp,
-    "afl": afl,
+    "alf": alf,
     "status": status,
     "createDate": "${createDate!.year.toString().padLeft(4, '0')}-${createDate!.month.toString().padLeft(2, '0')}-${createDate!.day.toString().padLeft(2, '0')}",
   };

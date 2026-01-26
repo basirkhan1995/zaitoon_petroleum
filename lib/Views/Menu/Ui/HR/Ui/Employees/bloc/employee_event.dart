@@ -6,10 +6,10 @@ sealed class EmployeeEvent extends Equatable {
 
 
 class LoadEmployeeEvent extends EmployeeEvent{
-  final int? empId;
-  const LoadEmployeeEvent({this.empId});
+  final String? cat;
+  const LoadEmployeeEvent({this.cat});
   @override
-  List<Object?> get props => [empId];
+  List<Object?> get props => [cat];
 }
 
 class AddEmployeeEvent extends EmployeeEvent{

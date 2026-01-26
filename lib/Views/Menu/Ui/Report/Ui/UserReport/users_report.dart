@@ -189,7 +189,7 @@ class _DesktopState extends State<_Desktop> {
                   Expanded(
                       child: Text(tr.userInformation,style: titleStyle)),
                   SizedBox(
-                      width: 150,
+                      width: 180,
                       child: Text(tr.userOwner,style: titleStyle)),
                   SizedBox(
                       width: 120,
@@ -199,7 +199,7 @@ class _DesktopState extends State<_Desktop> {
                       child: Text(tr.branch,style: titleStyle)),
                   SizedBox(
                       width: 80,
-                      child: Text("AFL",style: titleStyle)),
+                      child: Text("ALF",style: titleStyle)),
                   SizedBox(
                       width: 80,
                       child: Text(tr.fcp,style: titleStyle)),
@@ -264,7 +264,7 @@ class _DesktopState extends State<_Desktop> {
                                     ],
                                   )),
                               SizedBox(
-                                  width: 150,
+                                  width: 180,
                                   child: Text(usr.fullName??"")),
 
                               SizedBox(
@@ -275,7 +275,7 @@ class _DesktopState extends State<_Desktop> {
                                   child: Text(usr.branch.toString())),
                               SizedBox(
                                   width: 80,
-                                  child: Text(usr.afl.toString())),
+                                  child: Text(usr.alf.toString())),
 
                               SizedBox(
                                   width: 80,

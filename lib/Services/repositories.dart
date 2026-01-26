@@ -636,10 +636,10 @@ class Repositories {
   }
 
   ///Employees .................................................................
-  Future<List<EmployeeModel>> getEmployees({int? empId}) async {
+  Future<List<EmployeeModel>> getEmployees({String? cat}) async {
     try {
       // Build query parameters dynamically
-      final queryParams = empId != null ? {'empID': empId} : null;
+      final queryParams = cat != null ? {'cat': cat} : null;
 
       // Fetch data from API
       final response = await api.get(
