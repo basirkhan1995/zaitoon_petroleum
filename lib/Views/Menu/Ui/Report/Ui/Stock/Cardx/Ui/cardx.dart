@@ -176,12 +176,12 @@ class _DesktopState extends State<_Desktop> {
                             bloc.add(LoadProductsEvent()),
                         searchFunction: (bloc, query) =>
                             bloc.add(LoadProductsEvent()),
-                        showAllOption: true,
-                        allOption: ProductsModel(
-                          proId: null,
-                          proName: tr.all,
-                          proCode: '',
-                        ),
+                        // showAllOption: true,
+                        // allOption: ProductsModel(
+                        //   proId: null,
+                        //   proName: tr.all,
+                        //   proCode: '',
+                        // ),
                         itemBuilder: (context, ind) {
                           if (ind.proId == null) {
                             return Padding(
@@ -322,10 +322,9 @@ class _DesktopState extends State<_Desktop> {
 
                 if(state is StockRecordInitial){
                   return NoDataWidget(
-
                       title: "Inventory Report",
-                      message: "Stock Record",
-                      onRefresh: (){}
+                      message: "Stock IN & OUT Record",
+                      enableAction: false,
                   );
                 }
                 if(state is StockRecordLoadedState){
