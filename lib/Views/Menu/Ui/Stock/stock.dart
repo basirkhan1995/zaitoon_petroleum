@@ -8,6 +8,7 @@ import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/View/add_estimate.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/View/estimate.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/GoodsShift/add_shift.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/new_purchase.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewSale/new_sale.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Orders/Ui/orders.dart';
@@ -15,6 +16,8 @@ import '../../../../Features/Generic/tab_bar.dart';
 import '../../../../Features/Widgets/outline_button.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../Auth/bloc/auth_bloc.dart';
+import 'Ui/Adjustment/adjustment.dart';
+import 'Ui/GoodsShift/goods_shift.dart';
 import 'Ui/OrderScreen/GetOrderById/order_by_id.dart';
 import 'bloc/stock_tab_bloc.dart';
 
@@ -63,6 +66,18 @@ class StockView extends StatelessWidget {
                       value: StockTabsName.estimates,
                       label: locale.estimateTitle,
                       screen: const EstimateView(),
+                    ),
+
+                    ZTabItem(
+                      value: StockTabsName.shift,
+                      label: locale.shift,
+                      screen: const GoodsShiftView(),
+                    ),
+
+                    ZTabItem(
+                      value: StockTabsName.adjustment,
+                      label: locale.adjustment,
+                      screen: const AdjustmentView(),
                     ),
                   ];
 
@@ -127,7 +142,7 @@ class StockView extends StatelessWidget {
                     Wrap(
                       spacing: 5,
                       children: [
-                        const Icon(Icons.cached_rounded, size: 20),
+                        Icon(Icons.shopify_rounded, size: 20,color: color.outline),
                         Text(
                           locale.invoiceTitle,
                           style: Theme.of(context).textTheme.titleSmall,
@@ -165,7 +180,7 @@ class StockView extends StatelessWidget {
                       backgroundColor: color.primary.withValues(alpha: opacity),
                       toolTip: "F4",
                       label: Text(locale.findInvoice),
-                      icon: Icons.search_rounded,
+                      icon: Icons.filter_alt_outlined,
                       width: double.infinity,
                        onPressed: () => getInvoiceById(context),
                     ),
@@ -174,7 +189,7 @@ class StockView extends StatelessWidget {
                     Wrap(
                       spacing: 5,
                       children: [
-                        const Icon(Icons.call_to_action_outlined, size: 20),
+                         Icon(Icons.inventory_2_outlined, size: 18,color: color.outline,),
                         Text(
                           locale.stock,
                           style: Theme.of(context).textTheme.titleSmall,
@@ -186,17 +201,17 @@ class StockView extends StatelessWidget {
                       backgroundColor: color.primary.withValues(alpha: opacity),
                       toolTip: "F7",
                       label: Text(locale.shift),
-                      icon: Icons.filter_tilt_shift,
+                      icon: Icons.edit_location_outlined,
                       width: double.infinity,
-                      // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
+                       onPressed: () => Utils.goto(context, AddGoodsShiftView()),
                     ),
                     ZOutlineButton(
                       backgroundColor: color.primary.withValues(alpha: opacity),
                       toolTip: "F8",
                       label: Text(locale.adjustment),
-                      icon: Icons.auto_fix_high,
+                      icon: Icons.settings_backup_restore_rounded,
                       width: double.infinity,
-                      // onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
+                      onPressed: () => Utils.goto(context, AdjustmentView()),
                     ),
                   ],
                 ),

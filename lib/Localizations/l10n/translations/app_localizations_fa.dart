@@ -2173,4 +2173,13 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get accountsAndUsers => 'حسابها و کاربران';
+
+  @override
+  String get fromStorage => 'از مخزن';
+
+  @override
+  String get toStorage => 'به مخزن';
+
+  @override
+  String get totalItems => 'جمع تعداد';
 }

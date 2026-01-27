@@ -1,6 +1,6 @@
 part of 'stock_tab_bloc.dart';
 
-enum StockTabsName {estimates, orders, shift}
+enum StockTabsName {estimates, orders, shift, adjustment}
 
 class StockTabState extends Equatable {
   final StockTabsName tabs;

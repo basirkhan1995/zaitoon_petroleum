@@ -81,7 +81,7 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    TextStyle? titleStyle = textTheme.titleSmall;
+    TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.surface);
     final tr = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -155,8 +155,11 @@ class _DesktopState extends State<_Desktop> {
               ),
             ),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+              decoration: BoxDecoration(
+                color: color.primary.withValues(alpha: .9)
+              ),
               child: Row(
                 children: [
                   SizedBox(width: 30, child: Text("#", style: titleStyle)),
@@ -181,7 +184,7 @@ class _DesktopState extends State<_Desktop> {
               ),
             ),
             SizedBox(height: 5),
-            const Divider(),
+
 
             Expanded(
               child: BlocBuilder<OrdersBloc, OrdersState>(

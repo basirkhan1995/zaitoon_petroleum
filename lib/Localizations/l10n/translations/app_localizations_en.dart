@@ -2182,4 +2182,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountsAndUsers => 'Accounts & Users';
+
+  @override
+  String get fromStorage => 'From Storage';
+
+  @override
+  String get toStorage => 'To Storage';
+
+  @override
+  String get totalItems => 'Total Item';
 }

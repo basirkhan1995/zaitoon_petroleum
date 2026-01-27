@@ -723,5 +723,8 @@
   "weight": "Weight",
   "inAndOut": "IN/OUT",
   "ongoingBalance": "Ongoing Balance",
-  "accountsAndUsers": "Accounts & Users"
+  "accountsAndUsers": "Accounts & Users",
+  "fromStorage": "From Storage",
+  "toStorage": "To Storage",
+  "totalItems": "Total Item"
 }

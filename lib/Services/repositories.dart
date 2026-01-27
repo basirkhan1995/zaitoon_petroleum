@@ -53,6 +53,7 @@ import '../Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/model/limit_
 import '../Views/Menu/Ui/Settings/Ui/Company/Branches/model/branch_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/model/product_model.dart';
 import '../Views/Menu/Ui/Stakeholders/Ui/Individuals/model/individual_model.dart';
+import '../Views/Menu/Ui/Stock/Ui/GoodsShift/model/shift_model.dart';
 import '../Views/Menu/Ui/Stock/Ui/OrderScreen/GetOrderById/model/ord_by_id_model.dart';
 import '../Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/model/purchase_invoice_items.dart';
 import '../Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/model/shipping_model.dart';
@@ -1933,6 +1934,90 @@ class Repositories {
       throw "${e.message}";
     } catch (e) {
       throw "$e";
+    }
+  }
+
+
+  ///Shift Goods ...............................................................
+  // In your Repositories class, add these methods:
+
+  Future<List<GoodShiftModel>> getShifts({int? orderId}) async {
+    try {
+      final queryParams = {'ordID': orderId};
+      final response = await api.get(
+          endpoint: "/inventory/goodsShifting.php",
+          queryParams: queryParams
+      );
+
+      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+        throw Exception(response.data['msg']);
+      }
+
+      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+        return [];
+      }
+
+      if (response.data is List) {
+        return (response.data as List)
+            .whereType<Map<String, dynamic>>()
+            .map((json) => GoodShiftModel.fromMap(json))
+            .toList();
+      }
+
+      return [];
+    } on DioException catch (e) {
+      throw "${e.message}";
+    } catch (e) {
+      throw "$e";
+    }
+  }
+
+  Future<Map<String, dynamic>> addShift({
+    required String usrName,
+    required String account,
+    required String amount,
+    required List<ShiftRecord> records,
+  }) async {
+    try {
+      final data = {
+        "usrName": usrName,
+        "account": account,
+        "amount": amount,
+        "records": records.map((r) => r.toMap()).toList(),
+      };
+
+      final response = await api.post(
+        endpoint: "/inventory/goodsShifting.php",
+        data: data,
+      );
+
+      return response.data is Map<String, dynamic>
+          ? response.data
+          : {'msg': 'Invalid response format'};
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw 'Unexpected error: $e';
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteShift({
+    required int orderId,
+    required String usrName,
+  }) async {
+    try {
+      final response = await api.delete(
+          endpoint: "/inventory/goodsShifting.php",
+          data: {
+            "usrName": usrName,
+            "ordID": orderId.toString(),
+          }
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw '${e.message}';
+    } catch (e) {
+      throw e.toString();
     }
   }
 

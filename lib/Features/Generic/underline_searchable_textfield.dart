@@ -40,6 +40,7 @@ class GenericUnderlineTextfield<T, B extends BlocBase<S>, S> extends StatefulWid
   final bool showClearButton;
   final OnFieldSubmitFunction? onBarcodeSubmitted;
   final bool showAllOnFocus;
+  final bool enabled;
 
   const GenericUnderlineTextfield({
     super.key,
@@ -50,6 +51,7 @@ class GenericUnderlineTextfield<T, B extends BlocBase<S>, S> extends StatefulWid
     required this.itemToString,
     required this.stateToItems,
     this.focusNode,
+    this.enabled = true,
     this.loadingBuilder,
     this.stateToLoading,
     this.bloc,
@@ -357,6 +359,7 @@ class _GenericUnderlineTextfieldState<T, B extends BlocBase<S>, S> extends State
                 child: TextFormField(
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   focusNode: _focusNode,
+                  enabled: widget.enabled,
                   key: _fieldKey,
                   controller: widget.controller,
                   onChanged: (value) {

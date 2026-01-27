@@ -58,6 +58,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualDetail
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/bloc/stk_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/bloc/estimate_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/GoodsShift/bloc/goods_shift_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/GetOrderById/bloc/order_by_id_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/bloc/purchase_invoice_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewSale/bloc/sale_invoice_bloc.dart';
@@ -168,6 +169,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => SaleInvoiceBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => OrderTxnBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => GlCategoryBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => GoodsShiftBloc(Repositories(ApiServices()))),
 
         ///Report Bloc
         BlocProvider(create: (context) => AccStatementBloc(Repositories(ApiServices()))),

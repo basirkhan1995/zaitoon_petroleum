@@ -80,7 +80,7 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    TextStyle? titleStyle = textTheme.titleSmall;
+    TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.surface);
     final tr = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -140,8 +140,11 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+            decoration: BoxDecoration(
+                color: color.primary.withValues(alpha: .9)
+            ),
             child: Row(
               children: [
                 SizedBox(width: 30, child: Text("#", style: titleStyle)),
@@ -157,8 +160,6 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
           ),
-          SizedBox(height: 5),
-          const Divider(),
 
           Expanded(
             child: BlocConsumer<EstimateBloc, EstimateState>(
@@ -197,7 +198,11 @@ class _DesktopState extends State<_Desktop> {
                 }
 
                 if (displayState is EstimateError) {
-                  return NoDataWidget(message: displayState.message);
+                  return NoDataWidget(
+                    imageName: 'error.png',
+                    message: displayState.message, onRefresh: (){
+                    context.read<EstimateBloc>().add(LoadEstimatesEvent());
+                  },);
                 }
 
                 if (displayState is EstimateLoading) {
@@ -218,7 +223,9 @@ class _DesktopState extends State<_Desktop> {
                   }).toList();
 
                   if (filteredList.isEmpty) {
-                    return NoDataWidget(message: tr.noDataFound);
+                    return NoDataWidget(message: tr.noDataFound,onRefresh: (){
+                      context.read<EstimateBloc>().add(LoadEstimatesEvent());
+                    },);
                   }
 
                   return ListView.builder(

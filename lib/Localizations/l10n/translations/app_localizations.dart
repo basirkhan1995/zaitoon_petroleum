@@ -4323,6 +4323,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Accounts & Users'**
   String get accountsAndUsers;
+
+  /// No description provided for @fromStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'From Storage'**
+  String get fromStorage;
+
+  /// No description provided for @toStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'To Storage'**
+  String get toStorage;
+
+  /// No description provided for @totalItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Item'**
+  String get totalItems;
 }
 
 class _AppLocalizationsDelegate

@@ -117,14 +117,14 @@ class _DesktopState extends State<_Desktop> {
     ];
 
     final List<Map<String, dynamic>> transactionsButtons = [
-      {"title": "${tr.treasury} (${tr.all} ${tr.branches})", "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.allCashBalances},
+      {"title": "${tr.treasury} (${tr.all} ${tr.branches})", "icon":  FontAwesomeIcons.sackDollar, "action": ActionKey.allCashBalances},
       {"title": "${tr.treasury} (${tr.branch} Wise)", "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.cashBalanceBranchWise},
-      {"title": tr.exchangeRate, "icon": Icons.compare_arrows_rounded, "action": ActionKey.exchangeRate},
+      {"title": tr.exchangeRate, "icon": Icons.price_change_outlined, "action": ActionKey.exchangeRate},
       {"title": tr.balanceSheet, "icon": Icons.balance_rounded, "action": ActionKey.balanceSheet},
       {"title": tr.trialBalance, "icon": Icons.balance_rounded, "action": ActionKey.trialBalance},
       {"title": tr.transactionDetails, "icon": Icons.qr_code_2_rounded, "action": ActionKey.transactionByRef},
       {"title": "${tr.transactions} ${tr.report}", "icon": Icons.line_axis_sharp, "action": ActionKey.transactionReport},
-      {"title": "All Balances", "icon": Icons.line_axis_sharp, "action": ActionKey.allBalances},
+      {"title": "All Balances", "icon": Icons.money, "action": ActionKey.allBalances},
     ];
 
     final List<Map<String, dynamic>> activitiesButtons = [
@@ -229,7 +229,7 @@ class _DesktopState extends State<_Desktop> {
       child: ValueListenableBuilder<bool>(
         valueListenable: hoverNotifier,
         builder: (context, isHovered, _) {
-          return GestureDetector(
+          return InkWell(
             onTap: () => reportAction(button['action'] as ActionKey),
             child: AnimatedContainer(
               duration: Duration(milliseconds: 150),
@@ -241,21 +241,28 @@ class _DesktopState extends State<_Desktop> {
                       ? color.primary
                       : color.surface,
                   borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: .3)),
+                  border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .2)),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(button['icon'], size: 35, color: isHovered
-                      ? color.surface
-                      : color.primary,
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                      color: isHovered? Theme.of(context).colorScheme.outline.withValues(alpha: .3) : Theme.of(context).colorScheme.outline.withValues(alpha: .05)
+                    ),
+                    child: Icon(button['icon'], size: 30, color: isHovered
+                        ? color.surface
+                        : color.primary,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     button['title'],
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: isHovered
                           ? color.surface

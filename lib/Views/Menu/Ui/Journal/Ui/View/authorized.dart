@@ -109,6 +109,8 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
+    final color = Theme.of(context).colorScheme;
+    TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.surface);
 
     return MultiBlocListener(
       listeners: [
@@ -298,44 +300,42 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+                  margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                  decoration: BoxDecoration(
+                      color: color.primary.withValues(alpha: .9)
+                  ),
                   child: Row(
                     children: [
                       SizedBox(
                         width: 162,
                         child:
-                        Text(tr.txnDate, style: textTheme.titleSmall),
+                        Text(tr.txnDate, style: titleStyle),
                       ),
                       SizedBox(width: 20),
                       Expanded(
                         child: Text(
                           tr.referenceNumber,
-                          style: textTheme.titleSmall,
+                          style: titleStyle,
                         ),
                       ),
                       SizedBox(
                         width: 130,
-                        child: Text(tr.txnType, style: textTheme.titleSmall),
+                        child: Text(tr.txnType, style: titleStyle),
                       ),
                       SizedBox(width: 20),
                       SizedBox(
                         width: 110,
-                        child: Text(tr.maker, style: textTheme.titleSmall),
+                        child: Text(tr.maker, style: titleStyle),
                       ),
                       SizedBox(
                         width: 110,
-                        child: Text(tr.checker, style: textTheme.titleSmall),
+                        child: Text(tr.checker, style: titleStyle),
                       ),
                       SizedBox(width: 20),
                     ],
                   ),
-                ),
-                const SizedBox(height: 5),
-                Divider(
-                  indent: 5,
-                  endIndent: 5,
-                  color: Theme.of(context).colorScheme.outline,
                 ),
                 Expanded(
                   child: BlocConsumer<TransactionsBloc, TransactionsState>(

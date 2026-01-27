@@ -84,7 +84,7 @@ class _DesktopState extends State<_Desktop> {
   int? accNumber;
   String? salaryCalBase;
   String? paymentBase;
-  String? department;
+  EmpDepartment? department; // Changed from String? to EmpDepartment?
   DateTime? startDate;
 
   final formKey = GlobalKey<FormState>();
@@ -94,13 +94,15 @@ class _DesktopState extends State<_Desktop> {
         widget.model?.empPosition?.toLowerCase() == 'driver';
   }
 
-
   @override
   void initState() {
     super.initState();
 
     if (widget.model != null) {
-      department = widget.model?.empDepartment;
+      // Convert string to EmpDepartment enum
+      if (widget.model?.empDepartment != null) {
+        department = EmpDepartment.fromDatabaseValue(widget.model!.empDepartment!);
+      }
       paymentBase = widget.model?.empPmntMethod;
       salaryCalBase = widget.model?.empSalCalcBase;
       accNumber = widget.model?.empSalAccount;
@@ -117,7 +119,6 @@ class _DesktopState extends State<_Desktop> {
       jobTitle.text = widget.model?.empPosition ?? "";
     }
   }
-
 
   @override
   void dispose() {
@@ -283,9 +284,10 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 SizedBox(height: 10),
                 DepartmentDropdown(
+                  selectedDepartment: department, // Now passing EmpDepartment enum
                   onDepartmentSelected: (e) {
                     setState(() {
-                      department = e.name;
+                      department = e;
                     });
                   },
                 ),
@@ -386,7 +388,7 @@ class _DesktopState extends State<_Desktop> {
       empSalAccount: accNumber,
       empEmail: empEmail.text,
       empHireDate: DateTime.now(),
-      empDepartment: department,
+      empDepartment: department?.toDatabaseValue(), // Convert enum back to string
       empPosition: isDriverEmployee ? "Driver" : jobTitle.text,
       empSalCalcBase: salaryCalBase,
       empPmntMethod: paymentBase,
@@ -405,5 +407,4 @@ class _DesktopState extends State<_Desktop> {
       bloc.add(UpdateEmployeeEvent(data));
     }
   }
-
 }

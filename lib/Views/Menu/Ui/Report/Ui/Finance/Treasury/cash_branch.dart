@@ -191,17 +191,23 @@ class _DesktopState extends State<_Desktop> {
                 SizedBox(
                   width: 300,
                   child: BranchDropdown(
-                    currentBranchId: branchId,
+                    selectedId: branchId,
                     height: 40,
-                      title: "",
-                      onBranchSelected: (e){
+                    title: "",
+                    onBranchSelected: (e) {
+                      // Store the branch ID directly from the parameter
+                      final newBranchId = e?.brcId;
+
                       setState(() {
-                        branchId = e?.brcId;
+                        branchId = newBranchId;
                       });
+
+                      // Use the parameter directly, not the state variable which might not be updated yet
                       context.read<CashBalancesBloc>().add(
-                        LoadCashBalanceBranchWiseEvent(branchId: branchId),
+                        LoadCashBalanceBranchWiseEvent(branchId: newBranchId),
                       );
-                      }),
+                    },
+                  ),
                 ),
               ],
             ),
@@ -302,7 +308,6 @@ class _DesktopState extends State<_Desktop> {
     final closingSys = double.tryParse(record.closingSysEquivalent ?? '0') ?? 0;
     final cashFlow = closing - opening;
     final cashFlowSys = closingSys - openingSys;
-    
 
     return ZCover(
       color: Theme.of(context).colorScheme.surface,

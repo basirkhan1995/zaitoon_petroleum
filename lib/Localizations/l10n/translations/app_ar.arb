@@ -723,5 +723,8 @@
   "weight": "وزن",
   "inAndOut": "ورود/خروج",
   "ongoingBalance": "موجودی",
-  "accountsAndUsers": "حسابها و کاربران"
+  "accountsAndUsers": "حسابها و کاربران",
+  "fromStorage": "از مخزن",
+  "toStorage": "به مخزن",
+  "totalItems": "جمع تعداد"
 }

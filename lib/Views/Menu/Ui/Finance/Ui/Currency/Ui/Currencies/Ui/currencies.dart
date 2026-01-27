@@ -61,6 +61,10 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
+    final color = Theme.of(context).colorScheme;
+    TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.surface);
+
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): onAdd,
       const SingleActivator(LogicalKeyboardKey.f5): onRefresh,
@@ -72,7 +76,7 @@ class _DesktopState extends State<_Desktop> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -133,29 +137,33 @@ class _DesktopState extends State<_Desktop> {
               ),
             ),
             SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+              margin: const EdgeInsets.symmetric(horizontal: 5.0),
+              decoration: BoxDecoration(
+                  color: color.primary.withValues(alpha: .9)
+              ),
               child: Row(
                 children: [
                   SizedBox(
                     width: 50,
                     child: Text(
                       tr.flag,
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: titleStyle,
                     ),
                   ),
                   SizedBox(
                     width: 60,
                     child: Text(
                       tr.currencyCode,
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: titleStyle,
                     ),
                   ),
                   SizedBox(
                     width: 220,
                     child: Text(
                       tr.currencyTitle,
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: titleStyle,
                     ),
                   ),
 
@@ -163,7 +171,7 @@ class _DesktopState extends State<_Desktop> {
                     width: 170,
                     child: Text(
                       tr.ccyLocalName,
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: titleStyle,
                     ),
                   ),
 
@@ -172,7 +180,7 @@ class _DesktopState extends State<_Desktop> {
                     width: 70,
                     child: Text(
                       tr.symbol,
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: titleStyle,
                     ),
                   ),
 
@@ -181,17 +189,13 @@ class _DesktopState extends State<_Desktop> {
                     width: 60,
                     child: Text(
                       tr.status,
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: titleStyle,
                     ),
                   ),
                 ],
               ),
             ),
-            Divider(
-              endIndent: 10,
-              indent: 10,
-              color: Theme.of(context).colorScheme.outline.withValues(alpha: .3),
-            ),
+
             Expanded(
               child: BlocBuilder<CurrenciesBloc, CurrenciesState>(
                 builder: (context, state) {

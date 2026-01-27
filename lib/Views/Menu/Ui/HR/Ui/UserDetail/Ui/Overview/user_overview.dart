@@ -367,7 +367,8 @@ class _DesktopState extends State<_Desktop> {
               children: [
                 Expanded(
                     child: BranchDropdown(
-                      currentBranchId: branchCode,
+                      selectedId: branchCode,
+
                     onBranchSelected: (e) {
                   setState(() {
                     branchCode = e?.brcId;

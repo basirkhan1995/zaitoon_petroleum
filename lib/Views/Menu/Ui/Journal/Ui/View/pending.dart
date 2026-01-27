@@ -132,6 +132,8 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
+    final color = Theme.of(context).colorScheme;
+    TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.surface);
 
     return MultiBlocListener(
       listeners: [
@@ -349,8 +351,12 @@ class _DesktopState extends State<_Desktop> {
                 ),
 
                 // HEADER
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+                  margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                  decoration: BoxDecoration(
+                      color: color.primary.withValues(alpha: .9)
+                  ),
                   child: Row(
                     children: [
                       // SELECT-ALL CHECKBOX
@@ -378,7 +384,7 @@ class _DesktopState extends State<_Desktop> {
                         width: 162,
                         child: Text(
                           tr.txnDate,
-                          style: textTheme.titleSmall,
+                          style: titleStyle,
                         ),
                       ),
                       const SizedBox(width: 20),
@@ -387,7 +393,7 @@ class _DesktopState extends State<_Desktop> {
                           children: [
                             Text(
                               tr.referenceNumber,
-                              style: textTheme.titleSmall,
+                              style: titleStyle,
                             ),
                             const SizedBox(width: 4),
                             Icon(
@@ -402,7 +408,7 @@ class _DesktopState extends State<_Desktop> {
                         width: 110,
                         child: Text(
                           tr.txnType,
-                          style: textTheme.titleSmall,
+                          style: titleStyle,
                         ),
                       ),
                       const SizedBox(width: 20),
@@ -410,18 +416,13 @@ class _DesktopState extends State<_Desktop> {
                         width: 110,
                         child: Text(
                           tr.maker,
-                          style: textTheme.titleSmall,
+                          style: titleStyle,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                Divider(
-                  indent: 8,
-                  endIndent: 8,
-                  color: Theme.of(context).colorScheme.outline,
-                ),
+
 
                 // BODY
                 Expanded(
