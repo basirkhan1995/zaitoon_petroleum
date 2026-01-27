@@ -1939,8 +1939,6 @@ class Repositories {
 
 
   ///Shift Goods ...............................................................
-  // In your Repositories class, add these methods:
-
   Future<List<GoodShiftModel>> getShifts({int? orderId}) async {
     try {
       final queryParams = {'ordID': orderId};
@@ -1953,10 +1951,27 @@ class Repositories {
         throw Exception(response.data['msg']);
       }
 
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      if (response.data == null) {
         return [];
       }
 
+      // Handle single shift detail with records
+      if (response.data is Map<String, dynamic>) {
+        final data = response.data as Map<String, dynamic>;
+        final shift = GoodShiftModel.fromMap(data);
+
+        // Parse records if they exist
+        if (data.containsKey('records') && data['records'] is List) {
+          shift.records = (data['records'] as List)
+              .whereType<Map<String, dynamic>>()
+              .map((record) => ShiftRecord.fromMap(record))
+              .toList();
+        }
+
+        return [shift];
+      }
+
+      // Handle list of shifts
       if (response.data is List) {
         return (response.data as List)
             .whereType<Map<String, dynamic>>()
@@ -1971,7 +1986,6 @@ class Repositories {
       throw "$e";
     }
   }
-
   Future<Map<String, dynamic>> addShift({
     required String usrName,
     required String account,

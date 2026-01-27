@@ -2185,4 +2185,38 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get totalItems => 'جمع تعداد';
+
+  @override
+  String get shiftItems => 'کالاهای انتقالی';
+
+  @override
+  String get typeTitle => 'نوع انتقال';
+
+  @override
+  String get outTitle => 'خروج';
+
+  @override
+  String get inTitle => 'ورود';
+
+  @override
+  String get totalProductValue => 'د توکو مجموعي ارزښت';
+
+  @override
+  String get totalProductExpense => 'ټول (کالا + لګښت)';
+
+  @override
+  String get expenseAmount => 'مصارف انتقال';
+
+  @override
+  String get outRecords => 'اقلام خروجی';
+
+  @override
+  String get inRecords => 'اقلام ورودی';
+
+  @override
+  String get accountTitle => 'حساب';
+
+  @override
+  String get deleteMessage =>
+      'ایا ډاډه یاست چې غواړئ ړنګ کړئ؟ دا عمل بېرته نه راګرځي';
 }

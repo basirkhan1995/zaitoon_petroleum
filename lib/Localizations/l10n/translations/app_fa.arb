@@ -726,5 +726,16 @@
   "accountsAndUsers": "حسابها و کاربران",
   "fromStorage": "از مخزن",
   "toStorage": "به مخزن",
-  "totalItems": "جمع تعداد"
+  "totalItems": "جمع تعداد",
+  "shiftItems": "کالاهای انتقالی",
+  "typeTitle": "نوع انتقال",
+  "outTitle": "خروج",
+  "inTitle": "ورود",
+  "totalProductValue": "کل ارزش کالا",
+  "totalProductExpense": "جمع (کالا + هزینه)",
+  "expenseAmount": "مصارف انتقال",
+  "outRecords": "اقلام خروجی",
+  "inRecords": "اقلام ورودی",
+  "accountTitle": "حساب",
+  "deleteMessage": "آیا میخواهید حذف نمایید،  این عمل قابل بازگشت نیست"
 }

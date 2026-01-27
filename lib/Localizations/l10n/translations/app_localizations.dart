@@ -4341,6 +4341,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total Item'**
   String get totalItems;
+
+  /// No description provided for @shiftItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Shift Items'**
+  String get shiftItems;
+
+  /// No description provided for @typeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shift Type'**
+  String get typeTitle;
+
+  /// No description provided for @outTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'OUT'**
+  String get outTitle;
+
+  /// No description provided for @inTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'IN'**
+  String get inTitle;
+
+  /// No description provided for @totalProductValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Product Value'**
+  String get totalProductValue;
+
+  /// No description provided for @totalProductExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Total (Product + Expense)'**
+  String get totalProductExpense;
+
+  /// No description provided for @expenseAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense Amount'**
+  String get expenseAmount;
+
+  /// No description provided for @outRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'OUT Records'**
+  String get outRecords;
+
+  /// No description provided for @inRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'IN Records'**
+  String get inRecords;
+
+  /// No description provided for @accountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get accountTitle;
+
+  /// No description provided for @deleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to delete? This action cannot be undone.”'**
+  String get deleteMessage;
 }
 
 class _AppLocalizationsDelegate

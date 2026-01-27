@@ -8,6 +8,8 @@ List<GoodShiftModel> goodShiftModelFromMap(String str) => List<GoodShiftModel>.f
 
 String goodShiftModelToMap(List<GoodShiftModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toMap())));
 
+// Update GoodShiftModel class
+
 class GoodShiftModel {
   final int? ordId;
   final String? ordName;
@@ -19,6 +21,7 @@ class GoodShiftModel {
   final String? amount;
   final String? trnStateText;
   final DateTime? ordEntryDate;
+  List<ShiftRecord>? records;
 
   GoodShiftModel({
     this.ordId,
@@ -31,6 +34,7 @@ class GoodShiftModel {
     this.amount,
     this.trnStateText,
     this.ordEntryDate,
+    this.records,
   });
 
   GoodShiftModel copyWith({
@@ -44,6 +48,7 @@ class GoodShiftModel {
     String? amount,
     String? trnStateText,
     DateTime? ordEntryDate,
+    List<ShiftRecord>? records,
   }) =>
       GoodShiftModel(
         ordId: ordId ?? this.ordId,
@@ -56,6 +61,7 @@ class GoodShiftModel {
         amount: amount ?? this.amount,
         trnStateText: trnStateText ?? this.trnStateText,
         ordEntryDate: ordEntryDate ?? this.ordEntryDate,
+        records: records ?? this.records,
       );
 
   factory GoodShiftModel.fromMap(Map<String, dynamic> json) => GoodShiftModel(
@@ -69,6 +75,9 @@ class GoodShiftModel {
     amount: json["amount"],
     trnStateText: json["trnStateText"],
     ordEntryDate: json["ordEntryDate"] == null ? null : DateTime.parse(json["ordEntryDate"]),
+    records: json["records"] != null
+        ? (json["records"] as List).map((x) => ShiftRecord.fromMap(x)).toList()
+        : null,
   );
 
   Map<String, dynamic> toMap() => {
@@ -82,55 +91,106 @@ class GoodShiftModel {
     "amount": amount,
     "trnStateText": trnStateText,
     "ordEntryDate": ordEntryDate?.toIso8601String(),
+    "records": records?.map((x) => x.toMap()).toList(),
   };
+
+  double get totalAmount => double.tryParse(amount ?? "0") ?? 0;
+  bool get hasExpense => account != null && amount != null && totalAmount > 0;
+  int get outCount => records?.where((r) => r.stkEntryType == "OUT").length ?? 0;
+  int get inCount => records?.where((r) => r.stkEntryType == "IN").length ?? 0;
+
+  double get totalProductValue {
+    if (records == null) return 0;
+    double total = 0;
+    for (final record in records!) {
+      total += record.totalValue;
+    }
+    return total;
+  }
 }
-// shift_record_model.dart
+
 class ShiftRecord {
+  final int? stkID;
+  final int? stkOrder;
   final int? stkProduct;
-  final int? fromStorage;
-  final int? toStorage;
+  final String? proName;
+  final String? stkEntryType;
+  final int? fromStorageId;
+  final int? toStorageId;
+  final String? fromStorageName;
+  final String? toStorageName;
   final String? stkQuantity;
   final String? stkPurPrice;
+  final String? stkSalePrice;
 
   ShiftRecord({
+    this.stkID,
+    this.stkOrder,
     this.stkProduct,
-    this.fromStorage,
-    this.toStorage,
+    this.stkEntryType,
+    this.proName,
+    this.fromStorageName,
+    this.toStorageName,
+    this.fromStorageId,
+    this.toStorageId,
     this.stkQuantity,
     this.stkPurPrice,
+    this.stkSalePrice,
   });
 
   ShiftRecord copyWith({
+    int? stkID,
+    int? stkOrder,
     int? stkProduct,
+    String? stkEntryType,
     int? fromStorage,
     int? toStorage,
     String? stkQuantity,
     String? stkPurPrice,
+    String? stkSalePrice,
   }) => ShiftRecord(
+    stkID: stkID ?? this.stkID,
+    stkOrder: stkOrder ?? this.stkOrder,
     stkProduct: stkProduct ?? this.stkProduct,
-    fromStorage: fromStorage ?? this.fromStorage,
-    toStorage: toStorage ?? this.toStorage,
+    stkEntryType: stkEntryType ?? this.stkEntryType,
+    fromStorageId: fromStorage ?? this.fromStorageId,
+    toStorageId: toStorage ?? this.toStorageId,
     stkQuantity: stkQuantity ?? this.stkQuantity,
     stkPurPrice: stkPurPrice ?? this.stkPurPrice,
+    stkSalePrice: stkSalePrice ?? this.stkSalePrice,
   );
 
   factory ShiftRecord.fromMap(Map<String, dynamic> json) => ShiftRecord(
+    stkID: json["stkID"],
+    stkOrder: json["stkOrder"],
     stkProduct: json["stkProduct"],
-    fromStorage: json["fromStorage"],
-    toStorage: json["toStorage"],
+    stkEntryType: json["stkEntryType"],
+    fromStorageId: json["fromStorage"] ?? json["stkStorage"],
+    toStorageId: json["toStorage"] ?? json["stkStorage"],
+    fromStorageName: json["fromStorageName"] ?? json["stgName"],
+    toStorageName: json["toStorageName"] ?? json["stgName"],
+    proName: json["proName"],
     stkQuantity: json["stkQuantity"],
     stkPurPrice: json["stkPurPrice"],
+    stkSalePrice: json["stkSalePrice"],
   );
 
   Map<String, dynamic> toMap() => {
+    "stkID": stkID,
+    "stkOrder": stkOrder,
     "stkProduct": stkProduct,
-    "fromStorage": fromStorage,
-    "toStorage": toStorage,
+    "stkEntryType": stkEntryType,
+    "fromStorage": fromStorageId,
+    "toStorage": toStorageId,
     "stkQuantity": stkQuantity,
     "stkPurPrice": stkPurPrice,
+    "stkSalePrice": stkSalePrice,
   };
 
   double get quantity => double.tryParse(stkQuantity ?? "0") ?? 0;
   double get purchasePrice => double.tryParse(stkPurPrice ?? "0") ?? 0;
+  double get salePrice => double.tryParse(stkSalePrice ?? "0") ?? 0;
   double get totalValue => quantity * purchasePrice;
+  bool get isOutEntry => stkEntryType == "OUT";
+  bool get isInEntry => stkEntryType == "IN";
 }

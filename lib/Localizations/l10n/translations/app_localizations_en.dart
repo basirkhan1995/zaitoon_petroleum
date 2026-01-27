@@ -2191,4 +2191,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get totalItems => 'Total Item';
+
+  @override
+  String get shiftItems => 'Shift Items';
+
+  @override
+  String get typeTitle => 'Shift Type';
+
+  @override
+  String get outTitle => 'OUT';
+
+  @override
+  String get inTitle => 'IN';
+
+  @override
+  String get totalProductValue => 'Total Product Value';
+
+  @override
+  String get totalProductExpense => 'Total (Product + Expense)';
+
+  @override
+  String get expenseAmount => 'Expense Amount';
+
+  @override
+  String get outRecords => 'OUT Records';
+
+  @override
+  String get inRecords => 'IN Records';
+
+  @override
+  String get accountTitle => 'Account';
+
+  @override
+  String get deleteMessage =>
+      'Do you want to delete? This action cannot be undone.”';
 }

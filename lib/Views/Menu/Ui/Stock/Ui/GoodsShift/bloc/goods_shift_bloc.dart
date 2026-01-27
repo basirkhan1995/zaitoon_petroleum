@@ -64,8 +64,12 @@ class GoodsShiftBloc extends Bloc<GoodsShiftEvent, GoodsShiftState> {
       final msg = response['msg']?.toString() ?? '';
 
       if (msg.toLowerCase().contains('success')) {
-        add(LoadGoodsShiftsEvent());
+        // First emit saved state
         emit(GoodsShiftSavedState(message: 'Goods shift created successfully'));
+
+        // Then reload the shifts list
+        final shifts = await _repo.getShifts();
+        emit(GoodsShiftLoadedState(shifts));
       } else {
         emit(GoodsShiftErrorState(msg));
       }
@@ -88,8 +92,7 @@ class GoodsShiftBloc extends Bloc<GoodsShiftEvent, GoodsShiftState> {
       final msg = response['msg']?.toString() ?? '';
 
       if (msg.toLowerCase().contains('success')) {
-        final shifts = await _repo.getShifts();
-        emit(GoodsShiftLoadedState(shifts));
+        // Just emit deleted state - don't load shifts here
         emit(GoodsShiftDeletedState(message: 'Goods shift deleted successfully'));
       } else {
         emit(GoodsShiftErrorState(msg));

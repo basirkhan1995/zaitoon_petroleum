@@ -2182,4 +2182,38 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get totalItems => 'جمع تعداد';
+
+  @override
+  String get shiftItems => 'کالاهای انتقالی';
+
+  @override
+  String get typeTitle => 'نوع انتقال';
+
+  @override
+  String get outTitle => 'خروج';
+
+  @override
+  String get inTitle => 'ورود';
+
+  @override
+  String get totalProductValue => 'کل ارزش کالا';
+
+  @override
+  String get totalProductExpense => 'جمع (کالا + هزینه)';
+
+  @override
+  String get expenseAmount => 'مصارف انتقال';
+
+  @override
+  String get outRecords => 'اقلام خروجی';
+
+  @override
+  String get inRecords => 'اقلام ورودی';
+
+  @override
+  String get accountTitle => 'حساب';
+
+  @override
+  String get deleteMessage =>
+      'آیا میخواهید حذف نمایید،  این عمل قابل بازگشت نیست';
 }

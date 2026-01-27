@@ -104,7 +104,10 @@ class ZAlertDialog extends StatelessWidget {
               ZButton(
                 height: 40,
                 width: 100,
-                onPressed: onYes,
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog first
+                  onYes(); // Then trigger the callback
+                },
                 label: Text(AppLocalizations.of(context)!.yes),
               ),
               const SizedBox(width: 7),
@@ -112,7 +115,7 @@ class ZAlertDialog extends StatelessWidget {
                 height: 40,
                 width: 100,
                 backgroundHover: color.error,
-                onPressed: ()=>  Navigator.of(context).pop(),
+                onPressed: () => Navigator.of(context).pop(),
                 label: Text(AppLocalizations.of(context)!.ignore),
               ),
             ],

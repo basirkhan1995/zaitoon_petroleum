@@ -18,7 +18,6 @@ class StockRecordBloc extends Bloc<StockRecordEvent, StockRecordState> {
          emit(StockRecordErrorState(e.toString()));
        }
     });
-
     on<ResetStockRecordEvent>((event, emit) async{
       try{
         emit(StockRecordInitial());

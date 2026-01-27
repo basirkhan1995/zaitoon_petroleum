@@ -104,8 +104,8 @@ class _AddGoodsShiftViewState extends State<AddGoodsShiftView> {
 
     _records.add(ShiftRecord(
       stkProduct: 0,
-      fromStorage: 0,
-      toStorage: 0,
+      fromStorageId: 0,
+      toStorageId: 0,
       stkQuantity: "1",
       stkPurPrice: "0.00",
     ));
@@ -141,8 +141,8 @@ class _AddGoodsShiftViewState extends State<AddGoodsShiftView> {
 
     _records[index] = record.copyWith(
       stkProduct: productId ?? record.stkProduct,
-      fromStorage: fromStorage ?? record.fromStorage,
-      toStorage: toStorage ?? record.toStorage,
+      fromStorage: fromStorage ?? record.fromStorageId,
+      toStorage: toStorage ?? record.toStorageId,
       stkQuantity: quantity?.toStringAsFixed(2) ?? record.stkQuantity,
       stkPurPrice: purchasePrice?.toStringAsFixed(2) ?? record.stkPurPrice,
     );
@@ -739,13 +739,24 @@ class _AddGoodsShiftViewState extends State<AddGoodsShiftView> {
       return;
     }
 
-    if (_accountController.text.isEmpty) {
-      Utils.showOverlayMessage(context, message: 'Please enter account number', isError: true);
+    final accountText = _accountController.text.trim();
+    final amountText = _amountController.text.trim();
+// Case 1: If both are empty → allow (no error, continue)
+    if (accountText.isEmpty && amountText.isEmpty) {
+      // do nothing, just continue
+    } else if (amountText.isNotEmpty && accountText.isEmpty) {
+      Utils.showOverlayMessage(
+        context,
+        message: 'Please enter account number',
+        isError: true,
+      );
       return;
-    }
-
-    if (_amountController.text.isEmpty) {
-      Utils.showOverlayMessage(context, message: 'Please enter amount', isError: true);
+    } else if (accountText.isNotEmpty && amountText.isEmpty) {
+      Utils.showOverlayMessage(
+        context,
+        message: 'Please enter amount',
+        isError: true,
+      );
       return;
     }
 
@@ -756,15 +767,15 @@ class _AddGoodsShiftViewState extends State<AddGoodsShiftView> {
         Utils.showOverlayMessage(context, message: 'Please select a product for item ${i + 1}', isError: true);
         return;
       }
-      if (record.fromStorage == null || record.fromStorage == 0) {
+      if (record.fromStorageId == null || record.fromStorageId == 0) {
         Utils.showOverlayMessage(context, message: 'Please select from storage for item ${i + 1}', isError: true);
         return;
       }
-      if (record.toStorage == null || record.toStorage == 0) {
+      if (record.toStorageId == null || record.toStorageId == 0) {
         Utils.showOverlayMessage(context, message: 'Please select to storage for item ${i + 1}', isError: true);
         return;
       }
-      if (record.fromStorage == record.toStorage) {
+      if (record.fromStorageId == record.toStorageId) {
         Utils.showOverlayMessage(context, message: 'From and to storage cannot be same for item ${i + 1}', isError: true);
         return;
       }

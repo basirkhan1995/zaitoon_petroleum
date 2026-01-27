@@ -1207,7 +1207,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                                 style: const TextStyle(fontSize: 18),
                               ),
                               Text(
-                                product.stgName ?? "",
+                                product.fromStorageName ?? "",
                                 style: TextStyle(
                                   color: Theme.of(context).colorScheme.outline,
                                 ),
