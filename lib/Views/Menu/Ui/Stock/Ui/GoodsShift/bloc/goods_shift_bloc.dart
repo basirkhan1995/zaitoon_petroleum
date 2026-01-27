@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -18,10 +17,7 @@ class GoodsShiftBloc extends Bloc<GoodsShiftEvent, GoodsShiftState> {
     on<DeleteGoodsShiftEvent>(_onDeleteGoodsShift);
   }
 
-  Future<void> _onLoadGoodsShifts(
-      LoadGoodsShiftsEvent event,
-      Emitter<GoodsShiftState> emit,
-      ) async {
+  Future<void> _onLoadGoodsShifts(LoadGoodsShiftsEvent event, Emitter<GoodsShiftState> emit) async {
     emit(GoodsShiftLoadingState());
     try {
       final shifts = await _repo.getShifts();
@@ -30,11 +26,7 @@ class GoodsShiftBloc extends Bloc<GoodsShiftEvent, GoodsShiftState> {
       emit(GoodsShiftErrorState(e.toString()));
     }
   }
-
-  Future<void> _onLoadGoodsShiftById(
-      LoadGoodsShiftByIdEvent event,
-      Emitter<GoodsShiftState> emit,
-      ) async {
+  Future<void> _onLoadGoodsShiftById(LoadGoodsShiftByIdEvent event, Emitter<GoodsShiftState> emit) async {
     try {
       emit(GoodsShiftDetailLoadingState());
       final shifts = await _repo.getShifts(orderId: event.orderId);
@@ -47,11 +39,7 @@ class GoodsShiftBloc extends Bloc<GoodsShiftEvent, GoodsShiftState> {
       emit(GoodsShiftErrorState(e.toString()));
     }
   }
-
-  Future<void> _onAddGoodsShift(
-      AddGoodsShiftEvent event,
-      Emitter<GoodsShiftState> emit,
-      ) async {
+  Future<void> _onAddGoodsShift(AddGoodsShiftEvent event, Emitter<GoodsShiftState> emit) async {
     emit(GoodsShiftSavingState());
     try {
       final response = await _repo.addShift(
@@ -77,11 +65,7 @@ class GoodsShiftBloc extends Bloc<GoodsShiftEvent, GoodsShiftState> {
       emit(GoodsShiftErrorState(e.toString()));
     }
   }
-
-  Future<void> _onDeleteGoodsShift(
-      DeleteGoodsShiftEvent event,
-      Emitter<GoodsShiftState> emit,
-      ) async {
+  Future<void> _onDeleteGoodsShift(DeleteGoodsShiftEvent event, Emitter<GoodsShiftState> emit) async {
     emit(GoodsShiftDeletingState());
     try {
       final response = await _repo.deleteShift(
