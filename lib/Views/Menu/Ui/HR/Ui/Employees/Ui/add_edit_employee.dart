@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
@@ -249,14 +250,26 @@ class _DesktopState extends State<_Desktop> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "${account.accNumber} | ${account.accName}",
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 3),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "${account.accNumber} | ${account.accName}",
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                                ZCover(
+                                  color: Theme.of(context).colorScheme.outline.withValues(alpha: .01),
+                                  child: Text(
+                                    "${account.actCurrency}",
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                      color: Utils.currencyColors(account.actCurrency??"")
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
