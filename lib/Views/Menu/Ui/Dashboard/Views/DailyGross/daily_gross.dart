@@ -116,6 +116,7 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Expanded(
                               child: Text(
@@ -126,7 +127,7 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
                             width: 160,
                             child: DateRangeDropdown(
                               title: '',
-                              height: 38,
+                              height: 35,
                               onChanged: (fromDate, toDate) {
                                 context.read<DailyGrossBloc>().add(
                                   FetchDailyGrossEvent(
@@ -139,7 +140,7 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
                               },
                             ),
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 6),
                           ToggleButtons(
                             isSelected: [chartType == 0, chartType == 1],
                             onPressed: (index) {
@@ -148,10 +149,10 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
                               });
                             },
                             constraints: const BoxConstraints(
-                              minHeight: 35, // set your desired height
+                              minHeight: 32, // set your desired height
                               minWidth: 50,  // optional: control width too
                             ),
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(3),
                             children: const [
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 8),
@@ -169,7 +170,7 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
                     ),
                     const SizedBox(height: 5),
                     SizedBox(
-                      height: 300,
+                      height: 200,
                       child: chartType == 0
                           ? _buildLineChart(chartData, context)
                           : _buildBarChart(chartData, context),
