@@ -51,7 +51,7 @@ class TotalDailyPieView extends StatelessWidget {
             Colors.brown,
           ];
           return ZCover(
-            radius: 8,
+            radius: 5,
             margin: EdgeInsets.all(3),
             borderColor: Theme.of(context).colorScheme.outline.withValues(alpha: .3),
             child: SfCircularChart(

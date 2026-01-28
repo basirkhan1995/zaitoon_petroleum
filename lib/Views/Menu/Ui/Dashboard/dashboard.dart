@@ -80,6 +80,10 @@ class _Desktop extends StatelessWidget {
                     ),
                     DashboardStatsView(),
                   ],
+
+                  SizedBox(height: 5),
+                  SizedBox(height: 400, child: FxRateDashboardChart()),
+
                   BlocBuilder<TotalDailyBloc, TotalDailyState>(
                     builder: (context, state) {
                       if(state is TotalDailyLoaded){
@@ -109,9 +113,6 @@ class _Desktop extends StatelessWidget {
                   const TotalDailyTxnView(),
 
 
-
-                  SizedBox(height: 5),
-                  SizedBox(height: 400, child: FxRateDashboardChart()),
                 ],
               ),
             ),
@@ -128,10 +129,7 @@ class _Desktop extends StatelessWidget {
                     DailyGrossView(),
                   ],
                   if (visibility.todayTotalTxnChart) ...[
-                    Padding(
-                      padding: const EdgeInsets.all(6.0),
-                      child: TotalDailyPieView(),
-                    ),
+                    TotalDailyPieView(),
                   ],
                 ],
               ),

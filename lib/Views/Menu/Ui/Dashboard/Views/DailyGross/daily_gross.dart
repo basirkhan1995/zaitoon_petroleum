@@ -87,7 +87,6 @@ class _DailyGrossContent extends StatefulWidget {
 }
 
 class _DailyGrossContentState extends State<_DailyGrossContent> {
-  // Toggle: 0 = Line, 1 = Bar
   int chartType = 0;
 
   @override
@@ -97,22 +96,20 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
         if (state is DailyGrossError) {
           return Center(child: Text(state.message));
         }
-
         if (state is DailyGrossLoaded) {
           if (state.data.isEmpty) {
             return const Center(child: Text('No data available'));
           }
-
           final chartData = _prepareChartData(state.data);
-
           return Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
 
               // Chart
               ZCover(
                 radius: 5,
                 borderColor: Theme.of(context).colorScheme.outline.withValues(alpha: .3),
-                padding: const EdgeInsets.all(15),
+                padding: const EdgeInsets.all(5),
                 child: Column(
                   children: [
                     // Header: Title + Date Range + Chart Toggle
