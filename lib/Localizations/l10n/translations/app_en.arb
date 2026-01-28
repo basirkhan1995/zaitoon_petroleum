@@ -737,5 +737,7 @@
   "outRecords": "OUT Records",
   "inRecords": "IN Records",
   "accountTitle": "Account",
-  "deleteMessage": "Do you want to delete? This action cannot be undone.”"
+  "deleteMessage": "Do you want to delete? This action cannot be undone.”",
+  "deletedTitle": "Deleted",
+  "reversedTitle": "Reversed"
 }

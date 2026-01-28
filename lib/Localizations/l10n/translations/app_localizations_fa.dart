@@ -2216,4 +2216,10 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get deleteMessage =>
       'آیا میخواهید حذف نمایید،  این عمل قابل بازگشت نیست';
+
+  @override
+  String get deletedTitle => 'حذف شده';
+
+  @override
+  String get reversedTitle => 'برگشت شده';
 }

@@ -737,5 +737,7 @@
   "outRecords": "اقلام خروجی",
   "inRecords": "اقلام ورودی",
   "accountTitle": "حساب",
-  "deleteMessage": "آیا میخواهید حذف نمایید،  این عمل قابل بازگشت نیست"
+  "deleteMessage": "آیا میخواهید حذف نمایید،  این عمل قابل بازگشت نیست",
+  "deletedTitle": "حذف شده",
+  "reversedTitle": "برگشت شده"
 }

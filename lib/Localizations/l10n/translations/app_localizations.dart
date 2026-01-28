@@ -4407,6 +4407,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Do you want to delete? This action cannot be undone.”'**
   String get deleteMessage;
+
+  /// No description provided for @deletedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted'**
+  String get deletedTitle;
+
+  /// No description provided for @reversedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reversed'**
+  String get reversedTitle;
 }
 
 class _AppLocalizationsDelegate

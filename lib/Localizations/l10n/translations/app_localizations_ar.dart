@@ -2219,4 +2219,10 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get deleteMessage =>
       'ایا ډاډه یاست چې غواړئ ړنګ کړئ؟ دا عمل بېرته نه راګرځي';
+
+  @override
+  String get deletedTitle => 'حذف شده';
+
+  @override
+  String get reversedTitle => 'برگشت شده';
 }

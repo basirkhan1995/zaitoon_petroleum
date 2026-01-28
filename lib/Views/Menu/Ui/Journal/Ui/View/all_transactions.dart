@@ -4,6 +4,7 @@ import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/txn_status_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchGLAT/Ui/glat_view.dart';
@@ -505,7 +506,7 @@ class _DesktopState extends State<_Desktop> {
                                           SizedBox(width: 20),
                                           SizedBox(
                                               width: 115,
-                                              child: Text(txn.trnStateText!,)),
+                                              child: TransactionStatusBadge(status: txn.trnStateText??"")),
 
                                         ],
                                       ),

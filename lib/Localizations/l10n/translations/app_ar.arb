@@ -737,5 +737,7 @@
   "outRecords": "اقلام خروجی",
   "inRecords": "اقلام ورودی",
   "accountTitle": "حساب",
-  "deleteMessage": "ایا ډاډه یاست چې غواړئ ړنګ کړئ؟ دا عمل بېرته نه راګرځي"
+  "deleteMessage": "ایا ډاډه یاست چې غواړئ ړنګ کړئ؟ دا عمل بېرته نه راګرځي",
+  "deletedTitle": "حذف شده",
+  "reversedTitle": "برگشت شده"
 }

@@ -2225,4 +2225,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteMessage =>
       'Do you want to delete? This action cannot be undone.”';
+
+  @override
+  String get deletedTitle => 'Deleted';
+
+  @override
+  String get reversedTitle => 'Reversed';
 }
