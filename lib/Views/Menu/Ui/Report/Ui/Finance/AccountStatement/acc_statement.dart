@@ -82,7 +82,7 @@ class _DesktopState extends State<_Desktop> {
   Future<void> _copyToClipboard(String reference, BuildContext context) async {
     await Utils.copyToClipboard(reference);
 
-    // Set copied state to true
+
     setState(() {
       _copiedStates[reference] = true;
     });

@@ -315,6 +315,7 @@ class _DesktopState extends State<_Desktop> {
         padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min ,
           children: [
             // Currency Header
             Row(
