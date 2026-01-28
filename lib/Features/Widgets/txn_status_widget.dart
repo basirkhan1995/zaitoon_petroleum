@@ -59,7 +59,7 @@ class TransactionStatusConfig {
 
       case TransactionStatus.pending:
         return TransactionStatusConfig(
-          bgColor: const Color(0xFFFFF8E1),
+          bgColor: const Color(0xFFFFF3E0),
           textColor: const Color(0xFFF9A825),
           icon: Icons.schedule_rounded,
           title: tr.pendingTitle,
@@ -75,8 +75,8 @@ class TransactionStatusConfig {
 
       case TransactionStatus.reversed:
         return TransactionStatusConfig(
-          bgColor: const Color(0xFFFFF3E0),
-          textColor: const Color(0xFFEF6C00),
+          bgColor: const Color(0xFFE8F5E9),
+          textColor: const Color(0xFF2E7D32),
           icon: Icons.undo_rounded,
           title: tr.reversedTitle,
         );

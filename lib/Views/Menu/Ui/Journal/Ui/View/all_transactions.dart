@@ -272,7 +272,7 @@ class _DesktopState extends State<_Desktop> {
                             subtitle: Text(DateTime.now().toFormattedDate()),
                           )),
                       Expanded(
-                        flex:3,
+                        flex: 5,
                         child: ZSearchField(
                           icon: FontAwesomeIcons.magnifyingGlass,
                           controller: searchController,
