@@ -763,10 +763,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rate => 'Exchange Rate';
 
   @override
-  String get from => 'From Currency';
+  String get from => 'From CCY';
 
   @override
-  String get toCurrency => 'To Currency';
+  String get toCurrency => 'To CCY';
 
   @override
   String get amountGreaterZero => 'Amount must be greater than zero.';

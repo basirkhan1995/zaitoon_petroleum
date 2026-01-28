@@ -39,12 +39,6 @@ class _DesktopState extends State<_Desktop> {
   @override
   void initState() {
     super.initState();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.read<CashBalancesBloc>().add(
-          LoadCashBalanceBranchWiseEvent(branchId: branchId),
-        );
-      });
-
       _loadBaseCurrency();
       _loadAuth();
   }
@@ -65,6 +59,11 @@ class _DesktopState extends State<_Desktop> {
       final auth = context.read<AuthBloc>().state;
       if (auth is AuthenticatedState) {
         branchId = auth.loginData.usrBranch;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          context.read<CashBalancesBloc>().add(
+            LoadCashBalanceBranchWiseEvent(branchId: branchId),
+          );
+        });
       }
     } catch (e) {
       branchId = null;

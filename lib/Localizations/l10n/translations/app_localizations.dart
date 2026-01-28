@@ -1579,13 +1579,13 @@ abstract class AppLocalizations {
   /// No description provided for @from.
   ///
   /// In en, this message translates to:
-  /// **'From Currency'**
+  /// **'From CCY'**
   String get from;
 
   /// No description provided for @toCurrency.
   ///
   /// In en, this message translates to:
-  /// **'To Currency'**
+  /// **'To CCY'**
   String get toCurrency;
 
   /// No description provided for @amountGreaterZero.
