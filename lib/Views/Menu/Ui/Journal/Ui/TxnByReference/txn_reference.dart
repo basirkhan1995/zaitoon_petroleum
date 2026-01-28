@@ -8,6 +8,7 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/txn_status_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -142,10 +143,13 @@ class _DesktopState extends State<_Desktop> {
                   reference = state.transaction.trnReference ?? "";
                   amount.text = state.transaction.amount?.toAmount() ?? "";
 
+                  final bool isAlreadyReversed = loadedTxn?.trnStatusText == "Reversed";
+                  final bool isAlreadyDeleted = loadedTxn?.trnStatusText == "Deleted";
+
+
                   // Check if any buttons should be shown
                   final bool showAuthorizeButton = loadedTxn?.trnStatus == 0 && login.usrName != loadedTxn?.maker;
                   final bool showReverseButton = loadedTxn?.trnStatus == 1 && loadedTxn?.maker == login.usrName;
-                  final bool isAlreadyReversed = loadedTxn?.trnStatusText == "Reversed";
                   final bool showUpdateButton = loadedTxn?.trnStatus == 0 && loadedTxn?.maker == login.usrName;
                   final bool showDeleteButton = loadedTxn?.trnStatus == 0 && loadedTxn?.maker == login.usrName;
 
@@ -175,7 +179,7 @@ class _DesktopState extends State<_Desktop> {
                             Row(
                               children: [
                                 Text(
-                                  "${loadedTxn?.amount?.toAmount()} ${loadedTxn?.currency}",
+                                  "${loadedTxn?.amountText.toAmount()} ${loadedTxn?.currencyText}",
                                   style: textTheme.titleMedium?.copyWith(
                                       fontSize: 25
                                   ),
@@ -199,7 +203,9 @@ class _DesktopState extends State<_Desktop> {
                                     child: Icon(Icons.print,size: 20,color: color.primary,))
                               ],
                             ),
+                            SizedBox(height: 3),
                             Divider(thickness: 2,color: color.primary),
+                            SizedBox(height: 3),
                             Row(
                               children: [
                                 SizedBox(
@@ -207,7 +213,7 @@ class _DesktopState extends State<_Desktop> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment: CrossAxisAlignment.start,
-                                    spacing: 5,
+                                    spacing: 2,
                                     children: [
                                       Text("${locale.transactionRef}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
                                       Text("${locale.transactionDate}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
@@ -215,42 +221,40 @@ class _DesktopState extends State<_Desktop> {
                                       Text("${locale.accountName}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
                                       Text("${locale.amount}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
                                       Text("${locale.branch}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
-                                      Text("${locale.status}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
                                       Text("${locale.maker}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
+                                      Text("${locale.status}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
+
                                     ],
                                   ),
                                 ),
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  spacing: 5,
+                                  spacing: 2,
                                   children: [
                                     Text(
-                                        state.transaction.trnReference ?? "",style: textTheme.titleSmall?.copyWith(color: color.secondary)
+                                        state.transaction.trnReferenceText,style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
                                         state.transaction.trnEntryDate!.toFullDateTime,style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                        state.transaction.account.toString() ,style: textTheme.titleSmall?.copyWith(color: color.secondary)
+                                        state.transaction.accountText ,style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                        state.transaction.accName.toString(),style: textTheme.titleSmall?.copyWith(color: color.secondary)
+                                        state.transaction.accNameText,style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                        "${state.transaction.amount?.toAmount()} ${state.transaction.currency}",style: textTheme.titleSmall?.copyWith(color: color.secondary)
+                                        "${state.transaction.amountText} ${state.transaction.currencyText}",style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                        state.transaction.branch.toString(),style: textTheme.titleSmall?.copyWith(color: color.secondary)
+                                        state.transaction.branchText,style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
                                     Text(
-                                        state.transaction.trnStatus == 0
-                                            ? locale.pendingTransactions
-                                            : locale.authorizedTransactions,style: textTheme.titleSmall?.copyWith(color: color.secondary)
+                                        state.transaction.makerText,style: textTheme.titleSmall?.copyWith(color: color.secondary)
                                     ),
-                                    Text(
-                                        state.transaction.maker ?? "",style: textTheme.titleSmall?.copyWith(color: color.secondary)
-                                    ),
+                                    TransactionStatusBadge(status: state.transaction.trnStatusText??""),
+
 
                                   ],
                                 ),
@@ -311,7 +315,7 @@ class _DesktopState extends State<_Desktop> {
                               child: Row(
                                 spacing: 8,
                                 children: [
-                                  if(showAuthorizeButton)
+                                  if(showAuthorizeButton && !isAlreadyDeleted)
                                     Expanded(
                                       child: ZOutlineButton(
                                           onPressed: (){
@@ -359,7 +363,7 @@ class _DesktopState extends State<_Desktop> {
                                           )
                                               : Text(locale.reverseTitle)),
                                     ),
-                                    if(showUpdateButton)
+                                    if(showUpdateButton && !isAlreadyDeleted)
                                     Expanded(
                                       child: ZOutlineButton(
                                           backgroundHover: Colors.green,
@@ -385,7 +389,7 @@ class _DesktopState extends State<_Desktop> {
                                           )
                                               : Text(locale.update)),
                                     ),
-                                    if(showDeleteButton)
+                                    if(showDeleteButton && !isAlreadyDeleted)
                                     Expanded(
                                       child: ZOutlineButton(
                                           icon: isDeleteLoading? null : Icons.delete_outline_rounded,

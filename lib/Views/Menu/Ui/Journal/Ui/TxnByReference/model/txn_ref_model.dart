@@ -100,3 +100,15 @@ class TxnByReferenceModel {
     "trnEntryDate": trnEntryDate?.toIso8601String(),
   };
 }
+extension TxnByReferenceDisplay on TxnByReferenceModel {
+  String get trnReferenceText => trnReference ?? '';
+  String get trnTypeText => trnType ?? '';
+  String get makerText => maker ?? '';
+  String get accNameText => accName ?? '';
+  String get amountText => amount ?? '';
+  String get currencyText => currency ?? '';
+  String get narrationText => narration ?? '';
+  String get branchText => branch?.toString() ?? '';
+  String get accountText => account?.toString() ?? '';
+}
+
