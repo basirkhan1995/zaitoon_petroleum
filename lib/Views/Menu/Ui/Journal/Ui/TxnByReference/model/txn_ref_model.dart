@@ -12,6 +12,7 @@ class TxnByReferenceModel {
   final String? trnReference;
   final String? trnType;
   final int? trnStatus;
+  final String? trnStatusText;
   final String? maker;
   final dynamic checker;
   final int? account;
@@ -26,6 +27,7 @@ class TxnByReferenceModel {
     this.trnReference,
     this.trnType,
     this.trnStatus,
+    this.trnStatusText,
     this.maker,
     this.checker,
     this.account,
@@ -76,6 +78,7 @@ class TxnByReferenceModel {
     accName: json["accName"],
     amount: json["amount"],
     currency: json["currency"],
+    trnStatusText: json["trnStateText"],
     narration: json["narration"],
     branch: json["branch"],
     trnEntryDate: json["trnEntryDate"] == null ? null : DateTime.parse(json["trnEntryDate"]),
@@ -85,6 +88,7 @@ class TxnByReferenceModel {
     "trnReference": trnReference,
     "trnType": trnType,
     "trnStatus": trnStatus,
+    "trnStateText": trnStatusText,
     "maker": maker,
     "checker": checker,
     "account": account,

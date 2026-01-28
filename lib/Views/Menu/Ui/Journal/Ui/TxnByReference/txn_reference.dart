@@ -111,6 +111,7 @@ class _DesktopState extends State<_Desktop> {
       isActionTrue: false,
       icon: Icons.add_chart_rounded,
       alignment: AlignmentGeometry.center,
+      padding: EdgeInsets.symmetric(vertical: 6,horizontal: 3),
       onAction: null,
       actionLabel: isLoading
           ? SizedBox(
@@ -144,6 +145,7 @@ class _DesktopState extends State<_Desktop> {
                   // Check if any buttons should be shown
                   final bool showAuthorizeButton = loadedTxn?.trnStatus == 0 && login.usrName != loadedTxn?.maker;
                   final bool showReverseButton = loadedTxn?.trnStatus == 1 && loadedTxn?.maker == login.usrName;
+                  final bool isAlreadyReversed = loadedTxn?.trnStatusText == "Reversed";
                   final bool showUpdateButton = loadedTxn?.trnStatus == 0 && loadedTxn?.maker == login.usrName;
                   final bool showDeleteButton = loadedTxn?.trnStatus == 0 && loadedTxn?.maker == login.usrName;
 
@@ -331,7 +333,7 @@ class _DesktopState extends State<_Desktop> {
                                             ),
                                           ) : Text(locale.authorize)),
                                     ),
-                                  if(showReverseButton)
+                                  if(showReverseButton && !isAlreadyReversed)
                                     Expanded(
                                       child: ZOutlineButton(
                                           isActive: true,
