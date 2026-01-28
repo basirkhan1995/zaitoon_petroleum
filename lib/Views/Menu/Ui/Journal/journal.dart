@@ -742,7 +742,7 @@ class _DesktopState extends State<_Desktop> {
                           TransactionsModel(
                             usrName: login.usrName,
                             trdAccount: accNumber,
-                            trdCcy: baseCurrency ?? "",
+                            trdCcy: trnCurrency ?? baseCurrency ?? "",
                             trnType: trnType ?? "",
                             trdAmount: amount.text.cleanAmount,
                             trdNarration: narration.text,
@@ -971,7 +971,7 @@ class _DesktopState extends State<_Desktop> {
                           TransactionsModel(
                             usrName: login.usrName,
                             trdAccount: accNumber,
-                            trdCcy: baseCurrency,
+                            trdCcy: trnCurrency ?? baseCurrency,
                             trnType: trnType,
                             trdAmount: amount.text.cleanAmount,
                             trdNarration: narration.text,

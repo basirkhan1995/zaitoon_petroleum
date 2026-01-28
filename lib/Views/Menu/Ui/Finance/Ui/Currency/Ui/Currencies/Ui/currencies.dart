@@ -301,7 +301,6 @@ class _DesktopState extends State<_Desktop> {
                                             content: tr.currencyActivationMessage,
                                             onYes: () {
                                               context.read<CurrenciesBloc>().add(UpdateCcyStatusEvent(ccyCode: ccy.ccyCode!,status: e ?? false));
-                                              Navigator.of(context).pop();
                                               },
                                           );
                                         });
