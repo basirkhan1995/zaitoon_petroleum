@@ -221,7 +221,7 @@ class _DesktopState extends State<_Desktop> {
             _buildInfoRow('${tr.mobile1}:', branch.brcPhone ?? 'N/A'),
             _buildInfoRow('${tr.status}:',
                 branch.brcStatus == 1 ? tr.active : tr.inactive),
-            _buildInfoRow('${tr.date}:',
+            _buildInfoRow('${tr.entryDate}:',
                 branch.brcEntryDate?.toLocal().toString().split(' ')[0] ?? 'N/A'),
           ],
         ),
@@ -286,10 +286,10 @@ class _DesktopState extends State<_Desktop> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
+            crossAxisCount: 4,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio: 2.3,
+            childAspectRatio: 1.6,
           ),
           itemCount: branch.records!.length,
           itemBuilder: (context, index) {

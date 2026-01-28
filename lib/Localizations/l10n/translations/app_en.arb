@@ -740,5 +740,6 @@
   "deleteMessage": "Do you want to delete? This action cannot be undone.”",
   "deletedTitle": "Deleted",
   "reversedTitle": "Reversed",
-  "alreadyEmployed": "Employee has already been employed."
+  "alreadyEmployed": "Employee has already been employed.",
+  "entryDate": "Entry Date"
 }

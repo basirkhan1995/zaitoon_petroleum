@@ -2234,4 +2234,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get alreadyEmployed => 'Employee has already been employed.';
+
+  @override
+  String get entryDate => 'Entry Date';
 }

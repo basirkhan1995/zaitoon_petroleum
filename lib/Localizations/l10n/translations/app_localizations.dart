@@ -4425,6 +4425,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Employee has already been employed.'**
   String get alreadyEmployed;
+
+  /// No description provided for @entryDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry Date'**
+  String get entryDate;
 }
 
 class _AppLocalizationsDelegate

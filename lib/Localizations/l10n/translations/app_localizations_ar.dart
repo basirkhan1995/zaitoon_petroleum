@@ -2228,4 +2228,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get alreadyEmployed => 'کارمند از قبل استخدام شده است.';
+
+  @override
+  String get entryDate => 'تاریخ افتتاح';
 }
