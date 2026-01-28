@@ -739,5 +739,6 @@
   "accountTitle": "حساب",
   "deleteMessage": "آیا میخواهید حذف نمایید،  این عمل قابل بازگشت نیست",
   "deletedTitle": "حذف شده",
-  "reversedTitle": "برگشت شده"
+  "reversedTitle": "برگشت شده",
+  "alreadyEmployed": "کارمند از قبل استخدام شده است."
 }

@@ -2225,4 +2225,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get reversedTitle => 'برگشت شده';
+
+  @override
+  String get alreadyEmployed => 'کارمند از قبل استخدام شده است.';
 }

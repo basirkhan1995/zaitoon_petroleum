@@ -3,6 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/model/emp_model.dart';
 
+import '../../../../../../../Services/localization_services.dart';
+
 part 'employee_event.dart';
 part 'employee_state.dart';
 
@@ -20,6 +22,7 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
      }
     });
     on<AddEmployeeEvent>((event, emit) async{
+      final tr = localizationService.loc;
       emit(EmployeeLoadingState());
        try{
         final response = await _repo.addEmployee(newEmployee: event.newEmployee);
@@ -27,6 +30,8 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
         if(msg == "success"){
           emit(EmployeeSuccessState());
           add(LoadEmployeeEvent());
+        }else if(msg == "exist"){
+          emit(EmployeeErrorState(tr.alreadyEmployed));
         }else{
           emit(EmployeeErrorState(msg));
         }

@@ -4,6 +4,7 @@ import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/shortcut.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/Ui/add_edit_employee.dart';
@@ -128,6 +129,9 @@ class _DesktopState extends State<_Desktop> {
             Expanded(
               child: BlocConsumer<EmployeeBloc, EmployeeState>(
                 listener: (context, state) {
+                  if(state is EmployeeErrorState){
+                    Utils.showOverlayMessage(context, title: tr.accessDenied, message: state.message, isError: true);
+                  }
                   if(state is EmployeeSuccessState){
                     Navigator.of(context).pop();
                   }

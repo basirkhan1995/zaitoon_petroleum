@@ -2231,4 +2231,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reversedTitle => 'Reversed';
+
+  @override
+  String get alreadyEmployed => 'Employee has already been employed.';
 }

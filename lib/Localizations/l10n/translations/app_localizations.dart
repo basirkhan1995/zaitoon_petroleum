@@ -4419,6 +4419,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reversed'**
   String get reversedTitle;
+
+  /// No description provided for @alreadyEmployed.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee has already been employed.'**
+  String get alreadyEmployed;
 }
 
 class _AppLocalizationsDelegate
