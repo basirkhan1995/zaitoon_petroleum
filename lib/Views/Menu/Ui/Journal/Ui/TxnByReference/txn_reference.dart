@@ -180,9 +180,7 @@ class _DesktopState extends State<_Desktop> {
                               children: [
                                 Text(
                                   "${loadedTxn?.amountText.toAmount()} ${loadedTxn?.currencyText}",
-                                  style: textTheme.titleMedium?.copyWith(
-                                      fontSize: 25
-                                  ),
+                                  style: textTheme.titleMedium?.copyWith(fontSize: 25),
                                 ),
                               ],
                             ),
@@ -213,7 +211,7 @@ class _DesktopState extends State<_Desktop> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment: CrossAxisAlignment.start,
-                                    spacing: 2,
+                                    spacing: 3,
                                     children: [
                                       Text("${locale.transactionRef}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
                                       Text("${locale.transactionDate}:",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
@@ -230,32 +228,16 @@ class _DesktopState extends State<_Desktop> {
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  spacing: 2,
+                                  spacing: 3,
                                   children: [
-                                    Text(
-                                        state.transaction.trnReferenceText,style: textTheme.titleSmall?.copyWith(color: color.secondary)
-                                    ),
-                                    Text(
-                                        state.transaction.trnEntryDate!.toFullDateTime,style: textTheme.titleSmall?.copyWith(color: color.secondary)
-                                    ),
-                                    Text(
-                                        state.transaction.accountText ,style: textTheme.titleSmall?.copyWith(color: color.secondary)
-                                    ),
-                                    Text(
-                                        state.transaction.accNameText,style: textTheme.titleSmall?.copyWith(color: color.secondary)
-                                    ),
-                                    Text(
-                                        "${state.transaction.amountText} ${state.transaction.currencyText}",style: textTheme.titleSmall?.copyWith(color: color.secondary)
-                                    ),
-                                    Text(
-                                        state.transaction.branchText,style: textTheme.titleSmall?.copyWith(color: color.secondary)
-                                    ),
-                                    Text(
-                                        state.transaction.makerText,style: textTheme.titleSmall?.copyWith(color: color.secondary)
-                                    ),
+                                    Text(state.transaction.trnReferenceText,style: textTheme.titleSmall?.copyWith(color: color.secondary)),
+                                    Text(state.transaction.trnEntryDate!.toFullDateTime,style: textTheme.titleSmall?.copyWith(color: color.secondary)),
+                                    Text(state.transaction.accountText ,style: textTheme.titleSmall?.copyWith(color: color.secondary)),
+                                    Text(state.transaction.accNameText,style: textTheme.titleSmall?.copyWith(color: color.secondary)),
+                                    Text("${state.transaction.amountText.toAmount()} ${state.transaction.currencyText}",style: textTheme.titleSmall?.copyWith(color: color.secondary)),
+                                    Text(state.transaction.branchText,style: textTheme.titleSmall?.copyWith(color: color.secondary)),
+                                    Text(state.transaction.makerText,style: textTheme.titleSmall?.copyWith(color: color.secondary)),
                                     TransactionStatusBadge(status: state.transaction.trnStatusText??""),
-
-
                                   ],
                                 ),
                               ],
