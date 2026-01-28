@@ -108,10 +108,7 @@ class _Desktop extends StatelessWidget {
                   ),
                   const TotalDailyTxnView(),
 
-                  if (visibility.profitAndLoss) ...[
-                    SizedBox(height: 5),
-                    DailyGrossView(),
-                  ],
+
 
                   SizedBox(height: 5),
                   SizedBox(height: 400, child: FxRateDashboardChart()),
@@ -120,11 +117,15 @@ class _Desktop extends StatelessWidget {
             ),
 
             SizedBox(
-              width: 400,
+              width: 500,
               child: Column(
                 children: [
                   if (visibility.exchangeRate) ...[
                     ExchangeRateView(settingButton: true, newRateButton: false),
+                  ],
+                  if (visibility.profitAndLoss) ...[
+                    SizedBox(height: 3),
+                    DailyGrossView(),
                   ],
                   if (visibility.todayTotalTxnChart) ...[
                     Padding(

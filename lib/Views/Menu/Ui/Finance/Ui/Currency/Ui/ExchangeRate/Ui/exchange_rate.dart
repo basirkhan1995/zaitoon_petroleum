@@ -81,7 +81,7 @@ class _DesktopState extends State<_Desktop> {
     final locale = AppLocalizations.of(context)!;
     final currentLocale = context.read<LocalizationBloc>().state.languageCode;
     return Container(
-      width: 380,
+      width: 500,
       margin: EdgeInsets.symmetric(vertical: 5,horizontal: 5),
       decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,

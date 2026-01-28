@@ -932,7 +932,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(tr.profitSummary, style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(tr.profitSummary, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: color.outline)),
               const SizedBox(width: 4),
               Icon(Icons.ssid_chart, size: 22, color: color.primary),
             ],
@@ -940,7 +940,7 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
           Divider(color: color.outline.withValues(alpha: .2)),
 
           _buildProfitRow(
-              label: 'TotalDailyTxn Cost',
+              label: tr.totalCost,
               value: totalPurchaseCost,
               color: color.primary.withValues(alpha: .9),
               isBold: true
@@ -967,8 +967,9 @@ class _EstimateDetailViewState extends State<EstimateDetailView> {
                 ),
               ],
             ),
+          SizedBox(height: 3),
           Divider(color: color.outline.withValues(alpha: .2)),
-
+          SizedBox(height: 3),
           // Grand Total
           _buildProfitRow(
             label: tr.grandTotal,

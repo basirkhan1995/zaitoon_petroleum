@@ -110,7 +110,7 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
 
               // Chart
               ZCover(
-                radius: 8,
+                radius: 5,
                 borderColor: Theme.of(context).colorScheme.outline.withValues(alpha: .3),
                 padding: const EdgeInsets.all(15),
                 child: Column(
@@ -126,7 +126,7 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
                                 style: Theme.of(context).textTheme.titleMedium,
                               )),
                           SizedBox(
-                            width: 140,
+                            width: 160,
                             child: DateRangeDropdown(
                               title: '',
                               height: 38,
