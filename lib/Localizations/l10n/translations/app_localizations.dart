@@ -4431,6 +4431,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Entry Date'**
   String get entryDate;
+
+  /// No description provided for @timeOutMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Oops! The server is taking too long to respond.'**
+  String get timeOutMessage;
+
+  /// No description provided for @requestCancelMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The request was cancelled.'**
+  String get requestCancelMessage;
+
+  /// No description provided for @timeOutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Server Time Out'**
+  String get timeOutTitle;
 }
 
 class _AppLocalizationsDelegate

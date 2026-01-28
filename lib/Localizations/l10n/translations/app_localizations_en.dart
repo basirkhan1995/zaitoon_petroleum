@@ -2237,4 +2237,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get entryDate => 'Entry Date';
+
+  @override
+  String get timeOutMessage =>
+      'Oops! The server is taking too long to respond.';
+
+  @override
+  String get requestCancelMessage => 'The request was cancelled.';
+
+  @override
+  String get timeOutTitle => 'Server Time Out';
 }

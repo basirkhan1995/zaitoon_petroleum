@@ -64,365 +64,286 @@ class Repositories {
 
   ///Authentication ............................................................
   Future<Map<String, dynamic>> login({required String username, required String password}) async {
-    try {
-      final response = await api.post(
-        endpoint: "/user/login.php",
-        data: {"usrName": username, "usrPass": password},
-      );
+    final response = await api.post(
+      endpoint: "/user/login.php",
+      data: {"usrName": username, "usrPass": password},
+    );
 
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    return response.data;
   }
 
   ///Finance ...................................................................
   Future<Map<String, dynamic>> eoyOperationProcess({required String usrName, required String remark, required int branchCode}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/finance/eoyOperation.php",
-          data: {
-              "usrName": usrName,
-              "remark": remark,
-              "parkingBranch": branchCode
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-  Future<List<PAndLModel>> getProfitAndLoss() async {
-    try {
-
-      // Fetch data from API
-      final response = await api.get(
+    final response = await api.post(
         endpoint: "/finance/eoyOperation.php",
-      );
+        data: {
+          "usrName": usrName,
+          "remark": remark,
+          "parkingBranch": branchCode
+        }
+    );
+    return response.data;
+  }
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+  Future<List<PAndLModel>> getProfitAndLoss({CancelToken? cancelToken}) async {
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/finance/eoyOperation.php",
+      cancelToken: cancelToken,
+    );
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
 
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => PAndLModel.fromMap(json))
-            .toList();
-      }
-
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => PAndLModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   ///Get Company ...............................................................
-  Future<CompanySettingsModel> getCompanyProfile() async {
-    try {
-      final response = await api.get(
-        endpoint: "/setting/companyProfile.php",
-      );
+  Future<CompanySettingsModel> getCompanyProfile({CancelToken? cancelToken}) async {
+    final response = await api.get(
+      endpoint: "/setting/companyProfile.php",
+      cancelToken: cancelToken,
+    );
 
-      final data = response.data;
+    final data = response.data;
 
-      // Case 3: API returns a single object instead of list
-      if (data is Map<String, dynamic>) {
-        return CompanySettingsModel.fromMap(data);
-      }
-      // Case 4: API returns a list with first object as map
-      if (data is List && data.first is Map<String, dynamic>) {
-        return CompanySettingsModel.fromMap(data.first);
-      }
-      throw Exception("Invalid API response format");
-
-    } on DioException catch (e) {
-      throw e.message ?? "Network error";
-    } catch (e) {
-      throw e.toString();
+    // Case 3: API returns a single object instead of list
+    if (data is Map<String, dynamic>) {
+      return CompanySettingsModel.fromMap(data);
     }
+    // Case 4: API returns a list with first object as map
+    if (data is List && data.first is Map<String, dynamic>) {
+      return CompanySettingsModel.fromMap(data.first);
+    }
+    throw Exception("Invalid API response format");
   }
+
   Future<Map<String, dynamic>> editCompanyProfile({required CompanySettingsModel newData}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/setting/companyProfile.php",
-          data: newData.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-  Future<Map<String, dynamic>> uploadCompanyProfile({required Uint8List image}) async {
-    try {
-      // Create a valid filename like Postman does
-      final String fileName = "photo_${DateTime.now().millisecondsSinceEpoch}.jpg";
-
-      FormData formData = FormData.fromMap({
-        "image": MultipartFile.fromBytes(
-          image,
-          filename: fileName,
-          contentType: MediaType("image", "jpeg"),
-        ),
-      });
-
-      final response = await api.uploadFile(
+    final response = await api.put(
         endpoint: "/setting/companyProfile.php",
-        data: formData,
-      );
+        data: newData.toMap()
+    );
+    return response.data;
+  }
 
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+  Future<Map<String, dynamic>> uploadCompanyProfile({required Uint8List image}) async {
+    // Create a valid filename like Postman does
+    final String fileName = "photo_${DateTime.now().millisecondsSinceEpoch}.jpg";
+
+    FormData formData = FormData.fromMap({
+      "image": MultipartFile.fromBytes(
+        image,
+        filename: fileName,
+        contentType: MediaType("image", "jpeg"),
+      ),
+    });
+
+    final response = await api.uploadFile(
+      endpoint: "/setting/companyProfile.php",
+      data: formData,
+    );
+
+    return response.data;
   }
 
   ///Stakeholder | Individuals .................................................
-  Future<List<IndividualsModel>> getStakeholders({int? indId}) async {
-    try {
-      // Build query parameters dynamically
-      final queryParams = indId != null ? {'perID': indId} : null;
+  Future<List<IndividualsModel>> getStakeholders({int? indId, CancelToken? cancelToken}) async {
+    // Build query parameters dynamically
+    final queryParams = indId != null ? {'perID': indId} : null;
 
-      // Fetch data from API
-      final response = await api.get(
-        endpoint: "/stakeholder/personal.php",
-        queryParams: queryParams,
-      );
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/stakeholder/personal.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => IndividualsModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => IndividualsModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<Map<String, dynamic>> addStakeholder({required IndividualsModel stk}) async {
-    try {
-      final response = await api.post(
+    final response = await api.post(
         endpoint: "/stakeholder/personal.php",
         data: stk.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> editStakeholder({required IndividualsModel stk}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/stakeholder/personal.php",
-          data: stk.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-  Future<IndividualsModel> getPersonProfileById({required int perId}) async {
-    try {
-      final response = await api.get(
+    final response = await api.put(
         endpoint: "/stakeholder/personal.php",
-        queryParams: {'perID': perId},
-      );
-
-      final data = response.data;
-
-      // Case 1: API returns an error message
-      if (data is Map && data['msg'] != null) {
-        throw Exception(data['msg']);
-      }
-
-      // Case 2: API returns a list, but empty
-      if (data is List && data.isEmpty) {
-        throw Exception("Person not found");
-      }
-
-      // Case 3: API returns a single object instead of list
-      if (data is Map<String, dynamic>) {
-        return IndividualsModel.fromMap(data);
-      }
-
-      // Case 4: API returns a list with first object as map
-      if (data is List && data.first is Map<String, dynamic>) {
-        return IndividualsModel.fromMap(data.first);
-      }
-
-      throw Exception("Invalid API response format");
-
-    } on DioException catch (e) {
-      throw e.message ?? "Network error";
-    } catch (e) {
-      throw e.toString();
-    }
+        data: stk.toMap()
+    );
+    return response.data;
   }
+
+  Future<IndividualsModel> getPersonProfileById({required int perId, CancelToken? cancelToken}) async {
+    final response = await api.get(
+      endpoint: "/stakeholder/personal.php",
+      queryParams: {'perID': perId},
+      cancelToken: cancelToken,
+    );
+
+    final data = response.data;
+
+    // Case 1: API returns an error message
+    if (data is Map && data['msg'] != null) {
+      throw Exception(data['msg']);
+    }
+
+    // Case 2: API returns a list, but empty
+    if (data is List && data.isEmpty) {
+      throw Exception("Person not found");
+    }
+
+    // Case 3: API returns a single object instead of list
+    if (data is Map<String, dynamic>) {
+      return IndividualsModel.fromMap(data);
+    }
+
+    // Case 4: API returns a list with first object as map
+    if (data is List && data.first is Map<String, dynamic>) {
+      return IndividualsModel.fromMap(data.first);
+    }
+
+    throw Exception("Invalid API response format");
+  }
+
   Future<Map<String, dynamic>> uploadPersonalPhoto({required int perID, required Uint8List image,}) async {
-    try {
-      // Create a valid filename like Postman does
-      final String fileName = "photo_${DateTime.now().millisecondsSinceEpoch}.jpg";
+    // Create a valid filename like Postman does
+    final String fileName = "photo_${DateTime.now().millisecondsSinceEpoch}.jpg";
 
-      FormData formData = FormData.fromMap({
-        "perID": perID.toString(),
-        "image": MultipartFile.fromBytes(
-          image,
-          filename: fileName,
-          contentType: MediaType("image", "jpeg"),
-        ),
-      });
+    FormData formData = FormData.fromMap({
+      "perID": perID.toString(),
+      "image": MultipartFile.fromBytes(
+        image,
+        filename: fileName,
+        contentType: MediaType("image", "jpeg"),
+      ),
+    });
 
-      final response = await api.uploadFile(
-        endpoint: "/stakeholder/uploadPersonalPhoto.php",
-        data: formData,
-      );
+    final response = await api.uploadFile(
+      endpoint: "/stakeholder/uploadPersonalPhoto.php",
+      data: formData,
+    );
 
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    return response.data;
   }
-
 
   ///Accounts | Stakeholder's Account ..........................................
-  Future<List<AccountsModel>> getAccounts({int? ownerId}) async {
-    try {
-      // Build query parameters dynamically
-      final queryParams = ownerId != null ? {'perID': ownerId} : null;
+  Future<List<AccountsModel>> getAccounts({int? ownerId, CancelToken? cancelToken}) async {
+    // Build query parameters dynamically
+    final queryParams = ownerId != null ? {'perID': ownerId} : null;
 
-      // Fetch data from API
-      final response = await api.get(
-        endpoint: "/journal/allAccounts.php",
-        queryParams: queryParams,
-      );
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/journal/allAccounts.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => AccountsModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => AccountsModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<List<StakeholdersAccountsModel>> getStakeholdersAccounts({String? search}) async {
-    try {
-      final response = await api.post(
+    final response = await api.post(
         endpoint: "/journal/accountDetails.php",
         data: {
           "searchValue": search
         }
-      );
+    );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => StakeholdersAccountsModel.fromMap(json))
-            .toList();
-      }
-
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
-  }
-  Future<Map<String, dynamic>> addAccount({required AccountsModel newAccount}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/stakeholder/account.php",
-          data: newAccount.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-  Future<Map<String, dynamic>> editAccount({required AccountsModel newAccount}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/stakeholder/account.php",
-          data: newAccount.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-  Future<List<AccountsModel>> getAccountFilter({final String? include, final String? input,final String? exclude, final String? ccy,}) async {
-    try {
 
-      // Fetch data from API
-      final response = await api.post(
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => StakeholdersAccountsModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
+  }
+
+  Future<Map<String, dynamic>> addAccount({required AccountsModel newAccount}) async {
+    final response = await api.post(
+        endpoint: "/stakeholder/account.php",
+        data: newAccount.toMap()
+    );
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> editAccount({required AccountsModel newAccount}) async {
+    final response = await api.put(
+        endpoint: "/stakeholder/account.php",
+        data: newAccount.toMap()
+    );
+    return response.data;
+  }
+
+  Future<List<AccountsModel>> getAccountFilter({final String? include, final String? input,final String? exclude, final String? ccy,}) async {
+    // Fetch data from API
+    final response = await api.post(
         endpoint: "/journal/allAccounts.php",
         data: {
           "ccy": ccy,
@@ -430,1667 +351,1322 @@ class Repositories {
           "include": include,
           "account": exclude
         }
-      );
+    );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => AccountsModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => AccountsModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
 
   /// GL Accounts | System .....................................................
-  Future<List<GlAccountsModel>> getGl() async {
-    try {
+  Future<List<GlAccountsModel>> getGl({CancelToken? cancelToken}) async {
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/finance/glAccount.php",
+      cancelToken: cancelToken,
+    );
 
-      // Fetch data from API
-      final response = await api.get(
-        endpoint: "/finance/glAccount.php",
-      );
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => GlAccountsModel.fromMap(json))
-            .toList();
-      }
-
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
-  }
-  Future<Map<String, dynamic>> addGl({required GlAccountsModel newAccount}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/finance/glAccount.php",
-          data: newAccount.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-  Future<Map<String, dynamic>> editGl({required GlAccountsModel newAccount}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/finance/glAccount.php",
-          data: newAccount.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-  Future<Map<String, dynamic>> deleteGl({required int accNumber}) async {
-    try {
-      final response = await api.delete(
-          endpoint: "/finance/glAccount.php",
-          data: {
-            "acc":accNumber
-          }
-      );
 
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => GlAccountsModel.fromMap(json))
+          .toList();
     }
+
+    return [];
+  }
+
+  Future<Map<String, dynamic>> addGl({required GlAccountsModel newAccount}) async {
+    final response = await api.post(
+        endpoint: "/finance/glAccount.php",
+        data: newAccount.toMap()
+    );
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> editGl({required GlAccountsModel newAccount}) async {
+    final response = await api.put(
+        endpoint: "/finance/glAccount.php",
+        data: newAccount.toMap()
+    );
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> deleteGl({required int accNumber}) async {
+    final response = await api.delete(
+        endpoint: "/finance/glAccount.php",
+        data: {
+          "acc":accNumber
+        }
+    );
+
+    return response.data;
   }
 
   /// GL Sub Categories ........................................................
-  Future<List<GlCategoriesModel>> getGlSubCategories({required int catId}) async {
-    try {
+  Future<List<GlCategoriesModel>> getGlSubCategories({required int catId, CancelToken? cancelToken}) async {
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/finance/accountCategory.php",
+      queryParams: {
+        "cat":catId
+      },
+      cancelToken: cancelToken,
+    );
 
-      // Fetch data from API
-      final response = await api.get(
-        endpoint: "/finance/accountCategory.php",
-        queryParams: {
-          "cat":catId
-        }
-      );
-
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => GlCategoriesModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => GlCategoriesModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
 
   ///Users .....................................................................
-  Future<List<UsersModel>> getUsers({int? usrOwner}) async {
-    try {
-      // Build query parameters dynamically
-      final queryParams = usrOwner != null ? {'perID': usrOwner} : null;
+  Future<List<UsersModel>> getUsers({int? usrOwner, CancelToken? cancelToken}) async {
+    // Build query parameters dynamically
+    final queryParams = usrOwner != null ? {'perID': usrOwner} : null;
 
-      // Fetch data from API
-      final response = await api.get(
-        endpoint: "/HR/users.php",
-        queryParams: queryParams,
-      );
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/HR/users.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => UsersModel.fromMap(json))
-            .toList();
-      }
-
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => UsersModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<Map<String, dynamic>> addUser({required UsersModel newUser}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/HR/users.php",
-          data: newUser.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.post(
+        endpoint: "/HR/users.php",
+        data: newUser.toMap()
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> editUser({required UsersModel newUser}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/HR/users.php",
-          data: newUser.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.put(
+        endpoint: "/HR/users.php",
+        data: newUser.toMap()
+    );
+    return response.data;
   }
 
   ///Employees .................................................................
-  Future<List<EmployeeModel>> getEmployees({String? cat}) async {
-    try {
-      // Build query parameters dynamically
-      final queryParams = cat != null ? {'cat': cat} : null;
+  Future<List<EmployeeModel>> getEmployees({String? cat, CancelToken? cancelToken}) async {
+    // Build query parameters dynamically
+    final queryParams = cat != null ? {'cat': cat} : null;
 
-      // Fetch data from API
-      final response = await api.get(
-        endpoint: "/HR/employees.php",
-        queryParams: queryParams,
-      );
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/HR/employees.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => EmployeeModel.fromMap(json))
-            .toList();
-      }
-
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => EmployeeModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<Map<String, dynamic>> addEmployee({required EmployeeModel newEmployee}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/HR/employees.php",
-          data: newEmployee.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.post(
+        endpoint: "/HR/employees.php",
+        data: newEmployee.toMap()
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> updateEmployee({required EmployeeModel newEmployee}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/HR/employees.php",
-          data: newEmployee.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.put(
+        endpoint: "/HR/employees.php",
+        data: newEmployee.toMap()
+    );
+    return response.data;
   }
 
   ///Permissions ..............................................................
-  Future<List<UserPermissionsModel>> getPermissions({required String usrName}) async {
-    try {
-      // Build query parameters dynamically
-      final queryParams = {'username': usrName};
+  Future<List<UserPermissionsModel>> getPermissions({required String usrName, CancelToken? cancelToken}) async {
+    // Build query parameters dynamically
+    final queryParams = {'username': usrName};
 
-      // Fetch data from API
-      final response = await api.get(
-        endpoint: "/user/permissions.php",
-        queryParams: queryParams,
-      );
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/user/permissions.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => UserPermissionsModel.fromMap(json))
-            .toList();
-      }
-
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => UserPermissionsModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<Map<String, dynamic>> updatePermissionStatus({required int uprRole, required int usrId, required String usrName, required bool uprStatus}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/user/permissions.php",
-          data: {
-            "uprRole":uprRole,
-            "uprUserID":usrId,
-            "uprStatus":uprStatus
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.put(
+        endpoint: "/user/permissions.php",
+        data: {
+          "uprRole":uprRole,
+          "uprUserID":usrId,
+          "uprStatus":uprStatus
+        }
+    );
+    return response.data;
   }
 
   ///Currencies ................................................................
-  Future<List<CurrenciesModel>> getCurrencies({required int? status}) async {
-    try {
-      // Build query parameters dynamically
-      final queryParams = {'status': status};
+  Future<List<CurrenciesModel>> getCurrencies({required int? status, CancelToken? cancelToken}) async {
+    // Build query parameters dynamically
+    final queryParams = {'status': status};
 
-      // Fetch data from API
-      final response = await api.get(
-        endpoint: "/finance/currency.php",
-        queryParams: queryParams,
-      );
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/finance/currency.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => CurrenciesModel.fromMap(json))
-            .toList();
-      }
-
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => CurrenciesModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<Map<String, dynamic>> updateCcyStatus({required bool status, required String? ccyCode}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/finance/currency.php",
-          data: {
-            "ccyStatus": status,
-            "ccyCode":ccyCode,
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.put(
+        endpoint: "/finance/currency.php",
+        data: {
+          "ccyStatus": status,
+          "ccyCode":ccyCode,
+        }
+    );
+    return response.data;
   }
 
   ///Exchange Rate .............................................................
-  Future<List<ExchangeRateModel>> getExchangeRate({required String? ccyCode}) async {
-    try {
-      // Build query parameters dynamically
-      final queryParams = {'ccy': ccyCode};
+  Future<List<ExchangeRateModel>> getExchangeRate({required String? ccyCode, CancelToken? cancelToken}) async {
+    // Build query parameters dynamically
+    final queryParams = {'ccy': ccyCode};
 
-      // Fetch data from API
-      final response = await api.get(
-        endpoint: "/finance/exchangeRate.php",
-        queryParams: queryParams,
-      );
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/finance/exchangeRate.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => ExchangeRateModel.fromMap(json))
-            .toList();
-      }
-
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => ExchangeRateModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<Map<String, dynamic>> addExchangeRate({required ExchangeRateModel newRate}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/finance/exchangeRate.php",
-          data: newRate.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.post(
+        endpoint: "/finance/exchangeRate.php",
+        data: newRate.toMap()
+    );
+    return response.data;
   }
+
   Future<String?> getSingleRate({required String fromCcy, required String toCcy}) async {
-    try {
-      final response = await api.post(
-        endpoint: "/journal/getSingleExRate.php",
-        data: {
-          'ccyFrom': fromCcy,
-          'ccyTo': toCcy,
-        },
-      );
+    final response = await api.post(
+      endpoint: "/journal/getSingleExRate.php",
+      data: {
+        'ccyFrom': fromCcy,
+        'ccyTo': toCcy,
+      },
+    );
 
-      // Handle server error response
-      if (response.data is Map<String, dynamic> &&
-          response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // Expecting a Map: { "crExchange": "66.300000" }
-      if (response.data is Map<String, dynamic>) {
-        return response.data["crExchange"]?.toString();
-      }
-
-      return null;
-    } on DioException catch (e) {
-      throw e.message ?? "Unknown Dio error";
-    } catch (e) {
-      throw e.toString();
+    // Handle server error response
+    if (response.data is Map<String, dynamic> &&
+        response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    // Expecting a Map: { "crExchange": "66.300000" }
+    if (response.data is Map<String, dynamic>) {
+      return response.data["crExchange"]?.toString();
+    }
+
+    return null;
   }
 
   ///Driver ....................................................................
-  Future<List<DriverModel>> getDrivers({int? empId}) async {
-    try {
-      // Build query parameters dynamically
-      final queryParams = {'empID': empId};
+  Future<List<DriverModel>> getDrivers({int? empId, CancelToken? cancelToken}) async {
+    // Build query parameters dynamically
+    final queryParams = {'empID': empId};
 
-      // Fetch data from API
-      final response = await api.get(
-        endpoint: "/transport/drivers.php",
-        queryParams: queryParams,
-      );
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/transport/drivers.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => DriverModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => DriverModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
 
   ///Vehicles ..................................................................
-  Future<List<VehicleModel>> getVehicles({int? vehicleId}) async {
-    try {
-      // Build query parameters dynamically
-      final queryParams = {'vclID': vehicleId};
+  Future<List<VehicleModel>> getVehicles({int? vehicleId, CancelToken? cancelToken}) async {
+    // Build query parameters dynamically
+    final queryParams = {'vclID': vehicleId};
 
-      // Fetch data from API
-      final response = await api.get(
-        endpoint: "/transport/vehicle.php",
-        queryParams: queryParams,
-      );
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/transport/vehicle.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => VehicleModel.fromMap(json))
-            .toList();
-      }
-
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => VehicleModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<Map<String, dynamic>> addVehicle({required VehicleModel newVehicle}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/transport/vehicle.php",
-          data: newVehicle.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.post(
+        endpoint: "/transport/vehicle.php",
+        data: newVehicle.toMap()
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> updateVehicle({required VehicleModel newVehicle}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/transport/vehicle.php",
-          data: newVehicle.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.put(
+        endpoint: "/transport/vehicle.php",
+        data: newVehicle.toMap()
+    );
+    return response.data;
   }
 
   /// Shipping .................................................................
   Future<Map<String, dynamic>> addShipping({required ShippingModel newShipping}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/transport/shipping.php",
-          data: newShipping.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.post(
+        endpoint: "/transport/shipping.php",
+        data: newShipping.toMap()
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> updateShipping({required ShippingModel newShipping}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/transport/shipping.php",
-          data: newShipping.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.put(
+        endpoint: "/transport/shipping.php",
+        data: newShipping.toMap()
+    );
+    return response.data;
   }
-  Future<List<ShippingModel>> getAllShipping({int? id}) async {
-    try {
-      final Map<String, dynamic> queryParams = {};
-      if (id != null) {
-        queryParams['shpID'] = id;
-      }
-      final response = await api.get(
-        endpoint: '/transport/shipping.php',
-        queryParams: queryParams,
-      );
-      // Check for error messages
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        final msg = response.data['msg'];
-        if (msg == 'failed' || msg == 'error') {
-          throw msg;
-        }
-      }
 
-      // Handle empty or null response
-      if (response.data == null) {
-        return [];
-      }
+  Future<List<ShippingModel>> getAllShipping({int? id, CancelToken? cancelToken}) async {
+    final Map<String, dynamic> queryParams = {};
+    if (id != null) {
+      queryParams['shpID'] = id;
+    }
+    final response = await api.get(
+      endpoint: '/transport/shipping.php',
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Parse the response
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>()
-            .map((json) => ShippingModel.fromMap(json))
-            .toList();
-      } else if (response.data is Map<String, dynamic>) {
-        // If it's a single object, wrap it in a list
-        return [ShippingModel.fromMap(response.data)];
+    // Check for error messages
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      final msg = response.data['msg'];
+      if (msg == 'failed' || msg == 'error') {
+        throw msg;
       }
+    }
 
+    // Handle empty or null response
+    if (response.data == null) {
       return [];
-    } on DioException catch (e) {
-      throw 'Network error: ${e.message}';
-    } catch (e) {
-      throw '$e';
     }
+
+    // Parse the response
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>()
+          .map((json) => ShippingModel.fromMap(json))
+          .toList();
+    } else if (response.data is Map<String, dynamic>) {
+      // If it's a single object, wrap it in a list
+      return [ShippingModel.fromMap(response.data)];
+    }
+
+    return [];
   }
-  Future<ShippingDetailsModel> getShippingById({required int shpId}) async {
-    try {
-      final queryParams = {'shpID': shpId};
-      final response = await api.get(
-        endpoint: '/transport/shipping.php',
-        queryParams: queryParams,
-      );
 
-      final data = response.data;
+  Future<ShippingDetailsModel> getShippingById({required int shpId, CancelToken? cancelToken}) async {
+    final queryParams = {'shpID': shpId};
+    final response = await api.get(
+      endpoint: '/transport/shipping.php',
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Check for error messages
-      if (data is Map<String, dynamic> && data['msg'] != null) {
-        final msg = data['msg'];
-        if (msg == 'failed' || msg == 'error') {
-          throw Exception('Failed to load shipping details');
-        }
+    final data = response.data;
+
+    // Check for error messages
+    if (data is Map<String, dynamic> && data['msg'] != null) {
+      final msg = data['msg'];
+      if (msg == 'failed' || msg == 'error') {
+        throw Exception('Failed to load shipping details');
       }
-
-      // Handle different response formats
-      if (data is Map<String, dynamic>) {
-        // Direct object response (your API format for single shipping)
-        return ShippingDetailsModel.fromMap(data);
-      } else if (data is List) {
-        // List response - take first item
-        if (data.isEmpty) {
-          throw Exception("No shipping found with ID: $shpId");
-        }
-
-        final firstItem = data.first;
-        if (firstItem is Map<String, dynamic>) {
-          return ShippingDetailsModel.fromMap(firstItem);
-        }
-        throw Exception("Invalid data format in list response");
-      }
-
-      throw Exception("Invalid API response format");
-    } on DioException catch (e) {
-      throw 'Network error: ${e.message}';
-    } catch (e) {
-      throw 'Failed to load shipping details: $e';
     }
+
+    // Handle different response formats
+    if (data is Map<String, dynamic>) {
+      // Direct object response (your API format for single shipping)
+      return ShippingDetailsModel.fromMap(data);
+    } else if (data is List) {
+      // List response - take first item
+      if (data.isEmpty) {
+        throw Exception("No shipping found with ID: $shpId");
+      }
+
+      final firstItem = data.first;
+      if (firstItem is Map<String, dynamic>) {
+        return ShippingDetailsModel.fromMap(firstItem);
+      }
+      throw Exception("Invalid data format in list response");
+    }
+
+    throw Exception("Invalid API response format");
   }
-  Future<TrptModel> getTrpt({required String reference}) async {
-    try {
-      final queryParams = {'ref': reference};
-      final response = await api.get(
-          endpoint: '/transport/shippingTransaction.php',
-          queryParams: queryParams
-      );
 
-      final data = response.data;
+  Future<TrptModel> getTrpt({required String reference, CancelToken? cancelToken}) async {
+    final queryParams = {'ref': reference};
+    final response = await api.get(
+      endpoint: '/transport/shippingTransaction.php',
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Case 1: API returns a single object
-      if (data is Map<String, dynamic>) {
-        return TrptModel.fromMap(data);
-      }
+    final data = response.data;
 
-      // Case 2: API returns a list with data
-      if (data is List) {
-        if (data.isEmpty) {
-          throw Exception("No transport data found for reference: $reference");
-        }
-        if (data.first is Map<String, dynamic>) {
-          return TrptModel.fromMap(data.first);
-        }
-        throw Exception("Invalid data format in list response");
-      }
-
-      throw Exception("Invalid API response format");
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
+    // Case 1: API returns a single object
+    if (data is Map<String, dynamic>) {
+      return TrptModel.fromMap(data);
     }
+
+    // Case 2: API returns a list with data
+    if (data is List) {
+      if (data.isEmpty) {
+        throw Exception("No transport data found for reference: $reference");
+      }
+      if (data.first is Map<String, dynamic>) {
+        return TrptModel.fromMap(data.first);
+      }
+      throw Exception("Invalid data format in list response");
+    }
+
+    throw Exception("Invalid API response format");
   }
 
   Future<Map<String, dynamic>> updateShippingExpense({required String? usrName, required int shpId, required String amount, required String reference, required String narration}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/transport/shippingTransaction.php",
-          data: {
-            "usrName": usrName,
-            "shpID": shpId,
-            "trnReference": reference,
-            "amount": amount,
-            "narration": narration
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.put(
+        endpoint: "/transport/shippingTransaction.php",
+        data: {
+          "usrName": usrName,
+          "shpID": shpId,
+          "trnReference": reference,
+          "amount": amount,
+          "narration": narration
+        }
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> addShippingExpense({required String? usrName, required int shpId, required String amount, required int accNumber, required String narration}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/transport/shippingTransaction.php",
-          data: {
-            "usrName": usrName,
-            "shpID": shpId,
-            "accNumber": accNumber,
-            "amount": amount,
-            "narration": narration
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.post(
+        endpoint: "/transport/shippingTransaction.php",
+        data: {
+          "usrName": usrName,
+          "shpID": shpId,
+          "accNumber": accNumber,
+          "amount": amount,
+          "narration": narration
+        }
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> addShippingPayment({required String? usrName, required String paymentType, required int shpId, double? cashAmount, double? accountAmount, int? accNumber}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/transport/shippingPayment.php",
-          data: {
-            "usrName": usrName,
-            "shpID": shpId,
-            "pType": paymentType,
-            "cashAmount": cashAmount,
-            "cardAmount": accountAmount,
-            "account": accNumber
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.post(
+        endpoint: "/transport/shippingPayment.php",
+        data: {
+          "usrName": usrName,
+          "shpID": shpId,
+          "pType": paymentType,
+          "cashAmount": cashAmount,
+          "cardAmount": accountAmount,
+          "account": accNumber
+        }
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> editShippingPayment({required String? reference, required String? usrName, required String paymentType, required int shpId, double? cashAmount, double? accountAmount, int? accNumber}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/transport/shippingPayment.php",
-          data: {
-            "trdReference":reference,
-            "usrName": usrName,
-            "shpID": shpId,
-            "pType": paymentType,
-            "cashAmount": cashAmount,
-            "cardAmount": accountAmount,
-            "account": accNumber
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.put(
+        endpoint: "/transport/shippingPayment.php",
+        data: {
+          "trdReference":reference,
+          "usrName": usrName,
+          "shpID": shpId,
+          "pType": paymentType,
+          "cashAmount": cashAmount,
+          "cardAmount": accountAmount,
+          "account": accNumber
+        }
+    );
+    return response.data;
   }
 
   /// Fetch GL transaction by Vehicle ID
-  Future<GlatModel> getGlatTransaction(String ref) async {
-    try {
-      final response = await api.get(
-        endpoint: "/transport/vehicleTransaction.php",
-        queryParams: {"ref": ref},
-      );
+  Future<GlatModel> getGlatTransaction(String ref, {CancelToken? cancelToken}) async {
+    final response = await api.get(
+      endpoint: "/transport/vehicleTransaction.php",
+      queryParams: {"ref": ref},
+      cancelToken: cancelToken,
+    );
 
-      // The API already returns your JSON object
-      final data = response.data;
+    // The API already returns your JSON object
+    final data = response.data;
 
-      // Parse into model
-      return GlatModel.fromMap(data);
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    // Parse into model
+    return GlatModel.fromMap(data);
   }
 
   /// Transactions | Cash Deposit | Withdraw ...................................
-  Future<List<TransactionsModel>> getTransactionsByStatus({String? status}) async {
-    try {
-      // Build query parameters dynamically
-      final queryParams = {'status': status};
+  Future<List<TransactionsModel>> getTransactionsByStatus({String? status, CancelToken? cancelToken}) async {
+    // Build query parameters dynamically
+    final queryParams = {'status': status};
 
-      // Fetch data from API
-      final response = await api.get(
-        endpoint: "/journal/getTransactions.php",
-        queryParams: queryParams,
-      );
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/journal/getTransactions.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => TransactionsModel.fromMap(json))
-            .toList();
-      }
-
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => TransactionsModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
-  Future<TxnByReferenceModel> getTxnByReference({required String reference}) async {
-    try {
-      final queryParams = {'ref': reference};
-      final response = await api.get(
-          endpoint: '/journal/getSingleTransaction.php',
-          queryParams: queryParams
-      );
 
-      final data = response.data;
+  Future<TxnByReferenceModel> getTxnByReference({required String reference, CancelToken? cancelToken}) async {
+    final queryParams = {'ref': reference};
+    final response = await api.get(
+      endpoint: '/journal/getSingleTransaction.php',
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Case 3: API returns a single object instead of list
-      if (data is Map<String, dynamic>) {
-        return TxnByReferenceModel.fromMap(data);
-      }
-      // Case 4: API returns a list with first object as map
-      if (data is List && data.first is Map<String, dynamic>) {
-        return TxnByReferenceModel.fromMap(data.first);
-      }
-      throw Exception("Invalid API response format");
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
+    final data = response.data;
+
+    // Case 3: API returns a single object instead of list
+    if (data is Map<String, dynamic>) {
+      return TxnByReferenceModel.fromMap(data);
     }
+    // Case 4: API returns a list with first object as map
+    if (data is List && data.first is Map<String, dynamic>) {
+      return TxnByReferenceModel.fromMap(data.first);
+    }
+    throw Exception("Invalid API response format");
   }
-  Future<FetchAtatModel> getATATByReference({required String reference}) async {
-    try {
-      final queryParams = {'ref': reference};
-      final response = await api.get(
-        endpoint: '/journal/fundTransfer.php',
-        queryParams: queryParams,
-      );
 
-      final data = response.data;
+  Future<FetchAtatModel> getATATByReference({required String reference, CancelToken? cancelToken}) async {
+    final queryParams = {'ref': reference};
+    final response = await api.get(
+      endpoint: '/journal/fundTransfer.php',
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      if (data is Map<String, dynamic>) {
-        return FetchAtatModel.fromMap(data);
-      }
+    final data = response.data;
 
-      // Optional: handle case where API accidentally wraps in a list
-      if (data is List && data.isNotEmpty && data.first is Map<String, dynamic>) {
-        return FetchAtatModel.fromMap(data.first);
-      }
-
-      throw Exception("Invalid API response format: $data");
-    } on DioException catch (e) {
-      throw e.message ?? 'Unknown Dio error';
-    } catch (e) {
-      throw e.toString();
+    if (data is Map<String, dynamic>) {
+      return FetchAtatModel.fromMap(data);
     }
+
+    // Optional: handle case where API accidentally wraps in a list
+    if (data is List && data.isNotEmpty && data.first is Map<String, dynamic>) {
+      return FetchAtatModel.fromMap(data.first);
+    }
+
+    throw Exception("Invalid API response format: $data");
   }
 
   Future<Map<String, dynamic>> cashFlowOperations({required TransactionsModel newTransaction}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/journal/cashWD.php",
-          data: newTransaction.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.post(
+        endpoint: "/journal/cashWD.php",
+        data: newTransaction.toMap()
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> fundTransfer({required TransactionsModel newTransaction}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/journal/fundTransfer.php",
-          data: newTransaction.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.post(
+        endpoint: "/journal/fundTransfer.php",
+        data: newTransaction.toMap()
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> bulkTransfer({required String userName, required List<Map<String, dynamic>> records,}) async {
-    try {
-      final response = await api.post(
-        endpoint: '/journal/fundTransferMA.php',
-        data: {
-          'usrName': userName,
-          'records': records,
-        },
-      );
+    final response = await api.post(
+      endpoint: '/journal/fundTransferMA.php',
+      data: {
+        'usrName': userName,
+        'records': records,
+      },
+    );
 
-      // Parse response
-      final responseData = response.data;
-      if (responseData is Map<String, dynamic>) {
-        return responseData;
-      } else if (responseData is String) {
-        // If response is a simple string message
-        return {'msg': responseData};
-      }
-
-      return {'msg': 'Unknown response format'};
-    } catch (e) {
-      throw Exception('Failed to save bulk transfer: $e');
+    // Parse response
+    final responseData = response.data;
+    if (responseData is Map<String, dynamic>) {
+      return responseData;
+    } else if (responseData is String) {
+      // If response is a simple string message
+      return {'msg': responseData};
     }
+
+    return {'msg': 'Unknown response format'};
   }
+
   Future<Map<String, dynamic>> fxTransfer({required String userName, required List<Map<String, dynamic>> records,}) async {
-    try {
-      final response = await api.post(
-        endpoint: '/journal/crossCurrency.php',
-        data: {
-          'usrName': userName,
-          'records': records,
-        },
-      );
+    final response = await api.post(
+      endpoint: '/journal/crossCurrency.php',
+      data: {
+        'usrName': userName,
+        'records': records,
+      },
+    );
 
-      // Parse response
-      final responseData = response.data;
-      if (responseData is Map<String, dynamic>) {
-        return responseData;
-      } else if (responseData is String) {
-        // If response is a simple string message
-        return {'msg': responseData, 'account': responseData};
-      }
-
-      return {'msg': 'Unknown response format'};
-    } catch (e) {
-      throw Exception('Failed to save bulk transfer: $e');
+    // Parse response
+    final responseData = response.data;
+    if (responseData is Map<String, dynamic>) {
+      return responseData;
+    } else if (responseData is String) {
+      // If response is a simple string message
+      return {'msg': responseData, 'account': responseData};
     }
+
+    return {'msg': 'Unknown response format'};
   }
 
   Future<Map<String, dynamic>> authorizeTxn({required String reference, required String? usrName}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/journal/transactionActivity.php",
-          data: {
-            "reference": reference,
-            "username":usrName,
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.put(
+        endpoint: "/journal/transactionActivity.php",
+        data: {
+          "reference": reference,
+          "username":usrName,
+        }
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> reverseTxn({required String reference, required String? usrName}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/journal/transactionActivity.php",
-          data: {
-            "reference": reference,
-            "username":usrName,
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.post(
+        endpoint: "/journal/transactionActivity.php",
+        data: {
+          "reference": reference,
+          "username":usrName,
+        }
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> deleteTxn({required String reference, required String? usrName}) async {
-    try {
-      final response = await api.delete(
-          endpoint: "/journal/transactionActivity.php",
-          data: {
-            "reference": reference,
-            "username":usrName,
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.delete(
+        endpoint: "/journal/transactionActivity.php",
+        data: {
+          "reference": reference,
+          "username":usrName,
+        }
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> updateTxn({required TransactionsModel newTxn}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/journal/cashWD.php",
-          data: newTxn.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.put(
+        endpoint: "/journal/cashWD.php",
+        data: newTxn.toMap()
+    );
+    return response.data;
   }
 
   ///Password Settings .........................................................
   Future<Map<String, dynamic>> forceChangePassword({required String credential, required String newPassword}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/user/changePass.php",
-          data: {
-            "usrName": credential,
-            "usrPass": newPassword
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.put(
+        endpoint: "/user/changePass.php",
+        data: {
+          "usrName": credential,
+          "usrPass": newPassword
+        }
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> changePassword({required String credential,required String oldPassword, required String newPassword}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/user/changePass.php",
-          data: {
-            "usrName": credential,
-            "usrPass": oldPassword,
-            "usrNewPass": newPassword
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.post(
+        endpoint: "/user/changePass.php",
+        data: {
+          "usrName": credential,
+          "usrPass": oldPassword,
+          "usrNewPass": newPassword
+        }
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> resetPassword({required String credential,required String oldPassword, required String newPassword}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/user/users.php",
-          data: {
-            "credential": credential,
-            "newPassword": newPassword
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.put(
+        endpoint: "/user/users.php",
+        data: {
+          "credential": credential,
+          "newPassword": newPassword
+        }
+    );
+    return response.data;
   }
 
   ///Branches & Limits  .................................................
-  Future<List<BranchModel>> getBranches({int? brcId}) async {
-    try {
-      // Build query parameters dynamically
-      final queryParams = {'brcID': brcId};
+  Future<List<BranchModel>> getBranches({int? brcId, CancelToken? cancelToken}) async {
+    // Build query parameters dynamically
+    final queryParams = {'brcID': brcId};
 
-      // Fetch data from API
-      final response = await api.get(
-        endpoint: "/setting/branch.php",
-        queryParams: queryParams,
-      );
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/setting/branch.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => BranchModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => BranchModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<Map<String, dynamic>> addBranch({required BranchModel newBranch}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/setting/branch.php",
-          data: newBranch.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.post(
+        endpoint: "/setting/branch.php",
+        data: newBranch.toMap()
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> updateBranch({required BranchModel newBranch}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/setting/branch.php",
-          data: newBranch.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.put(
+        endpoint: "/setting/branch.php",
+        data: newBranch.toMap()
+    );
+    return response.data;
   }
-  Future<List<BranchLimitModel>> getBranchLimits({int? brcCode}) async {
-    try {
-      // Build query parameters dynamically
-      final queryParams = {'code': brcCode};
 
-      // Fetch data from API
-      final response = await api.get(
-        endpoint: "/setting/branchAuthLimit.php",
-        queryParams: queryParams,
-      );
+  Future<List<BranchLimitModel>> getBranchLimits({int? brcCode, CancelToken? cancelToken}) async {
+    // Build query parameters dynamically
+    final queryParams = {'code': brcCode};
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/setting/branchAuthLimit.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
 
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => BranchLimitModel.fromMap(json))
-            .toList();
-      }
-
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => BranchLimitModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<Map<String, dynamic>> addEditBranchLimit({required BranchLimitModel newLimit}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/setting/branchAuthLimit.php",
-          data: newLimit.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.post(
+        endpoint: "/setting/branchAuthLimit.php",
+        data: newLimit.toMap()
+    );
+    return response.data;
   }
 
   /// Storage ..................................................................
-  Future<List<StorageModel>> getStorage() async {
-    try {
+  Future<List<StorageModel>> getStorage({CancelToken? cancelToken}) async {
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/setting/storage.php",
+      cancelToken: cancelToken,
+    );
 
-      // Fetch data from API
-      final response = await api.get(
-        endpoint: "/setting/storage.php",
-      );
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => StorageModel.fromMap(json))
-            .toList();
-      }
-
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => StorageModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<Map<String, dynamic>> addStorage({required StorageModel newStorage}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/setting/storage.php",
-          data: newStorage.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.post(
+        endpoint: "/setting/storage.php",
+        data: newStorage.toMap()
+    );
+    return response.data;
   }
+
   Future<Map<String, dynamic>> updateStorage({required StorageModel newStorage}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/setting/storage.php",
-          data: newStorage.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.put(
+        endpoint: "/setting/storage.php",
+        data: newStorage.toMap()
+    );
+    return response.data;
   }
 
   /// StockAvailability .................................................................
   Future<Map<String, dynamic>> addProduct({required ProductsModel newProduct}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/inventory/product.php",
-          data: newProduct.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-  Future<Map<String, dynamic>> updateProduct({required ProductsModel newProduct}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/inventory/product.php",
-          data: newProduct.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-  Future<Map<String, dynamic>> deleteProduct({required int proId}) async {
-    try {
-      final response = await api.delete(
-          endpoint: "/inventory/product.php",
-          data: {
-            "proID": proId
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-  Future<List<ProductsModel>> getProduct({int? proId}) async {
-    try {
-      final queryParams = {'proID': proId};
-      final response = await api.get(
+    final response = await api.post(
         endpoint: "/inventory/product.php",
-        queryParams: queryParams,
-      );
-
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      if (response.data == null) {
-        return [];
-      }
-
-      // Handle single product
-      if (response.data is Map<String, dynamic>) {
-        if (response.data.containsKey('proID') || response.data.containsKey('proId')) {
-          return [ProductsModel.fromMap(response.data)];
-        }
-      }
-
-      // Handle list of products
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>()
-            .map((json) => ProductsModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } catch (e) {
-      rethrow;
-    }
+        data: newProduct.toMap()
+    );
+    return response.data;
   }
-  Future<List<ProductsStockModel>> getProductStock({int? proId, int? noStock}) async {
-    try {
-      final queryParams = {'proID': proId,'av':noStock??0};
-      // Fetch data from API
-      final response = await api.get(
-          endpoint: "/inventory/availableProducts.php",
-          queryParams: queryParams
-      );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+  Future<Map<String, dynamic>> updateProduct({required ProductsModel newProduct}) async {
+    final response = await api.put(
+        endpoint: "/inventory/product.php",
+        data: newProduct.toMap()
+    );
+    return response.data;
+  }
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
+  Future<Map<String, dynamic>> deleteProduct({required int proId}) async {
+    final response = await api.delete(
+        endpoint: "/inventory/product.php",
+        data: {
+          "proID": proId
+        }
+    );
+    return response.data;
+  }
 
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => ProductsStockModel.fromMap(json))
-            .toList();
-      }
+  Future<List<ProductsModel>> getProduct({int? proId, CancelToken? cancelToken}) async {
+    final queryParams = {'proID': proId};
+    final response = await api.get(
+      endpoint: "/inventory/product.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    if (response.data == null) {
+      return [];
+    }
+
+    // Handle single product
+    if (response.data is Map<String, dynamic>) {
+      if (response.data.containsKey('proID') || response.data.containsKey('proId')) {
+        return [ProductsModel.fromMap(response.data)];
+      }
+    }
+
+    // Handle list of products
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>()
+          .map((json) => ProductsModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
+  }
+
+  Future<List<ProductsStockModel>> getProductStock({int? proId, int? noStock, CancelToken? cancelToken}) async {
+    final queryParams = {'proID': proId,'av':noStock??0};
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/inventory/availableProducts.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
+
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
+
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => ProductsStockModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
 
   /// Product Category .........................................................
   Future<Map<String, dynamic>> addProCategory({required ProCategoryModel newCategory}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/setting/productCategory.php",
-          data: newCategory.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-  Future<Map<String, dynamic>> updateProCategory({required ProCategoryModel newCategory}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/setting/productCategory.php",
-          data: newCategory.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-  Future<List<ProCategoryModel>> getProCategory({int? catId}) async {
-    try {
-      final queryParams = {'pcID': catId};
-      // Fetch data from API
-      final response = await api.get(
+    final response = await api.post(
         endpoint: "/setting/productCategory.php",
-        queryParams: queryParams
-      );
+        data: newCategory.toMap()
+    );
+    return response.data;
+  }
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+  Future<Map<String, dynamic>> updateProCategory({required ProCategoryModel newCategory}) async {
+    final response = await api.put(
+        endpoint: "/setting/productCategory.php",
+        data: newCategory.toMap()
+    );
+    return response.data;
+  }
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
+  Future<List<ProCategoryModel>> getProCategory({int? catId, CancelToken? cancelToken}) async {
+    final queryParams = {'pcID': catId};
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/setting/productCategory.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => ProCategoryModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => ProCategoryModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
 
   /// Orders ...................................................................
-  Future<List<OrdersModel>> getOrders({int? orderId}) async {
-    try {
-      final queryParams = {'ordID': orderId};
-      // Fetch data from API
-      final response = await api.get(
-          endpoint: "/inventory/ordersView.php",
-          queryParams: queryParams
-      );
+  Future<List<OrdersModel>> getOrders({int? orderId, CancelToken? cancelToken}) async {
+    final queryParams = {'ordID': orderId};
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/inventory/ordersView.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => OrdersModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
-  }
-  Future<List<OrderByIdModel>> getOrderById({int? orderId}) async {
-    try {
-      final queryParams = {'ordID': orderId};
-      final response = await api.get(
-          endpoint: "/inventory/salePurchase.php",
-          queryParams: queryParams
-      );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      if (response.data == null) {
-        return [];
-      }
-
-      // Your API returns a single order with records included
-      if (response.data is Map<String, dynamic>) {
-        final orderData = response.data as Map<String, dynamic>;
-        if (orderData.containsKey('ordID') || orderData.containsKey('ordId')) {
-          final order = OrderByIdModel.fromMap(orderData);
-          return [order];
-        }
-      }
-
-      // If it's a list (though your API doesn't seem to return this)
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>()
-            .map((json) => OrderByIdModel.fromMap(json))
-            .toList();
-      }
-
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => OrdersModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
 
+  Future<List<OrderByIdModel>> getOrderById({int? orderId, CancelToken? cancelToken}) async {
+    final queryParams = {'ordID': orderId};
+    final response = await api.get(
+      endpoint: "/inventory/salePurchase.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
+
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
+
+    if (response.data == null) {
+      return [];
+    }
+
+    // Your API returns a single order with records included
+    if (response.data is Map<String, dynamic>) {
+      final orderData = response.data as Map<String, dynamic>;
+      if (orderData.containsKey('ordID') || orderData.containsKey('ordId')) {
+        final order = OrderByIdModel.fromMap(orderData);
+        return [order];
+      }
+    }
+
+    // If it's a list (though your API doesn't seem to return this)
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>()
+          .map((json) => OrderByIdModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
+  }
 
   ///Shift Goods ...............................................................
-  Future<List<GoodShiftModel>> getShifts({int? orderId}) async {
-    try {
-      final queryParams = {'ordID': orderId};
-      final response = await api.get(
-          endpoint: "/inventory/goodsShifting.php",
-          queryParams: queryParams
-      );
+  Future<List<GoodShiftModel>> getShifts({int? orderId, CancelToken? cancelToken}) async {
+    final queryParams = {'ordID': orderId};
+    final response = await api.get(
+      endpoint: "/inventory/goodsShifting.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
 
-      if (response.data == null) {
-        return [];
-      }
+    if (response.data == null) {
+      return [];
+    }
 
-      // Handle single shift detail with records
-      if (response.data is Map<String, dynamic>) {
-        final data = response.data as Map<String, dynamic>;
-        final shift = GoodShiftModel.fromMap(data);
+    // Handle single shift detail with records
+    if (response.data is Map<String, dynamic>) {
+      final data = response.data as Map<String, dynamic>;
+      final shift = GoodShiftModel.fromMap(data);
 
-        // Parse records if they exist
-        if (data.containsKey('records') && data['records'] is List) {
-          shift.records = (data['records'] as List)
-              .whereType<Map<String, dynamic>>()
-              .map((record) => ShiftRecord.fromMap(record))
-              .toList();
-        }
-
-        return [shift];
-      }
-
-      // Handle list of shifts
-      if (response.data is List) {
-        return (response.data as List)
+      // Parse records if they exist
+      if (data.containsKey('records') && data['records'] is List) {
+        shift.records = (data['records'] as List)
             .whereType<Map<String, dynamic>>()
-            .map((json) => GoodShiftModel.fromMap(json))
+            .map((record) => ShiftRecord.fromMap(record))
             .toList();
       }
 
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+      return [shift];
     }
+
+    // Handle list of shifts
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>()
+          .map((json) => GoodShiftModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<Map<String, dynamic>> addShift({
     required String usrName,
     required String account,
     required String amount,
     required List<ShiftRecord> records,
   }) async {
-    try {
-      final data = {
-        "usrName": usrName,
-        "account": account,
-        "amount": amount,
-        "records": records.map((r) => r.toMap()).toList(),
-      };
+    final data = {
+      "usrName": usrName,
+      "account": account,
+      "amount": amount,
+      "records": records.map((r) => r.toMap()).toList(),
+    };
 
-      final response = await api.post(
-        endpoint: "/inventory/goodsShifting.php",
-        data: data,
-      );
+    final response = await api.post(
+      endpoint: "/inventory/goodsShifting.php",
+      data: data,
+    );
 
-      return response.data is Map<String, dynamic>
-          ? response.data
-          : {'msg': 'Invalid response format'};
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw 'Unexpected error: $e';
-    }
+    return response.data is Map<String, dynamic>
+        ? response.data
+        : {'msg': 'Invalid response format'};
   }
 
   Future<Map<String, dynamic>> deleteShift({
     required int orderId,
     required String usrName,
   }) async {
-    try {
-      final response = await api.delete(
-          endpoint: "/inventory/goodsShifting.php",
-          data: {
-            "usrName": usrName,
-            "ordID": orderId.toString(),
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    final response = await api.delete(
+        endpoint: "/inventory/goodsShifting.php",
+        data: {
+          "usrName": usrName,
+          "ordID": orderId.toString(),
+        }
+    );
+    return response.data;
   }
 
   ///Estimate ..................................................................
-  Future<List<EstimateModel>> getAllEstimates() async {
-    try {
-      final response = await api.get(
-        endpoint: "/inventory/estimate.php",
-      );
+  Future<List<EstimateModel>> getAllEstimates({CancelToken? cancelToken}) async {
+    final response = await api.get(
+      endpoint: "/inventory/estimate.php",
+      cancelToken: cancelToken,
+    );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>()
-            .map((json) => EstimateModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>()
+          .map((json) => EstimateModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
 
-  Future<EstimateModel?> getEstimateById({required int orderId}) async {
-    try {
-      final queryParams = {'ordID': orderId};
-      final response = await api.get(
-          endpoint: "/inventory/estimate.php",
-          queryParams: queryParams
-      );
+  Future<EstimateModel?> getEstimateById({required int orderId, CancelToken? cancelToken}) async {
+    final queryParams = {'ordID': orderId};
+    final response = await api.get(
+      endpoint: "/inventory/estimate.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      if (response.data == null) {
-        return null;
-      }
-
-      if (response.data is Map<String, dynamic>) {
-        return EstimateModel.fromMap(response.data);
-      }
-
-      return null;
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    if (response.data == null) {
+      return null;
+    }
+
+    if (response.data is Map<String, dynamic>) {
+      return EstimateModel.fromMap(response.data);
+    }
+
+    return null;
   }
 
   Future<Map<String, dynamic>> addEstimate({
@@ -2099,29 +1675,22 @@ class Repositories {
     required String? xRef,
     required List<EstimateRecord> records,
   }) async {
-    try {
-      final data = {
-        "usrName": usrName,
-        "ordName": "Estimate",
-        "ordPersonal": perID,
-        "ordxRef": xRef ?? "",
-        "records": records.map((r) => r.toMap()).toList(),
-      };
+    final data = {
+      "usrName": usrName,
+      "ordName": "Estimate",
+      "ordPersonal": perID,
+      "ordxRef": xRef ?? "",
+      "records": records.map((r) => r.toMap()).toList(),
+    };
 
-      final response = await api.post(
-        endpoint: "/inventory/estimate.php",
-        data: data,
-      );
+    final response = await api.post(
+      endpoint: "/inventory/estimate.php",
+      data: data,
+    );
 
-      return response.data is Map<String, dynamic>
-          ? response.data
-          : {'msg': 'Invalid response format'};
-
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw 'Unexpected error: $e';
-    }
+    return response.data is Map<String, dynamic>
+        ? response.data
+        : {'msg': 'Invalid response format'};
   }
 
   Future<Map<String, dynamic>> updateEstimate({
@@ -2131,53 +1700,39 @@ class Repositories {
     required String? xRef,
     required List<EstimateRecord> records,
   }) async {
-    try {
-      final data = {
-        "usrName": usrName,
-        "ordName": "Estimate",
-        "ordID": orderId,
-        "ordPersonal": perID,
-        "ordxRef": xRef ?? "",
-        "records": records.map((r) => r.toMap()).toList(),
-      };
+    final data = {
+      "usrName": usrName,
+      "ordName": "Estimate",
+      "ordID": orderId,
+      "ordPersonal": perID,
+      "ordxRef": xRef ?? "",
+      "records": records.map((r) => r.toMap()).toList(),
+    };
 
-      final response = await api.put(
-        endpoint: "/inventory/estimate.php",
-        data: data,
-      );
-      return response.data is Map<String, dynamic>
-          ? response.data
-          : {'msg': 'Invalid response format'};
-
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw 'Unexpected error: $e';
-    }
+    final response = await api.put(
+      endpoint: "/inventory/estimate.php",
+      data: data,
+    );
+    return response.data is Map<String, dynamic>
+        ? response.data
+        : {'msg': 'Invalid response format'};
   }
 
   Future<Map<String, dynamic>> deleteEstimate({
     required int orderId,
     required String usrName,
   }) async {
-    try {
-      final response = await api.delete(
-          endpoint: "/inventory/estimate.php",
-          data: {
-            "ordID": orderId,
-            "usrName": usrName
-          }
-      );
+    final response = await api.delete(
+        endpoint: "/inventory/estimate.php",
+        data: {
+          "ordID": orderId,
+          "usrName": usrName
+        }
+    );
 
-      return response.data is Map<String, dynamic>
-          ? response.data
-          : {'msg': 'Invalid response format'};
-
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw 'Unexpected error: $e';
-    }
+    return response.data is Map<String, dynamic>
+        ? response.data
+        : {'msg': 'Invalid response format'};
   }
 
   Future<Map<String, dynamic>> convertEstimateToSale({
@@ -2187,32 +1742,23 @@ class Repositories {
     required int account, // payment account
     required String amount, // total invoice amount .. if it's cash set accNo null with amount
   }) async {
-    try {
-      final data = {
-        "usrName": usrName,
-        "ordID": orderId,
-        "ordPersonal": perID,
-        "account": account,
-        "amount": amount,
-      };
+    final data = {
+      "usrName": usrName,
+      "ordID": orderId,
+      "ordPersonal": perID,
+      "account": account,
+      "amount": amount,
+    };
 
-      final response = await api.post(
-        endpoint: "/inventory/estimateToSale.php",
-        data: data,
-      );
+    final response = await api.post(
+      endpoint: "/inventory/estimateToSale.php",
+      data: data,
+    );
 
-      return response.data is Map<String, dynamic>
-          ? response.data
-          : {'msg': 'Invalid response format'};
-
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw 'Unexpected error: $e';
-    }
+    return response.data is Map<String, dynamic>
+        ? response.data
+        : {'msg': 'Invalid response format'};
   }
-
-
 
   /// Purchase Invoice...........................................................................
   Future<Map<String, dynamic>> addPurchaseInvoice({
@@ -2224,32 +1770,25 @@ class Repositories {
     double? amount,
     required List<PurchaseInvoiceRecord> records,
   }) async {
-    try {
-      final data = {
-        "usrName": usrName,
-        "ordName": orderName,
-        "ordPersonal": perID,
-        "ordxRef": xRef ?? "",
-        "account": account ?? 0,
-        "amount": amount ?? 0.0,
-        "records": records.map((r) => r.toJson()).toList(),
-      };
+    final data = {
+      "usrName": usrName,
+      "ordName": orderName,
+      "ordPersonal": perID,
+      "ordxRef": xRef ?? "",
+      "account": account ?? 0,
+      "amount": amount ?? 0.0,
+      "records": records.map((r) => r.toJson()).toList(),
+    };
 
-      final response = await api.post(
-        endpoint: "/inventory/salePurchase.php",
-        data: data,
-      );
+    final response = await api.post(
+      endpoint: "/inventory/salePurchase.php",
+      data: data,
+    );
 
-      // Return the full response data
-      return response.data is Map<String, dynamic>
-          ? response.data
-          : {'msg': 'Invalid response format'};
-
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw 'Unexpected error: $e';
-    }
+    // Return the full response data
+    return response.data is Map<String, dynamic>
+        ? response.data
+        : {'msg': 'Invalid response format'};
   }
 
   Future<Map<String, dynamic>> addSaleInvoice({
@@ -2261,34 +1800,25 @@ class Repositories {
     double? amount,
     required List<SaleInvoiceRecord> records,
   }) async {
-    try {
-      final data = {
-        "usrName": usrName,
-        "ordName": orderName,
-        "ordPersonal": perID,
-        "ordxRef": xRef ?? "",
-        "account": account ?? 0,
-        "amount": amount ?? 0.0,
-        "records": records.map((r) => r.toJson()).toList(),
-      };
+    final data = {
+      "usrName": usrName,
+      "ordName": orderName,
+      "ordPersonal": perID,
+      "ordxRef": xRef ?? "",
+      "account": account ?? 0,
+      "amount": amount ?? 0.0,
+      "records": records.map((r) => r.toJson()).toList(),
+    };
 
-      final response = await api.post(
-        endpoint: "/inventory/salePurchase.php",
-        data: data,
-      );
+    final response = await api.post(
+      endpoint: "/inventory/salePurchase.php",
+      data: data,
+    );
 
-      return response.data is Map<String, dynamic>
-          ? response.data
-          : {'msg': 'Invalid response format'};
-
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw 'Unexpected error: $e';
-    }
+    return response.data is Map<String, dynamic>
+        ? response.data
+        : {'msg': 'Invalid response format'};
   }
-
-
 
   // In repositories.dart or similar
   Future<bool> updatePurchaseOrder({
@@ -2297,17 +1827,13 @@ class Repositories {
     required List<Map<String, dynamic>> records,
     required Map<String, dynamic> orderData, // Add this
   }) async {
-    try {
-      final response = await api.put(
-        endpoint: "/inventory/salePurchase.php",
-        data: orderData,
-      );
-      final message = response.data['msg']?.toString() ?? '';
-      return message.toLowerCase().contains('success') ||
-          message.toLowerCase().contains('authorized');
-    } catch (e) {
-      rethrow;
-    }
+    final response = await api.put(
+      endpoint: "/inventory/salePurchase.php",
+      data: orderData,
+    );
+    final message = response.data['msg']?.toString() ?? '';
+    return message.toLowerCase().contains('success') ||
+        message.toLowerCase().contains('authorized');
   }
 
   Future<bool> deleteOrder({
@@ -2317,800 +1843,668 @@ class Repositories {
     required String? ordName,
 
   }) async {
-    try {
-      final data = {
-        "ordID": orderId,
-        "usrName": usrName,
-        "ordTrnRef":ref,
-        "ordName":ordName
-      };
+    final data = {
+      "ordID": orderId,
+      "usrName": usrName,
+      "ordTrnRef":ref,
+      "ordName":ordName
+    };
 
-      final response = await api.delete(
-        endpoint: "/inventory/salePurchase.php",
-        data: data,
-      );
+    final response = await api.delete(
+      endpoint: "/inventory/salePurchase.php",
+      data: data,
+    );
 
-      return response.data['msg'] == 'success';
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    return response.data['msg'] == 'success';
   }
 
-  Future<OrderTxnModel> fetchOrderTxn({required String reference}) async {
-    try {
-      final response = await api.get(
-        endpoint: "/inventory/spTransaction.php",
-        queryParams: {'ref': reference},
-      );
+  Future<OrderTxnModel> fetchOrderTxn({required String reference, CancelToken? cancelToken}) async {
+    final response = await api.get(
+      endpoint: "/inventory/spTransaction.php",
+      queryParams: {'ref': reference},
+      cancelToken: cancelToken,
+    );
 
-      // Convert the response data to OrderTxnModel
-      return OrderTxnModel.fromMap(response.data);
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
+    // Convert the response data to OrderTxnModel
+    return OrderTxnModel.fromMap(response.data);
   }
 
   /// Transaction Types ........................................................
   Future<Map<String, dynamic>> addTxnType({required TxnTypeModel newType}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/setting/trnType.php",
-          data: newType.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-  Future<Map<String, dynamic>> updateTxnType({required TxnTypeModel newType}) async {
-    try {
-      final response = await api.put(
-          endpoint: "/setting/trnType.php",
-          data: newType.toMap()
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-  Future<Map<String, dynamic>> deleteTxnType({required String trnCode}) async {
-    try {
-      final response = await api.delete(
-          endpoint: "/setting/trnType.php",
-          data: {
-            "trntCode": trnCode
-          }
-      );
-      return response.data;
-    } on DioException catch (e) {
-      throw '${e.message}';
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-  Future<List<TxnTypeModel>> getTxnTypes({String? trnCode}) async {
-    try {
-      final queryParams = {'trntCode': trnCode};
-      // Fetch data from API
-      final response = await api.get(
+    final response = await api.post(
         endpoint: "/setting/trnType.php",
-        queryParams: queryParams
-      );
+        data: newType.toMap()
+    );
+    return response.data;
+  }
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+  Future<Map<String, dynamic>> updateTxnType({required TxnTypeModel newType}) async {
+    final response = await api.put(
+        endpoint: "/setting/trnType.php",
+        data: newType.toMap()
+    );
+    return response.data;
+  }
 
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
+  Future<Map<String, dynamic>> deleteTxnType({required String trnCode}) async {
+    final response = await api.delete(
+        endpoint: "/setting/trnType.php",
+        data: {
+          "trntCode": trnCode
+        }
+    );
+    return response.data;
+  }
 
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => TxnTypeModel.fromMap(json))
-            .toList();
-      }
+  Future<List<TxnTypeModel>> getTxnTypes({String? trnCode, CancelToken? cancelToken}) async {
+    final queryParams = {'trntCode': trnCode};
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/setting/trnType.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
 
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => TxnTypeModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
 
   /// User Log .................................................................
   Future<List<UserLogModel>> getUserLog({String? usrName, String? fromDate, String? toDate}) async {
-    try {
-      final queryParams = {
-        'usrName': usrName,
-        'fromDate': fromDate,
-        'toDate': toDate
-      };
-      // Fetch data from API
-      final response = await api.post(
-          endpoint: "/reports/userLogs.php",
-          data: queryParams
-      );
+    final queryParams = {
+      'usrName': usrName,
+      'fromDate': fromDate,
+      'toDate': toDate
+    };
+    // Fetch data from API
+    final response = await api.post(
+        endpoint: "/reports/userLogs.php",
+        data: queryParams
+    );
 
-      // Handle error messages from server
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // If data is null or empty, return empty list
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      // Parse list of stakeholders safely
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>() // ensure map type
-            .map((json) => UserLogModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => UserLogModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   ///Reports ...................................................................
   // Account Statement
   Future<AccountStatementModel> getAccountStatement({required int account, required String fromDate, required String toDate}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/reports/accountStatement.php",
-          data: {
-            "account": account,
-            "fromDate": fromDate,
-            "toDate": toDate
-          }
-      );
+    final response = await api.post(
+        endpoint: "/reports/accountStatement.php",
+        data: {
+          "account": account,
+          "fromDate": fromDate,
+          "toDate": toDate
+        }
+    );
 
-      // Handle message response
-      if (response.data is Map && response.data['msg'] != null) {
-        throw response.data['msg'];
-      }
-
-      // Handle empty response
-      if (response.data == null || response.data.isEmpty) {
-        throw "No data received";
-      }
-
-      // Convert response to string and back to ensure proper typing
-      final jsonString = json.encode(response.data);
-      final decodedData = json.decode(jsonString) as dynamic;
-
-      return AccountStatementModel.fromApiResponse(decodedData);
-
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw e.toString();
+    // Handle message response
+    if (response.data is Map && response.data['msg'] != null) {
+      throw response.data['msg'];
     }
+
+    // Handle empty response
+    if (response.data == null || response.data.isEmpty) {
+      throw "No data received";
+    }
+
+    // Convert response to string and back to ensure proper typing
+    final jsonString = json.encode(response.data);
+    final decodedData = json.decode(jsonString) as dynamic;
+
+    return AccountStatementModel.fromApiResponse(decodedData);
   }
+
   Future<GlStatementModel> getGlStatement({required int account, required String currency, required int branchCode, required String fromDate, required String toDate}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/reports/glStatement.php",
-          data: {
-            "ccy": currency,
-            "branch": branchCode,
-            "account": account,
-            "fromDate": fromDate,
-            "toDate": toDate
-          }
-      );
+    final response = await api.post(
+        endpoint: "/reports/glStatement.php",
+        data: {
+          "ccy": currency,
+          "branch": branchCode,
+          "account": account,
+          "fromDate": fromDate,
+          "toDate": toDate
+        }
+    );
 
-      // Handle message response
-      if (response.data is Map && response.data['msg'] != null) {
-        throw response.data['msg'];
-      }
-
-      // Handle empty response
-      if (response.data == null || response.data.isEmpty) {
-        throw "No data received";
-      }
-
-      // Convert response to string and back to ensure proper typing
-      final jsonString = json.encode(response.data);
-      final decodedData = json.decode(jsonString) as dynamic;
-
-      return GlStatementModel.fromApiResponse(decodedData);
-
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw e.toString();
+    // Handle message response
+    if (response.data is Map && response.data['msg'] != null) {
+      throw response.data['msg'];
     }
+
+    // Handle empty response
+    if (response.data == null || response.data.isEmpty) {
+      throw "No data received";
+    }
+
+    // Convert response to string and back to ensure proper typing
+    final jsonString = json.encode(response.data);
+    final decodedData = json.decode(jsonString) as dynamic;
+
+    return GlStatementModel.fromApiResponse(decodedData);
   }
+
   //Get Transaction Details By Ref
-  Future<TxnReportByRefModel> getTransactionByRefReport({required String ref}) async {
-    try {
-      final response = await api.get(
-          endpoint: "/reports/referenceHistory.php",
-          queryParams: {
-            "ref": ref,
-          }
-      );
+  Future<TxnReportByRefModel> getTransactionByRefReport({required String ref, CancelToken? cancelToken}) async {
+    final response = await api.get(
+      endpoint: "/reports/referenceHistory.php",
+      queryParams: {
+        "ref": ref,
+      },
+      cancelToken: cancelToken,
+    );
 
-      // Handle message response
-      if (response.data is Map && response.data['msg'] != null) {
-        throw response.data['msg'];
-      }
-
-      // Handle empty response
-      if (response.data == null || response.data.isEmpty) {
-        throw "No data received";
-      }
-
-      // Convert response to string and back to ensure proper typing
-      final jsonString = json.encode(response.data);
-      final decodedData = json.decode(jsonString) as dynamic;
-
-      return TxnReportByRefModel.fromMap(decodedData);
-
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw e.toString();
+    // Handle message response
+    if (response.data is Map && response.data['msg'] != null) {
+      throw response.data['msg'];
     }
+
+    // Handle empty response
+    if (response.data == null || response.data.isEmpty) {
+      throw "No data received";
+    }
+
+    // Convert response to string and back to ensure proper typing
+    final jsonString = json.encode(response.data);
+    final decodedData = json.decode(jsonString) as dynamic;
+
+    return TxnReportByRefModel.fromMap(decodedData);
   }
 
   /// Dashboard Statistics.....................................................
   Future<List<DailyGrossModel>> getDailyGross({required String from, required String to, required int startGroup, required int stopGroup}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/reports/dailyGrossing.php",
-          data: {
-            "from": from,
-            "to": to,
-            "startGroup": startGroup,
-            "stopGroup": stopGroup
-          }
-      );
+    final response = await api.post(
+        endpoint: "/reports/dailyGrossing.php",
+        data: {
+          "from": from,
+          "to": to,
+          "startGroup": startGroup,
+          "stopGroup": stopGroup
+        }
+    );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
 
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>()
-            .map((json) => DailyGrossModel.fromMap(json))
-            .toList();
-      }
-
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
-  }
-  Future<DashboardStatsModel> getDashboardStats() async {
-    try {
-      final response = await api.get(
-        endpoint: "/reports/counts.php",
-      );
 
-      if (response.data is Map && response.data['msg'] != null) {
-        throw response.data['msg'];
-      }
-
-      if (response.data == null || response.data.isEmpty) {
-        throw "No data received";
-      }
-
-      return DashboardStatsModel.fromMap(
-        Map<String, dynamic>.from(response.data),
-      );
-
-    } on DioException catch (e) {
-      throw e.message ?? "Network error";
-    } catch (e) {
-      throw e.toString();
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>()
+          .map((json) => DailyGrossModel.fromMap(json))
+          .toList();
     }
+
+    return [];
   }
+
+  Future<DashboardStatsModel> getDashboardStats({CancelToken? cancelToken}) async {
+    final response = await api.get(
+      endpoint: "/reports/counts.php",
+      cancelToken: cancelToken,
+    );
+
+    if (response.data is Map && response.data['msg'] != null) {
+      throw response.data['msg'];
+    }
+
+    if (response.data == null || response.data.isEmpty) {
+      throw "No data received";
+    }
+
+    return DashboardStatsModel.fromMap(
+      Map<String, dynamic>.from(response.data),
+    );
+  }
+
   Future<List<ArApModel>> getArApReport({String? name, String? ccy}) async {
-    try {
-      final response = await api.post(
+    final response = await api.post(
         endpoint: "/reports/stakeholderBalances.php",
         data: {
           "name":name,
           "ccy":ccy
         }
-      );
+    );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>()
-            .map((json) => ArApModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>()
+          .map((json) => ArApModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<List<TrialBalanceModel>> getTrialBalance({required String date}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/reports/trialBalance.php",
-          data: {
-            "date":date,
-          }
-      );
+    final response = await api.post(
+        endpoint: "/reports/trialBalance.php",
+        data: {
+          "date":date,
+        }
+    );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>()
-            .map((json) => TrialBalanceModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>()
+          .map((json) => TrialBalanceModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<List<TotalDailyTxnModel>> totalDailyTxnReport({required String fromDate, required String toDate}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/reports/dailyTotalTransactions.php",
-          data: {
-            "fromDate":fromDate,
-            "toDate":toDate
-          }
-      );
+    final response = await api.post(
+        endpoint: "/reports/dailyTotalTransactions.php",
+        data: {
+          "fromDate":fromDate,
+          "toDate":toDate
+        }
+    );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
 
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>()
-            .map((json) => TotalDailyTxnModel.fromMap(json))
-            .toList();
-      }
-
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
       return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
-  }
-  Future<BalanceSheetModel> balanceSheet() async {
-    try {
-      final response = await api.get(
-        endpoint: "/reports/balanceSheet.php",
-      );
 
-      // Check if API returned a message
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // If response is null
-      if (response.data == null) {
-        throw Exception("No data found");
-      }
-
-      // Convert the JSON to BalanceSheetModel
-      if (response.data is Map<String, dynamic>) {
-        return BalanceSheetModel.fromMap(response.data);
-      }
-
-      throw Exception("Unexpected response format");
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>()
+          .map((json) => TotalDailyTxnModel.fromMap(json))
+          .toList();
     }
+
+    return [];
   }
+
+  Future<BalanceSheetModel> balanceSheet({CancelToken? cancelToken}) async {
+    final response = await api.get(
+      endpoint: "/reports/balanceSheet.php",
+      cancelToken: cancelToken,
+    );
+
+    // Check if API returned a message
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
+
+    // If response is null
+    if (response.data == null) {
+      throw Exception("No data found");
+    }
+
+    // Convert the JSON to BalanceSheetModel
+    if (response.data is Map<String, dynamic>) {
+      return BalanceSheetModel.fromMap(response.data);
+    }
+
+    throw Exception("Unexpected response format");
+  }
+
   Future<List<ExchangeRateReportModel>> exchangeRateReport({String? fromDate, String? toDate, String? fromCcy, String? toCcy}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/reports/currencyRate.php",
-          data: {
-            "fromDate":fromDate,
-            "toDate":toDate,
-            "fromCcy": fromCcy,
-            "toCcy": toCcy
-          }
-      );
+    final response = await api.post(
+        endpoint: "/reports/currencyRate.php",
+        data: {
+          "fromDate":fromDate,
+          "toDate":toDate,
+          "fromCcy": fromCcy,
+          "toCcy": toCcy
+        }
+    );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>()
-            .map((json) => ExchangeRateReportModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>()
+          .map((json) => ExchangeRateReportModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<List<UsersReportModel>> getUsersReport({String? usrName, int? status, int? branch, String? role}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/reports/usersList.php",
-          data: {
-            "username":usrName,
-            "status":status,
-            "branch": branch,
-            "role": role
-          }
-      );
+    final response = await api.post(
+        endpoint: "/reports/usersList.php",
+        data: {
+          "username":usrName,
+          "status":status,
+          "branch": branch,
+          "role": role
+        }
+    );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>()
-            .map((json) => UsersReportModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>()
+          .map((json) => UsersReportModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
+
   Future<List<ShippingReportModel>> getShippingReport({int? vehicle, int? status, int? customer, String? fromDate, int? driverId, String? toDate}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/reports/shippingList.php",
-          data: {
-            "fromDate": fromDate,
-            "toDate": toDate,
-            "vehicle": vehicle,
-            "customer": customer,
-            "driver": driverId,
-            "status": status
-          }
-      );
+    final response = await api.post(
+        endpoint: "/reports/shippingList.php",
+        data: {
+          "fromDate": fromDate,
+          "toDate": toDate,
+          "vehicle": vehicle,
+          "customer": customer,
+          "driver": driverId,
+          "status": status
+        }
+    );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      if (response.data == null || (response.data is List && response.data.isEmpty)) {
-        return [];
-      }
-
-      if (response.data is List) {
-        return (response.data as List)
-            .whereType<Map<String, dynamic>>()
-            .map((json) => ShippingReportModel.fromMap(json))
-            .toList();
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>()
+          .map((json) => ShippingReportModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
   }
 
   ///Cash Balances .............................................................
-  Future<CashBalancesModel> cashBalances({int? branchId}) async {
-    try {
-      final response = await api.get(
-          endpoint: "/reports/cashBalance.php",
-          queryParams: {
-            "brcID": branchId
-          }
-      );
+  Future<CashBalancesModel> cashBalances({int? branchId, CancelToken? cancelToken}) async {
+    final response = await api.get(
+      endpoint: "/reports/cashBalance.php",
+      queryParams: {
+        "brcID": branchId
+      },
+      cancelToken: cancelToken,
+    );
 
-      // Check if API returned a message
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // If response is null
-      if (response.data == null) {
-        throw Exception("No data found");
-      }
-
-      // Handle the List response from API
-      if (response.data is List) {
-        final List dataList = response.data;
-        if (dataList.isEmpty) {
-          throw Exception("No cash balance data found for this branch");
-        }
-
-        // Convert the first item in the list to CashBalancesModel
-        return CashBalancesModel.fromMap(dataList.first);
-      }
-
-      // Handle single Map response (fallback)
-      if (response.data is Map<String, dynamic>) {
-        return CashBalancesModel.fromMap(response.data);
-      }
-
-      throw Exception("Unexpected response format: ${response.data.runtimeType}");
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    // Check if API returned a message
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
-  }
-  Future<List<CashBalancesModel>> allCashBalances() async {
-    try {
-      final response = await api.get(
-        endpoint: "/reports/cashBalance.php",
-      );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      if (response.data == null) {
-        throw Exception("No data found");
-      }
-
-      // Parse as list
-      if (response.data is List) {
-        return List<CashBalancesModel>.from(
-            response.data.map((x) => CashBalancesModel.fromMap(x))
-        );
-      }
-
-      // If single object, wrap in list
-      if (response.data is Map<String, dynamic>) {
-        return [CashBalancesModel.fromMap(response.data)];
-      }
-
-      throw Exception("Unexpected response format");
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    // If response is null
+    if (response.data == null) {
+      throw Exception("No data found");
     }
+
+    // Handle the List response from API
+    if (response.data is List) {
+      final List dataList = response.data;
+      if (dataList.isEmpty) {
+        throw Exception("No cash balance data found for this branch");
+      }
+
+      // Convert the first item in the list to CashBalancesModel
+      return CashBalancesModel.fromMap(dataList.first);
+    }
+
+    // Handle single Map response (fallback)
+    if (response.data is Map<String, dynamic>) {
+      return CashBalancesModel.fromMap(response.data);
+    }
+
+    throw Exception("Unexpected response format: ${response.data.runtimeType}");
   }
+
+  Future<List<CashBalancesModel>> allCashBalances({CancelToken? cancelToken}) async {
+    final response = await api.get(
+      endpoint: "/reports/cashBalance.php",
+      cancelToken: cancelToken,
+    );
+
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
+
+    if (response.data == null) {
+      throw Exception("No data found");
+    }
+
+    // Parse as list
+    if (response.data is List) {
+      return List<CashBalancesModel>.from(
+          response.data.map((x) => CashBalancesModel.fromMap(x))
+      );
+    }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic>) {
+      return [CashBalancesModel.fromMap(response.data)];
+    }
+
+    throw Exception("Unexpected response format");
+  }
+
   Future<List<TransactionReportModel>> transactionReport({String? fromDate, String? toDate, String? txnType, int? status, String? maker, String? checker, String? currency}) async {
-    try {
-      final response = await api.post(
+    final response = await api.post(
         endpoint: "/reports/transactionsReport.php",
         data: {
-            "fromDate": fromDate,
-            "toDate": toDate,
-            "type": txnType,
-            "status": status,
-            "maker": maker,
-            "checker": checker,
-            "currency": currency
-          }
-      );
+          "fromDate": fromDate,
+          "toDate": toDate,
+          "type": txnType,
+          "status": status,
+          "maker": maker,
+          "checker": checker,
+          "currency": currency
+        }
+    );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // Parse as list
-      if (response.data is List) {
-        return List<TransactionReportModel>.from(
-            response.data.map((x) => TransactionReportModel.fromMap(x))
-        );
-      }
-
-      // If single object, wrap in list
-      if (response.data is Map<String, dynamic>) {
-        return [TransactionReportModel.fromMap(response.data)];
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
-  }
-  Future<List<AllBalancesModel>> allBalances({int? catId}) async {
-    try {
-      final response = await api.get(
-          endpoint: "/reports/allBalances.php",
-          queryParams: {
-            "cat": catId,
-          }
+
+    // Parse as list
+    if (response.data is List) {
+      return List<TransactionReportModel>.from(
+          response.data.map((x) => TransactionReportModel.fromMap(x))
       );
-
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // Parse as list
-      if (response.data is List) {
-        return List<AllBalancesModel>.from(
-            response.data.map((x) => AllBalancesModel.fromMap(x))
-        );
-      }
-
-      // If single object, wrap in list
-      if (response.data is Map<String, dynamic>) {
-        return [AllBalancesModel.fromMap(response.data)];
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
     }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic>) {
+      return [TransactionReportModel.fromMap(response.data)];
+    }
+
+    return [];
   }
+
+  Future<List<AllBalancesModel>> allBalances({int? catId, CancelToken? cancelToken}) async {
+    final response = await api.get(
+      endpoint: "/reports/allBalances.php",
+      queryParams: {
+        "cat": catId,
+      },
+      cancelToken: cancelToken,
+    );
+
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
+
+    // Parse as list
+    if (response.data is List) {
+      return List<AllBalancesModel>.from(
+          response.data.map((x) => AllBalancesModel.fromMap(x))
+      );
+    }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic>) {
+      return [AllBalancesModel.fromMap(response.data)];
+    }
+
+    return [];
+  }
+
   Future<List<ProductReportModel>> stockAvailabilityReport({int? productId, int? storageId, int? isNoStock}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/reports/stockAvailability.php",
-          data: {
-            "product": productId,
-            "storage": storageId,
-            "availability": isNoStock,
-          }
-      );
+    final response = await api.post(
+        endpoint: "/reports/stockAvailability.php",
+        data: {
+          "product": productId,
+          "storage": storageId,
+          "availability": isNoStock,
+        }
+    );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // Parse as list
-      if (response.data is List) {
-        return List<ProductReportModel>.from(
-            response.data.map((x) => ProductReportModel.fromMap(x))
-        );
-      }
-
-      // If single object, wrap in list
-      if (response.data is Map<String, dynamic>) {
-        return [ProductReportModel.fromMap(response.data)];
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    // Parse as list
+    if (response.data is List) {
+      return List<ProductReportModel>.from(
+          response.data.map((x) => ProductReportModel.fromMap(x))
+      );
+    }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic>) {
+      return [ProductReportModel.fromMap(response.data)];
+    }
+
+    return [];
   }
+
   Future<List<OrderReportModel>> ordersReport({String? fromDate, String? toDate, int? ordID, int? customerId, int? branchId, String? orderName}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/reports/allOrders.php",
-          data: {
-            "fromDate": fromDate,
-            "toDate": toDate,
-            "orderName": orderName,
-            "ordID": ordID,
-            "customer": customerId,
-            "branch": branchId
-          }
-      );
+    final response = await api.post(
+        endpoint: "/reports/allOrders.php",
+        data: {
+          "fromDate": fromDate,
+          "toDate": toDate,
+          "orderName": orderName,
+          "ordID": ordID,
+          "customer": customerId,
+          "branch": branchId
+        }
+    );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // Parse as list
-      if (response.data is List) {
-        return List<OrderReportModel>.from(
-            response.data.map((x) => OrderReportModel.fromMap(x))
-        );
-      }
-
-      // If single object, wrap in list
-      if (response.data is Map<String, dynamic>) {
-        return [OrderReportModel.fromMap(response.data)];
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    // Parse as list
+    if (response.data is List) {
+      return List<OrderReportModel>.from(
+          response.data.map((x) => OrderReportModel.fromMap(x))
+      );
+    }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic>) {
+      return [OrderReportModel.fromMap(response.data)];
+    }
+
+    return [];
   }
+
   Future<List<StockRecordModel>> stockRecord({String? fromDate, String? toDate, int? proId, int? storageId, int? partyId}) async {
-    try {
-      final response = await api.post(
-          endpoint: "/reports/runningStock.php",
-          data: {
-            "fromDate": fromDate,
-            "toDate": toDate,
-            "proID": proId,
-            "stgID": storageId,
-            "perID":partyId,
-          }
-      );
+    final response = await api.post(
+        endpoint: "/reports/runningStock.php",
+        data: {
+          "fromDate": fromDate,
+          "toDate": toDate,
+          "proID": proId,
+          "stgID": storageId,
+          "perID":partyId,
+        }
+    );
 
-      if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-        throw Exception(response.data['msg']);
-      }
-
-      // Parse as list
-      if (response.data is List) {
-        return List<StockRecordModel>.from(
-            response.data.map((x) => StockRecordModel.fromMap(x))
-        );
-      }
-
-      // If single object, wrap in list
-      if (response.data is Map<String, dynamic>) {
-        return [StockRecordModel.fromMap(response.data)];
-      }
-
-      return [];
-    } on DioException catch (e) {
-      throw "${e.message}";
-    } catch (e) {
-      throw "$e";
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
     }
+
+    // Parse as list
+    if (response.data is List) {
+      return List<StockRecordModel>.from(
+          response.data.map((x) => StockRecordModel.fromMap(x))
+      );
+    }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic>) {
+      return [StockRecordModel.fromMap(response.data)];
+    }
+
+    return [];
   }
 }

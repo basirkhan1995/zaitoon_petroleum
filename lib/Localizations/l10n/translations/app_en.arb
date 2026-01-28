@@ -741,5 +741,8 @@
   "deletedTitle": "Deleted",
   "reversedTitle": "Reversed",
   "alreadyEmployed": "Employee has already been employed.",
-  "entryDate": "Entry Date"
+  "entryDate": "Entry Date",
+  "timeOutMessage": "Oops! The server is taking too long to respond.",
+  "requestCancelMessage": "The request was cancelled.",
+  "timeOutTitle": "Server Time Out"
 }

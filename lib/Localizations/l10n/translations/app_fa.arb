@@ -741,5 +741,8 @@
   "deletedTitle": "حذف شده",
   "reversedTitle": "برگشت شده",
   "alreadyEmployed": "کارمند از قبل استخدام شده است.",
-  "entryDate": "تاریخ افتتاح"
+  "entryDate": "تاریخ افتتاح",
+  "timeOutMessage": "اوه! پاسخ سرور بیش از حد طول کشید.",
+  "requestCancelMessage": "درخواست لغو شد.",
+  "timeOutTitle": "پایان پاسخ سرور"
 }

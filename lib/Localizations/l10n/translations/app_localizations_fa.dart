@@ -2228,4 +2228,13 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get entryDate => 'تاریخ افتتاح';
+
+  @override
+  String get timeOutMessage => 'اوه! پاسخ سرور بیش از حد طول کشید.';
+
+  @override
+  String get requestCancelMessage => 'درخواست لغو شد.';
+
+  @override
+  String get timeOutTitle => 'پایان پاسخ سرور';
 }

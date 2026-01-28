@@ -2231,4 +2231,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get entryDate => 'تاریخ افتتاح';
+
+  @override
+  String get timeOutMessage => 'اوف! د سرور ځواب ډېر وخت ونیوه.';
+
+  @override
+  String get requestCancelMessage => 'غوښتنه لغوه شوه.';
+
+  @override
+  String get timeOutTitle => 'پایان پاسخ سرور';
 }
