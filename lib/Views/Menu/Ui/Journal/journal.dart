@@ -2221,7 +2221,7 @@ class _DesktopState extends State<_Desktop> {
                    children: [
                     Text(details.accNumber.toString()),
                     Text(details.accName??""),
-                    Text(Utils.glCategories(category: details.accCategory??1,locale: tr)),
+                    Text(details.accCategory.toString()),
                     StatusBadge(status: details.accStatus??1, trueValue: tr.active,falseValue: tr.inactive),
                    ],
                  )

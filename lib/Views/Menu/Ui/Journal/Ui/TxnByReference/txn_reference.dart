@@ -129,7 +129,11 @@ class _DesktopState extends State<_Desktop> {
           children: [
 
             BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
-              listener: (context, state) {},
+              listener: (context, state) {
+                if(state is TxnReferenceErrorState){
+                  Utils.showOverlayMessage(context, message: state.error, isError: true);
+                }
+              },
               builder: (context, state) {
                 if (state is TxnReferenceLoadedState) {
                   loadedTxn = state.transaction;

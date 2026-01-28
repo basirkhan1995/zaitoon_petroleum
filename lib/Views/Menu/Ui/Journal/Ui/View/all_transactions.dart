@@ -11,10 +11,8 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/GetOrder/bloc/order_t
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/GetOrder/txn_oder.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
-import '../../../../../../Features/Widgets/status_badge.dart';
 import '../FetchATAT/bloc/fetch_atat_bloc.dart';
 import '../FetchATAT/fetch_atat.dart';
 import '../FetchGLAT/bloc/glat_bloc.dart';
@@ -239,7 +237,7 @@ class _DesktopState extends State<_Desktop> {
               });
               Utils.showOverlayMessage(
                 context,
-                title: tr.noData,
+                title: tr.accessDenied,
                 message: state.error,
                 isError: true,
               );
@@ -506,8 +504,8 @@ class _DesktopState extends State<_Desktop> {
                                               child: Text(txn.checker ?? "")),
                                           SizedBox(width: 20),
                                           SizedBox(
-                                              width: 110,
-                                              child: StatusBadge(status: txn.trnStatus!, trueValue: tr.authorizedTitle, falseValue: tr.pendingTitle,)),
+                                              width: 115,
+                                              child: Text(txn.trnStateText!,)),
 
                                         ],
                                       ),
