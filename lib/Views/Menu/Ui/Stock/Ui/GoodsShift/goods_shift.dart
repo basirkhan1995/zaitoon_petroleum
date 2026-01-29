@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/txn_status_widget.dart';
 import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/GoodsShift/shift_details.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
@@ -281,17 +282,7 @@ class _DesktopState extends State<_Desktop> {
                                           : "-",
                                     ),
                                   ),
-                                  SizedBox(
-                                    width: 100,
-                                    child: Text(
-                                      shift.trnStateText ?? "",
-                                      style: TextStyle(
-                                        color: (shift.trnStateText?.toLowerCase() == 'authorized')
-                                            ? Colors.green
-                                            : Colors.orange,
-                                      ),
-                                    ),
-                                  ),
+                                  TransactionStatusBadge(status: shift.trnStateText??"")
                                 ],
                               ),
                             ),
