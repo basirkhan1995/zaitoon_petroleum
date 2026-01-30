@@ -3,7 +3,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
-import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/txn_status_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
@@ -13,6 +12,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/GetOrder/bloc/order_t
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/GetOrder/txn_oder.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TransactionRef/bloc/txn_ref_report_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TransactionRef/txn_ref_auto.dart';
 import '../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
@@ -114,6 +114,31 @@ class _DesktopState extends State<_Desktop> {
     TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.surface);
     return MultiBlocListener(
       listeners: [
+        BlocListener<OrderTxnBloc, OrderTxnState>(
+          listener: (context, state) {
+            if (state is OrderTxnLoadedState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              showDialog(
+                context: context,
+                builder: (context) => TransactionReferenceDialog(reference: state.data.trnReference ?? ""),
+              );
+            } else if (state is OrderTxnErrorState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              Utils.showOverlayMessage(
+                context,
+                title: tr.noData,
+                message: state.message,
+                isError: true,
+              );
+            }
+          },
+        ),
         BlocListener<OrderTxnBloc, OrderTxnState>(
           listener: (context, state) {
             if (state is OrderTxnLoadedState) {
@@ -450,7 +475,10 @@ class _DesktopState extends State<_Desktop> {
                                                   child: Material(
                                                     color: Colors.transparent,
                                                     child: InkWell(
-                                                      onTap: () => _copyToClipboard(reference, context),
+                                                      onTap: () {
+                                                        _copyToClipboard(reference, context);
+                                                        context.read<TxnRefReportBloc>().add(LoadTxnReportByReferenceEvent(reference));
+                                                      },
                                                       borderRadius: BorderRadius.circular(4),
                                                       hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
                                                       child: AnimatedContainer(
@@ -540,15 +568,6 @@ class _DesktopState extends State<_Desktop> {
   Future<void> _copyToClipboard(String reference, BuildContext context) async {
     await Utils.copyToClipboard(reference);
 
-    showDialog(context: context, builder: (context){
-      return ZFormDialog(
-          width: MediaQuery.of(context).size.width *.7,
-          onAction: null, title: "",
-          isActionTrue: false,
-      
-      child: TransactionReferenceDialog(reference: reference)
-      );
-    });
     // Set copied state to true
     setState(() {
       _copiedStates[reference] = true;
