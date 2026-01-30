@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
+import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/txn_status_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
@@ -12,6 +13,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/GetOrder/bloc/order_t
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/GetOrder/txn_oder.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TransactionRef/txn_ref_auto.dart';
 import '../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
 import '../FetchATAT/bloc/fetch_atat_bloc.dart';
@@ -538,6 +540,15 @@ class _DesktopState extends State<_Desktop> {
   Future<void> _copyToClipboard(String reference, BuildContext context) async {
     await Utils.copyToClipboard(reference);
 
+    showDialog(context: context, builder: (context){
+      return ZFormDialog(
+          width: MediaQuery.of(context).size.width *.7,
+          onAction: null, title: "",
+          isActionTrue: false,
+      
+      child: TransactionReferenceDialog(reference: reference)
+      );
+    });
     // Set copied state to true
     setState(() {
       _copiedStates[reference] = true;
