@@ -1178,7 +1178,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                                   ZCover(
                                     child: Text(tr.purchasePrice, style: title),
                                   ),
-                                  ZCover(child: Text(product.purchasePrice)),
+                                  ZCover(child: Text(product.averagePrice)),
                                 ],
                               ),
                               Wrap(
@@ -1265,7 +1265,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                         // Get both purchase and sale prices from product stock
                         final purchasePrice =
                             double.tryParse(
-                              stockProduct.purchasePrice?.replaceAll(',', '') ??
+                              stockProduct.averagePrice?.replaceAll(',', '') ??
                                   "0.0",
                             ) ??
                             0.0;

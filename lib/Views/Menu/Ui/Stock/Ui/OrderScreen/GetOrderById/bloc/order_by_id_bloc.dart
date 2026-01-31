@@ -113,9 +113,9 @@ class OrderByIdBloc extends Bloc<OrderByIdEvent, OrderByIdState> {
           // Create a map of productId -> purchase price
           final productPurchasePrices = <int, double>{};
           for (var stock in productsStock) {
-            if (stock.proId != null && stock.purchasePrice != null) {
+            if (stock.proId != null && stock.averagePrice != null) {
               // Remove thousand separators and parse
-              final cleanPrice = stock.purchasePrice!.replaceAll(',', '');
+              final cleanPrice = stock.averagePrice!.replaceAll(',', '');
               final price = double.tryParse(cleanPrice) ?? 0.0;
               if (price > 0) {
                 productPurchasePrices[stock.proId!] = price;

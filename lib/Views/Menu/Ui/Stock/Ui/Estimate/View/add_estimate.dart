@@ -459,7 +459,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
                     Wrap(
                       children: [
                         ZCover(radius: 0,child: Text(tr.purchasePrice,style: title),),
-                        ZCover(radius: 0,child: Text(product.purchasePrice?.toAmount()??"")),
+                        ZCover(radius: 0,child: Text(product.averagePrice?.toAmount()??"")),
                       ],
                     ),
                     Wrap(
@@ -489,7 +489,7 @@ class _AddEstimateViewState extends State<AddEstimateView> {
               },
               onSelected: (product) {
                 final purchasePrice = double.tryParse(
-                  product.purchasePrice?.replaceAll(',', '') ?? "0.0",
+                  product.averagePrice?.replaceAll(',', '') ?? "0.0",
                 ) ?? 0.0;
                 final salePrice = double.tryParse(
                   product.sellPrice?.replaceAll(',', '') ?? "0.0",

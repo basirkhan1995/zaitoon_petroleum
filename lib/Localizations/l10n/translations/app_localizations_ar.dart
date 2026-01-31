@@ -2243,4 +2243,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get notAllowedError => 'این عملیات مجاز نیست';
+
+  @override
+  String get successMessage => 'عملیات موفقانه انجام شد.';
+
+  @override
+  String get deleteSuccessMessage => 'مورد شما موفقانه حذف گردید.';
+
+  @override
+  String get expenseAccount => 'حساب نوم';
+
+  @override
+  String get averagePrice => 'ق. اوسط';
+
+  @override
+  String get recentPrice => 'ق. آخرین';
 }

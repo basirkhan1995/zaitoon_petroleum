@@ -213,7 +213,7 @@ class _AdjustmentDetailViewState extends State<AdjustmentDetailView> {
                       Icon(Icons.inventory_2, color: color.primary),
                       const SizedBox(width: 8),
                       Text(
-                        tr.adjustment,
+                        adjustment.ordName??"",
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ],
@@ -222,7 +222,8 @@ class _AdjustmentDetailViewState extends State<AdjustmentDetailView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildInfoItem('Adjustment ID', adjustment.ordId.toString()),
+                      _buildInfoItem(tr.id, adjustment.ordId.toString()),
+                      _buildInfoItem(tr.referenceNumber, adjustment.ordTrnRef.toString()),
                       _buildInfoItem(
                         tr.referenceNumber,
                         adjustment.ordxRef ?? '-',
@@ -245,14 +246,14 @@ class _AdjustmentDetailViewState extends State<AdjustmentDetailView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildInfoItem('Expense Account', adjustment.account?.toString() ?? '-'),
+                      _buildInfoItem(tr.expenseAccount, adjustment.account?.toString() ?? '-'),
                       _buildInfoItem(
                         tr.amount,
                         '${adjustment.amount?.toAmount()} $baseCurrency',
                         isAmount: true,
                       ),
                       if (adjustment.ordPersonalName != null)
-                        _buildInfoItem('Created By', adjustment.ordPersonalName!),
+                        _buildInfoItem(tr.maker, adjustment.ordPersonalName!),
                     ],
                   ),
                 ],
@@ -303,10 +304,10 @@ class _AdjustmentDetailViewState extends State<AdjustmentDetailView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Adjusted Items',
+          tr.items,
           style: Theme.of(context).textTheme.titleMedium,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 3),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Table(
@@ -333,8 +334,8 @@ class _AdjustmentDetailViewState extends State<AdjustmentDetailView> {
                   _buildTableCell(tr.productName, isHeader: true),
                   _buildTableCell(tr.storage, isHeader: true),
                   _buildTableCell(tr.qty, isHeader: true, center: true),
-                  _buildTableCell('Unit Cost', isHeader: true, center: true),
-                  _buildTableCell(tr.totalTitle, isHeader: true, center: true),
+                  _buildTableCell(tr.unitPrice, isHeader: true, center: true),
+                  _buildTableCell(tr.totalAmount, isHeader: true, center: true),
                 ],
               ),
               // Table rows
@@ -416,13 +417,13 @@ class _AdjustmentDetailViewState extends State<AdjustmentDetailView> {
             if (state.adjustment.account != null) ...[
               Divider(color: color.outline.withValues(alpha: .2)),
               _buildSummaryRow(
-                'Expense Account',
+                tr.expenseAmount,
                 state.adjustment.account.toString(),
                 color: Colors.orange,
               ),
               if (state.adjustment.amount != null)
                 _buildSummaryRow(
-                  'Expense Amount',
+                  tr.expenseAmount,
                   '${state.adjustment.amount?.toAmount()} $baseCurrency',
                   color: Colors.blue,
                 ),

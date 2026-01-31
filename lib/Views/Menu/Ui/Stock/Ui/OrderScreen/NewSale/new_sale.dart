@@ -465,7 +465,7 @@ class _DesktopState extends State<_Desktop> {
                        Wrap(
                          children: [
                            ZCover(radius: 0,child: Text(tr.purchasePrice,style: title),),
-                           ZCover(radius: 0,child: Text(product.purchasePrice?.toAmount()??"")),
+                           ZCover(radius: 0,child: Text(product.averagePrice?.toAmount()??"")),
                          ],
                        ),
                         Wrap(
@@ -494,7 +494,7 @@ class _DesktopState extends State<_Desktop> {
                     return [];
                   },
                   onSelected: (product) {
-                    final purchasePrice = double.tryParse(product.purchasePrice?.toAmount() ?? "0.0") ?? 0.0;
+                    final purchasePrice = double.tryParse(product.averagePrice?.toAmount() ?? "0.0") ?? 0.0;
                     final salePrice = double.tryParse(product.sellPrice?.toAmount() ?? "0.0") ?? 0.0;
 
                     // Get storage ID and name from product

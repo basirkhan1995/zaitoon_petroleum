@@ -3835,7 +3835,7 @@ abstract class AppLocalizations {
   /// No description provided for @notEnoughMsg.
   ///
   /// In en, this message translates to:
-  /// **'Not enough items available.'**
+  /// **'Not enough item available.'**
   String get notEnoughMsg;
 
   /// No description provided for @paymentMismatchTotalInvoice.
@@ -4455,6 +4455,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This action isn\'t allowed.'**
   String get notAllowedError;
+
+  /// No description provided for @successMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation successfully done.'**
+  String get successMessage;
+
+  /// No description provided for @deleteSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Item has been deleted successfully.'**
+  String get deleteSuccessMessage;
+
+  /// No description provided for @expenseAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Name'**
+  String get expenseAccount;
+
+  /// No description provided for @averagePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'AVG. Price'**
+  String get averagePrice;
+
+  /// No description provided for @recentPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'RP. Price'**
+  String get recentPrice;
 }
 
 class _AppLocalizationsDelegate

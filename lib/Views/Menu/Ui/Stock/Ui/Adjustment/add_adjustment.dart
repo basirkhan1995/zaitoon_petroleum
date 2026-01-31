@@ -159,29 +159,6 @@ class _AddAdjustmentViewState extends State<AddAdjustmentView> {
           actionsPadding: const EdgeInsets.all(8),
           actions: [
             ZOutlineButton(
-              icon: Icons.refresh,
-              width: 110,
-              height: 38,
-              label: Text(tr.clear),
-              onPressed: _isSaving
-                  ? null
-                  : () {
-                context.read<AdjustmentBloc>().add(ResetAdjustmentFormEvent());
-                setState(() {
-                  _items.clear();
-                  _productControllers.clear();
-                  _storageControllers.clear();
-                  _qtyControllers.clear();
-                  _priceControllers.clear();
-                  _selectedProducts.clear();
-                  _addEmptyItem();
-                  _accountController.clear();
-                  _xRefController.clear();
-                });
-              },
-            ),
-            const SizedBox(width: 8),
-            ZOutlineButton(
               width: 110,
               height: 38,
               icon: Icons.print,
@@ -398,11 +375,19 @@ class _AddAdjustmentViewState extends State<AddAdjustmentView> {
                   children: [
                     ZCover(
                       radius: 0,
-                      child: Text('Cost Price', style: title),
+                      child: Text(tr.recentPrice, style: title),
                     ),
                     ZCover(
                       radius: 0,
-                      child: Text(product.purchasePrice?.toAmount() ?? ""),
+                      child: Text(product.recentPrice?.toAmount() ?? ""),
+                    ),
+                    ZCover(
+                      radius: 0,
+                      child: Text(tr.purchasePrice, style: title),
+                    ),
+                    ZCover(
+                      radius: 0,
+                      child: Text(product.averagePrice?.toAmount() ?? ""),
                     ),
                   ],
                 ),
@@ -431,7 +416,7 @@ class _AddAdjustmentViewState extends State<AddAdjustmentView> {
               },
               onSelected: (product) {
                 final purchasePrice = double.tryParse(
-                  product.purchasePrice?.replaceAll(',', '') ?? "0.0",
+                  product.averagePrice?.replaceAll(',', '') ?? "0.0",
                 ) ?? 0.0;
 
                 _selectedProducts[index] = product;
@@ -494,7 +479,7 @@ class _AddAdjustmentViewState extends State<AddAdjustmentView> {
               controller: _priceControllers[index],
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
-                hintText: 'Unit Cost',
+                hintText: tr.unitPrice,
                 border: InputBorder.none,
                 isDense: true,
               ),

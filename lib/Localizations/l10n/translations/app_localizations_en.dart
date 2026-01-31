@@ -1935,7 +1935,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get items => 'Items';
 
   @override
-  String get notEnoughMsg => 'Not enough items available.';
+  String get notEnoughMsg => 'Not enough item available.';
 
   @override
   String get paymentMismatchTotalInvoice =>
@@ -2250,4 +2250,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notAllowedError => 'This action isn\'t allowed.';
+
+  @override
+  String get successMessage => 'Operation successfully done.';
+
+  @override
+  String get deleteSuccessMessage => 'Item has been deleted successfully.';
+
+  @override
+  String get expenseAccount => 'Account Name';
+
+  @override
+  String get averagePrice => 'AVG. Price';
+
+  @override
+  String get recentPrice => 'RP. Price';
 }

@@ -6,6 +6,7 @@ import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Adjustment/add_adjustment.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/View/add_estimate.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/View/estimate.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/GoodsShift/add_shift.dart';
@@ -211,7 +212,7 @@ class StockView extends StatelessWidget {
                       label: Text(locale.adjustment),
                       icon: Icons.settings_backup_restore_rounded,
                       width: double.infinity,
-                      onPressed: () => Utils.goto(context, AdjustmentView()),
+                      onPressed: () => Utils.goto(context, AddAdjustmentView()),
                     ),
                   ],
                 ),

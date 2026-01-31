@@ -642,7 +642,7 @@
   "accountingEntries": "Accounting Entries",
   "noItems": "No items",
   "items": "Items",
-  "notEnoughMsg": "Not enough items available.",
+  "notEnoughMsg": "Not enough item available.",
   "paymentMismatchTotalInvoice": "Payment total isn't equal total invoice.",
   "retry": "Retry",
   "savingChanges": "Saving Changes ...",
@@ -745,5 +745,10 @@
   "timeOutMessage": "Oops! The server is taking too long to respond.",
   "requestCancelMessage": "The request was cancelled.",
   "timeOutTitle": "Server Time Out",
-  "notAllowedError": "This action isn't allowed."
+  "notAllowedError": "This action isn't allowed.",
+  "successMessage": "Operation successfully done.",
+  "deleteSuccessMessage": "Item has been deleted successfully.",
+  "expenseAccount": "Account Name",
+  "averagePrice": "AVG. Price",
+  "recentPrice": "RP. Price"
 }

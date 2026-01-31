@@ -15,7 +15,8 @@ class ProductsStockModel {
   final int? stkStorage;
   final String? stgName;
   final String? available;
-  final String? purchasePrice;
+  final String? averagePrice;
+  final String? recentPrice;
   final String? sellPrice;
 
   ProductsStockModel({
@@ -25,7 +26,8 @@ class ProductsStockModel {
     this.stkStorage,
     this.stgName,
     this.available,
-    this.purchasePrice,
+    this.averagePrice,
+    this.recentPrice,
     this.sellPrice,
   });
 
@@ -36,7 +38,8 @@ class ProductsStockModel {
     int? stkStorage,
     String? stgName,
     String? available,
-    String? purchasePrice,
+    String? recentPrice,
+    String? averagePrice,
     String? sellPrice,
   }) =>
       ProductsStockModel(
@@ -46,7 +49,8 @@ class ProductsStockModel {
         stkStorage: stkStorage ?? this.stkStorage,
         stgName: stgName ?? this.stgName,
         available: available ?? this.available,
-        purchasePrice: purchasePrice ?? this.purchasePrice,
+        averagePrice: averagePrice ?? this.averagePrice,
+        recentPrice: recentPrice ?? this.recentPrice,
         sellPrice: sellPrice ?? this.sellPrice,
       );
 
@@ -57,7 +61,8 @@ class ProductsStockModel {
     stkStorage: json["stkStorage"],
     stgName: json["stgName"],
     available: json["available"],
-    purchasePrice: json["purchase_price"],
+    averagePrice: json["average_price"],
+    recentPrice: json["recent_price"],
     sellPrice: json["sell_price"],
   );
 
@@ -68,7 +73,8 @@ class ProductsStockModel {
     "stkStorage": stkStorage,
     "stgName": stgName,
     "available": available,
-    "purchase_price": purchasePrice,
+    "average_price": averagePrice,
+    "recent_price": recentPrice,
     "sell_price": sellPrice,
   };
 }

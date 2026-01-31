@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 
+import '../../../../../../../Services/localization_services.dart';
 import '../model/adj_items.dart';
 import '../model/adjustment_model.dart';
 
@@ -38,6 +39,7 @@ class AdjustmentBloc extends Bloc<AdjustmentEvent, AdjustmentState> {
   }
 
   Future<void> _onLoadAdjustmentDetails(LoadAdjustmentDetailsEvent event, Emitter<AdjustmentState> emit) async {
+    final tr = localizationService.loc;
     try {
       emit(AdjustmentDetailLoadingState());
       final adjustment = await _repo.getAdjustmentById(orderId: event.orderId);
@@ -46,7 +48,7 @@ class AdjustmentBloc extends Bloc<AdjustmentEvent, AdjustmentState> {
         final items = adjustment.records?.map((record) => AdjustmentItem.fromRecord(record)).toList() ?? [];
         emit(AdjustmentDetailLoadedState(adjustment: adjustment, items: items));
       } else {
-        emit(AdjustmentErrorState('Adjustment not found'));
+        emit(AdjustmentErrorState(tr.noDataFound));
         // Return to list if adjustment not found
         if (_cachedAdjustments.isNotEmpty) {
           emit(AdjustmentLoadedState(_cachedAdjustments));
@@ -62,6 +64,7 @@ class AdjustmentBloc extends Bloc<AdjustmentEvent, AdjustmentState> {
   }
 
   Future<void> _onAddAdjustment(AddAdjustmentEvent event, Emitter<AdjustmentState> emit) async {
+    final tr = localizationService.loc;
     emit(AdjustmentSavingState());
     try {
       final response = await _repo.addAdjustment(
@@ -74,20 +77,20 @@ class AdjustmentBloc extends Bloc<AdjustmentEvent, AdjustmentState> {
       final msg = response['msg'];
       if (msg == "success") {
         // First emit saved state
-        emit(AdjustmentSavedState(message: 'Adjustment created successfully'));
+        emit(AdjustmentSavedState(message: tr.successMessage));
 
         // Then reload the adjustments list
         final adjustments = await _repo.allAdjustments();
         _cachedAdjustments = adjustments;
         emit(AdjustmentLoadedState(adjustments));
       }if(msg == "not enough"){
-        emit(AdjustmentErrorState("Not enough product"));
+        emit(AdjustmentErrorState(tr.notEnoughMsg));
         // Return to cached list on error
         if (_cachedAdjustments.isNotEmpty) {
           emit(AdjustmentLoadedState(_cachedAdjustments));
         }
       }if(msg == "not allowed"){
-        emit(AdjustmentErrorState("This action is not allowed"));
+        emit(AdjustmentErrorState(tr.notAllowedError));
         // Return to cached list on error
         if (_cachedAdjustments.isNotEmpty) {
           emit(AdjustmentLoadedState(_cachedAdjustments));
@@ -109,6 +112,7 @@ class AdjustmentBloc extends Bloc<AdjustmentEvent, AdjustmentState> {
   }
 
   Future<void> _onDeleteAdjustment(DeleteAdjustmentEvent event, Emitter<AdjustmentState> emit) async {
+    final tr = localizationService.loc;
     emit(AdjustmentDeletingState());
     try {
       final response = await _repo.deleteShift(
@@ -120,7 +124,7 @@ class AdjustmentBloc extends Bloc<AdjustmentEvent, AdjustmentState> {
 
       if (msg.toLowerCase().contains('success')) {
         // Just emit deleted state
-        emit(AdjustmentDeletedState(message: 'Adjustment deleted successfully'));
+        emit(AdjustmentDeletedState(message: tr.deleteSuccessMessage));
       } else {
         emit(AdjustmentErrorState(msg));
       }

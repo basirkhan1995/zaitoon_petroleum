@@ -468,7 +468,7 @@ class _AddGoodsShiftViewState extends State<AddGoodsShiftView> {
                 subtitle: Wrap(
                   children: [
                     ZCover(radius: 0,child: Text(tr.costPrice,style: title),),
-                    ZCover(radius: 0,child: Text(product.purchasePrice?.toAmount()??"")),
+                    ZCover(radius: 0,child: Text(product.averagePrice?.toAmount()??"")),
                   ],
                 ),
                 trailing: Column(
@@ -490,7 +490,7 @@ class _AddGoodsShiftViewState extends State<AddGoodsShiftView> {
               },
               onSelected: (product) {
                 final purchasePrice = double.tryParse(
-                  product.purchasePrice?.replaceAll(',', '') ?? "0.0",
+                  product.averagePrice?.replaceAll(',', '') ?? "0.0",
                 ) ?? 0.0;
 
                 _selectedProducts[index] = product;

@@ -745,5 +745,10 @@
   "timeOutMessage": "اوه! پاسخ سرور بیش از حد طول کشید.",
   "requestCancelMessage": "درخواست لغو شد.",
   "timeOutTitle": "پایان پاسخ سرور",
-  "notAllowedError": "این عملیات مجاز نیست"
+  "notAllowedError": "این عملیات مجاز نیست",
+  "successMessage": "عملیات موفقانه انجام شد.",
+  "deleteSuccessMessage": "مورد شما موفقانه حذف گردید.",
+  "expenseAccount": "نام حساب",
+  "averagePrice": "ق. اوسط",
+  "recentPrice": "ق. آخرین"
 }
