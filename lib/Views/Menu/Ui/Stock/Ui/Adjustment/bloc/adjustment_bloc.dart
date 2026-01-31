@@ -72,7 +72,6 @@ class AdjustmentBloc extends Bloc<AdjustmentEvent, AdjustmentState> {
       );
 
       final msg = response['msg'];
-
       if (msg == "success") {
         // First emit saved state
         emit(AdjustmentSavedState(message: 'Adjustment created successfully'));
@@ -81,9 +80,20 @@ class AdjustmentBloc extends Bloc<AdjustmentEvent, AdjustmentState> {
         final adjustments = await _repo.allAdjustments();
         _cachedAdjustments = adjustments;
         emit(AdjustmentLoadedState(adjustments));
+      }if(msg == "not enough"){
+        emit(AdjustmentErrorState("Not enough product"));
+        // Return to cached list on error
+        if (_cachedAdjustments.isNotEmpty) {
+          emit(AdjustmentLoadedState(_cachedAdjustments));
+        }
+      }if(msg == "not allowed"){
+        emit(AdjustmentErrorState("This action is not allowed"));
+        // Return to cached list on error
+        if (_cachedAdjustments.isNotEmpty) {
+          emit(AdjustmentLoadedState(_cachedAdjustments));
+        }
       } else {
         emit(AdjustmentErrorState(msg));
-        print(msg);
         // Return to cached list on error
         if (_cachedAdjustments.isNotEmpty) {
           emit(AdjustmentLoadedState(_cachedAdjustments));
@@ -101,14 +111,14 @@ class AdjustmentBloc extends Bloc<AdjustmentEvent, AdjustmentState> {
   Future<void> _onDeleteAdjustment(DeleteAdjustmentEvent event, Emitter<AdjustmentState> emit) async {
     emit(AdjustmentDeletingState());
     try {
-      final response = await _repo.deleteAdjustment(
+      final response = await _repo.deleteShift(
         orderId: event.orderId,
         usrName: event.usrName,
       );
 
       final msg = response['msg']?.toString() ?? '';
 
-      if (msg.toLowerCase().contains('success') || msg.toLowerCase().contains('deleted')) {
+      if (msg.toLowerCase().contains('success')) {
         // Just emit deleted state
         emit(AdjustmentDeletedState(message: 'Adjustment deleted successfully'));
       } else {
