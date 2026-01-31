@@ -1,4 +1,4 @@
-
+// goods_shift_event.dart
 part of 'goods_shift_bloc.dart';
 
 abstract class GoodsShiftEvent extends Equatable {
@@ -41,3 +41,5 @@ class DeleteGoodsShiftEvent extends GoodsShiftEvent {
   @override
   List<Object?> get props => [orderId, usrName];
 }
+
+class ReturnToShiftsListEvent extends GoodsShiftEvent {}

@@ -744,5 +744,6 @@
   "entryDate": "تاریخ افتتاح",
   "timeOutMessage": "اوف! د سرور ځواب ډېر وخت ونیوه.",
   "requestCancelMessage": "غوښتنه لغوه شوه.",
-  "timeOutTitle": "پایان پاسخ سرور"
+  "timeOutTitle": "پایان پاسخ سرور",
+  "notAllowedError": "این عملیات مجاز نیست"
 }

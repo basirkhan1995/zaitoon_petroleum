@@ -226,40 +226,42 @@ class ApiServices {
   /* -------------------------------------------------------------------------- */
 
   String _handleError(DioException e) {
-    final locale = localizationService.loc;
+    final tr = localizationService.loc;
 
     switch (e.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.receiveTimeout:
       case DioExceptionType.sendTimeout:
-        return locale.timeOutMessage;
+        return tr.timeOutMessage;
 
       case DioExceptionType.cancel:
-        return locale.requestCancelMessage;
+        return tr.requestCancelMessage;
 
       case DioExceptionType.connectionError:
-        return locale.noInternet;
+        return tr.noInternet;
 
       case DioExceptionType.badResponse:
         switch (e.response?.statusCode) {
           case 400:
-            return locale.badRequest;
+            return tr.badRequest;
           case 401:
-            return locale.unAuthorized;
+            return tr.unAuthorized;
           case 403:
-            return locale.forbidden;
+            return tr.forbidden;
           case 404:
-            return locale.url404;
+            return tr.url404;
+          case 405:
+            return tr.notAllowedError;
           case 500:
-            return locale.internalServerError;
+            return tr.internalServerError;
           case 503:
-            return locale.serviceUnavailable;
+            return tr.serviceUnavailable;
           default:
-            return "${locale.serverError}: ${e.response?.statusCode}";
+            return "${tr.serverError}: ${e.response?.statusCode}";
         }
 
       default:
-        return locale.networkError;
+        return tr.networkError;
     }
   }
 

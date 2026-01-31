@@ -2237,4 +2237,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get timeOutTitle => 'پایان پاسخ سرور';
+
+  @override
+  String get notAllowedError => 'این عملیات مجاز نیست';
 }

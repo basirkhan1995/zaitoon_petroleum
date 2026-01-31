@@ -4449,6 +4449,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Server Time Out'**
   String get timeOutTitle;
+
+  /// No description provided for @notAllowedError.
+  ///
+  /// In en, this message translates to:
+  /// **'This action isn\'t allowed.'**
+  String get notAllowedError;
 }
 
 class _AppLocalizationsDelegate

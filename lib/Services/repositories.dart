@@ -1024,7 +1024,6 @@ class Repositories {
 
     return [];
   }
-
   Future<TxnByReferenceModel> getTxnByReference({required String reference, CancelToken? cancelToken}) async {
     final queryParams = {'ref': reference};
     final response = await api.get(
@@ -1045,7 +1044,6 @@ class Repositories {
     }
     throw Exception("Invalid API response format");
   }
-
   Future<FetchAtatModel> getATATByReference({required String reference, CancelToken? cancelToken}) async {
     final queryParams = {'ref': reference};
     final response = await api.get(
@@ -1067,7 +1065,6 @@ class Repositories {
 
     throw Exception("Invalid API response format: $data");
   }
-
   Future<Map<String, dynamic>> cashFlowOperations({required TransactionsModel newTransaction}) async {
     final response = await api.post(
         endpoint: "/journal/cashWD.php",
@@ -1075,7 +1072,6 @@ class Repositories {
     );
     return response.data;
   }
-
   Future<Map<String, dynamic>> fundTransfer({required TransactionsModel newTransaction}) async {
     final response = await api.post(
         endpoint: "/journal/fundTransfer.php",
@@ -1083,7 +1079,6 @@ class Repositories {
     );
     return response.data;
   }
-
   Future<Map<String, dynamic>> bulkTransfer({required String userName, required List<Map<String, dynamic>> records,}) async {
     final response = await api.post(
       endpoint: '/journal/fundTransferMA.php',
@@ -1104,7 +1099,6 @@ class Repositories {
 
     return {'msg': 'Unknown response format'};
   }
-
   Future<Map<String, dynamic>> fxTransfer({required String userName, required List<Map<String, dynamic>> records,}) async {
     final response = await api.post(
       endpoint: '/journal/crossCurrency.php',
@@ -1125,7 +1119,6 @@ class Repositories {
 
     return {'msg': 'Unknown response format'};
   }
-
   Future<Map<String, dynamic>> authorizeTxn({required String reference, required String? usrName}) async {
     final response = await api.put(
         endpoint: "/journal/transactionActivity.php",
@@ -1136,7 +1129,6 @@ class Repositories {
     );
     return response.data;
   }
-
   Future<Map<String, dynamic>> reverseTxn({required String reference, required String? usrName}) async {
     final response = await api.post(
         endpoint: "/journal/transactionActivity.php",
@@ -1147,7 +1139,6 @@ class Repositories {
     );
     return response.data;
   }
-
   Future<Map<String, dynamic>> deleteTxn({required String reference, required String? usrName}) async {
     final response = await api.delete(
         endpoint: "/journal/transactionActivity.php",
@@ -1158,7 +1149,6 @@ class Repositories {
     );
     return response.data;
   }
-
   Future<Map<String, dynamic>> updateTxn({required TransactionsModel newTxn}) async {
     final response = await api.put(
         endpoint: "/journal/cashWD.php",
@@ -1178,7 +1168,6 @@ class Repositories {
     );
     return response.data;
   }
-
   Future<Map<String, dynamic>> changePassword({required String credential,required String oldPassword, required String newPassword}) async {
     final response = await api.post(
         endpoint: "/user/changePass.php",
@@ -1190,7 +1179,6 @@ class Repositories {
     );
     return response.data;
   }
-
   Future<Map<String, dynamic>> resetPassword({required String credential,required String oldPassword, required String newPassword}) async {
     final response = await api.put(
         endpoint: "/user/users.php",
@@ -1234,7 +1222,6 @@ class Repositories {
 
     return [];
   }
-
   Future<Map<String, dynamic>> addBranch({required BranchModel newBranch}) async {
     final response = await api.post(
         endpoint: "/setting/branch.php",
@@ -1242,7 +1229,6 @@ class Repositories {
     );
     return response.data;
   }
-
   Future<Map<String, dynamic>> updateBranch({required BranchModel newBranch}) async {
     final response = await api.put(
         endpoint: "/setting/branch.php",
@@ -1250,7 +1236,6 @@ class Repositories {
     );
     return response.data;
   }
-
   Future<List<BranchLimitModel>> getBranchLimits({int? brcCode, CancelToken? cancelToken}) async {
     // Build query parameters dynamically
     final queryParams = {'code': brcCode};
@@ -1282,7 +1267,6 @@ class Repositories {
 
     return [];
   }
-
   Future<Map<String, dynamic>> addEditBranchLimit({required BranchLimitModel newLimit}) async {
     final response = await api.post(
         endpoint: "/setting/branchAuthLimit.php",
@@ -1319,7 +1303,6 @@ class Repositories {
 
     return [];
   }
-
   Future<Map<String, dynamic>> addStorage({required StorageModel newStorage}) async {
     final response = await api.post(
         endpoint: "/setting/storage.php",
@@ -1327,7 +1310,6 @@ class Repositories {
     );
     return response.data;
   }
-
   Future<Map<String, dynamic>> updateStorage({required StorageModel newStorage}) async {
     final response = await api.put(
         endpoint: "/setting/storage.php",
@@ -1344,7 +1326,6 @@ class Repositories {
     );
     return response.data;
   }
-
   Future<Map<String, dynamic>> updateProduct({required ProductsModel newProduct}) async {
     final response = await api.put(
         endpoint: "/inventory/product.php",
@@ -1352,7 +1333,6 @@ class Repositories {
     );
     return response.data;
   }
-
   Future<Map<String, dynamic>> deleteProduct({required int proId}) async {
     final response = await api.delete(
         endpoint: "/inventory/product.php",
@@ -1362,7 +1342,6 @@ class Repositories {
     );
     return response.data;
   }
-
   Future<List<ProductsModel>> getProduct({int? proId, CancelToken? cancelToken}) async {
     final queryParams = {'proID': proId};
     final response = await api.get(
@@ -1396,7 +1375,6 @@ class Repositories {
 
     return [];
   }
-
   Future<List<ProductsStockModel>> getProductStock({int? proId, int? noStock, CancelToken? cancelToken}) async {
     final queryParams = {'proID': proId,'av':noStock??0};
     // Fetch data from API
@@ -1435,7 +1413,6 @@ class Repositories {
     );
     return response.data;
   }
-
   Future<Map<String, dynamic>> updateProCategory({required ProCategoryModel newCategory}) async {
     final response = await api.put(
         endpoint: "/setting/productCategory.php",
@@ -1443,7 +1420,6 @@ class Repositories {
     );
     return response.data;
   }
-
   Future<List<ProCategoryModel>> getProCategory({int? catId, CancelToken? cancelToken}) async {
     final queryParams = {'pcID': catId};
     // Fetch data from API
@@ -1504,7 +1480,6 @@ class Repositories {
 
     return [];
   }
-
   Future<List<OrderByIdModel>> getOrderById({int? orderId, CancelToken? cancelToken}) async {
     final queryParams = {'ordID': orderId};
     final response = await api.get(
@@ -1539,6 +1514,83 @@ class Repositories {
     }
 
     return [];
+  }
+
+  ///Adjustment
+  Future<List<AdjustmentModel>> allAdjustments() async {
+    final response = await api.get(
+        endpoint: "/inventory/adjustment.php"
+    );
+
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
+
+    // Parse as list
+    if (response.data is List) {
+      return List<AdjustmentModel>.from(
+          response.data.map((x) => AdjustmentModel.fromMap(x))
+      );
+    }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic>) {
+      return [AdjustmentModel.fromMap(response.data)];
+    }
+
+    return [];
+  }
+  Future<Map<String, dynamic>> addAdjustment({required String usrName, required String xReference, required int xAccount, required List<Map<String, dynamic>> records}) async {
+    final response = await api.post(
+        endpoint: "/inventory/adjustment.php",
+        data: {
+          "usrName": usrName,
+          "ordxRef": xReference,
+          "account": xAccount,
+          "records": records,
+        }
+    );
+    return response.data;
+  }
+  Future<AdjustmentModel?> getAdjustmentById({int? orderId, CancelToken? cancelToken}) async {
+    final queryParams = {'ordID': orderId};
+    final response = await api.get(
+      endpoint: "/inventory/adjustment.php",
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
+
+    // Check for error message
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
+
+    // Check if response is empty
+    if (response.data == null) {
+      return null;
+    }
+
+    // The response is a single AdjustmentModel object, not a list
+    if (response.data is Map<String, dynamic>) {
+      return AdjustmentModel.fromMap(response.data);
+    }
+
+    // If somehow the response is a list, take the first item
+    if (response.data is List && response.data.isNotEmpty) {
+      return AdjustmentModel.fromMap(response.data[0]);
+    }
+
+    return null;
+  }
+  Future<Map<String, dynamic>> deleteAdjustment({required int orderId, required String usrName}) async {
+    final response = await api.delete(
+        endpoint: "/inventory/adjustment.php",
+        data: {
+          "usrName": usrName,
+          "ordID": orderId.toString(),
+        }
+    );
+    return response.data;
   }
 
   ///Shift Goods ...............................................................
@@ -1584,13 +1636,7 @@ class Repositories {
 
     return [];
   }
-
-  Future<Map<String, dynamic>> addShift({
-    required String usrName,
-    required String account,
-    required String amount,
-    required List<ShiftRecord> records,
-  }) async {
+  Future<Map<String, dynamic>> addShift({required String usrName, required String account, required String amount, required List<ShiftRecord> records,}) async {
     final data = {
       "usrName": usrName,
       "account": account,
@@ -1607,11 +1653,7 @@ class Repositories {
         ? response.data
         : {'msg': 'Invalid response format'};
   }
-
-  Future<Map<String, dynamic>> deleteShift({
-    required int orderId,
-    required String usrName,
-  }) async {
+  Future<Map<String, dynamic>> deleteShift({required int orderId, required String usrName}) async {
     final response = await api.delete(
         endpoint: "/inventory/goodsShifting.php",
         data: {
@@ -1646,7 +1688,6 @@ class Repositories {
 
     return [];
   }
-
   Future<EstimateModel?> getEstimateById({required int orderId, CancelToken? cancelToken}) async {
     final queryParams = {'ordID': orderId};
     final response = await api.get(
@@ -1669,13 +1710,7 @@ class Repositories {
 
     return null;
   }
-
-  Future<Map<String, dynamic>> addEstimate({
-    required String usrName,
-    required int perID,
-    required String? xRef,
-    required List<EstimateRecord> records,
-  }) async {
+  Future<Map<String, dynamic>> addEstimate({required String usrName, required int perID, required String? xRef, required List<EstimateRecord> records}) async {
     final data = {
       "usrName": usrName,
       "ordName": "Estimate",
@@ -1693,14 +1728,7 @@ class Repositories {
         ? response.data
         : {'msg': 'Invalid response format'};
   }
-
-  Future<Map<String, dynamic>> updateEstimate({
-    required String usrName,
-    required int orderId,
-    required int perID,
-    required String? xRef,
-    required List<EstimateRecord> records,
-  }) async {
+  Future<Map<String, dynamic>> updateEstimate({required String usrName, required int orderId, required int perID, required String? xRef, required List<EstimateRecord> records}) async {
     final data = {
       "usrName": usrName,
       "ordName": "Estimate",
@@ -1718,11 +1746,7 @@ class Repositories {
         ? response.data
         : {'msg': 'Invalid response format'};
   }
-
-  Future<Map<String, dynamic>> deleteEstimate({
-    required int orderId,
-    required String usrName,
-  }) async {
+  Future<Map<String, dynamic>> deleteEstimate({required int orderId, required String usrName}) async {
     final response = await api.delete(
         endpoint: "/inventory/estimate.php",
         data: {
@@ -1735,14 +1759,7 @@ class Repositories {
         ? response.data
         : {'msg': 'Invalid response format'};
   }
-
-  Future<Map<String, dynamic>> convertEstimateToSale({
-    required String usrName,
-    required int orderId,
-    required int perID,
-    required int account, // payment account
-    required String amount, // total invoice amount .. if it's cash set accNo null with amount
-  }) async {
+  Future<Map<String, dynamic>> convertEstimateToSale({required String usrName, required int orderId, required int perID, required int account, required String amount}) async {
     final data = {
       "usrName": usrName,
       "ordID": orderId,
@@ -2227,7 +2244,6 @@ class Repositories {
 
     return [];
   }
-
   Future<List<UsersReportModel>> getUsersReport({String? usrName, int? status, int? branch, String? role}) async {
     final response = await api.post(
         endpoint: "/reports/usersList.php",
@@ -2256,7 +2272,6 @@ class Repositories {
 
     return [];
   }
-
   Future<List<ShippingReportModel>> getShippingReport({int? vehicle, int? status, int? customer, String? fromDate, int? driverId, String? toDate}) async {
     final response = await api.post(
         endpoint: "/reports/shippingList.php",
@@ -2326,7 +2341,6 @@ class Repositories {
 
     throw Exception("Unexpected response format: ${response.data.runtimeType}");
   }
-
   Future<List<CashBalancesModel>> allCashBalances({CancelToken? cancelToken}) async {
     final response = await api.get(
       endpoint: "/reports/cashBalance.php",
@@ -2355,7 +2369,6 @@ class Repositories {
 
     throw Exception("Unexpected response format");
   }
-
   Future<List<TransactionReportModel>> transactionReport({String? fromDate, String? toDate, String? txnType, int? status, String? maker, String? checker, String? currency}) async {
     final response = await api.post(
         endpoint: "/reports/transactionsReport.php",
@@ -2388,7 +2401,6 @@ class Repositories {
 
     return [];
   }
-
   Future<List<AllBalancesModel>> allBalances({int? catId, CancelToken? cancelToken}) async {
     final response = await api.get(
       endpoint: "/reports/allBalances.php",
@@ -2416,7 +2428,6 @@ class Repositories {
 
     return [];
   }
-
   Future<List<ProductReportModel>> stockAvailabilityReport({int? productId, int? storageId, int? isNoStock}) async {
     final response = await api.post(
         endpoint: "/reports/stockAvailability.php",
@@ -2445,7 +2456,6 @@ class Repositories {
 
     return [];
   }
-
   Future<List<OrderReportModel>> ordersReport({String? fromDate, String? toDate, int? ordID, int? customerId, int? branchId, String? orderName}) async {
     final response = await api.post(
         endpoint: "/reports/allOrders.php",
@@ -2477,7 +2487,6 @@ class Repositories {
 
     return [];
   }
-
   Future<List<StockRecordModel>> stockRecord({String? fromDate, String? toDate, int? proId, int? storageId, int? partyId}) async {
     final response = await api.post(
         endpoint: "/reports/runningStock.php",
@@ -2508,45 +2517,5 @@ class Repositories {
 
     return [];
   }
-  Future<List<AdjustmentModel>> allAdjustments() async {
-    final response = await api.get(
-        endpoint: "/inventory/adjustment.php"
-    );
 
-    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
-      throw Exception(response.data['msg']);
-    }
-
-    // Parse as list
-    if (response.data is List) {
-      return List<AdjustmentModel>.from(
-          response.data.map((x) => AdjustmentModel.fromMap(x))
-      );
-    }
-
-    // If single object, wrap in list
-    if (response.data is Map<String, dynamic>) {
-      return [AdjustmentModel.fromMap(response.data)];
-    }
-
-    return [];
-  }
-
-  Future<Map<String, dynamic>> addAdjustment({
-    required String usrName,
-    required String xReference,
-    required int xAccount,
-    required List<Map<String, dynamic>> records,
-  }) async {
-    final response = await api.post(
-        endpoint: "/inventory/adjustment.php",
-        data: {
-          "usrName": usrName,
-          "ordxRef": xReference,
-          "account": xAccount,
-          "records": records,
-        }
-    );
-    return response.data;
-  }
 }

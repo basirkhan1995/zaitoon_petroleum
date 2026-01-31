@@ -1,8 +1,10 @@
+
+
 import 'dart:convert';
 
-List<AdjustmentModel> adjustmentModelFromMap(String str) => List<AdjustmentModel>.from(json.decode(str).map((x) => AdjustmentModel.fromMap(x)));
+AdjustmentModel adjustmentModelFromMap(String str) => AdjustmentModel.fromMap(json.decode(str));
 
-String adjustmentModelToMap(List<AdjustmentModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toMap())));
+String adjustmentModelToMap(AdjustmentModel data) => json.encode(data.toMap());
 
 class AdjustmentModel {
   final int? ordId;
@@ -15,6 +17,7 @@ class AdjustmentModel {
   final String? amount;
   final String? trnStateText;
   final DateTime? ordEntryDate;
+  final List<Record>? records;
 
   AdjustmentModel({
     this.ordId,
@@ -27,6 +30,7 @@ class AdjustmentModel {
     this.amount,
     this.trnStateText,
     this.ordEntryDate,
+    this.records,
   });
 
   AdjustmentModel copyWith({
@@ -40,6 +44,7 @@ class AdjustmentModel {
     String? amount,
     String? trnStateText,
     DateTime? ordEntryDate,
+    List<Record>? records,
   }) =>
       AdjustmentModel(
         ordId: ordId ?? this.ordId,
@@ -52,6 +57,7 @@ class AdjustmentModel {
         amount: amount ?? this.amount,
         trnStateText: trnStateText ?? this.trnStateText,
         ordEntryDate: ordEntryDate ?? this.ordEntryDate,
+        records: records ?? this.records,
       );
 
   factory AdjustmentModel.fromMap(Map<String, dynamic> json) => AdjustmentModel(
@@ -65,6 +71,7 @@ class AdjustmentModel {
     amount: json["amount"],
     trnStateText: json["trnStateText"],
     ordEntryDate: json["ordEntryDate"] == null ? null : DateTime.parse(json["ordEntryDate"]),
+    records: json["records"] == null ? [] : List<Record>.from(json["records"]!.map((x) => Record.fromMap(x))),
   );
 
   Map<String, dynamic> toMap() => {
@@ -78,5 +85,71 @@ class AdjustmentModel {
     "amount": amount,
     "trnStateText": trnStateText,
     "ordEntryDate": ordEntryDate?.toIso8601String(),
+    "records": records == null ? [] : List<dynamic>.from(records!.map((x) => x.toMap())),
+  };
+}
+
+class Record {
+  final int? stkId;
+  final int? stkProduct;
+  final String? proName;
+  final String? stkEntryType;
+  final int? stkStorage;
+  final String? stgName;
+  final String? stkQuantity;
+  final String? stkPurPrice;
+
+  Record({
+    this.stkId,
+    this.stkProduct,
+    this.proName,
+    this.stkEntryType,
+    this.stkStorage,
+    this.stgName,
+    this.stkQuantity,
+    this.stkPurPrice,
+  });
+
+  Record copyWith({
+    int? stkId,
+    int? stkProduct,
+    String? proName,
+    String? stkEntryType,
+    int? stkStorage,
+    String? stgName,
+    String? stkQuantity,
+    String? stkPurPrice,
+  }) =>
+      Record(
+        stkId: stkId ?? this.stkId,
+        stkProduct: stkProduct ?? this.stkProduct,
+        proName: proName ?? this.proName,
+        stkEntryType: stkEntryType ?? this.stkEntryType,
+        stkStorage: stkStorage ?? this.stkStorage,
+        stgName: stgName ?? this.stgName,
+        stkQuantity: stkQuantity ?? this.stkQuantity,
+        stkPurPrice: stkPurPrice ?? this.stkPurPrice,
+      );
+
+  factory Record.fromMap(Map<String, dynamic> json) => Record(
+    stkId: json["stkID"],
+    stkProduct: json["stkProduct"],
+    proName: json["proName"],
+    stkEntryType: json["stkEntryType"],
+    stkStorage: json["stkStorage"],
+    stgName: json["stgName"],
+    stkQuantity: json["stkQuantity"],
+    stkPurPrice: json["stkPurPrice"],
+  );
+
+  Map<String, dynamic> toMap() => {
+    "stkID": stkId,
+    "stkProduct": stkProduct,
+    "proName": proName,
+    "stkEntryType": stkEntryType,
+    "stkStorage": stkStorage,
+    "stgName": stgName,
+    "stkQuantity": stkQuantity,
+    "stkPurPrice": stkPurPrice,
   };
 }

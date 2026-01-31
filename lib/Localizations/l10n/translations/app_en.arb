@@ -744,5 +744,6 @@
   "entryDate": "Entry Date",
   "timeOutMessage": "Oops! The server is taking too long to respond.",
   "requestCancelMessage": "The request was cancelled.",
-  "timeOutTitle": "Server Time Out"
+  "timeOutTitle": "Server Time Out",
+  "notAllowedError": "This action isn't allowed."
 }

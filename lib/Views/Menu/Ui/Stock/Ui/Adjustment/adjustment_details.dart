@@ -1,6 +1,7 @@
-// shift_details.dart - Update the back button and navigation
+// adjustment_detail.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/alert_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
@@ -10,19 +11,18 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import '../../../../../../Features/Widgets/no_data_widget.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
-import 'bloc/goods_shift_bloc.dart';
-import 'model/shift_model.dart';
+import 'bloc/adjustment_bloc.dart';
 
-class GoodsShiftDetailView extends StatefulWidget {
-  final int shiftId;
+class AdjustmentDetailView extends StatefulWidget {
+  final int orderId;
 
-  const GoodsShiftDetailView({super.key, required this.shiftId});
+  const AdjustmentDetailView({super.key, required this.orderId});
 
   @override
-  State<GoodsShiftDetailView> createState() => _GoodsShiftDetailViewState();
+  State<AdjustmentDetailView> createState() => _AdjustmentDetailViewState();
 }
 
-class _GoodsShiftDetailViewState extends State<GoodsShiftDetailView> {
+class _AdjustmentDetailViewState extends State<AdjustmentDetailView> {
   late String? usrName;
   String? baseCurrency;
   bool _isDeleting = false;
@@ -41,21 +41,25 @@ class _GoodsShiftDetailViewState extends State<GoodsShiftDetailView> {
       baseCurrency = companyState.company.comLocalCcy ?? "";
     }
 
-    // Load shift details
+    // Load adjustment details
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<GoodsShiftBloc>().add(LoadGoodsShiftByIdEvent(widget.shiftId));
+      context.read<AdjustmentBloc>().add(LoadAdjustmentDetailsEvent(widget.orderId));
     });
   }
 
   void _onBackPressed() {
     // Trigger return to list before navigating back
-    context.read<GoodsShiftBloc>().add(ReturnToShiftsListEvent());
+    context.read<AdjustmentBloc>().add(ReturnToListEvent());
     Navigator.of(context).pop();
   }
 
   void _onDelete() {
     if (usrName == null) {
-      Utils.showOverlayMessage(context, message: 'User not authenticated', isError: true);
+      Utils.showOverlayMessage(
+        context,
+        message: 'User not authenticated',
+        isError: true,
+      );
       return;
     }
 
@@ -69,8 +73,8 @@ class _GoodsShiftDetailViewState extends State<GoodsShiftDetailView> {
             setState(() {
               _isDeleting = true;
             });
-            context.read<GoodsShiftBloc>().add(DeleteGoodsShiftEvent(
-              orderId: widget.shiftId,
+            context.read<AdjustmentBloc>().add(DeleteAdjustmentEvent(
+              orderId: widget.orderId,
               usrName: usrName!,
             ));
           },
@@ -84,27 +88,26 @@ class _GoodsShiftDetailViewState extends State<GoodsShiftDetailView> {
     final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
 
-    return BlocListener<GoodsShiftBloc, GoodsShiftState>(
+    return BlocListener<AdjustmentBloc, AdjustmentState>(
       listener: (context, state) {
-        if (state is GoodsShiftDeletingState) {
+        if (state is AdjustmentDeletingState) {
           setState(() {
             _isDeleting = true;
           });
         }
 
-        if (state is GoodsShiftDeletedState) {
-          // Show success message
+        if (state is AdjustmentDeletedState) {
           Utils.showOverlayMessage(
             context,
             message: state.message,
             isError: false,
           );
           // Trigger return to list before popping
-          context.read<GoodsShiftBloc>().add(ReturnToShiftsListEvent());
+          context.read<AdjustmentBloc>().add(ReturnToListEvent());
           Navigator.of(context).pop();
         }
 
-        if (state is GoodsShiftErrorState) {
+        if (state is AdjustmentErrorState) {
           setState(() {
             _isDeleting = false;
           });
@@ -119,11 +122,11 @@ class _GoodsShiftDetailViewState extends State<GoodsShiftDetailView> {
         backgroundColor: color.surface,
         appBar: AppBar(
           backgroundColor: color.surface,
+          title: Text('${tr.adjustment} #${widget.orderId}'),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: _onBackPressed,
           ),
-          title: Text('${tr.shift} #${widget.shiftId}'),
           titleSpacing: 0,
           actionsPadding: const EdgeInsets.symmetric(horizontal: 15),
           actions: [
@@ -147,7 +150,8 @@ class _GoodsShiftDetailViewState extends State<GoodsShiftDetailView> {
                 height: 16,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(color.surface),
+                  valueColor:
+                  AlwaysStoppedAnimation<Color>(color.surface),
                 ),
               )
                   : Text(tr.delete),
@@ -155,24 +159,24 @@ class _GoodsShiftDetailViewState extends State<GoodsShiftDetailView> {
             ),
           ],
         ),
-        body: BlocBuilder<GoodsShiftBloc, GoodsShiftState>(
+        body: BlocBuilder<AdjustmentBloc, AdjustmentState>(
           builder: (context, state) {
-            if (state is GoodsShiftDetailLoadingState) {
+            if (state is AdjustmentDetailLoadingState) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            if (state is GoodsShiftDetailLoadedState) {
-              return _buildShiftDetail(state.shift, tr);
+            if (state is AdjustmentDetailLoadedState) {
+              return _buildAdjustmentDetail(state, tr);
             }
 
-            if (state is GoodsShiftErrorState) {
+            if (state is AdjustmentErrorState) {
               return Center(
                 child: NoDataWidget(
                   imageName: 'error.png',
                   message: state.error,
                   onRefresh: () {
-                    context.read<GoodsShiftBloc>().add(
-                      LoadGoodsShiftByIdEvent(widget.shiftId),
+                    context.read<AdjustmentBloc>().add(
+                      LoadAdjustmentDetailsEvent(widget.orderId),
                     );
                   },
                 ),
@@ -186,67 +190,89 @@ class _GoodsShiftDetailViewState extends State<GoodsShiftDetailView> {
     );
   }
 
-  // ... rest of the _buildShiftDetail method remains the same
-  Widget _buildShiftDetail(GoodShiftModel shift, AppLocalizations tr) {
+  Widget _buildAdjustmentDetail(
+      AdjustmentDetailLoadedState state, AppLocalizations tr) {
     final color = Theme.of(context).colorScheme;
+    final adjustment = state.adjustment;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Expense Information Card (if exists)
-          if (shift.hasExpense)
-            ZCover(
-              radius: 5,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.money, color: color.primary),
-                        const SizedBox(width: 8),
-                        Text(
-                          tr.expenses,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildInfoItem(tr.accountTitle, shift.account.toString()),
-                        _buildInfoItem(tr.amount,
-                            '${shift.totalAmount.toAmount()} $baseCurrency'),
-                        if (shift.ordTrnRef != null)
-                          _buildInfoItem(tr.referenceNumber, shift.ordTrnRef!),
-                        if (shift.trnStateText != null)
-                          _buildInfoItem(tr.status, shift.trnStateText == "Authorized"? tr.authorizedTitle : shift.trnStateText == "Pending"? tr.pendingTitle : ""),
-                      ],
-                    ),
-                  ],
-                ),
+          // Adjustment Information Card
+          ZCover(
+            radius: 5,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.inventory_2, color: color.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        tr.adjustment,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildInfoItem('Adjustment ID', adjustment.ordId.toString()),
+                      _buildInfoItem(
+                        tr.referenceNumber,
+                        adjustment.ordxRef ?? '-',
+                      ),
+                      _buildInfoItem(
+                        tr.date,
+                        adjustment.ordEntryDate?.toFormattedDate() ?? '-',
+                      ),
+                      _buildInfoItem(
+                        tr.status,
+                        adjustment.trnStateText == "Authorized"
+                            ? tr.authorizedTitle
+                            : adjustment.trnStateText == "Pending"
+                            ? tr.pendingTitle
+                            : adjustment.trnStateText ?? '-',
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildInfoItem('Expense Account', adjustment.account?.toString() ?? '-'),
+                      _buildInfoItem(
+                        tr.amount,
+                        '${adjustment.amount?.toAmount()} $baseCurrency',
+                        isAmount: true,
+                      ),
+                      if (adjustment.ordPersonalName != null)
+                        _buildInfoItem('Created By', adjustment.ordPersonalName!),
+                    ],
+                  ),
+                ],
               ),
             ),
+          ),
 
           const SizedBox(height: 16),
 
-          // Shift records table
-          if (shift.records != null && shift.records!.isNotEmpty)
-            _buildRecordsTable(shift.records!, tr),
+          // Adjusted Items Table
+          if (state.items.isNotEmpty) _buildItemsTable(state, tr),
 
           // Summary
-          if (shift.records != null && shift.records!.isNotEmpty)
-            _buildSummaryCard(shift, tr),
+          if (state.items.isNotEmpty) _buildSummaryCard(state, tr),
         ],
       ),
     );
   }
 
-  Widget _buildInfoItem(String label, String value) {
+  Widget _buildInfoItem(String label, String value, {bool isAmount = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -259,20 +285,25 @@ class _GoodsShiftDetailViewState extends State<GoodsShiftDetailView> {
         ),
         Text(
           value,
-          style: Theme.of(context).textTheme.titleMedium,
+          style: isAmount
+              ? Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.bold,
+          )
+              : Theme.of(context).textTheme.titleMedium,
         ),
       ],
     );
   }
 
-  Widget _buildRecordsTable(List<ShiftRecord> records, AppLocalizations tr) {
+  Widget _buildItemsTable(AdjustmentDetailLoadedState state, AppLocalizations tr) {
     final color = Theme.of(context).colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          tr.shiftItems,
+          'Adjusted Items',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
@@ -281,12 +312,11 @@ class _GoodsShiftDetailViewState extends State<GoodsShiftDetailView> {
           child: Table(
             columnWidths: const {
               0: FixedColumnWidth(40), // #
-              1: FlexColumnWidth(2), // Type
-              2: FlexColumnWidth(3), // Product
-              3: FlexColumnWidth(3), // Storage
-              4: FlexColumnWidth(2), // Quantity
-              5: FlexColumnWidth(2), // Cost/Unit
-              6: FlexColumnWidth(2), // Total
+              1: FlexColumnWidth(4), // Product
+              2: FlexColumnWidth(3), // Storage
+              3: FlexColumnWidth(2), // Quantity
+              4: FlexColumnWidth(2), // Unit Cost
+              5: FlexColumnWidth(2), // Total
             },
             border: TableBorder.all(
               color: color.outline.withValues(alpha: .1),
@@ -300,41 +330,31 @@ class _GoodsShiftDetailViewState extends State<GoodsShiftDetailView> {
                 ),
                 children: [
                   _buildTableCell('#', isHeader: true, center: true),
-                  _buildTableCell(tr.typeTitle, isHeader: true),
                   _buildTableCell(tr.productName, isHeader: true),
                   _buildTableCell(tr.storage, isHeader: true),
                   _buildTableCell(tr.qty, isHeader: true, center: true),
-                  _buildTableCell(tr.costPrice, isHeader: true, center: true),
+                  _buildTableCell('Unit Cost', isHeader: true, center: true),
                   _buildTableCell(tr.totalTitle, isHeader: true, center: true),
                 ],
               ),
               // Table rows
-              ...records.asMap().entries.map((entry) {
+              ...state.items.asMap().entries.map((entry) {
                 final index = entry.key;
-                final record = entry.value;
-                final isOut = record.isOutEntry;
+                final item = entry.value;
 
                 return TableRow(
                   decoration: BoxDecoration(
-                    color: isOut
-                        ? Theme.of(context).colorScheme.error.withValues(alpha: .03)
-                        : Colors.transparent,
+                    color: index.isEven
+                        ? Colors.transparent
+                        : color.primary.withValues(alpha: .03),
                   ),
                   children: [
                     _buildTableCell((index + 1).toString(), center: true),
-                    _buildTableCell(
-                      isOut ? tr.outTitle : tr.inTitle,
-                      color: isOut ? Colors.red : Colors.green,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    _buildTableCell(record.proName?.toString() ?? 'N/A'),
-                    _buildTableCell(
-                      isOut ? (record.fromStorageName?.toString() ?? 'N/A')
-                          : (record.toStorageName?.toString() ?? 'N/A'),
-                    ),
-                    _buildTableCell(record.quantity.toAmount(), center: true),
-                    _buildTableCell(record.purchasePrice.toAmount(), center: true),
-                    _buildTableCell(record.totalValue.toAmount(), center: true),
+                    _buildTableCell(item.productName),
+                    _buildTableCell(item.storageName),
+                    _buildTableCell(item.quantity.toAmount(), center: true),
+                    _buildTableCell((item.purPrice ?? 0).toAmount(), center: true),
+                    _buildTableCell(item.totalCost.toAmount(), center: true),
                   ],
                 );
               }),
@@ -359,18 +379,19 @@ class _GoodsShiftDetailViewState extends State<GoodsShiftDetailView> {
         textAlign: center ? TextAlign.center : TextAlign.start,
         style: TextStyle(
           fontWeight: fontWeight ?? (isHeader ? FontWeight.bold : FontWeight.normal),
-          color: color ?? (isHeader
-              ? Theme.of(context).colorScheme.surface
-              : Theme.of(context).colorScheme.onSurface),
+          color: color ??
+              (isHeader
+                  ? Theme.of(context).colorScheme.surface
+                  : Theme.of(context).colorScheme.onSurface),
         ),
       ),
     );
   }
 
-  Widget _buildSummaryCard(GoodShiftModel shift, AppLocalizations tr) {
+  Widget _buildSummaryCard(AdjustmentDetailLoadedState state, AppLocalizations tr) {
     final color = Theme.of(context).colorScheme;
-    final totalItems = shift.records?.length ?? 0;
-    final totalProductValue = shift.totalProductValue;
+    final totalItems = state.items.length;
+    final totalValue = state.items.fold(0.0, (sum, item) => sum + item.totalCost);
 
     return ZCover(
       child: Padding(
@@ -384,30 +405,27 @@ class _GoodsShiftDetailViewState extends State<GoodsShiftDetailView> {
             ),
             const SizedBox(height: 12),
             _buildSummaryRow(tr.totalItems, totalItems.toString()),
-            _buildSummaryRow(tr.outRecords, shift.outCount.toString()),
-            _buildSummaryRow(tr.inRecords, shift.inCount.toString()),
             Divider(color: color.outline.withValues(alpha: .2)),
             _buildSummaryRow(
-              tr.totalProductValue,
-              '${totalProductValue.toAmount()} $baseCurrency',
+              tr.totalTitle,
+              '${totalValue.toAmount()} $baseCurrency',
               isBold: true,
               color: color.primary,
             ),
-
-            // Show expense separately if exists
-            if (shift.hasExpense) ...[
+            // Show expense account info if available
+            if (state.adjustment.account != null) ...[
               Divider(color: color.outline.withValues(alpha: .2)),
               _buildSummaryRow(
-                tr.expenseAmount,
-                '${shift.totalAmount.toAmount()} $baseCurrency',
+                'Expense Account',
+                state.adjustment.account.toString(),
                 color: Colors.orange,
               ),
-              _buildSummaryRow(
-                tr.totalProductExpense,
-                '${(totalProductValue + shift.totalAmount).toAmount()} $baseCurrency',
-                isBold: true,
-                color: Colors.blue,
-              ),
+              if (state.adjustment.amount != null)
+                _buildSummaryRow(
+                  'Expense Amount',
+                  '${state.adjustment.amount?.toAmount()} $baseCurrency',
+                  color: Colors.blue,
+                ),
             ],
           ],
         ),
@@ -426,23 +444,25 @@ class _GoodsShiftDetailViewState extends State<GoodsShiftDetailView> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: color,
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: color ?? Theme.of(context).colorScheme.onSurface,
-              fontSize: isBold ? 16 : 14,
-            ),
-          ),
-        ],
+        Text(
+        label,
+        style: TextStyle(
+          fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+          color: color,
+        ),
       ),
+      Text(
+        value,
+        style: TextStyle(
+          fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+          color: color ?? Theme.of(context).colorScheme.onSurface,
+          fontSize: isBold ? 16 : 14,
+        ),
+      ),
+      ]
+    ),
     );
   }
 }
+
+

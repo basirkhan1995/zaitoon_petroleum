@@ -2247,4 +2247,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timeOutTitle => 'Server Time Out';
+
+  @override
+  String get notAllowedError => 'This action isn\'t allowed.';
 }

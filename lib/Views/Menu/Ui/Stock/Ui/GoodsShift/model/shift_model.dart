@@ -8,7 +8,7 @@ List<GoodShiftModel> goodShiftModelFromMap(String str) => List<GoodShiftModel>.f
 
 String goodShiftModelToMap(List<GoodShiftModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toMap())));
 
-// Update GoodShiftModel class
+
 
 class GoodShiftModel {
   final int? ordId;
