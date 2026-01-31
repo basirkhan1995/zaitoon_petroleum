@@ -57,6 +57,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualByID/b
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualDetails/bloc/ind_detail_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/bloc/stk_tab_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Adjustment/bloc/adjustment_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/bloc/estimate_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/GoodsShift/bloc/goods_shift_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/GetOrderById/bloc/order_by_id_bloc.dart';
@@ -170,7 +171,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => OrderTxnBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => GlCategoryBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => GoodsShiftBloc(Repositories(ApiServices()))),
-
+        BlocProvider(create: (context) => AdjustmentBloc(Repositories(ApiServices()))),
         ///Report Bloc
         BlocProvider(create: (context) => AccStatementBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => TxnRefReportBloc(Repositories(ApiServices()))),

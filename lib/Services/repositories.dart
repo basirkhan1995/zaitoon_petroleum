@@ -28,6 +28,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/mo
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/TxnTypes/model/txn_types_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Adjustment/model/adjustment_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/model/estimate_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewSale/model/sale_invoice_items.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Orders/model/orders_model.dart';
@@ -2506,5 +2507,46 @@ class Repositories {
     }
 
     return [];
+  }
+  Future<List<AdjustmentModel>> allAdjustments() async {
+    final response = await api.get(
+        endpoint: "/inventory/adjustment.php"
+    );
+
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
+
+    // Parse as list
+    if (response.data is List) {
+      return List<AdjustmentModel>.from(
+          response.data.map((x) => AdjustmentModel.fromMap(x))
+      );
+    }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic>) {
+      return [AdjustmentModel.fromMap(response.data)];
+    }
+
+    return [];
+  }
+
+  Future<Map<String, dynamic>> addAdjustment({
+    required String usrName,
+    required String xReference,
+    required int xAccount,
+    required List<Map<String, dynamic>> records,
+  }) async {
+    final response = await api.post(
+        endpoint: "/inventory/adjustment.php",
+        data: {
+          "usrName": usrName,
+          "ordxRef": xReference,
+          "account": xAccount,
+          "records": records,
+        }
+    );
+    return response.data;
   }
 }
