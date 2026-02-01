@@ -139,6 +139,18 @@ class _DesktopState extends State<_Desktop> {
     }
     final login = state.loginData;
 
+    String getAccountPosition(String? balance) {
+      if (balance == null || balance.isEmpty) return "No Balance";
+
+      // Remove formatting if needed
+      final clean = double.tryParse(balance.replaceAll(RegExp(r'[^\d.-]'), '')) ?? 0;
+
+      if (clean > 0) return locale.creditor;
+      if (clean < 0) return locale.debtor;
+      return locale.noBalance;
+    }
+
+
     void onCashDepositWithdraw({String? trnType}) {
       final locale = AppLocalizations.of(context)!;
       final accountController = TextEditingController();
@@ -153,6 +165,7 @@ class _DesktopState extends State<_Desktop> {
       String? ccySymbol;
       String? accountLimit;
       int? status;
+
       showDialog(
         context: context,
         builder: (context) {
@@ -342,7 +355,14 @@ class _DesktopState extends State<_Desktop> {
                                                 SizedBox(
                                                   width: 170,
                                                   child: Text(
-                                                    "${locale.status}:",
+                                                    "${locale.accountStatus}:",
+                                                    style: titleStyle,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 170,
+                                                  child: Text(
+                                                    "${locale.accountPosition}:",
                                                     style: titleStyle,
                                                   ),
                                                 ),
@@ -383,6 +403,10 @@ class _DesktopState extends State<_Desktop> {
                                                   status == 1
                                                       ? locale.active
                                                       : locale.blocked,
+                                                  style: bodyStyle,
+                                                ),
+                                                Text(
+                                                  getAccountPosition(availableBalance),
                                                   style: bodyStyle,
                                                 ),
                                                 Text(

@@ -1420,10 +1420,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                     style: TextStyle(
                       fontSize: 11,
                       color:
-                          (total -
-                                  (double.tryParse(record.stkPurPrice!)! *
-                                      qty)) >=
-                              0
+                          (total - (double.tryParse(record.stkPurPrice!)! * qty)) >= 0
                           ? Colors.green
                           : Colors.red,
                     ),

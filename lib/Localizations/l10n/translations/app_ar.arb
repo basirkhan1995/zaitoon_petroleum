@@ -753,5 +753,13 @@
   "recentPrice": "ق. آخرین",
   "stockBalance": "ګدام موجودي",
   "productMovement": "د توکو خوځښت",
-  "stockAvailability": "موجودی کالاها"
+  "accountStatus": "د حساب وضعیت",
+  "accountPosition": "د حساب مالي حالت",
+  "creditor": "پور ورکوونکی",
+  "debtor": "پوروړی",
+  "stockAvailability": "موجودی کالاها",
+  "noBalance": "بی حساب",
+  "balanceMessageShare": "مهرباني وکړئ د خپل حساب د موجودۍ معلومات لاندې وګورئ:",
+  "regardsTitle": "محترم",
+  "dearCustomer": "مشتری محترم،"
 }

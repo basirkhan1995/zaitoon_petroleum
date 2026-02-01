@@ -753,5 +753,13 @@
   "recentPrice": "RP. Price",
   "stockBalance": "Stock Balance",
   "productMovement": "Product Movement",
-  "stockAvailability": "Stock Availability"
+  "accountStatus": "Account Status",
+  "accountPosition": "Account Position",
+  "creditor": "Creditor",
+  "debtor": "Debtor",
+  "stockAvailability": "Stock Availability",
+  "noBalance": "No Balance",
+  "balanceMessageShare": "Please find your account balance information below:",
+  "regardsTitle": "Regards",
+  "dearCustomer": "Dear Customer,"
 }

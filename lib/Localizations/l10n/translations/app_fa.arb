@@ -753,5 +753,13 @@
   "recentPrice": "ق. آخرین",
   "stockBalance": "مانده انبار",
   "productMovement": "گردش کالا",
-  "stockAvailability": "موجودی کالاها"
+  "accountStatus": "وضعیت حساب",
+  "accountPosition": "ماهیت حساب",
+  "creditor": "بستانکار",
+  "debtor": "بدهکار",
+  "stockAvailability": "موجودی کالاها",
+  "noBalance": "بی حساب",
+  "balanceMessageShare": "لطفاً اطلاعات موجودی حساب خود را در زیر مشاهده کنید:",
+  "regardsTitle": "محترم",
+  "dearCustomer": "مشتری محترم،"
 }

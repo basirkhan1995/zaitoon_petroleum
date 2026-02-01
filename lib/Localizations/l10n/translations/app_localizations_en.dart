@@ -2273,5 +2273,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get productMovement => 'Product Movement';
 
   @override
+  String get accountStatus => 'Account Status';
+
+  @override
+  String get accountPosition => 'Account Position';
+
+  @override
+  String get creditor => 'Creditor';
+
+  @override
+  String get debtor => 'Debtor';
+
+  @override
   String get stockAvailability => 'Stock Availability';
+
+  @override
+  String get noBalance => 'No Balance';
+
+  @override
+  String get balanceMessageShare =>
+      'Please find your account balance information below:';
+
+  @override
+  String get regardsTitle => 'Regards';
+
+  @override
+  String get dearCustomer => 'Dear Customer,';
 }

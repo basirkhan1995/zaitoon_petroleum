@@ -17,6 +17,7 @@ import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart'
 import '../../../../../../../Features/Other/utils.dart';
 import '../../../../../../../Features/PrintSettings/print_preview.dart';
 import '../../../../../../../Features/PrintSettings/report_model.dart';
+import '../../../../../../../Features/Widgets/share_helper.dart';
 import '../../../../Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import '../../../../Journal/Ui/TxnByReference/txn_reference.dart';
 import '../../../../Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
@@ -253,6 +254,27 @@ class _DesktopState extends State<_Desktop> {
                                    Utils.showOverlayMessage(context, message: tr.accountStatementMessage, isError: true);
                                  }
                                 },
+                              ),
+                              SizedBox(width: 8),
+                              Builder(
+                                builder: (context) {
+                                  return ZOutlineButton(
+                                    icon: FontAwesomeIcons.whatsapp,
+                                    width: 100,
+                                    onPressed: () {
+                                      final helper = WhatsAppShareHelper(context);
+                                      helper.shareViaWhatsApp(
+                                        accountNumber: accNumber.toString(),
+                                        signatory: accountStatementModel?.signatory??"",
+                                        accountName: accountStatementModel?.accName??"",
+                                        currentBalance: accountStatementModel?.curBalance.toDoubleAmount(),
+                                        availableBalance: accountStatementModel?.avilBalance.toDoubleAmount(), // Debtor
+                                        currencySymbol: accountStatementModel?.actCurrency??"",
+                                      );
+                                    },
+                                    label: Text("Share"),
+                                  );
+                                }
                               ),
                               SizedBox(width: 8),
                               ZOutlineButton(

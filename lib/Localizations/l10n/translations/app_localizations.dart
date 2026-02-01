@@ -4498,11 +4498,59 @@ abstract class AppLocalizations {
   /// **'Product Movement'**
   String get productMovement;
 
+  /// No description provided for @accountStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Status'**
+  String get accountStatus;
+
+  /// No description provided for @accountPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Position'**
+  String get accountPosition;
+
+  /// No description provided for @creditor.
+  ///
+  /// In en, this message translates to:
+  /// **'Creditor'**
+  String get creditor;
+
+  /// No description provided for @debtor.
+  ///
+  /// In en, this message translates to:
+  /// **'Debtor'**
+  String get debtor;
+
   /// No description provided for @stockAvailability.
   ///
   /// In en, this message translates to:
   /// **'Stock Availability'**
   String get stockAvailability;
+
+  /// No description provided for @noBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'No Balance'**
+  String get noBalance;
+
+  /// No description provided for @balanceMessageShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Please find your account balance information below:'**
+  String get balanceMessageShare;
+
+  /// No description provided for @regardsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Regards'**
+  String get regardsTitle;
+
+  /// No description provided for @dearCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Dear Customer,'**
+  String get dearCustomer;
 }
 
 class _AppLocalizationsDelegate

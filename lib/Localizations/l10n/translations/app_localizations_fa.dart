@@ -2263,5 +2263,30 @@ class AppLocalizationsFa extends AppLocalizations {
   String get productMovement => 'گردش کالا';
 
   @override
+  String get accountStatus => 'وضعیت حساب';
+
+  @override
+  String get accountPosition => 'ماهیت حساب';
+
+  @override
+  String get creditor => 'بستانکار';
+
+  @override
+  String get debtor => 'بدهکار';
+
+  @override
   String get stockAvailability => 'موجودی کالاها';
+
+  @override
+  String get noBalance => 'بی حساب';
+
+  @override
+  String get balanceMessageShare =>
+      'لطفاً اطلاعات موجودی حساب خود را در زیر مشاهده کنید:';
+
+  @override
+  String get regardsTitle => 'محترم';
+
+  @override
+  String get dearCustomer => 'مشتری محترم،';
 }

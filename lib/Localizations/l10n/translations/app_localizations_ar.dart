@@ -2266,5 +2266,30 @@ class AppLocalizationsAr extends AppLocalizations {
   String get productMovement => 'د توکو خوځښت';
 
   @override
+  String get accountStatus => 'د حساب وضعیت';
+
+  @override
+  String get accountPosition => 'د حساب مالي حالت';
+
+  @override
+  String get creditor => 'پور ورکوونکی';
+
+  @override
+  String get debtor => 'پوروړی';
+
+  @override
   String get stockAvailability => 'موجودی کالاها';
+
+  @override
+  String get noBalance => 'بی حساب';
+
+  @override
+  String get balanceMessageShare =>
+      'مهرباني وکړئ د خپل حساب د موجودۍ معلومات لاندې وګورئ:';
+
+  @override
+  String get regardsTitle => 'محترم';
+
+  @override
+  String get dearCustomer => 'مشتری محترم،';
 }
