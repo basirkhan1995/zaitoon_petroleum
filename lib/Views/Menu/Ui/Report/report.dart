@@ -109,8 +109,8 @@ class _DesktopState extends State<_Desktop> {
     ];
 
     final List<Map<String, dynamic>> stockButtons = [
-      {"title": "${tr.products} ${tr.report}", "icon": Icons.shopping_bag_outlined, "action": ActionKey.products},
-      {"title": "${tr.inventory} ${tr.report}", "icon": Icons.inventory_2_outlined, "action": ActionKey.stockRecord},
+      {"title": tr.stockAvailability, "icon": Icons.storage        , "action": ActionKey.products},
+      {"title": tr.productMovement, "icon": Icons.shopping_bag_outlined, "action": ActionKey.stockRecord},
       {"title": tr.purchaseInvoice, "icon": Icons.add_shopping_cart_sharp, "action": ActionKey.purchase},
       {"title": tr.salesInvoice, "icon": Icons.add_shopping_cart_sharp, "action": ActionKey.sale},
       {"title": tr.estimateTitle, "icon": Icons.file_copy_outlined, "action": ActionKey.estimate},
@@ -133,7 +133,7 @@ class _DesktopState extends State<_Desktop> {
     ];
 
     final List<Map<String, dynamic>> transportButtons = [
-      {"title": tr.shipping, "icon": Icons.local_shipping_outlined, "action": ActionKey.shipping},
+      {"title": tr.shipping, "icon": Icons.emoji_transportation_rounded, "action": ActionKey.shipping},
     ];
 
     return Scaffold(

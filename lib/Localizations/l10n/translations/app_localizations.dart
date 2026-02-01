@@ -4485,6 +4485,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'RP. Price'**
   String get recentPrice;
+
+  /// No description provided for @stockBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock Balance'**
+  String get stockBalance;
+
+  /// No description provided for @productMovement.
+  ///
+  /// In en, this message translates to:
+  /// **'Product Movement'**
+  String get productMovement;
+
+  /// No description provided for @stockAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock Availability'**
+  String get stockAvailability;
 }
 
 class _AppLocalizationsDelegate

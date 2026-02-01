@@ -2258,4 +2258,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get recentPrice => 'ق. آخرین';
+
+  @override
+  String get stockBalance => 'ګدام موجودي';
+
+  @override
+  String get productMovement => 'د توکو خوځښت';
+
+  @override
+  String get stockAvailability => 'موجودی کالاها';
 }

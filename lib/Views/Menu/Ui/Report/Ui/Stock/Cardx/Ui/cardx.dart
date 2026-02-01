@@ -298,7 +298,7 @@ class _DesktopState extends State<_Desktop> {
                       child: Text(tr.unitPrice,style: titleStyle)),
                   SizedBox(
                       width: 100,
-                      child: Text(tr.totalTitle,style: titleStyle)),
+                      child: Text(tr.stockBalance,style: titleStyle)),
             ]),
           ),
 

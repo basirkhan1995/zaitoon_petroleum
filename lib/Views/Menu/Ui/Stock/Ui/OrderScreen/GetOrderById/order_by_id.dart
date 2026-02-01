@@ -25,6 +25,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/model/individual_model.dart';
 import '../../../../../../../Features/PrintSettings/print_preview.dart';
 import '../../../../../../../Features/PrintSettings/report_model.dart';
+import '../../../../../../../Features/Widgets/txn_status_widget.dart';
 import '../../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import 'bloc/order_by_id_bloc.dart';
@@ -330,9 +331,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
             if (state is OrderByIdLoaded) {
               final order = state.order;
               final isEditing = state.isEditing;
-
               _initializeControllers(order);
-
               return SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
@@ -441,7 +440,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
 
   Widget _buildOrderHeader(OrderByIdLoaded state) {
     final order = state.order;
-    final statusColor = _getStatusColor(order.trnStateText);
     final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
     final String paymentTitle = order.ordName == "Sale"
@@ -462,26 +460,10 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                   paymentTitle,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: statusColor,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    order.trnStateText?.toUpperCase() ?? '',
-                    style: TextStyle(
-                      color: color.surface,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
+                TransactionStatusBadge(status: order.trnStateText??""),
               ],
             ),
+            const SizedBox(height: 5),
             const Divider(),
             const SizedBox(height: 5),
 
@@ -490,11 +472,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
               children: [
                 Expanded(
                   child: state.isEditing
-                      ? GenericTextfield<
-                          IndividualsModel,
-                          IndividualsBloc,
-                          IndividualsState
-                        >(
+                      ? GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
                           controller: TextEditingController(
                             text: state.selectedSupplier != null
                                 ? "${state.selectedSupplier?.perName ?? ""} ${state.selectedSupplier?.perLastName ?? ""}"
@@ -1089,18 +1067,14 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     final productController = TextEditingController(text: productName);
 
     // Get or create quantity controller
-    final qtyController =
-        _qtyControllers[index] ??
-        TextEditingController(text: record.stkQuantity);
+    final qtyController = _qtyControllers[index] ?? TextEditingController(text: record.stkQuantity);
     if (!_qtyControllers.containsKey(index)) {
       _qtyControllers[index] = qtyController;
     }
 
     // Determine which price to show based on order type
-    final isPurchase =
-        state.order.ordName?.toLowerCase().contains('purchase') ?? true;
-    final priceText = isPurchase
-        ? record.stkPurPrice?.toAmount()
+    final isPurchase = state.order.ordName?.toLowerCase().contains('purchase') ?? true;
+    final priceText = isPurchase ? record.stkPurPrice?.toAmount()
         : record.stkSalePrice?.toAmount();
 
     // Get or create price controller
@@ -1662,19 +1636,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
         ],
       ),
     );
-  }
-
-  Color _getStatusColor(String? status) {
-    switch (status?.toLowerCase()) {
-      case 'pending':
-        return Colors.orange;
-      case 'authorized':
-        return Colors.green;
-      case 'cancelled':
-        return Colors.red;
-      default:
-        return Theme.of(context).colorScheme.primary;
-    }
   }
 
   Widget rowHeader({required String title, dynamic value}) {

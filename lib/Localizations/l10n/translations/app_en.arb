@@ -750,5 +750,8 @@
   "deleteSuccessMessage": "Item has been deleted successfully.",
   "expenseAccount": "Account Name",
   "averagePrice": "AVG. Price",
-  "recentPrice": "RP. Price"
+  "recentPrice": "RP. Price",
+  "stockBalance": "Stock Balance",
+  "productMovement": "Product Movement",
+  "stockAvailability": "Stock Availability"
 }

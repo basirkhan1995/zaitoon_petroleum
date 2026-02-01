@@ -2265,4 +2265,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recentPrice => 'RP. Price';
+
+  @override
+  String get stockBalance => 'Stock Balance';
+
+  @override
+  String get productMovement => 'Product Movement';
+
+  @override
+  String get stockAvailability => 'Stock Availability';
 }

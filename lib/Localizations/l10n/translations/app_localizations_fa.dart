@@ -2255,4 +2255,13 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get recentPrice => 'ق. آخرین';
+
+  @override
+  String get stockBalance => 'مانده انبار';
+
+  @override
+  String get productMovement => 'گردش کالا';
+
+  @override
+  String get stockAvailability => 'موجودی کالاها';
 }

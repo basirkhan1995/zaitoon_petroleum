@@ -750,5 +750,8 @@
   "deleteSuccessMessage": "مورد شما موفقانه حذف گردید.",
   "expenseAccount": "نام حساب",
   "averagePrice": "ق. اوسط",
-  "recentPrice": "ق. آخرین"
+  "recentPrice": "ق. آخرین",
+  "stockBalance": "مانده انبار",
+  "productMovement": "گردش کالا",
+  "stockAvailability": "موجودی کالاها"
 }
