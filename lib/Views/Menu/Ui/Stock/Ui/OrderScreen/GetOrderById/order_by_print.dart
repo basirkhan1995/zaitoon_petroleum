@@ -205,8 +205,6 @@ class OrderPrintService extends PrintServices {
             selectedAccount: selectedAccount,
           ),
           pw.SizedBox(height: 20),
-          termsAndConditions(language: language),
-          pw.SizedBox(height: 20),
           signatureSection(language: language),
         ],
         header: (context) => prebuiltHeader,
@@ -580,7 +578,7 @@ class OrderPrintService extends PrintServices {
           // Subtotal
           _buildSummaryRow(
             label: getTranslation(locale: 'subTotal', language: language),
-            value: subTotal,
+            value: 34,
             ccy: ccy,
           ),
           pw.SizedBox(height: 5),
@@ -680,31 +678,6 @@ class OrderPrintService extends PrintServices {
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  pw.Widget termsAndConditions({required String language}) {
-    return pw.Container(
-      padding: pw.EdgeInsets.all(10),
-      decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: pw.PdfColors.grey300),
-        borderRadius: pw.BorderRadius.circular(5),
-      ),
-      child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          text(
-            text: getTranslation(locale: 'termsAndConditions', language: language),
-            fontSize: 12,
-            fontWeight: pw.FontWeight.bold,
-          ),
-          pw.SizedBox(height: 5),
-          text(
-            text: _getTermsAndConditions(language),
-            fontSize: 9,
           ),
         ],
       ),
@@ -824,22 +797,5 @@ class OrderPrintService extends PrintServices {
     } catch (e) {
       return 0.0;
     }
-  }
-  String _getTermsAndConditions(String language) {
-    const terms = {
-      'en': "1. Goods once sold will not be taken back.\n"
-          "2. Payment should be made within 30 days.\n"
-          "3. Interest @ 12% p.a. will be charged on overdue payments.\n"
-          "4. All disputes subject to jurisdiction.",
-      'fa': "1. کالاهای فروخته شده پس گرفته نمی شوند.\n"
-          "2. پرداخت باید ظرف 30 روز انجام شود.\n"
-          "3. بهره 12٪ در سال برای پرداخت های معوق دریافت می شود.\n"
-          "4. کلیه اختلافات تابع صلاحیت.",
-      'ar': "1. البضائع المباعة لن تؤخذ مرة أخرى.\n"
-          "2. يجب أن يتم الدفع خلال 30 يومًا.\n"
-          "3. سيتم فرض فائدة 12٪ سنويًا على المدفوعات المتأخرة.\n"
-          "4. جميع النزاعات تخضع للولاية القضائية.",
-    };
-    return terms[language] ?? terms['en']!;
   }
 }

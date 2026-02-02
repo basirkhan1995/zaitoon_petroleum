@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
-import '../../../../../Features/Other/cover.dart';
 import 'package:intl/intl.dart';
-
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import '../../../../../Localizations/l10n/translations/app_localizations.dart';
 
 class DigitalClock extends StatefulWidget {
@@ -14,137 +13,159 @@ class DigitalClock extends StatefulWidget {
 }
 
 class _DigitalClockState extends State<DigitalClock> {
-  late DateTime _currentTime;
-  late Timer _timer;
+  late DateTime _now;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _currentTime = DateTime.now();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _currentTime = DateTime.now();
-      });
+    _now = DateTime.now();
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) {
+        setState(() => _now = DateTime.now());
+      }
     });
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 5,horizontal: 5),
-      padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(5),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)
-          )
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
+    final theme = Theme.of(context);
+
+    // Shamsi full string → split safely
+    final shamsiDate = _now.shamsiDateFormatted; // e.g. 1404/11/13
+    final shamsiParts = shamsiDate.split('/');
+
+    final shamsiDay = shamsiParts.length >= 3 ? shamsiParts.last : '';
+
+    return ZCover(
+      radius: 6,
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.all(4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 5,
-            children: [
-              Flexible(
-                flex: 3,
-                child: Text(
-                  DateFormat('HH:mm:ss').format(_currentTime),
-                  style: TextStyle(
-                    fontSize: 48,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Digital',
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ),
-
-              Flexible(
-                flex: 1,
-                child: Text(
-                  getLocalizedPeriod(DateFormat('a').format(_currentTime)),
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Roboto',
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          // Date (Tue, July 05, 2025)
-          Text(
-            DateFormat('EEE, MMMM dd, yyyy').format(_currentTime),
-            style: TextStyle(
-              fontSize: 15,
-              fontFamily: "Roboto",
-              color: Theme.of(context).colorScheme.secondary,
-            ),
-          ),
-
-          SizedBox(height: 5),
-
-          ZCover(
-            margin: EdgeInsets.zero,
-            padding: EdgeInsets.symmetric(horizontal: 3,vertical: 2),
-            color: Theme.of(context).colorScheme.surface,
-            child: Wrap(
-              spacing: 5,
+          /// ================= LEFT =================
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                /// Day name
                 Text(
-                  DateTime.now().shamsiDateFormatted,
+                  DateFormat('EEEE').format(_now),
                   style: TextStyle(
-                    fontSize: 15,
-                    fontFamily: "Roboto",
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.secondary,
                   ),
                 ),
 
-                Text(
-                  DateTime.now().shamsiWeekdayName,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Roboto",
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                const SizedBox(height: 4),
+
+                /// Time
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      DateFormat('hh:mm:ss').format(_now),
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Digital',
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        getLocalizedPeriod(DateFormat('a').format(_now)),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
+                const SizedBox(height: 2),
+
+                /// Gregorian date
                 Text(
-                  DateTime.now().shamsiMonthName,
+                  DateFormat('MMMM d, yyyy').format(_now),
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Roboto",
-                    color: Theme.of(context).colorScheme.primary,
+                    fontSize: 13,
+                    color: theme.colorScheme.secondary,
                   ),
                 ),
               ],
             ),
           ),
 
+          /// ================= RIGHT =================
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                /// Shamsi day (big)
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+
+                  spacing: 5,
+                  children: [
+
+                    Text(
+                      _now.shamsiMonthName,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                    Text(
+                      shamsiDay,
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+
+                /// Shamsi month + year
+                Text(
+                  _now.shamsiDateString,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.secondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
   String getLocalizedPeriod(String period) {
-    if(period == "AM") return AppLocalizations.of(context)!.am;
-    if(period == "PM") return AppLocalizations.of(context)!.pm;
-    return period; // Default to English if not specified
+    if (period == "AM") return AppLocalizations.of(context)!.am;
+    if (period == "PM") return AppLocalizations.of(context)!.pm;
+    return period;
   }
 }

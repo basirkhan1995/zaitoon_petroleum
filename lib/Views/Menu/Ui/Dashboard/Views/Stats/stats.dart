@@ -17,8 +17,11 @@ class DashboardStatsView extends StatelessWidget {
   }
 }
 
+/* ------------------ RESPONSIVE WRAPPERS ------------------ */
+
 class _Mobile extends StatelessWidget {
   const _Mobile();
+
   @override
   Widget build(BuildContext context) => const Padding(
     padding: EdgeInsets.all(8),
@@ -28,6 +31,7 @@ class _Mobile extends StatelessWidget {
 
 class _Tablet extends StatelessWidget {
   const _Tablet();
+
   @override
   Widget build(BuildContext context) => const Padding(
     padding: EdgeInsets.all(8),
@@ -45,17 +49,20 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_){
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DashboardStatsBloc>().add(FetchDashboardStatsEvent());
     });
-    super.initState();
   }
+
   @override
   Widget build(BuildContext context) => const Padding(
-    padding: EdgeInsets.all(5),
+    padding: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
     child: _StatsContent(),
   );
 }
+
+/* ------------------ MAIN CONTENT ------------------ */
 
 class _StatsContent extends StatelessWidget {
   const _StatsContent();
@@ -101,65 +108,96 @@ class _StatsContent extends StatelessWidget {
             },
           ];
 
-          final filtered = data.where((e) => (e['value'] as int) > 0).toList();
+          final filtered =
+          data.where((e) => (e['value'] as int) > 0).toList();
 
           return Stack(
             children: [
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: filtered.map((item) {
-                  final color = item['color'] as Color;
+              LayoutBuilder(
+                builder: (context, c) {
+                  double itemWidth;
 
-                  return Container(
-                    width: 135,
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: .08),
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(
-                        color: color.withValues(alpha: .3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Icon(
-                              item['icon'] as IconData,
-                              size: 35,
-                              color: color.withValues(alpha: .4),
+                  if (c.maxWidth < 400) {
+                    itemWidth = c.maxWidth / 2 - 8;
+                  } else if (c.maxWidth < 800) {
+                    itemWidth = c.maxWidth / 2 - 8;
+                  } else if (c.maxWidth < 1200) {
+                    itemWidth = c.maxWidth / 4 - 8;
+                  } else {
+                    itemWidth = c.maxWidth / filtered.length - 8;
+                  }
+
+                  return Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: filtered.map((item) {
+                      final color = item['color'] as Color;
+
+                      return SizedBox(
+                        width: itemWidth,
+                        child: HoverCard(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
                             ),
-                            Text(
-                              item['value'].toString(),
-                              style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                                color: color,
+                            decoration: BoxDecoration(
+                              color: color.withValues(alpha: .08),
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(
+                                color: color.withValues(alpha: .3),
+                                width: 1,
                               ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: color.withValues(alpha: .05),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Align(
-                          alignment:
-                          Directionality.of(context) == TextDirection.ltr
-                              ? Alignment.centerLeft
-                              : Alignment.centerRight,
-                          child: Text(
-                            item['title'].toString(),
-                            style: theme.textTheme.bodySmall,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Icon(
+                                      item['icon'] as IconData,
+                                      size: 26,
+                                      color: color.withValues(alpha: .5),
+                                    ),
+                                    AnimatedCount(
+                                      value: item['value'] as int,
+                                      style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.w700,
+                                        color: color,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  item['title'].toString(),
+                                  style:
+                                  theme.textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ],
-                    ),
+                      );
+                    }).toList(),
                   );
-                }).toList(),
+                },
               ),
-              // Show small top-right spinner if refreshing
               if (state.isRefreshing)
                 const Positioned(
                   top: 8,
@@ -174,9 +212,65 @@ class _StatsContent extends StatelessWidget {
           );
         }
 
-        // First load spinner
         return const Center(child: CircularProgressIndicator());
       },
+    );
+  }
+}
+
+/* ------------------ ANIMATED COUNTER ------------------ */
+
+class AnimatedCount extends StatelessWidget {
+  final int value;
+  final TextStyle style;
+  final Duration duration;
+
+  const AnimatedCount({
+    super.key,
+    required this.value,
+    required this.style,
+    this.duration = const Duration(milliseconds: 1000),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: value.toDouble()),
+      duration: duration,
+      curve: Curves.easeOutCubic,
+      builder: (context, val, _) {
+        return Text(val.toInt().toString(), style: style);
+      },
+    );
+  }
+}
+
+/* ------------------ DESKTOP HOVER EFFECT (NO DEPRECATED API) ------------------ */
+
+class HoverCard extends StatefulWidget {
+  final Widget child;
+
+  const HoverCard({super.key, required this.child});
+
+  @override
+  State<HoverCard> createState() => _HoverCardState();
+}
+
+class _HoverCardState extends State<HoverCard> {
+  bool isHover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => isHover = true),
+      onExit: (_) => setState(() => isHover = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        transform: isHover
+            ? (Matrix4.identity()..translateByDouble(0, -4, 0, 1))
+            : Matrix4.identity(),
+        child: widget.child,
+      ),
     );
   }
 }

@@ -221,3 +221,40 @@ extension JalaliFormatting on Jalali {
     return AfghanShamsiConverter.toPersianNumbers(toFormattedShamsiString());
   }
 }
+
+extension AfghanShamsiStringExtra on String {
+  String get shamsiYear =>
+      AfghanShamsiConverter.toPersianNumbers(
+        toAfghanShamsi.year.toString(),
+      );
+
+  String get shamsiDayNumber =>
+      AfghanShamsiConverter.toPersianNumbers(
+        toAfghanShamsi.day.toString(),
+      );
+
+  String get shamsiWeekdayWithDay =>
+      '$shamsiWeekdayName $shamsiDayNumber';
+
+  String get shamsiFullNumericDate =>
+      AfghanShamsiConverter.formatWithLeadingZeros(toAfghanShamsi);
+}
+extension AfghanShamsiExtraExtensions on DateTime {
+  /// Weekday + Day number → شنبه ۱۳
+  String get shamsiWeekdayWithDay {
+    final j = toAfghanShamsi;
+    final weekday =
+        AfghanShamsiConverter.shamsiWeekdays[j.weekDay] ?? '';
+    final day =
+    AfghanShamsiConverter.toPersianNumbers(j.day.toString());
+    return '$weekday $day';
+  }
+
+  /// Full numeric Shamsi date → ۱۴۰۴/۱۰/۱۰
+  String get shamsiFullNumericDate {
+    final j = toAfghanShamsi;
+    return AfghanShamsiConverter.toPersianNumbers(
+      '${j.year}/${j.month.toString().padLeft(2, '0')}/${j.day.toString().padLeft(2, '0')}',
+    );
+  }
+}

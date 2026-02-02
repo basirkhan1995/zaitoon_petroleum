@@ -11,7 +11,6 @@ import 'package:zaitoon_petroleum/Features/PrintSettings/print_services.dart';
 import 'package:zaitoon_petroleum/Features/PrintSettings/report_model.dart';
 import '../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
 
-// Invoice item interface for both sale and purchase
 abstract class InvoiceItem {
   String get productName;
   double get quantity;
@@ -20,14 +19,13 @@ abstract class InvoiceItem {
   String get storageName;
 }
 
-// Sale invoice item implementation
 class SaleInvoiceItemForPrint implements InvoiceItem {
   @override
   final String productName;
   @override
   final double quantity;
   @override
-  final double unitPrice; // sale price
+  final double unitPrice;
   @override
   final double total;
   @override
@@ -46,14 +44,14 @@ class SaleInvoiceItemForPrint implements InvoiceItem {
   });
 }
 
-// Purchase invoice item implementation
+
 class PurchaseInvoiceItemForPrint implements InvoiceItem {
   @override
   final String productName;
   @override
   final double quantity;
   @override
-  final double unitPrice; // purchase price
+  final double unitPrice;
   @override
   final double total;
   @override
@@ -70,7 +68,7 @@ class PurchaseInvoiceItemForPrint implements InvoiceItem {
 
 class InvoicePrintService extends PrintServices {
   Future<void> createInvoiceDocument({
-    required String invoiceType, // "Sale" or "Purchase"
+    required String invoiceType,
     required int invoiceNumber,
     required String? reference,
     required DateTime? invoiceDate,
@@ -267,10 +265,6 @@ class InvoicePrintService extends PrintServices {
             account: account,
             currency: currency,
           ),
-          pw.SizedBox(height: 20),
-          _profitSummaryIfSale(items: items, language: language, isSale: isSale),
-          pw.SizedBox(height: 20),
-          _termsAndConditions(language: language),
           pw.SizedBox(height: 20),
           _signatureSection(language: language),
         ],
@@ -646,110 +640,6 @@ class InvoicePrintService extends PrintServices {
     );
   }
 
-  pw.Widget _profitSummaryIfSale({
-    required List<InvoiceItem> items,
-    required String language,
-    required bool isSale,
-  }) {
-    if (!isSale) return pw.SizedBox.shrink();
-
-    // Calculate total profit for sale items
-    double totalCost = 0;
-    double totalSale = 0;
-
-    for (final item in items) {
-      if (item is SaleInvoiceItemForPrint) {
-        final saleItem = item;
-        if (saleItem.purchasePrice != null) {
-          totalCost += saleItem.purchasePrice! * saleItem.quantity;
-          totalSale += saleItem.total;
-        }
-      }
-    }
-
-    final totalProfit = totalSale - totalCost;
-    final profitPercentage = totalCost > 0 ? (totalProfit / totalCost * 100) : 0;
-
-    return pw.Container(
-      padding: pw.EdgeInsets.all(10),
-      decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: pw.PdfColors.grey300),
-        borderRadius: pw.BorderRadius.circular(5),
-      ),
-      child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          text(
-            text: getTranslation(locale: 'profitSummary', language: language),
-            fontSize: 12,
-            fontWeight: pw.FontWeight.bold,
-          ),
-          pw.SizedBox(height: 5),
-          pw.Divider(color: pw.PdfColors.grey300),
-          pw.SizedBox(height: 5),
-          _buildSummaryRow(
-            label: getTranslation(locale: 'totalCost', language: language),
-            value: totalCost,
-          ),
-          pw.SizedBox(height: 5),
-          _buildSummaryRow(
-            label: getTranslation(locale: 'totalSale', language: language),
-            value: totalSale,
-          ),
-          pw.SizedBox(height: 5),
-          _buildSummaryRow(
-            label: getTranslation(locale: 'profit', language: language),
-            value: totalProfit,
-            color: totalProfit >= 0 ? pw.PdfColors.green : pw.PdfColors.red,
-            isBold: true,
-          ),
-          if (totalCost > 0) ...[
-            pw.SizedBox(height: 5),
-            _buildSummaryRow(
-              label: '${getTranslation(locale: 'profit', language: language)} %',
-              value: 0, // We'll handle this separately
-              showValue: false,
-            ),
-            pw.Align(
-              alignment: pw.Alignment.centerRight,
-              child: text(
-                text: '${profitPercentage.toStringAsFixed(2)}%',
-                fontSize: 12,
-                color: totalProfit >= 0 ? pw.PdfColors.green : pw.PdfColors.red,
-                fontWeight: pw.FontWeight.bold,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  pw.Widget _termsAndConditions({required String language}) {
-    return pw.Container(
-      padding: pw.EdgeInsets.all(10),
-      decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: pw.PdfColors.grey300),
-        borderRadius: pw.BorderRadius.circular(5),
-      ),
-      child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          text(
-            text: getTranslation(locale: 'termsAndConditions', language: language),
-            fontSize: 12,
-            fontWeight: pw.FontWeight.bold,
-          ),
-          pw.SizedBox(height: 5),
-          text(
-            text: _getTermsAndConditions(language),
-            fontSize: 9,
-          ),
-        ],
-      ),
-    );
-  }
-
   pw.Widget _signatureSection({required String language}) {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -808,49 +698,5 @@ class InvoicePrintService extends PrintServices {
         ),
       ],
     );
-  }
-
-  pw.Widget _buildSummaryRow({
-    required String label,
-    required double value,
-    bool showValue = true,
-    pw.PdfColor? color,
-    bool isBold = false,
-  }) {
-    return pw.Row(
-      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-      children: [
-        text(
-          text: label,
-          fontSize: 11,
-          fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
-        ),
-        if (showValue)
-          text(
-            text: value.toAmount(),
-            fontSize: 11,
-            fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
-            color: color,
-          ),
-      ],
-    );
-  }
-
-  String _getTermsAndConditions(String language) {
-    const terms = {
-      'en': "1. Goods once sold will not be taken back.\n"
-          "2. Payment should be made within 30 days.\n"
-          "3. Interest @ 12% p.a. will be charged on overdue payments.\n"
-          "4. All disputes subject to jurisdiction.",
-      'fa': "1. کالاهای فروخته شده پس گرفته نمی شوند.\n"
-          "2. پرداخت باید ظرف 30 روز انجام شود.\n"
-          "3. بهره 12٪ در سال برای پرداخت های معوق دریافت می شود.\n"
-          "4. کلیه اختلافات تابع صلاحیت.",
-      'ar': "1. البضائع المباعة لن تؤخذ مرة أخرى.\n"
-          "2. يجب أن يتم الدفع خلال 30 يومًا.\n"
-          "3. سيتم فرض فائدة 12٪ سنويًا على المدفوعات المتأخرة.\n"
-          "4. جميع النزاعات تخضع للولاية القضائية.",
-    };
-    return terms[language] ?? terms['en']!;
   }
 }

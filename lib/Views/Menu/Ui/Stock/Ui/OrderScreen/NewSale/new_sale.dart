@@ -1154,7 +1154,7 @@ class _DesktopState extends State<_Desktop> {
     showDialog(
       context: context,
       builder: (_) => PrintPreviewDialog<dynamic>(
-        data: null, // You can pass current state here if needed
+        data: null,
         company: company,
         buildPreview: ({
           required data,
@@ -1164,7 +1164,7 @@ class _DesktopState extends State<_Desktop> {
         }) {
           return InvoicePrintService().printInvoicePreview(
             invoiceType: "Sale",
-            invoiceNumber: 0, // Use 0 for new invoices, or get from saved invoice
+            invoiceNumber: 0,
             reference: _xRefController.text,
             invoiceDate: DateTime.now(),
             customerSupplierName: current.customer?.perName ?? "",

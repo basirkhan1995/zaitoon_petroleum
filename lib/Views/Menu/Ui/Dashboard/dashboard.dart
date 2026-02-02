@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/DailyGross/daily_gross.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/PieChartTotal/pie_chart.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/Stats/stats.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/Ui/exchange_rate.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/bloc/total_daily_bloc.dart';
@@ -61,29 +62,10 @@ class _Desktop extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 2),
-                  if (visibility.dashboardClock) ...[
-                    const DigitalClock(),
-                    SizedBox(height: 5),
-                  ],
-
                   if (visibility.statsCount) ...[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Row(
-                        spacing: 5,
-                        children: [
-                          Icon(Icons.line_axis_rounded),
-                          Text(AppLocalizations.of(context)!.dashbordOverview),
-                        ],
-                      ),
-                    ),
                     DashboardStatsView(),
                   ],
-
-                  SizedBox(height: 5),
                   SizedBox(height: 400, child: FxRateDashboardChart()),
-
                   BlocBuilder<TotalDailyBloc, TotalDailyState>(
                     builder: (context, state) {
                       if(state is TotalDailyLoaded){
@@ -111,7 +93,9 @@ class _Desktop extends StatelessWidget {
                     },
                   ),
                   const TotalDailyTxnView(),
-
+                  if (visibility.todayTotalTxnChart) ...[
+                    TotalDailyColumnView(),
+                  ],
 
                 ],
               ),
@@ -121,6 +105,10 @@ class _Desktop extends StatelessWidget {
               width: 500,
               child: Column(
                 children: [
+                  if (visibility.dashboardClock) ...[
+                    const DigitalClock(),
+                    SizedBox(height: 5),
+                  ],
                   if (visibility.exchangeRate) ...[
                     ExchangeRateView(settingButton: true, newRateButton: false),
                   ],

@@ -26,7 +26,7 @@ class _DailyGrossViewState extends State<DailyGrossView> {
   void initState() {
     super.initState();
     final now = DateTime.now();
-    final from = DateFormat('yyyy-MM-dd').format(now.subtract(const Duration(days: 30)));
+    final from = DateFormat('yyyy-MM-dd').format(now.subtract(const Duration(days: 7)));
     final to = DateFormat('yyyy-MM-dd').format(now);
 
     context.read<DailyGrossBloc>().add(

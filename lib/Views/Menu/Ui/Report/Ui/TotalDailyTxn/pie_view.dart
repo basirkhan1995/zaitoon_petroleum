@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'bloc/total_daily_bloc.dart';
 import 'model/daily_txn_model.dart';
 
-class TotalDailyPieView extends StatelessWidget {
+class TotalDailyColumnView extends StatelessWidget {
   final String? fromDate;
   final String? toDate;
-  const TotalDailyPieView({super.key, this.fromDate, this.toDate});
+
+  const TotalDailyColumnView({
+    super.key,
+    this.fromDate,
+    this.toDate,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BlocBuilder<TotalDailyBloc, TotalDailyState>(
       builder: (context, state) {
         if (state is TotalDailyError) {
@@ -24,67 +32,57 @@ class TotalDailyPieView extends StatelessWidget {
         }
 
         if (state is TotalDailyLoaded) {
-          if(state.data.isEmpty){
+          if (state.data.isEmpty) {
             return const SizedBox();
           }
+
           final data = state.data;
 
-          // Total for calculating percentages
-          final grandTotal = data.fold<double>(
-            0,
-                (sum, item) => sum + (item.totalAmount ?? 0),
-          );
-
-
-          final colors = [
-            Colors.purple,
-            Colors.blue,
-            Colors.orange,
-            Colors.green,
-            Colors.red,
-            Colors.teal,
-            Colors.pink,
-            Colors.amber,
-            Colors.indigo,
-            Colors.cyan,
-            Colors.lime,
-            Colors.brown,
-          ];
           return ZCover(
             radius: 5,
-            padding: EdgeInsets.zero,
-            margin: EdgeInsets.all(3),
-            borderColor: Theme.of(context).colorScheme.outline.withValues(alpha: .3),
-            child: SfCircularChart(
-
-              legend: Legend(
-                isVisible: true,
-                overflowMode: LegendItemOverflowMode.wrap,
-                position: LegendPosition.bottom,
+            margin: const EdgeInsets.all(3),
+            borderColor:
+            theme.colorScheme.outline.withValues(alpha: .3),
+            child: SfCartesianChart(
+              title: ChartTitle(
+                text: 'Daily Financial Summary',
+                textStyle: theme.textTheme.titleSmall,
               ),
-              tooltipBehavior: TooltipBehavior(enable: true),
-              series: <CircularSeries>[
-                DoughnutSeries<TotalDailyTxnModel, String>(
+
+              tooltipBehavior: TooltipBehavior(
+                enable: true,
+                format: 'point.x : point.y',
+              ),
+              primaryXAxis: CategoryAxis(
+                labelRotation: 0,
+                majorGridLines: const MajorGridLines(width: 0),
+              ),
+              primaryYAxis: NumericAxis(
+                majorGridLines: const MajorGridLines(width: .5),
+                numberFormat: NumberFormat.compact(),
+              ),
+              series: <CartesianSeries<TotalDailyTxnModel, String>>[
+                ColumnSeries<TotalDailyTxnModel, String>(
+                  name: 'Amount',
                   dataSource: data,
                   xValueMapper: (item, _) => item.txnName ?? '',
                   yValueMapper: (item, _) => item.totalAmount ?? 0,
-                  pointColorMapper: (item, index) =>
-                  colors[index % colors.length],
-                  dataLabelMapper: (item, _) =>
-                  "${item.txnName} - ${((item.totalAmount! / grandTotal) * 100).toStringAsFixed(1)}%",
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(6),
+                  ),
+                  width: 0.6,
+                  color: theme.colorScheme.primary,
                   dataLabelSettings: const DataLabelSettings(
                     isVisible: true,
-                    labelPosition: ChartDataLabelPosition.outside,
+                    labelAlignment: ChartDataLabelAlignment.outer,
                   ),
-                  radius: '80%',
-                  innerRadius: '60%',
                 ),
               ],
+
             ),
           );
         }
 
-        // Loading
         return const Center(child: CircularProgressIndicator());
       },
     );

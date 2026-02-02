@@ -46,10 +46,11 @@ class IndividualsDetailsTabView extends StatelessWidget {
             /// Colors for underline style
             style: ZTabStyle.rounded,
             tabBarPadding: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
+
             borderRadius: 0,
-            title: AppLocalizations.of(context)!.details,
+            title: AppLocalizations.of(context)!.accountsAndUsers,
             selectedColor: Theme.of(context).colorScheme.primary,
-            description: AppLocalizations.of(context)!.accountsAndUsers,
+            description: AppLocalizations.of(context)!.stakeholderManage,
             unselectedTextColor: Theme.of(context).colorScheme.secondary,
             selectedTextColor: Theme.of(context).colorScheme.surface,
             tabContainerColor: Theme.of(context).colorScheme.surface,
