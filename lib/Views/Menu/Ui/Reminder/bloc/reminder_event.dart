@@ -36,3 +36,5 @@ class UpdateReminderEvent extends ReminderEvent {
   @override
   List<Object?> get props => [model];
 }
+
+

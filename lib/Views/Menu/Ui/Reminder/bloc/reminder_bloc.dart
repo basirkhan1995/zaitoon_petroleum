@@ -14,7 +14,6 @@ class ReminderBloc extends Bloc<ReminderEvent, ReminderState> {
     /// LOAD ALERT REMINDERS
     on<LoadAlertReminders>((event, emit) async {
       emit(state.copyWith(loading: true, error: null));
-
       try {
         final data = await _repo.getAlertReminders(alert: event.alert);
 

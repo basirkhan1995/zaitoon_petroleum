@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/DailyGross/daily_gross.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/PieChartTotal/pie_chart.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/Stats/stats.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/Ui/exchange_rate.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/bloc/total_daily_bloc.dart';
@@ -93,10 +92,11 @@ class _Desktop extends StatelessWidget {
                       return const SizedBox();
                     },
                   ),
-                  const TotalDailyTxnView(),
                   if (visibility.todayTotalTxnChart) ...[
                     TotalDailyColumnView(),
                   ],
+                  const TotalDailyTxnView(),
+
 
                 ],
               ),
@@ -119,9 +119,6 @@ class _Desktop extends StatelessWidget {
                   if (visibility.profitAndLoss) ...[
                     SizedBox(height: 3),
                     DailyGrossView(),
-                  ],
-                  if (visibility.todayTotalTxnChart) ...[
-                    TotalDailyPieView(),
                   ],
                 ],
               ),
