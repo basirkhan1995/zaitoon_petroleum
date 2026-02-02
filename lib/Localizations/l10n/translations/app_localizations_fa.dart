@@ -2289,4 +2289,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get dearCustomer => 'مشتری محترم،';
+
+  @override
+  String get reminders => 'یادآوری‌ ها';
+
+  @override
+  String get noAlertReminders => 'یادآوری یافت نشد';
 }

@@ -761,5 +761,7 @@
   "noBalance": "No Balance",
   "balanceMessageShare": "Please find your account balance information below:",
   "regardsTitle": "Regards",
-  "dearCustomer": "Dear Customer,"
+  "dearCustomer": "Dear Customer,",
+  "reminders": "Reminders",
+  "noAlertReminders": "No Alert Reminders"
 }

@@ -78,6 +78,7 @@ import 'Themes/Bloc/themes_bloc.dart';
 import 'Themes/Ui/theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/bloc/permissions_bloc.dart';
+import 'Views/Menu/Ui/Reminder/bloc/reminder_bloc.dart';
 import 'Views/Menu/Ui/Report/TransactionRef/bloc/txn_ref_report_bloc.dart';
 import 'Views/Menu/Ui/Report/TxnReport/bloc/txn_report_bloc.dart';
 import 'Views/Menu/Ui/Settings/Ui/Company/Branches/bloc/branch_bloc.dart';
@@ -172,6 +173,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => GlCategoryBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => GoodsShiftBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => AdjustmentBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => ReminderBloc(Repositories(ApiServices()))),
         ///Report Bloc
         BlocProvider(create: (context) => AccStatementBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => TxnRefReportBloc(Repositories(ApiServices()))),

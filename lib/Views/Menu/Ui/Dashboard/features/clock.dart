@@ -75,7 +75,7 @@ class _DigitalClockState extends State<DigitalClock> {
                     Text(
                       DateFormat('hh:mm:ss').format(_now),
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 30,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Digital',
                         color: theme.colorScheme.primary,
@@ -138,7 +138,7 @@ class _DigitalClockState extends State<DigitalClock> {
                     Text(
                       shamsiDay,
                       style: TextStyle(
-                        fontSize: 30,
+                        fontSize: 35,
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.primary,
                       ),
@@ -150,7 +150,7 @@ class _DigitalClockState extends State<DigitalClock> {
                 Text(
                   _now.shamsiDateString,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: theme.colorScheme.secondary,
                   ),

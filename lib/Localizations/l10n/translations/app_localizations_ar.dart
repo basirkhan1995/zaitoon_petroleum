@@ -2292,4 +2292,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dearCustomer => 'مشتری محترم،';
+
+  @override
+  String get reminders => 'یادونې';
+
+  @override
+  String get noAlertReminders => 'یادآوری یافت نشد';
 }

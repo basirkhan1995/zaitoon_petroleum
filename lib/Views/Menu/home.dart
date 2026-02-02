@@ -18,6 +18,7 @@ import '../../Localizations/l10n/translations/app_localizations.dart';
 import 'Ui/Dashboard/dashboard.dart';
 import 'Ui/Finance/finance.dart';
 import 'Ui/Journal/journal.dart';
+import 'Ui/Reminder/reminder.dart';
 import 'Ui/Report/report.dart';
 import 'Ui/Settings/Ui/Company/bloc/company_settings_menu_bloc.dart';
 import 'Ui/Settings/bloc/settings_tab_bloc.dart';
@@ -131,6 +132,12 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
         label: AppLocalizations.of(context)!.orderTitle,
         screen: const StockView(),
         icon: Icons.shopping_basket_outlined,
+      ),
+      MenuDefinition(
+        value: MenuName.reminders,
+        label: AppLocalizations.of(context)!.reminders,
+        screen: const ReminderView(),
+        icon: Icons.add_alert_outlined,
       ),
       MenuDefinition(
         value: MenuName.settings,

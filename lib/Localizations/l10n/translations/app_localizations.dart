@@ -4551,6 +4551,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dear Customer,'**
   String get dearCustomer;
+
+  /// No description provided for @reminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders'**
+  String get reminders;
+
+  /// No description provided for @noAlertReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'No Alert Reminders'**
+  String get noAlertReminders;
 }
 
 class _AppLocalizationsDelegate

@@ -9,6 +9,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeR
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/bloc/total_daily_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/pie_view.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/total_daily_txn.dart';
+import '../Reminder/reminder_widget.dart';
 import '../Report/Ui/Finance/ExchangeRate/chart.dart';
 
 import '../Settings/features/Visibility/bloc/settings_visible_bloc.dart';
@@ -107,11 +108,14 @@ class _Desktop extends StatelessWidget {
                 children: [
                   if (visibility.dashboardClock) ...[
                     const DigitalClock(),
-                    SizedBox(height: 5),
+                    SizedBox(height: 3),
                   ],
                   if (visibility.exchangeRate) ...[
                     ExchangeRateView(settingButton: true, newRateButton: false),
                   ],
+                  SizedBox(height: 3),
+                  DashboardAlertReminder(),
+                  SizedBox(height: 3),
                   if (visibility.profitAndLoss) ...[
                     SizedBox(height: 3),
                     DailyGrossView(),

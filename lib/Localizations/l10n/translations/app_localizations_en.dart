@@ -2299,4 +2299,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dearCustomer => 'Dear Customer,';
+
+  @override
+  String get reminders => 'Reminders';
+
+  @override
+  String get noAlertReminders => 'No Alert Reminders';
 }

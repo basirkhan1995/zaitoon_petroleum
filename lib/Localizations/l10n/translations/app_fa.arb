@@ -761,5 +761,7 @@
   "noBalance": "بی حساب",
   "balanceMessageShare": "لطفاً اطلاعات موجودی حساب خود را در زیر مشاهده کنید:",
   "regardsTitle": "محترم",
-  "dearCustomer": "مشتری محترم،"
+  "dearCustomer": "مشتری محترم،",
+  "reminders": "یادآوری‌ ها",
+  "noAlertReminders": "یادآوری یافت نشد"
 }

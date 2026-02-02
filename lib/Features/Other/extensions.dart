@@ -163,6 +163,33 @@ extension TimeAgoString on String {
   }
 }
 
+extension ReminderDueExtension on DateTime {
+
+  String toDueStatus() {
+    final now = DateTime.now();
+
+    final today = DateTime(now.year, now.month, now.day);
+    final due = DateTime(year, month, day);
+
+    final diff = due.difference(today).inDays;
+
+    if (diff == 0) return "Due Today";
+
+    if (diff == 1) return "Due Tomorrow";
+
+    if (diff > 1) {
+      return "Due in $diff ${diff == 1 ? 'day' : 'days'}";
+    }
+
+    final overdue = diff.abs();
+
+    if (overdue == 1) return "Overdue by 1 day";
+
+    return "Overdue by $overdue days";
+  }
+}
+
+
 String _plural(int value, String unit) {
   return value == 1
       ? '1 $unit ago'

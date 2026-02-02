@@ -42,6 +42,7 @@ import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/FetchGLAT/model/glat_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/GetOrder/model/get_order_model.dart';
+import '../Views/Menu/Ui/Reminder/model/reminder_model.dart';
 import '../Views/Menu/Ui/Report/TransactionRef/model/txn_report_model.dart';
 import '../Views/Menu/Ui/Report/Ui/AllBalances/model/all_balances_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/ArApReport/model/ar_ap_model.dart';
@@ -2092,7 +2093,6 @@ class Repositories {
 
     return [];
   }
-
   Future<DashboardStatsModel> getDashboardStats({CancelToken? cancelToken}) async {
     final response = await api.get(
       endpoint: "/reports/counts.php",
@@ -2111,7 +2111,6 @@ class Repositories {
       Map<String, dynamic>.from(response.data),
     );
   }
-
   Future<List<ArApModel>> getArApReport({String? name, String? ccy}) async {
     final response = await api.post(
         endpoint: "/reports/stakeholderBalances.php",
@@ -2138,7 +2137,6 @@ class Repositories {
 
     return [];
   }
-
   Future<List<TrialBalanceModel>> getTrialBalance({required String date}) async {
     final response = await api.post(
         endpoint: "/reports/trialBalance.php",
@@ -2164,7 +2162,6 @@ class Repositories {
 
     return [];
   }
-
   Future<List<TotalDailyTxnModel>> totalDailyTxnReport({required String fromDate, required String toDate}) async {
     final response = await api.post(
         endpoint: "/reports/dailyTotalTransactions.php",
@@ -2191,7 +2188,6 @@ class Repositories {
 
     return [];
   }
-
   Future<BalanceSheetModel> balanceSheet({CancelToken? cancelToken}) async {
     final response = await api.get(
       endpoint: "/reports/balanceSheet.php",
@@ -2215,7 +2211,6 @@ class Repositories {
 
     throw Exception("Unexpected response format");
   }
-
   Future<List<ExchangeRateReportModel>> exchangeRateReport({String? fromDate, String? toDate, String? fromCcy, String? toCcy}) async {
     final response = await api.post(
         endpoint: "/reports/currencyRate.php",
@@ -2516,6 +2511,48 @@ class Repositories {
     }
 
     return [];
+  }
+
+  ///Reminder ..................................................................
+  Future<List<ReminderModel>> getAlertReminders({int? alert}) async {
+    final response = await api.get(
+        endpoint: "/finance/reminders.php",
+        queryParams: {
+          "alerts": alert
+        }
+    );
+
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
+
+    // Parse as list
+    if (response.data is List) {
+      return List<ReminderModel>.from(
+          response.data.map((x) => ReminderModel.fromMap(x))
+      );
+    }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic>) {
+      return [ReminderModel.fromMap(response.data)];
+    }
+
+    return [];
+  }
+  Future<Map<String, dynamic>> addNewReminder({required ReminderModel newData}) async {
+    final response = await api.post(
+        endpoint: "/finance/reminders.php",
+        data: newData.toMap()
+    );
+    return response.data;
+  }
+  Future<Map<String, dynamic>> updateReminder({required ReminderModel newData}) async {
+    final response = await api.put(
+        endpoint: "/finance/reminders.php",
+        data: newData.toMap()
+    );
+    return response.data;
   }
 
 }
