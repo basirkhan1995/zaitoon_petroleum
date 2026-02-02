@@ -37,9 +37,21 @@ class _Tablet extends StatelessWidget {
 }
 
 
-class _Desktop extends StatelessWidget {
+class _Desktop extends StatefulWidget {
   const _Desktop();
 
+  @override
+  State<_Desktop> createState() => _DesktopState();
+}
+
+class _DesktopState extends State<_Desktop> {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      context.read<ReminderBloc>().add(LoadAlertReminders(alert: 0));
+    });
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
@@ -56,7 +68,7 @@ class _Desktop extends StatelessWidget {
         ),
         child: Column(
           children: [
-      
+
             /// HEADER
             Padding(
               padding: const EdgeInsets.all(8),
@@ -67,7 +79,7 @@ class _Desktop extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const Spacer(),
-      
+
                   /// Refresh
                   ZOutlineButton(
                     width: 110,
@@ -75,12 +87,12 @@ class _Desktop extends StatelessWidget {
                     icon: Icons.refresh,
                     label: Text(locale.refresh),
                     onPressed: () {
-                      context.read<ReminderBloc>().add(LoadAlertReminders(alert: 1));
+                      context.read<ReminderBloc>().add(LoadAlertReminders(alert: 0));
                     },
                   ),
-      
+
                   const SizedBox(width: 5),
-      
+
                   /// New Reminder
                   ZOutlineButton(
                     width: 110,
@@ -98,30 +110,30 @@ class _Desktop extends StatelessWidget {
                 ],
               ),
             ),
-      
+
             const Divider(),
-      
+
             /// LIST
             Expanded(
               child: BlocBuilder<ReminderBloc, ReminderState>(
                 builder: (context, state) {
-      
+
                   if (state.loading && state.reminders.isEmpty) {
                     return const Center(child: CircularProgressIndicator());
                   }
-      
+
                   if (state.reminders.isEmpty) {
                     return const Center(child: Text("No Reminders"));
                   }
-      
+
                   return ListView.builder(
                     itemCount: state.reminders.length,
                     itemBuilder: (_, i) {
                       final r = state.reminders[i];
-      
+
                       final isOverdue = r.rmdAlertDate != null &&
                           r.rmdAlertDate!.isBefore(DateTime.now());
-      
+
                       return Material(
                         child: InkWell(
                           onTap: () {
@@ -140,9 +152,9 @@ class _Desktop extends StatelessWidget {
                                   ? Colors.red
                                   : Theme.of(context).colorScheme.primary,
                             ),
-      
+
                             title: Text(r.fullName ?? ""),
-      
+
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -156,7 +168,7 @@ class _Desktop extends StatelessWidget {
                                 )
                               ],
                             ),
-      
+
                             trailing: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -170,13 +182,12 @@ class _Desktop extends StatelessWidget {
                                           .colorScheme
                                           .error),
                                 ),
-      
+
                                 Checkbox(
                                   value: r.rmdStatus == 1,
                                   onChanged: (_) {
                                     context.read<ReminderBloc>().add(
-                                        UpdateReminderEvent(
-                                            r.copyWith(rmdStatus: 1)));
+                                        UpdateReminderEvent(r.copyWith(rmdStatus: 1)));
                                   },
                                 )
                               ],

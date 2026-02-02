@@ -9,9 +9,9 @@ abstract class ReminderEvent extends Equatable {
 
 /// Load only alert reminders
 class LoadAlertReminders extends ReminderEvent {
-  final int alert;
+  final int? alert;
 
-  const LoadAlertReminders({this.alert = 1});
+  const LoadAlertReminders({this.alert});
 
   @override
   List<Object?> get props => [alert];

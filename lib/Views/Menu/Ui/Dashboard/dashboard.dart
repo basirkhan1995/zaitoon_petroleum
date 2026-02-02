@@ -113,13 +113,13 @@ class _Desktop extends StatelessWidget {
                   if (visibility.exchangeRate) ...[
                     ExchangeRateView(settingButton: true, newRateButton: false),
                   ],
-                  SizedBox(height: 3),
-                  DashboardAlertReminder(),
-                  SizedBox(height: 3),
                   if (visibility.profitAndLoss) ...[
                     SizedBox(height: 3),
                     DailyGrossView(),
                   ],
+                  SizedBox(height: 3),
+                  DashboardAlertReminder(),
+                  SizedBox(height: 3),
                 ],
               ),
             ),

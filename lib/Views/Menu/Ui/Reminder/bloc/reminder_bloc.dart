@@ -31,38 +31,67 @@ class ReminderBloc extends Bloc<ReminderEvent, ReminderState> {
 
     /// ADD REMINDER
     on<AddReminderEvent>((event, emit) async {
-      emit(state.copyWith(loading: true));
+      emit(state.copyWith(loading: true, error: null));
 
       try {
         final res = await _repo.addNewReminder(newData: event.model);
 
         if (res['msg'] == "success") {
-          add(const LoadAlertReminders());
-          emit(state.copyWith(successMsg: "Reminder Added"));
+
+          final data = await _repo.getAlertReminders(alert: 1);
+
+          emit(state.copyWith(
+            reminders: data,
+            loading: false,
+            successMsg: "Reminder Added",
+          ));
+
         } else {
-          emit(state.copyWith(error: res['msg']));
+          emit(state.copyWith(
+            loading: false,
+            error: res['msg'],
+          ));
         }
       } catch (e) {
-        emit(state.copyWith(error: e.toString()));
+        emit(state.copyWith(
+          loading: false,
+          error: e.toString(),
+        ));
       }
     });
 
+
     /// UPDATE REMINDER
     on<UpdateReminderEvent>((event, emit) async {
-      emit(state.copyWith(loading: true));
+      emit(state.copyWith(loading: true, error: null, successMsg: null));
 
       try {
         final res = await _repo.updateReminder(newData: event.model);
 
         if (res['msg'] == "success") {
-          add(const LoadAlertReminders());
-          emit(state.copyWith(successMsg: "Reminder Updated"));
+
+          /// 🔥 Reload reminders immediately
+          final data = await _repo.getAlertReminders(alert: 1);
+
+          emit(state.copyWith(
+            reminders: data,
+            loading: false,
+            successMsg: "Reminder Updated",
+          ));
+
         } else {
-          emit(state.copyWith(error: res['msg']));
+          emit(state.copyWith(
+            loading: false,
+            error: res['msg'],
+          ));
         }
       } catch (e) {
-        emit(state.copyWith(error: e.toString()));
+        emit(state.copyWith(
+          loading: false,
+          error: e.toString(),
+        ));
       }
     });
+
   }
 }

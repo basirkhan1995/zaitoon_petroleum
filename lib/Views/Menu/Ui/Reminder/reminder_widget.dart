@@ -4,6 +4,8 @@ import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 
+import '../../../../Features/Widgets/outline_button.dart';
+import 'add_edit_reminders.dart';
 import 'bloc/reminder_bloc.dart';
 import 'model/reminder_model.dart';
 
@@ -22,84 +24,98 @@ class _DashboardAlertReminderState extends State<DashboardAlertReminder> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ReminderBloc>().add(const LoadAlertReminders());
+      context.read<ReminderBloc>().add(const LoadAlertReminders(alert: 1));
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
     return BlocBuilder<ReminderBloc, ReminderState>(
       builder: (context, state) {
-        double totalDue = state.reminders.fold(
-          0, (sum, e) =>
-          sum + (double.tryParse(e.rmdAmount ?? "0") ?? 0),
-        );
-
         return Stack(
           children: [
             ZCover(
               radius: 6,
               margin: const EdgeInsets.all(3),
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
 
-                    /// HEADER
-                    Row(
-                      children: [
+                  /// HEADER
+                  Row(
+                    children: [
 
-                        /// Alert Icon
-                        Icon(Icons.notifications_active,
-                            color: Theme.of(context).colorScheme.error),
+                      /// Alert Icon
+                      Icon(Icons.notifications_active,
+                          color: Theme.of(context).colorScheme.error),
 
-                        const SizedBox(width: 8),
+                      const SizedBox(width: 8),
 
-                        Text(
-                          AppLocalizations.of(context)!.reminders,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-
-                        const Spacer(),
-
-                        /// Total Amount
-                        ZCover(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                           radius: 8,
-                          child: Text(
-                            totalDue.toAmount(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    /// EMPTY
-                    if (state.reminders.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Text(
-                          AppLocalizations.of(context)!.noAlertReminders,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
+                      Text(
+                        AppLocalizations.of(context)!.reminders,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
 
-                    /// LIST
-                    ...state.reminders.map((e) {
-                      return _ReminderTile(model: e);
-                    }),
-                  ],
-                ),
+                      const Spacer(),
+
+
+                      /// HEADER
+                      Row(
+                        children: [
+                          /// Refresh
+                          ZOutlineButton(
+                            width: 100,
+                            height: 30,
+                            icon: Icons.refresh,
+                            label: Text(tr.refresh),
+                            onPressed: () {
+                              context.read<ReminderBloc>().add(LoadAlertReminders(alert: 1));
+                            },
+                          ),
+
+                          const SizedBox(width: 5),
+
+                          /// New Reminder
+                          ZOutlineButton(
+                            width: 100,
+                            height: 30,
+                            icon: Icons.add,
+                            isActive: true,
+                            label: Text(tr.newKeyword),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (_) => const AddEditReminderView(),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  /// EMPTY
+                  if (state.reminders.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text(
+                        AppLocalizations.of(context)!.noAlertReminders,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+
+                  /// LIST
+                  ...state.reminders.map((e) {
+                    return _ReminderTile(model: e);
+                  }),
+                ],
               ),
             ),
 
