@@ -121,7 +121,7 @@ class _DesktopState extends State<_Desktop> {
               child: BlocBuilder<ReminderBloc, ReminderState>(
                 builder: (context, state) {
 
-                  if (state.loading && state.reminders.isEmpty) {
+                  if (state.loading) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
