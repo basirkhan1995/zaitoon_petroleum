@@ -33,7 +33,6 @@ class HomeView extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => MenuBloc()),
-        // Add other providers if needed
       ],
       child: const ResponsiveLayout(
         mobile: _Mobile(),

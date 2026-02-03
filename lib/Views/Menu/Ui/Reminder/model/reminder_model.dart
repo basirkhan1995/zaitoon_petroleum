@@ -94,7 +94,7 @@ class ReminderModel {
   Map<String, dynamic> toMap() => {
     "user": usrName,
     "rmdID": rmdId,
-    "rmdMame": rmdName,
+    "rmdName": rmdName,
     "rmdAccount": rmdAccount,
     "rmdAmount": rmdAmount,
     "currency":currency,

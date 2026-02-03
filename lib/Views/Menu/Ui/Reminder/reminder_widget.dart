@@ -257,9 +257,7 @@ class _ReminderTile extends StatelessWidget {
                     rmdStatus: isPaid ? 0 : 1,
                   );
 
-                  context
-                      .read<ReminderBloc>()
-                      .add(UpdateReminderEvent(updated));
+                  context.read<ReminderBloc>().add(UpdateReminderEvent(updated));
                 },
                 child: Container(
                   padding: const EdgeInsets.all(4),
@@ -287,12 +285,3 @@ class _ReminderTile extends StatelessWidget {
     );
   }
 }
-
-
-// onPressed: () {
-// /// mark reminder as completed
-// final updated = model.copyWith(rmdStatus: 1);
-//
-// context.read<ReminderBloc>()
-//     .add(UpdateReminderEvent(updated));
-// },
