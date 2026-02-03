@@ -257,7 +257,7 @@ class _DesktopState extends State<_Desktop> {
                                   children: [
                                     if ((r.rmdAmount ?? "").isNotEmpty)
                                       Text(
-                                        r.rmdAmount!,
+                                        "${r.rmdAmount.toAmount()} ${r.currency}",
                                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                                           color: Theme.of(context).colorScheme.error,
                                           fontWeight: FontWeight.w600,

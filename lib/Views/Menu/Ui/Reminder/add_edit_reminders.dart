@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 
+import '../../../../Features/Generic/rounded_searchable_textfield.dart';
+import '../../../../Features/Other/thousand_separator.dart';
 import '../../../../Features/Other/zForm_dialog.dart';
 import '../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
+import '../Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
 import 'bloc/reminder_bloc.dart';
 import 'model/reminder_model.dart';
 
@@ -48,7 +54,7 @@ class _DesktopState extends State<_Desktop> {
   final TextEditingController account = TextEditingController();
   final TextEditingController amount = TextEditingController();
   final TextEditingController details = TextEditingController();
-
+  int? accNumber;
   DateTime? alertDate;
 
   @override
@@ -85,11 +91,68 @@ class _DesktopState extends State<_Desktop> {
         children: [
 
           /// Account
-          ZTextFieldEntitled(
+          GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
+            showAllOnFocus: true,
             controller: account,
-            title: AppLocalizations.of(context)!.accounts,
-            keyboardInputType: TextInputType.number,
+            title: locale.accounts,
+            hintText: locale.accNameOrNumber,
             isRequired: true,
+            bloc: context.read<AccountsBloc>(),
+            fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
+            searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
+            validator: (value) {
+              if (value.isEmpty) {
+                return locale.required(locale.accounts);
+              }
+              return null;
+            },
+            itemBuilder: (context, account) => Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 5,
+                vertical: 5,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "${account.accnumber} | ${account.accName}",
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyLarge,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            itemToString: (acc) =>
+            "${acc.accnumber} | ${acc.accName}",
+            stateToLoading: (state) =>
+            state is AccountLoadingState,
+            loadingBuilder: (context) => const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+              ),
+            ),
+            stateToItems: (state) {
+              if (state is StkAccountLoadedState) {
+                return state.accounts;
+              }
+              return [];
+            },
+            onSelected: (value) {
+              setState(() {
+                accNumber = value.accnumber;
+              });
+            },
+            noResultsText: locale.noDataFound,
+            showClearButton: true,
           ),
 
           /// Amount
@@ -99,6 +162,31 @@ class _DesktopState extends State<_Desktop> {
             keyboardInputType:
             const TextInputType.numberWithOptions(decimal: true),
             isRequired: true,
+
+            inputFormat: [
+              FilteringTextInputFormatter.allow(
+                RegExp(r'[0-9.,]*'),
+              ),
+              SmartThousandsDecimalFormatter(),
+            ],
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return locale.required(locale.amount);
+              }
+
+              // Remove formatting (e.g. commas)
+              final clean = value.replaceAll(
+                RegExp(r'[^\d.]'),
+                '',
+              );
+              final amount = double.tryParse(clean);
+
+              if (amount == null || amount <= 0.0) {
+                return locale.amountGreaterZero;
+              }
+
+              return null;
+            },
           ),
 
           /// Details
@@ -118,26 +206,13 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  void pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2100),
-      initialDate: alertDate ?? DateTime.now(),
-    );
-
-    if (picked != null) {
-      setState(() => alertDate = picked);
-    }
-  }
 
   void onSubmit() {
-
     final model = ReminderModel(
       rmdId: widget.reminder?.rmdId,
       usrName: "basir.h",
-      rmdAccount: int.tryParse(account.text),
-      rmdAmount: amount.text,
+      rmdAccount: accNumber,
+      rmdAmount: amount.text.cleanAmount,
       rmdDetails: details.text,
       rmdAlertDate: alertDate,
       rmdStatus: widget.reminder?.rmdStatus ?? 0,
