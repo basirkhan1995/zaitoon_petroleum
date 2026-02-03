@@ -39,7 +39,6 @@ class ReminderBloc extends Bloc<ReminderEvent, ReminderState> {
         if (res['msg'] == "success") {
 
           final data = await _repo.getAlertReminders(alert: 1);
-
           emit(state.copyWith(
             reminders: data,
             loading: false,
