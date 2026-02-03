@@ -33,6 +33,8 @@ import '../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'package:flutter/services.dart';
 import '../../../Auth/bloc/auth_bloc.dart';
+import '../Reminder/bloc/reminder_bloc.dart';
+import '../Reminder/model/reminder_model.dart';
 import '../Report/TransactionRef/transaction_ref.dart';
 import '../Report/Ui/Finance/AccountStatement/acc_statement.dart';
 import '../Report/Ui/Finance/GLStatement/gl_statement.dart';
@@ -1916,6 +1918,26 @@ class _DesktopState extends State<_Desktop> {
       showDialog(context: context, builder: (context){
         return AccountStatementView();
       });
+    }
+
+    void onReminder({
+      required int accNumber,
+      required String dueType,
+      required String usrName,
+      required String narration,
+      required String amount,
+      required String date,
+      }) {
+      final model = ReminderModel(
+        usrName: usrName,
+        rmdName: dueType,
+        rmdAccount: accNumber,
+        rmdAmount: amount.cleanAmount,
+        rmdDetails: narration,
+        rmdAlertDate: DateTime.tryParse(date),
+        rmdStatus: 1,
+      );
+      context.read<ReminderBloc>().add(AddReminderEvent(model));
     }
 
     final shortcuts = {

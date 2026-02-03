@@ -78,8 +78,10 @@ class _DesktopState extends State<_Desktop> {
               padding: const EdgeInsets.all(8),
               child: Row(
                 children: [
+                  Icon(Icons.notifications_active_rounded),
+                  SizedBox(width: 5),
                   Text(locale.reminders,
-                      style: Theme.of(context).textTheme.titleSmall),
+                      style: Theme.of(context).textTheme.titleLarge),
                   const Spacer(),
 
                   /// Refresh
