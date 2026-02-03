@@ -9,6 +9,7 @@ import '../../../../Features/Widgets/outline_button.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'add_edit_reminders.dart';
 import 'bloc/reminder_bloc.dart';
+import 'model/reminder_model.dart';
 
 class ReminderView extends StatelessWidget {
   const ReminderView({super.key});
@@ -47,13 +48,20 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
+
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_){
       context.read<ReminderBloc>().add(LoadAlertReminders(alert: 0));
     });
-    super.initState();
   }
+
+  DateTime _normalize(DateTime? d) {
+    if (d == null) return DateTime(1900);
+    return DateTime(d.year, d.month, d.day);
+  }
+
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
@@ -70,10 +78,8 @@ class _DesktopState extends State<_Desktop> {
               padding: const EdgeInsets.all(8),
               child: Row(
                 children: [
-                  Text(
-                    locale.reminders,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
+                  Text(locale.reminders,
+                      style: Theme.of(context).textTheme.titleSmall),
                   const Spacer(),
 
                   /// Refresh
@@ -83,7 +89,8 @@ class _DesktopState extends State<_Desktop> {
                     icon: Icons.refresh,
                     label: Text(locale.refresh),
                     onPressed: () {
-                      context.read<ReminderBloc>().add(LoadAlertReminders(alert: 0));
+                      context.read<ReminderBloc>()
+                          .add(LoadAlertReminders(alert: 0));
                     },
                   ),
 
@@ -122,170 +129,49 @@ class _DesktopState extends State<_Desktop> {
                     return const Center(child: Text("No Reminders"));
                   }
 
-                  return ListView.builder(
-                    itemCount: state.reminders.length,
-                    itemBuilder: (_, i) {
-                      final r = state.reminders[i];
+                  final now = DateTime.now();
+                  final today = DateTime(now.year, now.month, now.day);
 
-                      final isOverdue = r.rmdAlertDate != null &&
-                          r.rmdAlertDate!.isBefore(DateTime.now());
+                  /// GROUPING
+                  final overdue = state.reminders.where((r) {
+                    final d = _normalize(r.rmdAlertDate);
+                    return r.rmdStatus == 0 && d.isBefore(today);
+                  }).toList();
 
-                      return Material(
-                        child: InkWell(
-                          highlightColor: Theme.of(context).colorScheme.surface,
-                          hoverColor: Theme.of(context).colorScheme.surface,
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (_) =>
-                                  AddEditReminderView(r: r),
-                            );
-                          },
-                          child: ZCover(
-                        margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                        color: Theme.of(context).colorScheme.surface,
-                        borderColor: isOverdue
-                            ? Colors.red.withValues(alpha: .4)
-                            : Theme.of(context).colorScheme.outline.withValues(alpha: .2),
-                        radius: 5,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(6),
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (_) => AddEditReminderView(r: r),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                  final dueToday = state.reminders.where((r) {
+                    final d = _normalize(r.rmdAlertDate);
+                    return r.rmdStatus == 0 && d == today;
+                  }).toList();
 
-                                /// ICON
-                                Icon(
-                                  isOverdue
-                                      ? Icons.warning_rounded
-                                      : Icons.notifications_active_outlined,
-                                  color: isOverdue
-                                      ? Theme.of(context).colorScheme.error
-                                      : Theme.of(context).colorScheme.primary,
-                                  size: 26,
-                                ),
+                  final upcoming = state.reminders.where((r) {
+                    final d = _normalize(r.rmdAlertDate);
+                    return r.rmdStatus == 0 && d.isAfter(today);
+                  }).toList();
 
-                                const SizedBox(width: 10),
+                  final completed = state.reminders.where((r) {
+                    return r.rmdStatus == 1;
+                  }).toList();
 
-                                /// MAIN CONTENT
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        r.rmdName ?? "",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall
-                                            ?.copyWith(fontWeight: FontWeight.w600),
-                                      ),
-                                      Text(
-                                        r.fullName ?? "",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall
-                                            ?.copyWith(fontWeight: FontWeight.w600),
-                                      ),
+                  /// SORT
+                  overdue.sort((a,b)=>a.rmdAlertDate!.compareTo(b.rmdAlertDate!));
+                  upcoming.sort((a,b)=>a.rmdAlertDate!.compareTo(b.rmdAlertDate!));
 
-                                      if ((r.rmdDetails ?? "").isNotEmpty)
-                                        Padding(
-                                          padding: const EdgeInsets.only(top: 4),
-                                          child: Text(
-                                            r.rmdDetails!,
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: Theme.of(context).textTheme.bodySmall,
-                                          ),
-                                        ),
+                  return ListView(
+                    children: [
 
-                                      const SizedBox(height: 6),
+                      if (overdue.isNotEmpty)
+                        _buildGroup(context, "Overdue", overdue, Colors.red),
 
-                                      /// DUE STATUS
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.account_circle_outlined,size:  15,color: Theme.of(context).colorScheme.outline),
-                                          SizedBox(width: 3),
-                                          Text(
-                                            r.rmdAccount.toString(),
-                                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                              color: isOverdue ?Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.outline,
-                                            ),
-                                          ),
+                      if (dueToday.isNotEmpty)
+                        _buildGroup(context, "Due Today", dueToday, Colors.orange),
 
-                                          SizedBox(width: 5),
+                      if (upcoming.isNotEmpty)
+                        _buildGroup(context, "Upcoming", upcoming,
+                            Theme.of(context).colorScheme.outline),
 
-                                          Icon(Icons.date_range,size:  15,color: Theme.of(context).colorScheme.outline),
-                                          SizedBox(width: 3),
-                                          Text(
-                                            r.rmdAlertDate?.toDateString ?? "",
-                                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                              color: isOverdue ?Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.outline,
-                                            ),
-                                          ),
-
-                                          SizedBox(width: 5),
-
-                                          Icon(Icons.access_time,size:  15,color: Theme.of(context).colorScheme.outline),
-                                          SizedBox(width: 3),
-                                          Text(
-                                            r.rmdAlertDate?.toDueStatus() ?? "",
-                                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                              color: isOverdue ?Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.outline,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                const SizedBox(width: 8),
-
-                                /// TRAILING (AMOUNT + CHECK)
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    if ((r.rmdAmount ?? "").isNotEmpty)
-                                      Text(
-                                        "${r.rmdAmount.toAmount()} ${r.currency}",
-                                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                          color: Theme.of(context).colorScheme.error,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-
-                                    Checkbox(
-                                      value: r.rmdStatus == 1,
-                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                      visualDensity: VisualDensity.compact,
-                                      onChanged: (_) {
-                                        context.read<ReminderBloc>().add(
-                                          UpdateReminderEvent(
-                                            r.copyWith(rmdStatus: 0),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                      ),
-                      );
-                    },
+                      if (completed.isNotEmpty)
+                        _buildGroup(context, "Completed", completed, Colors.green),
+                    ],
                   );
                 },
               ),
@@ -295,6 +181,157 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
+
+  /// GROUP BUILDER
+  Widget _buildGroup(
+      BuildContext context,
+      String title,
+      List<ReminderModel> reminders,
+      Color color,
+      ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+
+        /// HEADER
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          child: Text(
+            "$title (${reminders.length})",
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+
+        ...reminders.map((r) => _buildReminderTile(context, r, color)),
+      ],
+    );
+  }
+
+  /// REMINDER TILE
+  Widget _buildReminderTile(
+      BuildContext context,
+      ReminderModel r,
+      Color borderColor,
+      ) {
+
+    final isCompleted = r.rmdStatus == 1;
+
+    return ZCover(
+      margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      borderColor: borderColor.withValues(alpha: .4),
+      child: InkWell(
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (_) => AddEditReminderView(r: r),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            children: [
+
+              /// ICON
+              Icon(
+                isCompleted
+                    ? Icons.check_circle
+                    : Icons.notifications_active,
+                color: borderColor,
+                size: 26,
+              ),
+
+              const SizedBox(width: 10),
+
+              /// MAIN CONTENT
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    Text(
+                      r.fullName ?? "",
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall
+                          ?.copyWith(fontWeight: FontWeight.w600),
+                    ),
+
+                    if ((r.rmdDetails ?? "").isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          r.rmdDetails!,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
+
+                    const SizedBox(height: 6),
+
+                    /// INFO ROW
+                    Row(
+                      children: [
+
+                        Icon(Icons.account_circle_outlined,size: 14),
+                        const SizedBox(width: 4),
+                        Text(r.rmdAccount.toString(),
+                            style: Theme.of(context).textTheme.labelSmall),
+
+                        const SizedBox(width: 10),
+
+                        Icon(Icons.date_range,size: 14),
+                        const SizedBox(width: 4),
+                        Text(r.rmdAlertDate?.toDateString ?? "",
+                            style: Theme.of(context).textTheme.labelSmall),
+
+                        const SizedBox(width: 10),
+
+                        Icon(Icons.access_time,size: 14),
+                        const SizedBox(width: 4),
+                        Text(r.rmdAlertDate?.toDueStatus() ?? "",
+                            style: Theme.of(context).textTheme.labelSmall),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              /// RIGHT SIDE
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+
+                  Text(
+                    "${r.rmdAmount.toAmount()} ${r.currency}",
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.error,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+
+                  Checkbox(
+                    value: isCompleted,
+                    onChanged: (_) {
+                      context.read<ReminderBloc>().add(
+                        UpdateReminderEvent(
+                          r.copyWith(rmdStatus: isCompleted ? 0 : 1),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
+
 
 

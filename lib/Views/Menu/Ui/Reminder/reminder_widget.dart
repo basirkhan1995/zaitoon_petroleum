@@ -164,7 +164,7 @@ class _ReminderTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  model.rmdName ?? "",
+                  model.rmdName == "receivable"? AppLocalizations.of(context)!.receivableDue : AppLocalizations.of(context)!.payableDue,
                   style: Theme.of(context)
                       .textTheme
                       .titleSmall
@@ -256,7 +256,6 @@ class _ReminderTile extends StatelessWidget {
                   final updated = model.copyWith(
                     rmdStatus: isPaid ? 0 : 1,
                   );
-
                   context.read<ReminderBloc>().add(UpdateReminderEvent(updated));
                 },
                 child: Container(

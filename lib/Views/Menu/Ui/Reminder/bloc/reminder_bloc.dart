@@ -41,6 +41,7 @@ class ReminderBloc extends Bloc<ReminderEvent, ReminderState> {
         if (res['msg'] == "success") {
           // Reload with current filter if exists, otherwise use alert: 1
           final alertToLoad = _currentAlertFilter ?? 1;
+
           final data = await _repo.getAlertReminders(alert: alertToLoad);
 
           emit(state.copyWith(
@@ -64,33 +65,63 @@ class ReminderBloc extends Bloc<ReminderEvent, ReminderState> {
 
     /// UPDATE REMINDER
     on<UpdateReminderEvent>((event, emit) async {
-      emit(state.copyWith(loading: true, error: null, successMsg: null));
 
+      /// ⭐ STEP 1 — Update UI immediately
+      final updatedList = state.reminders.where((r) {
+
+        if (r.rmdId == event.model.rmdId) {
+
+          /// If reminder is completed and filter = alert list
+          if ((_currentAlertFilter ?? 1) == 1 &&
+              event.model.rmdStatus == 1) {
+            return false; // remove from list
+          }
+        }
+
+        return true;
+
+      }).map((r) {
+
+        if (r.rmdId == event.model.rmdId) {
+          return event.model;
+        }
+
+        return r;
+
+      }).toList();
+
+      emit(state.copyWith(
+        reminders: updatedList,
+        loading: true,
+      ));
+
+      /// ⭐ STEP 2 — Call API in background
       try {
+
         final res = await _repo.updateReminder(newData: event.model);
 
-        if (res['msg'] == "success") {
-          // Reload with current filter if exists, otherwise use alert: 1
-          final alertToLoad = _currentAlertFilter ?? 1;
-          final data = await _repo.getAlertReminders(alert: alertToLoad);
-
-          emit(state.copyWith(
-            reminders: data,
-            loading: false,
-            successMsg: "Reminder Updated",
-          ));
-        } else {
-          emit(state.copyWith(
-            loading: false,
-            error: res['msg'],
-          ));
+        if (res['msg'] != "success") {
+          throw Exception(res['msg']);
         }
+
+        /// OPTIONAL silent sync
+        final data = await _repo.getAlertReminders(
+            alert: _currentAlertFilter ?? 1);
+
+        emit(state.copyWith(
+          reminders: data,
+          loading: false,
+        ));
+
       } catch (e) {
+
         emit(state.copyWith(
           loading: false,
           error: e.toString(),
         ));
+
       }
     });
+
   }
 }

@@ -7,6 +7,7 @@ enum DueType {
   payable,
   receivable;
 
+  /// Value stored in database
   String toDatabaseValue() {
     switch (this) {
       case DueType.payable:
@@ -16,6 +17,7 @@ enum DueType {
     }
   }
 
+  /// Convert database value back to enum
   static DueType fromDatabaseValue(String value) {
     switch (value) {
       case "Payable":
@@ -29,6 +31,7 @@ enum DueType {
 }
 
 class DueTypeTranslator {
+  /// UI Translation only
   static String getTranslatedDueType(
       BuildContext context, DueType type) {
     final t = AppLocalizations.of(context)!;
@@ -89,6 +92,7 @@ class _DueTypeDropdownState extends State<DueTypeDropdown> {
   @override
   void didUpdateWidget(covariant DueTypeDropdown oldWidget) {
     super.didUpdateWidget(oldWidget);
+
     if (widget.selectedDueType != null &&
         widget.selectedDueType != _selectedDueType) {
       setState(() {

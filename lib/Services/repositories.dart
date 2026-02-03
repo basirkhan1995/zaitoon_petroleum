@@ -2552,6 +2552,7 @@ class Repositories {
         endpoint: "/finance/reminders.php",
         data: newData.toMap()
     );
+    print("Res: ${response.data}");
     return response.data;
   }
 
