@@ -232,7 +232,7 @@ class _ReminderTile extends StatelessWidget {
 
               /// Amount
               Text(
-                (model.rmdAmount ?? "0").toAmount(),
+                "${(model.rmdAmount ?? "0").toAmount()} ${model.currency}",
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   color: Theme.of(context).colorScheme.error,
                   fontWeight: FontWeight.bold,

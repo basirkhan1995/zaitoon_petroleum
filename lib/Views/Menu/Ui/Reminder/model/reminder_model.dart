@@ -22,6 +22,7 @@ class ReminderModel {
   final String? fullName;
   final String? perPhone;
   final String? perEmail;
+  final String? currency;
 
   ReminderModel({
     this.rmdId,
@@ -37,6 +38,7 @@ class ReminderModel {
     this.fullName,
     this.perPhone,
     this.perEmail,
+    this.currency,
   });
 
   ReminderModel copyWith({
@@ -49,6 +51,7 @@ class ReminderModel {
     DateTime? rmdAlertDate,
     int? rmdStatus,
     int? rmdBranch,
+    String? currency,
     String? brcName,
     String? fullName,
     String? perPhone,
@@ -68,6 +71,7 @@ class ReminderModel {
         fullName: fullName ?? this.fullName,
         perPhone: perPhone ?? this.perPhone,
         perEmail: perEmail ?? this.perEmail,
+        currency: currency ?? this.currency,
       );
 
   factory ReminderModel.fromMap(Map<String, dynamic> json) => ReminderModel(
@@ -81,6 +85,7 @@ class ReminderModel {
     rmdStatus: json["rmdStatus"],
     rmdBranch: json["rmdBranch"],
     brcName: json["brcName"],
+    currency: json["currency"],
     fullName: json["fullName"],
     perPhone: json["perPhone"],
     perEmail: json["perEmail"],
@@ -92,6 +97,7 @@ class ReminderModel {
     "rmdName": rmdName,
     "rmdAccount": rmdAccount,
     "rmdAmount": rmdAmount,
+    "currency":currency,
     "rmdDetails": rmdDetails,
     "rmdAlertDate": "${rmdAlertDate!.year.toString().padLeft(4, '0')}-${rmdAlertDate!.month.toString().padLeft(2, '0')}-${rmdAlertDate!.day.toString().padLeft(2, '0')}",
     "rmdStatus": rmdStatus,

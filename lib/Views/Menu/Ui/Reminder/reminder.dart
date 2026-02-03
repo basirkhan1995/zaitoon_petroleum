@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 
 import '../../../../Features/Other/extensions.dart';
@@ -58,7 +59,7 @@ class _DesktopState extends State<_Desktop> {
 
     return Scaffold(
       body: Container(
-        width: 500,
+        width: 600,
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 3),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
@@ -143,57 +144,146 @@ class _DesktopState extends State<_Desktop> {
                                   AddEditReminderView(r: r),
                             );
                           },
-                          child: ListTile(
-                            leading: Icon(
-                              isOverdue
-                                  ? Icons.warning_rounded
-                                  : Icons.notifications_active,
-                              color: isOverdue
-                                  ? Colors.red
-                                  : Theme.of(context).colorScheme.primary,
-                            ),
-
-                            title: Text(r.fullName ?? ""),
-
-                            subtitle: Column(
+                          child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: isOverdue
+                                ? Colors.red.withValues(alpha: .4)
+                                : Theme.of(context).colorScheme.outline.withValues(alpha: .2),
+                          ),
+                        ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(6),
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => AddEditReminderView(r: r),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(r.rmdDetails ?? ""),
-                                Text(
-                                  r.rmdAlertDate?.toDueStatus() ?? "",
-                                  style: TextStyle(
-                                    color:
-                                    isOverdue ? Colors.red : Colors.grey,
-                                  ),
-                                )
-                              ],
-                            ),
 
-                            trailing: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  r.rmdAmount ?? "",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall
-                                      ?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .error),
+                                /// ICON
+                                Icon(
+                                  isOverdue
+                                      ? Icons.warning_rounded
+                                      : Icons.notifications_active_outlined,
+                                  color: isOverdue
+                                      ? Colors.red
+                                      : Theme.of(context).colorScheme.primary,
+                                  size: 26,
                                 ),
 
-                                Checkbox(
-                                  value: r.rmdStatus == 1,
-                                  onChanged: (_) {
-                                    context.read<ReminderBloc>().add(
-                                        UpdateReminderEvent(r.copyWith(rmdStatus: 1)));
-                                  },
-                                )
+                                const SizedBox(width: 10),
+
+                                /// MAIN CONTENT
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        r.fullName ?? "",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall
+                                            ?.copyWith(fontWeight: FontWeight.w600),
+                                      ),
+
+                                      if ((r.rmdDetails ?? "").isNotEmpty)
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 4),
+                                          child: Text(
+                                            r.rmdDetails!,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: Theme.of(context).textTheme.bodySmall,
+                                          ),
+                                        ),
+
+                                      const SizedBox(height: 6),
+
+                                      /// DUE STATUS
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.account_circle_outlined,size:  15,color: Theme.of(context).colorScheme.outline),
+                                          SizedBox(width: 3),
+                                          Text(
+                                            r.rmdAccount.toString(),
+                                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                              color: isOverdue ? Colors.red : Colors.grey,
+                                            ),
+                                          ),
+
+                                          SizedBox(width: 5),
+
+                                          Icon(Icons.date_range,size:  15,color: Theme.of(context).colorScheme.outline),
+                                          SizedBox(width: 3),
+                                          Text(
+                                            r.rmdAlertDate?.toDateString ?? "",
+                                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                              color: isOverdue ? Colors.red : Colors.grey,
+                                            ),
+                                          ),
+
+                                          SizedBox(width: 5),
+
+                                          Icon(Icons.access_time,size:  15,color: Theme.of(context).colorScheme.outline),
+                                          SizedBox(width: 3),
+                                          Text(
+                                            r.rmdAlertDate?.toDueStatus() ?? "",
+                                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                              color: isOverdue ? Colors.red : Colors.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(width: 8),
+
+                                /// TRAILING (AMOUNT + CHECK)
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    if ((r.rmdAmount ?? "").isNotEmpty)
+                                      Text(
+                                        r.rmdAmount!,
+                                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                          color: Theme.of(context).colorScheme.error,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+
+                                    Checkbox(
+                                      value: r.rmdStatus == 1,
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      visualDensity: VisualDensity.compact,
+                                      onChanged: (_) {
+                                        context.read<ReminderBloc>().add(
+                                          UpdateReminderEvent(
+                                            r.copyWith(rmdStatus: 0),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
                         ),
+                      )
+                      ),
                       );
                     },
                   );

@@ -71,7 +71,8 @@ class _DesktopState extends State<_Desktop> {
         context.watch<ReminderBloc>().state.loading;
 
     return ZFormDialog(
-      width: 400,
+      width: 450,
+      padding: EdgeInsets.all(10),
       icon: Icons.notifications,
       title: locale.reminders,
       actionLabel: isLoading
@@ -80,12 +81,13 @@ class _DesktopState extends State<_Desktop> {
       onAction: onSubmit,
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        spacing: 8,
         children: [
 
           /// Account
           ZTextFieldEntitled(
             controller: account,
-            title: "Account",
+            title: AppLocalizations.of(context)!.accounts,
             keyboardInputType: TextInputType.number,
             isRequired: true,
           ),
@@ -103,27 +105,14 @@ class _DesktopState extends State<_Desktop> {
           ZTextFieldEntitled(
             controller: details,
             title: locale.details,
+            keyboardInputType: TextInputType.multiline,
+            maxLength: 100,
           ),
 
           const SizedBox(height: 10),
 
           /// DATE PICKER
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  alertDate == null
-                      ? "Select Due Date"
-                      : alertDate!.toLocal().toString().split(" ").first,
-                ),
-              ),
 
-              IconButton(
-                icon: const Icon(Icons.calendar_month),
-                onPressed: pickDate,
-              )
-            ],
-          )
         ],
       ),
     );
