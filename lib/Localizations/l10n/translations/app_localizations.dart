@@ -4587,6 +4587,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Due Date'**
   String get dueDate;
+
+  /// No description provided for @setReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Reminder'**
+  String get setReminder;
 }
 
 class _AppLocalizationsDelegate

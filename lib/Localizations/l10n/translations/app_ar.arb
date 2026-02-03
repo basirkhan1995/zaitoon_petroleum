@@ -767,5 +767,6 @@
   "dueType": "د سررسېد ډول",
   "payableDue": "د تادیې سررسېد",
   "receivableDue": "د ترلاسه کولو سررسېد",
-  "dueDate": "د تادیې نېټه"
+  "dueDate": "د تادیې نېټه",
+  "setReminder": "تعیین یادآوری"
 }

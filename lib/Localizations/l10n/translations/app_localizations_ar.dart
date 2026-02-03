@@ -2310,4 +2310,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dueDate => 'د تادیې نېټه';
+
+  @override
+  String get setReminder => 'تعیین یادآوری';
 }

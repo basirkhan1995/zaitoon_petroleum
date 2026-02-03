@@ -127,7 +127,7 @@ class _DesktopState extends State<_Desktop> {
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
     final state = context.watch<AuthBloc>().state;
-    String dueDate = DateTime.now().toFormattedDate();
+
     TextStyle? headerStyle = textTheme.titleMedium?.copyWith(
       color: color.primary,
     );
@@ -156,11 +156,33 @@ class _DesktopState extends State<_Desktop> {
     }
 
 
+    void onReminder({
+      required int accNumber,
+      required String dueType,
+      required String usrName,
+      required String narration,
+      required String amount,
+      required String date,
+    }) {
+      final model = ReminderModel(
+        usrName: usrName,
+        rmdName: dueType,
+        rmdAccount: accNumber,
+        rmdAmount: amount.cleanAmount,
+        rmdDetails: narration,
+        rmdAlertDate: DateTime.tryParse(date),
+        rmdStatus: 1,
+      );
+      context.read<ReminderBloc>().add(AddReminderEvent(model));
+    }
+
     void onCashDepositWithdraw({String? trnType}) {
       final locale = AppLocalizations.of(context)!;
       final accountController = TextEditingController();
       final TextEditingController amount = TextEditingController();
       final TextEditingController narration = TextEditingController();
+      bool isReminder = false;
+      String? reminderDate;
 
       String? currentBalance;
       String? availableBalance;
@@ -185,18 +207,41 @@ class _DesktopState extends State<_Desktop> {
                         : Icons.arrow_circle_up_rounded,
                     title: trnType == "CHDP" ? locale.deposit : locale.withdraw,
                     onAction: () {
-                      context.read<TransactionsBloc>().add(
-                        OnCashTransactionEvent(
-                          TransactionsModel(
-                            usrName: login.usrName,
-                            trdAccount: accNumber,
-                            trdCcy: accCurrency ?? "",
-                            trnType: trnType,
-                            trdAmount: amount.text.cleanAmount,
-                            trdNarration: narration.text,
+                      if(isReminder){
+                        context.read<TransactionsBloc>().add(
+                          OnCashTransactionEvent(
+                            TransactionsModel(
+                              usrName: login.usrName,
+                              trdAccount: accNumber,
+                              trdCcy: accCurrency ?? "",
+                              trnType: trnType,
+                              trdAmount: amount.text.cleanAmount,
+                              trdNarration: narration.text,
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                        onReminder(
+                            accNumber: accNumber!,
+                            amount: amount.text.cleanAmount,
+                            date: reminderDate??DateTime.now().toFormattedDate(),
+                            dueType: trnType == "CHDP" ? "payable" : "receivable",
+                          narration: narration.text,
+                          usrName: "basir.h"
+                        );
+                      }else{
+                        context.read<TransactionsBloc>().add(
+                          OnCashTransactionEvent(
+                            TransactionsModel(
+                              usrName: login.usrName,
+                              trdAccount: accNumber,
+                              trdCcy: accCurrency ?? "",
+                              trnType: trnType,
+                              trdAmount: amount.text.cleanAmount,
+                              trdNarration: narration.text,
+                            ),
+                          ),
+                        );
+                      }
                     },
                     actionLabel: trState is TxnLoadingState
                         ? SizedBox(
@@ -215,96 +260,75 @@ class _DesktopState extends State<_Desktop> {
                           mainAxisSize: MainAxisSize.min,
                           spacing: 12,
                           children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              spacing: 5,
-                              children: [
-                                Expanded(
-                                  flex: 3,
-                                  child: GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
-                                    showAllOnFocus: true,
-                                    controller: accountController,
-                                    title: locale.accounts,
-                                    hintText: locale.accNameOrNumber,
-                                    isRequired: true,
-                                    bloc: context.read<AccountsBloc>(),
-                                    fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
-                                    searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
-                                    validator: (value) {
-                                      if (value.isEmpty) {
-                                        return locale.required(locale.accounts);
-                                      }
-                                      return null;
-                                    },
-                                    itemBuilder: (context, account) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 5,
-                                        vertical: 5,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                "${account.accnumber} | ${account.accName}",
-                                                style: Theme.of(
-                                                  context,
-                                                ).textTheme.bodyLarge,
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    itemToString: (acc) =>
-                                        "${acc.accnumber} | ${acc.accName}",
-                                    stateToLoading: (state) =>
-                                        state is AccountLoadingState,
-                                    loadingBuilder: (context) => const SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 3,
-                                      ),
-                                    ),
-                                    stateToItems: (state) {
-                                      if (state is StkAccountLoadedState) {
-                                        return state.accounts;
-                                      }
-                                      return [];
-                                    },
-                                    onSelected: (value) {
-                                      setState(() {
-                                        accNumber = value.accnumber;
-                                        ccySymbol = value.ccySymbol;
-                                        accCurrency = value.actCurrency;
-                                        accName = value.accName ?? "";
-                                        availableBalance = value.avilBalance;
-                                        currentBalance = value.curBalance;
-                                        accountLimit = value.actCreditLimit;
-                                        status = value.actStatus ?? 0;
-                                      });
-                                    },
-                                    noResultsText: locale.noDataFound,
-                                    showClearButton: true,
-                                  ),
+                            GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
+                              showAllOnFocus: true,
+                              controller: accountController,
+                              title: locale.accounts,
+                              hintText: locale.accNameOrNumber,
+                              isRequired: true,
+                              bloc: context.read<AccountsBloc>(),
+                              fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
+                              searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return locale.required(locale.accounts);
+                                }
+                                return null;
+                              },
+                              itemBuilder: (context, account) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 5,
                                 ),
-                                Expanded(
-                                  child: ZDatePicker(
-                                    disablePastDate: true,
-                                    label: locale.dueDate,
-                                    value: dueDate,
-                                    onDateChanged: (v) {
-                                      setState(() {
-                                        dueDate = v;
-                                      });
-                                    },
-                                  ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "${account.accnumber} | ${account.accName}",
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyLarge,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
+                              itemToString: (acc) =>
+                              "${acc.accnumber} | ${acc.accName}",
+                              stateToLoading: (state) =>
+                              state is AccountLoadingState,
+                              loadingBuilder: (context) => const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                ),
+                              ),
+                              stateToItems: (state) {
+                                if (state is StkAccountLoadedState) {
+                                  return state.accounts;
+                                }
+                                return [];
+                              },
+                              onSelected: (value) {
+                                setState(() {
+                                  accNumber = value.accnumber;
+                                  ccySymbol = value.ccySymbol;
+                                  accCurrency = value.actCurrency;
+                                  accName = value.accName ?? "";
+                                  availableBalance = value.avilBalance;
+                                  currentBalance = value.curBalance;
+                                  accountLimit = value.actCreditLimit;
+                                  status = value.actStatus ?? 0;
+                                });
+                              },
+                              noResultsText: locale.noDataFound,
+                              showClearButton: true,
                             ),
                             if (accName != null && accName!.isNotEmpty)...[
                               ZCover(
@@ -451,10 +475,9 @@ class _DesktopState extends State<_Desktop> {
                                   ],
                                 ),
                               ),
+                              SizedBox(height: 5),
                             ],
 
-                            if (accName != null && accName!.isNotEmpty)
-                              SizedBox(height: 5),
                             ZTextFieldEntitled(
                               isRequired: true,
                               keyboardInputType:
@@ -497,7 +520,7 @@ class _DesktopState extends State<_Desktop> {
                               spacing: 5,
                               children: [
                                 Checkbox(
-                                  visualDensity: VisualDensity(horizontal: -4),
+                                  visualDensity: VisualDensity(horizontal: -4,vertical: -4),
                                   value: isPrint,
                                   onChanged: (e) {
                                     setState(() {
@@ -508,19 +531,46 @@ class _DesktopState extends State<_Desktop> {
                                 Text(locale.print),
                               ],
                             ),
-
-                            if (trState is TransactionErrorState)
-                              SizedBox(height: 10),
                             Row(
+                              spacing: 5,
                               children: [
-                                trState is TransactionErrorState
-                                    ? Text(
-                                        trState.message,
-                                        style: TextStyle(color: color.error),
-                                      )
-                                    : SizedBox(),
+                                Checkbox(
+                                  visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+                                  value: isReminder,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isReminder = value ?? false;
+                                    });
+                                  },
+                                ),
+                                Text(locale.setReminder),
                               ],
                             ),
+
+                            if(isReminder)
+                              ZDatePicker(
+                                disablePastDate: true,
+                                label: locale.dueDate,
+                                value: reminderDate,
+                                onDateChanged: (v) {
+                                  setState(() {
+                                    reminderDate = v;
+                                  });
+                                },
+                              ),
+
+                            if (trState is TransactionErrorState)...[
+                              Row(
+                                children: [
+                                  Text(
+                                    trState.message,
+                                    style: TextStyle(color: color.error),
+                                  ),
+                                ],
+                              ),
+                            ]
+
+
                           ],
                         ),
                       ),
@@ -1920,25 +1970,6 @@ class _DesktopState extends State<_Desktop> {
       });
     }
 
-    void onReminder({
-      required int accNumber,
-      required String dueType,
-      required String usrName,
-      required String narration,
-      required String amount,
-      required String date,
-      }) {
-      final model = ReminderModel(
-        usrName: usrName,
-        rmdName: dueType,
-        rmdAccount: accNumber,
-        rmdAmount: amount.cleanAmount,
-        rmdDetails: narration,
-        rmdAlertDate: DateTime.tryParse(date),
-        rmdStatus: 1,
-      );
-      context.read<ReminderBloc>().add(AddReminderEvent(model));
-    }
 
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): () => onCashDepositWithdraw(trnType: "CHDP"),

@@ -767,5 +767,6 @@
   "dueType": "Due Type",
   "payableDue": "Payable Due",
   "receivableDue": "Receivable Due",
-  "dueDate": "Due Date"
+  "dueDate": "Due Date",
+  "setReminder": "Set Reminder"
 }

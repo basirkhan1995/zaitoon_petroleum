@@ -2307,4 +2307,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get dueDate => 'تاریخ موعد';
+
+  @override
+  String get setReminder => 'تعیین یادآوری';
 }

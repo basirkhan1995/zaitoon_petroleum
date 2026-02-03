@@ -767,5 +767,6 @@
   "dueType": "نوع سررسید",
   "payableDue": "سررسید پرداخت",
   "receivableDue": "سررسید دریافت",
-  "dueDate": "تاریخ موعد"
+  "dueDate": "تاریخ موعد",
+  "setReminder": "تعیین یادآوری"
 }

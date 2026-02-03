@@ -2317,4 +2317,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dueDate => 'Due Date';
+
+  @override
+  String get setReminder => 'Set Reminder';
 }
