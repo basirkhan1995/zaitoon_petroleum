@@ -763,5 +763,9 @@
   "regardsTitle": "محترم",
   "dearCustomer": "مشتری محترم،",
   "reminders": "یادآوری‌ ها",
-  "noAlertReminders": "یادآوری یافت نشد"
+  "noAlertReminders": "یادآوری یافت نشد",
+  "dueType": "نوع سررسید",
+  "payableDue": "سررسید پرداخت",
+  "receivableDue": "سررسید دریافت",
+  "dueDate": "تاریخ موعد"
 }

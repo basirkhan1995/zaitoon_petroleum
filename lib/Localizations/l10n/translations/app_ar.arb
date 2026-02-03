@@ -763,5 +763,9 @@
   "regardsTitle": "محترم",
   "dearCustomer": "مشتری محترم،",
   "reminders": "یادونې",
-  "noAlertReminders": "یادآوری یافت نشد"
+  "noAlertReminders": "یادآوری یافت نشد",
+  "dueType": "د سررسېد ډول",
+  "payableDue": "د تادیې سررسېد",
+  "receivableDue": "د ترلاسه کولو سررسېد",
+  "dueDate": "د تادیې نېټه"
 }

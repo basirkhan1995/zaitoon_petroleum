@@ -153,7 +153,8 @@ class _ReminderTile extends StatelessWidget {
     return ZCover(
       margin: const EdgeInsets.symmetric(vertical: 6),
       padding: const EdgeInsets.all(10),
-      radius: 8,
+      color: Theme.of(context).colorScheme.surface,
+      radius: 5,
       child: Row(
         children: [
 
@@ -162,7 +163,13 @@ class _ReminderTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
+                Text(
+                  model.rmdName ?? "",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall
+                      ?.copyWith(fontWeight: FontWeight.w600),
+                ),
                 /// Customer
                 Text(
                   model.fullName ?? "",

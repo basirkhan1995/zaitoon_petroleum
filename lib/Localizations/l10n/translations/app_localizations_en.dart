@@ -2305,4 +2305,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noAlertReminders => 'No Alert Reminders';
+
+  @override
+  String get dueType => 'Due Type';
+
+  @override
+  String get payableDue => 'Payable Due';
+
+  @override
+  String get receivableDue => 'Receivable Due';
+
+  @override
+  String get dueDate => 'Due Date';
 }

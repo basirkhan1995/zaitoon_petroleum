@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Reminder/features/due_drop.dart';
 
+import '../../../../Features/Date/z_generic_date.dart';
 import '../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../Features/Other/thousand_separator.dart';
 import '../../../../Features/Other/zForm_dialog.dart';
 import '../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../Auth/bloc/auth_bloc.dart';
 import '../Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import '../Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
 import 'bloc/reminder_bloc.dart';
@@ -55,54 +59,91 @@ class _DesktopState extends State<_Desktop> {
   final TextEditingController amount = TextEditingController();
   final TextEditingController details = TextEditingController();
   int? accNumber;
-  DateTime? alertDate;
+  String? usrName;
+  String? dueType;
 
   @override
   void initState() {
     final r = widget.reminder;
 
-    account.text = r?.rmdAccount?.toString() ?? "";
-    amount.text = r?.rmdAmount ?? "";
-    details.text = r?.rmdDetails ?? "";
-    alertDate = r?.rmdAlertDate;
-
+    if(r !=null){
+      account.text = r.rmdAccount?.toString() ?? "";
+      amount.text = r.rmdAmount ?? "";
+      details.text = r.rmdDetails ?? "";
+      dueDate = r.rmdAlertDate?.toFormattedDate() ??"";
+      dueType = r.rmdName;
+    }
     super.initState();
   }
+  String dueDate = DateTime.now().toFormattedDate();
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context)!;
-
-    final isLoading =
-        context.watch<ReminderBloc>().state.loading;
+    final tr = AppLocalizations.of(context)!;
+    final state = context.watch<AuthBloc>().state;
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
+    usrName = login.usrName??"";
+    final isLoading = context.watch<ReminderBloc>().state.loading;
 
     return ZFormDialog(
       width: 450,
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.all(12),
       icon: Icons.notifications,
-      title: locale.reminders,
+      title: tr.reminders,
       actionLabel: isLoading
-          ? const CircularProgressIndicator()
-          : Text(locale.create),
+          ? SizedBox(
+          width: 16,
+          height: 16,
+          child: const CircularProgressIndicator())
+          : Text(widget.reminder == null ? tr.create : tr.update),
       onAction: onSubmit,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         spacing: 8,
         children: [
-
+          /// DATE PICKER
+          Row(
+            spacing: 8,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: ZDatePicker(
+                  disablePastDate: true,
+                  label: tr.dueDate,
+                  value: dueDate,
+                  onDateChanged: (v) {
+                    setState(() {
+                      dueDate = v;
+                    });
+                  },
+                ),
+              ),
+              Expanded(
+                child: DueTypeDropdown(
+                    onDueTypeSelected: (e){
+                       setState(() {
+                         dueType = e.name;
+                       });
+                }),
+              ),
+            ],
+          ),
           /// Account
           GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
             showAllOnFocus: true,
             controller: account,
-            title: locale.accounts,
-            hintText: locale.accNameOrNumber,
+            title: tr.accounts,
+            hintText: tr.accNameOrNumber,
             isRequired: true,
             bloc: context.read<AccountsBloc>(),
             fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
             searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
             validator: (value) {
               if (value.isEmpty) {
-                return locale.required(locale.accounts);
+                return tr.required(tr.accounts);
               }
               return null;
             },
@@ -151,14 +192,14 @@ class _DesktopState extends State<_Desktop> {
                 accNumber = value.accnumber;
               });
             },
-            noResultsText: locale.noDataFound,
+            noResultsText: tr.noDataFound,
             showClearButton: true,
           ),
 
           /// Amount
           ZTextFieldEntitled(
             controller: amount,
-            title: locale.amount,
+            title: tr.amount,
             keyboardInputType:
             const TextInputType.numberWithOptions(decimal: true),
             isRequired: true,
@@ -171,7 +212,7 @@ class _DesktopState extends State<_Desktop> {
             ],
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return locale.required(locale.amount);
+                return tr.required(tr.amount);
               }
 
               // Remove formatting (e.g. commas)
@@ -182,7 +223,7 @@ class _DesktopState extends State<_Desktop> {
               final amount = double.tryParse(clean);
 
               if (amount == null || amount <= 0.0) {
-                return locale.amountGreaterZero;
+                return tr.amountGreaterZero;
               }
 
               return null;
@@ -192,15 +233,13 @@ class _DesktopState extends State<_Desktop> {
           /// Details
           ZTextFieldEntitled(
             controller: details,
-            title: locale.details,
+            title: tr.details,
             keyboardInputType: TextInputType.multiline,
             maxLength: 100,
           ),
 
           const SizedBox(height: 10),
-
-          /// DATE PICKER
-
+          
         ],
       ),
     );
@@ -210,11 +249,12 @@ class _DesktopState extends State<_Desktop> {
   void onSubmit() {
     final model = ReminderModel(
       rmdId: widget.reminder?.rmdId,
-      usrName: "basir.h",
+      usrName: usrName,
+      rmdName: dueType,
       rmdAccount: accNumber,
       rmdAmount: amount.text.cleanAmount,
       rmdDetails: details.text,
-      rmdAlertDate: alertDate,
+      rmdAlertDate: DateTime.tryParse(dueDate),
       rmdStatus: widget.reminder?.rmdStatus ?? 0,
     );
 

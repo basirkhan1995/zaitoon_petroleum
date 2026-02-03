@@ -8,6 +8,7 @@ class GregorianDatePicker extends StatefulWidget {
   final DateTime? initialDate;
   final int minYear;
   final int maxYear;
+  final bool disablePastDates; // New parameter
 
   const GregorianDatePicker({
     super.key,
@@ -15,9 +16,9 @@ class GregorianDatePicker extends StatefulWidget {
     this.initialDate,
     this.minYear = 1900,
     this.maxYear = 2100,
+    this.disablePastDates = false, // Default to false
   });
 
-  @override
   @override
   GregorianDatePickerState createState() => GregorianDatePickerState();
 }
@@ -37,7 +38,14 @@ class GregorianDatePickerState extends State<GregorianDatePicker> {
   void initState() {
     super.initState();
     _today = DateTime.now();
-    _selectedDate = widget.initialDate ?? _today;
+
+    // If past dates are disabled and initial date is in past, use today
+    if (widget.disablePastDates && widget.initialDate != null && widget.initialDate!.isBefore(_today)) {
+      _selectedDate = DateTime(_today.year, _today.month, _today.day);
+    } else {
+      _selectedDate = widget.initialDate ?? DateTime(_today.year, _today.month, _today.day);
+    }
+
     _currentMonth = DateTime(_selectedDate.year, _selectedDate.month, 1);
     _selectedYear = _selectedDate.year;
     _yearScrollController = ScrollController();
@@ -77,6 +85,10 @@ class GregorianDatePickerState extends State<GregorianDatePicker> {
   }
 
   void _onDateTapped(DateTime date) {
+    // Check if past dates are disabled and date is in past
+    if (widget.disablePastDates && _isDateBeforeToday(date)) {
+      return;
+    }
     setState(() {
       _pendingSelection = date;
     });
@@ -84,6 +96,11 @@ class GregorianDatePickerState extends State<GregorianDatePicker> {
 
   void _confirmSelection() {
     if (_pendingSelection != null) {
+      // Double-check that the pending selection is valid
+      if (widget.disablePastDates && _isDateBeforeToday(_pendingSelection!)) {
+        return;
+      }
+
       setState(() {
         _selectedDate = _pendingSelection!;
         _selectedYear = _pendingSelection!.year;
@@ -104,14 +121,44 @@ class GregorianDatePickerState extends State<GregorianDatePicker> {
 
   void _navigateMonth(int offset) {
     setState(() {
-      _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + offset, 1);
+      final newMonth = DateTime(_currentMonth.year, _currentMonth.month + offset, 1);
+
+      // If past dates are disabled and trying to navigate to past months, limit to current month
+      if (widget.disablePastDates) {
+        if (newMonth.year < _today.year ||
+            (newMonth.year == _today.year && newMonth.month < _today.month)) {
+          _currentMonth = DateTime(_today.year, _today.month, 1);
+          _selectedYear = _today.year;
+          return;
+        }
+      }
+
+      _currentMonth = newMonth;
+      _selectedYear = newMonth.year;
     });
   }
 
   void _changeYear(int year) {
+    // If past dates are disabled, don't allow selecting years before current year
+    if (widget.disablePastDates && year < _today.year) {
+      return;
+    }
+
     setState(() {
       _selectedYear = year;
-      _currentMonth = DateTime(year, _currentMonth.month, 1);
+
+      // If we're in the current year, make sure we don't go to a past month
+      if (widget.disablePastDates && year == _today.year) {
+        final currentMonth = _currentMonth.month;
+        if (currentMonth < _today.month) {
+          _currentMonth = DateTime(year, _today.month, 1);
+        } else {
+          _currentMonth = DateTime(year, currentMonth, 1);
+        }
+      } else {
+        _currentMonth = DateTime(year, _currentMonth.month, 1);
+      }
+
       _showYearSelector = false;
     });
   }
@@ -132,6 +179,18 @@ class GregorianDatePickerState extends State<GregorianDatePicker> {
     });
   }
 
+  // Helper method to check if a date is before today (ignoring time)
+  bool _isDateBeforeToday(DateTime date) {
+    final today = DateTime(_today.year, _today.month, _today.day);
+    final compareDate = DateTime(date.year, date.month, date.day);
+    return compareDate.isBefore(today);
+  }
+
+  // Helper method to check if a date is disabled
+  bool _isDateDisabled(DateTime date) {
+    return widget.disablePastDates && _isDateBeforeToday(date);
+  }
+
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
@@ -144,9 +203,9 @@ class GregorianDatePickerState extends State<GregorianDatePicker> {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        width: showYearPanel ? 500 : 340, // expand only width
+        width: showYearPanel ? 500 : 340,
         height: 450,
-        padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
           color: color.surface,
           borderRadius: BorderRadius.circular(5),
@@ -196,18 +255,24 @@ class GregorianDatePickerState extends State<GregorianDatePicker> {
                         itemBuilder: (context, index) {
                           final year = widget.minYear + index;
                           final isSelected = year == _selectedYear;
+                          final isPastYear = widget.disablePastDates && year < _today.year;
+
                           return InkWell(
-                            onTap: () => _changeYear(year),
+                            onTap: isPastYear ? null : () => _changeYear(year),
                             child: Container(
                               decoration: BoxDecoration(
                                 color: isSelected ? color.primary : color.surface,
                                 borderRadius: BorderRadius.circular(3),
+                                border: Border.all(
+                                  color: isPastYear ? color.outline.withValues(alpha: .3) : Colors.transparent,
+                                ),
                               ),
                               child: Center(
                                 child: Text(
                                   year.toString(),
                                   style: TextStyle(
-                                    color: isSelected ? color.surface : color.primary,
+                                    color: isSelected ? color.surface :
+                                    isPastYear ? color.outline.withValues(alpha: .5) : color.primary,
                                     fontWeight: FontWeight.bold,
                                   ),
                                   maxLines: 1,
@@ -234,7 +299,7 @@ class GregorianDatePickerState extends State<GregorianDatePicker> {
                   Row(
                     spacing: 5,
                     children: [
-                      Icon(Icons.calendar_month_rounded,color: color.outline),
+                      Icon(Icons.calendar_month_rounded, color: color.outline),
                       Expanded(
                         child: Text(
                           _formatSelectedDate(_pendingSelection ?? _selectedDate),
@@ -279,7 +344,16 @@ class GregorianDatePickerState extends State<GregorianDatePicker> {
                         IconButton(
                           iconSize: 20,
                           icon: Icon(Icons.chevron_left, color: color.secondary),
-                          onPressed: () => _navigateMonth(-1),
+                          onPressed: () {
+                            if (widget.disablePastDates) {
+                              final prevMonth = DateTime(_currentMonth.year, _currentMonth.month - 1, 1);
+                              if (prevMonth.year < _today.year ||
+                                  (prevMonth.year == _today.year && prevMonth.month < _today.month)) {
+                                return;
+                              }
+                            }
+                            _navigateMonth(-1);
+                          },
                           tooltip: 'Previous month',
                         ),
                         IconButton(
@@ -341,9 +415,10 @@ class GregorianDatePickerState extends State<GregorianDatePicker> {
                                   ? _isSameDate(date, _pendingSelection!)
                                   : date != null && _isSameDate(date, _selectedDate);
                               final isToday = date != null && _isSameDate(date, _today);
+                              final isDisabled = date != null && _isDateDisabled(date);
 
                               return InkWell(
-                                onTap: date != null ? () => _onDateTapped(date) : null,
+                                onTap: (date != null && !isDisabled) ? () => _onDateTapped(date) : null,
                                 child: Container(
                                   margin: const EdgeInsets.all(2),
                                   decoration: BoxDecoration(
@@ -351,6 +426,8 @@ class GregorianDatePickerState extends State<GregorianDatePicker> {
                                         ? color.primary
                                         : isToday
                                         ? color.primary.withValues(alpha: .2)
+                                        : isDisabled
+                                        ? color.surface.withValues(alpha: .3)
                                         : null,
                                     shape: BoxShape.circle,
                                     border: isToday ? Border.all(color: color.primary, width: 1) : null,
@@ -363,6 +440,8 @@ class GregorianDatePickerState extends State<GregorianDatePicker> {
                                             ? color.surface
                                             : isToday
                                             ? color.primary
+                                            : isDisabled
+                                            ? color.outline.withValues(alpha: 0.5)
                                             : isCurrentMonthDay
                                             ? color.secondary
                                             : color.surface.withValues(alpha: .0),

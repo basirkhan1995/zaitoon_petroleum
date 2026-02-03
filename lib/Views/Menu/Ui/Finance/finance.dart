@@ -5,6 +5,7 @@ import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/EndOfYear/end_year.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/gl_accounts.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Payroll/payroll.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Reminder/reminder.dart';
 import '../../../../Features/Generic/tab_bar.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import 'Ui/Currency/currency.dart';
@@ -49,6 +50,11 @@ class FinanceView extends StatelessWidget {
                 label: AppLocalizations.of(context)!.fiscalYear,
                 screen: const EndOfYearView(),
               ),
+            ZTabItem(
+              value: FinanceTabName.reminder,
+              label: AppLocalizations.of(context)!.reminders,
+              screen: const ReminderView(),
+            ),
           ];
 
           if (tabs.isEmpty) {

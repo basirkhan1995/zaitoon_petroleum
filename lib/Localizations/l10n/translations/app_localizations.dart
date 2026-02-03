@@ -4563,6 +4563,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No Alert Reminders'**
   String get noAlertReminders;
+
+  /// No description provided for @dueType.
+  ///
+  /// In en, this message translates to:
+  /// **'Due Type'**
+  String get dueType;
+
+  /// No description provided for @payableDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Payable Due'**
+  String get payableDue;
+
+  /// No description provided for @receivableDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Receivable Due'**
+  String get receivableDue;
+
+  /// No description provided for @dueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Due Date'**
+  String get dueDate;
 }
 
 class _AppLocalizationsDelegate

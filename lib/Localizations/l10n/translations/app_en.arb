@@ -763,5 +763,9 @@
   "regardsTitle": "Regards",
   "dearCustomer": "Dear Customer,",
   "reminders": "Reminders",
-  "noAlertReminders": "No Alert Reminders"
+  "noAlertReminders": "No Alert Reminders",
+  "dueType": "Due Type",
+  "payableDue": "Payable Due",
+  "receivableDue": "Receivable Due",
+  "dueDate": "Due Date"
 }

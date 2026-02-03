@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 
 import '../../../../Features/Other/extensions.dart';
@@ -58,15 +59,9 @@ class _DesktopState extends State<_Desktop> {
     final locale = AppLocalizations.of(context)!;
 
     return Scaffold(
-      body: Container(
-        width: 600,
+      body: ZCover(
+        radius: 5,
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 3),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(5),
-          border: Border.all(
-              color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
-        ),
         child: Column(
           children: [
 
@@ -137,6 +132,8 @@ class _DesktopState extends State<_Desktop> {
 
                       return Material(
                         child: InkWell(
+                          highlightColor: Theme.of(context).colorScheme.surface,
+                          hoverColor: Theme.of(context).colorScheme.surface,
                           onTap: () {
                             showDialog(
                               context: context,
@@ -144,17 +141,13 @@ class _DesktopState extends State<_Desktop> {
                                   AddEditReminderView(r: r),
                             );
                           },
-                          child: Container(
+                          child: ZCover(
                         margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: isOverdue
-                                ? Colors.red.withValues(alpha: .4)
-                                : Theme.of(context).colorScheme.outline.withValues(alpha: .2),
-                          ),
-                        ),
+                        color: Theme.of(context).colorScheme.surface,
+                        borderColor: isOverdue
+                            ? Colors.red.withValues(alpha: .4)
+                            : Theme.of(context).colorScheme.outline.withValues(alpha: .2),
+                        radius: 5,
                         child: InkWell(
                           borderRadius: BorderRadius.circular(6),
                           onTap: () {
@@ -175,7 +168,7 @@ class _DesktopState extends State<_Desktop> {
                                       ? Icons.warning_rounded
                                       : Icons.notifications_active_outlined,
                                   color: isOverdue
-                                      ? Colors.red
+                                      ? Theme.of(context).colorScheme.error
                                       : Theme.of(context).colorScheme.primary,
                                   size: 26,
                                 ),
@@ -187,6 +180,13 @@ class _DesktopState extends State<_Desktop> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
+                                      Text(
+                                        r.rmdName ?? "",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall
+                                            ?.copyWith(fontWeight: FontWeight.w600),
+                                      ),
                                       Text(
                                         r.fullName ?? "",
                                         style: Theme.of(context)
@@ -217,7 +217,7 @@ class _DesktopState extends State<_Desktop> {
                                           Text(
                                             r.rmdAccount.toString(),
                                             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                              color: isOverdue ? Colors.red : Colors.grey,
+                                              color: isOverdue ?Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.outline,
                                             ),
                                           ),
 
@@ -228,7 +228,7 @@ class _DesktopState extends State<_Desktop> {
                                           Text(
                                             r.rmdAlertDate?.toDateString ?? "",
                                             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                              color: isOverdue ? Colors.red : Colors.grey,
+                                              color: isOverdue ?Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.outline,
                                             ),
                                           ),
 
@@ -239,7 +239,7 @@ class _DesktopState extends State<_Desktop> {
                                           Text(
                                             r.rmdAlertDate?.toDueStatus() ?? "",
                                             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                              color: isOverdue ? Colors.red : Colors.grey,
+                                              color: isOverdue ?Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.outline,
                                             ),
                                           ),
                                         ],

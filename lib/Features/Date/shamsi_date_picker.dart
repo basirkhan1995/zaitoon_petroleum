@@ -9,6 +9,7 @@ class AfghanDatePicker extends StatefulWidget {
   final Jalali? initialDate;
   final int minYear;
   final int maxYear;
+  final bool disablePastDates; // New parameter
 
   const AfghanDatePicker({
     super.key,
@@ -16,6 +17,7 @@ class AfghanDatePicker extends StatefulWidget {
     this.initialDate,
     this.minYear = 1300,
     this.maxYear = 1500,
+    this.disablePastDates = false, // Default to false
   });
 
   @override
@@ -37,7 +39,14 @@ class AfghanDatePickerState extends State<AfghanDatePicker> {
   void initState() {
     super.initState();
     _today = Jalali.now();
-    _selectedDate = widget.initialDate ?? _today;
+
+    // If past dates are disabled and initial date is in past, use today
+    if (widget.disablePastDates && widget.initialDate != null && widget.initialDate!.compareTo(_today) < 0) {
+      _selectedDate = _today;
+    } else {
+      _selectedDate = widget.initialDate ?? _today;
+    }
+
     _currentMonth = Jalali(_selectedDate.year, _selectedDate.month, 1);
     _selectedYear = _selectedDate.year;
     _yearScrollController = ScrollController();
@@ -59,20 +68,30 @@ class AfghanDatePickerState extends State<AfghanDatePicker> {
   }
 
   String _formatSelectedDate(Jalali date) {
-    final weekday = _getFullWeekdayName(date.weekDay); // <-- add this
+    final weekday = _getFullWeekdayName(date.weekDay);
     final month = _getAfghanMonthName(date.month);
     final day = _toPersianNumbers(date.day.toString().padLeft(2,'0'));
     final year = _toPersianNumbers(date.year.toString());
-    return '$weekday، $month $day/$year'; // include weekday at the start
+    return '$weekday، $month $day/$year';
   }
-
 
   bool _isSameDate(Jalali d1, Jalali d2) => d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
 
-  void _onDateTapped(Jalali date) => setState(() => _pendingSelection = date);
+  void _onDateTapped(Jalali date) {
+    // Check if past dates are disabled and date is in past
+    if (widget.disablePastDates && date.compareTo(_today) < 0) {
+      return;
+    }
+    setState(() => _pendingSelection = date);
+  }
 
   void _confirmSelection() {
     if (_pendingSelection != null) {
+      // Double-check that the pending selection is valid
+      if (widget.disablePastDates && _pendingSelection!.compareTo(_today) < 0) {
+        return;
+      }
+
       setState(() {
         _selectedDate = _pendingSelection!;
         _selectedYear = _pendingSelection!.year;
@@ -104,16 +123,43 @@ class AfghanDatePickerState extends State<AfghanDatePicker> {
         newYear -= 1;
       }
 
+      // If past dates are disabled and trying to navigate to past months, limit to current month
+      if (widget.disablePastDates) {
+        final newMonthDate = Jalali(newYear, newMonth, 1);
+        if (newMonthDate.year < _today.year ||
+            (newMonthDate.year == _today.year && newMonthDate.month < _today.month)) {
+          _currentMonth = Jalali(_today.year, _today.month, 1);
+          _selectedYear = _today.year;
+          return;
+        }
+      }
+
       _currentMonth = Jalali(newYear, newMonth, 1);
       _selectedYear = newYear;
     });
   }
 
-
   void _changeYear(int year) {
+    // If past dates are disabled, don't allow selecting years before current year
+    if (widget.disablePastDates && year < _today.year) {
+      return;
+    }
+
     setState(() {
       _selectedYear = year;
-      _currentMonth = Jalali(year, _currentMonth.month, 1);
+
+      // If we're in the current year, make sure we don't go to a past month
+      if (widget.disablePastDates && year == _today.year) {
+        final currentMonth = _currentMonth.month;
+        if (currentMonth < _today.month) {
+          _currentMonth = Jalali(year, _today.month, 1);
+        } else {
+          _currentMonth = Jalali(year, currentMonth, 1);
+        }
+      } else {
+        _currentMonth = Jalali(year, _currentMonth.month, 1);
+      }
+
       _showYearSelector = false;
     });
   }
@@ -132,6 +178,11 @@ class AfghanDatePickerState extends State<AfghanDatePicker> {
         );
       }
     });
+  }
+
+  // Helper method to check if a date is disabled
+  bool _isDateDisabled(Jalali date) {
+    return widget.disablePastDates && date.compareTo(_today) < 0;
   }
 
   @override
@@ -179,17 +230,26 @@ class AfghanDatePickerState extends State<AfghanDatePicker> {
                         itemBuilder: (context, index) {
                           final year = widget.minYear + index;
                           final selected = year == _selectedYear;
+                          final isPastYear = widget.disablePastDates && year < _today.year;
+
                           return InkWell(
-                            onTap: () => _changeYear(year),
+                            onTap: isPastYear ? null : () => _changeYear(year),
                             child: Container(
                               decoration: BoxDecoration(
                                 color: selected ? color.primary : color.surface,
                                 borderRadius: BorderRadius.circular(3),
+                                border: Border.all(
+                                  color: isPastYear ? color.outline.withValues(alpha: .3) : Colors.transparent,
+                                ),
                               ),
                               child: Center(
                                 child: Text(
                                   _toPersianNumbers(year.toString()),
-                                  style: TextStyle(color: selected ? color.surface : color.primary, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                    color: selected ? color.surface :
+                                    isPastYear ? color.outline.withValues(alpha: .5) : color.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
@@ -201,11 +261,10 @@ class AfghanDatePickerState extends State<AfghanDatePicker> {
                 ),
               ),
 
-            SizedBox(width: 5),
-            if (_showYearSelector)
-              VerticalDivider(width: 1, color: color.outlineVariant),
-            if (_showYearSelector)
-              SizedBox(width: 10),
+            if (_showYearSelector) SizedBox(width: 5),
+            if (_showYearSelector) VerticalDivider(width: 1, color: color.outlineVariant),
+            if (_showYearSelector) SizedBox(width: 10),
+
             // Calendar panel
             Expanded(
               child: Column(
@@ -213,12 +272,13 @@ class AfghanDatePickerState extends State<AfghanDatePicker> {
                   Row(
                     spacing: 5,
                     children: [
-                      Icon(Icons.calendar_month_rounded,color: color.outline),
+                      Icon(Icons.calendar_month_rounded, color: color.outline),
                       Text(_formatSelectedDate(_pendingSelection ?? _selectedDate),
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: color.outline)),
                     ],
                   ),
                   const SizedBox(height: 12),
+
                   // Month navigation
                   Row(
                     children: [
@@ -234,8 +294,28 @@ class AfghanDatePickerState extends State<AfghanDatePicker> {
                           ),
                         ),
                       ),
-                      IconButton(icon: Icon(Icons.chevron_left), onPressed: () => _navigateMonth(-1),iconSize: 20),
-                      IconButton(icon: Icon(Icons.chevron_right), onPressed: () => _navigateMonth(1),iconSize: 20),
+
+                      // Previous month button - disable if past dates are disabled and we're at the earliest allowed month
+                      IconButton(
+                        icon: Icon(Icons.chevron_left),
+                        onPressed: () {
+                          if (widget.disablePastDates) {
+                            final prevMonth = Jalali(_currentMonth.year, _currentMonth.month - 1, 1);
+                            if (prevMonth.year < _today.year ||
+                                (prevMonth.year == _today.year && prevMonth.month < _today.month)) {
+                              return;
+                            }
+                          }
+                          _navigateMonth(-1);
+                        },
+                        iconSize: 20,
+                      ),
+
+                      IconButton(
+                        icon: Icon(Icons.chevron_right),
+                        onPressed: () => _navigateMonth(1),
+                        iconSize: 20,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -264,13 +344,16 @@ class AfghanDatePickerState extends State<AfghanDatePicker> {
                         final date = isCurrentMonthDay ? Jalali(_currentMonth.year, _currentMonth.month, day!) : null;
                         final isSelected = date != null && (_pendingSelection != null ? _isSameDate(date, _pendingSelection!) : _isSameDate(date, _selectedDate));
                         final isToday = date != null && _isSameDate(date, _today);
+                        final isDisabled = date != null && _isDateDisabled(date);
 
                         return InkWell(
-                          onTap: date != null ? () => _onDateTapped(date) : null,
+                          onTap: (date != null && !isDisabled) ? () => _onDateTapped(date) : null,
                           child: Container(
                             margin: const EdgeInsets.all(2),
                             decoration: BoxDecoration(
-                              color: isSelected ? color.primary : isToday ? color.primary.withValues(alpha: .2) : null,
+                              color: isSelected ? color.primary :
+                              isToday ? color.primary.withValues(alpha: .2) :
+                              isDisabled ? color.surface.withValues(alpha: .3) : null,
                               shape: BoxShape.circle,
                               border: isToday ? Border.all(color: color.primary, width: 1) : null,
                             ),
@@ -279,7 +362,9 @@ class AfghanDatePickerState extends State<AfghanDatePicker> {
                                 day != null ? _toPersianNumbers(day.toString()) : '',
                                 style: TextStyle(
                                   fontSize: 18,
-                                  color: isSelected ? color.surface : isToday ? color.primary : color.secondary,
+                                  color: isSelected ? color.surface :
+                                  isToday ? color.primary :
+                                  isDisabled ? color.outline.withValues(alpha: .5) : color.secondary,
                                   fontWeight: isSelected || isToday ? FontWeight.bold : FontWeight.normal,
                                 ),
                               ),
@@ -296,12 +381,17 @@ class AfghanDatePickerState extends State<AfghanDatePicker> {
                     children: [
                       ZOutlineButton(
                           width: 90,
-                          height: 30, onPressed: _selectToday, label: Text(locale.today)),
+                          height: 30,
+                          onPressed: _selectToday,
+                          label: Text(locale.today)
+                      ),
                       const SizedBox(width: 8),
                       ZButton(
                           height: 30,
                           width: 90,
-                          onPressed: _pendingSelection != null ? _confirmSelection : null, label: Text(locale.selectKeyword)),
+                          onPressed: _pendingSelection != null ? _confirmSelection : null,
+                          label: Text(locale.selectKeyword)
+                      ),
                     ],
                   ),
                 ],
@@ -312,6 +402,7 @@ class AfghanDatePickerState extends State<AfghanDatePicker> {
       ),
     );
   }
+
   String _getFullWeekdayName(int weekday) {
     const weekdays = {
       1: 'شنبه',

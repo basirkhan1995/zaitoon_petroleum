@@ -2298,4 +2298,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noAlertReminders => 'یادآوری یافت نشد';
+
+  @override
+  String get dueType => 'د سررسېد ډول';
+
+  @override
+  String get payableDue => 'د تادیې سررسېد';
+
+  @override
+  String get receivableDue => 'د ترلاسه کولو سررسېد';
+
+  @override
+  String get dueDate => 'د تادیې نېټه';
 }

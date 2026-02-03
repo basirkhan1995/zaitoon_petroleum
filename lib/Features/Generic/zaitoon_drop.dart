@@ -148,7 +148,7 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
             widget.customTitle!
           else if (widget.title.isNotEmpty)
             Text(widget.title,
-                style: Theme.of(context).textTheme.titleSmall),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 12)),
 
           const SizedBox(height: 4),
 

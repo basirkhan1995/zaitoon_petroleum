@@ -2295,4 +2295,16 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get noAlertReminders => 'یادآوری یافت نشد';
+
+  @override
+  String get dueType => 'نوع سررسید';
+
+  @override
+  String get payableDue => 'سررسید پرداخت';
+
+  @override
+  String get receivableDue => 'سررسید دریافت';
+
+  @override
+  String get dueDate => 'تاریخ موعد';
 }

@@ -19,6 +19,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_mod
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/bloc/transaction_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
+import '../../../../Features/Date/z_generic_date.dart';
 import '../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../Features/Generic/underline_tab.dart';
 import '../../../../Features/Other/cover.dart';
@@ -87,6 +88,7 @@ class _DesktopState extends State<_Desktop> {
   final company = ReportModel();
   TransactionsModel? transactionsModel;
   bool isPrint = true;
+
   @override
   void initState() {
     super.initState();
@@ -107,9 +109,9 @@ class _DesktopState extends State<_Desktop> {
       if (companyState is CompanyProfileLoadedState) {
         return companyState.company.comLocalCcy;
       }
-      return ""; // Fallback currency
+      return "";
     } catch (e) {
-      return ""; // Fallback if provider not available
+      return "";
     }
   }
 
@@ -123,6 +125,7 @@ class _DesktopState extends State<_Desktop> {
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
     final state = context.watch<AuthBloc>().state;
+    String dueDate = DateTime.now().toFormattedDate();
     TextStyle? headerStyle = textTheme.titleMedium?.copyWith(
       color: color.primary,
     );
@@ -210,75 +213,96 @@ class _DesktopState extends State<_Desktop> {
                           mainAxisSize: MainAxisSize.min,
                           spacing: 12,
                           children: [
-                            GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
-                              showAllOnFocus: true,
-                              controller: accountController,
-                              title: locale.accounts,
-                              hintText: locale.accNameOrNumber,
-                              isRequired: true,
-                              bloc: context.read<AccountsBloc>(),
-                              fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
-                              searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return locale.required(locale.accounts);
-                                }
-                                return null;
-                              },
-                              itemBuilder: (context, account) => Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 5,
-                                  vertical: 5,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "${account.accnumber} | ${account.accName}",
-                                          style: Theme.of(
-                                            context,
-                                          ).textTheme.bodyLarge,
-                                        ),
-                                      ],
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              spacing: 5,
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
+                                    showAllOnFocus: true,
+                                    controller: accountController,
+                                    title: locale.accounts,
+                                    hintText: locale.accNameOrNumber,
+                                    isRequired: true,
+                                    bloc: context.read<AccountsBloc>(),
+                                    fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
+                                    searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return locale.required(locale.accounts);
+                                      }
+                                      return null;
+                                    },
+                                    itemBuilder: (context, account) => Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 5,
+                                        vertical: 5,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                "${account.accnumber} | ${account.accName}",
+                                                style: Theme.of(
+                                                  context,
+                                                ).textTheme.bodyLarge,
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ],
+                                    itemToString: (acc) =>
+                                        "${acc.accnumber} | ${acc.accName}",
+                                    stateToLoading: (state) =>
+                                        state is AccountLoadingState,
+                                    loadingBuilder: (context) => const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 3,
+                                      ),
+                                    ),
+                                    stateToItems: (state) {
+                                      if (state is StkAccountLoadedState) {
+                                        return state.accounts;
+                                      }
+                                      return [];
+                                    },
+                                    onSelected: (value) {
+                                      setState(() {
+                                        accNumber = value.accnumber;
+                                        ccySymbol = value.ccySymbol;
+                                        accCurrency = value.actCurrency;
+                                        accName = value.accName ?? "";
+                                        availableBalance = value.avilBalance;
+                                        currentBalance = value.curBalance;
+                                        accountLimit = value.actCreditLimit;
+                                        status = value.actStatus ?? 0;
+                                      });
+                                    },
+                                    noResultsText: locale.noDataFound,
+                                    showClearButton: true,
+                                  ),
                                 ),
-                              ),
-                              itemToString: (acc) =>
-                                  "${acc.accnumber} | ${acc.accName}",
-                              stateToLoading: (state) =>
-                                  state is AccountLoadingState,
-                              loadingBuilder: (context) => const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 3,
+                                Expanded(
+                                  child: ZDatePicker(
+                                    disablePastDate: true,
+                                    label: locale.dueDate,
+                                    value: dueDate,
+                                    onDateChanged: (v) {
+                                      setState(() {
+                                        dueDate = v;
+                                      });
+                                    },
+                                  ),
                                 ),
-                              ),
-                              stateToItems: (state) {
-                                if (state is StkAccountLoadedState) {
-                                  return state.accounts;
-                                }
-                                return [];
-                              },
-                              onSelected: (value) {
-                                setState(() {
-                                  accNumber = value.accnumber;
-                                  ccySymbol = value.ccySymbol;
-                                  accCurrency = value.actCurrency;
-                                  accName = value.accName ?? "";
-                                  availableBalance = value.avilBalance;
-                                  currentBalance = value.curBalance;
-                                  accountLimit = value.actCreditLimit;
-                                  status = value.actStatus ?? 0;
-                                });
-                              },
-                              noResultsText: locale.noDataFound,
-                              showClearButton: true,
+                              ],
                             ),
                             if (accName != null && accName!.isNotEmpty)...[
                               ZCover(

@@ -8,6 +8,7 @@ class ZDatePicker extends StatefulWidget {
   final String? value;
   final double? height;
   final bool isActive;
+  final bool disablePastDate;
   final ValueChanged<String> onDateChanged;
   final EdgeInsetsGeometry? padding;
   final TextStyle? labelStyle;
@@ -23,6 +24,7 @@ class ZDatePicker extends StatefulWidget {
     this.isActive = false,
     this.height,
     this.labelStyle,
+    this.disablePastDate = false,
     this.gregorianTextStyle,
     this.shamsiTextStyle,
   });
@@ -132,6 +134,7 @@ class _ZDatePickerState extends State<ZDatePicker> {
     showDialog(
       context: context,
       builder: (_) => GregorianDatePicker(
+        disablePastDates: widget.disablePastDate,
         onDateSelected: (value) {
           final formatted = value.toFormattedDate();
           setState(() => selectedGregorianDate = formatted);
@@ -145,6 +148,7 @@ class _ZDatePickerState extends State<ZDatePicker> {
     showDialog(
       context: context,
       builder: (_) => AfghanDatePicker(
+        disablePastDates: widget.disablePastDate,
         onDateSelected: (value) {
           final formatted = value.toGregorianString();
           setState(() => selectedGregorianDate = formatted);

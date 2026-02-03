@@ -102,7 +102,7 @@ class _DesktopState extends State<_Desktop> {
                 Spacer(),
                 ZOutlineButton(
                     width: 110,
-                    height: 35,
+                    height: 30,
                     onPressed: onRefresh,
                     label: Text(locale.refresh),
                     icon: Icons.refresh),
@@ -118,7 +118,7 @@ class _DesktopState extends State<_Desktop> {
                     });
                   },
                   width: 110,
-                  height: 35,
+                  height: 30,
                   label: Text(locale.newKeyword),
                 ),
                 if(widget.settingButton)
@@ -133,7 +133,7 @@ class _DesktopState extends State<_Desktop> {
                     context.read<CurrencyTabBloc>().add(CcyOnChangedEvent(CurrencyTabName.rates));
                   },
                   width: 110,
-                  height: 35,
+                  height: 30,
                   label: Text(locale.settings),
                 ),
               ],
