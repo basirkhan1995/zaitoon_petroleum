@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/DailyGross/daily_gross.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/Stats/stats.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/Ui/exchange_rate.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/bloc/total_daily_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/pie_view.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/total_daily_txn.dart';
 import '../Reminder/reminder_widget.dart';
 import '../Report/Ui/Finance/ExchangeRate/chart.dart';
@@ -50,80 +47,53 @@ class _Desktop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final visibility = context
-        .read<SettingsVisibleBloc>()
-        .state;
+    final visibility = context.read<SettingsVisibleBloc>().state;
     return Scaffold(
       body: SingleChildScrollView(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (visibility.statsCount) ...[
-                    DashboardStatsView(),
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (visibility.statsCount) ...[
+                      DashboardStatsView(),
+                    ],
+                    if (visibility.profitAndLoss) ...[
+                      SizedBox(height: 3),
+                      DailyGrossView(),
+                    ],
+                    SizedBox(height: 400, child: FxRateDashboardChart()),
+                    // if (visibility.todayTotalTxnChart) ...[
+                    //   TotalDailyColumnView(),
+                    // ],
+                    const TotalDailyTxnView(),
                   ],
-                  SizedBox(height: 400, child: FxRateDashboardChart()),
-                  BlocBuilder<TotalDailyBloc, TotalDailyState>(
-                    builder: (context, state) {
-                      if(state is TotalDailyLoaded){
-                        if(state.data.isEmpty){
-                          return const SizedBox.shrink();
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0, vertical: 5
-                          ),
-                          child: Row(
-                            spacing: 5,
-                            children: [
-                              const Icon(Icons.line_axis_rounded),
-                              Text(
-                                AppLocalizations.of(
-                                  context,
-                                )!.todayTransactionSummary,
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      return const SizedBox();
-                    },
-                  ),
-                  if (visibility.todayTotalTxnChart) ...[
-                    TotalDailyColumnView(),
-                  ],
-                  const TotalDailyTxnView(),
-
-
-                ],
+                ),
               ),
-            ),
 
-            SizedBox(
-              width: 500,
-              child: Column(
-                children: [
-                  if (visibility.dashboardClock) ...[
-                    const DigitalClock(),
+              SizedBox(
+                width: 500,
+                child: Column(
+                  children: [
+                    if (visibility.dashboardClock) ...[
+                      const DigitalClock(),
+                      SizedBox(height: 3),
+                    ],
+                    if (visibility.exchangeRate) ...[
+                      ExchangeRateView(settingButton: true, newRateButton: false),
+                    ],
+                    SizedBox(height: 3),
+                    DashboardAlertReminder(),
                     SizedBox(height: 3),
                   ],
-                  if (visibility.exchangeRate) ...[
-                    ExchangeRateView(settingButton: true, newRateButton: false),
-                  ],
-                  if (visibility.profitAndLoss) ...[
-                    SizedBox(height: 3),
-                    DailyGrossView(),
-                  ],
-                  SizedBox(height: 3),
-                  DashboardAlertReminder(),
-                  SizedBox(height: 3),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

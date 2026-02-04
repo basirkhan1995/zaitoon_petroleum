@@ -15,9 +15,11 @@ final class TotalDailyLoading extends TotalDailyState {
 }
 
 final class TotalDailyLoaded extends TotalDailyState {
-  final List<TotalDailyTxnModel> data;
+  final List<TotalDailyCompare> data;
   final bool isRefreshing;
+
   const TotalDailyLoaded(this.data, {this.isRefreshing = false});
+
   @override
   List<Object?> get props => [data, isRefreshing];
 }
@@ -25,6 +27,7 @@ final class TotalDailyLoaded extends TotalDailyState {
 final class TotalDailyError extends TotalDailyState {
   final String message;
   const TotalDailyError(this.message);
+
   @override
   List<Object?> get props => [message];
 }

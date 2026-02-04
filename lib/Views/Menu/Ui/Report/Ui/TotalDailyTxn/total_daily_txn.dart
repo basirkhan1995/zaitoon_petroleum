@@ -4,7 +4,6 @@ import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'bloc/total_daily_bloc.dart';
-import 'package:shamsi_date/shamsi_date.dart';
 
 class TotalDailyTxnView extends StatelessWidget {
   final String? fromDate;
@@ -40,6 +39,7 @@ class _Tablet extends StatelessWidget {
 class _Desktop extends StatefulWidget {
   final String? fromDate;
   final String? toDate;
+
   const _Desktop(this.fromDate, this.toDate);
 
   @override
@@ -47,18 +47,22 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_){
-      context.read<TotalDailyBloc>().add(LoadTotalDailyEvent(widget.fromDate ?? fromDate, widget.toDate ?? toDate));
-    });
-    super.initState();
-  }
-
   String fromDate = DateTime.now().toFormattedDate();
   String toDate = DateTime.now().toFormattedDate();
-  Jalali shamsiFromDate = DateTime.now().toAfghanShamsi;
-  Jalali shamsiToDate = DateTime.now().toAfghanShamsi;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TotalDailyBloc>().add(
+        LoadTotalDailyEvent(
+          widget.fromDate ?? fromDate,
+          widget.toDate ?? toDate,
+        ),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -77,94 +81,101 @@ class _DesktopState extends State<_Desktop> {
         if (state is TotalDailyLoaded) {
           final data = state.data;
 
-          return Stack(
-            children: [
-              Wrap(
-                spacing: 1,
-                runSpacing: 10,
-                children: data.map((item) {
-                  final color = theme.colorScheme.onSurface;
+          if (data.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-                  return Container(
-                    width: 190,
-                    padding: const EdgeInsets.all(10),
-                    margin: EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surface,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: color.withValues(alpha: .15),
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          return Wrap(
+            spacing: 6,
+            runSpacing: 10,
+            children: data.map((item) {
+              // Use percentage only, no isNew
+              final percentText = "${item.percentage.toStringAsFixed(1)} %";
+              final percentColor = item.isIncrease ? Colors.green : Colors.red;
+              final icon = item.isIncrease ? Icons.trending_up : Icons.trending_down;
+
+              return Container(
+                width: 190,
+                padding: const EdgeInsets.all(8),
+                margin: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface,
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(
+                    color: theme.colorScheme.outline.withValues(alpha: .15),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // TXN NAME
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-
-                        /// 🔹 Transaction Name
-                        Row(
-                          spacing: 3,
-                          children: [
-                            Icon(Icons.line_axis_rounded,size: 15,color: theme.colorScheme.outline.withValues(alpha: .9)),
-                            Text(
-                              item.txnName ?? '',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w400,
-                                color: theme.colorScheme.outline.withValues(alpha: .9)
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 6),
-
-                        /// 🔹 Amount
                         Text(
-                          item.totalAmount?.toAmount()??"0.00",
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: color,
-                          ),
-                        ),
-
-                        const SizedBox(height: 4),
-
-                        /// 🔹 Count
-                        Text(
-                          '${item.totalCount} TXN',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: Colors.grey.shade600,
+                          item.today.txnName ?? '',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: theme.colorScheme.outline.withValues(alpha: .5),
                           ),
                         ),
                       ],
                     ),
-                  );
-                }).toList(),
-              ),
 
-              /// 🔄 Refresh indicator (top-right)
-              if (state.isRefreshing)
-                const Positioned(
-                  top: 6,
-                  right: 6,
-                  child: SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
+                    const SizedBox(height: 3),
+
+                    // AMOUNT
+                    Text(
+                      item.today.totalAmount?.toAmount() ?? "0.00",
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    // PERCENTAGE + ICON + COUNT
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              icon,
+                              size: 16,
+                              color: percentColor,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              percentText,
+                              style: TextStyle(
+                                color: percentColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          '${item.today.totalCount}',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                              color: theme.colorScheme.outline.withValues(alpha: .5)),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-            ],
+              );
+            }).toList(),
           );
         }
 
-        /// First load
         return const Center(child: CircularProgressIndicator());
       },
     );
   }
-
 }
+
+
+
 
 
