@@ -57,15 +57,35 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) => const Padding(
-    padding: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
     child: _StatsContent(),
   );
 }
 
 /* ------------------ MAIN CONTENT ------------------ */
 
-class _StatsContent extends StatelessWidget {
+class _StatsContent extends StatefulWidget {
   const _StatsContent();
+
+  @override
+  State<_StatsContent> createState() => _StatsContentState();
+}
+
+class _StatsContentState extends State<_StatsContent> {
+  bool _showLoadingSkeleton = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-hide loading skeleton after timeout (safety measure)
+    Future.delayed(const Duration(seconds: 10), () {
+      if (mounted && _showLoadingSkeleton) {
+        setState(() {
+          _showLoadingSkeleton = false;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,12 +94,34 @@ class _StatsContent extends StatelessWidget {
 
     return BlocBuilder<DashboardStatsBloc, DashboardStatsState>(
       builder: (context, state) {
+        // Show loading skeleton only on first load
+        if (_showLoadingSkeleton && state is! DashboardStatsLoaded) {
+          return _buildLoadingSkeleton(context, theme);
+        }
+
         if (state is DashboardStatsError) {
-          return Center(child: Text(state.message));
+          // Hide errors on dashboard
+          return Container();
         }
 
         if (state is DashboardStatsLoaded) {
+          // Mark first load as complete
+          if (_showLoadingSkeleton) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  _showLoadingSkeleton = false;
+                });
+              }
+            });
+          }
+
           final stats = state.stats;
+
+          // Don't show if all values are zero or null
+          if (!stats.hasData) {
+            return Container();
+          }
 
           final data = [
             {
@@ -108,8 +150,12 @@ class _StatsContent extends StatelessWidget {
             },
           ];
 
-          final filtered =
-          data.where((e) => (e['value'] as int) > 0).toList();
+          // Filter out zero values
+          final filtered = data.where((e) => (e['value'] as int) > 0).toList();
+
+          if (filtered.isEmpty) {
+            return Container();
+          }
 
           return Stack(
             children: [
@@ -198,21 +244,114 @@ class _StatsContent extends StatelessWidget {
                   );
                 },
               ),
+
+              // Subtle refresh indicator in top-right corner
               if (state.isRefreshing)
-                const Positioned(
-                  top: 8,
-                  right: 8,
-                  child: SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surface.withValues(alpha: .9),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: .1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                 ),
             ],
           );
         }
 
-        return const Center(child: CircularProgressIndicator());
+        // For all other states after first load - return empty container
+        return Container();
+      },
+    );
+  }
+
+  Widget _buildLoadingSkeleton(BuildContext context, ThemeData theme) {
+    return LayoutBuilder(
+      builder: (context, c) {
+        double itemWidth = c.maxWidth / 4 - 8;
+        if (c.maxWidth < 1200) itemWidth = c.maxWidth / 2 - 8;
+        if (c.maxWidth < 400) itemWidth = c.maxWidth / 2 - 8;
+
+        return Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: List.generate(4, (index) {
+            final colors = [
+              theme.colorScheme.primary,
+              Colors.green,
+              Colors.orange,
+              Colors.teal,
+            ];
+
+            final color = colors[index % colors.length];
+
+            return SizedBox(
+              width: itemWidth,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: .08),
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(
+                    color: color.withValues(alpha: .3),
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: 26,
+                          height: 26,
+                          decoration: BoxDecoration(
+                            color: color.withValues(alpha: .5),
+                            borderRadius: BorderRadius.circular(13),
+                          ),
+                        ),
+                        Container(
+                          width: 60,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: color.withValues(alpha: .3),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      width: 80,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.outline.withValues(alpha: .1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
+        );
       },
     );
   }
@@ -245,7 +384,7 @@ class AnimatedCount extends StatelessWidget {
   }
 }
 
-/* ------------------ DESKTOP HOVER EFFECT (NO DEPRECATED API) ------------------ */
+/* ------------------ DESKTOP HOVER EFFECT ------------------ */
 
 class HoverCard extends StatefulWidget {
   final Widget child;
@@ -267,7 +406,7 @@ class _HoverCardState extends State<HoverCard> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         transform: isHover
-            ? (Matrix4.identity()..translateByDouble(0, -4, 0, 1))
+            ? (Matrix4.identity()..translateByDouble(0.0, -4.0, 0.0, 1.0))
             : Matrix4.identity(),
         child: widget.child,
       ),

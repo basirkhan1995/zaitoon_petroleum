@@ -82,7 +82,7 @@ class _DesktopState extends State<_Desktop> {
           final data = state.data;
 
           if (data.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: SizedBox());
           }
 
           return Wrap(

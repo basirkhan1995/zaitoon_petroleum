@@ -70,22 +70,22 @@ class _ChartContentState extends State<_ChartContent> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-
           /// ---------------- FILTER ROW ----------------
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: Row(
               children: [
-                Text(AppLocalizations.of(context)!.exchangeRate,style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                ),),
+                Text(
+                  AppLocalizations.of(context)!.exchangeRate,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const Spacer(flex: 2),
 
                 Flexible(
                   child: CurrencyDropdown(
                     title: AppLocalizations.of(context)!.from,
                     height: 35,
-                    initiallySelectedSingle:
-                    CurrenciesModel(ccyCode: fromCcy),
+                    initiallySelectedSingle: CurrenciesModel(ccyCode: fromCcy),
                     isMulti: false,
                     onSingleChanged: (e) {
                       setState(() => fromCcy = e?.ccyCode);
@@ -101,8 +101,7 @@ class _ChartContentState extends State<_ChartContent> {
                   child: CurrencyDropdown(
                     height: 35,
                     title: AppLocalizations.of(context)!.toCurrency,
-                    initiallySelectedSingle:
-                    CurrenciesModel(ccyCode: toCcy),
+                    initiallySelectedSingle: CurrenciesModel(ccyCode: toCcy),
                     isMulti: false,
                     onSingleChanged: (e) {
                       setState(() => toCcy = e?.ccyCode);
@@ -135,22 +134,43 @@ class _ChartContentState extends State<_ChartContent> {
             width: double.infinity,
             child: BlocBuilder<FxRateReportBloc, FxRateReportState>(
               builder: (context, state) {
-                if (state is FxRateReportLoadingState) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
+                // Handle all states
                 if (state is FxRateReportErrorState) {
-                  return Center(child: Text(state.message));
+                  // For dashboard, don't show errors - just hide the chart
+                  return Container();
                 }
 
-                if (state is FxRateReportLoadedState) {
-                  if (state.rates.isEmpty) {
-                    return const Center(child: Text('No data'));
-                  }
-                  return _buildAreaChart(context, state.rates);
+                // Show only when we have loaded data
+                if (state is FxRateReportLoadedState && state.rates.isNotEmpty) {
+                  return Stack(
+                    children: [
+                      _buildAreaChart(context, state.rates),
+
+                      // Subtle refresh indicator overlay
+                      if (state.isRefreshing)
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            width: 16,
+                            height: 16,
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surface.withValues(alpha: .8),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
                 }
 
-                return const SizedBox.shrink();
+                // For all other states (Initial, Loading, Loaded with empty data) - return empty container
+                return Container();
               },
             ),
           ),

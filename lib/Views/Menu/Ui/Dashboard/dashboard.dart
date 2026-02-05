@@ -4,6 +4,7 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/DailyGross/daily_gross.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/Stats/stats.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/Ui/exchange_rate.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/column_chart_view.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/total_daily_txn.dart';
 import '../Reminder/reminder_widget.dart';
 import '../Report/Ui/Finance/ExchangeRate/chart.dart';
@@ -67,9 +68,7 @@ class _Desktop extends StatelessWidget {
                       DailyGrossView(),
                     ],
                     SizedBox(height: 400, child: FxRateDashboardChart()),
-                    // if (visibility.todayTotalTxnChart) ...[
-                    //   TotalDailyColumnView(),
-                    // ],
+                    TotalDailyColumnView(),
                     const TotalDailyTxnView(),
                   ],
                 ),

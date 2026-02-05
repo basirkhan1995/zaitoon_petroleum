@@ -9,6 +9,7 @@ part 'daily_gross_state.dart';
 
 class DailyGrossBloc extends Bloc<DailyGrossEvent, DailyGrossState> {
   final Repositories repository;
+  List<DailyGrossModel> _cachedData = [];
 
   DailyGrossBloc(this.repository) : super(DailyGrossInitial()) {
     on<FetchDailyGrossEvent>(_onFetchDailyGross);
@@ -18,20 +19,9 @@ class DailyGrossBloc extends Bloc<DailyGrossEvent, DailyGrossState> {
       FetchDailyGrossEvent event,
       Emitter<DailyGrossState> emit,
       ) async {
-    final currentState = state;
-
-    /// 🔹 FIRST LOAD → show loader
-    if (currentState is! DailyGrossLoaded) {
-      emit(DailyGrossLoading());
-    }
-    /// 🔹 RELOAD → silent refresh
-    else {
-      emit(
-        DailyGrossLoaded(
-          currentState.data,
-          isRefreshing: true,
-        ),
-      );
+    // If we have cached data, show it immediately
+    if (_cachedData.isNotEmpty) {
+      emit(DailyGrossLoaded(_cachedData, isRefreshing: true));
     }
 
     try {
@@ -42,9 +32,15 @@ class DailyGrossBloc extends Bloc<DailyGrossEvent, DailyGrossState> {
         stopGroup: event.stopGroup,
       );
 
+      _cachedData = result; // Cache the result
       emit(DailyGrossLoaded(result));
     } catch (e) {
-      emit(DailyGrossError(e.toString()));
+      // On error, keep showing cached data if available
+      if (_cachedData.isNotEmpty) {
+        emit(DailyGrossLoaded(_cachedData));
+      } else {
+        emit(DailyGrossError(e.toString()));
+      }
     }
   }
 }

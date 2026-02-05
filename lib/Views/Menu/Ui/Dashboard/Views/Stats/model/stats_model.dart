@@ -50,10 +50,35 @@ class DashboardStatsModel extends Equatable {
     'users': users,
   };
 
+  // Getter methods with null safety
   int get personalsCount => personals ?? 0;
   int get employeesCount => employees ?? 0;
   int get accountsCount => accounts ?? 0;
   int get usersCount => users ?? 0;
+
+  // Check if we have any data to display
+  bool get hasData {
+    return personalsCount > 0 ||
+        employeesCount > 0 ||
+        accountsCount > 0 ||
+        usersCount > 0;
+  }
+
+  // Check if all values are null (empty response)
+  bool get isEmpty {
+    return personals == null &&
+        employees == null &&
+        accounts == null &&
+        users == null;
+  }
+
+  // Check if this is the initial empty state
+  bool get isInitialState {
+    return personals == 0 &&
+        employees == 0 &&
+        accounts == 0 &&
+        users == 0;
+  }
 
   @override
   List<Object?> get props => [personals, employees, accounts, users];

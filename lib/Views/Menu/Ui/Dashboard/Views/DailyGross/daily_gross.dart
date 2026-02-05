@@ -93,19 +93,20 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
   Widget build(BuildContext context) {
     return BlocBuilder<DailyGrossBloc, DailyGrossState>(
       builder: (context, state) {
+        // Handle all states
         if (state is DailyGrossError) {
-          return Center(child: Text(state.message));
+          // For dashboard, don't show errors - just hide the widget
+          return Container();
         }
-        if (state is DailyGrossLoaded) {
-          if (state.data.isEmpty) {
-            return const Center(child: Text('No data available'));
-          }
+
+        // Show only when we have loaded data
+        if (state is DailyGrossLoaded && state.data.isNotEmpty) {
           final chartData = _prepareChartData(state.data);
+
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-
-              // Chart
+              // Main chart container
               ZCover(
                 radius: 5,
                 borderColor: Theme.of(context).colorScheme.outline.withValues(alpha: .3),
@@ -119,16 +120,18 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Expanded(
-                              child: Text(
-                                AppLocalizations.of(context)!.profitAndLoss,
-                                style: Theme.of(context).textTheme.titleMedium,
-                              )),
+                            child: Text(
+                              AppLocalizations.of(context)!.profitAndLoss,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ),
                           SizedBox(
                             width: 160,
                             child: DateRangeDropdown(
                               title: '',
                               height: 35,
                               onChanged: (fromDate, toDate) {
+                                // Silent refresh when date changes
                                 context.read<DailyGrossBloc>().add(
                                   FetchDailyGrossEvent(
                                     from: fromDate,
@@ -149,8 +152,8 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
                               });
                             },
                             constraints: const BoxConstraints(
-                              minHeight: 32, // set your desired height
-                              minWidth: 50,  // optional: control width too
+                              minHeight: 32,
+                              minWidth: 50,
                             ),
                             borderRadius: BorderRadius.circular(3),
                             children: const [
@@ -164,11 +167,12 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
                               ),
                             ],
                           ),
-
                         ],
                       ),
                     ),
                     const SizedBox(height: 5),
+
+                    // Chart Area
                     SizedBox(
                       height: 200,
                       child: chartType == 0
@@ -179,20 +183,31 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
                 ),
               ),
 
+              // Subtle refresh indicator (only shown during silent refresh)
               if (state.isRefreshing)
-                const Padding(
-                  padding: EdgeInsets.only(top: 8),
-                  child: SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 14,
+                        height: 14,
+                        padding: const EdgeInsets.all(2),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: .7),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
             ],
           );
         }
 
-        return const Center(child: CircularProgressIndicator());
+        // For all other states (Initial, Loading, Loaded with empty data) - return empty container
+        return Container();
       },
     );
   }

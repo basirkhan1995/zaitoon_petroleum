@@ -8,6 +8,7 @@ part 'dashboard_stats_state.dart';
 
 class DashboardStatsBloc extends Bloc<DashboardStatsEvent, DashboardStatsState> {
   final Repositories repository;
+  DashboardStatsModel? _cachedStats;
 
   DashboardStatsBloc(this.repository) : super(DashboardStatsInitial()) {
     on<FetchDashboardStatsEvent>(_onFetchDashboardStats);
@@ -17,21 +18,25 @@ class DashboardStatsBloc extends Bloc<DashboardStatsEvent, DashboardStatsState> 
       FetchDashboardStatsEvent event,
       Emitter<DashboardStatsState> emit,
       ) async {
-    final currentState = state;
-
-    // Silent refresh if already loaded
-    if (currentState is DashboardStatsLoaded) {
-      emit(DashboardStatsLoaded(currentState.stats, isRefreshing: true));
+    // If we have cached data, show it immediately (silent refresh)
+    if (_cachedStats != null) {
+      emit(DashboardStatsLoaded(_cachedStats!, isRefreshing: true));
     } else {
+      // Only show loading if no cached data
       emit(DashboardStatsLoading());
     }
 
     try {
       final stats = await repository.getDashboardStats();
+      _cachedStats = stats; // Cache the result
       emit(DashboardStatsLoaded(stats, isRefreshing: false));
     } catch (e) {
-      emit(DashboardStatsError(e.toString()));
+      // On error, keep showing cached data if available
+      if (_cachedStats != null) {
+        emit(DashboardStatsLoaded(_cachedStats!));
+      } else {
+        emit(DashboardStatsError(e.toString()));
+      }
     }
   }
-
 }
