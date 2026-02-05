@@ -1,4 +1,3 @@
-// In your AddEditReminderView.dart, wrap the ZFormDialog with BlocListener
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -76,7 +75,7 @@ class _DesktopState extends State<_Desktop> {
     if (r != null) {
       account.text = r.rmdAccount?.toString() ?? "";
       accNumber = r.rmdAccount;
-      amount.text = r.rmdAmount ?? "";
+      amount.text = r.rmdAmount.toAmount();
       details.text = r.rmdDetails ?? "";
       dueDate = r.rmdAlertDate?.toFormattedDate() ?? "";
       dueType = r.rmdName;
@@ -97,7 +96,14 @@ class _DesktopState extends State<_Desktop> {
 
     return BlocListener<ReminderBloc, ReminderState>(
       listener: (context, state) {
-        // Close dialog on success
+        if (state.error != null && !state.loading) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.error!),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
         if (state.successMsg != null && !state.loading) {
           Navigator.of(context).pop();
         }
@@ -137,11 +143,13 @@ class _DesktopState extends State<_Desktop> {
                 ),
                 Expanded(
                   child: DueTypeDropdown(
-                      onDueTypeSelected: (e) {
-                        setState(() {
-                          dueType = e.name;
-                        });
-                      }),
+                    selectedDueType: dueType ?? "", // Pass the current dueType
+                    onDueTypeSelected: (selectedType) {
+                      setState(() {
+                        dueType = selectedType.toDatabaseValue();
+                      });
+                    },
+                  ),
                 ),
               ],
             ),
@@ -161,6 +169,9 @@ class _DesktopState extends State<_Desktop> {
               validator: (value) {
                 if (value.isEmpty) {
                   return tr.required(tr.accounts);
+                }
+                if (accNumber == null) {
+                  return tr.required(tr.accountTitle);
                 }
                 return null;
               },
@@ -226,9 +237,9 @@ class _DesktopState extends State<_Desktop> {
 
                 // Remove formatting (e.g. commas)
                 final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
-                final amount = double.tryParse(clean);
+                final amountValue = double.tryParse(clean);
 
-                if (amount == null || amount <= 0.0) {
+                if (amountValue == null || amountValue <= 0.0) {
                   return tr.amountGreaterZero;
                 }
 
@@ -252,13 +263,25 @@ class _DesktopState extends State<_Desktop> {
   }
 
   void onSubmit() {
-    // Add validation for required fields
+    // Validate due type
     if (dueType == null || dueType!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.required("Reminder type")),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
+    // Validate account
     if (accNumber == null) {
-
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.required(AppLocalizations.of(context)!.accountTitle)),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 

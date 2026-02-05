@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/Ui/login.dart';
@@ -51,7 +52,6 @@ class _Desktop extends StatefulWidget {
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
   Uint8List? _cachedLogo;
   String? _cachedComName;
@@ -62,7 +62,6 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
-    // Pre-fetch company profile when initializing
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CompanyProfileBloc>().add(LoadCompanyProfileEvent());
     });
@@ -328,7 +327,6 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
   }
 }
 
-// Separate widget for menu footer to avoid context.select issues
 class _MenuFooter extends StatelessWidget {
   final bool isExpanded;
   final String adminName;
@@ -406,7 +404,6 @@ class _MenuFooter extends StatelessWidget {
   }
 }
 
-// Separate widget for dialog content to optimize rebuilds
 class _ProfileDialogContent extends StatelessWidget {
   final AuthenticatedState authState;
   final VoidCallback onLogout;
@@ -563,14 +560,14 @@ class _DetailRow extends StatelessWidget {
   }
 }
 
-// ================== MOBILE / TABLET PLACEHOLDER ==================
+// ================== MOBILE & TABLET DRAWER VERSION ==================
 
 class _Mobile extends StatelessWidget {
   const _Mobile();
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const _DrawerHomeView(isTablet: false);
   }
 }
 
@@ -579,6 +576,520 @@ class _Tablet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const _DrawerHomeView(isTablet: true);
+  }
+}
+
+class _DrawerHomeView extends StatefulWidget {
+  final bool isTablet;
+
+  const _DrawerHomeView({required this.isTablet});
+
+  @override
+  State<_DrawerHomeView> createState() => _DrawerHomeViewState();
+}
+
+class _DrawerHomeViewState extends State<_DrawerHomeView> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  late MenuName _currentTab;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentTab = context.read<MenuBloc>().state.tabs;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CompanyProfileBloc>().add(LoadCompanyProfileEvent());
+    });
+  }
+
+  void _logout() async {
+    final authBloc = context.read<AuthBloc>();
+    await SecureStorage.clearCredentials();
+    authBloc.add(OnLogoutEvent());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is UnAuthenticatedState) {
+          Utils.gotoReplacement(context, const LoginView());
+        }
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+          ),
+          title: BlocBuilder<MenuBloc, MenuState>(
+            builder: (context, state) {
+              return Text(
+                _getMenuTitle(context, state.tabs),
+                style: TextStyle(
+                  fontSize: widget.isTablet ? 20 : 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              );
+            },
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.account_circle),
+              onPressed: () => _showProfileDialog(context),
+            ),
+          ],
+        ),
+        drawer: _buildDrawer(context),
+        body: BlocBuilder<MenuBloc, MenuState>(
+          builder: (context, state) {
+            return _getScreenForMenu(state.tabs);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! AuthenticatedState) return const SizedBox();
+
+    final String adminName = authState.loginData.usrFullName ?? "";
+    final String usrPhoto = authState.loginData.usrPhoto ?? "";
+    final String usrRole = authState.loginData.usrRole ?? "";
+
+    final drawerWidth = widget.isTablet ? 280.0 : 250.0;
+
+    return Drawer(
+      width: drawerWidth,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0
+      )),
+      child: BlocConsumer<CompanyProfileBloc, CompanyProfileState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          final companyName = state is CompanyProfileLoadedState
+              ? state.company.comName
+              : AppLocalizations.of(context)!.zPetroleum;
+          final logo = _getCompanyLogo(state);
+
+          return Column(
+            children: [
+              // Drawer Header
+              Container(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 80,
+                      height: 80,
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: .2),
+                        ),
+                      ),
+                      child: logo != null
+                          ? Image.memory(logo, fit: BoxFit.contain)
+                          : Image.asset(
+                        "assets/images/zaitoonLogo.png",
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      companyName??"",
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+
+              // Menu Items
+              Expanded(
+                child: ListView(
+                  children: _buildMenuItems(context),
+                ),
+              ),
+
+              // User Profile & Logout
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: .3),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        ImageHelper.stakeholderProfile(
+                          imageName: usrPhoto,
+                          size: 40,
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.primary.withValues(alpha: .3),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                adminName,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                usrRole,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ZOutlineButton(
+                          isActive: true,
+                          backgroundHover: Theme.of(context).colorScheme.error,
+                          onPressed: _logout,
+                          label: Text(AppLocalizations.of(context)!.logout))
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  List<Widget> _buildMenuItems(BuildContext context) {
+    final currentTab = context.watch<MenuBloc>().state.tabs;
+    final menuItems = [
+      _DrawerMenuItem(
+        icon: Icons.add_home_outlined,
+        label: AppLocalizations.of(context)!.dashboard,
+        isSelected: currentTab == MenuName.dashboard,
+        onTap: () => _onMenuItemTap(MenuName.dashboard),
+      ),
+      _DrawerMenuItem(
+        icon: Icons.money,
+        label: AppLocalizations.of(context)!.finance,
+        isSelected: currentTab == MenuName.finance,
+        onTap: () => _onMenuItemTap(MenuName.finance),
+      ),
+      _DrawerMenuItem(
+        icon: Icons.menu_book,
+        label: AppLocalizations.of(context)!.journal,
+        isSelected: currentTab == MenuName.journal,
+        onTap: () => _onMenuItemTap(MenuName.journal),
+      ),
+      _DrawerMenuItem(
+        icon: Icons.account_circle_outlined,
+        label: AppLocalizations.of(context)!.stakeholders,
+        isSelected: currentTab == MenuName.stakeholders,
+        onTap: () => _onMenuItemTap(MenuName.stakeholders),
+      ),
+      _DrawerMenuItem(
+        icon: Icons.group_rounded,
+        label: AppLocalizations.of(context)!.hr,
+        isSelected: currentTab == MenuName.hr,
+        onTap: () => _onMenuItemTap(MenuName.hr),
+      ),
+      _DrawerMenuItem(
+        icon: Icons.fire_truck_rounded,
+        label: AppLocalizations.of(context)!.transport,
+        isSelected: currentTab == MenuName.transport,
+        onTap: () => _onMenuItemTap(MenuName.transport),
+      ),
+      _DrawerMenuItem(
+        icon: Icons.shopping_basket_outlined,
+        label: AppLocalizations.of(context)!.orderTitle,
+        isSelected: currentTab == MenuName.stock,
+        onTap: () => _onMenuItemTap(MenuName.stock),
+      ),
+      _DrawerMenuItem(
+        icon: Icons.settings_outlined,
+        label: AppLocalizations.of(context)!.settings,
+        isSelected: currentTab == MenuName.settings,
+        onTap: () => _onMenuItemTap(MenuName.settings),
+      ),
+      _DrawerMenuItem(
+        icon: Icons.info_outlined,
+        label: AppLocalizations.of(context)!.report,
+        isSelected: currentTab == MenuName.report,
+        onTap: () => _onMenuItemTap(MenuName.report),
+      ),
+    ];
+
+    return menuItems;
+  }
+
+  void _onMenuItemTap(MenuName menuName) {
+    if (_currentTab != menuName) {
+      setState(() {
+        _currentTab = menuName;
+      });
+      context.read<MenuBloc>().add(MenuOnChangedEvent(menuName));
+    }
+    // Close drawer on mobile, keep open on tablet
+    if (!widget.isTablet) {
+      Navigator.pop(context);
+    }
+  }
+
+  Widget _getScreenForMenu(MenuName menuName) {
+    switch (menuName) {
+      case MenuName.dashboard:
+        return const DashboardView();
+      case MenuName.finance:
+        return const FinanceView();
+      case MenuName.journal:
+        return const JournalView();
+      case MenuName.stakeholders:
+        return const IndividualsView();
+      case MenuName.hr:
+        return const HrTabView();
+      case MenuName.transport:
+        return const TransportView();
+      case MenuName.stock:
+        return const StockView();
+      case MenuName.settings:
+        return const SettingsView();
+      case MenuName.report:
+        return const ReportView();
+    }
+  }
+
+  String _getMenuTitle(BuildContext context, MenuName menuName) {
+    switch (menuName) {
+      case MenuName.dashboard:
+        return AppLocalizations.of(context)!.dashboard;
+      case MenuName.finance:
+        return AppLocalizations.of(context)!.finance;
+      case MenuName.journal:
+        return AppLocalizations.of(context)!.journal;
+      case MenuName.stakeholders:
+        return AppLocalizations.of(context)!.stakeholders;
+      case MenuName.hr:
+        return AppLocalizations.of(context)!.hr;
+      case MenuName.transport:
+        return AppLocalizations.of(context)!.transport;
+      case MenuName.stock:
+        return AppLocalizations.of(context)!.orderTitle;
+      case MenuName.settings:
+        return AppLocalizations.of(context)!.settings;
+      case MenuName.report:
+        return AppLocalizations.of(context)!.report;
+    }
+  }
+
+  Uint8List? _getCompanyLogo(CompanyProfileState state) {
+    if (state is CompanyProfileLoadedState) {
+      final base64Logo = state.company.comLogo;
+      if (base64Logo != null && base64Logo.isNotEmpty) {
+        try {
+          return base64Decode(base64Logo);
+        } catch (_) {
+          return null;
+        }
+      }
+    }
+    return null;
+  }
+
+  void _showProfileDialog(BuildContext context) {
+    final authState = context.read<AuthBloc>().state as AuthenticatedState;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .2),
+                blurRadius: 20,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Profile header
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.primary,
+                          width: 2,
+                        ),
+                      ),
+                      child: ImageHelper.stakeholderProfile(
+                        imageName: authState.loginData.usrPhoto,
+                        size: 80,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      authState.loginData.usrFullName ?? "No Name",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    Text(
+                      authState.loginData.usrName ?? "",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Profile details
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    _BottomSheetDetailRow(
+                      icon: Icons.email_outlined,
+                      text: authState.loginData.usrEmail ?? "No Email",
+                    ),
+                    const SizedBox(height: 16),
+                    _BottomSheetDetailRow(
+                      icon: Icons.work_outline,
+                      text: authState.loginData.usrRole ?? "No Role",
+                    ),
+                    const SizedBox(height: 16),
+                    _BottomSheetDetailRow(
+                      icon: Icons.business_outlined,
+                      text: authState.loginData.brcName ?? "No Branch",
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                  width: double.infinity,
+                  child: ZOutlineButton(
+                      isActive: true,
+                      backgroundHover: Theme.of(context).colorScheme.error,
+                      onPressed: _logout,
+                      label: Text(AppLocalizations.of(context)!.logout))
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+// Drawer Menu Item Widget
+class _DrawerMenuItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _DrawerMenuItem({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.symmetric(horizontal: 15),
+      leading: Icon(
+        icon,
+        color: isSelected
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
+      ),
+      title: Text(
+        label,
+        style: TextStyle(
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+          color: isSelected
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.onSurface,
+        ),
+      ),
+      selected: isSelected,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(1)),
+      selectedTileColor: Theme.of(context).colorScheme.primary.withValues(alpha: .1),
+      onTap: onTap,
+    );
+  }
+}
+
+// Bottom Sheet Detail Row
+class _BottomSheetDetailRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const _BottomSheetDetailRow({
+    required this.icon,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          size: 20,
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

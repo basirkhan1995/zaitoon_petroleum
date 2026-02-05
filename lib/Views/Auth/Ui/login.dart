@@ -7,7 +7,6 @@ import 'package:zaitoon_petroleum/Views/Auth/ForgotPassword/forgot_password.dart
 import 'package:zaitoon_petroleum/Views/Auth/Ui/force_change_password.dart';
 import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/home.dart';
-import '../../../Features/Other/secure_storage.dart';
 import '../../../Features/Widgets/textfield_entitled.dart';
 import '../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../Localizations/locale_selector.dart';
@@ -31,6 +30,7 @@ class _Mobile extends StatefulWidget {
   @override
   State<_Mobile> createState() => _MobileState();
 }
+
 class _MobileState extends State<_Mobile> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -48,19 +48,40 @@ class _MobileState extends State<_Mobile> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Title section at the top
-              _zaitoonTitle(context: context),
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthenticatedState) {
+            Utils.gotoReplacement(context, HomeView());
+          }
+          if (state is AuthErrorState) {
+            Utils.showOverlayMessage(
+              context,
+              title: tr.accessDenied,
+              message: state.message,
+              isError: true,
+            );
+          }
+          if (state is ForceChangePasswordState) {
+            Utils.goto(
+              context,
+              ForceChangePasswordView(credential: _emailController.text),
+            );
+          }
+          if (state is EmailVerificationState) {}
+        },
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // Title section at the top
+                _zaitoonTitle(context: context),
 
-              // Centered login form
-              Center(
-                child: _loginForm(),
-              ),
-            ],
+                // Centered login form
+                Center(child: _loginForm()),
+              ],
+            ),
           ),
         ),
       ),
@@ -69,10 +90,12 @@ class _MobileState extends State<_Mobile> {
 
   Widget _loginForm() {
     final locale = AppLocalizations.of(context)!;
-
+    final isLoading = context.watch<AuthBloc>().state is AuthLoadingState;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-      constraints: const BoxConstraints(maxWidth: 500), // Optional: limit max width for better centering on large screens
+      constraints: const BoxConstraints(
+        maxWidth: 500,
+      ),
       child: Form(
         key: formKey,
         child: Column(
@@ -132,7 +155,16 @@ class _MobileState extends State<_Mobile> {
                   );
                 }
               },
-              label: Text(AppLocalizations.of(context)!.login),
+              label: isLoading
+                  ? SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 4,
+                  color: Theme.of(context).colorScheme.surface,
+                ),
+              )
+                  : Text(locale.login),
             ),
             const SizedBox(height: 15),
             TextButton(
@@ -177,7 +209,9 @@ class _MobileState extends State<_Mobile> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: .09),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: .09),
                   ),
                 ),
                 child: Image.asset('assets/images/zaitoonLogo.png'),
@@ -219,6 +253,7 @@ class _Tablet extends StatefulWidget {
   @override
   State<_Tablet> createState() => _TabletState();
 }
+
 class _TabletState extends State<_Tablet> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -236,9 +271,30 @@ class _TabletState extends State<_Tablet> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Padding(
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthenticatedState) {
+            Utils.gotoReplacement(context, HomeView());
+          }
+          if (state is AuthErrorState) {
+            Utils.showOverlayMessage(
+              context,
+              title: tr.accessDenied,
+              message: state.message,
+              isError: true,
+            );
+          }
+          if (state is ForceChangePasswordState) {
+            Utils.goto(
+              context,
+              ForceChangePasswordView(credential: _emailController.text),
+            );
+          }
+          if (state is EmailVerificationState) {}
+        },
+        child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SizedBox.expand(
           child: Column(
@@ -252,6 +308,7 @@ class _TabletState extends State<_Tablet> {
           ),
         ),
       ),
+),
     );
   }
 
@@ -280,8 +337,9 @@ class _TabletState extends State<_Tablet> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(
-                  color:
-                  Theme.of(context).colorScheme.primary.withValues(alpha: .09),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: .09),
                 ),
               ),
               child: Image.asset('assets/images/zaitoonLogo.png'),
@@ -294,13 +352,13 @@ class _TabletState extends State<_Tablet> {
               spacing: 0,
               children: [
                 Text(
-                    AppLocalizations.of(context)!.zPetroleum.toUpperCase(),
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontFamily: "NotoSans",
-                        fontSize: 40,
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold
-                    )
+                  AppLocalizations.of(context)!.zPetroleum.toUpperCase(),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontFamily: "NotoSans",
+                    fontSize: 40,
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
                   AppLocalizations.of(context)!.zaitoonSlogan,
@@ -310,13 +368,13 @@ class _TabletState extends State<_Tablet> {
             ),
           ],
         ),
-
       ],
     );
   }
 
   Widget _body() {
     final locale = AppLocalizations.of(context)!;
+    final isLoading = context.watch<AuthBloc>().state is AuthLoadingState;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 30),
       decoration: BoxDecoration(
@@ -324,9 +382,7 @@ class _TabletState extends State<_Tablet> {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(
-              context,
-            ).colorScheme.primary.withValues(alpha: .5),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: .5),
             blurRadius: 3,
             spreadRadius: .5,
           ),
@@ -369,9 +425,7 @@ class _TabletState extends State<_Tablet> {
                   });
                 },
                 icon: Icon(
-                  isPasswordSecure
-                      ? Icons.visibility_off
-                      : Icons.visibility,
+                  isPasswordSecure ? Icons.visibility_off : Icons.visibility,
                 ),
               ),
               validator: (value) {
@@ -387,10 +441,25 @@ class _TabletState extends State<_Tablet> {
             ZButton(
               onPressed: () {
                 if (formKey.currentState!.validate()) {
-                  Utils.gotoReplacement(context, HomeView());
+                  context.read<AuthBloc>().add(
+                    LoginEvent(
+                      usrName: _emailController.text,
+                      usrPassword: _passwordController.text,
+                      rememberMe: isRememberMe,
+                    ),
+                  );
                 }
               },
-              label: Text(AppLocalizations.of(context)!.login),
+              label: isLoading
+                  ? SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 4,
+                  color: Theme.of(context).colorScheme.surface,
+                ),
+              )
+                  : Text(locale.login),
             ),
             SizedBox(height: 15),
             TextButton(
@@ -412,8 +481,8 @@ class _Desktop extends StatefulWidget {
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-class _DesktopState extends State<_Desktop> {
 
+class _DesktopState extends State<_Desktop> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool isPasswordSecure = true;
@@ -435,14 +504,25 @@ class _DesktopState extends State<_Desktop> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          if(state is AuthenticatedState){Utils.gotoReplacement(context, HomeView());
-          }if(state is AuthErrorState){Utils.showOverlayMessage(context,title: locale.accessDenied, message: state.message, isError: true);}
-          if(state is ForceChangePasswordState){
-            Utils.goto(context, ForceChangePasswordView(credential: _emailController.text));
-          }if(state is EmailVerificationState){
-
+          if (state is AuthenticatedState) {
+            Utils.gotoReplacement(context, HomeView());
           }
-          },
+          if (state is AuthErrorState) {
+            Utils.showOverlayMessage(
+              context,
+              title: locale.accessDenied,
+              message: state.message,
+              isError: true,
+            );
+          }
+          if (state is ForceChangePasswordState) {
+            Utils.goto(
+              context,
+              ForceChangePasswordView(credential: _emailController.text),
+            );
+          }
+          if (state is EmailVerificationState) {}
+        },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: SizedBox.expand(
@@ -477,8 +557,9 @@ class _DesktopState extends State<_Desktop> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(
-                  color:
-                  Theme.of(context).colorScheme.primary.withValues(alpha: .09),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: .09),
                 ),
               ),
               child: Image.asset('assets/images/zaitoonLogo.png'),
@@ -496,8 +577,8 @@ class _DesktopState extends State<_Desktop> {
                     fontFamily: "NotoSans",
                     fontSize: 40,
                     color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold
-                  )
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
                   AppLocalizations.of(context)!.zaitoonSlogan,
@@ -589,33 +670,20 @@ class _DesktopState extends State<_Desktop> {
                   },
                 ),
 
-                // Row(
-                //   spacing: 5,
-                //   children: [
-                //     Checkbox(
-                //       visualDensity: VisualDensity(horizontal: -4),
-                //       value: isRememberMe,
-                //       onChanged: (e) {
-                //         setState(() {
-                //           isRememberMe = !isRememberMe;
-                //         });
-                //       },
-                //     ),
-                //     Text(locale.rememberMe),
-                //   ],
-                // ),
-
                 SizedBox(height: 15),
 
                 ZButton(
                   onPressed: onSubmit,
-                  label: isLoading? SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 4,
-                        color: Theme.of(context).colorScheme.surface,
-                      )) : Text(locale.login),
+                  label: isLoading
+                      ? SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 4,
+                            color: Theme.of(context).colorScheme.surface,
+                          ),
+                        )
+                      : Text(locale.login),
                 ),
                 SizedBox(height: 15),
                 TextButton(
@@ -632,30 +700,15 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Future<void> checkAutoLogin() async {
-    final credentials = await SecureStorage.getCredentials();
-    if (credentials['usrName'] != null && credentials['usrPass'] != null) {
-      setState(() {
-        _emailController.text = credentials['usrName']!;
-        _passwordController.text = credentials['usrPass']!;
-        isRememberMe = true;
-      });
-
-      // Trigger auto-login
-      onSubmit();
-    }
-  }
-
   void onSubmit() {
     if (formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
         LoginEvent(
           usrName: _emailController.text.trim(),
           usrPassword: _passwordController.text,
-          rememberMe: isRememberMe
+          rememberMe: isRememberMe,
         ),
       );
     }
   }
-
 }

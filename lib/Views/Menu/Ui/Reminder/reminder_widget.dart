@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
-
+import 'package:zaitoon_petroleum/Views/Menu/bloc/menu_bloc.dart';
 import '../../../../Features/Widgets/outline_button.dart';
+import '../Finance/bloc/financial_tab_bloc.dart';
 import 'add_edit_reminders.dart';
 import 'bloc/reminder_bloc.dart';
 import 'model/reminder_model.dart';
@@ -70,21 +71,32 @@ class _DashboardAlertReminderState extends State<DashboardAlertReminder> {
                           /// Refresh
                           ZOutlineButton(
                             width: 100,
-                            height: 30,
+                            height: 35,
                             icon: Icons.refresh,
                             label: Text(tr.refresh),
                             onPressed: () {
                               context.read<ReminderBloc>().add(LoadAlertReminders(alert: 1));
                             },
                           ),
+                          const SizedBox(width: 5),
+                          /// New Reminder
+                          ZOutlineButton(
+                            width: 100,
+                            height: 35,
+                            icon: Icons.settings,
+                            label: Text(tr.settings),
+                            onPressed: () {
+                              context.read<MenuBloc>().add(MenuOnChangedEvent(MenuName.finance));
+                              context.read<FinanceTabBloc>().add(FinanceOnChangedEvent(FinanceTabName.reminder));
 
+                            },
+                          ),
                           const SizedBox(width: 5),
 
                           /// New Reminder
                           ZOutlineButton(
-                            width: 100,
-                            height: 30,
-                            icon: Icons.add,
+                            width: 80,
+                            height: 35,
                             isActive: true,
                             label: Text(tr.newKeyword),
                             onPressed: () {

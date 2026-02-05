@@ -17,11 +17,12 @@ import '../../../bloc/currency_tab_bloc.dart';
 class ExchangeRateView extends StatelessWidget {
   final bool newRateButton;
   final bool settingButton;
-
+  final double? width;
   const ExchangeRateView({
     super.key,
     this.newRateButton = false,
     this.settingButton = false,
+    this.width,
   });
 
   @override
@@ -34,37 +35,33 @@ class ExchangeRateView extends StatelessWidget {
         context.read<ExchangeRateBloc>().add(LoadExchangeRateEvent(profile.comLocalCcy ?? ""));
       },
       child: ResponsiveLayout(
-        mobile: _Mobile(),
-        tablet: _Tablet(),
+        mobile: _Desktop(
+          newRateButton: newRateButton,
+          settingButton: settingButton,
+          width: width,
+        ),
+        tablet: _Desktop(
+          newRateButton: newRateButton,
+          settingButton: settingButton,
+          width: width,
+        ),
         desktop: _Desktop(
           newRateButton: newRateButton,
           settingButton: settingButton,
+          width: width,
         ),
       ),
     );
   }
 }
 
-class _Mobile extends StatelessWidget {
-  const _Mobile();
 
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-class _Tablet extends StatelessWidget {
-  const _Tablet();
 
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 class _Desktop extends StatefulWidget {
   final bool newRateButton;
   final bool settingButton;
-  const _Desktop({required this.settingButton, required this.newRateButton});
+  final double? width;
+  const _Desktop({required this.settingButton, required this.newRateButton, this.width});
 
   @override
   State<_Desktop> createState() => _DesktopState();
@@ -81,7 +78,7 @@ class _DesktopState extends State<_Desktop> {
     final locale = AppLocalizations.of(context)!;
     final currentLocale = context.read<LocalizationBloc>().state.languageCode;
     return Container(
-      width: 500,
+      width: widget.width ?? double.infinity,
       margin: EdgeInsets.symmetric(vertical: 1,horizontal: 3),
       decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
@@ -101,8 +98,8 @@ class _DesktopState extends State<_Desktop> {
                 ),
                 Spacer(),
                 ZOutlineButton(
-                    width: 110,
-                    height: 30,
+                    width: 100,
+                    height: 35,
                     onPressed: onRefresh,
                     label: Text(locale.refresh),
                     icon: Icons.refresh),
@@ -117,8 +114,8 @@ class _DesktopState extends State<_Desktop> {
                       return AddRateView();
                     });
                   },
-                  width: 110,
-                  height: 30,
+                  width: 100,
+                  height: 35,
                   label: Text(locale.newKeyword),
                 ),
                 if(widget.settingButton)
@@ -133,7 +130,7 @@ class _DesktopState extends State<_Desktop> {
                     context.read<CurrencyTabBloc>().add(CcyOnChangedEvent(CurrencyTabName.rates));
                   },
                   width: 110,
-                  height: 30,
+                  height: 35,
                   label: Text(locale.settings),
                 ),
               ],
@@ -233,6 +230,7 @@ class _DesktopState extends State<_Desktop> {
 
                               Expanded(
                                 child: Row(
+                                  mainAxisSize: MainAxisSize.min,
                                   spacing: 8,
                                   children: [
                                     SizedBox(
@@ -283,7 +281,7 @@ class _DesktopState extends State<_Desktop> {
                                 ),
                               ),
                               SizedBox(
-                                width: 140,
+                                width: 100,
                                 child: Text(
                                   ccy.crExchange.toExchangeRate(),
                                   textAlign: currentLocale == "en"? TextAlign.right : TextAlign.left,

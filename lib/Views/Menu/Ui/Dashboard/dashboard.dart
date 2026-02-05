@@ -30,7 +30,33 @@ class _Mobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final visibility = context.read<SettingsVisibleBloc>().state;
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            if (visibility.dashboardClock) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: const DigitalClock(),
+              ),
+            ],
+            if (visibility.exchangeRate) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 3),
+                child: ExchangeRateView(settingButton: true, newRateButton: false),
+              ),
+            ],
+            if (visibility.statsCount) ...[
+              DashboardStatsView(),
+            ],
+            if (visibility.profitAndLoss) ...[
+              DailyGrossView(),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -39,7 +65,40 @@ class _Tablet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final visibility = context.read<SettingsVisibleBloc>().state;
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            if (visibility.dashboardClock) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: const DigitalClock(),
+              ),
+            ],
+            if (visibility.exchangeRate) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 13.0,vertical: 3),
+                child: ExchangeRateView(settingButton: true, newRateButton: false),
+              ),
+            ],
+            if (visibility.statsCount) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                child: DashboardStatsView(),
+              ),
+            ],
+            if (visibility.profitAndLoss) ...[
+              DailyGrossView(),
+            ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: DashboardAlertReminder(),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

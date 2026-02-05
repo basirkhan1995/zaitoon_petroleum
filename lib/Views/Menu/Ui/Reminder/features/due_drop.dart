@@ -19,21 +19,20 @@ enum DueType {
 
   /// Convert database value back to enum
   static DueType fromDatabaseValue(String value) {
-    switch (value) {
-      case "Payable":
+    switch (value.toLowerCase()) {
+      case "payable":
         return DueType.payable;
-      case "Receivable":
+      case "receivable":
         return DueType.receivable;
       default:
-        return DueType.payable;
+        return DueType.payable; // Default fallback
     }
   }
 }
 
 class DueTypeTranslator {
   /// UI Translation only
-  static String getTranslatedDueType(
-      BuildContext context, DueType type) {
+  static String getTranslatedDueType(BuildContext context, DueType type) {
     final t = AppLocalizations.of(context)!;
 
     switch (type) {
@@ -44,31 +43,23 @@ class DueTypeTranslator {
     }
   }
 
-  static String getTranslatedDueTypeFromDb(
-      BuildContext context, String dbValue) {
-    final type = DueType.fromDatabaseValue(dbValue);
-    return getTranslatedDueType(context, type);
-  }
-
-  static List<Map<String, dynamic>> getTranslatedDueTypeList(
-      BuildContext context) {
-    return DueType.values.map((type) {
-      return {
-        "dueType": type,
-        "translatedName": getTranslatedDueType(context, type),
-        "databaseValue": type.toDatabaseValue(),
-      };
-    }).toList();
+  static String getTranslatedDueTypeFromDb(BuildContext context, String dbValue) {
+    try {
+      final type = DueType.fromDatabaseValue(dbValue);
+      return getTranslatedDueType(context, type);
+    } catch (e) {
+      return dbValue; // Return original if conversion fails
+    }
   }
 }
 
 class DueTypeDropdown extends StatefulWidget {
-  final DueType? selectedDueType;
+  final String selectedDueType; // Accept database string
   final Function(DueType) onDueTypeSelected;
 
   const DueTypeDropdown({
     super.key,
-    this.selectedDueType,
+    required this.selectedDueType,
     required this.onDueTypeSelected,
   });
 
@@ -82,21 +73,34 @@ class _DueTypeDropdownState extends State<DueTypeDropdown> {
   @override
   void initState() {
     super.initState();
-    _selectedDueType = widget.selectedDueType ?? DueType.values.first;
 
+    // Initialize with the database string
+    _selectedDueType = _getInitialDueType();
+
+    // Notify parent of initial selection
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onDueTypeSelected(_selectedDueType);
     });
+  }
+
+  DueType _getInitialDueType() {
+    if (widget.selectedDueType.isNotEmpty) {
+      try {
+        return DueType.fromDatabaseValue(widget.selectedDueType);
+      } catch (e) {
+        return DueType.values.first;
+      }
+    }
+    return DueType.values.first;
   }
 
   @override
   void didUpdateWidget(covariant DueTypeDropdown oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (widget.selectedDueType != null &&
-        widget.selectedDueType != _selectedDueType) {
+    if (widget.selectedDueType != oldWidget.selectedDueType) {
       setState(() {
-        _selectedDueType = widget.selectedDueType!;
+        _selectedDueType = _getInitialDueType();
       });
     }
   }
@@ -111,8 +115,7 @@ class _DueTypeDropdownState extends State<DueTypeDropdown> {
     return ZDropdown<DueType>(
       title: AppLocalizations.of(context)!.dueType,
       items: DueType.values.toList(),
-      itemLabel: (type) =>
-          DueTypeTranslator.getTranslatedDueType(context, type),
+      itemLabel: (type) => DueTypeTranslator.getTranslatedDueType(context, type),
       selectedItem: _selectedDueType,
       onItemSelected: _handleSelected,
       leadingBuilder: (type) => _getDueTypeIcon(type),
