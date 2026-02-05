@@ -37,13 +37,13 @@ class _Mobile extends StatelessWidget {
           children: [
             if (visibility.dashboardClock) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: const DigitalClock(),
               ),
             ],
             if (visibility.exchangeRate) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 3),
                 child: ExchangeRateView(settingButton: true, newRateButton: false),
               ),
             ],
