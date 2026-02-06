@@ -62,7 +62,6 @@ class _DesktopState extends State<_Desktop> {
   String? _userName;
   String? baseCurrency;
   int? signatory;
-  // Track controllers for each row
   final Map<String, TextEditingController> _priceControllers = {};
   final Map<String, TextEditingController> _qtyControllers = {};
 
@@ -286,21 +285,8 @@ class _DesktopState extends State<_Desktop> {
                       ZOutlineButton(
                         width: 100,
                         icon: Icons.print,
-                        onPressed: _printPurchaseInvoice,
+                        onPressed: _onPrint,
                         label: Text(tr.print),
-                      ),
-
-                      const SizedBox(width: 8),
-                      ZOutlineButton(
-                        width: 100,
-                        icon: Icons.refresh,
-                        onPressed: () {
-                          context.read<PurchaseInvoiceBloc>().add(ResetPurchaseInvoiceEvent());
-                          _accountController.clear();
-                          _personController.clear();
-                          _xRefController.clear();
-                        },
-                        label: Text(tr.newKeyword),
                       ),
                       const SizedBox(width: 8),
                       BlocBuilder<PurchaseInvoiceBloc, PurchaseInvoiceState>(
@@ -986,7 +972,7 @@ class _DesktopState extends State<_Desktop> {
   }
 
   // In _DesktopState class of NewPurchaseOrderView
-  void _printPurchaseInvoice() {
+  void _onPrint({String? invoiceNumber}) {
     final state = context.read<PurchaseInvoiceBloc>().state;
 
     if (state is! PurchaseInvoiceLoaded) {
@@ -1045,7 +1031,7 @@ class _DesktopState extends State<_Desktop> {
         }) {
           return InvoicePrintService().printInvoicePreview(
             invoiceType: "Purchase",
-            invoiceNumber: 0,
+            invoiceNumber: invoiceNumber ?? "",
             reference: _xRefController.text,
             invoiceDate: DateTime.now(),
             customerSupplierName: current.supplier?.perName ?? "",
@@ -1072,7 +1058,7 @@ class _DesktopState extends State<_Desktop> {
         }) {
           return InvoicePrintService().printInvoiceDocument(
             invoiceType: "Purchase",
-            invoiceNumber: 0,
+            invoiceNumber: invoiceNumber ?? "",
             reference: _xRefController.text,
             invoiceDate: DateTime.now(),
             customerSupplierName: current.supplier?.perName ?? "",
@@ -1098,7 +1084,7 @@ class _DesktopState extends State<_Desktop> {
         }) {
           return InvoicePrintService().createInvoiceDocument(
             invoiceType: "Purchase",
-            invoiceNumber: 0,
+            invoiceNumber: invoiceNumber ?? "",
             reference: _xRefController.text,
             invoiceDate: DateTime.now(),
             customerSupplierName: current.supplier?.perName ?? "",

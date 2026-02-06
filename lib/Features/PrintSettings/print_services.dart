@@ -5,7 +5,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:zaitoon_petroleum/Features/PrintSettings/report_model.dart';
-
+import 'package:pdf/pdf.dart' as pw;
 
 abstract class PrintServices {
 
@@ -79,12 +79,19 @@ abstract class PrintServices {
     }
   }
 
-  // Add these methods to your InvoicePrintService class
-
   Future<pw.Widget> header({required ReportModel report}) async {
-    final image = (report.comLogo != null && report.comLogo is Uint8List && report.comLogo!.isNotEmpty)
-        ? pw.MemoryImage(report.comLogo!)
-        : null;
+    // Check if company logo exists and is valid
+    final bool hasCompanyLogo = report.comLogo != null &&
+        report.comLogo is Uint8List &&
+        report.comLogo!.isNotEmpty;
+
+    pw.ImageProvider? logoImage;
+
+    // Only load company logo if it exists
+    if (hasCompanyLogo) {
+      logoImage = pw.MemoryImage(report.comLogo!);
+    }
+
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
@@ -98,27 +105,41 @@ abstract class PrintServices {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  text(text: report.comName ?? "", fontSize: 25, tightBounds: true, fontWeight: pw.FontWeight.bold),
-                  pw.SizedBox(height: 3),
-                  text(text: report.comAddress ?? "", fontSize: 10),
-                  text(text: "${report.compPhone ?? ""} | ${report.comEmail ?? ""}", fontSize: 9),
+                  text(
+                      text: report.comName ?? "",
+                      fontSize: 25,
+                      tightBounds: true,
+                      fontWeight: pw.FontWeight.bold
+                  ),
+                  if (report.comAddress != null && report.comAddress!.isNotEmpty)
+                    text(
+                      text: report.comAddress ?? "",
+                      fontSize: 10,
+                      color: pw.PdfColors.grey600,
+                    ),
+                  if (report.compPhone != null && report.compPhone!.isNotEmpty)
+                    text(
+                      text: report.compPhone ?? "",
+                      fontSize: 9,
+                      color: pw.PdfColors.grey600,
+                    ),
                 ],
               ),
             ),
-            // Logo (right side)
-            if (image != null)
+            // Logo (right side) - only show if company logo exists
+            if (logoImage != null)
               pw.Container(
                 width: 50,
                 height: 50,
-                child: pw.Image(image, fit: pw.BoxFit.contain),
+                child: pw.Image(logoImage, fit: pw.BoxFit.contain),
               ),
           ],
         ),
-        pw.SizedBox(height: 5)
+        pw.SizedBox(height: 8),
+        horizontalDivider(),
       ],
     );
   }
-
   pw.Widget footer({
     required ReportModel report,
     required pw.Context context,
@@ -129,6 +150,7 @@ abstract class PrintServices {
       children: [
         pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.start,
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
             pw.Container(
               height: 20,
@@ -144,6 +166,12 @@ abstract class PrintServices {
         ),
         pw.SizedBox(height: 3),
         horizontalDivider(),
+        pw.SizedBox(height: 3),
+        pw.Row(
+          children: [
+            text(text: "${report.compPhone ?? ""} | ${report.comEmail ?? ""}", fontSize: 9),
+          ]
+        ),
         pw.SizedBox(height: 3),
         pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -953,8 +981,13 @@ abstract class PrintServices {
         'fa':'خرید',
         'ar':'خرید',
       },
+      'invDate':{
+        'en':'Invoice Date',
+        'fa':'تاریخ بل',
+        'ar':'بل نیته',
+      },
       'SEL':{
-        'en':'SaleReport',
+        'en':'Sale',
         'fa':'فروش',
         'ar':'فروش',
       },

@@ -1803,7 +1803,6 @@ class Repositories {
       endpoint: "/inventory/salePurchase.php",
       data: data,
     );
-
     // Return the full response data
     return response.data is Map<String, dynamic>
         ? response.data

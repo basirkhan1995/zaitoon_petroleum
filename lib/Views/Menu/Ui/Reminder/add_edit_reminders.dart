@@ -5,7 +5,6 @@ import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Reminder/features/due_drop.dart';
-
 import '../../../../Features/Date/z_generic_date.dart';
 import '../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../Features/Other/thousand_separator.dart';
@@ -19,14 +18,16 @@ import 'bloc/reminder_bloc.dart';
 import 'model/reminder_model.dart';
 
 class AddEditReminderView extends StatelessWidget {
+  final String? dueParameter;
+  final bool? isEnable;
   final ReminderModel? r;
-  const AddEditReminderView({super.key, this.r});
+  const AddEditReminderView({super.key, this.r, this.dueParameter, this.isEnable = false});
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobile: const _Mobile(),
-      desktop: _Desktop(r),
+      desktop: _Desktop(r,dueParameter,isEnable),
       tablet: const _Tablet(),
     );
   }
@@ -52,8 +53,10 @@ class _Tablet extends StatelessWidget {
 
 class _Desktop extends StatefulWidget {
   final ReminderModel? reminder;
+  final String? dueParameter;
+  final bool? isEnable;
 
-  const _Desktop(this.reminder);
+  const _Desktop(this.reminder,this.dueParameter,this.isEnable);
 
   @override
   State<_Desktop> createState() => _DesktopState();
@@ -66,12 +69,17 @@ class _DesktopState extends State<_Desktop> {
   int? accNumber;
   String? usrName;
   String? dueType;
-  String dueDate = DateTime.now().toFormattedDate();
+  String dueDate = DateTime.now().add(Duration(days: 1)).toFormattedDate();
+
 
   @override
   void initState() {
     final r = widget.reminder;
 
+    if(widget.dueParameter !=null && widget.dueParameter!.isNotEmpty){
+      dueType = widget.dueParameter;
+
+    }
     if (r != null) {
       account.text = r.rmdAccount?.toString() ?? "";
       accNumber = r.rmdAccount;
@@ -143,7 +151,8 @@ class _DesktopState extends State<_Desktop> {
                 ),
                 Expanded(
                   child: DueTypeDropdown(
-                    selectedDueType: dueType ?? "", // Pass the current dueType
+                    isEnable: widget.isEnable ?? true,
+                    selectedDueType: dueType ?? widget.dueParameter ??"",
                     onDueTypeSelected: (selectedType) {
                       setState(() {
                         dueType = selectedType.toDatabaseValue();
@@ -164,8 +173,7 @@ class _DesktopState extends State<_Desktop> {
               isRequired: true,
               bloc: context.read<AccountsBloc>(),
               fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
-              searchFunction: (bloc, query) =>
-                  bloc.add(LoadStkAccountsEvent(search: query)),
+              searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
               validator: (value) {
                 if (value.isEmpty) {
                   return tr.required(tr.accounts);
@@ -288,7 +296,7 @@ class _DesktopState extends State<_Desktop> {
     final model = ReminderModel(
       rmdId: widget.reminder?.rmdId,
       usrName: usrName,
-      rmdName: dueType,
+      rmdName: dueType ?? widget.dueParameter,
       rmdAccount: accNumber,
       rmdAmount: amount.text.cleanAmount,
       rmdDetails: details.text,

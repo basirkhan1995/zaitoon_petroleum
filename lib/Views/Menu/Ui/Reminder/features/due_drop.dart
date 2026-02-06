@@ -54,11 +54,13 @@ class DueTypeTranslator {
 }
 
 class DueTypeDropdown extends StatefulWidget {
-  final String selectedDueType; // Accept database string
+  final String selectedDueType;
+  final bool isEnable;
   final Function(DueType) onDueTypeSelected;
 
   const DueTypeDropdown({
     super.key,
+    this.isEnable = false,
     required this.selectedDueType,
     required this.onDueTypeSelected,
   });
@@ -113,6 +115,7 @@ class _DueTypeDropdownState extends State<DueTypeDropdown> {
   @override
   Widget build(BuildContext context) {
     return ZDropdown<DueType>(
+      disableAction: widget.isEnable,
       title: AppLocalizations.of(context)!.dueType,
       items: DueType.values.toList(),
       itemLabel: (type) => DueTypeTranslator.getTranslatedDueType(context, type),

@@ -44,7 +44,6 @@ class SaleInvoiceItemForPrint implements InvoiceItem {
   });
 }
 
-
 class PurchaseInvoiceItemForPrint implements InvoiceItem {
   @override
   final String productName;
@@ -69,7 +68,7 @@ class PurchaseInvoiceItemForPrint implements InvoiceItem {
 class InvoicePrintService extends PrintServices {
   Future<void> createInvoiceDocument({
     required String invoiceType,
-    required int invoiceNumber,
+    required String invoiceNumber,
     required String? reference,
     required DateTime? invoiceDate,
     required String customerSupplierName,
@@ -114,7 +113,7 @@ class InvoicePrintService extends PrintServices {
 
   Future<void> printInvoiceDocument({
     required String invoiceType,
-    required int invoiceNumber,
+    required String invoiceNumber,
     required String? reference,
     required DateTime? invoiceDate,
     required String customerSupplierName,
@@ -169,7 +168,7 @@ class InvoicePrintService extends PrintServices {
 
   Future<pw.Document> printInvoicePreview({
     required String invoiceType,
-    required int invoiceNumber,
+    required String invoiceNumber,
     required String? reference,
     required DateTime? invoiceDate,
     required String customerSupplierName,
@@ -205,7 +204,7 @@ class InvoicePrintService extends PrintServices {
 
   Future<pw.Document> generateInvoiceDocument({
     required String invoiceType,
-    required int invoiceNumber,
+    required String invoiceNumber,
     required String? reference,
     required DateTime? invoiceDate,
     required String customerSupplierName,
@@ -222,7 +221,6 @@ class InvoicePrintService extends PrintServices {
   }) async {
     final document = pw.Document();
     final prebuiltHeader = await header(report: company);
-
     final ByteData imageData = await rootBundle.load('assets/images/zaitoonLogo.png');
     final Uint8List imageBytes = imageData.buffer.asUint8List();
     final pw.MemoryImage logoImage = pw.MemoryImage(imageBytes);
@@ -232,12 +230,11 @@ class InvoicePrintService extends PrintServices {
     document.addPage(
       pw.MultiPage(
         maxPages: 1000,
-        margin: pw.EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+        margin: pw.EdgeInsets.symmetric(horizontal: 25, vertical: 15),
         pageFormat: pageFormat,
         textDirection: documentLanguage(language: language),
         orientation: orientation,
         build: (context) => [
-          horizontalDivider(),
           _invoiceHeaderWidget(
             language: language,
             invoiceType: invoiceType,
@@ -250,7 +247,7 @@ class InvoicePrintService extends PrintServices {
             customerSupplierName: customerSupplierName,
             isSale: isSale,
           ),
-          pw.SizedBox(height: 10),
+          pw.SizedBox(height: 5),
           _itemsTable(
             items: items,
             language: language,
@@ -265,15 +262,13 @@ class InvoicePrintService extends PrintServices {
             account: account,
             currency: currency,
           ),
-          pw.SizedBox(height: 20),
-          _signatureSection(language: language),
         ],
         header: (context) => prebuiltHeader,
         footer: (context) => footer(
-          report: company,
-          context: context,
-          language: language,
-          logoImage: logoImage,
+            report: company,
+            context: context,
+            language: language,
+            logoImage: logoImage
         ),
       ),
     );
@@ -283,7 +278,7 @@ class InvoicePrintService extends PrintServices {
   pw.Widget _invoiceHeaderWidget({
     required String language,
     required String invoiceType,
-    required int invoiceNumber,
+    required String invoiceNumber,
     required DateTime? invoiceDate,
     required String? reference,
   }) {
@@ -304,13 +299,14 @@ class InvoicePrintService extends PrintServices {
                 children: [
                   text(
                     text: invoiceTitle,
-                    fontSize: 24,
+                    fontSize: 18,
                     fontWeight: pw.FontWeight.bold,
                     color: pw.PdfColors.blue700,
                   ),
                   text(
-                    text: "${getTranslation(locale: 'invoiceNumber', language: language)}: $invoiceNumber",
-                    fontSize: 14,
+                    text:
+                    "${getTranslation(locale: 'invoiceNumber', language: language)}: $invoiceNumber",
+                    fontSize: 10,
                   ),
                 ],
               ),
@@ -318,12 +314,13 @@ class InvoicePrintService extends PrintServices {
                 crossAxisAlignment: pw.CrossAxisAlignment.end,
                 children: [
                   text(
-                    text: getTranslation(locale: 'date', language: language),
-                    fontSize: 10,
+                    text: getTranslation(locale: 'invDate', language: language),
+                    fontSize: 9,
+                    color: pw.PdfColors.grey700,
                   ),
                   text(
-                    text: invoiceDate?.toDateTime ?? DateTime.now().toFormattedDate(),
-                    fontSize: 14,
+                    text: DateTime.now().toFormattedDate(),
+                    fontSize: 10,
                     fontWeight: pw.FontWeight.bold,
                   ),
                   text(
@@ -338,7 +335,8 @@ class InvoicePrintService extends PrintServices {
           pw.SizedBox(height: 8),
           if (reference != null && reference.isNotEmpty)
             text(
-              text: "${getTranslation(locale: 'referenceNumber', language: language)}: $reference",
+              text:
+              "${getTranslation(locale: 'referenceNumber', language: language)}: $reference",
               fontSize: 11,
             ),
         ],
@@ -356,8 +354,8 @@ class InvoicePrintService extends PrintServices {
         : getTranslation(locale: 'supplier', language: language);
 
     return pw.Container(
-      child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
+      child: pw.Row(
+        crossAxisAlignment: pw.CrossAxisAlignment.center,
         children: [
           text(
             text: title,
@@ -365,10 +363,10 @@ class InvoicePrintService extends PrintServices {
             color: pw.PdfColors.grey600,
             fontWeight: pw.FontWeight.bold,
           ),
-          pw.SizedBox(height: 2),
+          pw.SizedBox(width: 4),
           text(
             text: customerSupplierName,
-            fontSize: 13,
+            fontSize: 10,
           ),
         ],
       ),
@@ -400,10 +398,10 @@ class InvoicePrintService extends PrintServices {
       children: [
         // Header Row
         pw.TableRow(
-          decoration: pw.BoxDecoration(color: pw.PdfColors.grey200),
+          decoration: pw.BoxDecoration(color: pw.PdfColors.grey50),
           children: [
             pw.Padding(
-              padding: pw.EdgeInsets.all(8),
+              padding: pw.EdgeInsets.all(4),
               child: text(
                 text: getTranslation(locale: 'number', language: language),
                 fontSize: 9,
@@ -412,15 +410,15 @@ class InvoicePrintService extends PrintServices {
               ),
             ),
             pw.Padding(
-              padding: pw.EdgeInsets.all(8),
+              padding: pw.EdgeInsets.all(4),
               child: text(
-                text: getTranslation(locale: 'productName', language: language),
+                text: getTranslation(locale: 'description', language: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
               ),
             ),
             pw.Padding(
-              padding: pw.EdgeInsets.all(8),
+              padding: pw.EdgeInsets.all(4),
               child: text(
                 text: getTranslation(locale: 'qty', language: language),
                 fontSize: 9,
@@ -429,7 +427,7 @@ class InvoicePrintService extends PrintServices {
               ),
             ),
             pw.Padding(
-              padding: pw.EdgeInsets.all(8),
+              padding: pw.EdgeInsets.all(4),
               child: text(
                 text: getTranslation(locale: 'unitPrice', language: language),
                 fontSize: 9,
@@ -438,7 +436,7 @@ class InvoicePrintService extends PrintServices {
               ),
             ),
             pw.Padding(
-              padding: pw.EdgeInsets.all(8),
+              padding: pw.EdgeInsets.all(4),
               child: text(
                 text: getTranslation(locale: 'total', language: language),
                 fontSize: 9,
@@ -447,7 +445,7 @@ class InvoicePrintService extends PrintServices {
               ),
             ),
             pw.Padding(
-              padding: pw.EdgeInsets.all(8),
+              padding: pw.EdgeInsets.all(4),
               child: text(
                 text: getTranslation(locale: 'storage', language: language),
                 fontSize: 9,
@@ -461,10 +459,11 @@ class InvoicePrintService extends PrintServices {
         // Data Rows
         for (int i = 0; i < items.length; i++)
           pw.TableRow(
-            decoration: i.isOdd ? pw.BoxDecoration(color: pw.PdfColors.grey50) : null,
+            decoration:
+            i.isOdd ? pw.BoxDecoration(color: pw.PdfColors.grey50) : null,
             children: [
               pw.Padding(
-                padding: pw.EdgeInsets.all(8),
+                padding: pw.EdgeInsets.all(5),
                 child: text(
                   text: (i + 1).toString(),
                   fontSize: 9,
@@ -472,14 +471,14 @@ class InvoicePrintService extends PrintServices {
                 ),
               ),
               pw.Padding(
-                padding: pw.EdgeInsets.all(8),
+                padding: pw.EdgeInsets.all(5),
                 child: text(
                   text: items[i].productName,
                   fontSize: 9,
                 ),
               ),
               pw.Padding(
-                padding: pw.EdgeInsets.all(8),
+                padding: pw.EdgeInsets.all(5),
                 child: text(
                   text: items[i].quantity.toString(),
                   fontSize: 9,
@@ -487,7 +486,7 @@ class InvoicePrintService extends PrintServices {
                 ),
               ),
               pw.Padding(
-                padding: pw.EdgeInsets.all(8),
+                padding: pw.EdgeInsets.all(5),
                 child: text(
                   text: items[i].unitPrice.toAmount(),
                   fontSize: 9,
@@ -495,7 +494,7 @@ class InvoicePrintService extends PrintServices {
                 ),
               ),
               pw.Padding(
-                padding: pw.EdgeInsets.all(8),
+                padding: pw.EdgeInsets.all(5),
                 child: text(
                   text: items[i].total.toAmount(),
                   fontSize: 9,
@@ -504,7 +503,7 @@ class InvoicePrintService extends PrintServices {
                 ),
               ),
               pw.Padding(
-                padding: pw.EdgeInsets.all(8),
+                padding: pw.EdgeInsets.all(5),
                 child: text(
                   text: items[i].storageName,
                   fontSize: 9,
@@ -529,7 +528,8 @@ class InvoicePrintService extends PrintServices {
     final cleanAmount = grandTotal.toString().replaceAll(',', '');
     final parsedAmount = int.tryParse(
       double.tryParse(cleanAmount)?.toStringAsFixed(0) ?? "0",
-    ) ?? 0;
+    ) ??
+        0;
     final amountInWords = NumberToWords.convert(parsedAmount, lang);
     final ccy = currency ?? '';
 
@@ -539,33 +539,6 @@ class InvoicePrintService extends PrintServices {
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.end,
         children: [
-          // Grand Total
-          pw.Container(
-            padding: pw.EdgeInsets.all(10),
-            decoration: pw.BoxDecoration(
-              color: pw.PdfColors.grey100,
-              border: pw.Border.all(color: pw.PdfColors.grey300),
-              borderRadius: pw.BorderRadius.circular(5),
-            ),
-            child: pw.Row(
-              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-              children: [
-                text(
-                  text: getTranslation(locale: 'grandTotal', language: language),
-                  fontSize: 14,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-                text(
-                  text: "${grandTotal.toAmount()} $ccy",
-                  fontSize: 14,
-                  fontWeight: pw.FontWeight.bold,
-                  color: pw.PdfColors.blue700,
-                ),
-              ],
-            ),
-          ),
-          pw.SizedBox(height: 10),
-
           // Payment Breakdown
           pw.Container(
             padding: pw.EdgeInsets.all(10),
@@ -576,32 +549,44 @@ class InvoicePrintService extends PrintServices {
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                text(
-                  text: getTranslation(locale: 'payment', language: language),
-                  fontSize: 12,
-                  fontWeight: pw.FontWeight.bold,
+                // Grand Total
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    text(
+                      text: getTranslation(
+                          locale: 'grandTotal', language: language),
+                      fontSize: 11,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                    text(
+                      text: "${grandTotal.toAmount()} $ccy",
+                      fontSize: 11,
+                      fontWeight: pw.FontWeight.bold,
+                      color: pw.PdfColors.blue700,
+                    ),
+                  ],
                 ),
-                pw.SizedBox(height: 5),
 
                 if (cashPayment > 0)
                   _buildPaymentRow(
-                    label: getTranslation(locale: 'cashPayment', language: language),
+                    label: getTranslation(
+                        locale: 'cashPayment', language: language),
                     value: cashPayment,
                     ccy: ccy,
                   ),
 
                 if (creditAmount > 0 && account != null)
                   _buildPaymentRow(
-                    label: "${getTranslation(locale: 'accountPayment', language: language)} (${account.accNumber})",
+                    label:
+                    "${getTranslation(locale: 'accountPayment', language: language)} (${account.accNumber})",
                     value: creditAmount,
                     ccy: ccy,
                   ),
 
-                pw.SizedBox(height: 5),
-                pw.Divider(color: pw.PdfColors.grey300),
-                pw.SizedBox(height: 5),
                 _buildPaymentRow(
-                  label: getTranslation(locale: 'totalPayment', language: language),
+                  label: getTranslation(
+                      locale: 'totalPayment', language: language),
                   value: cashPayment + creditAmount,
                   ccy: ccy,
                   isBold: true,
@@ -623,7 +608,8 @@ class InvoicePrintService extends PrintServices {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 text(
-                  text: getTranslation(locale: 'amountInWords', language: language),
+                  text: getTranslation(
+                      locale: 'amountInWords', language: language),
                   fontSize: 10,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -640,42 +626,6 @@ class InvoicePrintService extends PrintServices {
     );
   }
 
-  pw.Widget _signatureSection({required String language}) {
-    return pw.Row(
-      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-      children: [
-        pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
-          children: [
-            pw.Container(
-              width: 200,
-              height: 1,
-              color: pw.PdfColors.black,
-            ),
-            text(
-              text: getTranslation(locale: 'customerSignature', language: language),
-              fontSize: 10,
-            ),
-          ],
-        ),
-        pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.end,
-          children: [
-            pw.Container(
-              width: 200,
-              height: 1,
-              color: pw.PdfColors.black,
-            ),
-            text(
-              text: getTranslation(locale: 'authorizedBy', language: language),
-              fontSize: 10,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   pw.Widget _buildPaymentRow({
     required String label,
     required double value,
@@ -687,12 +637,12 @@ class InvoicePrintService extends PrintServices {
       children: [
         text(
           text: label,
-          fontSize: 10,
+          fontSize: 11,
           fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
         ),
         text(
           text: "${value.toAmount()} $ccy",
-          fontSize: 10,
+          fontSize: 11,
           fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
           color: isBold ? pw.PdfColors.blue700 : null,
         ),

@@ -253,7 +253,7 @@ class _DesktopState extends State<_Desktop> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      r.rmdName == "receivable"? AppLocalizations.of(context)!.receivableDue : AppLocalizations.of(context)!.payableDue,
+                      r.rmdName == "Receivable"? AppLocalizations.of(context)!.receivableDue : AppLocalizations.of(context)!.payableDue,
                       style: Theme.of(context)
                           .textTheme
                           .titleSmall

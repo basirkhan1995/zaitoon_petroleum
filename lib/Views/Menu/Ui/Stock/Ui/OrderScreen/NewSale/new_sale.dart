@@ -7,6 +7,7 @@ import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Reminder/add_edit_reminders.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/model/individual_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewSale/bloc/sale_invoice_bloc.dart';
@@ -57,10 +58,10 @@ class _DesktopState extends State<_Desktop> {
 
   final List<List<FocusNode>> _rowFocusNodes = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  Uint8List _companyLogo = Uint8List(0);
+  final company = ReportModel();
   String? _userName;
   String? baseCurrency;
-
   int? signatory;
   // Track controllers for each row
   final Map<String, TextEditingController> _priceControllers = {};
@@ -76,6 +77,20 @@ class _DesktopState extends State<_Desktop> {
     final companyState = context.read<CompanyProfileBloc>().state;
     if (companyState is CompanyProfileLoadedState) {
       baseCurrency = companyState.company.comLocalCcy ?? "";
+      company.comName = companyState.company.comName??"";
+      company.comAddress = companyState.company.addName??"";
+      company.compPhone = companyState.company.comPhone??"";
+      company.comEmail = companyState.company.comEmail??"";
+      company.statementDate = DateTime.now().toFullDateTime;
+      final base64Logo = companyState.company.comLogo;
+      if (base64Logo != null && base64Logo.isNotEmpty) {
+        try {
+          _companyLogo = base64Decode(base64Logo);
+          company.comLogo = _companyLogo;
+        } catch (e) {
+          _companyLogo = Uint8List(0);
+        }
+      }
     }
   }
 
@@ -126,6 +141,9 @@ class _DesktopState extends State<_Desktop> {
           }
           if (state is SaleInvoiceSaved) {
             if (state.success) {
+              // Store the invoice number first
+              String? savedInvoiceNumber = state.invoiceNumber;
+
               Utils.showOverlayMessage(
                 context,
                 title: tr.successTitle,
@@ -135,6 +153,12 @@ class _DesktopState extends State<_Desktop> {
               _accountController.clear();
               _personController.clear();
               _xRefController.clear();
+
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (savedInvoiceNumber != null && savedInvoiceNumber.isNotEmpty) {
+                  _onSalePrint(invoiceNumber: savedInvoiceNumber);
+                }
+              });
             } else {
               Utils.showOverlayMessage(context, message: "Failed to create invoice", isError: true);
             }
@@ -235,7 +259,9 @@ class _DesktopState extends State<_Desktop> {
                                   return [];
                                 },
                                 onSelected: (value) {
-                                  _accountController.text = '${value.accName} (${value.accNumber})';
+                                  setState(() {
+                                    _accountController.text = '${value.accName} (${value.accNumber})';
+                                  });
                                   context.read<SaleInvoiceBloc>().add(SelectCustomerAccountEvent(value));
                                 },
                                 showClearButton: true,
@@ -266,7 +292,9 @@ class _DesktopState extends State<_Desktop> {
                                 return [];
                               },
                               onSelected: (value) {
-                                _accountController.text = '${value.accName} (${value.accNumber})';
+                                setState(() {
+                                  _accountController.text = '${value.accName} (${value.accNumber})';
+                                });
                                 context.read<SaleInvoiceBloc>().add(SelectCustomerAccountEvent(value));
                               },
                               showClearButton: true,
@@ -274,24 +302,27 @@ class _DesktopState extends State<_Desktop> {
                           },
                         ),
                       ),
+                      if(_accountController.text.isNotEmpty)...[
+                        const SizedBox(width: 8),
+                        ZOutlineButton(
+                          width: 140,
+                          icon: Icons.alarm_rounded,
+                          onPressed: (){
+                            showDialog(context: context, builder: (context){
+                              return AddEditReminderView(
+                                  dueParameter: "Receivable",
+                                  isEnable: true);
+                            });
+                          },
+                          label: Text(tr.setReminder),
+                        ),
+                      ],
                       const SizedBox(width: 8),
                       ZOutlineButton(
                         width: 100,
                         icon: Icons.print,
-                        onPressed: () => _printSaleInvoice(),
+                        onPressed: () => _onSalePrint(invoiceNumber: null),
                         label: Text(tr.print),
-                      ),
-                      const SizedBox(width: 8),
-                      ZOutlineButton(
-                        width: 100,
-                        icon: Icons.refresh,
-                        onPressed: () {
-                          context.read<SaleInvoiceBloc>().add(ResetSaleInvoiceEvent());
-                          _accountController.clear();
-                          _personController.clear();
-                          _xRefController.clear();
-                        },
-                        label: Text(tr.newKeyword),
                       ),
                       const SizedBox(width: 8),
                       BlocBuilder<SaleInvoiceBloc, SaleInvoiceState>(
@@ -723,8 +754,7 @@ class _DesktopState extends State<_Desktop> {
       builder: (context, state) {
         if (state is SaleInvoiceLoaded || state is SaleInvoiceSaving) {
           final current = state is SaleInvoiceSaving ?
-          state :
-          (state as SaleInvoiceLoaded);
+          state : (state as SaleInvoiceLoaded);
 
           return Container(
             padding: const EdgeInsets.all(16),
@@ -1074,24 +1104,18 @@ class _DesktopState extends State<_Desktop> {
   }
   String _getPaymentModeLabel(PaymentMode mode) {
     switch (mode) {
-      case PaymentMode.cash:
-        return AppLocalizations.of(context)!.cash;
-      case PaymentMode.credit:
-        return AppLocalizations.of(context)!.creditTitle;
-      case PaymentMode.mixed:
-        return AppLocalizations.of(context)!.combinedPayment;
+      case PaymentMode.cash: return AppLocalizations.of(context)!.cash;
+      case PaymentMode.credit: return AppLocalizations.of(context)!.creditTitle;
+      case PaymentMode.mixed: return AppLocalizations.of(context)!.combinedPayment;
     }
   }
 
   void _saveInvoice(BuildContext context, SaleInvoiceLoaded state) {
-    // Additional validation
     if (!state.isFormValid) {
       Utils.showOverlayMessage(context, message: 'Please fill all required fields correctly', isError: true);
       return;
     }
-
     final completer = Completer<String>();
-
     context.read<SaleInvoiceBloc>().add(SaveSaleInvoiceEvent(
       usrName: _userName ?? '',
       orderName: "Sale",
@@ -1101,42 +1125,13 @@ class _DesktopState extends State<_Desktop> {
       completer: completer,
     ));
   }
-
-  void _printSaleInvoice() {
+  void _onSalePrint({String? invoiceNumber}) {
     final state = context.read<SaleInvoiceBloc>().state;
-
     if (state is! SaleInvoiceLoaded) {
       Utils.showOverlayMessage(context, message: 'Cannot print: No invoice data loaded', isError: true);
       return;
     }
-
     final current = state;
-
-    // Get company info
-    final companyState = context.read<CompanyProfileBloc>().state;
-    if (companyState is! CompanyProfileLoadedState) {
-      Utils.showOverlayMessage(context, message: 'Company information not available', isError: true);
-      return;
-    }
-
-    final company = ReportModel(
-      comName: companyState.company.comName ?? "",
-      comAddress: companyState.company.addName ?? "",
-      compPhone: companyState.company.comPhone ?? "",
-      comEmail: companyState.company.comEmail ?? "",
-      statementDate: DateTime.now().toFullDateTime,
-    );
-
-    // Get company logo
-    final base64Logo = companyState.company.comLogo;
-    if (base64Logo != null && base64Logo.isNotEmpty) {
-      try {
-        company.comLogo = base64Decode(base64Logo);
-      } catch (e) {
-       "";
-      }
-    }
-
 
     // Prepare invoice items for print
     final List<InvoiceItem> invoiceItems = current.items.map((item) {
@@ -1164,7 +1159,7 @@ class _DesktopState extends State<_Desktop> {
         }) {
           return InvoicePrintService().printInvoicePreview(
             invoiceType: "Sale",
-            invoiceNumber: 0,
+            invoiceNumber: invoiceNumber ?? "",
             reference: _xRefController.text,
             invoiceDate: DateTime.now(),
             customerSupplierName: current.customer?.perName ?? "",
@@ -1191,7 +1186,7 @@ class _DesktopState extends State<_Desktop> {
         }) {
           return InvoicePrintService().printInvoiceDocument(
             invoiceType: "Sale",
-            invoiceNumber: 0,
+            invoiceNumber: invoiceNumber ?? "",
             reference: _xRefController.text,
             invoiceDate: DateTime.now(),
             customerSupplierName: current.customer?.perName ?? "",
@@ -1217,7 +1212,7 @@ class _DesktopState extends State<_Desktop> {
         }) {
           return InvoicePrintService().createInvoiceDocument(
             invoiceType: "Sale",
-            invoiceNumber: 0,
+            invoiceNumber: invoiceNumber ?? "",
             reference: _xRefController.text,
             invoiceDate: DateTime.now(),
             customerSupplierName: current.customer?.perName ?? "",

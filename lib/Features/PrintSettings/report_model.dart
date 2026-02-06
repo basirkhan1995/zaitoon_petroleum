@@ -4,6 +4,7 @@ import 'dart:typed_data';
 class ReportModel {
   String? comName;
   String? compPhone;
+  int? invoiceNumber;
   String? comEmail;
   Uint8List? comLogo;
   String? comAddress;
@@ -19,6 +20,7 @@ class ReportModel {
     this.comEmail,
     this.comLogo,
     this.comAddress,
+    this.invoiceNumber,
     this.baseCurrency,
     this.statementDate,
     this.startDate,
@@ -29,6 +31,7 @@ class ReportModel {
   ReportModel copyWith({
     String? comName,
     String? compPhone,
+    int? invoiceNumber,
     String? comEmail,
     Uint8List? comLogo,
     String? comAddress,
@@ -37,13 +40,14 @@ class ReportModel {
     String? startDate,
     String? statementPeriod,
     String? endDate,
-  }) =>
+    }) =>
       ReportModel(
         comName: comName ?? this.comName,
         compPhone: compPhone ?? this.compPhone,
         comEmail: comEmail ?? this.comEmail,
         comLogo: comLogo ?? this.comLogo,
         comAddress: comAddress ?? this.comAddress,
+        invoiceNumber: invoiceNumber ?? this.invoiceNumber,
         statementDate: statementDate ?? this.statementDate,
         startDate: startDate ?? this.startDate,
         statementPeriod: statementPeriod ?? this.statementPeriod,

@@ -53,6 +53,10 @@ class _Mobile extends StatelessWidget {
             if (visibility.profitAndLoss) ...[
               DailyGrossView(),
             ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+              child: DashboardAlertReminder(),
+            ),
           ],
         ),
       ),

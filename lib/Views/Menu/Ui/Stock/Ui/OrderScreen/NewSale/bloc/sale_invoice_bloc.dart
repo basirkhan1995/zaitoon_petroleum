@@ -313,12 +313,12 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
 
     try {
       int? accountNumber;
-      double amountToSend; // This is CREDIT amount for API
+      double amountToSend;
 
       switch (current.paymentMode) {
         case PaymentMode.cash:
           accountNumber = 0;
-          amountToSend = 0.0; // No credit to account
+          amountToSend = 0.0;
           break;
 
         case PaymentMode.credit:
@@ -328,7 +328,7 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
 
         case PaymentMode.mixed:
           accountNumber = current.customerAccount!.accNumber;
-          amountToSend = current.creditAmount; // Credit portion to account
+          amountToSend = current.creditAmount;
           break;
       }
 
@@ -350,20 +350,21 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
         perID: event.ordPersonal,
         xRef: xRef,
         account: accountNumber,
-        amount: amountToSend, // CREDIT amount
+        amount: amountToSend,
         records: records,
       );
 
       final message = response['msg']?.toString() ?? 'No response message';
       final sp = response['specific']?.toString() ?? 'No response message';
       if (message.toLowerCase().contains('success')) {
-        String invoiceNumber = response['invoiceNo']?.toString() ?? 'Generated';
+        //final ref = response['ref']?.toString() ?? 'No Reference';
+        final invoiceNumber = response['ordID']?.toString() ?? 'No Order Id';
         emit(SaleInvoiceSaved(true, invoiceNumber: invoiceNumber));
         event.completer.complete(invoiceNumber);
         add(ResetSaleInvoiceEvent());
       }
       else if (message.toLowerCase().contains('authorized')) {
-        String invoiceNumber = response['invoiceNo']?.toString() ?? 'Authorized';
+        final invoiceNumber = response['ordID']?.toString() ?? 'No Order Id';
         emit(SaleInvoiceSaved(true, invoiceNumber: invoiceNumber));
         event.completer.complete(invoiceNumber);
         add(ResetSaleInvoiceEvent());
