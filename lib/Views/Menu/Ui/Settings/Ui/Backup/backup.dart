@@ -83,7 +83,7 @@ class _BackupContent extends StatelessWidget {
                     tr.databaseBackup,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.blue[900],
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   Text(
@@ -204,7 +204,7 @@ class _BackupContent extends StatelessWidget {
                                   file.path,
                                   style: TextStyle(
                                     fontSize: 10,
-                                    color: Colors.grey[500],
+                                    color: Theme.of(context).colorScheme.outline,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -215,7 +215,7 @@ class _BackupContent extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                  icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
                                   onPressed: () {
                                     _showDeleteDialog(context, file.path);
                                   },
@@ -235,13 +235,12 @@ class _BackupContent extends StatelessWidget {
                   return Center(
                     child: Text(
                       'Error: ${state.message}',
-                      style: const TextStyle(color: Colors.red),
+                      style: TextStyle(color: Theme.of(context).colorScheme.error),
                     ),
                   );
                 } else if (state is BackupLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
-
                 return const Center(child: Text('No data available'));
               },
             ),
@@ -280,8 +279,8 @@ class _BackupContent extends StatelessWidget {
               context.read<BackupBloc>().add(DeleteBackupEvent(filePath));
               Navigator.pop(context);
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+            child: Text(AppLocalizations.of(context)!.delete),
           ),
         ],
       ),
