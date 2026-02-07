@@ -123,7 +123,7 @@ class _DesktopState extends State<_Desktop> {
                    width: 300,
                    child: Text(locale.details,style: titleStyle)),
                 SizedBox(
-                    width: 200,
+                    width: 280,
                     child: Text(locale.address,style: titleStyle)),
                 SizedBox(
                     width: 60,
@@ -168,9 +168,9 @@ class _DesktopState extends State<_Desktop> {
                         hoverColor: color.primary.withValues(alpha: .05),
                         highlightColor: color.primary.withValues(alpha: .05),
                         child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 8,horizontal: 15),
+                          padding: EdgeInsets.symmetric(vertical: 12,horizontal: 15),
                           decoration: BoxDecoration(
-                           color: index.isEven? color.primary.withValues(alpha: .05) : Colors.transparent
+                           color: index.isOdd? color.primary.withValues(alpha: .05) : Colors.transparent
                           ),
                           child: Row(
                             children: [
@@ -179,7 +179,7 @@ class _DesktopState extends State<_Desktop> {
                                   width: 300,
                                   child: Text(st.stgDetails??"")),
                                 SizedBox(
-                                    width: 200,
+                                    width: 280,
                                     child: Text(st.stgLocation??"")),
 
                                 SizedBox(

@@ -147,7 +147,6 @@ class _Desktop extends StatelessWidget {
                       SizedBox(height: 3),
                       DailyGrossView(),
                     ],
-                    SizedBox(height: 3),
                     DashboardAlertReminder(),
                     SizedBox(height: 3),
                   ],

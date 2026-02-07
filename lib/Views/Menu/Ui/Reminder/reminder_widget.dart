@@ -68,21 +68,20 @@ class _DashboardAlertReminderState extends State<DashboardAlertReminder> {
                       /// HEADER
                       Row(
                         children: [
-                          /// Refresh
-                          ZOutlineButton(
-                            width: 100,
-                            height: 35,
-                            icon: Icons.refresh,
-                            label: Text(tr.refresh),
-                            onPressed: () {
-                              context.read<ReminderBloc>().add(LoadAlertReminders(alert: 1));
-                            },
-                          ),
-                          const SizedBox(width: 5),
+                          // /// Refresh
+                          // ZOutlineButton(
+                          //   width: 100,
+                          //   height: 35,
+                          //   icon: Icons.refresh,
+                          //   label: Text(tr.refresh),
+                          //   onPressed: () {
+                          //     context.read<ReminderBloc>().add(LoadAlertReminders(alert: 1));
+                          //   },
+                          // ),
+                          // const SizedBox(width: 5),
                           /// New Reminder
                           ZOutlineButton(
-                            width: 100,
-                            height: 35,
+                            height: 43,
                             icon: Icons.settings,
                             label: Text(tr.settings),
                             onPressed: () {

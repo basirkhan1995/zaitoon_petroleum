@@ -673,107 +673,109 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
               : AppLocalizations.of(context)!.zPetroleum;
           final logo = _getCompanyLogo(state);
 
-          return Column(
-            children: [
-              // Drawer Header
-              Container(
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 80,
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.primary.withValues(alpha: .2),
-                        ),
-                      ),
-                      child: logo != null
-                          ? Image.memory(logo, fit: BoxFit.contain)
-                          : Image.asset(
-                        "assets/images/zaitoonLogo.png",
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      companyName??"",
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-
-              // Menu Items
-              Expanded(
-                child: ListView(
-                  children: _buildMenuItems(context),
-                ),
-              ),
-
-              // User Profile & Logout
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: .3),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        ImageHelper.stakeholderProfile(
-                          imageName: usrPhoto,
-                          size: 40,
+          return SafeArea(
+            child: Column(
+              children: [
+                // Drawer Header
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 80,
+                        height: 80,
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: Theme.of(context).colorScheme.primary.withValues(alpha: .3),
+                            color: Theme.of(context).colorScheme.primary.withValues(alpha: .2),
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                adminName,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(
-                                usrRole,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
+                        child: logo != null
+                            ? Image.memory(logo, fit: BoxFit.contain)
+                            : Image.asset(
+                          "assets/images/zaitoonLogo.png",
+                          fit: BoxFit.contain,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ZOutlineButton(
-                          isActive: true,
-                          backgroundHover: Theme.of(context).colorScheme.error,
-                          onPressed: _logout,
-                          label: Text(AppLocalizations.of(context)!.logout))
-                    ),
-                  ],
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        companyName??"",
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+            
+                // Menu Items
+                Expanded(
+                  child: ListView(
+                    children: _buildMenuItems(context),
+                  ),
+                ),
+            
+                // User Profile & Logout
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: .3),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          ImageHelper.stakeholderProfile(
+                            imageName: usrPhoto,
+                            size: 40,
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.primary.withValues(alpha: .3),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  adminName,
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  usrRole,
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ZOutlineButton(
+                            isActive: true,
+                            backgroundHover: Theme.of(context).colorScheme.error,
+                            onPressed: _logout,
+                            label: Text(AppLocalizations.of(context)!.logout))
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),
@@ -1037,6 +1039,7 @@ class _DrawerMenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 15),
+      visualDensity: VisualDensity(vertical: -4),
       leading: Icon(
         icon,
         color: isSelected

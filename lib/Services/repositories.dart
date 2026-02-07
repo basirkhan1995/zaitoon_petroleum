@@ -2576,98 +2576,79 @@ class Repositories {
 
 
   Future<File> downloadBackup() async {
-    try {
-      Directory baseDir;
+    Directory baseDir;
 
-      // 🔹 ANDROID
-      if (Platform.isAndroid) {
-        final status = await Permission.storage.request();
-        if (!status.isGranted) {
-          throw Exception('Storage permission denied');
-        }
-
-        final androidDownload = Directory('/storage/emulated/0/Download');
-        if (await androidDownload.exists()) {
-          baseDir = androidDownload;
-        } else {
-          baseDir = (await getExternalStorageDirectory())!;
-        }
+    // 🔹 ANDROID
+    if (Platform.isAndroid) {
+      final status = await Permission.storage.request();
+      if (!status.isGranted) {
+        throw Exception('Storage permission denied');
       }
 
-      // 🔹 iOS
-      else if (Platform.isIOS) {
-        baseDir = await getApplicationDocumentsDirectory();
+      final androidDownload = Directory('/storage/emulated/0/Download');
+      if (await androidDownload.exists()) {
+        baseDir = androidDownload;
+      } else {
+        baseDir = (await getExternalStorageDirectory())!;
       }
-
-      // 🔹 Windows / macOS / Linux
-      else {
-        baseDir = await getApplicationDocumentsDirectory();
-      }
-
-      // 📁 ZaitoonBackups folder
-      final backupDir = Directory('${baseDir.path}/ZaitoonBackups');
-      if (!await backupDir.exists()) {
-        await backupDir.create(recursive: true);
-      }
-
-      // 🕒 File name
-      final now = DateTime.now();
-      final formattedDate =
-          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}_'
-          '${now.hour.toString().padLeft(2, '0')}-${now.minute.toString().padLeft(2, '0')}';
-
-      final filePath = '${backupDir.path}/zaitoon_backup_$formattedDate.db';
-
-      // ⬇️ Download
-      await api.downloadFile(
-        endpoint: "/setting/backupLocally.php",
-        savePath: filePath,
-        onReceiveProgress: (received, total) {
-          if (total > 0) {
-            print('Downloaded ${(received / total * 100).toStringAsFixed(2)}%');
-          }
-        },
-      );
-
-      return File(filePath);
-    } catch (e) {
-      throw Exception('Failed to download backup: $e');
     }
+    // 🔹 iOS
+    else if (Platform.isIOS) {
+      baseDir = await getApplicationDocumentsDirectory();
+    }
+    // 🔹 Windows / macOS / Linux
+    else {
+      baseDir = await getApplicationDocumentsDirectory();
+    }
+
+    final backupDir = Directory('${baseDir.path}/ZaitoonBackups');
+    if (!await backupDir.exists()) {
+      await backupDir.create(recursive: true);
+    }
+
+    final now = DateTime.now();
+    final formattedDate =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}_'
+        '${now.hour.toString().padLeft(2, '0')}-${now.minute.toString().padLeft(2, '0')}';
+
+    final filePath = '${backupDir.path}/zaitoon_backup_$formattedDate.db';
+
+    await api.downloadFile(
+      endpoint: "/setting/backupLocally.php",
+      savePath: filePath,
+      onReceiveProgress: (received, total) {
+        if (total > 0) {
+          // progress callback
+        }
+      },
+    );
+
+    return File(filePath);
   }
 
-
-  // Method to get list of existing backups
+  // Get list of existing backups
   Future<List<FileSystemEntity>> getBackupFiles() async {
-    try {
-      final baseDir = await _getBackupBaseDirectory();
-      final backupDir = Directory('${baseDir.path}/ZaitoonBackups');
+    final baseDir = await _getBackupBaseDirectory();
+    final backupDir = Directory('${baseDir.path}/ZaitoonBackups');
 
-      if (!await backupDir.exists()) return [];
+    if (!await backupDir.exists()) return [];
 
-      final files = backupDir
-          .listSync()
-          .whereType<File>()
-          .toList();
+    final files = backupDir
+        .listSync()
+        .whereType<File>()
+        .toList();
 
-      files.sort((a, b) =>
-          b.statSync().modified.compareTo(a.statSync().modified));
+    files.sort((a, b) =>
+        b.statSync().modified.compareTo(a.statSync().modified));
 
-      return files;
-    } catch (e) {
-      return [];
-    }
+    return files;
   }
 
-
-  // Method to delete a backup file
+  // Delete a backup file
   Future<void> deleteBackup(String filePath) async {
-    try {
-      final file = File(filePath);
-      if (await file.exists()) {
-        await file.delete();
-      }
-    } catch (e) {
-      throw Exception('Failed to delete backup: $e');
+    final file = File(filePath);
+    if (await file.exists()) {
+      await file.delete();
     }
   }
 
