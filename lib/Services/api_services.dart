@@ -380,6 +380,34 @@ class ApiServices {
       throw e.toString();
     }
   }
+
+  // Add this method to your ApiServices class after the uploadFile method:
+
+/* -------------------------------------------------------------------------- */
+/*                              FILE DOWNLOAD                                 */
+/* -------------------------------------------------------------------------- */
+
+  Future<Response> downloadFile({
+    required String endpoint,
+    required String savePath,
+    CancelToken? cancelToken,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    try {
+      await _checkConnectivity();
+      return await _dio.download(
+        endpoint,
+        savePath,
+        cancelToken: cancelToken,
+        onReceiveProgress: onReceiveProgress,
+      );
+    } on DioException catch (e) {
+      throw _handleError(e);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
 }
 
 

@@ -768,5 +768,11 @@
   "payableDue": "Payable Due",
   "receivableDue": "Receivable Due",
   "dueDate": "Due Date",
-  "setReminder": "Set Reminder"
+  "setReminder": "Set Reminder",
+  "backupTitle": "Backup",
+  "databaseBackup": "Database Backup",
+  "downloadBackupMsg": "Download a local copy of your database to keep your data safe.",
+  "downloadLatestBackup": "Download Latest Backup",
+  "downloading": "Downloading...",
+  "existingBackups": "Existing Backups"
 }

@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' hide MultipartFile;
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/model/rate_model.dart';
@@ -2555,4 +2558,119 @@ class Repositories {
     return response.data;
   }
 
+  ///Back up ...................................................................
+  Future<Directory> _getBackupBaseDirectory() async {
+    if (Platform.isAndroid) {
+      final dir = Directory('/storage/emulated/0/Download');
+      if (await dir.exists()) return dir;
+      return (await getExternalStorageDirectory())!;
+    }
+
+    if (Platform.isIOS) {
+      return await getApplicationDocumentsDirectory();
+    }
+
+    // Windows / macOS / Linux
+    return await getApplicationDocumentsDirectory();
+  }
+
+
+  Future<File> downloadBackup() async {
+    try {
+      Directory baseDir;
+
+      // 🔹 ANDROID
+      if (Platform.isAndroid) {
+        final status = await Permission.storage.request();
+        if (!status.isGranted) {
+          throw Exception('Storage permission denied');
+        }
+
+        final androidDownload = Directory('/storage/emulated/0/Download');
+        if (await androidDownload.exists()) {
+          baseDir = androidDownload;
+        } else {
+          baseDir = (await getExternalStorageDirectory())!;
+        }
+      }
+
+      // 🔹 iOS
+      else if (Platform.isIOS) {
+        baseDir = await getApplicationDocumentsDirectory();
+      }
+
+      // 🔹 Windows / macOS / Linux
+      else {
+        baseDir = await getApplicationDocumentsDirectory();
+      }
+
+      // 📁 ZaitoonBackups folder
+      final backupDir = Directory('${baseDir.path}/ZaitoonBackups');
+      if (!await backupDir.exists()) {
+        await backupDir.create(recursive: true);
+      }
+
+      // 🕒 File name
+      final now = DateTime.now();
+      final formattedDate =
+          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}_'
+          '${now.hour.toString().padLeft(2, '0')}-${now.minute.toString().padLeft(2, '0')}';
+
+      final filePath = '${backupDir.path}/zaitoon_backup_$formattedDate.db';
+
+      // ⬇️ Download
+      await api.downloadFile(
+        endpoint: "/setting/backupLocally.php",
+        savePath: filePath,
+        onReceiveProgress: (received, total) {
+          if (total > 0) {
+            print('Downloaded ${(received / total * 100).toStringAsFixed(2)}%');
+          }
+        },
+      );
+
+      return File(filePath);
+    } catch (e) {
+      throw Exception('Failed to download backup: $e');
+    }
+  }
+
+
+  // Method to get list of existing backups
+  Future<List<FileSystemEntity>> getBackupFiles() async {
+    try {
+      final baseDir = await _getBackupBaseDirectory();
+      final backupDir = Directory('${baseDir.path}/ZaitoonBackups');
+
+      if (!await backupDir.exists()) return [];
+
+      final files = backupDir
+          .listSync()
+          .whereType<File>()
+          .toList();
+
+      files.sort((a, b) =>
+          b.statSync().modified.compareTo(a.statSync().modified));
+
+      return files;
+    } catch (e) {
+      return [];
+    }
+  }
+
+
+  // Method to delete a backup file
+  Future<void> deleteBackup(String filePath) async {
+    try {
+      final file = File(filePath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (e) {
+      throw Exception('Failed to delete backup: $e');
+    }
+  }
+
 }
+
+

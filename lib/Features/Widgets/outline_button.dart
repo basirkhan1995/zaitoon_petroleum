@@ -12,7 +12,7 @@ class ZOutlineButton extends StatefulWidget {
   final Color? textColor;
   final IconData? icon;
   final double? iconSize;
-  final bool isActive; // <-- New parameter
+  final bool isActive;
   final bool disable;
 
   const ZOutlineButton({
@@ -29,11 +29,11 @@ class ZOutlineButton extends StatefulWidget {
     this.icon,
     this.backgroundColor,
     this.height,
-    this.isActive = false, // default to false
+    this.isActive = false,
   });
 
   @override
-  ZOutlineButtonState createState() => ZOutlineButtonState();
+  State<ZOutlineButton> createState() => ZOutlineButtonState();
 }
 
 class ZOutlineButtonState extends State<ZOutlineButton> {
@@ -43,7 +43,6 @@ class ZOutlineButtonState extends State<ZOutlineButton> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // Determine colors based on isActive and hover
     final bgColor = widget.isActive
         ? widget.backgroundHover ?? theme.colorScheme.primary
         : (_isHovered
@@ -51,60 +50,66 @@ class ZOutlineButtonState extends State<ZOutlineButton> {
         : widget.backgroundColor ?? theme.colorScheme.surface);
 
     final borderColor = widget.isActive
-        ? bgColor // same as background when active
+        ? bgColor
         : (_isHovered
         ? widget.backgroundHover ?? theme.colorScheme.primary
         : Colors.grey.withValues(alpha: .5));
 
-    final disabledStatus = widget.disable
-        ? theme.colorScheme.error // same as background when active
-        : (_isHovered
-        ? widget.backgroundHover ?? theme.colorScheme.primary
-        : Colors.grey.withValues(alpha: .5));
+    final disabledBorder = theme.colorScheme.error;
 
     final textColor = widget.isActive
         ? widget.foregroundHover ?? theme.colorScheme.onPrimary
         : (_isHovered
         ? widget.foregroundHover ?? theme.colorScheme.onPrimary
-        : widget.textColor ?? theme.colorScheme.primary.withValues(alpha: .9));
+        : widget.textColor ??
+        theme.colorScheme.primary.withValues(alpha: .9));
+
+    Widget button = OutlinedButton(
+      style: ButtonStyle(
+        padding: WidgetStateProperty.all(
+          const EdgeInsets.symmetric(horizontal: 12),
+        ),
+        minimumSize: WidgetStateProperty.all(
+          Size(0, widget.height ?? 40),
+        ),
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+        ),
+        backgroundColor: WidgetStateProperty.all(bgColor),
+        side: WidgetStateProperty.all(
+          BorderSide(color: widget.disable ? disabledBorder : borderColor),
+        ),
+      ),
+      onPressed: widget.disable ? null : widget.onPressed,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (widget.icon != null)
+            Icon(widget.icon, color: textColor, size: widget.iconSize),
+          if (widget.icon != null) const SizedBox(width: 5),
+          DefaultTextStyle.merge(
+            style: TextStyle(color: textColor),
+            child: widget.label,
+          ),
+        ],
+      ),
+    );
+
+    // Apply fixed width ONLY if provided
+    if (widget.width != null) {
+      button = SizedBox(
+        width: widget.width,
+        height: widget.height ?? 40,
+        child: button,
+      );
+    }
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: widget.width ?? double.infinity,
-          minHeight: widget.height ?? 40,
-        ),
-        child: Tooltip(
-          message: widget.toolTip,
-          child: SizedBox(
-            width: widget.width ?? 145,
-            height: widget.height ?? 40,
-            child: OutlinedButton(
-              style: ButtonStyle(
-                padding: WidgetStateProperty.all(
-                  const EdgeInsets.symmetric(horizontal: 8),
-                ),
-                shape: WidgetStateProperty.all(
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-                ),
-                backgroundColor: WidgetStateProperty.all(bgColor),
-                side: WidgetStateProperty.all(BorderSide(color: widget.disable? disabledStatus : borderColor)),
-              ),
-              onPressed: widget.disable ? null : widget.onPressed,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (widget.icon != null)
-                    Icon(widget.icon, color: textColor, size: widget.iconSize),
-                  if (widget.icon != null) const SizedBox(width: 5),
-                  DefaultTextStyle.merge(style: TextStyle(color: textColor), child: widget.label),
-                ],
-              ),
-            ),
-          ),
-        ),
+      child: Tooltip(
+        message: widget.toolTip,
+        child: button,
       ),
     );
   }

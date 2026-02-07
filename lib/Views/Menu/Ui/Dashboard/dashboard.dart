@@ -105,7 +105,6 @@ class _Tablet extends StatelessWidget {
     );
   }
 }
-
 class _Desktop extends StatelessWidget {
   const _Desktop();
 

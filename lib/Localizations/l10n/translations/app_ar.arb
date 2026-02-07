@@ -768,5 +768,11 @@
   "payableDue": "د تادیې سررسېد",
   "receivableDue": "د ترلاسه کولو سررسېد",
   "dueDate": "د تادیې نېټه",
-  "setReminder": "تعیین یادآوری"
+  "setReminder": "تعیین یادآوری",
+  "backupTitle": "پشتیبانی",
+  "databaseBackup": "پشتیبانی دیتابیس",
+  "downloadBackupMsg": "د معلوماتو د خوندي ساتلو لپاره د خپل ډیټابېس محلي کاپي ډاونلوډ کړئ.",
+  "downloadLatestBackup": "وروستی بیکاپ ډاونلوډ",
+  "downloading": "ډاونلوډ کېدونکی دی…",
+  "existingBackups": "نسخه‌ های ذخیره‌ شده"
 }

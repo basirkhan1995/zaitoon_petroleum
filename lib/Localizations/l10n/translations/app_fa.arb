@@ -768,5 +768,11 @@
   "payableDue": "سررسید پرداخت",
   "receivableDue": "سررسید دریافت",
   "dueDate": "تاریخ موعد",
-  "setReminder": "تعیین یادآوری"
+  "setReminder": "تعیین یادآوری",
+  "backupTitle": "پشتیبانی",
+  "databaseBackup": "پشتیبانی دیتابیس",
+  "downloadBackupMsg": "برای حفظ امنیت اطلاعات خود، یک نسخهٔ محلی از پایگاه داده دانلود کنید.",
+  "downloadLatestBackup": "دانلود آخرین نسخهٔ",
+  "downloading": "در حال دانلود…",
+  "existingBackups": "نسخه‌ های ذخیره‌ شده"
 }

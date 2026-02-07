@@ -4593,6 +4593,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Set Reminder'**
   String get setReminder;
+
+  /// No description provided for @backupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup'**
+  String get backupTitle;
+
+  /// No description provided for @databaseBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Database Backup'**
+  String get databaseBackup;
+
+  /// No description provided for @downloadBackupMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Download a local copy of your database to keep your data safe.'**
+  String get downloadBackupMsg;
+
+  /// No description provided for @downloadLatestBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Download Latest Backup'**
+  String get downloadLatestBackup;
+
+  /// No description provided for @downloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading...'**
+  String get downloading;
+
+  /// No description provided for @existingBackups.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing Backups'**
+  String get existingBackups;
 }
 
 class _AppLocalizationsDelegate

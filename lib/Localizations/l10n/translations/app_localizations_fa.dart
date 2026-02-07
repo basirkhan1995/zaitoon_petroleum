@@ -2310,4 +2310,23 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get setReminder => 'تعیین یادآوری';
+
+  @override
+  String get backupTitle => 'پشتیبانی';
+
+  @override
+  String get databaseBackup => 'پشتیبانی دیتابیس';
+
+  @override
+  String get downloadBackupMsg =>
+      'برای حفظ امنیت اطلاعات خود، یک نسخهٔ محلی از پایگاه داده دانلود کنید.';
+
+  @override
+  String get downloadLatestBackup => 'دانلود آخرین نسخهٔ';
+
+  @override
+  String get downloading => 'در حال دانلود…';
+
+  @override
+  String get existingBackups => 'نسخه‌ های ذخیره‌ شده';
 }

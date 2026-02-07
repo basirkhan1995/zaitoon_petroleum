@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Backup/backup.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/company_tab.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/stock_settings.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/TxnTypes/txn_types_view.dart';
@@ -65,6 +66,12 @@ class _Desktop extends StatelessWidget {
               label: AppLocalizations.of(context)!.stock,
               screen: const StockSettingsView(),
             ),
+            if (login.hasPermission(32) ?? false)
+              ZTabItem(
+                value: SettingsTabName.backup,
+                label: AppLocalizations.of(context)!.backupTitle,
+                screen: const BackupView(),
+              ),
 
             ZTabItem(
               value: SettingsTabName.about,

@@ -2313,4 +2313,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get setReminder => 'تعیین یادآوری';
+
+  @override
+  String get backupTitle => 'پشتیبانی';
+
+  @override
+  String get databaseBackup => 'پشتیبانی دیتابیس';
+
+  @override
+  String get downloadBackupMsg =>
+      'د معلوماتو د خوندي ساتلو لپاره د خپل ډیټابېس محلي کاپي ډاونلوډ کړئ.';
+
+  @override
+  String get downloadLatestBackup => 'وروستی بیکاپ ډاونلوډ';
+
+  @override
+  String get downloading => 'ډاونلوډ کېدونکی دی…';
+
+  @override
+  String get existingBackups => 'نسخه‌ های ذخیره‌ شده';
 }

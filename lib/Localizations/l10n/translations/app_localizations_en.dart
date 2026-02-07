@@ -2320,4 +2320,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get setReminder => 'Set Reminder';
+
+  @override
+  String get backupTitle => 'Backup';
+
+  @override
+  String get databaseBackup => 'Database Backup';
+
+  @override
+  String get downloadBackupMsg =>
+      'Download a local copy of your database to keep your data safe.';
+
+  @override
+  String get downloadLatestBackup => 'Download Latest Backup';
+
+  @override
+  String get downloading => 'Downloading...';
+
+  @override
+  String get existingBackups => 'Existing Backups';
 }
