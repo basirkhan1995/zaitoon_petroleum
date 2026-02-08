@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Reminder/features/due_drop.dart';
 import '../../../../Features/Date/z_generic_date.dart';
 import '../../../../Features/Generic/rounded_searchable_textfield.dart';
@@ -19,15 +20,16 @@ import 'model/reminder_model.dart';
 
 class AddEditReminderView extends StatelessWidget {
   final String? dueParameter;
+  final int? accNumber;
   final bool? isEnable;
   final ReminderModel? r;
-  const AddEditReminderView({super.key, this.r, this.dueParameter, this.isEnable = false});
+  const AddEditReminderView({super.key,this.r, this.dueParameter, this.accNumber, this.isEnable = false});
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobile: const _Mobile(),
-      desktop: _Desktop(r,dueParameter,isEnable),
+      desktop: _Desktop(r,accNumber, dueParameter, isEnable),
       tablet: const _Tablet(),
     );
   }
@@ -53,10 +55,11 @@ class _Tablet extends StatelessWidget {
 
 class _Desktop extends StatefulWidget {
   final ReminderModel? reminder;
+  final int? accNumber;
   final String? dueParameter;
   final bool? isEnable;
 
-  const _Desktop(this.reminder,this.dueParameter,this.isEnable);
+  const _Desktop(this.reminder,this.accNumber, this.dueParameter,this.isEnable);
 
   @override
   State<_Desktop> createState() => _DesktopState();
@@ -74,22 +77,29 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   void initState() {
+    super.initState();
+
     final r = widget.reminder;
 
-    if(widget.dueParameter !=null && widget.dueParameter!.isNotEmpty){
-      dueType = widget.dueParameter;
-
+    if (widget.accNumber != null) {
+      accNumber = widget.accNumber;
+      account.text = widget.accNumber.toString();
     }
+
+    if (widget.dueParameter != null && widget.dueParameter!.isNotEmpty) {
+      dueType = widget.dueParameter;
+    }
+
     if (r != null) {
-      account.text = r.rmdAccount?.toString() ?? "";
-      accNumber = r.rmdAccount;
+      account.text = r.rmdAccount?.toString() ?? widget.accNumber.toString();
+      accNumber = r.rmdAccount ?? widget.accNumber;
       amount.text = r.rmdAmount.toAmount();
       details.text = r.rmdDetails ?? "";
       dueDate = r.rmdAlertDate?.toFormattedDate() ?? "";
       dueType = r.rmdName;
     }
-    super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -105,12 +115,7 @@ class _DesktopState extends State<_Desktop> {
     return BlocListener<ReminderBloc, ReminderState>(
       listener: (context, state) {
         if (state.error != null && !state.loading) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.error!),
-              backgroundColor: Colors.red,
-            ),
-          );
+          Utils.showOverlayMessage(context, message: state.error??"", isError: true);
         }
         if (state.successMsg != null && !state.loading) {
           Navigator.of(context).pop();
@@ -151,7 +156,7 @@ class _DesktopState extends State<_Desktop> {
                 ),
                 Expanded(
                   child: DueTypeDropdown(
-                    isEnable: widget.isEnable ?? true,
+                    isEnable: widget.isEnable ?? false,
                     selectedDueType: dueType ?? widget.dueParameter ??"",
                     onDueTypeSelected: (selectedType) {
                       setState(() {
@@ -164,68 +169,70 @@ class _DesktopState extends State<_Desktop> {
             ),
 
             /// Account
-            GenericTextfield<StakeholdersAccountsModel, AccountsBloc,
-                AccountsState>(
-              showAllOnFocus: true,
-              controller: account,
-              title: tr.accounts,
-              hintText: tr.accNameOrNumber,
-              isRequired: true,
-              bloc: context.read<AccountsBloc>(),
-              fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
-              searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
-              validator: (value) {
-                if (value.isEmpty) {
-                  return tr.required(tr.accounts);
-                }
-                if (accNumber == null) {
-                  return tr.required(tr.accountTitle);
-                }
-                return null;
-              },
-              itemBuilder: (context, account) => Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 5,
+            if(widget.isEnable == false)...[
+              GenericTextfield<StakeholdersAccountsModel, AccountsBloc,
+                  AccountsState>(
+                showAllOnFocus: true,
+                controller: account,
+                title: tr.accounts,
+                hintText: tr.accNameOrNumber,
+                isRequired: true,
+                bloc: context.read<AccountsBloc>(),
+                fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
+                searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return tr.required(tr.accounts);
+                  }
+                  if (accNumber == null) {
+                    return tr.required(tr.accountTitle);
+                  }
+                  return null;
+                },
+                itemBuilder: (context, account) => Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 5,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "${account.accnumber} | ${account.accName}",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "${account.accnumber} | ${account.accName}",
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ],
-                    ),
-                  ],
+                itemToString: (acc) => "${acc.accnumber} | ${acc.accName}",
+                stateToLoading: (state) => state is AccountLoadingState,
+                loadingBuilder: (context) => const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                  ),
                 ),
+                stateToItems: (state) {
+                  if (state is StkAccountLoadedState) {
+                    return state.accounts;
+                  }
+                  return [];
+                },
+                onSelected: (value) {
+                  setState(() {
+                    accNumber = value.accnumber;
+                  });
+                },
+                noResultsText: tr.noDataFound,
+                showClearButton: true,
               ),
-              itemToString: (acc) => "${acc.accnumber} | ${acc.accName}",
-              stateToLoading: (state) => state is AccountLoadingState,
-              loadingBuilder: (context) => const SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                ),
-              ),
-              stateToItems: (state) {
-                if (state is StkAccountLoadedState) {
-                  return state.accounts;
-                }
-                return [];
-              },
-              onSelected: (value) {
-                setState(() {
-                  accNumber = value.accnumber;
-                });
-              },
-              noResultsText: tr.noDataFound,
-              showClearButton: true,
-            ),
+            ],
 
             /// Amount
             ZTextFieldEntitled(
@@ -283,13 +290,8 @@ class _DesktopState extends State<_Desktop> {
     }
 
     // Validate account
-    if (accNumber == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.required(AppLocalizations.of(context)!.accountTitle)),
-          backgroundColor: Colors.red,
-        ),
-      );
+    if (accNumber == null && widget.accNumber == null) {
+      Utils.showOverlayMessage(context, message: "Account is required", isError: true);
       return;
     }
 
@@ -297,7 +299,7 @@ class _DesktopState extends State<_Desktop> {
       rmdId: widget.reminder?.rmdId,
       usrName: usrName,
       rmdName: dueType ?? widget.dueParameter,
-      rmdAccount: accNumber,
+      rmdAccount: accNumber ?? widget.accNumber,
       rmdAmount: amount.text.cleanAmount,
       rmdDetails: details.text,
       rmdAlertDate: DateTime.tryParse(dueDate),

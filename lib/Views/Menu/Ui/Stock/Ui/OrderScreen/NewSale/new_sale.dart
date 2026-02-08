@@ -66,13 +66,14 @@ class _DesktopState extends State<_Desktop> {
   // Track controllers for each row
   final Map<String, TextEditingController> _priceControllers = {};
   final Map<String, TextEditingController> _qtyControllers = {};
-
+  int? _selectedAccountNumber;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SaleInvoiceBloc>().add(InitializeSaleInvoiceEvent());
     });
+
 
     final companyState = context.read<CompanyProfileBloc>().state;
     if (companyState is CompanyProfileLoadedState) {
@@ -261,6 +262,7 @@ class _DesktopState extends State<_Desktop> {
                                 onSelected: (value) {
                                   setState(() {
                                     _accountController.text = '${value.accName} (${value.accNumber})';
+                                    _selectedAccountNumber = value.accNumber; // ✅ Save real account ID
                                   });
                                   context.read<SaleInvoiceBloc>().add(SelectCustomerAccountEvent(value));
                                 },
@@ -293,7 +295,7 @@ class _DesktopState extends State<_Desktop> {
                               },
                               onSelected: (value) {
                                 setState(() {
-                                  _accountController.text = '${value.accName} (${value.accNumber})';
+                                  _accountController.text = value.accNumber.toString();
                                 });
                                 context.read<SaleInvoiceBloc>().add(SelectCustomerAccountEvent(value));
                               },
@@ -310,6 +312,7 @@ class _DesktopState extends State<_Desktop> {
                           onPressed: (){
                             showDialog(context: context, builder: (context){
                               return AddEditReminderView(
+                                  accNumber: _selectedAccountNumber,
                                   dueParameter: "Receivable",
                                   isEnable: true);
                             });
