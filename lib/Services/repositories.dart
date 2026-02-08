@@ -41,6 +41,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/model/vehi
 import '../Views/Menu/Ui/Dashboard/Views/DailyGross/model/gross_model.dart';
 import '../Views/Menu/Ui/Dashboard/Views/Stats/model/stats_model.dart';
 import '../Views/Menu/Ui/Finance/Ui/EndOfYear/model/eoy_model.dart';
+import '../Views/Menu/Ui/HR/Ui/Attendance/model/attendance_model.dart';
 import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/FetchGLAT/model/glat_model.dart';
@@ -2573,8 +2574,6 @@ class Repositories {
     // Windows / macOS / Linux
     return await getApplicationDocumentsDirectory();
   }
-
-
   Future<File> downloadBackup() async {
     Directory baseDir;
 
@@ -2625,8 +2624,6 @@ class Repositories {
 
     return File(filePath);
   }
-
-  // Get list of existing backups
   Future<List<FileSystemEntity>> getBackupFiles() async {
     final baseDir = await _getBackupBaseDirectory();
     final backupDir = Directory('${baseDir.path}/ZaitoonBackups');
@@ -2643,8 +2640,6 @@ class Repositories {
 
     return files;
   }
-
-  // Delete a backup file
   Future<void> deleteBackup(String filePath) async {
     final file = File(filePath);
     if (await file.exists()) {
@@ -2652,6 +2647,48 @@ class Repositories {
     }
   }
 
+
+  ///Attendance ...............................................................
+  Future<List<AttendanceRecord>> getAllAttendance({String? date}) async {
+    final response = await api.get(
+        endpoint: "/HR/attendence.php",
+        queryParams: {
+          "date": date
+        }
+    );
+
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
+
+    // Parse as list
+    if (response.data is List) {
+      return List<AttendanceRecord>.from(
+          response.data.map((x) => AttendanceRecord.fromMap(x))
+      );
+    }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic>) {
+      return [AttendanceRecord.fromMap(response.data)];
+    }
+
+    return [];
+  }
+  Future<Map<String, dynamic>> addNewAttendance({required AttendanceModel newData}) async {
+    final response = await api.post(
+        endpoint: "/HR/attendence.php",
+        data: newData.toMap()
+    );
+    return response.data;
+  }
+  Future<Map<String, dynamic>> updateAttendance({required AttendanceModel newData}) async {
+    final response = await api.put(
+        endpoint: "/HR/attendence.php",
+        data: newData.toMap()
+    );
+    return response.data;
+  }
 }
 
 
