@@ -11,7 +11,6 @@ part 'employee_state.dart';
 class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
   final Repositories _repo;
   EmployeeBloc(this._repo) : super(EmployeeInitial()) {
-
     on<LoadEmployeeEvent>((event, emit)async {
       emit(EmployeeLoadingState());
      try{

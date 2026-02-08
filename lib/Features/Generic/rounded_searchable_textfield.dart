@@ -16,6 +16,8 @@ class GenericTextfield<T, B extends BlocBase<S>, S> extends StatefulWidget {
   final LoadingBuilder? loadingBuilder;
   final bool Function(S state)? stateToLoading;
   final double? width;
+  final double? height;
+  final bool isEnabled;
   final TextEditingController? controller;
   final String? hintText;
   final String title;
@@ -40,12 +42,14 @@ class GenericTextfield<T, B extends BlocBase<S>, S> extends StatefulWidget {
   final bool readOnly;
   final bool showClearButton;
   final bool showAllOnFocus;
-  final T? allOption; // Add "All" option
-  final bool showAllOption; // Whether to show "All" option
-  final String allOptionText; // Text for "All" option
+  final T? allOption;
+  final bool showAllOption;
+  final String allOptionText;
 
   const GenericTextfield({
     super.key,
+    this.isEnabled = true,
+    this.height = 60,
     required this.controller,
     required this.title,
     this.onSubmitted,
@@ -190,7 +194,7 @@ class _GenericTextfieldState<T, B extends BlocBase<S>, S> extends State<GenericT
     if (allItems.isEmpty) {
       final isLoading = widget.bloc != null && widget.stateToLoading != null && widget.stateToLoading!(widget.bloc!.state);
       return SizedBox(
-        height: 60,
+        height: widget.height,
         child: Center(
           child: isLoading
               ? const SizedBox(
