@@ -2363,4 +2363,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noAttendance => 'No Attendance';
+
+  @override
+  String get addAttendance => 'Add Attendance';
 }

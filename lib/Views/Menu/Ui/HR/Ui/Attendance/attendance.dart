@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/bloc/attendance_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/model/attendance_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/time_selector.dart';
 import '../../../../../../Features/Date/z_generic_date.dart';
 import '../../../../../../Features/Other/attendance_status.dart';
+import '../../../../../Auth/bloc/auth_bloc.dart';
+import 'model/attendance_model.dart';
 
 class AttendanceView extends StatelessWidget {
   const AttendanceView({super.key});
@@ -60,6 +63,7 @@ class _DesktopState extends State<_Desktop> {
     super.initState();
   }
 
+  String? usrName;
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
@@ -71,6 +75,11 @@ class _DesktopState extends State<_Desktop> {
     TextStyle? subtitle = Theme.of(context).textTheme.bodyMedium?.copyWith(
       color: color.outline.withValues(alpha: .9),
     );
+    final state = context.watch<AuthBloc>().state;
+    if(state is !AuthenticatedState){
+     return const SizedBox();
+    }
+    usrName = state.loginData.usrName;
     return Scaffold(
       body: Column(
         children: [
@@ -112,8 +121,9 @@ class _DesktopState extends State<_Desktop> {
                     ZOutlineButton(
                         height: 46,
                         isActive: true,
+                        onPressed: ()=> addAttendance(tr),
                         icon: Icons.add,
-                        label: Text("${tr.newKeyword} ${tr.attendance}"))
+                        label: Text(tr.addAttendance))
                   ],
                 ),
               ],
@@ -148,11 +158,23 @@ class _DesktopState extends State<_Desktop> {
           ),
           SizedBox(height: 5),
           Expanded(
-            child: BlocBuilder<AttendanceBloc, AttendanceState>(
-              builder: (context, state) {
-                if (state is AttendanceLoadingState) {
-                  return Center(child: CircularProgressIndicator());
+            child: BlocConsumer<AttendanceBloc, AttendanceState>(
+              listener: (BuildContext context, AttendanceState state) {
+                if(state is AttendanceErrorState){
+                  Utils.showOverlayMessage(context, message: state.message, isError: true);
                 }
+              },
+              builder: (context, state) {
+                /// ===============================
+                /// FULL LOADING (initial / refresh)
+                /// ===============================
+                if (state is AttendanceLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                /// ===============================
+                /// ERROR
+                /// ===============================
                 if (state is AttendanceErrorState) {
                   return NoDataWidget(
                     title: AppLocalizations.of(context)!.accessDenied,
@@ -164,72 +186,96 @@ class _DesktopState extends State<_Desktop> {
                     },
                   );
                 }
-                if (state is AttendanceLoadedState) {
-                  if (state.attendance.isEmpty) {
-                    return NoDataWidget(
-                      title: AppLocalizations.of(context)!.noDataFound,
-                      message: "${tr.noAttendance} - ${date.compact}",
-                      enableAction: false,
-                    );
-                  }
-                  return ListView.builder(
-                    itemCount: state.attendance.length,
-                    itemBuilder: (context, index) {
-                      final at = state.attendance[index];
-                      return Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 5,
-                        ),
-                        margin: EdgeInsets.symmetric(horizontal: 5),
-                        decoration: BoxDecoration(
-                          color: index.isEven
-                              ? Theme.of(
-                                  context,
-                                ).colorScheme.primary.withValues(alpha: .05)
-                              : Colors.transparent,
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: 100,
-                              child: Text(at.emaDate.compact),
-                            ),
 
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(at.fullName ?? "", style: titleStyle),
-                                  Text(at.empPosition ?? "", style: subtitle),
-                                ],
-                              ),
-                            ),
+                /// ===============================
+                /// LOADED OR SILENT LOADING
+                /// ===============================
+                final attendance = state is AttendanceLoadedState
+                    ? state.attendance
+                    : state is AttendanceSilentLoadingState
+                    ? state.attendance
+                    : <AttendanceRecord>[];
 
-                            SizedBox(
-                              width: 100,
-                              child: Text(at.emaCheckedIn ?? ""),
-                            ),
-                            SizedBox(
-                              width: 100,
-                              child: Text(at.emaCheckedOut ?? ""),
-                            ),
-                            SizedBox(
-                              width: 100,
-                              child: AttendanceStatusBadge(
-                                status: at.emaStatus ?? "",
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                if (attendance.isEmpty) {
+                  return NoDataWidget(
+                    title: AppLocalizations.of(context)!.noDataFound,
+                    message: "${tr.noAttendance} - ${date.compact}",
+                    enableAction: false,
                   );
                 }
-                return const SizedBox();
+
+                /// ===============================
+                /// STACK → LIST + LOADING OVERLAY
+                /// ===============================
+                return Stack(
+                  children: [
+                    ListView.builder(
+                      itemCount: attendance.length,
+                      itemBuilder: (context, index) {
+                        final at = attendance[index];
+                        return Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                          margin: const EdgeInsets.symmetric(horizontal: 5),
+                          decoration: BoxDecoration(
+                            color: index.isEven
+                                ? Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withValues(alpha: .05)
+                                : Colors.transparent,
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(width: 100, child: Text(at.emaDate.compact)),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(at.fullName ?? "", style: titleStyle),
+                                    Text(at.empPosition ?? "", style: subtitle),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 100, child: Text(at.emaCheckedIn ?? "")),
+                              SizedBox(width: 100, child: Text(at.emaCheckedOut ?? "")),
+                              SizedBox(
+                                width: 100,
+                                child: AttendanceStatusBadge(
+                                  status: at.emaStatus ?? "",
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+
+                    /// 🔄 SILENT LOADING INDICATOR
+                    if (state is AttendanceSilentLoadingState)
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: .3),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Theme.of(context).colorScheme.surface,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
               },
+
             ),
           ),
         ],
@@ -237,36 +283,87 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  void addAttendance(AppLocalizations tr){
-    showDialog(context: context, builder: (context){
-      return ZFormDialog(
-          onAction: (){
-            context.read<AttendanceBloc>().add(AddAttendanceEvent(AttendanceModel(
+  void addAttendance(AppLocalizations tr) {
+    String? checkIn;
+    String? checkOut;
 
-            )));
-          },
-          actionLabel: Text(tr.submit),
-          title: tr.newKeyword,
-        child: Column(
-          children: [
-            SizedBox(
-              width: 200,
-              child: ZDatePicker(
-                label: "",
-                value: date,
-                onDateChanged: (v) {
-                  setState(() {
-                    date = v;
-                  });
-                  context.read<AttendanceBloc>().add(
-                    LoadAllAttendanceEvent(date: date),
-                  );
-                },
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ZFormDialog(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+          icon: Icons.access_time,
+          title: tr.addAttendance,
+
+          /// 🔹 ACTION BUTTON
+          onAction: () {
+            context.read<AttendanceBloc>().add(
+              AddAttendanceEvent(
+                usrName: usrName ?? "",
+                checkIn: checkIn ?? "08:00:00",
+                checkOut: checkOut ?? "16:00:00",
+                date: date,
               ),
-            ),
-          ],
-        ),
-      );
-    });
+            );
+          },
+
+          /// 🔹 ACTION LABEL WITH LOADING
+          actionLabel: BlocBuilder<AttendanceBloc, AttendanceState>(
+            buildWhen: (prev, curr) =>
+            curr is AttendanceSilentLoadingState ||
+                curr is AttendanceLoadedState ||
+                curr is AttendanceErrorState,
+            builder: (context, state) {
+              final isLoading = state is AttendanceSilentLoadingState;
+
+              if (isLoading) {
+                return const SizedBox(
+                  height: 18,
+                  width: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                );
+              }
+
+              return Text(tr.submit);
+            },
+          ),
+
+          /// 🔹 DIALOG BODY
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: ZDatePicker(
+                  label: tr.date,
+                  value: date,
+                  onDateChanged: (v) {
+                    setState(() => date = v);
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              TimePickerField(
+                label: tr.checkIn,
+                initialTime: '08:00:00',
+                onChanged: (time) => checkIn = time,
+              ),
+
+              const SizedBox(height: 12),
+
+              TimePickerField(
+                label: tr.checkOut,
+                initialTime: '16:00:00',
+                onChanged: (time) => checkOut = time,
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
+
+
 }

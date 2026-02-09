@@ -782,5 +782,6 @@
   "presentTitle": "Present",
   "checkIn": "Check IN",
   "checkOut": "Check OUT",
-  "noAttendance": "No Attendance"
+  "noAttendance": "No Attendance",
+  "addAttendance": "Add Attendance"
 }

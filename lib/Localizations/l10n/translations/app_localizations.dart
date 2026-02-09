@@ -4677,6 +4677,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No Attendance'**
   String get noAttendance;
+
+  /// No description provided for @addAttendance.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Attendance'**
+  String get addAttendance;
 }
 
 class _AppLocalizationsDelegate

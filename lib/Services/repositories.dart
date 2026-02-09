@@ -2550,6 +2550,7 @@ class Repositories {
         endpoint: "/finance/reminders.php",
         data: newData.toMap()
     );
+
     return response.data;
   }
   Future<Map<String, dynamic>> updateReminder({required ReminderModel newData}) async {
@@ -2650,7 +2651,6 @@ class Repositories {
 
 
   ///Attendance ...............................................................
-  // repositories.dart
   Future<List<AttendanceRecord>> getAllAttendance({String? date}) async{
     final response = await api.get(
         endpoint: "/HR/attendence.php",
@@ -2681,11 +2681,17 @@ class Repositories {
 
     return [];
   }
-  Future<Map<String, dynamic>> addNewAttendance({required AttendanceModel newData}) async {
+  Future<Map<String, dynamic>> addNewAttendance({required String usrName, required String checkIn, required String checkOut, required String date}) async {
     final response = await api.post(
         endpoint: "/HR/attendence.php",
-        data: newData.toMap()
+        data: {
+          "usrName": usrName,
+          "emaDate": date,
+          "emaCheckedIn": checkIn,
+          "empCheckedOut": checkOut
+        }
     );
+    print(response.data);
     return response.data;
   }
   Future<Map<String, dynamic>> updateAttendance({required AttendanceModel newData}) async {

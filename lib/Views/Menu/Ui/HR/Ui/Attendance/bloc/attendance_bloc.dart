@@ -43,14 +43,14 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
       }
 
       try {
-        final res = await _repo.addNewAttendance(newData: event.newData);
+        final res = await _repo.addNewAttendance(usrName: event.usrName, checkIn: event.checkIn, checkOut: event.checkOut, date: event.date);
         final msg = res["msg"];
 
         if (msg == "success") {
           // Reload attendance for the same date
           add(LoadAllAttendanceEvent(date: _currentDate));
         }
-        else if (msg == "exits") {
+        else if (msg == "exit") {
           emit(const AttendanceErrorState(
             "Attendance already exists for this date",
           ));

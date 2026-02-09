@@ -2353,4 +2353,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get noAttendance => 'حضور و غیاب یافت نشد';
+
+  @override
+  String get addAttendance => 'ثبت حضور و غیاب';
 }

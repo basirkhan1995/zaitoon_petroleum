@@ -782,5 +782,6 @@
   "presentTitle": "حاضر",
   "checkIn": "ورود",
   "checkOut": "خروج",
-  "noAttendance": "حضور و غیاب یافت نشد"
+  "noAttendance": "حضور و غیاب یافت نشد",
+  "addAttendance": "ثبت حضور و غیاب"
 }
