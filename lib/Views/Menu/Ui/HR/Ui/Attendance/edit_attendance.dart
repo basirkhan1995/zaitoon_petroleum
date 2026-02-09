@@ -8,6 +8,7 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/bloc/attendance_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/model/attendance_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/time_selector.dart';
+import 'features/status_selector.dart';
 
 class EditAttendanceDialog extends StatefulWidget {
   final AttendanceRecord record;
@@ -26,7 +27,7 @@ class EditAttendanceDialog extends StatefulWidget {
 class _EditAttendanceDialogState extends State<EditAttendanceDialog> {
   late String checkIn;
   late String checkOut;
-  late String status;
+
 
   // Status options
   final List<String> statusOptions = [
@@ -40,9 +41,9 @@ class _EditAttendanceDialogState extends State<EditAttendanceDialog> {
     super.initState();
     checkIn = widget.record.emaCheckedIn ?? "08:00:00";
     checkOut = widget.record.emaCheckedOut ?? "16:00:00";
-    status = widget.record.emaStatus ?? "Present";
+    selectedStatus = AttendanceStatusEnum.fromDatabaseValue(widget.record.emaStatus ?? "Present");
   }
-
+  AttendanceStatusEnum? selectedStatus;
   void _updateAttendance() {
     final updatedRecord = AttendanceRecord(
       usrName: widget.record.usrName,
@@ -51,7 +52,7 @@ class _EditAttendanceDialogState extends State<EditAttendanceDialog> {
       fullName: widget.record.fullName,
       emaCheckedIn: checkIn,
       emaCheckedOut: checkOut,
-      emaStatus: status,
+      emaStatus: selectedStatus?.toDatabaseValue(),
       emaDate: widget.record.emaDate ?? widget.currentDate,
       empPosition: widget.record.empPosition,
     );
@@ -169,29 +170,12 @@ class _EditAttendanceDialogState extends State<EditAttendanceDialog> {
               },
             ),
 
-            const SizedBox(height: 15),
+            const SizedBox(height: 12),
 
-            // Status Dropdown
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: tr.status,
-                border: const OutlineInputBorder(),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 16,
-                ),
-              ),
-              initialValue: status,
-              items: statusOptions.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                if (newValue != null) {
-                  setState(() => status = newValue);
-                }
+            AttendanceDropdown(
+              selectedStatus: selectedStatus,
+              onStatusSelected: (status) {
+                selectedStatus = status;
               },
             ),
 
