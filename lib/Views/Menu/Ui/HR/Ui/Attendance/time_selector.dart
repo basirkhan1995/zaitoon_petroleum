@@ -108,11 +108,20 @@ Future<String?> selectTime(
     context: context,
     initialTime: initialTime ?? TimeOfDay.now(),
     builder: (context, child) {
-      return MediaQuery(
-        data: MediaQuery.of(context).copyWith(
-          alwaysUse24HourFormat: true,
+      return Theme(
+        data: Theme.of(context).copyWith(
+          timePickerTheme: TimePickerThemeData(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8), // 👈 Reduce radius here
+            ),
+          ),
         ),
-        child: child!,
+        child: MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            alwaysUse24HourFormat: true,
+          ),
+          child: child!,
+        ),
       );
     },
   );
@@ -130,6 +139,7 @@ Future<String?> selectTime(
 
   return _formatTime(dateTime, withSeconds: withSeconds);
 }
+
 
 /// ===============================
 /// 3️⃣ FORMATTER
