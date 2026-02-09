@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:http/http.dart' hide MultipartFile;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/model/ccy_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/model/rate_model.dart';
@@ -2649,15 +2650,20 @@ class Repositories {
 
 
   ///Attendance ...............................................................
-  Future<List<AttendanceRecord>> getAllAttendance({String? date}) async {
+  // repositories.dart
+  Future<List<AttendanceRecord>> getAllAttendance({String? date}) async{
     final response = await api.get(
         endpoint: "/HR/attendence.php",
         queryParams: {
-          "date": date
+          "date": date ?? DateTime.now().toFormattedDate()
         }
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      // If no records found, return empty list
+      if (response.data['msg'] == 'failed') {
+        return [];
+      }
       throw Exception(response.data['msg']);
     }
 
@@ -2669,7 +2675,7 @@ class Repositories {
     }
 
     // If single object, wrap in list
-    if (response.data is Map<String, dynamic>) {
+    if (response.data is Map<String, dynamic> && response.data.isNotEmpty) {
       return [AttendanceRecord.fromMap(response.data)];
     }
 

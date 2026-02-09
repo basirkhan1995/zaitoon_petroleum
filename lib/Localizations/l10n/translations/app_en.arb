@@ -774,5 +774,13 @@
   "downloadBackupMsg": "Download a local copy of your database to keep your data safe.",
   "downloadLatestBackup": "Download Latest Backup",
   "downloading": "Downloading...",
-  "existingBackups": "Existing Backups"
+  "existingBackups": "Existing Backups",
+  "attendance": "Attendance",
+  "absentTitle": "Absent",
+  "lateTitle": "Late",
+  "leaveTitle": "Leave",
+  "presentTitle": "Present",
+  "checkIn": "Check IN",
+  "checkOut": "Check OUT",
+  "noAttendance": "No Attendance"
 }

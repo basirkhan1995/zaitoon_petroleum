@@ -4629,6 +4629,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Existing Backups'**
   String get existingBackups;
+
+  /// No description provided for @attendance.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance'**
+  String get attendance;
+
+  /// No description provided for @absentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Absent'**
+  String get absentTitle;
+
+  /// No description provided for @lateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Late'**
+  String get lateTitle;
+
+  /// No description provided for @leaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get leaveTitle;
+
+  /// No description provided for @presentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Present'**
+  String get presentTitle;
+
+  /// No description provided for @checkIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Check IN'**
+  String get checkIn;
+
+  /// No description provided for @checkOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Check OUT'**
+  String get checkOut;
+
+  /// No description provided for @noAttendance.
+  ///
+  /// In en, this message translates to:
+  /// **'No Attendance'**
+  String get noAttendance;
 }
 
 class _AppLocalizationsDelegate

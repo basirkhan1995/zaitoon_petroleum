@@ -9,7 +9,6 @@ part 'attendance_state.dart';
 class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
   final Repositories _repo;
 
-  // Cache for current date's attendance
   String? _currentDate;
   List<AttendanceRecord>? _cachedAttendance;
 
@@ -38,11 +37,9 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     });
 
     on<AddAttendanceEvent>((event, emit) async {
-      // Silent loading - maintain current state
-      if (state is AttendanceLoadedState) {
-        emit(AttendanceSilentLoadingState(
-            (state as AttendanceLoadedState).attendance
-        ));
+      // Keep current UI (silent loading)
+      if (_cachedAttendance != null) {
+        emit(AttendanceSilentLoadingState(_cachedAttendance!));
       }
 
       try {
@@ -50,16 +47,21 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
         final msg = res["msg"];
 
         if (msg == "success") {
-          // Reload with silent loading
+          // Reload attendance for the same date
           add(LoadAllAttendanceEvent(date: _currentDate));
-        } else if (msg == "exits") {
-          emit(AttendanceErrorState("Attendance already exists for this date"));
-          // Restore previous state after error
+        }
+        else if (msg == "exits") {
+          emit(const AttendanceErrorState(
+            "Attendance already exists for this date",
+          ));
+
+          // Restore previous data
           if (_cachedAttendance != null) {
             emit(AttendanceLoadedState(_cachedAttendance!));
           }
-        } else {
-          emit(AttendanceErrorState("Failed to add attendance"));
+        }
+        else {
+          emit(const AttendanceErrorState("Failed to add attendance"));
           if (_cachedAttendance != null) {
             emit(AttendanceLoadedState(_cachedAttendance!));
           }

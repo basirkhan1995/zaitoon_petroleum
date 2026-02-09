@@ -774,5 +774,13 @@
   "downloadBackupMsg": "برای حفظ امنیت اطلاعات خود، یک نسخهٔ محلی از پایگاه داده دانلود کنید.",
   "downloadLatestBackup": "دانلود آخرین نسخهٔ",
   "downloading": "در حال دانلود…",
-  "existingBackups": "نسخه‌ های ذخیره‌ شده"
+  "existingBackups": "نسخه‌ های ذخیره‌ شده",
+  "attendance": "حضور و غیاب",
+  "absentTitle": "غایب",
+  "lateTitle": "تاخیر",
+  "leaveTitle": "مرخص",
+  "presentTitle": "حاضر",
+  "checkIn": "ورود",
+  "checkOut": "خروج",
+  "noAttendance": "حضور و غیاب یافت نشد"
 }

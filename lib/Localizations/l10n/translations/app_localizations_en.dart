@@ -2339,4 +2339,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get existingBackups => 'Existing Backups';
+
+  @override
+  String get attendance => 'Attendance';
+
+  @override
+  String get absentTitle => 'Absent';
+
+  @override
+  String get lateTitle => 'Late';
+
+  @override
+  String get leaveTitle => 'Leave';
+
+  @override
+  String get presentTitle => 'Present';
+
+  @override
+  String get checkIn => 'Check IN';
+
+  @override
+  String get checkOut => 'Check OUT';
+
+  @override
+  String get noAttendance => 'No Attendance';
 }

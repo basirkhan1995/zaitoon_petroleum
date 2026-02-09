@@ -116,6 +116,59 @@ extension DateTimeExtensions on dynamic {
   }
 }
 
+extension ZSmartDateFormat on dynamic {
+  DateTime? get _date => ZDateFormatter.parse(this);
+
+  /// Jan
+  String get monthShort =>
+      _date == null ? '' : DateFormat('MMM').format(_date!);
+
+  /// January
+  String get monthFull =>
+      _date == null ? '' : DateFormat('MMMM').format(_date!);
+
+  /// 05
+  String get day =>
+      _date == null ? '' : DateFormat('dd').format(_date!);
+
+  /// Wed
+  String get weekDayShort =>
+      _date == null ? '' : DateFormat('EEE').format(_date!);
+
+  /// Wednesday
+  String get weekDayFull =>
+      _date == null ? '' : DateFormat('EEEE').format(_date!);
+
+  /// 14:30
+  String get time24 =>
+      _date == null ? '' : DateFormat('HH:mm').format(_date!);
+
+  /// 02:30 PM
+  String get time12 =>
+      _date == null ? '' : DateFormat('hh:mm a').format(_date!);
+
+  /// Jan 05, Wed
+  String get compact =>
+      _date == null ? '' : DateFormat('MMM dd, EEE').format(_date!);
+
+  /// Wed, Jan 05
+  String get compactReverse =>
+      _date == null ? '' : DateFormat('EEE, MMM dd').format(_date!);
+
+  /// Wednesday, January 05
+  String get fullReadable =>
+      _date == null ? '' : DateFormat('EEEE, MMMM dd').format(_date!);
+
+  /// Jan 05 • 14:30
+  String get dateTimeShort =>
+      _date == null ? '' : DateFormat('MMM dd • HH:mm').format(_date!);
+
+  /// Custom formatter
+  String format(String pattern) =>
+      _date == null ? '' : DateFormat(pattern).format(_date!);
+}
+
+
 extension DateTimeFormatExtensions on DateTime {
   /// Returns date in 'yyyy-MM-dd' format (e.g., 2025-10-31)
   String get toDateString => DateFormat('yyyy-MM-dd').format(this);
@@ -256,5 +309,24 @@ extension AfghanShamsiExtraExtensions on DateTime {
     return AfghanShamsiConverter.toPersianNumbers(
       '${j.year}/${j.month.toString().padLeft(2, '0')}/${j.day.toString().padLeft(2, '0')}',
     );
+  }
+}
+
+
+class ZDateFormatter {
+  static DateTime? parse(dynamic value) {
+    if (value == null) return null;
+
+    if (value is DateTime) return value;
+
+    if (value is String && value.isNotEmpty) {
+      try {
+        return DateTime.parse(value);
+      } catch (_) {
+        return null;
+      }
+    }
+
+    return null;
   }
 }

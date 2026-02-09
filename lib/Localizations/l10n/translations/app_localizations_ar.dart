@@ -2332,4 +2332,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get existingBackups => 'نسخه‌ های ذخیره‌ شده';
+
+  @override
+  String get attendance => 'حضور و غیاب';
+
+  @override
+  String get absentTitle => 'غایب';
+
+  @override
+  String get lateTitle => 'تاخیر';
+
+  @override
+  String get leaveTitle => 'مرخص';
+
+  @override
+  String get presentTitle => 'حاضر';
+
+  @override
+  String get checkIn => 'ورود';
+
+  @override
+  String get checkOut => 'خروج';
+
+  @override
+  String get noAttendance => 'حضور و غیاب یافت نشد';
 }
