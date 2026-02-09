@@ -3,6 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/model/attendance_model.dart';
 
+import '../../../../../../../Services/localization_services.dart';
+
 part 'attendance_event.dart';
 part 'attendance_state.dart';
 
@@ -37,6 +39,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     });
 
     on<AddAttendanceEvent>((event, emit) async {
+      final tr = localizationService.loc;
       // Keep current UI (silent loading)
       if (_cachedAttendance != null) {
         emit(AttendanceSilentLoadingState(_cachedAttendance!));
@@ -47,12 +50,14 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
         final msg = res["msg"];
 
         if (msg == "success") {
+          // Emit success first
+          emit( AttendanceSuccessState(tr.successAttendanceOperation));
           // Reload attendance for the same date
           add(LoadAllAttendanceEvent(date: _currentDate));
         }
-        else if (msg == "exit") {
-          emit(const AttendanceErrorState(
-            "Attendance already exists for this date",
+        else if (msg == "exist") {
+          emit( AttendanceErrorState(
+            tr.attendanceExist,
           ));
 
           // Restore previous data
@@ -61,7 +66,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
           }
         }
         else {
-          emit(const AttendanceErrorState("Failed to add attendance"));
+          emit( AttendanceErrorState(tr.operationFailedMessage));
           if (_cachedAttendance != null) {
             emit(AttendanceLoadedState(_cachedAttendance!));
           }
@@ -75,6 +80,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     });
 
     on<UpdateAttendanceEvent>((event, emit) async {
+      final tr = localizationService.loc;
       // Silent loading - maintain current state
       if (state is AttendanceLoadedState) {
         emit(AttendanceSilentLoadingState(
@@ -87,10 +93,12 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
         final msg = res["msg"];
 
         if (msg == "success") {
+          // Emit success first
+          emit( AttendanceSuccessState(tr.successAttendanceOperation));
           // Reload with silent loading
           add(LoadAllAttendanceEvent(date: _currentDate));
         } else {
-          emit(AttendanceErrorState("Failed to update attendance"));
+          emit(AttendanceErrorState(tr.operationFailedMessage));
           if (_cachedAttendance != null) {
             emit(AttendanceLoadedState(_cachedAttendance!));
           }

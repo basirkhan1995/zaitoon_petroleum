@@ -2359,4 +2359,23 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get currentValues => 'اطلاعات فعلی';
+
+  @override
+  String get attendanceExist => 'حضور و غیاب در این تاریخ از قبل موجود میباشد.';
+
+  @override
+  String get successAttendanceOperation =>
+      'حضور و غیاب جدید موفقانه اضافه گردید';
+
+  @override
+  String get operationFailedTitle => 'عملیات ناموفق';
+
+  @override
+  String get addShipmentHint => 'افزودن و مدیریت محموله‌ ها';
+
+  @override
+  String get shipmentExpenseHint => 'ثبت هزینه‌ های محموله';
+
+  @override
+  String get trackShipmentsHint => 'پیگیری لجستیک در یک مکان.';
 }

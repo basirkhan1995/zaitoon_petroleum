@@ -2369,4 +2369,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get currentValues => 'Current Values';
+
+  @override
+  String get attendanceExist => 'Attendance already exists for this date.';
+
+  @override
+  String get successAttendanceOperation =>
+      'A new attendance has been added successfully.';
+
+  @override
+  String get operationFailedTitle => 'Operation Failed';
+
+  @override
+  String get addShipmentHint => 'Add and manage shipments.';
+
+  @override
+  String get shipmentExpenseHint => 'Record shipment expenses';
+
+  @override
+  String get trackShipmentsHint => 'Track logistics in one place.';
 }

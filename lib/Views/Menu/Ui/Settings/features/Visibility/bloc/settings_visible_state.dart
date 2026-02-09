@@ -20,6 +20,8 @@ enum DateType {
   final bool todayTotalTransactions;
   final bool statsCount;
   final bool todayTotalTxnChart;
+  final bool transport;
+  final bool orders;
 
   SettingsVisibilityState({
     this.stock = false,
@@ -36,6 +38,8 @@ enum DateType {
     this.todayTotalTransactions = true,
     this.statsCount = true,
     this.todayTotalTxnChart = true,
+    this.transport = false,
+    this.orders = false,
   });
 
   factory SettingsVisibilityState.fromMap(Map<String, dynamic> map) {
@@ -54,6 +58,8 @@ enum DateType {
       statsCount: map['statsCount'] ?? true,
       todayTotalTransactions: map['todayTotalTransactions'] ?? true,
       todayTotalTxnChart: map['todayTotalTxnChart'] ?? true,
+      transport: map['transport'] ?? false,
+      orders: map['orders'] ?? false,
     );
   }
 
@@ -71,7 +77,9 @@ enum DateType {
     'profitAndLoss': profitAndLoss,
     'statsCount': statsCount,
     'todayTotalTransactions': todayTotalTransactions,
-    'todayTotalTxnChart':todayTotalTxnChart
+    'todayTotalTxnChart':todayTotalTxnChart,
+    'transport' : transport,
+    'orders': orders
   };
 
   static DateType _dateTypeFromString(String value) {

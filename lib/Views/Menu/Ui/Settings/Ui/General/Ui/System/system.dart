@@ -37,6 +37,7 @@ class _Desktop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: BlocBuilder<SettingsVisibleBloc, SettingsVisibilityState>(
@@ -133,6 +134,51 @@ class _Desktop extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: bulletPoint(locale.profitAndLoss),
                       ),
+                      Divider(indent: 8,endIndent: 8),
+                      ///Transport..............................................
+                      LabeledCheckbox(
+                        title: locale.transport,
+                        value: state.transport,
+                        onChanged: (e) {
+                          context.read<SettingsVisibleBloc>().add(
+                            UpdateSettingsEvent(transport: e),
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Column(
+                          children: [
+                            bulletPoint(locale.addShipmentHint),
+                            bulletPoint(locale.shipmentExpenseHint),
+                            bulletPoint(locale.trackShipmentsHint),
+                          ],
+                        ),
+                      ),
+                      Divider(indent: 8,endIndent: 8),
+                      ///Orders..............................................
+                      LabeledCheckbox(
+                        title: locale.inventory,
+                        value: state.orders,
+                        onChanged: (e) {
+                          context.read<SettingsVisibleBloc>().add(
+                            UpdateSettingsEvent(orders: e),
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Column(
+                          children: [
+                            bulletPoint(locale.purchaseInvoice),
+                            bulletPoint(locale.salesInvoice),
+                            bulletPoint(locale.estimate),
+                            bulletPoint(locale.shiftItems),
+                            bulletPoint(locale.adjustment),
+                          ],
+                        ),
+                      ),
+
                     ],
                   ))
                 ],

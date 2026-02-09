@@ -2362,4 +2362,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get currentValues => 'اطلاعات فعلی';
+
+  @override
+  String get attendanceExist => 'حضور و غیاب در این تاریخ از قبل موجود میباشد.';
+
+  @override
+  String get successAttendanceOperation =>
+      'حضور و غیاب جدید موفقانه اضافه گردید';
+
+  @override
+  String get operationFailedTitle => 'عملیات ناموفق';
+
+  @override
+  String get addShipmentHint => 'بارونه اضافه او اداره کړئ';
+
+  @override
+  String get shipmentExpenseHint => 'د بار لګښتونه ثبت کړئ';
+
+  @override
+  String get trackShipmentsHint => 'لوژستیک په یوه ځای کې تعقیب کړئ';
 }

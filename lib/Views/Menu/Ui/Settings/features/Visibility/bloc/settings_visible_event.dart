@@ -28,6 +28,8 @@ class UpdateSettingsEvent extends SettingsVisibleEvent{
   final bool? isDateExpiry;
   final String? dateFormat;
   final bool? profitAndLoss;
+  final bool? transport;
+  final bool? orders;
   const UpdateSettingsEvent({
     this.stock,
     this.exchangeRate,
@@ -38,7 +40,9 @@ class UpdateSettingsEvent extends SettingsVisibleEvent{
     this.dateType,
     this.dateFormat,
     this.recentTransactions,
-    this.profitAndLoss
+    this.profitAndLoss,
+    this.transport,
+    this.orders,
   });
   @override
   List<Object?> get props => [
@@ -51,6 +55,8 @@ class UpdateSettingsEvent extends SettingsVisibleEvent{
     recentTransactions,
     dateType,
     dateFormat,
-    profitAndLoss
+    profitAndLoss,
+    transport,
+    orders,
   ];
 }

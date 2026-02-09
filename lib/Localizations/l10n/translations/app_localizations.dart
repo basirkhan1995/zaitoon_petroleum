@@ -4689,6 +4689,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Current Values'**
   String get currentValues;
+
+  /// No description provided for @attendanceExist.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance already exists for this date.'**
+  String get attendanceExist;
+
+  /// No description provided for @successAttendanceOperation.
+  ///
+  /// In en, this message translates to:
+  /// **'A new attendance has been added successfully.'**
+  String get successAttendanceOperation;
+
+  /// No description provided for @operationFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation Failed'**
+  String get operationFailedTitle;
+
+  /// No description provided for @addShipmentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add and manage shipments.'**
+  String get addShipmentHint;
+
+  /// No description provided for @shipmentExpenseHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Record shipment expenses'**
+  String get shipmentExpenseHint;
+
+  /// No description provided for @trackShipmentsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Track logistics in one place.'**
+  String get trackShipmentsHint;
 }
 
 class _AppLocalizationsDelegate

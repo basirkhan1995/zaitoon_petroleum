@@ -41,7 +41,9 @@ class SettingsVisibleBloc extends Bloc<SettingsVisibleEvent, SettingsVisibilityS
       dateType: event.dateType ?? state.dateType,
       isDateExpiry: event.isDateExpiry ?? state.isDateExpiry,
       dateFormat: event.dateFormat ?? state.dateFormat,
-      profitAndLoss: event.profitAndLoss ?? state.profitAndLoss
+      profitAndLoss: event.profitAndLoss ?? state.profitAndLoss,
+      transport: event.transport ?? state.transport,
+      orders: event.orders ?? state.orders,
     );
 
     final prefs = await SharedPreferences.getInstance();

@@ -784,5 +784,17 @@
   "checkOut": "Check OUT",
   "noAttendance": "No Attendance",
   "addAttendance": "Add Attendance",
-  "currentValues": "Current Values"
+  "currentValues": "Current Values",
+  "attendanceExist": "Attendance already exists for this date.",
+  "successAttendanceOperation": "A new attendance has been added successfully.",
+  "operationFailedTitle": "Operation Failed",
+  "addShipmentHint": "Add and manage shipments.",
+  "shipmentExpenseHint": "Record shipment expenses",
+  "PurchaseInvoiceHint": "Record purchase invoice to update stock.",
+  "SaleInvoiceHint": "Create sale invoice to reduce stock.",
+  "GoodsAdjustmentHint": "Adjust goods to reflect shortage.",
+  "EstimateHint": "Prepare estimate for customer request.",
+  "StockTransferHint": "Transfer goods from one stock to another.",
+  "InventoryHint": "Check available stock before proceeding.",
+  "trackShipmentsHint": "Track logistics in one place."
 }

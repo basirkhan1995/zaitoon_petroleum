@@ -22,6 +22,7 @@ import 'Ui/Journal/journal.dart';
 import 'Ui/Report/report.dart';
 import 'Ui/Settings/Ui/Company/bloc/company_settings_menu_bloc.dart';
 import 'Ui/Settings/bloc/settings_tab_bloc.dart';
+import 'Ui/Settings/features/Visibility/bloc/settings_visible_bloc.dart';
 import 'Ui/Settings/settings.dart';
 import 'Ui/Stock/stock.dart';
 import 'bloc/menu_bloc.dart';
@@ -75,12 +76,12 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Required for AutomaticKeepAliveClientMixin
+    super.build(context);
 
     // Use context.select here, at the top of build method
     final currentTab = context.select((MenuBloc bloc) => bloc.state.tabs);
     final authState = context.select((AuthBloc bloc) => bloc.state);
-
+    final visibility = context.watch<SettingsVisibleBloc>().state;
     if (authState is! AuthenticatedState) return const SizedBox();
 
     final String adminName = authState.loginData.usrFullName ?? "";
@@ -118,18 +119,22 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
         screen: const HrTabView(),
         icon: Icons.group_rounded,
       ),
-      MenuDefinition(
-        value: MenuName.transport,
-        label: AppLocalizations.of(context)!.transport,
-        screen: const TransportView(),
-        icon: Icons.fire_truck_rounded,
-      ),
+      if(visibility.transport)...[
+        MenuDefinition(
+          value: MenuName.transport,
+          label: AppLocalizations.of(context)!.transport,
+          screen: const TransportView(),
+          icon: Icons.fire_truck_rounded,
+        ),
+      ],
+    if(visibility.orders)...[
       MenuDefinition(
         value: MenuName.stock,
         label: AppLocalizations.of(context)!.orderTitle,
         screen: const StockView(),
         icon: Icons.shopping_basket_outlined,
       ),
+    ],
       MenuDefinition(
         value: MenuName.settings,
         label: AppLocalizations.of(context)!.settings,

@@ -1,4 +1,4 @@
-// edit_attendance_dialog.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
@@ -27,14 +27,6 @@ class EditAttendanceDialog extends StatefulWidget {
 class _EditAttendanceDialogState extends State<EditAttendanceDialog> {
   late String checkIn;
   late String checkOut;
-
-
-  // Status options
-  final List<String> statusOptions = [
-    'Present',
-    'Late',
-    'Absent',
-  ];
 
   @override
   void initState() {
@@ -74,13 +66,27 @@ class _EditAttendanceDialogState extends State<EditAttendanceDialog> {
     final tr = AppLocalizations.of(context)!;
 
     return BlocListener<AttendanceBloc, AttendanceState>(
+      listenWhen: (prev, curr) =>
+      curr is AttendanceSuccessState || curr is AttendanceErrorState,
       listener: (context, state) {
+        /// ✅ CLOSE dialog on success
+        if (state is AttendanceLoadedState) {
+          Navigator.pop(context);
+        }
+
+        if (state is AttendanceSuccessState) {
+          Navigator.pop(context);
+          Utils.showOverlayMessage(context, title: tr.successTitle, message: state.message, isError: false);
+        }
+
+        /// ❌ Keep dialog open on error
         if (state is AttendanceErrorState) {
-          // Show error message
-          Utils.showOverlayMessage(context, message: state.message, isError: true);
-        } else if (state is AttendanceLoadedState) {
-          // Close dialog on success
-          Navigator.of(context).pop();
+          Utils.showOverlayMessage(
+            context,
+            title: tr.operationFailedTitle,
+            message: state.message,
+            isError: true,
+          );
         }
       },
       child: ZFormDialog(

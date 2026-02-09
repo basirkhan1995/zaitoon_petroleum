@@ -122,7 +122,7 @@ class _DesktopState extends State<_Desktop> {
                           AttendanceSummary(attendance: attendance),
                         const SizedBox(width: 3),
                         SizedBox(
-                          width: 200,
+                          width: 160,
                           child: ZDatePicker(
                             label: "",
                             value: date,
@@ -217,70 +217,74 @@ class _DesktopState extends State<_Desktop> {
                     enableAction: false,
                   );
                 }
-
-                return Column(
+                return Stack(
                   children: [
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: attendance.length,
-                        itemBuilder: (context, index) {
-                          final at = attendance[index];
-                          return InkWell(
-                            onTap: () => _editAttendance(at, tr),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 5),
-                              margin:
-                              const EdgeInsets.symmetric(horizontal: 5),
-                              decoration: BoxDecoration(
-                                color: index.isEven
-                                    ? Theme.of(context)
-                                    .colorScheme
-                                    .primary
-                                    .withValues(alpha: .05)
-                                    : Colors.transparent,
-                              ),
-                              child: Row(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                      width: 100,
-                                      child:
-                                      Text(at.emaDate.compact)),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Text(at.fullName ?? "",
-                                            style: titleStyle),
-                                        Text(at.empPosition ?? "",
-                                            style: subtitle),
-                                      ],
-                                    ),
+                    Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: attendance.length,
+                            itemBuilder: (context, index) {
+                              final at = attendance[index];
+                              return InkWell(
+                                onTap: () => _editAttendance(at, tr),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 5),
+                                  margin:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                                  decoration: BoxDecoration(
+                                    color: index.isEven
+                                        ? Theme.of(context)
+                                        .colorScheme
+                                        .primary
+                                        .withValues(alpha: .05)
+                                        : Colors.transparent,
                                   ),
-                                  SizedBox(
-                                      width: 100,
-                                      child: Text(
-                                          at.emaCheckedIn ?? "")),
-                                  SizedBox(
-                                      width: 100,
-                                      child: Text(
-                                          at.emaCheckedOut ?? "")),
-                                  SizedBox(
-                                    width: 100,
-                                    child: AttendanceStatusBadge(
-                                      status: at.emaStatus ?? "",
-                                    ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                          width: 100,
+                                          child:
+                                          Text(at.emaDate.compact)),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                          children: [
+                                            Text(at.fullName ?? "",
+                                                style: titleStyle),
+                                            Text(at.empPosition ?? "",
+                                                style: subtitle),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(
+                                          width: 100,
+                                          child: Text(
+                                              at.emaCheckedIn ?? "")),
+                                      SizedBox(
+                                          width: 100,
+                                          child: Text(
+                                              at.emaCheckedOut ?? "")),
+                                      SizedBox(
+                                        width: 100,
+                                        child: AttendanceStatusBadge(
+                                          status: at.emaStatus ?? "",
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
+
                     if (state is AttendanceSilentLoadingState)
                       Positioned(
                         top: 8,
@@ -306,6 +310,7 @@ class _DesktopState extends State<_Desktop> {
                       ),
                   ],
                 );
+
               },
             ),
           ),
@@ -320,79 +325,100 @@ class _DesktopState extends State<_Desktop> {
 
     showDialog(
       context: context,
-      builder: (context) {
-        return ZFormDialog(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-          icon: Icons.access_time,
-          title: tr.addAttendance,
+      builder: (dialogContext) {
+        return BlocListener<AttendanceBloc, AttendanceState>(
+          listenWhen: (prev, curr) =>
+          curr is AttendanceSuccessState || curr is AttendanceErrorState,
+          listener: (context, state) {
+            /// ✅ CLOSE dialog on success
+            if (state is AttendanceLoadedState) {
+              Navigator.pop(dialogContext);
+            }
 
-          /// 🔹 ACTION BUTTON
-          onAction: () {
-            context.read<AttendanceBloc>().add(
-              AddAttendanceEvent(
-                usrName: usrName ?? "",
-                checkIn: checkIn ?? "08:00:00",
-                checkOut: checkOut ?? "16:00:00",
-                date: date,
-              ),
-            );
+            if (state is AttendanceSuccessState) {
+              Navigator.pop(dialogContext);
+              Utils.showOverlayMessage(context, title: tr.successTitle, message: state.message, isError: false);
+            }
+
+            /// ❌ Keep dialog open on error
+            if (state is AttendanceErrorState) {
+              Utils.showOverlayMessage(
+                context,
+                title: tr.operationFailedTitle,
+                message: state.message,
+                isError: true,
+              );
+            }
           },
+          child: ZFormDialog(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            icon: Icons.access_time,
+            title: tr.addAttendance,
 
-          /// 🔹 ACTION LABEL WITH LOADING
-          actionLabel: BlocBuilder<AttendanceBloc, AttendanceState>(
-            buildWhen: (prev, curr) =>
-            curr is AttendanceSilentLoadingState ||
-                curr is AttendanceLoadedState ||
-                curr is AttendanceErrorState,
-            builder: (context, state) {
-              final isLoading = state is AttendanceSilentLoadingState;
-
-              if (isLoading) {
-                return const SizedBox(
-                  height: 18,
-                  width: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                );
-              }
-
-              return Text(tr.submit);
-            },
-          ),
-
-          /// 🔹 DIALOG BODY
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: ZDatePicker(
-                  label: tr.date,
-                  value: date,
-                  onDateChanged: (v) {
-                    setState(() => date = v);
-                  },
+            onAction: () {
+              context.read<AttendanceBloc>().add(
+                AddAttendanceEvent(
+                  usrName: usrName ?? "",
+                  checkIn: checkIn ?? "08:00:00",
+                  checkOut: checkOut ?? "16:00:00",
+                  date: date,
                 ),
-              ),
+              );
+            },
 
-              const SizedBox(height: 12),
+            actionLabel: BlocBuilder<AttendanceBloc, AttendanceState>(
+              buildWhen: (prev, curr) =>
+              curr is AttendanceSilentLoadingState ||
+                  curr is AttendanceLoadedState ||
+                  curr is AttendanceErrorState,
+              builder: (context, state) {
+                final isLoading = state is AttendanceSilentLoadingState;
 
-              TimePickerField(
-                label: tr.checkIn,
-                initialTime: '08:00:00',
-                onChanged: (time) => checkIn = time,
-              ),
-              const SizedBox(height: 12),
-              TimePickerField(
-                label: tr.checkOut,
-                initialTime: '16:00:00',
-                onChanged: (time) => checkOut = time,
-              ),
-            ],
+                if (isLoading) {
+                  return const SizedBox(
+                    height: 18,
+                    width: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  );
+                }
+
+                return Text(tr.submit);
+              },
+            ),
+
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: ZDatePicker(
+                    label: tr.date,
+                    value: date,
+                    onDateChanged: (v) {
+                      setState(() => date = v);
+                    },
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TimePickerField(
+                  label: tr.checkIn,
+                  initialTime: '08:00:00',
+                  onChanged: (time) => checkIn = time,
+                ),
+                const SizedBox(height: 12),
+                TimePickerField(
+                  label: tr.checkOut,
+                  initialTime: '16:00:00',
+                  onChanged: (time) => checkOut = time,
+                ),
+              ],
+            ),
           ),
         );
       },
     );
   }
+
   void _editAttendance(AttendanceRecord record, AppLocalizations tr) {
     showDialog(
       context: context,

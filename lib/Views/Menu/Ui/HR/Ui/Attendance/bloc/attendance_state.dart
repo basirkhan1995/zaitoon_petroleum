@@ -37,3 +37,11 @@ final class AttendanceLoadedState extends AttendanceState {
   @override
   List<Object?> get props => [attendance];
 }
+
+final class AttendanceSuccessState extends AttendanceState {
+  final String message;
+  const AttendanceSuccessState(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

@@ -784,5 +784,17 @@
   "checkOut": "خروج",
   "noAttendance": "حضور و غیاب یافت نشد",
   "addAttendance": "ثبت حضور و غیاب",
-  "currentValues": "اطلاعات فعلی"
+  "currentValues": "اطلاعات فعلی",
+  "attendanceExist": "حضور و غیاب در این تاریخ از قبل موجود میباشد.",
+  "successAttendanceOperation": "حضور و غیاب جدید موفقانه اضافه گردید",
+  "operationFailedTitle": "عملیات ناموفق",
+  "addShipmentHint": "افزودن و مدیریت محموله‌ ها",
+  "shipmentExpenseHint": "ثبت هزینه‌ های محموله",
+  "PurchaseInvoiceHint": "فاکتور خرید را ثبت کنید تا موجودی به‌روز شود.",
+  "SaleInvoiceHint": "فاکتور فروش ایجاد کنید تا موجودی کاهش یابد.",
+  "GoodsAdjustmentHint": "کالاها را برای کمبود تنظیم کنید.",
+  "EstimateHint": "برآورد برای درخواست مشتری آماده کنید.",
+  "StockTransferHint": "کالاها را از یک انبار به انبار دیگر منتقل کنید.",
+  "InventoryHint": "موجودی را بررسی کنید قبل از ادامه.",
+  "trackShipmentsHint": "پیگیری لجستیک در یک مکان."
 }
