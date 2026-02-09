@@ -2356,4 +2356,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get addAttendance => 'ثبت حضور و غیاب';
+
+  @override
+  String get currentValues => 'اطلاعات فعلی';
 }

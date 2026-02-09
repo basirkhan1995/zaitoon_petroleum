@@ -117,6 +117,7 @@ class AttendanceRecord {
     "emaStatus": emaStatus,
     "empPosition": empPosition,
   };
+
 }
 
 extension AttendanceCounter on List<AttendanceRecord> {

@@ -12,6 +12,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/time_selector.d
 import '../../../../../../Features/Date/z_generic_date.dart';
 import '../../../../../../Features/Other/attendance_status.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
+import 'edit_attendance.dart';
 import 'model/attendance_model.dart';
 
 class AttendanceView extends StatelessWidget {
@@ -213,39 +214,42 @@ class _DesktopState extends State<_Desktop> {
                       itemCount: attendance.length,
                       itemBuilder: (context, index) {
                         final at = attendance[index];
-                        return Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                          margin: const EdgeInsets.symmetric(horizontal: 5),
-                          decoration: BoxDecoration(
-                            color: index.isEven
-                                ? Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .withValues(alpha: .05)
-                                : Colors.transparent,
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(width: 100, child: Text(at.emaDate.compact)),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(at.fullName ?? "", style: titleStyle),
-                                    Text(at.empPosition ?? "", style: subtitle),
-                                  ],
+                        return InkWell(
+                          onTap: ()=> _editAttendance(at, tr),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                            margin: const EdgeInsets.symmetric(horizontal: 5),
+                            decoration: BoxDecoration(
+                              color: index.isEven
+                                  ? Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withValues(alpha: .05)
+                                  : Colors.transparent,
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(width: 100, child: Text(at.emaDate.compact)),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(at.fullName ?? "", style: titleStyle),
+                                      Text(at.empPosition ?? "", style: subtitle),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: 100, child: Text(at.emaCheckedIn ?? "")),
-                              SizedBox(width: 100, child: Text(at.emaCheckedOut ?? "")),
-                              SizedBox(
-                                width: 100,
-                                child: AttendanceStatusBadge(
-                                  status: at.emaStatus ?? "",
+                                SizedBox(width: 100, child: Text(at.emaCheckedIn ?? "")),
+                                SizedBox(width: 100, child: Text(at.emaCheckedOut ?? "")),
+                                SizedBox(
+                                  width: 100,
+                                  child: AttendanceStatusBadge(
+                                    status: at.emaStatus ?? "",
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         );
                       },
@@ -364,6 +368,16 @@ class _DesktopState extends State<_Desktop> {
       },
     );
   }
-
+  void _editAttendance(AttendanceRecord record, AppLocalizations tr) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return EditAttendanceDialog(
+          record: record,
+          currentDate: date,
+        );
+      },
+    );
+  }
 
 }

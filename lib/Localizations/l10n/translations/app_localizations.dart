@@ -4683,6 +4683,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Attendance'**
   String get addAttendance;
+
+  /// No description provided for @currentValues.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Values'**
+  String get currentValues;
 }
 
 class _AppLocalizationsDelegate

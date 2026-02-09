@@ -783,5 +783,6 @@
   "checkIn": "Check IN",
   "checkOut": "Check OUT",
   "noAttendance": "No Attendance",
-  "addAttendance": "Add Attendance"
+  "addAttendance": "Add Attendance",
+  "currentValues": "Current Values"
 }

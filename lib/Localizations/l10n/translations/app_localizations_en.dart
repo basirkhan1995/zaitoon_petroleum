@@ -2366,4 +2366,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addAttendance => 'Add Attendance';
+
+  @override
+  String get currentValues => 'Current Values';
 }
