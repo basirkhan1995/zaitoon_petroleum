@@ -68,7 +68,7 @@ class Utils{
         left: width * 0.1,
         right: width * 0.1,
         child: MediaQuery(
-          data: mediaQuery, // 🔥 FIX
+          data: mediaQuery,
           child: Material(
             color: Colors.transparent,
             child: TweenAnimationBuilder<double>(
@@ -313,6 +313,7 @@ class _OverlayContent extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
+        border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
         color: color,
         borderRadius: BorderRadius.circular(5),
         boxShadow: const [

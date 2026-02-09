@@ -2380,5 +2380,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get shipmentExpenseHint => 'د بار لګښتونه ثبت کړئ';
 
   @override
+  String get purchaseInvoiceHint =>
+      'د پېرود فاکتور ثبت کړئ ترڅو موجودي نوي شي.';
+
+  @override
+  String get saleInvoiceHint => 'د پلور فاکتور جوړ کړئ ترڅو موجودي کمه شي.';
+
+  @override
+  String get goodsAdjustmentHint => 'مالونه د کموالي له مخې تنظیم کړئ.';
+
+  @override
+  String get estimateHint => 'د مشتري غوښتنې لپاره اټکل چمتو کړئ.';
+
+  @override
+  String get stockTransferHint => 'مالونه له یوه ګودام څخه بل ته انتقال کړئ.';
+
+  @override
+  String get inventoryHint => 'موجودي وګورئ مخکې له دې چې دوام ورکړئ.';
+
+  @override
   String get trackShipmentsHint => 'لوژستیک په یوه ځای کې تعقیب کړئ';
 }

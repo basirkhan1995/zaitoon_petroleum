@@ -2377,5 +2377,25 @@ class AppLocalizationsFa extends AppLocalizations {
   String get shipmentExpenseHint => 'ثبت هزینه‌ های محموله';
 
   @override
+  String get purchaseInvoiceHint =>
+      'فاکتور خرید را ثبت کنید تا موجودی به‌روز شود.';
+
+  @override
+  String get saleInvoiceHint => 'فاکتور فروش ایجاد کنید تا موجودی کاهش یابد.';
+
+  @override
+  String get goodsAdjustmentHint => 'کالاها را برای کمبود تنظیم کنید.';
+
+  @override
+  String get estimateHint => 'برآورد برای درخواست مشتری آماده کنید.';
+
+  @override
+  String get stockTransferHint =>
+      'کالاها را از یک انبار به انبار دیگر منتقل کنید.';
+
+  @override
+  String get inventoryHint => 'موجودی را بررسی کنید قبل از ادامه.';
+
+  @override
   String get trackShipmentsHint => 'پیگیری لجستیک در یک مکان.';
 }

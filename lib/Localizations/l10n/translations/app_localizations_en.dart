@@ -2387,5 +2387,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shipmentExpenseHint => 'Record shipment expenses';
 
   @override
+  String get purchaseInvoiceHint => 'Record purchase invoice to update stock.';
+
+  @override
+  String get saleInvoiceHint => 'Create sale invoice to reduce stock.';
+
+  @override
+  String get goodsAdjustmentHint => 'Adjust goods to reflect shortage.';
+
+  @override
+  String get estimateHint => 'Prepare estimate for customer request.';
+
+  @override
+  String get stockTransferHint => 'Transfer goods from one stock to another.';
+
+  @override
+  String get inventoryHint => 'Check available stock before proceeding.';
+
+  @override
   String get trackShipmentsHint => 'Track logistics in one place.';
 }

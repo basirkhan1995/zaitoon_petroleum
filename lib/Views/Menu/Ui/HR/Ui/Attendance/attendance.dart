@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/time_selector.dart';
 import '../../../../../../Features/Date/z_generic_date.dart';
 import '../../../../../../Features/Other/attendance_status.dart';
+import '../../../../../../Features/Other/toast.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
 import 'edit_attendance.dart';
 import 'model/attendance_model.dart';
@@ -342,11 +343,12 @@ class _DesktopState extends State<_Desktop> {
 
             /// ❌ Keep dialog open on error
             if (state is AttendanceErrorState) {
-              Utils.showOverlayMessage(
-                context,
+              ToastManager.show(
+                context: context,
                 title: tr.operationFailedTitle,
                 message: state.message,
-                isError: true,
+                type: ToastType.error,
+                durationInSeconds: 4,
               );
             }
           },

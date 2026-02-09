@@ -790,11 +790,11 @@
   "operationFailedTitle": "Operation Failed",
   "addShipmentHint": "Add and manage shipments.",
   "shipmentExpenseHint": "Record shipment expenses",
-  "PurchaseInvoiceHint": "Record purchase invoice to update stock.",
-  "SaleInvoiceHint": "Create sale invoice to reduce stock.",
-  "GoodsAdjustmentHint": "Adjust goods to reflect shortage.",
-  "EstimateHint": "Prepare estimate for customer request.",
-  "StockTransferHint": "Transfer goods from one stock to another.",
-  "InventoryHint": "Check available stock before proceeding.",
+  "purchaseInvoiceHint": "Record purchase invoice to update stock.",
+  "saleInvoiceHint": "Create sale invoice to reduce stock.",
+  "goodsAdjustmentHint": "Adjust goods to reflect shortage.",
+  "estimateHint": "Prepare estimate for customer request.",
+  "stockTransferHint": "Transfer goods from one stock to another.",
+  "inventoryHint": "Check available stock before proceeding.",
   "trackShipmentsHint": "Track logistics in one place."
 }

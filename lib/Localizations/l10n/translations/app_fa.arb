@@ -790,11 +790,11 @@
   "operationFailedTitle": "عملیات ناموفق",
   "addShipmentHint": "افزودن و مدیریت محموله‌ ها",
   "shipmentExpenseHint": "ثبت هزینه‌ های محموله",
-  "PurchaseInvoiceHint": "فاکتور خرید را ثبت کنید تا موجودی به‌روز شود.",
-  "SaleInvoiceHint": "فاکتور فروش ایجاد کنید تا موجودی کاهش یابد.",
-  "GoodsAdjustmentHint": "کالاها را برای کمبود تنظیم کنید.",
-  "EstimateHint": "برآورد برای درخواست مشتری آماده کنید.",
-  "StockTransferHint": "کالاها را از یک انبار به انبار دیگر منتقل کنید.",
-  "InventoryHint": "موجودی را بررسی کنید قبل از ادامه.",
+  "purchaseInvoiceHint": "فاکتور خرید را ثبت کنید تا موجودی به‌روز شود.",
+  "saleInvoiceHint": "فاکتور فروش ایجاد کنید تا موجودی کاهش یابد.",
+  "goodsAdjustmentHint": "کالاها را برای کمبود تنظیم کنید.",
+  "estimateHint": "برآورد برای درخواست مشتری آماده کنید.",
+  "stockTransferHint": "کالاها را از یک انبار به انبار دیگر منتقل کنید.",
+  "inventoryHint": "موجودی را بررسی کنید قبل از ادامه.",
   "trackShipmentsHint": "پیگیری لجستیک در یک مکان."
 }

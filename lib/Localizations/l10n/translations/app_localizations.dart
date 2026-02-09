@@ -4720,6 +4720,42 @@ abstract class AppLocalizations {
   /// **'Record shipment expenses'**
   String get shipmentExpenseHint;
 
+  /// No description provided for @purchaseInvoiceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Record purchase invoice to update stock.'**
+  String get purchaseInvoiceHint;
+
+  /// No description provided for @saleInvoiceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Create sale invoice to reduce stock.'**
+  String get saleInvoiceHint;
+
+  /// No description provided for @goodsAdjustmentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust goods to reflect shortage.'**
+  String get goodsAdjustmentHint;
+
+  /// No description provided for @estimateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepare estimate for customer request.'**
+  String get estimateHint;
+
+  /// No description provided for @stockTransferHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer goods from one stock to another.'**
+  String get stockTransferHint;
+
+  /// No description provided for @inventoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Check available stock before proceeding.'**
+  String get inventoryHint;
+
   /// No description provided for @trackShipmentsHint.
   ///
   /// In en, this message translates to:

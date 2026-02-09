@@ -1,13 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
-import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/bloc/attendance_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/model/attendance_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/time_selector.dart';
+import '../../../../../../Features/Other/toast.dart';
 import 'features/status_selector.dart';
 
 class EditAttendanceDialog extends StatefulWidget {
@@ -76,16 +75,23 @@ class _EditAttendanceDialogState extends State<EditAttendanceDialog> {
 
         if (state is AttendanceSuccessState) {
           Navigator.pop(context);
-          Utils.showOverlayMessage(context, title: tr.successTitle, message: state.message, isError: false);
+          ToastManager.show(
+            context: context,
+            title: tr.successTitle,
+            message: state.message,
+            type: ToastType.success,
+            durationInSeconds: 4,
+          );
         }
 
         /// ❌ Keep dialog open on error
         if (state is AttendanceErrorState) {
-          Utils.showOverlayMessage(
-            context,
+          ToastManager.show(
+            context: context,
             title: tr.operationFailedTitle,
             message: state.message,
-            isError: true,
+            type: ToastType.error,
+            durationInSeconds: 4,
           );
         }
       },

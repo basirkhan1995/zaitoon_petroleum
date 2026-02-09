@@ -790,11 +790,11 @@
   "operationFailedTitle": "عملیات ناموفق",
   "addShipmentHint": "بارونه اضافه او اداره کړئ",
   "shipmentExpenseHint": "د بار لګښتونه ثبت کړئ",
-  "PurchaseInvoiceHint": "د پېرود فاکتور ثبت کړئ ترڅو موجودي نوي شي.",
-  "SaleInvoiceHint": "د پلور فاکتور جوړ کړئ ترڅو موجودي کمه شي.",
-  "GoodsAdjustmentHint": "مالونه د کموالي له مخې تنظیم کړئ.",
-  "EstimateHint": "د مشتري غوښتنې لپاره اټکل چمتو کړئ.",
-  "StockTransferHint": "مالونه له یوه ګودام څخه بل ته انتقال کړئ.",
-  "InventoryHint": "موجودي وګورئ مخکې له دې چې دوام ورکړئ.",
+  "purchaseInvoiceHint": "د پېرود فاکتور ثبت کړئ ترڅو موجودي نوي شي.",
+  "saleInvoiceHint": "د پلور فاکتور جوړ کړئ ترڅو موجودي کمه شي.",
+  "goodsAdjustmentHint": "مالونه د کموالي له مخې تنظیم کړئ.",
+  "estimateHint": "د مشتري غوښتنې لپاره اټکل چمتو کړئ.",
+  "stockTransferHint": "مالونه له یوه ګودام څخه بل ته انتقال کړئ.",
+  "inventoryHint": "موجودي وګورئ مخکې له دې چې دوام ورکړئ.",
   "trackShipmentsHint": "لوژستیک په یوه ځای کې تعقیب کړئ"
 }

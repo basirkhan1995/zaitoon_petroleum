@@ -38,8 +38,8 @@ enum DateType {
     this.todayTotalTransactions = true,
     this.statsCount = true,
     this.todayTotalTxnChart = true,
-    this.transport = false,
-    this.orders = false,
+    this.transport = true,
+    this.orders = true,
   });
 
   factory SettingsVisibilityState.fromMap(Map<String, dynamic> map) {
@@ -58,8 +58,8 @@ enum DateType {
       statsCount: map['statsCount'] ?? true,
       todayTotalTransactions: map['todayTotalTransactions'] ?? true,
       todayTotalTxnChart: map['todayTotalTxnChart'] ?? true,
-      transport: map['transport'] ?? false,
-      orders: map['orders'] ?? false,
+      transport: map['transport'] ?? true,
+      orders: map['orders'] ?? true,
     );
   }
 
