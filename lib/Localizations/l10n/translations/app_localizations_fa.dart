@@ -2431,4 +2431,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get baseHours => 'پایه ساعات';
+
+  @override
+  String get disselect => 'گسسته کردن';
 }

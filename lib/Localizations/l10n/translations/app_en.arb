@@ -807,5 +807,6 @@
   "unpaidTitle": "Unpaid",
   "workedHours": "Worked Hours",
   "workedDays": "Worked Days",
-  "baseHours": "Base Hours"
+  "baseHours": "Base Hours",
+  "disselect": "Disselect All"
 }

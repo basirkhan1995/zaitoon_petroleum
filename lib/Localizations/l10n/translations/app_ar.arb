@@ -807,5 +807,6 @@
   "unpaidTitle": "پرداخت نشده",
   "workedHours": "ساعات کارکرد",
   "workedDays": "تعداد روز",
-  "baseHours": "پایه ساعات"
+  "baseHours": "پایه ساعات",
+  "disselect": "بې برخې کول"
 }

@@ -2,6 +2,9 @@ part of 'payroll_bloc.dart';
 
 sealed class PayrollState extends Equatable {
   const PayrollState();
+
+  // Add this getter to all states
+  List<PayrollModel> get payroll => [];
 }
 
 final class PayrollInitial extends PayrollState {
@@ -19,6 +22,9 @@ final class PayrollSilentLoadingState extends PayrollState {
   const PayrollSilentLoadingState(this.attendance);
 
   @override
+  List<PayrollModel> get payroll => attendance; // Add this
+
+  @override
   List<Object?> get props => [attendance];
 }
 
@@ -31,11 +37,11 @@ final class PayrollErrorState extends PayrollState {
 }
 
 final class PayrollLoadedState extends PayrollState {
-  final List<PayrollModel> attendance;
-  const PayrollLoadedState(this.attendance);
+  final List<PayrollModel> payroll;
+  const PayrollLoadedState(this.payroll);
 
   @override
-  List<Object?> get props => [attendance];
+  List<Object?> get props => [payroll];
 }
 
 final class PayrollSuccessState extends PayrollState {

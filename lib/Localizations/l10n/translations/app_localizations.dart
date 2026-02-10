@@ -4827,6 +4827,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Base Hours'**
   String get baseHours;
+
+  /// No description provided for @disselect.
+  ///
+  /// In en, this message translates to:
+  /// **'Disselect All'**
+  String get disselect;
 }
 
 class _AppLocalizationsDelegate

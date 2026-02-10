@@ -2439,4 +2439,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get baseHours => 'Base Hours';
+
+  @override
+  String get disselect => 'Disselect All';
 }

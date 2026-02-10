@@ -2433,4 +2433,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get baseHours => 'پایه ساعات';
+
+  @override
+  String get disselect => 'بې برخې کول';
 }
