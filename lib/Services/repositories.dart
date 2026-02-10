@@ -2733,6 +2733,16 @@ class Repositories {
 
     return [];
   }
+  Future<Map<String, dynamic>> postPayroll({required String usrName, required List<PayrollModel> records}) async {
+    final response = await api.post(
+        endpoint: "/finance/payroll.php",
+        data: {
+          "usrName": usrName,
+          "records": records,
+        }
+    );
+    return response.data;
+  }
 }
 
 

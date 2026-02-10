@@ -84,7 +84,14 @@ class _Desktop extends StatelessWidget {
             ),
             Row(
               children: [
-                // In your code:
+                ZOutlineButton(
+                  height: 46,
+                  icon: Icons.payments_outlined,
+                  onPressed: (){
+                   /// Here to post payroll to their accounts
+                  },
+                  label: Text(tr.payment),
+                ),
 
                 const SizedBox(width: 8),
 
