@@ -385,12 +385,11 @@ class __DesktopState extends State<_Desktop> {
                         final isSelected = _selectedIds.contains(record.perId);
 
                         return InkWell(
-                          hoverColor: color.outline.withValues(alpha: .03),
-                          highlightColor: color.outline.withValues(alpha: .03),
-                          onTap: () =>
-                              _toggleRecordSelection(record.perId!, isPaid),
-                          onLongPress: () =>
-                              _toggleRecordSelection(record.perId!, isPaid),
+                          hoverColor: color.surface,
+                          splashColor: color.primary,
+                          highlightColor: color.surface,
+                          onTap: () => _toggleRecordSelection(record.perId!, isPaid),
+                          onLongPress: () => _toggleRecordSelection(record.perId!, isPaid),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
@@ -472,10 +471,7 @@ class __DesktopState extends State<_Desktop> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        double.tryParse(
-                                              record.salary ?? '0',
-                                            )?.toStringAsFixed(2) ??
-                                            '0.00',
+                                        record.salary.toAmount(),
                                         style: textTheme.titleSmall,
                                       ),
                                       Text(
