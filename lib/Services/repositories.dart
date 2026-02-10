@@ -42,6 +42,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/model/vehi
 import '../Views/Menu/Ui/Dashboard/Views/DailyGross/model/gross_model.dart';
 import '../Views/Menu/Ui/Dashboard/Views/Stats/model/stats_model.dart';
 import '../Views/Menu/Ui/Finance/Ui/EndOfYear/model/eoy_model.dart';
+import '../Views/Menu/Ui/Finance/Ui/Payroll/model/payroll_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Attendance/model/attendance_model.dart';
 import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
@@ -2691,7 +2692,6 @@ class Repositories {
           "empCheckedOut": checkOut
         }
     );
-    print(response.data);
     return response.data;
   }
   Future<Map<String, dynamic>> updateAttendance({required AttendanceModel newData}) async {
@@ -2700,6 +2700,38 @@ class Repositories {
         data: newData.toMap()
     );
     return response.data;
+  }
+
+  ///Payroll ...................................................................
+  Future<List<PayrollModel>> getPayroll({String? date}) async{
+    final response = await api.get(
+        endpoint: "/finance/payroll.php",
+        queryParams: {
+          "date": date
+        }
+    );
+
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      // If no records found, return empty list
+      if (response.data['msg'] == 'failed') {
+        return [];
+      }
+      throw Exception(response.data['msg']);
+    }
+
+    // Parse as list
+    if (response.data is List) {
+      return List<PayrollModel>.from(
+          response.data.map((x) => PayrollModel.fromMap(x))
+      );
+    }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic> && response.data.isNotEmpty) {
+      return [PayrollModel.fromMap(response.data)];
+    }
+
+    return [];
   }
 }
 

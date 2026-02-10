@@ -4,13 +4,11 @@ import '../../../../../../../Localizations/l10n/translations/app_localizations.d
 
 enum EmpPaymentMethod {
   monthly,
-  weekly,
   daily;
 
   String toDatabaseValue() {
     switch (this) {
       case EmpPaymentMethod.monthly: return "Monthly";
-      case EmpPaymentMethod.weekly: return "Weekly";
       case EmpPaymentMethod.daily: return "Daily";
     }
   }
@@ -18,7 +16,6 @@ enum EmpPaymentMethod {
   static EmpPaymentMethod fromDatabaseValue(String value) {
     switch (value) {
       case "Monthly": return EmpPaymentMethod.monthly;
-      case "Weekly": return EmpPaymentMethod.weekly;
       case "Daily": return EmpPaymentMethod.daily;
       default: return EmpPaymentMethod.monthly;
     }
@@ -32,7 +29,6 @@ class PaymentMethodTranslator {
 
     switch (method) {
       case EmpPaymentMethod.monthly: return t.monthly;
-      case EmpPaymentMethod.weekly: return t.weekly;
       case EmpPaymentMethod.daily: return t.daily;
     }
   }
@@ -110,7 +106,6 @@ class _PaymentMethodDropdownState extends State<PaymentMethodDropdown> {
   Widget _getIcon(EmpPaymentMethod method) {
     final icon = switch (method) {
       EmpPaymentMethod.monthly => Icons.payments_rounded,
-      EmpPaymentMethod.weekly => Icons.calendar_view_week_rounded,
       EmpPaymentMethod.daily => Icons.today_rounded,
     };
     return Icon(icon, size: 20);

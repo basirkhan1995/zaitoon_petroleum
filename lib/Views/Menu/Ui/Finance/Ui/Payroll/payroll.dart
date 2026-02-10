@@ -18,7 +18,6 @@ class _Mobile extends StatelessWidget {
     return const Placeholder();
   }
 }
-
 class _Tablet extends StatelessWidget {
   const _Tablet();
 
@@ -27,7 +26,6 @@ class _Tablet extends StatelessWidget {
     return const Placeholder();
   }
 }
-
 class _Desktop extends StatelessWidget {
   const _Desktop();
 
