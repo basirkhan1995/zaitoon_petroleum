@@ -54,6 +54,7 @@ class _DesktopState extends State<_Desktop> {
 
   String getTitle(BuildContext context, String code) {
     switch (code) {
+      case "SLRY": return AppLocalizations.of(context)!.postSalary;
       case "ATAT": return AppLocalizations.of(context)!.accountTransfer;
       case "CRFX": return AppLocalizations.of(context)!.fxTransaction;
       case "PLCL": return AppLocalizations.of(context)!.profitAndLoss;
@@ -81,7 +82,7 @@ class _DesktopState extends State<_Desktop> {
       width: MediaQuery.of(context).size.width * .7,
       isActionTrue: false,
       onAction: null,
-      icon: Icons.home_repair_service_outlined,
+      icon: Icons.ssid_chart,
       title: getTitle(context, loadedAtat?.trnType??""),
       child: BlocConsumer<FetchAtatBloc, FetchAtatState>(
   listener: (context, state) {

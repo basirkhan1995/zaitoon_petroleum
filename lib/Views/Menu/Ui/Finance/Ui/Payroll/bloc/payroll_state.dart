@@ -37,6 +37,7 @@ final class PayrollErrorState extends PayrollState {
 }
 
 final class PayrollLoadedState extends PayrollState {
+  @override
   final List<PayrollModel> payroll;
   const PayrollLoadedState(this.payroll);
 
