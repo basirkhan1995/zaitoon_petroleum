@@ -39,6 +39,7 @@ class PayrollBloc extends Bloc<PayrollEvent, PayrollState> {
 
     on<PostPayrollEvent>((event, emit) async {
       final tr = localizationService.loc;
+
       // Keep current UI (silent loading)
       if (_cachedPayroll != null) {
         emit(PayrollSilentLoadingState(_cachedPayroll!));
@@ -52,12 +53,10 @@ class PayrollBloc extends Bloc<PayrollEvent, PayrollState> {
           // Emit success first
           emit(PayrollSuccessState(tr.successMessage));
           // Reload Payroll
-          add(LoadPayrollEvent(_currentDate??""));
+          add(LoadPayrollEvent(_currentDate ?? ""));
         }
         else if (msg == "exist") {
-          emit( PayrollErrorState(
-            "Payroll Already exists",
-          ));
+          emit(PayrollErrorState("Payroll Already exists"));
 
           // Restore previous data
           if (_cachedPayroll != null) {
@@ -65,7 +64,8 @@ class PayrollBloc extends Bloc<PayrollEvent, PayrollState> {
           }
         }
         else {
-          emit( PayrollErrorState(tr.operationFailedMessage));
+          final errorMsg = res["message"] ?? tr.operationFailedMessage;
+          emit(PayrollErrorState(errorMsg));
           if (_cachedPayroll != null) {
             emit(PayrollLoadedState(_cachedPayroll!));
           }
@@ -77,6 +77,46 @@ class PayrollBloc extends Bloc<PayrollEvent, PayrollState> {
         }
       }
     });
+    // on<PostPayrollEvent>((event, emit) async {
+    //   final tr = localizationService.loc;
+    //   // Keep current UI (silent loading)
+    //   if (_cachedPayroll != null) {
+    //     emit(PayrollSilentLoadingState(_cachedPayroll!));
+    //   }
+    //
+    //   try {
+    //     final res = await _repo.postPayroll(usrName: event.usrName, records: event.records);
+    //     final msg = res["msg"];
+    //
+    //     if (msg == "success") {
+    //       // Emit success first
+    //       emit(PayrollSuccessState(tr.successMessage));
+    //       // Reload Payroll
+    //       add(LoadPayrollEvent(_currentDate??""));
+    //     }
+    //     else if (msg == "exist") {
+    //       emit( PayrollErrorState(
+    //         "Payroll Already exists",
+    //       ));
+    //
+    //       // Restore previous data
+    //       if (_cachedPayroll != null) {
+    //         emit(PayrollLoadedState(_cachedPayroll!));
+    //       }
+    //     }
+    //     else {
+    //       emit( PayrollErrorState(tr.operationFailedMessage));
+    //       if (_cachedPayroll != null) {
+    //         emit(PayrollLoadedState(_cachedPayroll!));
+    //       }
+    //     }
+    //   } catch (e) {
+    //     emit(PayrollErrorState(e.toString()));
+    //     if (_cachedPayroll != null) {
+    //       emit(PayrollLoadedState(_cachedPayroll!));
+    //     }
+    //   }
+    // });
 
   }
 }
