@@ -291,7 +291,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get more => 'بیشتر';
 
   @override
-  String get selectAll => 'تول';
+  String get selectAll => 'ټول وټاکئ';
 
   @override
   String get baseCurrency => 'سیستم ارز';

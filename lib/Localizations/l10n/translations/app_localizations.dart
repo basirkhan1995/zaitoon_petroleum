@@ -655,7 +655,7 @@ abstract class AppLocalizations {
   /// No description provided for @selectAll.
   ///
   /// In en, this message translates to:
-  /// **'Select all'**
+  /// **'Select All'**
   String get selectAll;
 
   /// No description provided for @baseCurrency.

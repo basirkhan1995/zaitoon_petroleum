@@ -291,7 +291,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get more => 'More';
 
   @override
-  String get selectAll => 'Select all';
+  String get selectAll => 'Select All';
 
   @override
   String get baseCurrency => 'Base Currency';

@@ -59,7 +59,8 @@ class __DesktopState extends State<_Desktop> {
     setState(() {
       if (_selectedIds.contains(perId)) {
         _selectedIds.remove(perId);
-      } else if (!isPaid) {
+      } else {
+        // Allow selecting both paid and unpaid records
         _selectedIds.add(perId);
       }
     });
@@ -70,12 +71,9 @@ class __DesktopState extends State<_Desktop> {
       if (_selectAll) {
         _selectedIds.clear();
       } else {
-        // Select only unpaid records
+        // Select ALL records (both paid and unpaid)
         _selectedIds.addAll(
-          payroll
-              .where((record) => (record.payment ?? 0) == 0)
-              .map((record) => record.perId!)
-              .toList(),
+          payroll.map((record) => record.perId!).toList(),
         );
       }
       _selectAll = !_selectAll;
@@ -83,19 +81,22 @@ class __DesktopState extends State<_Desktop> {
   }
 
   void _postSelectedPayroll(
-    BuildContext context,
-    String usrName,
-    List<PayrollModel> payroll,
-  ) {
-    final selectedRecords = payroll
-        .where((record) => _selectedIds.contains(record.perId))
+      BuildContext context,
+      String usrName,
+      List<PayrollModel> payroll,
+      ) {
+    // Filter only unpaid records for posting
+    final selectedUnpaidRecords = payroll
+        .where((record) =>
+    _selectedIds.contains(record.perId) &&
+        (record.payment ?? 0) == 0)
         .map((record) => record.copyWith(payment: 1))
         .toList();
 
-    if (selectedRecords.isEmpty) {
+    if (selectedUnpaidRecords.isEmpty) {
       ToastManager.show(
         context: context,
-        message: "Please select a record to post",
+        message: "Please select unpaid records to post",
         type: ToastType.error,
       );
       return;
@@ -106,12 +107,13 @@ class __DesktopState extends State<_Desktop> {
       builder: (context) {
         return ZAlertDialog(
           title: AppLocalizations.of(context)!.confirmPayment,
-          content: 'Post salary for ${selectedRecords.length} employees?',
+          content: 'Post salary for ${selectedUnpaidRecords.length} employees?',
           onYes: () {
             context.read<PayrollBloc>().add(
-              PostPayrollEvent(usrName, selectedRecords),
+              PostPayrollEvent(usrName, selectedUnpaidRecords),
             );
             setState(() {
+              // Clear selection after posting
               _selectedIds.clear();
               _selectAll = false;
             });
@@ -146,7 +148,7 @@ class __DesktopState extends State<_Desktop> {
         children: [
           // Header
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 5),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -160,8 +162,11 @@ class __DesktopState extends State<_Desktop> {
                         final unpaidCount = payroll
                             .where((r) => (r.payment ?? 0) == 0)
                             .length;
+                        final paidCount = payroll
+                            .where((r) => (r.payment ?? 0) == 1)
+                            .length;
                         return Text(
-                          '${_selectedIds.length} ${tr.selected} | $unpaidCount ${tr.unpaidTitle}',
+                          '${_selectedIds.length} ${tr.selected} | $unpaidCount ${tr.unpaidTitle} | $paidCount ${tr.paidTitle}',
                           style: textTheme.bodySmall?.copyWith(
                             color: color.outline.withValues(alpha: .9),
                           ),
@@ -176,30 +181,25 @@ class __DesktopState extends State<_Desktop> {
                     if (_selectedIds.isNotEmpty)
                       ZOutlineButton(
                         height: 45,
-                        isActive: true,
                         backgroundHover: Theme.of(context).colorScheme.error,
                         icon: Icons.clear,
                         onPressed: _clearSelection,
                         label: Text(tr.clear),
                       ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 5),
                     // Select All
                     BlocBuilder<PayrollBloc, PayrollState>(
                       builder: (context, state) {
                         final payroll = state.payroll;
-                        final unpaidCount = payroll
-                            .where((r) => (r.payment ?? 0) == 0)
-                            .length;
-                        final allSelected =
-                            unpaidCount > 0 &&
-                            _selectedIds.length == unpaidCount;
+                        final allSelected = payroll.isNotEmpty &&
+                            _selectedIds.length == payroll.length;
 
                         return ZOutlineButton(
                           height: 45,
                           icon: allSelected
                               ? Icons.check_box
                               : Icons.check_box_outline_blank,
-                          onPressed: unpaidCount > 0
+                          onPressed: payroll.isNotEmpty
                               ? () => _toggleSelectAll(payroll)
                               : null,
                           label: Text(
@@ -209,27 +209,28 @@ class __DesktopState extends State<_Desktop> {
                       },
                     ),
 
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 5),
 
                     // Payment Button
-                    BlocBuilder<PayrollBloc, PayrollState>(
-                      builder: (context, state) {
-                        return ZOutlineButton(
-                          height: 45,
-                          icon: Icons.payment_rounded,
-                          onPressed: _selectedIds.isNotEmpty
-                              ? () => _postSelectedPayroll(
-                                  context,
-                                  usrName!,
-                                  state.payroll,
-                                )
-                              : null,
-                          label: Text(tr.postSalary),
-                        );
-                      },
-                    ),
+                    if (_selectedIds.isNotEmpty)
+                      BlocBuilder<PayrollBloc, PayrollState>(
+                        builder: (context, state) {
+                          return ZOutlineButton(
+                            height: 45,
+                            icon: Icons.payment_rounded,
+                            onPressed: _selectedIds.isNotEmpty
+                                ? () => _postSelectedPayroll(
+                              context,
+                              usrName!,
+                              state.payroll,
+                            )
+                                : null,
+                            label: Text(tr.postSalary),
+                          );
+                        },
+                      ),
 
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 5),
 
                     // Refresh Button
                     ZOutlineButton(
@@ -271,6 +272,15 @@ class __DesktopState extends State<_Desktop> {
             ),
             child: Row(
               children: [
+                SizedBox(
+                  width: 40,
+                  child: Center(
+                    child: Text(
+                      '#',
+                      style: textTheme.titleSmall?.copyWith(color: color.surface),
+                    ),
+                  ),
+                ),
                 SizedBox(
                   width: 100,
                   child: Text(
@@ -384,6 +394,9 @@ class __DesktopState extends State<_Desktop> {
                         final isPaid = (record.payment ?? 0) == 1;
                         final isSelected = _selectedIds.contains(record.perId);
 
+                        // Check if paid record should be checked by default
+                        final shouldBeChecked = isPaid || isSelected;
+
                         return InkWell(
                           hoverColor: color.surface,
                           splashColor: color.surface,
@@ -407,11 +420,11 @@ class __DesktopState extends State<_Desktop> {
                                   : Colors.transparent,
                               border: isSelected
                                   ? Border.all(
-                                      color: color.primary.withValues(
-                                        alpha: .2,
-                                      ),
-                                      width: 1,
-                                    )
+                                color: color.primary.withValues(
+                                  alpha: .2,
+                                ),
+                                width: 1,
+                              )
                                   : null,
                               borderRadius: BorderRadius.circular(2),
                             ),
@@ -419,28 +432,31 @@ class __DesktopState extends State<_Desktop> {
                               children: [
                                 // Checkbox
                                 SizedBox(
-                                  width: 25,
+                                  width: 40,
                                   child: Center(
                                     child: Checkbox(
                                       visualDensity: VisualDensity(
                                         horizontal: -4,
                                         vertical: -4,
                                       ),
-                                      value: isSelected,
-                                      onChanged: isPaid
-                                          ? null
-                                          : (value) => _toggleRecordSelection(
-                                              record.perId!,
-                                              isPaid,
-                                            ),
+                                      value: shouldBeChecked,
+                                      // Paid records can be unchecked, but show as checked by default
+                                      onChanged: (value) => _toggleRecordSelection(
+                                        record.perId!,
+                                        isPaid,
+                                      ),
+                                      // Optional: Style paid records differently
+                                      fillColor: isPaid
+                                          ? WidgetStateProperty.all(
+                                          color.primary.withValues(alpha: .2))
+                                          : null,
                                     ),
                                   ),
                                 ),
 
-                                SizedBox(width: 5),
                                 // Date
                                 SizedBox(
-                                  width: 80,
+                                  width: 100,
                                   child: Text(record.monthYear ?? ''),
                                 ),
 
@@ -448,7 +464,7 @@ class __DesktopState extends State<_Desktop> {
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Text(record.fullName ?? ''),
                                       Text(
@@ -468,7 +484,7 @@ class __DesktopState extends State<_Desktop> {
                                   width: 120,
                                   child: Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         record.salary.toAmount(),
@@ -491,7 +507,7 @@ class __DesktopState extends State<_Desktop> {
                                   width: 120,
                                   child: Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '${double.tryParse(record.hoursInMonth ?? '0')?.toStringAsFixed(1) ?? '0.0'} hr',
@@ -514,7 +530,7 @@ class __DesktopState extends State<_Desktop> {
                                   width: 120,
                                   child: Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '${record.totalDays ?? 0} days',

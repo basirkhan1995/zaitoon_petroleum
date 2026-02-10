@@ -291,7 +291,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get more => 'بیشتر';
 
   @override
-  String get selectAll => 'همه';
+  String get selectAll => 'انتخاب همه';
 
   @override
   String get baseCurrency => 'ارز سیستم';
