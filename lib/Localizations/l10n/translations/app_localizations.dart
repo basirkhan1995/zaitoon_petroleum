@@ -4761,6 +4761,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Track logistics in one place.'**
   String get trackShipmentsHint;
+
+  /// No description provided for @dismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismiss;
 }
 
 class _AppLocalizationsDelegate

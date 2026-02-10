@@ -69,7 +69,6 @@ class _DesktopState extends State<_Desktop> {
   void initState() {
     email.text = widget.user.usrEmail ?? "";
     usrName.text = widget.user.usrName ?? "";
-    usrStatus = widget.user.usrStatus;
     usrRole = widget.user.usrRole;
     branchCode = widget.user.usrBranch;
     usrFcp = widget.user.usrFcp == 1;

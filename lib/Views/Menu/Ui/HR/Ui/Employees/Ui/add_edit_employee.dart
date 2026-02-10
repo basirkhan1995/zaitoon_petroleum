@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
@@ -94,7 +95,7 @@ class _DesktopState extends State<_Desktop> {
         widget.employeeType == 'driver' ||
         widget.model?.empPosition?.toLowerCase() == 'driver';
   }
-
+  int? empStatus;
   @override
   void initState() {
     super.initState();
@@ -104,6 +105,7 @@ class _DesktopState extends State<_Desktop> {
       if (widget.model?.empDepartment != null) {
         department = EmpDepartment.fromDatabaseValue(widget.model!.empDepartment!);
       }
+      indAccountCtrl.text = widget.model?.empSalAccount.toString() ?? "";
       paymentBase = widget.model?.empPmntMethod;
       salaryCalBase = widget.model?.empSalCalcBase;
       accNumber = widget.model?.empSalAccount;
@@ -111,6 +113,7 @@ class _DesktopState extends State<_Desktop> {
       empEmail.text = widget.model?.empEmail ?? "";
       empTaxInfo.text = widget.model?.empTaxInfo ?? "";
       perId = widget.model?.perId;
+      empStatus = widget.model?.empStatus;
     }
 
     // 🔒 Force Driver job title
@@ -150,7 +153,7 @@ class _DesktopState extends State<_Desktop> {
           ? (widget.isDriver == true || widget.employeeType == 'driver'
           ? locale.driverRegistration // Custom title for driver
           : locale.employeeRegistration)
-          : locale.update,
+          : "${locale.update} ${widget.model?.perName} ${widget.model?.perLastName}",
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -224,7 +227,6 @@ class _DesktopState extends State<_Desktop> {
                     showClearButton: true,
                   ),
                 if (widget.model == null) SizedBox(height: 10),
-                if (widget.model == null)
                   GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
                     showAllOnFocus: true,
                     controller: indAccountCtrl,
@@ -384,6 +386,23 @@ class _DesktopState extends State<_Desktop> {
                       Utils.validateEmail(email: value, context: context),
                   title: locale.email,
                 ),
+                if(widget.model !=null)...[
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Switch(
+                        value: empStatus == 1,
+                        onChanged: (e) {
+                          setState(() {
+                            empStatus = e == true ? 1 : 0;
+                          });
+                        },
+                      ),
+                      SizedBox(width: 8),
+                      Text(empStatus == 1 ? locale.active : locale.blocked),
+                    ],
+                  ),
+                ]
               ],
             ),
           ),
@@ -401,13 +420,13 @@ class _DesktopState extends State<_Desktop> {
       empSalAccount: accNumber,
       empEmail: empEmail.text,
       empHireDate: DateTime.now(),
-      empDepartment: department?.toDatabaseValue(), // Convert enum back to string
+      empDepartment: department?.toDatabaseValue(),
       empPosition: isDriverEmployee ? "Driver" : jobTitle.text,
       empSalCalcBase: salaryCalBase,
       empPmntMethod: paymentBase,
-      empStatus: 1,
+      empStatus: empStatus,
       empFingerprint: "FP-23452",
-      empEndDate: "12-2-2025",
+      empEndDate: DateTime.now().toFormattedDate(),
       empSalary: empSalary.text.cleanAmount,
       empTaxInfo: empTaxInfo.text,
     );

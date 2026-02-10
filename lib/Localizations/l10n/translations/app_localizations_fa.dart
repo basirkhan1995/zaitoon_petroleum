@@ -2398,4 +2398,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get trackShipmentsHint => 'پیگیری لجستیک در یک مکان.';
+
+  @override
+  String get dismiss => 'رد کردن';
 }

@@ -796,5 +796,6 @@
   "estimateHint": "Prepare estimate for customer request.",
   "stockTransferHint": "Transfer goods from one stock to another.",
   "inventoryHint": "Check available stock before proceeding.",
-  "trackShipmentsHint": "Track logistics in one place."
+  "trackShipmentsHint": "Track logistics in one place.",
+  "dismiss": "Dismiss"
 }

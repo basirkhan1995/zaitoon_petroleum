@@ -2406,4 +2406,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trackShipmentsHint => 'Track logistics in one place.';
+
+  @override
+  String get dismiss => 'Dismiss';
 }

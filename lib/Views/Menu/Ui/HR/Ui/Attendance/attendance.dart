@@ -356,7 +356,7 @@ class _DesktopState extends State<_Desktop> {
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
             icon: Icons.access_time,
             title: tr.addAttendance,
-
+            width: 500,
             onAction: () {
               context.read<AttendanceBloc>().add(
                 AddAttendanceEvent(

@@ -2400,4 +2400,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get trackShipmentsHint => 'لوژستیک په یوه ځای کې تعقیب کړئ';
+
+  @override
+  String get dismiss => 'رد کول';
 }
