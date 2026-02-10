@@ -2403,4 +2403,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dismiss => 'رد کول';
+
+  @override
+  String get current => 'فعلی';
 }

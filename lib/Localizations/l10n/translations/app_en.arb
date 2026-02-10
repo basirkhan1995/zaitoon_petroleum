@@ -797,5 +797,6 @@
   "stockTransferHint": "Transfer goods from one stock to another.",
   "inventoryHint": "Check available stock before proceeding.",
   "trackShipmentsHint": "Track logistics in one place.",
-  "dismiss": "Dismiss"
+  "dismiss": "Dismiss",
+  "current": "Current"
 }

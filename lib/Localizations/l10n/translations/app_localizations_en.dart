@@ -2409,4 +2409,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dismiss => 'Dismiss';
+
+  @override
+  String get current => 'Current';
 }

@@ -90,6 +90,7 @@ class _DesktopState extends State<_Desktop> {
 
     final handlers = <String, void Function(String)>{
       "ATAT": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
+      "SLRY": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
       "CRFX": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
       "TRPT": (ref) => context.read<TrptBloc>().add(LoadTrptEvent(ref)),
       "GLAT": (ref) => context.read<GlatBloc>().add(LoadGlatEvent(ref)),

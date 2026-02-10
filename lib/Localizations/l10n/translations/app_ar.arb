@@ -797,5 +797,6 @@
   "stockTransferHint": "مالونه له یوه ګودام څخه بل ته انتقال کړئ.",
   "inventoryHint": "موجودي وګورئ مخکې له دې چې دوام ورکړئ.",
   "trackShipmentsHint": "لوژستیک په یوه ځای کې تعقیب کړئ",
-  "dismiss": "رد کول"
+  "dismiss": "رد کول",
+  "current": "فعلی"
 }

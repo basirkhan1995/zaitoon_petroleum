@@ -2401,4 +2401,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get dismiss => 'رد کردن';
+
+  @override
+  String get current => 'فعلی';
 }

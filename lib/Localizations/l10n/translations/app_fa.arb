@@ -797,5 +797,6 @@
   "stockTransferHint": "کالاها را از یک انبار به انبار دیگر منتقل کنید.",
   "inventoryHint": "موجودی را بررسی کنید قبل از ادامه.",
   "trackShipmentsHint": "پیگیری لجستیک در یک مکان.",
-  "dismiss": "رد کردن"
+  "dismiss": "رد کردن",
+  "current": "فعلی"
 }

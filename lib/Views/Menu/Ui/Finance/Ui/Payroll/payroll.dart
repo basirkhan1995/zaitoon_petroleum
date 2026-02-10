@@ -4,6 +4,7 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Payroll/bloc/payroll_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Payroll/model/payroll_model.dart';
+import '../../../../../../Features/Date/month_year_picker.dart';
 import '../../../../../../Features/Widgets/no_data_widget.dart';
 import '../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
@@ -63,35 +64,52 @@ class _Desktop extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-        Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                tr.attendance,
-                style:
-                Theme.of(context).textTheme.titleMedium,
-              ),
-            ],
-          ),
-          Row(
-            children: [
+        Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  tr.payRoll,
+                  style:
+                  Theme.of(context).textTheme.titleMedium,
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                // In your code:
 
-              const SizedBox(width: 8),
-              ZOutlineButton(
-                height: 46,
-                isActive: true,
+                const SizedBox(width: 8),
 
-                icon: Icons.add,
-                label: Text(tr.addAttendance),
-              )
-            ],
-          ),
-        ],
-      ),
+                ZOutlineButton(
+                  height: 46,
+                  isActive: true,
+                  icon: Icons.refresh,
+                  onPressed: (){
+                    showDialog(context: context, builder: (context){
+                      return MonthYearPicker(
+                        onMonthYearSelected: (date) {
+                          context.read<PayrollBloc>().add(LoadPayrollEvent(date));
+                        },
+                        initialDate: DateTime.now(),
+                        minYear: 2000,
+                        maxYear: 2100,
+                        disablePastDates: true,
+                      );
+                    });
+                  },
+                  label: Text("LOAD PAYROLL"),
+                )
+              ],
+            ),
+          ],
+                ),
+        ),
           Container(
             padding:
             const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
@@ -120,85 +138,87 @@ class _Desktop extends StatelessWidget {
             ),
           ),
           SizedBox(height: 5),
-          BlocConsumer<PayrollBloc, PayrollState>(
-            listener: (context, state) {},
-            builder: (context, payState) {
+          Expanded(
+            child: BlocConsumer<PayrollBloc, PayrollState>(
+              listener: (context, state) {},
+              builder: (context, payState) {
 
-              final payroll = payState is PayrollLoadedState
-                  ? payState.attendance
-                  : payState is PayrollSilentLoadingState
-                  ? payState.attendance
-                  : <PayrollModel>[];
-              if (payroll.isEmpty) {
-                return NoDataWidget(
-                  title: tr.noData,
-                  message: tr.noDataFound,
-                  enableAction: false,
-                );
-              }
+                final payroll = payState is PayrollLoadedState
+                    ? payState.attendance
+                    : payState is PayrollSilentLoadingState
+                    ? payState.attendance
+                    : <PayrollModel>[];
+                if (payroll.isEmpty) {
+                  return NoDataWidget(
+                    title: tr.noData,
+                    message: tr.noDataFound,
+                    enableAction: false,
+                  );
+                }
 
-              if (payState is PayrollLoadingState) {
-                return const Center(
-                    child: CircularProgressIndicator());
-              }
+                if (payState is PayrollLoadingState) {
+                  return const Center(
+                      child: CircularProgressIndicator());
+                }
 
-              if (payState is PayrollErrorState) {
-                return NoDataWidget(
-                  title: tr.accessDenied,
-                  message: payState.message,
-                  onRefresh: () {
-                    context.read<PayrollBloc>().add(LoadPayrollEvent(""));
-                  },
-                );
-              }
+                if (payState is PayrollErrorState) {
+                  return NoDataWidget(
+                    title: tr.accessDenied,
+                    message: payState.message,
+                    onRefresh: () {
+                      context.read<PayrollBloc>().add(LoadPayrollEvent(""));
+                    },
+                  );
+                }
 
-              return Stack(
-                children: [
+                return Stack(
+                  children: [
 
-                  //Payroll Data here
-                  Column(
-                    children: [
-                     Expanded(
-                       child: ListView.builder(
-                           itemCount: payroll.length,
-                           itemBuilder: (context,index){
-                           final py = payroll[index];
-                             return Row(
-                             children: [
-                               Text(py.fullName??""),
-                             ],
-                           );
-                       }),
-                     ),
-                    ],
-                  ),
+                    //Payroll Data here
+                    Column(
+                      children: [
+                       Expanded(
+                         child: ListView.builder(
+                             itemCount: payroll.length,
+                             itemBuilder: (context,index){
+                             final py = payroll[index];
+                               return Row(
+                               children: [
+                                 Text(py.fullName??""),
+                               ],
+                             );
+                         }),
+                       ),
+                      ],
+                    ),
 
-                  if (payState is PayrollSilentLoadingState)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: .3),
-                          borderRadius:
-                          BorderRadius.circular(20),
-                        ),
-                        child: SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .surface,
+                    if (payState is PayrollSilentLoadingState)
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: .3),
+                            borderRadius:
+                            BorderRadius.circular(20),
+                          ),
+                          child: SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surface,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                ],
-              );
-            },
+                  ],
+                );
+              },
+            ),
           ),
         ],
       ),
