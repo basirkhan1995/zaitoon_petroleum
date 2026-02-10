@@ -808,5 +808,6 @@
   "workedHours": "Worked Hours",
   "workedDays": "Worked Days",
   "baseHours": "Base Hours",
-  "disselect": "Disselect All"
+  "disselect": "Disselect All",
+  "postSalary": "Post Salary"
 }

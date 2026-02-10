@@ -2434,4 +2434,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get disselect => 'گسسته کردن';
+
+  @override
+  String get postSalary => 'پرداخت حقوق';
 }

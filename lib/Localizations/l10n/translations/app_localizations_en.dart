@@ -2442,4 +2442,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get disselect => 'Disselect All';
+
+  @override
+  String get postSalary => 'Post Salary';
 }

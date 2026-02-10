@@ -808,5 +808,6 @@
   "workedHours": "ساعات کارکرد",
   "workedDays": "تعداد روز",
   "baseHours": "پایه ساعات",
-  "disselect": "گسسته کردن"
+  "disselect": "گسسته کردن",
+  "postSalary": "پرداخت حقوق"
 }

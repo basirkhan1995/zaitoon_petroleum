@@ -4833,6 +4833,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Disselect All'**
   String get disselect;
+
+  /// No description provided for @postSalary.
+  ///
+  /// In en, this message translates to:
+  /// **'Post Salary'**
+  String get postSalary;
 }
 
 class _AppLocalizationsDelegate

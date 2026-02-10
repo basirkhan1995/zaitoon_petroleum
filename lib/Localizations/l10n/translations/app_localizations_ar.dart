@@ -2436,4 +2436,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get disselect => 'بې برخې کول';
+
+  @override
+  String get postSalary => 'معاش ولېږئ';
 }

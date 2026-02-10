@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:zaitoon_petroleum/Features/Other/alert_dialog.dart';
+import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/toast.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/status_badge.dart';
@@ -80,45 +82,42 @@ class __DesktopState extends State<_Desktop> {
     });
   }
 
-  void _postSelectedPayroll(BuildContext context, String usrName, List<PayrollModel> payroll) {
+  void _postSelectedPayroll(
+    BuildContext context,
+    String usrName,
+    List<PayrollModel> payroll,
+  ) {
     final selectedRecords = payroll
         .where((record) => _selectedIds.contains(record.perId))
         .map((record) => record.copyWith(payment: 1))
         .toList();
 
     if (selectedRecords.isEmpty) {
-      ToastManager.show(context: context, message: "Please select a record to post", type: ToastType.error);
+      ToastManager.show(
+        context: context,
+        message: "Please select a record to post",
+        type: ToastType.error,
+      );
       return;
     }
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        contentPadding: EdgeInsets.all(15),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-        title: Text('Confirm Payment'),
-        content: Text(
-          'Post salary for ${selectedRecords.length} employees?',
-        ),
-        actions: [
-          ZOutlineButton(
-              onPressed: () => Navigator.pop(context),
-              label: Text(AppLocalizations.of(context)!.cancel)),
-          ZOutlineButton(
-              onPressed: () {
-                Navigator.pop(context);
-                context.read<PayrollBloc>().add(
-                  PostPayrollEvent(usrName, selectedRecords),
-                );
-                setState(() {
-                  _selectedIds.clear();
-                  _selectAll = false;
-                });
-              },
-              isActive: true,
-              label: Text(AppLocalizations.of(context)!.submit)),
-        ],
-      ),
+      builder: (context) {
+        return ZAlertDialog(
+          title: AppLocalizations.of(context)!.confirmPayment,
+          content: 'Post salary for ${selectedRecords.length} employees?',
+          onYes: () {
+            context.read<PayrollBloc>().add(
+              PostPayrollEvent(usrName, selectedRecords),
+            );
+            setState(() {
+              _selectedIds.clear();
+              _selectAll = false;
+            });
+          },
+        );
+      },
     );
   }
 
@@ -154,18 +153,17 @@ class __DesktopState extends State<_Desktop> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      tr.payRoll,
-                      style: textTheme.titleMedium,
-                    ),
+                    Text(tr.payRoll, style: textTheme.titleLarge),
                     BlocBuilder<PayrollBloc, PayrollState>(
                       builder: (context, state) {
                         final payroll = state.payroll;
-                        final unpaidCount = payroll.where((r) => (r.payment ?? 0) == 0).length;
+                        final unpaidCount = payroll
+                            .where((r) => (r.payment ?? 0) == 0)
+                            .length;
                         return Text(
-                          '${_selectedIds.length} ${tr.selected} / $unpaidCount ${tr.unpaidTitle}',
+                          '${_selectedIds.length} ${tr.selected} | $unpaidCount ${tr.unpaidTitle}',
                           style: textTheme.bodySmall?.copyWith(
-                            color: color.outline.withValues(alpha: .7),
+                            color: color.outline.withValues(alpha: .9),
                           ),
                         );
                       },
@@ -176,28 +174,37 @@ class __DesktopState extends State<_Desktop> {
                   children: [
                     // Clear Selection
                     if (_selectedIds.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: ZOutlineButton(
-                          height: 40,
-                          icon: Icons.clear,
-                          onPressed: _clearSelection,
-                          label: Text(tr.clear),
-                        ),
+                      ZOutlineButton(
+                        height: 45,
+                        isActive: true,
+                        backgroundHover: Theme.of(context).colorScheme.error,
+                        icon: Icons.clear,
+                        onPressed: _clearSelection,
+                        label: Text(tr.clear),
                       ),
-
+                    const SizedBox(width: 8),
                     // Select All
                     BlocBuilder<PayrollBloc, PayrollState>(
                       builder: (context, state) {
                         final payroll = state.payroll;
-                        final unpaidCount = payroll.where((r) => (r.payment ?? 0) == 0).length;
-                        final allSelected = unpaidCount > 0 && _selectedIds.length == unpaidCount;
+                        final unpaidCount = payroll
+                            .where((r) => (r.payment ?? 0) == 0)
+                            .length;
+                        final allSelected =
+                            unpaidCount > 0 &&
+                            _selectedIds.length == unpaidCount;
 
                         return ZOutlineButton(
-                          height: 40,
-                          icon: allSelected ? Icons.check_box : Icons.check_box_outline_blank,
-                          onPressed: unpaidCount > 0 ? () => _toggleSelectAll(payroll) : null,
-                          label: Text(allSelected ? tr.disselect : tr.selectAll),
+                          height: 45,
+                          icon: allSelected
+                              ? Icons.check_box
+                              : Icons.check_box_outline_blank,
+                          onPressed: unpaidCount > 0
+                              ? () => _toggleSelectAll(payroll)
+                              : null,
+                          label: Text(
+                            allSelected ? tr.disselect : tr.selectAll,
+                          ),
                         );
                       },
                     ),
@@ -208,12 +215,16 @@ class __DesktopState extends State<_Desktop> {
                     BlocBuilder<PayrollBloc, PayrollState>(
                       builder: (context, state) {
                         return ZOutlineButton(
-                          height: 40,
-                          icon: Icons.payments_outlined,
+                          height: 45,
+                          icon: Icons.payment_rounded,
                           onPressed: _selectedIds.isNotEmpty
-                              ? () => _postSelectedPayroll(context, usrName!, state.payroll)
+                              ? () => _postSelectedPayroll(
+                                  context,
+                                  usrName!,
+                                  state.payroll,
+                                )
                               : null,
-                          label: Text(tr.payment),
+                          label: Text(tr.postSalary),
                         );
                       },
                     ),
@@ -222,7 +233,7 @@ class __DesktopState extends State<_Desktop> {
 
                     // Refresh Button
                     ZOutlineButton(
-                      height: 40,
+                      height: 45,
                       isActive: true,
                       icon: Icons.refresh,
                       onPressed: () {
@@ -230,7 +241,9 @@ class __DesktopState extends State<_Desktop> {
                           context: context,
                           builder: (context) => MonthYearPicker(
                             onMonthYearSelected: (date) {
-                              context.read<PayrollBloc>().add(LoadPayrollEvent(date));
+                              context.read<PayrollBloc>().add(
+                                LoadPayrollEvent(date),
+                              );
                               _clearSelection();
                             },
                             initialDate: DateTime.now(),
@@ -250,23 +263,76 @@ class __DesktopState extends State<_Desktop> {
 
           // Table Header
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
             margin: const EdgeInsets.symmetric(horizontal: 12.0),
             decoration: BoxDecoration(
               color: color.primary.withValues(alpha: .9),
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(2),
             ),
             child: Row(
               children: [
-                SizedBox(width: 100, child: Text(tr.date, style: textTheme.titleSmall?.copyWith(color: color.surface))),
-                Expanded(child: Text(tr.employees, style: textTheme.titleSmall?.copyWith(color: color.surface))),
-                SizedBox(width: 120, child: Text(tr.salaryBase, style: textTheme.titleSmall?.copyWith(color: color.surface))),
-                SizedBox(width: 120, child: Text(tr.baseHours, style: textTheme.titleSmall?.copyWith(color: color.surface))),
-                SizedBox(width: 120, child: Text(tr.workedDays, style: textTheme.titleSmall?.copyWith(color: color.surface))),
-                SizedBox(width: 120, child: Text(tr.salaryAmount, style: textTheme.titleSmall?.copyWith(color: color.surface))),
-                SizedBox(width: 120, child: Text(tr.overtime, style: textTheme.titleSmall?.copyWith(color: color.surface))),
-                SizedBox(width: 120, child: Text(tr.totalPayable, style: textTheme.titleSmall?.copyWith(color: color.surface))),
-                SizedBox(width: 90, child: Text(tr.status, style: textTheme.titleSmall?.copyWith(color: color.surface))),
+                SizedBox(
+                  width: 100,
+                  child: Text(
+                    tr.date,
+                    style: textTheme.titleSmall?.copyWith(color: color.surface),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    tr.employees,
+                    style: textTheme.titleSmall?.copyWith(color: color.surface),
+                  ),
+                ),
+                SizedBox(
+                  width: 120,
+                  child: Text(
+                    tr.salaryBase,
+                    style: textTheme.titleSmall?.copyWith(color: color.surface),
+                  ),
+                ),
+                SizedBox(
+                  width: 120,
+                  child: Text(
+                    tr.baseHours,
+                    style: textTheme.titleSmall?.copyWith(color: color.surface),
+                  ),
+                ),
+                SizedBox(
+                  width: 120,
+                  child: Text(
+                    tr.workedDays,
+                    style: textTheme.titleSmall?.copyWith(color: color.surface),
+                  ),
+                ),
+                SizedBox(
+                  width: 120,
+                  child: Text(
+                    tr.salaryAmount,
+                    style: textTheme.titleSmall?.copyWith(color: color.surface),
+                  ),
+                ),
+                SizedBox(
+                  width: 100,
+                  child: Text(
+                    tr.overtime,
+                    style: textTheme.titleSmall?.copyWith(color: color.surface),
+                  ),
+                ),
+                SizedBox(
+                  width: 120,
+                  child: Text(
+                    tr.totalPayable,
+                    style: textTheme.titleSmall?.copyWith(color: color.surface),
+                  ),
+                ),
+                SizedBox(
+                  width: 90,
+                  child: Text(
+                    tr.status,
+                    style: textTheme.titleSmall?.copyWith(color: color.surface),
+                  ),
+                ),
               ],
             ),
           ),
@@ -278,10 +344,20 @@ class __DesktopState extends State<_Desktop> {
             child: BlocConsumer<PayrollBloc, PayrollState>(
               listener: (context, state) {
                 if (state is PayrollSuccessState) {
-                 ToastManager.show(context: context,title: tr.successTitle,  message: state.message, type: ToastType.success);
+                  ToastManager.show(
+                    context: context,
+                    title: tr.successTitle,
+                    message: state.message,
+                    type: ToastType.success,
+                  );
                 }
                 if (state is PayrollErrorState && state.message.isNotEmpty) {
-                  ToastManager.show(context: context,title: tr.operationFailedTitle, message: state.message, type: ToastType.error);
+                  ToastManager.show(
+                    context: context,
+                    title: tr.operationFailedTitle,
+                    message: state.message,
+                    type: ToastType.error,
+                  );
                 }
               },
               builder: (context, state) {
@@ -311,19 +387,34 @@ class __DesktopState extends State<_Desktop> {
                         return InkWell(
                           hoverColor: color.outline.withValues(alpha: .03),
                           highlightColor: color.outline.withValues(alpha: .03),
-                          onTap: () => _toggleRecordSelection(record.perId!, isPaid),
-                          onLongPress: () => _toggleRecordSelection(record.perId!, isPaid),
+                          onTap: () =>
+                              _toggleRecordSelection(record.perId!, isPaid),
+                          onLongPress: () =>
+                              _toggleRecordSelection(record.perId!, isPaid),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                            margin: EdgeInsets.symmetric(horizontal: 12,vertical: 1),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 5,
+                            ),
+                            margin: EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 1,
+                            ),
                             decoration: BoxDecoration(
-                              color: isSelected? Colors.transparent : index.isEven
-                                  ? color.primary.withValues(alpha: .05)
+                              color: isSelected
+                                  ? color.primary.withValues(alpha: .03)
+                                  : index.isEven
+                                  ? color.primary.withValues(alpha: .03)
                                   : Colors.transparent,
                               border: isSelected
-                                  ? Border.all(color: color.primary.withValues(alpha: .8), width: 1)
+                                  ? Border.all(
+                                      color: color.primary.withValues(
+                                        alpha: .2,
+                                      ),
+                                      width: 1,
+                                    )
                                   : null,
-                              borderRadius: BorderRadius.circular(4),
+                              borderRadius: BorderRadius.circular(2),
                             ),
                             child: Row(
                               children: [
@@ -332,11 +423,17 @@ class __DesktopState extends State<_Desktop> {
                                   width: 25,
                                   child: Center(
                                     child: Checkbox(
-                                      visualDensity: VisualDensity(horizontal: -4,vertical: -4),
+                                      visualDensity: VisualDensity(
+                                        horizontal: -4,
+                                        vertical: -4,
+                                      ),
                                       value: isSelected,
                                       onChanged: isPaid
                                           ? null
-                                          : (value) => _toggleRecordSelection(record.perId!, isPaid),
+                                          : (value) => _toggleRecordSelection(
+                                              record.perId!,
+                                              isPaid,
+                                            ),
                                     ),
                                   ),
                                 ),
@@ -351,13 +448,16 @@ class __DesktopState extends State<_Desktop> {
                                 // Employee
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(record.fullName ?? ''),
                                       Text(
-                                        'Acc: ${record.salaryAccount}',
+                                        '${record.salaryAccount}',
                                         style: textTheme.bodySmall?.copyWith(
-                                          color: color.outline.withValues(alpha: .7),
+                                          color: color.outline.withValues(
+                                            alpha: .7,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -368,16 +468,22 @@ class __DesktopState extends State<_Desktop> {
                                 SizedBox(
                                   width: 120,
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        double.tryParse(record.salary ?? '0')?.toStringAsFixed(2) ?? '0.00',
+                                        double.tryParse(
+                                              record.salary ?? '0',
+                                            )?.toStringAsFixed(2) ??
+                                            '0.00',
                                         style: textTheme.titleSmall,
                                       ),
                                       Text(
                                         record.currency ?? '',
                                         style: textTheme.bodySmall?.copyWith(
-                                          color: color.outline.withValues(alpha: .7),
+                                          color: color.outline.withValues(
+                                            alpha: .7,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -388,7 +494,8 @@ class __DesktopState extends State<_Desktop> {
                                 SizedBox(
                                   width: 120,
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '${double.tryParse(record.hoursInMonth ?? '0')?.toStringAsFixed(1) ?? '0.0'} hr',
@@ -397,7 +504,9 @@ class __DesktopState extends State<_Desktop> {
                                       Text(
                                         record.calculationBase ?? '',
                                         style: textTheme.bodySmall?.copyWith(
-                                          color: color.outline.withValues(alpha: .7),
+                                          color: color.outline.withValues(
+                                            alpha: .7,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -408,7 +517,8 @@ class __DesktopState extends State<_Desktop> {
                                 SizedBox(
                                   width: 120,
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '${record.totalDays ?? 0} days',
@@ -417,7 +527,9 @@ class __DesktopState extends State<_Desktop> {
                                       Text(
                                         '${double.tryParse(record.workedHours ?? '0')?.toStringAsFixed(1) ?? '0.0'} hr',
                                         style: textTheme.bodySmall?.copyWith(
-                                          color: color.outline.withValues(alpha: .7),
+                                          color: color.outline.withValues(
+                                            alpha: .7,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -427,27 +539,69 @@ class __DesktopState extends State<_Desktop> {
                                 // Salary Payable
                                 SizedBox(
                                   width: 120,
-                                  child: Text(
-                                    double.tryParse(record.salaryPayable ?? '0')?.toStringAsFixed(2) ?? '0.00',
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        record.salaryPayable.toAmount(),
+                                      ),
+                                      Text(
+                                        record.currency ?? '',
+                                        style: textTheme.bodySmall?.copyWith(
+                                          color: color.outline.withValues(
+                                            alpha: .7,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
 
                                 // Overtime
                                 SizedBox(
-                                  width: 120,
-                                  child: Text(
-                                    double.tryParse(record.overtimePayable ?? '0')?.toStringAsFixed(2) ?? '0.00',
+                                  width: 100,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        record.overtimePayable.toAmount(),
+                                      ),
+                                      Text(
+                                        record.currency ?? '',
+                                        style: textTheme.bodySmall?.copyWith(
+                                          color: color.outline.withValues(
+                                            alpha: .7,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
 
                                 // Total Payable
                                 SizedBox(
                                   width: 120,
-                                  child: Text(
-                                    double.tryParse(record.totalPayable ?? '0')?.toStringAsFixed(2) ?? '0.00',
-                                    style: textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        record.totalPayable.toAmount(),
+                                        style: textTheme.titleSmall?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        record.currency ?? '',
+                                        style: textTheme.bodySmall?.copyWith(
+                                          color: color.outline.withValues(
+                                            alpha: .7,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
 
