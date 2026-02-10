@@ -80,11 +80,7 @@ class __DesktopState extends State<_Desktop> {
     });
   }
 
-  void _postSelectedPayroll(
-      BuildContext context,
-      String usrName,
-      List<PayrollModel> payroll,
-      ) {
+  void _postSelectedPayroll(BuildContext context, String usrName, List<PayrollModel> payroll) {
     // Filter only unpaid records for posting
     final selectedUnpaidRecords = payroll
         .where((record) =>
