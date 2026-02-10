@@ -386,7 +386,7 @@ class __DesktopState extends State<_Desktop> {
 
                         return InkWell(
                           hoverColor: color.surface,
-                          splashColor: color.primary,
+                          splashColor: color.surface,
                           highlightColor: color.surface,
                           onTap: () => _toggleRecordSelection(record.perId!, isPaid),
                           onLongPress: () => _toggleRecordSelection(record.perId!, isPaid),
