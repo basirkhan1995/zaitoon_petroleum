@@ -72,6 +72,7 @@ class ZAlertDialog extends StatelessWidget {
                 ],
               ),
             ),
+            if(content.isNotEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 5),
               child: Text(

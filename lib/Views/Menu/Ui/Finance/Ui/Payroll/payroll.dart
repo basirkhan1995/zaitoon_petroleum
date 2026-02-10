@@ -219,8 +219,7 @@ class __DesktopState extends State<_Desktop> {
                               context,
                               usrName!,
                               state.payroll,
-                            )
-                                : null,
+                            ) : null,
                             label: Text(tr.postSalary),
                           );
                         },
