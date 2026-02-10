@@ -279,6 +279,8 @@ class Utils{
   static String getTxnCode({required String txn, required BuildContext context}) {
     switch (txn) {
       case "CHDP":return AppLocalizations.of(context)!.deposit;
+      case "PLCL":return AppLocalizations.of(context)!.pandl;
+      case "SLRY":return AppLocalizations.of(context)!.postSalary;
       case "CHWL":return AppLocalizations.of(context)!.withdraw;
       case "XPNS":return AppLocalizations.of(context)!.expense;
       case "INCM":return AppLocalizations.of(context)!.income;

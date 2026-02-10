@@ -86,7 +86,9 @@ class _DesktopState extends State<_Desktop> {
   int? accNumber;
   String? salaryCalBase;
   String? paymentBase;
-  EmpDepartment? department; // Changed from String? to EmpDepartment?
+  EmpDepartment? department;
+  EmpSalaryCalcBase? salaryCalculationBase;
+  EmpPaymentMethod? employeePaymentMethod;
   DateTime? startDate;
 
   final formKey = GlobalKey<FormState>();
@@ -103,8 +105,19 @@ class _DesktopState extends State<_Desktop> {
     if (widget.model != null) {
       // Convert string to EmpDepartment enum
       if (widget.model?.empDepartment != null) {
-        department = EmpDepartment.fromDatabaseValue(widget.model!.empDepartment!);
+        department = EmpDepartment.fromDatabaseValue(widget.model!.empDepartment??"");
       }
+
+      // FIXED: Use the correct enum methods
+      if (widget.model?.empSalCalcBase != null) {
+        salaryCalculationBase = EmpSalaryCalcBase.fromDatabaseValue(widget.model!.empSalCalcBase??"");
+      }
+
+      // FIXED: Use the correct enum methods
+      if (widget.model?.empPmntMethod != null) {
+        employeePaymentMethod = EmpPaymentMethod.fromDatabaseValue(widget.model!.empPmntMethod??"");
+      }
+
       indAccountCtrl.text = widget.model?.empSalAccount.toString() ?? "";
       paymentBase = widget.model?.empPmntMethod;
       salaryCalBase = widget.model?.empSalCalcBase;
@@ -126,6 +139,12 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   void dispose() {
+    jobTitle.dispose();
+    indAccountCtrl.dispose();
+    individualCtrl.dispose();
+    empSalary.dispose();
+    empEmail.dispose();
+    empTaxInfo.dispose();
     super.dispose();
   }
 
@@ -299,7 +318,7 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 SizedBox(height: 10),
                 DepartmentDropdown(
-                  selectedDepartment: department, // Now passing EmpDepartment enum
+                  selectedDepartment: department,
                   onDepartmentSelected: (e) {
                     setState(() {
                       department = e;
@@ -312,6 +331,7 @@ class _DesktopState extends State<_Desktop> {
                   children: [
                     Expanded(
                       child: SalaryCalcBaseDropdown(
+                       selectedBase: salaryCalculationBase,
                         onSelected: (e) {
                           salaryCalBase = e.name;
                         },
@@ -319,6 +339,7 @@ class _DesktopState extends State<_Desktop> {
                     ),
                     Expanded(
                       child: PaymentMethodDropdown(
+                        selectedMethod: employeePaymentMethod,
                         onSelected: (e) {
                           paymentBase = e.name;
                         },

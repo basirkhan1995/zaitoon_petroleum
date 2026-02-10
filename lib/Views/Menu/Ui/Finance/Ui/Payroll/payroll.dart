@@ -327,7 +327,7 @@ class __DesktopState extends State<_Desktop> {
                   ),
                 ),
                 SizedBox(
-                  width: 90,
+                  width: 105,
                   child: Text(
                     tr.status,
                     style: textTheme.titleSmall?.copyWith(color: color.surface),
@@ -603,7 +603,7 @@ class __DesktopState extends State<_Desktop> {
 
                                 // Status
                                 SizedBox(
-                                  width: 90,
+                                  width: 105,
                                   child: StatusBadge(
                                     status: record.payment ?? 0,
                                     trueValue: tr.paidTitle,

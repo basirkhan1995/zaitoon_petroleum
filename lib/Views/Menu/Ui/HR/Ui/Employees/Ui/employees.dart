@@ -201,6 +201,9 @@ class _DesktopState extends State<_Desktop> {
                             ),
                           ],
                           onTap: () {
+                            print(emp.empPmntMethod);
+                            print(emp.empSalCalcBase);
+
                             showDialog(
                               context: context,
                               builder: (_) => AddEditEmployeeView(model: emp),
