@@ -4773,6 +4773,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Current'**
   String get current;
+
+  /// No description provided for @loadPayroll.
+  ///
+  /// In en, this message translates to:
+  /// **'Load Payroll'**
+  String get loadPayroll;
+
+  /// No description provided for @salaryAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary Amount'**
+  String get salaryAmount;
+
+  /// No description provided for @overtime.
+  ///
+  /// In en, this message translates to:
+  /// **'Overtime'**
+  String get overtime;
+
+  /// No description provided for @totalPayable.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Payable'**
+  String get totalPayable;
+
+  /// No description provided for @paidTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get paidTitle;
+
+  /// No description provided for @unpaidTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpaid'**
+  String get unpaidTitle;
+
+  /// No description provided for @workedHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Worked Hours'**
+  String get workedHours;
+
+  /// No description provided for @workedDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Worked Days'**
+  String get workedDays;
+
+  /// No description provided for @baseHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Base Hours'**
+  String get baseHours;
 }
 
 class _AppLocalizationsDelegate

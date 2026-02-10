@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/status_badge.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Payroll/bloc/payroll_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -97,13 +99,13 @@ class _Desktop extends StatelessWidget {
                           context.read<PayrollBloc>().add(LoadPayrollEvent(date));
                         },
                         initialDate: DateTime.now(),
-                        minYear: 2000,
-                        maxYear: 2100,
+                        minYear: 2020,
+                        maxYear: 2200,
                         disablePastDates: true,
                       );
                     });
                   },
-                  label: Text("LOAD PAYROLL"),
+                  label: Text(tr.loadPayroll),
                 )
               ],
             ),
@@ -120,19 +122,31 @@ class _Desktop extends StatelessWidget {
             child: Row(
               children: [
                 SizedBox(
-                    width: 100,
+                    width: 80,
                     child: Text(tr.date, style: headerTitle)),
                 Expanded(
                     child:
-                    Text(tr.employeeName, style: headerTitle)),
+                    Text(tr.employees, style: headerTitle)),
                 SizedBox(
-                    width: 100,
-                    child: Text(tr.checkIn, style: headerTitle)),
+                    width: 120,
+                    child: Text(tr.salaryBase, style: headerTitle)),
                 SizedBox(
-                    width: 100,
-                    child: Text(tr.checkOut, style: headerTitle)),
+                    width: 120,
+                    child: Text(tr.baseHours, style: headerTitle)),
                 SizedBox(
-                    width: 100,
+                    width: 120,
+                    child: Text(tr.workedDays, style: headerTitle)),
+                SizedBox(
+                    width: 120,
+                    child: Text(tr.salaryAmount, style: headerTitle)),
+                SizedBox(
+                    width: 120,
+                    child: Text(tr.overtime, style: headerTitle)),
+                SizedBox(
+                    width: 120,
+                    child: Text(tr.totalPayable, style: headerTitle)),
+                SizedBox(
+                    width: 90,
                     child: Text(tr.status, style: headerTitle)),
               ],
             ),
@@ -182,11 +196,64 @@ class _Desktop extends StatelessWidget {
                              itemCount: payroll.length,
                              itemBuilder: (context,index){
                              final py = payroll[index];
-                               return Row(
-                               children: [
-                                 Text(py.fullName??""),
-                               ],
-                             );
+                               return Container(
+                                 padding: EdgeInsets.symmetric(horizontal: 8,vertical: 8),
+                                 margin: EdgeInsets.symmetric(horizontal: 5),
+                                 decoration: BoxDecoration(
+                                   color: index.isEven ? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent
+                                 ),
+                                 child: Row(
+                                 children: [
+                                   SizedBox(
+                                       width: 80,
+                                       child: Text(py.monthYear.toString())),
+                                   Expanded(child: Column(
+                                     mainAxisAlignment: MainAxisAlignment.start,
+                                     crossAxisAlignment: CrossAxisAlignment.start,
+                                     children: [
+                                       Text(py.fullName??""),
+                                       Text(py.salaryAccount.toString())
+                                     ],
+                                   )),
+                                   SizedBox(
+                                       width: 120,
+                                       child: Text("${py.salary.toAmount()} ${py.currency}",style: titleStyle)),
+                                   SizedBox(
+                                       width: 120,
+                                       child: Column(
+                                         mainAxisAlignment: MainAxisAlignment.start,
+                                         crossAxisAlignment: CrossAxisAlignment.start,
+                                         children: [
+                                           Text("${py.hoursInMonth.toAmount(decimal: 2)} hr",style: titleStyle),
+                                           Text(py.calculationBase.toString(),style: subtitle?.copyWith(fontSize: 12))
+                                         ],
+                                       )),
+                                   SizedBox(
+                                       width: 120,
+                                       child: Column(
+                                         mainAxisAlignment: MainAxisAlignment.start,
+                                         crossAxisAlignment: CrossAxisAlignment.start,
+                                         children: [
+                                           Text("${py.totalDays.toAmount(decimal: 0)} days",style: titleStyle),
+                                           Text("${py.workedHours.toAmount(decimal: 2)} hr",style: subtitle?.copyWith(fontSize: 12))
+                                         ],
+                                       )),
+
+                                   SizedBox(
+                                       width: 120,
+                                       child: Text("${py.salaryPayable.toAmount()} ${py.currency}")),
+                                   SizedBox(
+                                       width: 120,
+                                       child: Text("${py.overtimePayable.toAmount()} ${py.currency}")),
+                                   SizedBox(
+                                       width: 120,
+                                       child: Text("${py.totalPayable.toAmount()} ${py.currency}",style: titleStyle)),
+                                   SizedBox(
+                                       width: 90,
+                                       child: StatusBadge(status: py.payment!,trueValue: tr.paidTitle,falseValue: tr.unpaidTitle)),
+                                 ],
+                                                              ),
+                               );
                          }),
                        ),
                       ],

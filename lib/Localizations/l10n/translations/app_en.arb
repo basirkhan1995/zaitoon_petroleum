@@ -798,5 +798,14 @@
   "inventoryHint": "Check available stock before proceeding.",
   "trackShipmentsHint": "Track logistics in one place.",
   "dismiss": "Dismiss",
-  "current": "Current"
+  "current": "Current",
+  "loadPayroll": "Load Payroll",
+  "salaryAmount": "Salary Amount",
+  "overtime": "Overtime",
+  "totalPayable": "Total Payable",
+  "paidTitle": "Paid",
+  "unpaidTitle": "Unpaid",
+  "workedHours": "Worked Hours",
+  "workedDays": "Worked Days",
+  "baseHours": "Base Hours"
 }

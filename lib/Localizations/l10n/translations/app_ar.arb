@@ -798,5 +798,14 @@
   "inventoryHint": "موجودي وګورئ مخکې له دې چې دوام ورکړئ.",
   "trackShipmentsHint": "لوژستیک په یوه ځای کې تعقیب کړئ",
   "dismiss": "رد کول",
-  "current": "فعلی"
+  "current": "فعلی",
+  "loadPayroll": "لیست معاشات",
+  "salaryAmount": "مبلغ حقوق",
+  "overtime": "اضافه کاری",
+  "totalPayable": "مبلغ قابل پرداخت",
+  "paidTitle": "پرداخت شده",
+  "unpaidTitle": "پرداخت نشده",
+  "workedHours": "ساعات کارکرد",
+  "workedDays": "تعداد روز",
+  "baseHours": "پایه ساعات"
 }

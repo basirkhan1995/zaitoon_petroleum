@@ -2412,4 +2412,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get current => 'Current';
+
+  @override
+  String get loadPayroll => 'Load Payroll';
+
+  @override
+  String get salaryAmount => 'Salary Amount';
+
+  @override
+  String get overtime => 'Overtime';
+
+  @override
+  String get totalPayable => 'Total Payable';
+
+  @override
+  String get paidTitle => 'Paid';
+
+  @override
+  String get unpaidTitle => 'Unpaid';
+
+  @override
+  String get workedHours => 'Worked Hours';
+
+  @override
+  String get workedDays => 'Worked Days';
+
+  @override
+  String get baseHours => 'Base Hours';
 }

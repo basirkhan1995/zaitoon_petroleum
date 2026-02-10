@@ -2404,4 +2404,31 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get current => 'فعلی';
+
+  @override
+  String get loadPayroll => 'لیست معاشات';
+
+  @override
+  String get salaryAmount => 'مبلغ حقوق';
+
+  @override
+  String get overtime => 'اضافه کاری';
+
+  @override
+  String get totalPayable => 'مبلغ قابل پرداخت';
+
+  @override
+  String get paidTitle => 'پرداخت شده';
+
+  @override
+  String get unpaidTitle => 'پرداخت نشده';
+
+  @override
+  String get workedHours => 'ساعات کارکرد';
+
+  @override
+  String get workedDays => 'تعداد روز';
+
+  @override
+  String get baseHours => 'پایه ساعات';
 }
