@@ -297,6 +297,8 @@ class Utils{
       case "CRFX":return AppLocalizations.of(context)!.fxTransaction;
       case "TRPT":return AppLocalizations.of(context)!.transportEntry;
       case "GLAT":return AppLocalizations.of(context)!.assetEntry;
+      case "SALE":return AppLocalizations.of(context)!.saleTitle;
+      case "PRCH":return AppLocalizations.of(context)!.purchaseTitle;
       default: return txn;
     }
   }

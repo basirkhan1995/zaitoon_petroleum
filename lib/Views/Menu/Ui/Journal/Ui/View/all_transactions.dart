@@ -270,7 +270,7 @@ class _DesktopState extends State<_Desktop> {
                             contentPadding: EdgeInsets.zero,
                             visualDensity: VisualDensity(vertical: -4, horizontal: -4),
                             title: Text(tr.todayTransaction,style: Theme.of(context).textTheme.titleMedium),
-                            subtitle: Text(DateTime.now().toFormattedDate()),
+                            subtitle: Text(DateTime.now().compact),
                           )),
                       Expanded(
                         flex: 5,

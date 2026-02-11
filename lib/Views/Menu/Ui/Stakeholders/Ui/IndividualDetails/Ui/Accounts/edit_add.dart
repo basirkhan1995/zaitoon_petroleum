@@ -91,7 +91,7 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
     final theme = Theme.of(context).colorScheme;
     final isEdit = widget.model != null;
     return ZFormDialog(
@@ -99,7 +99,7 @@ class _DesktopState extends State<_Desktop> {
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       width: 500,
 
-      title: isEdit ? locale.update : locale.newKeyword,
+      title: isEdit ? tr.update : tr.newKeyword,
 
       actionLabel:
           (context.watch<AccountsBloc>().state is AccountLoadingState)
@@ -111,7 +111,7 @@ class _DesktopState extends State<_Desktop> {
                 color: theme.surface,
               ),
             )
-          : Text(isEdit ? locale.update : locale.create),
+          : Text(isEdit ? tr.update : tr.create),
 
       onAction: onSubmit,
 
@@ -129,17 +129,18 @@ class _DesktopState extends State<_Desktop> {
               spacing: 8,
               children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   spacing: 5,
                   children: [
                     Expanded(
                       child: ZTextFieldEntitled(
                         controller: accName,
                         isRequired: true,
-                        title: locale.accountName,
+                        title: tr.accountName,
                         onSubmit: (_) => onSubmit(),
                         validator: (value) {
                           if (value.isEmpty) {
-                            return locale.required(locale.accountName);
+                            return tr.required(tr.accountName);
                           }
                           return null;
                         },
@@ -150,7 +151,7 @@ class _DesktopState extends State<_Desktop> {
                       child: CurrencyDropdown(
                         height: 40,
                         disableAction: widget.model != null,
-                        title: locale.currencyTitle,
+                        title: tr.currencyTitle,
                         isMulti: false,
                         initiallySelectedSingle: CurrenciesModel(ccyCode: defaultCcy),
                         onMultiChanged: (_) {},
@@ -174,7 +175,7 @@ class _DesktopState extends State<_Desktop> {
                     ),
                     SmartThousandsDecimalFormatter(),
                   ],
-                  title: locale.accountLimit,
+                  title: tr.accountLimit,
                   controller: accountLimit,
                 ),
 
@@ -191,7 +192,7 @@ class _DesktopState extends State<_Desktop> {
                       },
                     ),
                     SizedBox(width: 5),
-                    Text(locale.status),
+                    Text(status? tr.active : tr.blocked),
                   ],
                 ),
               ],

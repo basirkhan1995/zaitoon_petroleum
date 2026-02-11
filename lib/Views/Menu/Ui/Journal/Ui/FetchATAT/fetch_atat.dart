@@ -51,7 +51,6 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
-
   String getTitle(BuildContext context, String code) {
     switch (code) {
       case "SLRY": return AppLocalizations.of(context)!.postSalary;
@@ -63,50 +62,62 @@ class _DesktopState extends State<_Desktop> {
   }
 
   FetchAtatModel? loadedAtat;
+
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
     TextStyle? titleStyle = textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold);
+    TextStyle? headerStyle = textTheme.titleSmall?.copyWith(color: color.surface);
     TextStyle? bodyStyle = textTheme.bodyMedium?.copyWith();
     final isDeleteLoading = context.watch<TransactionsBloc>().state is TxnDeleteLoadingState;
     final isAuthorizeLoading = context.watch<TransactionsBloc>().state is TxnAuthorizeLoadingState;
     final auth = context.watch<AuthBloc>().state;
+
     if (auth is! AuthenticatedState) {
       return const SizedBox();
     }
     final login = auth.loginData;
 
-    return ZFormDialog(
-      width: MediaQuery.of(context).size.width * .7,
-      isActionTrue: false,
-      onAction: null,
-      icon: Icons.ssid_chart,
-      title: getTitle(context, loadedAtat?.trnType??""),
-      child: BlocConsumer<FetchAtatBloc, FetchAtatState>(
-  listener: (context, state) {
-    if (state is FetchATATLoadedState) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return FetchAtatView();
-        },
-      );
-    }
-  },
-  builder: (context, state) {
-    return BlocBuilder<FetchAtatBloc, FetchAtatState>(
+    return BlocConsumer<FetchAtatBloc, FetchAtatState>(
+      listener: (context, state) {
+        if (state is FetchATATLoadedState) {
+          loadedAtat = state.atat;
+        }
+      },
+      builder: (context, state) {
+        if (state is FetchATATLoadingState) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-        builder: (context, state) {
-          if (state is FetchATATLoadedState) {
-            loadedAtat = state.atat;
-          }
-          // Check if any buttons should be shown
-          final bool showAuthorizeButton = loadedAtat?.trnStatus == 0 && login.usrName != loadedAtat?.maker;
-          final bool showDeleteButton = loadedAtat?.trnStatus == 0 && loadedAtat?.maker == login.usrName;
-          final bool showAnyButton = showAuthorizeButton || showDeleteButton;
-          return Column(
+        if (state is FetchATATLoadedState) {
+          loadedAtat = state.atat;
+        }
+
+        if (state is FetchATATErrorState) {
+          return Center(
+            child: Text(
+              state.message,
+              style: const TextStyle(color: Colors.red),
+            ),
+          );
+        }
+
+        // Check if any buttons should be shown
+        final bool showAuthorizeButton = loadedAtat?.trnStatus == 0 &&
+            login.usrName != loadedAtat?.maker;
+        final bool showDeleteButton = loadedAtat?.trnStatus == 0 &&
+            loadedAtat?.maker == login.usrName;
+        final bool showAnyButton = showAuthorizeButton || showDeleteButton;
+
+        return ZFormDialog(
+          width: MediaQuery.of(context).size.width * .7,
+          isActionTrue: false,
+          onAction: null,
+          icon: Icons.ssid_chart,
+          title: getTitle(context, loadedAtat?.trnType ?? ""),
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
@@ -117,15 +128,15 @@ class _DesktopState extends State<_Desktop> {
                     Text(
                       tr.details,
                       style: textTheme.titleMedium?.copyWith(
-                        color: color.primary,
-                        fontSize: 18
+                          color: color.primary,
+                          fontSize: 18
                       ),
                     ),
-                    Icon(Icons.print)
+                    const Icon(Icons.print)
                   ],
                 ),
               ),
-              Divider(color: color.outline.withValues(alpha: .3),thickness: 1, endIndent: 8, indent: 8),
+              Divider(color: color.outline.withValues(alpha: .3), thickness: 1, endIndent: 8, indent: 8),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -141,8 +152,8 @@ class _DesktopState extends State<_Desktop> {
                           Text(tr.status, style: titleStyle),
                           Text(tr.branch, style: titleStyle),
                           Text(tr.maker, style: titleStyle),
-                          if(loadedAtat?.checker !=null && loadedAtat!.checker!.isNotEmpty)
-                          Text(tr.checker, style: titleStyle),
+                          if(loadedAtat?.checker != null && loadedAtat!.checker!.isNotEmpty)
+                            Text(tr.checker, style: titleStyle),
                           Text(tr.narration, style: titleStyle),
                           Text(tr.date, style: titleStyle),
                         ],
@@ -154,20 +165,29 @@ class _DesktopState extends State<_Desktop> {
                       spacing: 5,
                       children: [
                         Text(loadedAtat?.trnReference ?? "", style: bodyStyle),
-                        Text(loadedAtat?.trnStatus == 1? tr.authorizedTransaction : tr.pendingTransactions, style: bodyStyle),
+                        Text(
+                            loadedAtat?.trnStatus == 1
+                                ? tr.authorizedTransaction
+                                : tr.pendingTransactions,
+                            style: bodyStyle
+                        ),
                         Text(loadedAtat?.trdBranch.toString() ?? "", style: bodyStyle),
                         Text(loadedAtat?.maker ?? "", style: bodyStyle),
-                        if(loadedAtat?.checker !=null && loadedAtat!.checker!.isNotEmpty)
-                        Text(loadedAtat?.checker ?? "", style: bodyStyle),
+                        if(loadedAtat?.checker != null && loadedAtat!.checker!.isNotEmpty)
+                          Text(loadedAtat?.checker ?? "", style: bodyStyle),
                         Text(loadedAtat?.trdNarration ?? "", style: bodyStyle),
-                        Text(loadedAtat!.trnEntryDate!.toFullDateTime,style: bodyStyle,
+                        Text(
+                          loadedAtat!.trnEntryDate!.toFullDateTime,
+                          style: bodyStyle,
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Row(
@@ -182,7 +202,7 @@ class _DesktopState extends State<_Desktop> {
                     ),
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 5),
                         child: Text(
                           tr.creditTitle,
                           style: textTheme.titleMedium?.copyWith(
@@ -194,17 +214,21 @@ class _DesktopState extends State<_Desktop> {
                   ],
                 ),
               ),
-              Divider(color: color.outline.withValues(alpha: .3),thickness: 1, endIndent: 8, indent: 8),
+
 
               Expanded(
                 child: Row(
                   children: [
+                    // Debit Column
                     Expanded(
                       child: Column(
                         children: [
                           Container(
-                            margin: EdgeInsets.symmetric(horizontal: 8,vertical: 2),
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary
+                            ),
                             child: Row(
                               spacing: 5,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -213,87 +237,86 @@ class _DesktopState extends State<_Desktop> {
                                 Expanded(
                                   child: Text(
                                     tr.accountName,
-                                    style: titleStyle,
+                                    style: headerStyle,
                                   ),
                                 ),
                                 SizedBox(
                                   width: 100,
                                   child: Text(
                                     tr.accountNumber,
-                                    style: titleStyle,
+                                    style: headerStyle,
                                   ),
                                 ),
                                 SizedBox(
                                   width: 120,
                                   child: Text(
                                     tr.amount,
-                                    style: titleStyle,
+                                    style: headerStyle,
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           Expanded(
-                            child: BlocConsumer<FetchAtatBloc, FetchAtatState>(
-                              listener: (context, state) {},
-                              builder: (context, state) {
-                                if (state is FetchATATLoadedState) {
-                                  return ListView.builder(
-                                    itemCount: state.atat.debit?.length,
-                                    itemBuilder: (context, index) {
-                                      final dr = state.atat.debit?[index];
-                                      return Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 8,vertical: 2),
-                                        padding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
-                                        decoration: BoxDecoration(
-                                            color: index.isOdd? color.primary.withValues(alpha: .05) : Colors.transparent,
-                                            borderRadius: BorderRadius.circular(2),
-                                            border: Border.all(color: color.outline.withValues(alpha: .3))
+                            child: state is FetchATATLoadedState
+                                ? ListView.builder(
+                              itemCount: state.atat.debit?.length ?? 0,
+                              itemBuilder: (context, index) {
+                                final dr = state.atat.debit?[index];
+                                return Container(
+                                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                                  decoration: BoxDecoration(
+                                      color: index.isOdd
+                                          ? color.primary.withValues(alpha: .05)
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(2),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    spacing: 5,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          dr?.accName ?? "",
+                                          style: bodyStyle,
                                         ),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          spacing: 5,
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                dr?.accName ?? "",
-                                                style: bodyStyle,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 100,
-                                              child: Text(
-                                                dr?.trdAccount.toString() ?? "",
-                                                style: bodyStyle,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 120,
-                                              child: Text(
-                                                "${dr?.trdAmount?.toAmount()} ${dr?.trdCcy}",
-                                                style: bodyStyle,
-                                              ),
-                                            ),
-                                          ],
+                                      ),
+                                      SizedBox(
+                                        width: 100,
+                                        child: Text(
+                                          dr?.trdAccount.toString() ?? "",
+                                          style: bodyStyle,
                                         ),
-                                      );
-                                    },
-                                  );
-                                }
-                                return const SizedBox();
+                                      ),
+                                      SizedBox(
+                                        width: 120,
+                                        child: Text(
+                                          "${dr?.trdAmount?.toAmount()} ${dr?.trdCcy}",
+                                          style: bodyStyle,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
                               },
-                            ),
+                            )
+                                : const SizedBox(),
                           ),
                         ],
                       ),
                     ),
+                    // Credit Column
                     Expanded(
                       child: Column(
                         children: [
                           Container(
-                            margin: EdgeInsets.symmetric(horizontal: 8,vertical: 2),
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary
+                            ),
                             child: Row(
                               spacing: 5,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -302,77 +325,73 @@ class _DesktopState extends State<_Desktop> {
                                 Expanded(
                                   child: Text(
                                     tr.accountName,
-                                    style: titleStyle,
+                                    style: headerStyle,
                                   ),
                                 ),
                                 SizedBox(
                                   width: 100,
                                   child: Text(
                                     tr.accountNumber,
-                                    style: titleStyle,
+                                    style: headerStyle,
                                   ),
                                 ),
                                 SizedBox(
                                   width: 120,
                                   child: Text(
                                     tr.amount,
-                                    style: titleStyle,
+                                    style: headerStyle,
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           Expanded(
-                            child: BlocConsumer<FetchAtatBloc, FetchAtatState>(
-                              listener: (context, state) {},
-                              builder: (context, state) {
-                                if (state is FetchATATLoadedState) {
-                                  return ListView.builder(
-                                    itemCount: state.atat.credit?.length,
-                                    itemBuilder: (context, index) {
-                                      final cr = state.atat.credit?[index];
-                                      return Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 8,vertical: 2),
-                                        padding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
-                                        decoration: BoxDecoration(
-                                            color: index.isOdd? color.primary.withValues(alpha: .05) : Colors.transparent,
-                                            borderRadius: BorderRadius.circular(2),
-                                            border: Border.all(color: color.outline.withValues(alpha: .3))
+                            child: state is FetchATATLoadedState
+                                ? ListView.builder(
+                              itemCount: state.atat.credit?.length ?? 0,
+                              itemBuilder: (context, index) {
+                                final cr = state.atat.credit?[index];
+                                return Container(
+                                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                                  decoration: BoxDecoration(
+                                      color: index.isOdd
+                                          ? color.primary.withValues(alpha: .05)
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(2),
+
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    spacing: 5,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          cr?.accName ?? "",
+                                          style: bodyStyle,
                                         ),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          spacing: 5,
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                cr?.accName ?? "",
-                                                style: bodyStyle,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 100,
-                                              child: Text(
-                                                cr?.trdAccount.toString() ?? "",
-                                                style: bodyStyle,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 120,
-                                              child: Text(
-                                                "${cr?.trdAmount?.toAmount()} ${cr?.trdCcy}",
-                                                style: bodyStyle,
-                                              ),
-                                            ),
-                                          ],
+                                      ),
+                                      SizedBox(
+                                        width: 100,
+                                        child: Text(
+                                          cr?.trdAccount.toString() ?? "",
+                                          style: bodyStyle,
                                         ),
-                                      );
-                                    },
-                                  );
-                                }
-                                return const SizedBox();
+                                      ),
+                                      SizedBox(
+                                        width: 120,
+                                        child: Text(
+                                          "${cr?.trdAmount?.toAmount()} ${cr?.trdCcy}",
+                                          style: bodyStyle,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
                               },
-                            ),
+                            )
+                                : const SizedBox(),
                           ),
                         ],
                       ),
@@ -380,6 +399,7 @@ class _DesktopState extends State<_Desktop> {
                   ],
                 ),
               ),
+
               if (showAnyButton)
                 Column(
                   children: [
@@ -411,7 +431,9 @@ class _DesktopState extends State<_Desktop> {
                           if (showAuthorizeButton)
                             ZOutlineButton(
                               width: 130,
-                              onPressed: () {
+                              onPressed: isAuthorizeLoading
+                                  ? null
+                                  : () {
                                 context.read<TransactionsBloc>().add(
                                   AuthorizeTxnEvent(
                                     reference: loadedAtat?.trnReference ?? "",
@@ -424,30 +446,21 @@ class _DesktopState extends State<_Desktop> {
                                   : Icons.check_box_outlined,
                               isActive: true,
                               label: isAuthorizeLoading
-                                  ? SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 3,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.surface,
-                                      ),
-                                    )
+                                  ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                ),
+                              )
                                   : Text(tr.authorize),
                             ),
-
                           if (showDeleteButton)
                             ZOutlineButton(
                               width: 130,
-                              icon: isDeleteLoading
+                              onPressed: isDeleteLoading
                                   ? null
-                                  : Icons.delete_outline_rounded,
-                              isActive: true,
-                              backgroundHover: Theme.of(
-                                context,
-                              ).colorScheme.error,
-                              onPressed: () {
+                                  : () {
                                 context.read<TransactionsBloc>().add(
                                   DeletePendingTxnEvent(
                                     reference: loadedAtat?.trnReference ?? "",
@@ -455,33 +468,34 @@ class _DesktopState extends State<_Desktop> {
                                   ),
                                 );
                               },
+                              icon: isDeleteLoading
+                                  ? null
+                                  : Icons.delete_outline_rounded,
+                              isActive: true,
+                              backgroundHover: Theme.of(
+                                context,
+                              ).colorScheme.error,
                               label: isDeleteLoading
-                                  ? SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 3,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.primary,
-                                      ),
-                                    )
+                                  ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                ),
+                              )
                                   : Text(tr.delete),
                             ),
                         ],
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                   ],
                 ),
-              if (!showAnyButton) SizedBox(height: 10),
+              if (!showAnyButton) const SizedBox(height: 10),
             ],
-          );
-        },
-      );
-  },
-),
+          ),
+        );
+      },
     );
   }
-
 }
