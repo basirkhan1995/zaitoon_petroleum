@@ -28,28 +28,10 @@ class AddEditReminderView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-      mobile: const _Mobile(),
+      mobile: _Desktop(r,accNumber, dueParameter, isEnable),
       desktop: _Desktop(r,accNumber, dueParameter, isEnable),
-      tablet: const _Tablet(),
+      tablet: _Desktop(r,accNumber, dueParameter, isEnable),
     );
-  }
-}
-
-class _Mobile extends StatelessWidget {
-  const _Mobile();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
 
@@ -133,145 +115,147 @@ class _DesktopState extends State<_Desktop> {
             child: CircularProgressIndicator())
             : Text(widget.reminder == null ? tr.create : tr.update),
         onAction: onSubmit,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          spacing: 8,
-          children: [
-            /// DATE PICKER
-            Row(
-              spacing: 8,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: ZDatePicker(
-                    disablePastDate: true,
-                    label: tr.dueDate,
-                    value: dueDate,
-                    onDateChanged: (v) {
-                      setState(() {
-                        dueDate = v;
-                      });
-                    },
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              /// DATE PICKER
+              Row(
+                spacing: 8,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: ZDatePicker(
+                      disablePastDate: true,
+                      label: tr.dueDate,
+                      value: dueDate,
+                      onDateChanged: (v) {
+                        setState(() {
+                          dueDate = v;
+                        });
+                      },
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: DueTypeDropdown(
-                    isEnable: widget.isEnable ?? false,
-                    selectedDueType: dueType ?? widget.dueParameter ??"",
-                    onDueTypeSelected: (selectedType) {
-                      setState(() {
-                        dueType = selectedType.toDatabaseValue();
-                      });
-                    },
+                  Expanded(
+                    child: DueTypeDropdown(
+                      isEnable: widget.isEnable ?? false,
+                      selectedDueType: dueType ?? widget.dueParameter ??"",
+                      onDueTypeSelected: (selectedType) {
+                        setState(() {
+                          dueType = selectedType.toDatabaseValue();
+                        });
+                      },
+                    ),
                   ),
+                ],
+              ),
+          
+              /// Account
+              if(widget.isEnable == false)...[
+                GenericTextfield<StakeholdersAccountsModel, AccountsBloc,
+                    AccountsState>(
+                  showAllOnFocus: true,
+                  controller: account,
+                  title: tr.accounts,
+                  hintText: tr.accNameOrNumber,
+                  isRequired: true,
+                  bloc: context.read<AccountsBloc>(),
+                  fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
+                  searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return tr.required(tr.accounts);
+                    }
+                    if (accNumber == null) {
+                      return tr.required(tr.accountTitle);
+                    }
+                    return null;
+                  },
+                  itemBuilder: (context, account) => Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 5,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "${account.accnumber} | ${account.accName}",
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  itemToString: (acc) => "${acc.accnumber} | ${acc.accName}",
+                  stateToLoading: (state) => state is AccountLoadingState,
+                  loadingBuilder: (context) => const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                    ),
+                  ),
+                  stateToItems: (state) {
+                    if (state is StkAccountLoadedState) {
+                      return state.accounts;
+                    }
+                    return [];
+                  },
+                  onSelected: (value) {
+                    setState(() {
+                      accNumber = value.accnumber;
+                    });
+                  },
+                  noResultsText: tr.noDataFound,
+                  showClearButton: true,
                 ),
               ],
-            ),
-
-            /// Account
-            if(widget.isEnable == false)...[
-              GenericTextfield<StakeholdersAccountsModel, AccountsBloc,
-                  AccountsState>(
-                showAllOnFocus: true,
-                controller: account,
-                title: tr.accounts,
-                hintText: tr.accNameOrNumber,
+          
+              /// Amount
+              ZTextFieldEntitled(
+                controller: amount,
+                title: tr.amount,
+                keyboardInputType:
+                const TextInputType.numberWithOptions(decimal: true),
                 isRequired: true,
-                bloc: context.read<AccountsBloc>(),
-                fetchAllFunction: (bloc) => bloc.add(LoadStkAccountsEvent()),
-                searchFunction: (bloc, query) => bloc.add(LoadStkAccountsEvent(search: query)),
+                inputFormat: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
+                  SmartThousandsDecimalFormatter(),
+                ],
                 validator: (value) {
-                  if (value.isEmpty) {
-                    return tr.required(tr.accounts);
+                  if (value == null || value.isEmpty) {
+                    return tr.required(tr.amount);
                   }
-                  if (accNumber == null) {
-                    return tr.required(tr.accountTitle);
+          
+                  // Remove formatting (e.g. commas)
+                  final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
+                  final amountValue = double.tryParse(clean);
+          
+                  if (amountValue == null || amountValue <= 0.0) {
+                    return tr.amountGreaterZero;
                   }
+          
                   return null;
                 },
-                itemBuilder: (context, account) => Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 5,
-                    vertical: 5,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "${account.accnumber} | ${account.accName}",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                itemToString: (acc) => "${acc.accnumber} | ${acc.accName}",
-                stateToLoading: (state) => state is AccountLoadingState,
-                loadingBuilder: (context) => const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 3,
-                  ),
-                ),
-                stateToItems: (state) {
-                  if (state is StkAccountLoadedState) {
-                    return state.accounts;
-                  }
-                  return [];
-                },
-                onSelected: (value) {
-                  setState(() {
-                    accNumber = value.accnumber;
-                  });
-                },
-                noResultsText: tr.noDataFound,
-                showClearButton: true,
               ),
+          
+              /// Details
+              ZTextFieldEntitled(
+                controller: details,
+                title: tr.details,
+                keyboardInputType: TextInputType.multiline,
+                maxLength: 100,
+              ),
+          
+              const SizedBox(height: 10),
             ],
-
-            /// Amount
-            ZTextFieldEntitled(
-              controller: amount,
-              title: tr.amount,
-              keyboardInputType:
-              const TextInputType.numberWithOptions(decimal: true),
-              isRequired: true,
-              inputFormat: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
-                SmartThousandsDecimalFormatter(),
-              ],
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return tr.required(tr.amount);
-                }
-
-                // Remove formatting (e.g. commas)
-                final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
-                final amountValue = double.tryParse(clean);
-
-                if (amountValue == null || amountValue <= 0.0) {
-                  return tr.amountGreaterZero;
-                }
-
-                return null;
-              },
-            ),
-
-            /// Details
-            ZTextFieldEntitled(
-              controller: details,
-              title: tr.details,
-              keyboardInputType: TextInputType.multiline,
-              maxLength: 100,
-            ),
-
-            const SizedBox(height: 10),
-          ],
+          ),
         ),
       ),
     );

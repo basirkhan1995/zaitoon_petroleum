@@ -7,6 +7,7 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import '../../../../Features/Other/extensions.dart';
 import '../../../../Features/Widgets/outline_button.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../Auth/bloc/auth_bloc.dart';
 import 'add_edit_reminders.dart';
 import 'bloc/reminder_bloc.dart';
 import 'model/reminder_model.dart';
@@ -16,28 +17,10 @@ class ReminderView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(mobile: _Mobile(), desktop: _Desktop(), tablet: _Tablet(),);
+    return ResponsiveLayout(mobile: _Desktop(), desktop: _Desktop(), tablet: _Desktop(),);
   }
 }
 
-class _Mobile extends StatelessWidget {
-  const _Mobile();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 
 
 class _Desktop extends StatefulWidget {
@@ -61,11 +44,16 @@ class _DesktopState extends State<_Desktop> {
     if (d == null) return DateTime(1900);
     return DateTime(d.year, d.month, d.day);
   }
-
+  String? usrName;
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
-
+    final state = context.watch<AuthBloc>().state;
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
+    usrName = login.usrName ?? "";
     return Scaffold(
       body: ZCover(
         radius: 5,
@@ -86,8 +74,6 @@ class _DesktopState extends State<_Desktop> {
 
                   /// Refresh
                   ZOutlineButton(
-                    width: 110,
-                    height: 35,
                     icon: Icons.refresh,
                     label: Text(locale.refresh),
                     onPressed: () {
@@ -100,8 +86,6 @@ class _DesktopState extends State<_Desktop> {
 
                   /// New Reminder
                   ZOutlineButton(
-                    width: 110,
-                    height: 35,
                     icon: Icons.add,
                     isActive: true,
                     label: Text(locale.newKeyword),
@@ -234,6 +218,7 @@ class _DesktopState extends State<_Desktop> {
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
               /// ICON
@@ -281,27 +266,33 @@ class _DesktopState extends State<_Desktop> {
                     const SizedBox(height: 6),
 
                     /// INFO ROW
-                    Row(
+                    Wrap(
                       children: [
+                        Row(
+                          children: [
+                            Icon(Icons.account_circle_outlined,size: 14),
+                            const SizedBox(width: 4),
+                            Text(r.rmdAccount.toString(),
+                                style: Theme.of(context).textTheme.labelSmall),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(Icons.date_range,size: 14),
+                            const SizedBox(width: 4),
+                            Text(r.rmdAlertDate?.toDateString ?? "",
+                                style: Theme.of(context).textTheme.labelSmall),
+                          ],
+                        ),
 
-                        Icon(Icons.account_circle_outlined,size: 14),
-                        const SizedBox(width: 4),
-                        Text(r.rmdAccount.toString(),
-                            style: Theme.of(context).textTheme.labelSmall),
-
-                        const SizedBox(width: 10),
-
-                        Icon(Icons.date_range,size: 14),
-                        const SizedBox(width: 4),
-                        Text(r.rmdAlertDate?.toDateString ?? "",
-                            style: Theme.of(context).textTheme.labelSmall),
-
-                        const SizedBox(width: 10),
-
-                        Icon(Icons.access_time,size: 14),
-                        const SizedBox(width: 4),
-                        Text(r.rmdAlertDate?.toDueStatus(AppLocalizations.of(context)!) ?? "",
-                            style: Theme.of(context).textTheme.labelSmall),
+                        Row(
+                          children: [
+                            Icon(Icons.access_time,size: 14),
+                            const SizedBox(width: 4),
+                            Text(r.rmdAlertDate?.toDueStatus(AppLocalizations.of(context)!) ?? "",
+                                style: Theme.of(context).textTheme.labelSmall),
+                          ],
+                        )
                       ],
                     ),
                   ],
@@ -326,7 +317,8 @@ class _DesktopState extends State<_Desktop> {
                     onChanged: (_) {
                       context.read<ReminderBloc>().add(
                         UpdateReminderEvent(
-                          r.copyWith(rmdStatus: isCompleted ? 0 : 1),
+
+                          r.copyWith(rmdStatus: isCompleted ? 0 : 1,usrName: usrName),
                         ),
                       );
                     },

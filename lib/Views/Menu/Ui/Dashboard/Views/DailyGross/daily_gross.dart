@@ -117,16 +117,16 @@ class _DailyGrossContentState extends State<_DailyGrossContent> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Expanded(
                             child: Text(
                               AppLocalizations.of(context)!.profitAndLoss,
-                              style: Theme.of(context).textTheme.titleMedium,
+                              style: Theme.of(context).textTheme.titleSmall,
                             ),
                           ),
-                          SizedBox(
-                            width: 160,
+                          Expanded(
+
                             child: DateRangeDropdown(
                               title: '',
                               height: 35,

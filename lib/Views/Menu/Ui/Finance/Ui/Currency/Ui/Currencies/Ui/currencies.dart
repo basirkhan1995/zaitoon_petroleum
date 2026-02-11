@@ -24,12 +24,254 @@ class CurrenciesView extends StatelessWidget {
   }
 }
 
-class _Mobile extends StatelessWidget {
+class _Mobile extends StatefulWidget {
   const _Mobile();
 
   @override
+  State<_Mobile> createState() => _MobileState();
+}
+
+class _MobileState extends State<_Mobile> {
+  final searchController = TextEditingController();
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      context.read<CurrenciesBloc>().add(LoadCurrenciesEvent());
+    });
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final tr = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
+    final color = Theme.of(context).colorScheme;
+    TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.surface);
+
+    final shortcuts = {
+      const SingleActivator(LogicalKeyboardKey.f1): onAdd,
+      const SingleActivator(LogicalKeyboardKey.f5): onRefresh,
+    };
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: GlobalShortcuts(
+        shortcuts: shortcuts,
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Text(tr.allCurrencies,style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.outline),),
+              ],
+            ),
+            ZSearchField(
+              controller: searchController,
+              title: '',
+              hint: tr.search,
+              end: searchController.text.isNotEmpty
+                  ? InkWell(
+                splashColor: Colors.transparent,
+                hoverColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onTap: () {
+                  setState(() {
+                    searchController.clear();
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                  ),
+                  child: Icon(Icons.clear, size: 15),
+                ),
+              ) : SizedBox(),
+              onChanged: (e) {
+                setState(() {});
+              },
+              icon: FontAwesomeIcons.magnifyingGlass,
+            ),
+            Row(
+              spacing: 8,
+              children: [
+                Expanded(
+                  child: ZOutlineButton(
+                      toolTip: 'F5',
+                      icon: Icons.refresh,
+                      label: Text(AppLocalizations.of(context)!.refresh),
+                      onPressed: onRefresh
+                  ),
+                ),
+                Expanded(
+                  child: ZOutlineButton(
+                      toolTip: 'F1',
+                      isActive: true,
+                      label: Text(AppLocalizations.of(context)!.newKeyword),
+                      onPressed: onAdd
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+              margin: const EdgeInsets.symmetric(horizontal: 5.0),
+              decoration: BoxDecoration(
+                  color: color.primary.withValues(alpha: .9)
+              ),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 50,
+                    child: Text(
+                      tr.flag,
+                      style: titleStyle,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 60,
+                    child: Text(
+                      tr.currencyCode,
+                      style: titleStyle,
+                    ),
+                  ),
+
+                  Spacer(),
+                  SizedBox(
+                    width: 70,
+                    child: Text(
+                      tr.symbol,
+                      style: titleStyle,
+                    ),
+                  ),
+
+                  SizedBox(width: 10),
+                  SizedBox(
+                    width: 60,
+                    child: Text(
+                      tr.status,
+                      style: titleStyle,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Expanded(
+              child: BlocBuilder<CurrenciesBloc, CurrenciesState>(
+                builder: (context, state) {
+                  if(state is CurrenciesLoadingState){
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } if(state is CurrenciesErrorState){
+                    return NoDataWidget(
+                      message: state.message,
+                      onRefresh: (){
+                        context.read<CurrenciesBloc>().add(LoadCurrenciesEvent());
+                      },
+                    );
+                  } if(state is CurrenciesLoadedState){
+
+                    final query = searchController.text.toLowerCase().trim();
+                    final filteredCcy = state.ccy.where((item) {
+                      final ccyCode = item.ccyCode?.toLowerCase() ?? '';
+                      final ccyName = item.ccyName?.toLowerCase() ?? '';
+                      return ccyCode.contains(query) || ccyName.contains(query);
+                    }).toList();
+
+                    return ListView.builder(
+                        itemCount: filteredCcy.length,
+                        itemBuilder: (context,index){
+                          final ccy = filteredCcy[index];
+                          return InkWell(
+                            hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
+                            highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
+                            onTap: (){
+                              showDialog(context: context, builder: (context){
+                                return AddEditCurrencyView(currency: ccy);
+                              });
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 5,
+                                horizontal: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: index.isOdd
+                                    ? Theme.of(
+                                  context,
+                                ).colorScheme.primary.withValues(alpha: .05)
+                                    : Colors.transparent,
+                              ),
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 30,
+                                    child: Flag.fromString(
+                                      ccy.ccyCountryCode??"",
+                                      height: 20,
+                                      width: 30,
+                                      borderRadius: 2,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                  SizedBox(width: 20),
+                                  SizedBox(
+                                    width: 60,
+                                    child: Text(
+                                      ccy.ccyCode ?? "",
+                                      style: Theme.of(context).textTheme.titleMedium,
+                                    ),
+                                  ),
+
+                                  Spacer(),
+                                  ZCover(
+                                    margin: EdgeInsets.symmetric(horizontal: 5),
+                                    child: Text(
+                                      ccy.ccySymbol ?? "",
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context).textTheme.titleMedium,
+                                    ),
+                                  ),
+                                  SizedBox(width: 30),
+                                  SizedBox(
+                                    width: 70,
+                                    child: Checkbox(
+                                        visualDensity: VisualDensity(vertical: -4),
+                                        value: ccy.ccyStatus == 1,
+                                        onChanged: (e){
+                                          showDialog(context: context, builder: (context){
+                                            return ZAlertDialog(
+                                              title: tr.areYouSure,
+                                              content: tr.currencyActivationMessage,
+                                              onYes: () {
+                                                context.read<CurrenciesBloc>().add(UpdateCcyStatusEvent(ccyCode: ccy.ccyCode!,status: e ?? false));
+                                              },
+                                            );
+                                          });
+                                        }),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        });
+                  }
+                  return const SizedBox();
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  void onRefresh(){
+    context.read<CurrenciesBloc>().add(LoadCurrenciesEvent());
+  }
+
+  void onAdd(){
+    showDialog(context: context, builder: (context){
+      return AddEditCurrencyView();
+    });
   }
 }
 

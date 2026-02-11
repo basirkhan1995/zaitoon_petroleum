@@ -1460,7 +1460,6 @@ class Repositories {
   /// Orders ...................................................................
   Future<List<OrdersModel>> getOrders({int? orderId, CancelToken? cancelToken}) async {
     final queryParams = {'ordID': orderId};
-    // Fetch data from API
     final response = await api.get(
       endpoint: "/inventory/ordersView.php",
       queryParams: queryParams,

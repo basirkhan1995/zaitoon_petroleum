@@ -114,8 +114,6 @@ class _DesktopState extends State<_Desktop> {
                       return AddRateView();
                     });
                   },
-                  width: 100,
-                  height: 35,
                   label: Text(locale.newKeyword),
                 ),
                 if(widget.settingButton)
@@ -129,8 +127,6 @@ class _DesktopState extends State<_Desktop> {
                     context.read<FinanceTabBloc>().add(FinanceOnChangedEvent(FinanceTabName.exchangeRate));
                     context.read<CurrencyTabBloc>().add(CcyOnChangedEvent(CurrencyTabName.rates));
                   },
-                  width: 110,
-                  height: 35,
                   label: Text(locale.settings),
                 ),
               ],
@@ -227,7 +223,6 @@ class _DesktopState extends State<_Desktop> {
                           child: Row(
                             spacing: 8,
                             children: [
-
                               Expanded(
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -281,7 +276,7 @@ class _DesktopState extends State<_Desktop> {
                                 ),
                               ),
                               SizedBox(
-                                width: 100,
+                                width: 50,
                                 child: Text(
                                   ccy.crExchange.toExchangeRate(),
                                   textAlign: currentLocale == "en"? TextAlign.right : TextAlign.left,

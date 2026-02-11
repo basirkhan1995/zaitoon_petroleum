@@ -153,9 +153,12 @@ class ZTabContainer<T> extends StatelessWidget {
               ],
 
               /// ---------------- Tabs Row
-              Row(
-                mainAxisAlignment: tabAlignment,
-                children: _buildZTabs(context),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: tabAlignment,
+                  children: _buildZTabs(context),
+                ),
               ),
             ],
           ),

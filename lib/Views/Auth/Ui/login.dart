@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/toast.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/button.dart';
 import 'package:zaitoon_petroleum/Views/Auth/ForgotPassword/forgot_password.dart';
@@ -30,7 +31,6 @@ class _Mobile extends StatefulWidget {
   @override
   State<_Mobile> createState() => _MobileState();
 }
-
 class _MobileState extends State<_Mobile> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -56,12 +56,7 @@ class _MobileState extends State<_Mobile> {
             Utils.gotoReplacement(context, HomeView());
           }
           if (state is AuthErrorState) {
-            Utils.showOverlayMessage(
-              context,
-              title: tr.accessDenied,
-              message: state.message,
-              isError: true,
-            );
+            ToastManager.show(context: context,title: tr.accessDenied, message: state.message, type: ToastType.error);
           }
           if (state is ForceChangePasswordState) {
             Utils.goto(
@@ -253,7 +248,6 @@ class _Tablet extends StatefulWidget {
   @override
   State<_Tablet> createState() => _TabletState();
 }
-
 class _TabletState extends State<_Tablet> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -279,12 +273,7 @@ class _TabletState extends State<_Tablet> {
             Utils.gotoReplacement(context, HomeView());
           }
           if (state is AuthErrorState) {
-            Utils.showOverlayMessage(
-              context,
-              title: tr.accessDenied,
-              message: state.message,
-              isError: true,
-            );
+            ToastManager.show(context: context,title: tr.accessDenied, message: state.message, type: ToastType.error);
           }
           if (state is ForceChangePasswordState) {
             Utils.goto(
@@ -481,7 +470,6 @@ class _Desktop extends StatefulWidget {
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -499,7 +487,7 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: BlocListener<AuthBloc, AuthState>(
@@ -508,12 +496,7 @@ class _DesktopState extends State<_Desktop> {
             Utils.gotoReplacement(context, HomeView());
           }
           if (state is AuthErrorState) {
-            Utils.showOverlayMessage(
-              context,
-              title: locale.accessDenied,
-              message: state.message,
-              isError: true,
-            );
+            ToastManager.show(context: context,title: tr.accessDenied, message: state.message, type: ToastType.error);
           }
           if (state is ForceChangePasswordState) {
             Utils.goto(

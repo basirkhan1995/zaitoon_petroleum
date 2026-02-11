@@ -5,6 +5,7 @@ import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/bloc/menu_bloc.dart';
 import '../../../../Features/Widgets/outline_button.dart';
+import '../../../Auth/bloc/auth_bloc.dart';
 import '../Finance/bloc/financial_tab_bloc.dart';
 import 'add_edit_reminders.dart';
 import 'bloc/reminder_bloc.dart';
@@ -28,10 +29,16 @@ class _DashboardAlertReminderState extends State<DashboardAlertReminder> {
       context.read<ReminderBloc>().add(const LoadAlertReminders(alert: 1));
     });
   }
-
+  String? usrName;
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
+    final state = context.watch<AuthBloc>().state;
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
+    usrName = login.usrName ?? "";
     return BlocBuilder<ReminderBloc, ReminderState>(
       builder: (context, state) {
         return Stack(
@@ -111,7 +118,7 @@ class _DashboardAlertReminderState extends State<DashboardAlertReminder> {
 
                   /// LIST
                   ...state.reminders.map((e) {
-                    return _ReminderTile(model: e);
+                    return _ReminderTile(model: e,usrName: usrName??"");
                   }),
                 ],
               ),
@@ -133,8 +140,9 @@ class _DashboardAlertReminderState extends State<DashboardAlertReminder> {
 }
 class _ReminderTile extends StatelessWidget {
   final ReminderModel model;
+  final String usrName;
 
-  const _ReminderTile({required this.model});
+  const _ReminderTile({required this.model,required this.usrName});
 
   String _formatDate(DateTime? date) {
     if (date == null) return "";
@@ -263,6 +271,7 @@ class _ReminderTile extends StatelessWidget {
                 onTap: () {
                   final updated = model.copyWith(
                     rmdStatus: isPaid ? 0 : 1,
+                    usrName: usrName
                   );
                   context.read<ReminderBloc>().add(UpdateReminderEvent(updated));
                 },
