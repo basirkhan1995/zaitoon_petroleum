@@ -9,7 +9,6 @@ part 'currencies_state.dart';
 class CurrenciesBloc extends Bloc<CurrenciesEvent, CurrenciesState> {
   final Repositories _repo;
   CurrenciesBloc(this._repo) : super(CurrenciesInitial()) {
-
     on<LoadCurrenciesEvent>((event, emit) async{
       emit(CurrenciesLoadingState());
      try{
@@ -19,7 +18,6 @@ class CurrenciesBloc extends Bloc<CurrenciesEvent, CurrenciesState> {
        emit(CurrenciesErrorState(e.toString()));
      }
     });
-
     on<UpdateCcyStatusEvent>((event, emit) async{
       emit(CurrenciesLoadingState());
       try{
@@ -27,6 +25,22 @@ class CurrenciesBloc extends Bloc<CurrenciesEvent, CurrenciesState> {
         if(ccy['msg'] == "success"){
           add(LoadCurrenciesEvent());
         }
+      }catch(e){
+        emit(CurrenciesErrorState(e.toString()));
+      }
+    });
+    on<AddCcyEvent>((event, emit) async{
+      emit(CurrenciesLoadingState());
+      try{
+
+      }catch(e){
+        emit(CurrenciesErrorState(e.toString()));
+      }
+    });
+    on<UpdateCcyEvent>((event, emit) async{
+      emit(CurrenciesLoadingState());
+      try{
+
       }catch(e){
         emit(CurrenciesErrorState(e.toString()));
       }

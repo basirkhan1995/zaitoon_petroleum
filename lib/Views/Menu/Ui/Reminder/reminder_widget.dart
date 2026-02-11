@@ -68,20 +68,8 @@ class _DashboardAlertReminderState extends State<DashboardAlertReminder> {
                       /// HEADER
                       Row(
                         children: [
-                          // /// Refresh
-                          // ZOutlineButton(
-                          //   width: 100,
-                          //   height: 35,
-                          //   icon: Icons.refresh,
-                          //   label: Text(tr.refresh),
-                          //   onPressed: () {
-                          //     context.read<ReminderBloc>().add(LoadAlertReminders(alert: 1));
-                          //   },
-                          // ),
-                          // const SizedBox(width: 5),
                           /// New Reminder
                           ZOutlineButton(
-                            height: 43,
                             icon: Icons.settings,
                             label: Text(tr.settings),
                             onPressed: () {
@@ -94,9 +82,8 @@ class _DashboardAlertReminderState extends State<DashboardAlertReminder> {
 
                           /// New Reminder
                           ZOutlineButton(
-                            width: 80,
-                            height: 35,
                             isActive: true,
+                            icon: Icons.add,
                             label: Text(tr.newKeyword),
                             onPressed: () {
                               showDialog(
@@ -189,7 +176,20 @@ class _ReminderTile extends StatelessWidget {
                       .titleSmall
                       ?.copyWith(fontWeight: FontWeight.w600),
                 ),
+                Row(
+                  children: [
+                    Icon(Icons.account_balance_wallet_outlined,
+                        size: 14,
+                        color: Theme.of(context).hintColor),
 
+                    const SizedBox(width: 2),
+
+                    Text(
+                      "${model.rmdAccount}",
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 3),
 
                 /// Details
@@ -201,43 +201,41 @@ class _ReminderTile extends StatelessWidget {
                 const SizedBox(height: 6),
 
                 /// Account + Date Row
-                Row(
-                  children: [
-                    Icon(Icons.account_balance_wallet_outlined,
-                        size: 14,
-                        color: Theme.of(context).hintColor),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_today_outlined,
+                              size: 14,
+                              color: Theme.of(context).hintColor),
 
-                    const SizedBox(width: 4),
+                          const SizedBox(width: 2),
 
-                    Text(
-                      "${model.rmdAccount}",
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
+                          Text(
+                            _formatDate(model.rmdAlertDate),
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 8),
+                      Row(
+                        children: [
+                          Icon(Icons.access_time_rounded,
+                              size: 14,
+                              color: Theme.of(context).hintColor),
 
-                    const SizedBox(width: 15),
-
-                    Icon(Icons.calendar_today_outlined,
-                        size: 14,
-                        color: Theme.of(context).hintColor),
-
-                    const SizedBox(width: 4),
-
-                    Text(
-                      _formatDate(model.rmdAlertDate),
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-
-                    const SizedBox(width: 15),
-                    Icon(Icons.access_time_rounded,
-                        size: 14,
-                        color: Theme.of(context).hintColor),
-
-                    const SizedBox(width: 4),
-                    Text(
-                        model.rmdAlertDate?.toDueStatus() ?? "",
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
+                          const SizedBox(width: 2),
+                          Text(
+                            model.rmdAlertDate?.toDueStatus(AppLocalizations.of(context)!) ?? "",
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -263,7 +261,6 @@ class _ReminderTile extends StatelessWidget {
               InkWell(
                 borderRadius: BorderRadius.circular(20),
                 onTap: () {
-
                   final updated = model.copyWith(
                     rmdStatus: isPaid ? 0 : 1,
                   );

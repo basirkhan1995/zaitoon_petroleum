@@ -4839,6 +4839,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Post Salary'**
   String get postSalary;
+
+  /// No description provided for @dayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'day'**
+  String get dayTitle;
+
+  /// No description provided for @daysTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get daysTitle;
+
+  /// No description provided for @dueIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Due in'**
+  String get dueIn;
 }
 
 class _AppLocalizationsDelegate

@@ -2445,4 +2445,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get postSalary => 'Post Salary';
+
+  @override
+  String get dayTitle => 'day';
+
+  @override
+  String get daysTitle => 'days';
+
+  @override
+  String get dueIn => 'Due in';
 }

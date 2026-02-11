@@ -2439,4 +2439,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get postSalary => 'معاش ولېږئ';
+
+  @override
+  String get dayTitle => 'ورح';
+
+  @override
+  String get daysTitle => 'ورح';
+
+  @override
+  String get dueIn => 'سررسید';
 }

@@ -809,5 +809,8 @@
   "workedDays": "تعداد روز",
   "baseHours": "پایه ساعات",
   "disselect": "گسسته کردن",
-  "postSalary": "پرداخت حقوق"
+  "postSalary": "پرداخت حقوق",
+  "dayTitle": "روز",
+  "daysTitle": "روز",
+  "dueIn": "سررسید"
 }

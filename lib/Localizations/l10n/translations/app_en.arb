@@ -809,5 +809,8 @@
   "workedDays": "Worked Days",
   "baseHours": "Base Hours",
   "disselect": "Disselect All",
-  "postSalary": "Post Salary"
+  "postSalary": "Post Salary",
+  "dayTitle": "day",
+  "daysTitle": "days",
+  "dueIn": "Due in"
 }

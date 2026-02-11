@@ -71,54 +71,35 @@ class _DesktopState extends State<_Desktop> {
     );
 
     return Scaffold(
-      backgroundColor: color.surface,
+      appBar: AppBar(
+        title: Text(tr.transactionDetails),
+        titleSpacing: 0,
+      ),
+
       body: Column(
         children: [
-          // Header with search
-          Container(
-            padding: const EdgeInsets.all(16),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                BackButton(),
-                const SizedBox(width: 5),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        tr.transactionByRef,
-                        style: textTheme.titleLarge?.copyWith(
-                        ),
-                      ),
-                    ],
+                  child: ZTextFieldEntitled(
+                    controller: ref,
+                    icon: Icons.search_rounded,
+                    title: '',
+                    isRequired: true,
+                    hint: tr.referenceNumber,
+                    onSubmit: (_) => onSubmit(),
                   ),
                 ),
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Flexible(
-                        flex: 2,
-                        child: ZTextFieldEntitled(
-                          controller: ref,
-                          icon: Icons.qr_code_2_outlined,
-                          title: '',
-                          isRequired: true,
-                          hint: tr.referenceNumber,
-                          onSubmit: (_) => onSubmit(),
-                        ),
-                      ),
-                      const SizedBox(width: 5),
-                      ZOutlineButton(
-                        width: 120,
-                        isActive: true,
-                        onPressed: onSubmit,
-                        icon: Icons.call_to_action_outlined,
-                        label: Text(tr.submit),
-                      ),
-                    ],
-                  ),
+                const SizedBox(width: 5),
+                ZOutlineButton(
+                  width: 120,
+                  onPressed: onSubmit,
+                  icon: Icons.refresh,
+                  label: Text(tr.submit),
                 ),
               ],
             ),
@@ -219,15 +200,13 @@ class _DesktopState extends State<_Desktop> {
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
-                          vertical: 12,
+                          vertical: 5,
                         ),
                         margin: const EdgeInsets.symmetric(
                           horizontal: 10,
-
                         ),
                         decoration: BoxDecoration(
                           color: color.primary.withValues(alpha: .9),
-
                         ),
                         child: Row(
                           children: [
@@ -290,10 +269,11 @@ class _DesktopState extends State<_Desktop> {
                             return Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 20,
-                                vertical: 14,
+                                vertical: 8,
                               ),
-                              color: index.isEven
-                                  ? color.primary.withValues(alpha: .03)
+                              margin: EdgeInsets.symmetric(horizontal: 10),
+                              color: index.isOdd
+                                  ? color.primary.withValues(alpha: .05)
                                   : Colors.transparent,
                               child: Row(
                                 children: [

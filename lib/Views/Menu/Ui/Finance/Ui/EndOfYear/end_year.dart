@@ -90,7 +90,7 @@ class _DesktopState extends State<_Desktop> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("P&L", style: titleStyle?.copyWith(fontSize: 25)),
+        title: Text(tr.profitAndLoss, style: titleStyle?.copyWith(fontSize: 25,color: Theme.of(context).colorScheme.onSurface)),
         actionsPadding: const EdgeInsets.all(8),
         actions: [
           ZOutlineButton(

@@ -300,7 +300,7 @@ class _DesktopState extends State<_Desktop> {
 
                         Icon(Icons.access_time,size: 14),
                         const SizedBox(width: 4),
-                        Text(r.rmdAlertDate?.toDueStatus() ?? "",
+                        Text(r.rmdAlertDate?.toDueStatus(AppLocalizations.of(context)!) ?? "",
                             style: Theme.of(context).textTheme.labelSmall),
                       ],
                     ),

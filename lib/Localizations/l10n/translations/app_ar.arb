@@ -809,5 +809,8 @@
   "workedDays": "تعداد روز",
   "baseHours": "پایه ساعات",
   "disselect": "بې برخې کول",
-  "postSalary": "معاش ولېږئ"
+  "postSalary": "معاش ولېږئ",
+  "dayTitle": "ورح",
+  "daysTitle": "ورح",
+  "dueIn": "سررسید"
 }

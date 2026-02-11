@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 
 // Font Scaler based on screen size
 extension FontScaler on BuildContext {
@@ -165,7 +166,7 @@ extension TimeAgoString on String {
 
 extension ReminderDueExtension on DateTime {
 
-  String toDueStatus() {
+  String toDueStatus(AppLocalizations tr) {
     final now = DateTime.now();
 
     final today = DateTime(now.year, now.month, now.day);
@@ -178,7 +179,7 @@ extension ReminderDueExtension on DateTime {
     if (diff == 1) return "Due Tomorrow";
 
     if (diff > 1) {
-      return "Due in $diff ${diff == 1 ? 'day' : 'days'}";
+      return "${tr.dueType} $diff ${diff == 1 ? tr.dayTitle : tr.daysTitle}";
     }
 
     final overdue = diff.abs();

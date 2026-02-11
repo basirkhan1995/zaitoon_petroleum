@@ -2437,4 +2437,13 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get postSalary => 'پرداخت حقوق';
+
+  @override
+  String get dayTitle => 'روز';
+
+  @override
+  String get daysTitle => 'روز';
+
+  @override
+  String get dueIn => 'سررسید';
 }
