@@ -53,15 +53,19 @@ class _Desktop extends StatefulWidget {
 
 class __DesktopState extends State<_Desktop> {
   final Set<int> _selectedIds = {};
+  final Map<int, bool> _localPaymentStatus = {}; // Track local changes
   bool _selectAll = false;
 
-  void _toggleRecordSelection(int perId, bool isPaid) {
+  void _toggleRecordSelection(int perId, bool currentPaidStatus) {
     setState(() {
       if (_selectedIds.contains(perId)) {
         _selectedIds.remove(perId);
+        // When unselected, revert to original payment status
+        _localPaymentStatus.remove(perId);
       } else {
-        // Allow selecting both paid and unpaid records
         _selectedIds.add(perId);
+        // When selected, toggle payment status
+        _localPaymentStatus[perId] = !currentPaidStatus;
       }
     });
   }
@@ -70,38 +74,49 @@ class __DesktopState extends State<_Desktop> {
     setState(() {
       if (_selectAll) {
         _selectedIds.clear();
+        _localPaymentStatus.clear();
       } else {
         // Select ALL records (both paid and unpaid)
-        _selectedIds.addAll(
-          payroll.map((record) => record.perId!).toList(),
-        );
+        for (final record in payroll) {
+          _selectedIds.add(record.perId!);
+          // For select all, we'll mark unpaid as selected for payment
+          // and keep paid as is (they'll remain checked)
+          if ((record.payment ?? 0) == 0) {
+            _localPaymentStatus[record.perId!] = true; // Mark unpaid for payment
+          } else {
+            _localPaymentStatus[record.perId!] = true; // Keep paid checked
+          }
+        }
       }
       _selectAll = !_selectAll;
     });
   }
 
   void _postSelectedPayroll(BuildContext context, String usrName, List<PayrollModel> payroll) {
-    // Get all records for the current month
-    final allRecordsForMonth = payroll;
+    // Update payment status based on local changes
+    final updatedRecords = payroll.map((record) {
+      final perId = record.perId!;
 
-    // Update payment status for selected unpaid records
-    final updatedRecords = allRecordsForMonth.map((record) {
-      // If record is selected AND unpaid, mark as paid
-      if (_selectedIds.contains(record.perId) && (record.payment ?? 0) == 0) {
-        return record.copyWith(payment: 1);
+      if (_selectedIds.contains(perId)) {
+        // This record was selected for change
+        final newPaymentStatus = _localPaymentStatus[perId] ?? true;
+        return record.copyWith(payment: newPaymentStatus ? 1 : 0);
+      } else {
+        // Not selected - keep original payment status
+        return record;
       }
-      // Keep existing payment status for all other records
-      return record;
     }).toList();
 
-    final newlyPaidCount = updatedRecords
+    final selectedCount = _selectedIds.length;
+    final toBePaidCount = updatedRecords
         .where((r) => _selectedIds.contains(r.perId) && (r.payment ?? 0) == 1)
         .length;
+    final toBeUnpaidCount = selectedCount - toBePaidCount;
 
-    if (newlyPaidCount == 0) {
+    if (selectedCount == 0) {
       ToastManager.show(
         context: context,
-        message: "Please select unpaid records to post",
+        message: "Please select records to update",
         type: ToastType.error,
       );
       return;
@@ -119,8 +134,17 @@ class __DesktopState extends State<_Desktop> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Post salary for $newlyPaidCount employees?"),
-                Text("All posted payroll will be reposted!",style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error))
+                if (toBePaidCount > 0)
+                  Text("Mark $toBePaidCount employees as PAID"),
+                if (toBeUnpaidCount > 0)
+                  Text("Mark $toBeUnpaidCount employees as UNPAID",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                      )),
+                Text("All payroll records will be updated!",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.error,
+                    )),
               ],
             ),
           ),
@@ -130,6 +154,7 @@ class __DesktopState extends State<_Desktop> {
             );
             setState(() {
               _selectedIds.clear();
+              _localPaymentStatus.clear();
               _selectAll = false;
             });
           },
@@ -141,8 +166,23 @@ class __DesktopState extends State<_Desktop> {
   void _clearSelection() {
     setState(() {
       _selectedIds.clear();
+      _localPaymentStatus.clear();
       _selectAll = false;
     });
+  }
+
+  // Helper to get visual checkbox state
+  bool _getCheckboxValue(PayrollModel record) {
+    final perId = record.perId!;
+    final isPaid = (record.payment ?? 0) == 1;
+
+    if (_selectedIds.contains(perId)) {
+      // If selected, use local payment status
+      return _localPaymentStatus[perId] ?? isPaid;
+    } else {
+      // If not selected, use original payment status
+      return isPaid;
+    }
   }
 
   @override
@@ -407,9 +447,8 @@ class __DesktopState extends State<_Desktop> {
                         final record = payroll[index];
                         final isPaid = (record.payment ?? 0) == 1;
                         final isSelected = _selectedIds.contains(record.perId);
-
-                        // Check if paid record should be checked by default
-                        final shouldBeChecked = isPaid || isSelected;
+                        final checkboxValue = _getCheckboxValue(record);
+                        final visualIsPaid = isSelected ? _localPaymentStatus[record.perId!] ?? isPaid : isPaid;
 
                         return InkWell(
                           hoverColor: color.surface,
@@ -444,7 +483,7 @@ class __DesktopState extends State<_Desktop> {
                             ),
                             child: Row(
                               children: [
-                                // Checkbox
+                                // Checkbox - FIXED: Shows immediate visual feedback
                                 SizedBox(
                                   width: 40,
                                   child: Center(
@@ -453,17 +492,15 @@ class __DesktopState extends State<_Desktop> {
                                         horizontal: -4,
                                         vertical: -4,
                                       ),
-                                      value: shouldBeChecked,
-                                      // Paid records can be unchecked, but show as checked by default
-                                      onChanged: (value) => _toggleRecordSelection(
-                                        record.perId!,
-                                        isPaid,
-                                      ),
-                                      // Optional: Style paid records differently
-                                      fillColor: isPaid
-                                          ? WidgetStateProperty.all(
-                                          color.primary.withValues(alpha: .2))
+                                      value: checkboxValue, // Use the computed value
+                                      onChanged: (value) {
+                                        _toggleRecordSelection(record.perId!, isPaid);
+                                      },
+                                      // Visual styling
+                                      fillColor: visualIsPaid
+                                          ? WidgetStateProperty.all(Colors.green.withValues(alpha: .7))
                                           : null,
+                                      checkColor: visualIsPaid ? Colors.white : null,
                                     ),
                                   ),
                                 ),
@@ -631,11 +668,11 @@ class __DesktopState extends State<_Desktop> {
                                   ),
                                 ),
 
-                                // Status
+                                // Status - Show visual status based on local changes
                                 SizedBox(
                                   width: 105,
                                   child: StatusBadge(
-                                    status: record.payment ?? 0,
+                                    status: visualIsPaid ? 1 : 0,
                                     trueValue: tr.paidTitle,
                                     falseValue: tr.unpaidTitle,
                                   ),
