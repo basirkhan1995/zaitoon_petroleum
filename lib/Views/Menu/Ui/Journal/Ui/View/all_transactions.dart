@@ -12,8 +12,6 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/GetOrder/bloc/order_t
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/GetOrder/txn_oder.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TransactionRef/bloc/txn_ref_report_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TransactionRef/txn_ref_auto.dart';
 import '../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
 import '../FetchATAT/bloc/fetch_atat_bloc.dart';
@@ -115,31 +113,6 @@ class _DesktopState extends State<_Desktop> {
     TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.surface);
     return MultiBlocListener(
       listeners: [
-        BlocListener<OrderTxnBloc, OrderTxnState>(
-          listener: (context, state) {
-            if (state is OrderTxnLoadedState) {
-              setState(() {
-                _isLoadingDialog = false;
-                _loadingRef = null;
-              });
-              showDialog(
-                context: context,
-                builder: (context) => TransactionReferenceDialog(reference: state.data.trnReference ?? ""),
-              );
-            } else if (state is OrderTxnErrorState) {
-              setState(() {
-                _isLoadingDialog = false;
-                _loadingRef = null;
-              });
-              Utils.showOverlayMessage(
-                context,
-                title: tr.noData,
-                message: state.message,
-                isError: true,
-              );
-            }
-          },
-        ),
         BlocListener<OrderTxnBloc, OrderTxnState>(
           listener: (context, state) {
             if (state is OrderTxnLoadedState) {
@@ -478,7 +451,6 @@ class _DesktopState extends State<_Desktop> {
                                                     child: InkWell(
                                                       onTap: () {
                                                         _copyToClipboard(reference, context);
-                                                        context.read<TxnRefReportBloc>().add(LoadTxnReportByReferenceEvent(reference));
                                                       },
                                                       borderRadius: BorderRadius.circular(4),
                                                       hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
@@ -501,7 +473,7 @@ class _DesktopState extends State<_Desktop> {
                                                             duration: const Duration(milliseconds: 300),
                                                             child: Icon(
                                                               isCopied ? Icons.check : Icons.content_copy,
-                                                              key: ValueKey<bool>(isCopied), // Important for AnimatedSwitcher
+                                                              key: ValueKey<bool>(isCopied),
                                                               size: 15,
                                                               color: isCopied
                                                                   ? Theme.of(context).colorScheme.primary

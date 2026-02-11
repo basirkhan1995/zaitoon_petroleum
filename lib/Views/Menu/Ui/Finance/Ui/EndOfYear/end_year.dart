@@ -68,7 +68,7 @@ class _DesktopState extends State<_Desktop> {
   @override
   void initState() {
     myLocale = context.read<LocalizationBloc>().state.languageCode;
-    WidgetsBinding.instance.addPostFrameCallback((_){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<EoyBloc>().add(LoadPLEvent());
     });
     super.initState();
@@ -84,8 +84,8 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final titleStyle = theme.textTheme.titleMedium?.copyWith(
-      color: theme.colorScheme.onSurface,
+    final titleStyle = theme.textTheme.titleSmall?.copyWith(
+      color: theme.colorScheme.surface,
     );
 
     return Scaffold(
@@ -147,24 +147,31 @@ class _DesktopState extends State<_Desktop> {
                   _HeaderRow(titleStyle: titleStyle, tr: tr),
                   Expanded(
                     child: BlocConsumer<EoyBloc, EoyState>(
-                      listener: (context,state){
-                        if(state is EoySuccessState){
+                      listener: (context, state) {
+                        if (state is EoySuccessState) {
                           Navigator.of(context).pop();
-                        }if(state is EoyErrorState){
-                          Utils.showOverlayMessage(context, message: state.error, isError: true);
+                        }
+                        if (state is EoyErrorState) {
+                          Utils.showOverlayMessage(
+                            context,
+                            message: state.error,
+                            isError: true,
+                          );
                         }
                       },
                       builder: (context, state) {
-
                         if (state is EoyErrorState) {
                           return NoDataWidget(
-                              onRefresh: (){
-                                context.read<EoyBloc>().add(LoadPLEvent());
-                              },
-                              message: state.error);
+                            onRefresh: () {
+                              context.read<EoyBloc>().add(LoadPLEvent());
+                            },
+                            message: state.error,
+                          );
                         }
                         if (state is EoyLoadingState) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         }
                         if (state is EoyLoadedState) {
                           final summary = state.eoy.summary;
@@ -176,20 +183,46 @@ class _DesktopState extends State<_Desktop> {
                                   itemBuilder: (context, index) {
                                     final eoy = state.eoy[index];
                                     return Container(
+                                      margin: const EdgeInsets.symmetric(horizontal: 8),
                                       decoration: BoxDecoration(
                                         color: index.isEven
-                                            ? theme.colorScheme.primary.withValues(alpha: .05)
+                                            ? theme.colorScheme.primary
+                                                  .withValues(alpha: .05)
                                             : Colors.transparent,
                                       ),
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 8,
+                                      ),
                                       child: Row(
                                         children: [
-                                          SizedBox(width: 120, child: Text(eoy.accountNumber.toString())),
-                                          Expanded(child: Text(eoy.accountName ?? "")),
-                                          SizedBox(width: 100, child: Text(eoy.trdBranch.toString())),
-                                          SizedBox(width: 100, child: Text(eoy.category ?? "")),
-                                          _AmountCell(amount: eoy.debitAmount, currency: eoy.currency),
-                                          _AmountCell(amount: eoy.creditAmount, currency: eoy.currency),
+                                          SizedBox(
+                                            width: 120,
+                                            child: Text(
+                                              eoy.accountNumber.toString(),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Text(eoy.accountName ?? ""),
+                                          ),
+                                          SizedBox(
+                                            width: 100,
+                                            child: Text(
+                                              eoy.trdBranch.toString(),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 100,
+                                            child: Text(eoy.category ?? ""),
+                                          ),
+                                          _AmountCell(
+                                            amount: eoy.debitAmount,
+                                            currency: eoy.currency,
+                                          ),
+                                          _AmountCell(
+                                            amount: eoy.creditAmount,
+                                            currency: eoy.currency,
+                                          ),
                                         ],
                                       ),
                                     );
@@ -229,100 +262,160 @@ class _DesktopState extends State<_Desktop> {
       context: context,
       builder: (context) {
         return BlocBuilder<EoyBloc, EoyState>(
-  builder: (context, state) {
-    final isLoading = state is EoyLoadingState;
-    return ZFormDialog(
-          padding: const EdgeInsets.all(12),
-          title: tr.eoyClosing,
-      icon: Icons.line_axis,
-      actionLabel: isLoading
-          ? const SizedBox(
-        height: 18,
-        width: 18,
-        child: CircularProgressIndicator(strokeWidth: 2),
-      )
-          : Text(tr.proceed),
-      /// ✅ DISABLE ACTION WHEN LOADING
-      onAction: isLoading
-          ? null
-          : () {
-        if (usrName != null && branchCode != null) {
-          context.read<EoyBloc>().add(
-            ProcessPLEvent(
-              usrName!,
-              remark.text,
-              branchCode!,
-            ),
-          );
-        }
-      },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-
-              Container(
-                padding: const EdgeInsets.all(8),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.yellow.shade50,
-                  borderRadius: BorderRadius.circular(3),
-                  border: Border.all(color: color.outline.withValues(alpha: .3)),
-                ),
+          builder: (context, state) {
+            final isLoading = state is EoyLoadingState;
+            return ZFormDialog(
+              padding: EdgeInsets.all(12),
+              title: tr.eoyClosing,
+              icon: Icons.line_axis,
+              actionLabel: isLoading
+                  ? const SizedBox(
+                height: 18,
+                width: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+                  : Text(tr.proceed),
+              onAction: isLoading
+                  ? null
+                  : () {
+                if (usrName != null && branchCode != null) {
+                  context.read<EoyBloc>().add(
+                    ProcessPLEvent(usrName!, remark.text, branchCode!),
+                  );
+                }
+              },
+              child: SingleChildScrollView(
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      spacing: 5,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Icon(Icons.warning_amber_rounded,color: color.error),
-                        Text(tr.attentionTitle,style: txt.titleSmall?.copyWith(color: color.error),)
-                      ],
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.yellow.shade50,
+                        borderRadius: BorderRadius.circular(3),
+                        border: Border.all(
+                          color: color.outline.withValues(alpha: .3),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            spacing: 5,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Icon(
+                                Icons.warning_amber_rounded,
+                                color: color.error,
+                              ),
+                              Text(
+                                tr.attentionTitle,
+                                style: txt.titleSmall?.copyWith(
+                                  color: color.error,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Divider(color: color.error),
+                          SizedBox(height: 5),
+                          Text(
+                            tr.plMessage,
+                            style: txt.bodyMedium?.copyWith(color: color.error),
+                          ),
+                        ],
+                      ),
                     ),
-                    Divider(color: color.error),
-                    SizedBox(height: 5),
-                    Text(
-                       tr.plMessage,
-                      style: txt.bodyMedium?.copyWith(color: color.error),
+                    const SizedBox(height: 16),
+                    if (summary != null) ...[
+                      // Main Row containing all three sections
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Income Column
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  tr.income,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Divider(),
+                                ...summary.incomeByCurrency.entries.map(
+                                      (e) => _InfoRow(label: e.key, amount: e.value),
+                                ),
+                                SizedBox(height: 8),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(width: 16), // Spacer between columns
+
+                          // Expense Column
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  tr.expense,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Divider(),
+                                ...summary.expenseByCurrency.entries.map(
+                                      (e) => _InfoRow(label: e.key, amount: e.value),
+                                ),
+                                SizedBox(height: 8),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(width: 16), // Spacer between columns
+
+                          // Retained Earnings Column
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  tr.retainedEarnings,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Divider(),
+                                ...summary.retainedByCurrency.entries.map(
+                                      (e) => _InfoRow(
+                                    label: e.key,
+                                    amount: e.value,
+                                    isPositive: e.value >= 0,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                    ZTextFieldEntitled(
+                      controller: remark,
+                      keyboardInputType: TextInputType.multiline,
+                      title: tr.remark,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
-              if (summary != null) ...[
-                 Text(tr.income, style: TextStyle(fontWeight: FontWeight.bold)),
-                Divider(),
-                ...summary.incomeByCurrency.entries.map(
-                      (e) => _InfoRow(label: e.key, amount: e.value),
-                ),
-                const SizedBox(height: 8),
-                 Text(tr.expense, style: TextStyle(fontWeight: FontWeight.bold)),
-                Divider(),
-                ...summary.expenseByCurrency.entries.map(
-                      (e) => _InfoRow(label: e.key, amount: e.value),
-                ),
-                const SizedBox(height: 8),
-                Text(tr.retainedEarnings, style: TextStyle(fontWeight: FontWeight.bold)),
-                Divider(),
-                ...summary.retainedByCurrency.entries.map(
-                      (e) => _InfoRow(
-                    label: e.key,
-                    amount: e.value,
-                    isPositive: e.value >= 0,
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
-              ZTextFieldEntitled(
-                controller: remark,
-                keyboardInputType: TextInputType.multiline,
-                title: tr.remark,
-              ),
-            ],
-          ),
+            );
+          },
         );
-  },
-);
       },
     );
   }
@@ -345,12 +438,20 @@ class _InfoRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         spacing: 5,
         children: [
-          Text(label, style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: Utils.currencyColors(label))),
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Utils.currencyColors(label),
+            ),
+          ),
           Text(
             amount.toAmount(),
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: isPositive != null ? (isPositive! ? Colors.green : Colors.red) : null,
+              color: isPositive != null
+                  ? (isPositive! ? Colors.green : Colors.red)
+                  : null,
             ),
           ),
         ],
@@ -370,22 +471,47 @@ class _HeaderRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary,
         border: Border(
-          bottom: BorderSide(color: theme.colorScheme.outline.withValues(alpha: .5)),
+          bottom: BorderSide(
+            color: theme.colorScheme.outline.withValues(alpha: .5),
+          ),
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+
         child: Row(
           children: [
-            SizedBox(width: 120, child: Text(tr.accountNumber, style: titleStyle)),
+            SizedBox(
+              width: 120,
+              child: Text(tr.accountNumber, style: titleStyle),
+            ),
             Expanded(child: Text(tr.accountName, style: titleStyle)),
             SizedBox(width: 100, child: Text(tr.branch, style: titleStyle)),
-            SizedBox(width: 100, child: Text(tr.categoryTitle, style: titleStyle)),
-            SizedBox(width: 150, child: Text(tr.debitTitle, textAlign: TextAlign.right, style: titleStyle)),
-            SizedBox(width: 150, child: Text(tr.creditTitle, textAlign: TextAlign.right, style: titleStyle)),
+            SizedBox(
+              width: 100,
+              child: Text(tr.categoryTitle, style: titleStyle),
+            ),
+            SizedBox(
+              width: 150,
+              child: Text(
+                tr.debitTitle,
+                textAlign: TextAlign.right,
+                style: titleStyle,
+              ),
+            ),
+            SizedBox(
+              width: 150,
+              child: Text(
+                tr.creditTitle,
+                textAlign: TextAlign.right,
+                style: titleStyle,
+              ),
+            ),
           ],
         ),
       ),
@@ -409,7 +535,13 @@ class _AmountCell extends StatelessWidget {
         children: [
           Text(amount.toAmount()),
           const SizedBox(width: 5),
-          Text(currency ?? "", style: TextStyle(color: Utils.currencyColors(currency ?? ""), fontWeight: FontWeight.w500)),
+          Text(
+            currency ?? "",
+            style: TextStyle(
+              color: Utils.currencyColors(currency ?? ""),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
@@ -435,11 +567,11 @@ class _BottomSummary extends StatelessWidget {
     final theme = Theme.of(context);
 
     Widget currencyColumn(
-        String title,
-        Map<String, double> data, {
-          required Color amountColor,
-          bool highlightNegative = false,
-        }) {
+      String title,
+      Map<String, double> data, {
+      required Color amountColor,
+      bool highlightNegative = false,
+    }) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -455,7 +587,7 @@ class _BottomSummary extends StatelessWidget {
 
           /// Values
           ...data.entries.map(
-                (e) => Text(
+            (e) => Text(
               "${e.key}: ${e.value.toAmount()}",
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
@@ -480,17 +612,24 @@ class _BottomSummary extends StatelessWidget {
         ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           /// ================= LEFT: TOTAL (EXPANDED) =================
           Expanded(
-            child: Text(
-              tr.totalTitle,  // Make sure this exists in translations
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+            child: Row(
+              children: [
+                Icon(Icons.ssid_chart,size: 20),
+                SizedBox(width: 8),
+                Text(
+                  "${tr.totalTitle} ${tr.profitAndLoss}",
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.outline,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
 
@@ -501,19 +640,19 @@ class _BottomSummary extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 currencyColumn(
-                  tr.income,  // This should work if 'income' key exists
+                  tr.income,
                   incomeByCurrency,
                   amountColor: Colors.green,
                 ),
                 const SizedBox(width: 40),
                 currencyColumn(
-                  tr.expense,  // Changed from tr.expense to tr.expenses
+                  tr.expense,
                   expenseByCurrency,
                   amountColor: Colors.red,
                 ),
                 const SizedBox(width: 40),
                 currencyColumn(
-                  tr.retainedEarnings,  // Make sure this key exists
+                  tr.retainedEarnings,
                   retainedByCurrency,
                   amountColor: Colors.green,
                   highlightNegative: true,
@@ -526,9 +665,3 @@ class _BottomSummary extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-

@@ -22,7 +22,7 @@ final class PayrollSilentLoadingState extends PayrollState {
   const PayrollSilentLoadingState(this.attendance);
 
   @override
-  List<PayrollModel> get payroll => attendance; // Add this
+  List<PayrollModel> get payroll => attendance;
 
   @override
   List<Object?> get props => [attendance];

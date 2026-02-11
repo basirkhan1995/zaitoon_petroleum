@@ -242,20 +242,27 @@ class Utils{
       return "";
     }
   }
-
   static Color currencyColors(String ccy) {
-    final lowerCategory = ccy.toLowerCase();
-    if (lowerCategory == 'usd') {
-      return Colors.orange.withValues(alpha: .86);
-    } else if (lowerCategory == 'afn') {
-      return Colors.cyan.withValues(alpha: .6);
-    } else if (lowerCategory == 'eur') {
-      return Colors.purple.withValues(alpha: .6);
-    } else if (lowerCategory == 'gbp') {
-      return Colors.greenAccent.withValues(alpha: .6);
-    }  else {
-      return Colors.lightBlueAccent.withValues(alpha: .6);
-    }
+    final lowerCurrency = ccy.toLowerCase();
+    final Map<String, Color> colorMap = {
+      'usd': Color(0xFF1E88E5), // Bright Blue
+      'afn': Color(0xFF26C6DA), // Cyan
+      'eur': Color(0xFFAB47BC), // Purple
+      'gbp': Color(0xFF66BB6A), // Green
+      'inr': Color(0xFFEF5350), // Indian Red/Orange
+      'cad': Color(0xFF42A5F5), // Canadian Blue
+      'pkr': Color(0xFF9CCC65), // Light Green
+      'aud': Color(0xFFFFCA28), // Gold
+      'jpy': Color(0xFFFF7043), // Deep Orange
+      'cny': Color(0xFFE53935), // Chinese Red
+      'rub': Color(0xFF8E24AA), // Russian Purple
+      'aed': Color(0xFF00897B), // Emirates Green
+      'sar': Color(0xFFFF8F00), // Saudi Gold
+      'try': Color(0xFFFFA726), // Turkish Orange
+    };
+
+    return colorMap[lowerCurrency]?.withValues(alpha: .9) ??
+        Color(0xFF78909C).withValues(alpha: .8); // Default Blue Gray
   }
 
   static String getTxnName({required String txn, required BuildContext context}) {

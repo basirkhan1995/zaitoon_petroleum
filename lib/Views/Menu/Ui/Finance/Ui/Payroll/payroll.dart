@@ -81,15 +81,24 @@ class __DesktopState extends State<_Desktop> {
   }
 
   void _postSelectedPayroll(BuildContext context, String usrName, List<PayrollModel> payroll) {
-    // Filter only unpaid records for posting
-    final selectedUnpaidRecords = payroll
-        .where((record) =>
-    _selectedIds.contains(record.perId) &&
-        (record.payment ?? 0) == 0)
-        .map((record) => record.copyWith(payment: 1))
-        .toList();
+    // Get all records for the current month
+    final allRecordsForMonth = payroll;
 
-    if (selectedUnpaidRecords.isEmpty) {
+    // Update payment status for selected unpaid records
+    final updatedRecords = allRecordsForMonth.map((record) {
+      // If record is selected AND unpaid, mark as paid
+      if (_selectedIds.contains(record.perId) && (record.payment ?? 0) == 0) {
+        return record.copyWith(payment: 1);
+      }
+      // Keep existing payment status for all other records
+      return record;
+    }).toList();
+
+    final newlyPaidCount = updatedRecords
+        .where((r) => _selectedIds.contains(r.perId) && (r.payment ?? 0) == 1)
+        .length;
+
+    if (newlyPaidCount == 0) {
       ToastManager.show(
         context: context,
         message: "Please select unpaid records to post",
@@ -102,14 +111,24 @@ class __DesktopState extends State<_Desktop> {
       context: context,
       builder: (context) {
         return ZAlertDialog(
-          title: AppLocalizations.of(context)!.confirmPayment,
-          content: 'Post salary for ${selectedUnpaidRecords.length} employees?',
+          title: AppLocalizations.of(context)!.areYouSure,
+          content: '',
+          child: Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Post salary for $newlyPaidCount employees?"),
+                Text("All posted payroll will be reposted!",style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error))
+              ],
+            ),
+          ),
           onYes: () {
             context.read<PayrollBloc>().add(
-              PostPayrollEvent(usrName, selectedUnpaidRecords),
+              PostPayrollEvent(usrName, updatedRecords),
             );
             setState(() {
-              // Clear selection after posting
               _selectedIds.clear();
               _selectAll = false;
             });

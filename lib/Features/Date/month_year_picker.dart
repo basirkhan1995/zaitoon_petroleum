@@ -333,187 +333,187 @@ class MonthYearPickerState extends State<MonthYearPicker> {
 
             // RIGHT: Month selection content
             Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  // Selected month/year display (header)
-                  Row(
-                    children: [
-                      Icon(Icons.calendar_month_rounded, color: color.outline),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          _formatSelectedMonthYear(_pendingSelection ?? _selectedDate),
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: color.outline,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: false,
-                        ),
-                      ),
-                      // NEW: Display API format in header
-                      if (_pendingSelection != null)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: Text(
-                            _formatForApi(_pendingSelection!),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: color.outline.withValues(alpha: 0.7),
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Year navigation header
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    child: Row(
+              child: Padding(
+                padding: _showYearSelector? const EdgeInsets.all(8.0) : EdgeInsets.zero,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    // Selected month/year display (header)
+                    Row(
                       children: [
+                        Icon(Icons.calendar_month_rounded, color: color.outline),
+                        const SizedBox(width: 8),
                         Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              setState(() => _showYearSelector = !_showYearSelector);
-                              if (_showYearSelector) _scrollToSelectedYear();
-                            },
-                            child: Text(
-                              _selectedYear.toString(),
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: color.primary.withValues(alpha: .9),
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              softWrap: false,
+                          child: Text(
+                            _formatSelectedMonthYear(_pendingSelection ?? _selectedDate),
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: color.outline,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
                           ),
                         ),
-                        IconButton(
-                          iconSize: 20,
-                          icon: Icon(Icons.chevron_left, color: color.secondary),
-                          onPressed: () => _navigateYear(-1),
-                          tooltip: 'Previous year',
-                        ),
-                        IconButton(
-                          iconSize: 20,
-                          icon: Icon(Icons.chevron_right, color: color.secondary),
-                          onPressed: () => _navigateYear(1),
-                          tooltip: 'Next year',
-                        ),
+                        // NEW: Display API format in header
+                        if (_pendingSelection != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Text(
+                              _formatForApi(_pendingSelection!),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: color.outline.withValues(alpha: 0.7),
+                                fontStyle: FontStyle.normal,
+                              ),
+                            ),
+                          ),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 8),
 
-                  const SizedBox(height: 16),
-
-                  // Month grid (3x4 layout)
-                  Expanded(
-                    child: GridView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.all(8),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        childAspectRatio: 2.2,
-                        mainAxisSpacing: 8,
-                        crossAxisSpacing: 8,
+                    // Year navigation header
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() => _showYearSelector = !_showYearSelector);
+                                if (_showYearSelector) _scrollToSelectedYear();
+                              },
+                              child: Text(
+                                _selectedYear.toString(),
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: color.primary.withValues(alpha: .9),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: false,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            iconSize: 20,
+                            icon: Icon(Icons.chevron_left, color: color.secondary),
+                            onPressed: () => _navigateYear(-1),
+                            tooltip: 'Previous year',
+                          ),
+                          IconButton(
+                            iconSize: 20,
+                            icon: Icon(Icons.chevron_right, color: color.secondary),
+                            onPressed: () => _navigateYear(1),
+                            tooltip: 'Next year',
+                          ),
+                        ],
                       ),
-                      itemCount: 12,
-                      itemBuilder: (context, index) {
-                        final month = index + 1;
-                        final isSelected = _pendingSelection != null
-                            ? _pendingSelection!.month == month && _pendingSelection!.year == _selectedYear
-                            : _selectedDate.month == month && _selectedDate.year == _selectedYear;
-                        final isDisabled = _isMonthDisabled(month, _selectedYear);
-                        final isCurrentMonth = month == DateTime.now().month &&
-                            _selectedYear == DateTime.now().year;
+                    ),
 
-                        return InkWell(
-                          onTap: isDisabled ? null : () => _onMonthTapped(month),
-                          borderRadius: BorderRadius.circular(4),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? color.primary
-                                  : isCurrentMonth
-                                  ? color.primary.withValues(alpha: .1)
-                                  : color.surface,
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(
+                    const SizedBox(height: 8),
+
+                    // Month grid (3x4 layout)
+                    Expanded(
+                      child: GridView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          childAspectRatio: 2.2,
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 8,
+                        ),
+                        itemCount: 12,
+                        itemBuilder: (context, index) {
+                          final month = index + 1;
+                          final isSelected = _pendingSelection != null
+                              ? _pendingSelection!.month == month && _pendingSelection!.year == _selectedYear
+                              : _selectedDate.month == month && _selectedDate.year == _selectedYear;
+                          final isDisabled = _isMonthDisabled(month, _selectedYear);
+                          final isCurrentMonth = month == DateTime.now().month &&
+                              _selectedYear == DateTime.now().year;
+
+                          return InkWell(
+                            onTap: isDisabled ? null : () => _onMonthTapped(month),
+                            borderRadius: BorderRadius.circular(4),
+                            child: Container(
+                              decoration: BoxDecoration(
                                 color: isSelected
                                     ? color.primary
                                     : isCurrentMonth
-                                    ? color.primary
-                                    : color.outline.withValues(alpha: .3),
-                                width: isSelected || isCurrentMonth ? 2 : 1,
+                                    ? color.primary.withValues(alpha: .1)
+                                    : color.surface,
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? color.primary
+                                      : isCurrentMonth
+                                      ? color.primary
+                                      : color.outline.withValues(alpha: .3),
+                                  width: isSelected || isCurrentMonth ? 1 : 0.5,
+                                ),
+                              ),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      _monthNames[index],
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? color.surface
+                                            : isDisabled
+                                            ? color.outline.withValues(alpha: 0.5)
+                                            : color.secondary,
+                                        fontWeight: isSelected || isCurrentMonth
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    // NEW: Show month number with zero padding
+                                    Text(
+                                      month.toString().padLeft(2, '0'),
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? color.surface.withValues(alpha: 0.8)
+                                            : isDisabled
+                                            ? color.outline.withValues(alpha: 0.4)
+                                            : color.secondary.withValues(alpha: 0.7),
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    _monthNames[index],
-                                    style: TextStyle(
-                                      color: isSelected
-                                          ? color.surface
-                                          : isDisabled
-                                          ? color.outline.withValues(alpha: 0.5)
-                                          : color.secondary,
-                                      fontWeight: isSelected || isCurrentMonth
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  // NEW: Show month number with zero padding
-                                  Text(
-                                    month.toString().padLeft(2, '0'),
-                                    style: TextStyle(
-                                      color: isSelected
-                                          ? color.surface.withValues(alpha: 0.8)
-                                          : isDisabled
-                                          ? color.outline.withValues(alpha: 0.4)
-                                          : color.secondary.withValues(alpha: 0.7),
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
-                  ),
 
-                  const SizedBox(height: 16),
-
-                  // Footer buttons
-                  Row(
-                    children: [
-                      ZOutlineButton(
-                        height: 30,
-                        width: 90,
-                        onPressed: _selectCurrentMonth,
-                        label: Text(locale.current),
-                      ),
-                      const SizedBox(width: 8),
-                      ZButton(
-                        width: 90,
-                        height: 30,
-                        onPressed: _pendingSelection != null ? _confirmSelection : null,
-                        label: Text(locale.selectKeyword),
-                      ),
-                    ],
-                  ),
-                ],
+                    // Footer buttons
+                    Row(
+                      children: [
+                        ZOutlineButton(
+                          height: 30,
+                          width: 90,
+                          onPressed: _selectCurrentMonth,
+                          label: Text(locale.current),
+                        ),
+                        const SizedBox(width: 8),
+                        ZButton(
+                          width: 90,
+                          height: 30,
+                          onPressed: _pendingSelection != null ? _confirmSelection : null,
+                          label: Text(locale.selectKeyword),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

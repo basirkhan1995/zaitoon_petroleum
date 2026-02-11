@@ -1181,7 +1181,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                                 style: const TextStyle(fontSize: 18),
                               ),
                               Text(
-                                product.fromStorageName ?? "",
+                                product.stgName ?? "",
                                 style: TextStyle(
                                   color: Theme.of(context).colorScheme.outline,
                                 ),
@@ -1237,18 +1237,8 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                         productName = stockProduct.proName ?? '';
 
                         // Get both purchase and sale prices from product stock
-                        final purchasePrice =
-                            double.tryParse(
-                              stockProduct.averagePrice?.replaceAll(',', '') ??
-                                  "0.0",
-                            ) ??
-                            0.0;
-                        final salePrice =
-                            double.tryParse(
-                              stockProduct.sellPrice?.replaceAll(',', '') ??
-                                  "0.0",
-                            ) ??
-                            0.0;
+                        final purchasePrice = double.tryParse(stockProduct.averagePrice?.replaceAll(',', '') ?? "0.0") ?? 0.0;
+                        final salePrice = double.tryParse(stockProduct.sellPrice?.replaceAll(',', '') ??  "0.0") ?? 0.0;
 
                         // For sale orders, auto-set storage from product
                         final storageId = stockProduct.stkStorage;
@@ -1259,11 +1249,10 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                               productId: productId,
                               productName: productName,
                               storageId: storageId,
-                              price: salePrice, // This will set the sale price
+                              price: salePrice,
                             ),
                           );
 
-                          // Also set the purchase price
                           context.read<OrderByIdBloc>().add(
                             UpdateOrderItemEvent(
                               index: index,
@@ -1273,10 +1262,8 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                               isPurchasePrice: true,
                             ),
                           );
-
                           storageController.text = stockProduct.stgName ?? '';
                         } else {
-                          // Without storage, just update product and prices
                           context.read<OrderByIdBloc>().add(
                             UpdateOrderItemEvent(
                               index: index,

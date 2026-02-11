@@ -54,16 +54,7 @@ class PayrollBloc extends Bloc<PayrollEvent, PayrollState> {
           emit(PayrollSuccessState(tr.successMessage));
           // Reload Payroll
           add(LoadPayrollEvent(_currentDate ?? ""));
-        }
-        else if (msg == "exist") {
-          emit(PayrollErrorState("Payroll Already exists"));
-
-          // Restore previous data
-          if (_cachedPayroll != null) {
-            emit(PayrollLoadedState(_cachedPayroll!));
-          }
-        }
-        else {
+        } else {
           final errorMsg = res["message"] ?? tr.operationFailedMessage;
           emit(PayrollErrorState(errorMsg));
           if (_cachedPayroll != null) {
