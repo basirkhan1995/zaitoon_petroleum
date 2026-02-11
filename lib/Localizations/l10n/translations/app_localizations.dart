@@ -4857,6 +4857,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Due in'**
   String get dueIn;
+
+  /// No description provided for @overdueByOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue by 1 days'**
+  String get overdueByOne;
+
+  /// No description provided for @overdueBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue by'**
+  String get overdueBy;
+
+  /// No description provided for @dueTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Due tomorrow'**
+  String get dueTomorrow;
+
+  /// No description provided for @dueToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Due today'**
+  String get dueToday;
 }
 
 class _AppLocalizationsDelegate

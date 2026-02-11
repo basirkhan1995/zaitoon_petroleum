@@ -812,5 +812,9 @@
   "postSalary": "Post Salary",
   "dayTitle": "day",
   "daysTitle": "days",
-  "dueIn": "Due in"
+  "dueIn": "Due in",
+  "overdueByOne": "Overdue by 1 days",
+  "overdueBy": "Overdue by",
+  "dueTomorrow": "Due tomorrow",
+  "dueToday": "Due today"
 }

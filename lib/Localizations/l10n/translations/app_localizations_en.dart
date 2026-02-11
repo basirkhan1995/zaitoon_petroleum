@@ -2454,4 +2454,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dueIn => 'Due in';
+
+  @override
+  String get overdueByOne => 'Overdue by 1 days';
+
+  @override
+  String get overdueBy => 'Overdue by';
+
+  @override
+  String get dueTomorrow => 'Due tomorrow';
+
+  @override
+  String get dueToday => 'Due today';
 }

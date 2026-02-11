@@ -2448,4 +2448,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dueIn => 'سررسید';
+
+  @override
+  String get overdueByOne => 'یو ورځ ځنډ';
+
+  @override
+  String get overdueBy => 'ورځ ځنډ';
+
+  @override
+  String get dueTomorrow => 'سبا نېټه';
+
+  @override
+  String get dueToday => 'نن نېټه';
 }

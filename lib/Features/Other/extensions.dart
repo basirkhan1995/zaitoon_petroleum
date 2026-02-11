@@ -174,9 +174,9 @@ extension ReminderDueExtension on DateTime {
 
     final diff = due.difference(today).inDays;
 
-    if (diff == 0) return "Due Today";
+    if (diff == 0) return tr.dueToday;
 
-    if (diff == 1) return "Due Tomorrow";
+    if (diff == 1) return tr.dueTomorrow;
 
     if (diff > 1) {
       return "${tr.dueType} $diff ${diff == 1 ? tr.dayTitle : tr.daysTitle}";
@@ -184,9 +184,9 @@ extension ReminderDueExtension on DateTime {
 
     final overdue = diff.abs();
 
-    if (overdue == 1) return "Overdue by 1 day";
+    if (overdue == 1) return tr.overdueByOne;
 
-    return "Overdue by $overdue days";
+    return "${tr.overdueBy} $overdue ${tr.daysTitle}";
   }
 }
 

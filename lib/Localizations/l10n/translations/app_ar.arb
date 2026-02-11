@@ -812,5 +812,9 @@
   "postSalary": "معاش ولېږئ",
   "dayTitle": "ورح",
   "daysTitle": "ورح",
-  "dueIn": "سررسید"
+  "dueIn": "سررسید",
+  "overdueByOne": "یو ورځ ځنډ",
+  "overdueBy": "ورځ ځنډ",
+  "dueTomorrow": "سبا نېټه",
+  "dueToday": "نن نېټه"
 }

@@ -812,5 +812,9 @@
   "postSalary": "پرداخت حقوق",
   "dayTitle": "روز",
   "daysTitle": "روز",
-  "dueIn": "سررسید"
+  "dueIn": "سررسید",
+  "overdueByOne": "یک روز سررسید گذشته",
+  "overdueBy": "گذشت زمان ",
+  "dueTomorrow": "سررسید فردا",
+  "dueToday": "سررسید امروز"
 }

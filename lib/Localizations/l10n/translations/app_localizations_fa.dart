@@ -2446,4 +2446,16 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get dueIn => 'سررسید';
+
+  @override
+  String get overdueByOne => 'یک روز سررسید گذشته';
+
+  @override
+  String get overdueBy => 'گذشت زمان ';
+
+  @override
+  String get dueTomorrow => 'سررسید فردا';
+
+  @override
+  String get dueToday => 'سررسید امروز';
 }
