@@ -2461,4 +2461,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get other => 'دیگر';
+
+  @override
+  String get menuTitle => 'مینو';
+
+  @override
+  String get reports => 'گزارشات';
 }

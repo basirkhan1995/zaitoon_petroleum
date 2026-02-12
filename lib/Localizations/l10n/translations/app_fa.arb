@@ -817,5 +817,7 @@
   "overdueBy": "گذشت زمان ",
   "dueTomorrow": "سررسید فردا",
   "dueToday": "سررسید امروز",
-  "other": "دیگر"
+  "other": "دیگر",
+  "menuTitle": "مینو",
+  "reports": "گزارشات"
 }

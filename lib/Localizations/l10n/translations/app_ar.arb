@@ -817,5 +817,7 @@
   "overdueBy": "ورځ ځنډ",
   "dueTomorrow": "سبا نېټه",
   "dueToday": "نن نېټه",
-  "other": "دیگر"
+  "other": "دیگر",
+  "menuTitle": "مینو",
+  "reports": "گزارشات"
 }

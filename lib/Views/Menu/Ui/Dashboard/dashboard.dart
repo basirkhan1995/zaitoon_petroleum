@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/DailyGross/daily_gross.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/Stats/stats.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/Ui/exchange_rate.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/column_chart_view.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/total_daily_txn.dart';
+import '../../../Auth/bloc/auth_bloc.dart';
 import '../Reminder/reminder_widget.dart';
 import '../Report/Ui/Finance/ExchangeRate/chart.dart';
 
@@ -31,6 +33,12 @@ class _Mobile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final visibility = context.read<SettingsVisibleBloc>().state;
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -41,22 +49,46 @@ class _Mobile extends StatelessWidget {
                 child: const DigitalClock(),
               ),
             ],
-            if (visibility.exchangeRate) ...[
+
+            //Exchange Rate Widget
+            if (login.hasPermission(3) ?? false) ...[
+              if (visibility.exchangeRate) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 3,
+                  ),
+                  child: ExchangeRateView(
+                    settingButton: true,
+                    newRateButton: false,
+                  ),
+                ),
+              ],
+            ],
+
+            //Stats Count - Total Accounts, Total Stakeholders ...
+            if (login.hasPermission(2) ?? false) ...[
+              if (visibility.statsCount) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  child: DashboardStatsView(),
+                ),
+              ],
+            ],
+
+            //Profit & Loss Graph
+            if (login.hasPermission(8) ?? false) ...[
+              if (visibility.profitAndLoss) ...[DailyGrossView()],
+            ],
+
+            //Reminder
+            if (login.hasPermission(9) ?? false) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 3),
-                child: ExchangeRateView(settingButton: true, newRateButton: false),
+                padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                child: DashboardAlertReminder(),
               ),
             ],
-            if (visibility.statsCount) ...[
-              DashboardStatsView(),
-            ],
-            if (visibility.profitAndLoss) ...[
-              DailyGrossView(),
-            ],
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5.0),
-              child: DashboardAlertReminder(),
-            ),
+
           ],
         ),
       ),
@@ -70,6 +102,12 @@ class _Tablet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final visibility = context.read<SettingsVisibleBloc>().state;
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -80,37 +118,65 @@ class _Tablet extends StatelessWidget {
                 child: const DigitalClock(),
               ),
             ],
-            if (visibility.exchangeRate) ...[
+
+            //Exchange Rate Widget
+            if (login.hasPermission(3) ?? false) ...[
+              if (visibility.exchangeRate) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 13.0,
+                    vertical: 3,
+                  ),
+                  child: ExchangeRateView(
+                    settingButton: true,
+                    newRateButton: false,
+                  ),
+                ),
+              ],
+            ],
+
+            //Stats Count - Total Accounts, Total Stakeholders ...
+            if (login.hasPermission(2) ?? false) ...[
+              if (visibility.statsCount) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  child: DashboardStatsView(),
+                ),
+              ],
+            ],
+
+            //Profit & Loss Graph
+            if (login.hasPermission(8) ?? false) ...[
+              if (visibility.profitAndLoss) ...[DailyGrossView()],
+            ],
+
+            //Reminder
+            if (login.hasPermission(9) ?? false) ...[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 13.0,vertical: 3),
-                child: ExchangeRateView(settingButton: true, newRateButton: false),
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: DashboardAlertReminder(),
               ),
             ],
-            if (visibility.statsCount) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                child: DashboardStatsView(),
-              ),
-            ],
-            if (visibility.profitAndLoss) ...[
-              DailyGrossView(),
-            ],
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: DashboardAlertReminder(),
-            ),
+
           ],
         ),
       ),
     );
   }
 }
+
 class _Desktop extends StatelessWidget {
   const _Desktop();
 
   @override
   Widget build(BuildContext context) {
     final visibility = context.read<SettingsVisibleBloc>().state;
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -122,12 +188,27 @@ class _Desktop extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (visibility.statsCount) ...[
-                      DashboardStatsView(),
+
+                    //Stats Count - Total Accounts, Total Stakeholders ...
+                    if (login.hasPermission(2) ?? false) ...[
+                      if (visibility.statsCount) ...[
+                        DashboardStatsView(),
+                      ],
                     ],
-                    SizedBox(height: 400, child: FxRateDashboardChart()),
-                    TotalDailyColumnView(),
-                    const TotalDailyTxnView(),
+
+                      //Exchange Rate Graph
+                      if (login.hasPermission(7) ?? false) ...[
+                        SizedBox(height: 400, child: FxRateDashboardChart()),
+                      ],
+
+                      if (login.hasPermission(4) ?? false) ...[
+                        TotalDailyColumnView(),
+                      ],
+
+                    if (login.hasPermission(5) ?? false) ...[
+                      const TotalDailyTxnView(),
+                    ],
+
                   ],
                 ),
               ),
@@ -140,14 +221,29 @@ class _Desktop extends StatelessWidget {
                       const DigitalClock(),
                       SizedBox(height: 3),
                     ],
-                    if (visibility.exchangeRate) ...[
-                      ExchangeRateView(settingButton: true, newRateButton: false),
+
+                    //Exchange Rate Widget
+                    if (login.hasPermission(7) ?? false) ...[
+                      if (visibility.exchangeRate) ...[
+                        ExchangeRateView(
+                          settingButton: true,
+                          newRateButton: false,
+                        ),
+                      ],
                     ],
-                    if (visibility.profitAndLoss) ...[
-                      SizedBox(height: 3),
-                      DailyGrossView(),
+
+                    //Profit & Loss Graph
+                    if (login.hasPermission(8) ?? false) ...[
+                      if (visibility.profitAndLoss) ...[
+                        SizedBox(height: 3),
+                        DailyGrossView(),
+                      ],
                     ],
-                    DashboardAlertReminder(),
+
+                    //Reminder
+                    if (login.hasPermission(9) ?? false) ...[
+                      DashboardAlertReminder(),
+                    ],
                     SizedBox(height: 3),
                   ],
                 ),

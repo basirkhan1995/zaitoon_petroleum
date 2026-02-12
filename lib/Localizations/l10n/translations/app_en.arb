@@ -817,5 +817,7 @@
   "overdueBy": "Overdue by",
   "dueTomorrow": "Due tomorrow",
   "dueToday": "Due today",
-  "other": "Other"
+  "other": "Other",
+  "menuTitle": "Menu",
+  "reports": "Reports"
 }

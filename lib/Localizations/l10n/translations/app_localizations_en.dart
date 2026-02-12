@@ -2469,4 +2469,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get other => 'Other';
+
+  @override
+  String get menuTitle => 'Menu';
+
+  @override
+  String get reports => 'Reports';
 }

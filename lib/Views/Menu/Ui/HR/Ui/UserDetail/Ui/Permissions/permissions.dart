@@ -13,28 +13,10 @@ class PermissionsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-      mobile: _Mobile(),
-      tablet: _Tablet(),
+      mobile: _Desktop(user),
+      tablet: _Desktop(user),
       desktop: _Desktop(user),
     );
-  }
-}
-
-class _Mobile extends StatelessWidget {
-  const _Mobile();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
 
@@ -63,15 +45,16 @@ class _DesktopState extends State<_Desktop> {
     final color = Theme.of(context).colorScheme;
 
     final Map<String, List<int>> permissionGroups = {
-      locale.dashboard: [1, 2, 3, 4, 5,8],
-      locale.finance: [6,7,9,10,33],
+      locale.menuTitle: [1,10,18,31,35,42,66,57,71],
+      locale.dashboard: [2, 3, 4, 5,8],
+      locale.finance: [6,7,9,33],
       locale.inventory: [11, 12, 13,48],
       locale.usersAndAuthorizations: [15, 14, 16, 17, 45, 46],
-      locale.cashOperations: [18, 19, 20, 21, 22, 23, 24, 25],
-      locale.settings: [31, 32,26],
+      locale.cashOperations: [19, 20, 21, 22, 23, 24, 25],
+      locale.settings: [32,26],
       locale.transport: [28, 29, 30],
-      locale.report: [51, 52, 53,49, 50, 54,40,27, 34, 35, 36, 37, 38, 39, 41, 42, 43, 44, 55, 56],
-      locale.other: [57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105]
+      locale.report: [51, 52, 53,49, 50, 54,40,27, 34, 36, 37, 38, 39, 41, 43, 44, 55, 56],
+      locale.other: [58,59,60,61,62,63,64,65,67,68,69,70,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105]
     };
 
 

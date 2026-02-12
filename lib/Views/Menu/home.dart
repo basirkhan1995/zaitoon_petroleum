@@ -6,6 +6,7 @@ import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/Ui/login.dart';
+import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/hr.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/individuals.dart';
@@ -88,25 +89,39 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
     final String usrPhoto = authState.loginData.usrPhoto ??"";
     final String usrRole = authState.loginData.usrRole ?? "";
 
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
+
     final menuItems = [
-      MenuDefinition(
-        value: MenuName.dashboard,
-        label: AppLocalizations.of(context)!.dashboard,
-        screen: const DashboardView(),
-        icon: Icons.add_home_outlined,
-      ),
+      if(login.hasPermission(1) ?? false)...[
+        MenuDefinition(
+          value: MenuName.dashboard,
+          label: AppLocalizations.of(context)!.dashboard,
+          screen: const DashboardView(),
+          icon: Icons.add_home_outlined,
+        ),
+      ],
+
+    if(login.hasPermission(10) ?? false)...[
       MenuDefinition(
         value: MenuName.finance,
         label: AppLocalizations.of(context)!.finance,
         screen: const FinanceView(),
         icon: Icons.money,
       ),
+    ],
+
       MenuDefinition(
         value: MenuName.journal,
         label: AppLocalizations.of(context)!.journal,
         screen: const JournalView(),
         icon: Icons.menu_book,
       ),
+
       MenuDefinition(
         value: MenuName.stakeholders,
         label: AppLocalizations.of(context)!.stakeholders,
@@ -143,7 +158,7 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
       ),
       MenuDefinition(
         value: MenuName.report,
-        label: AppLocalizations.of(context)!.report,
+        label: AppLocalizations.of(context)!.reports,
         screen: const ReportView(),
         icon: Icons.info_outlined,
       ),

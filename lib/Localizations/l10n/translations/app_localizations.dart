@@ -4887,6 +4887,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Other'**
   String get other;
+
+  /// No description provided for @menuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menuTitle;
+
+  /// No description provided for @reports.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get reports;
 }
 
 class _AppLocalizationsDelegate
