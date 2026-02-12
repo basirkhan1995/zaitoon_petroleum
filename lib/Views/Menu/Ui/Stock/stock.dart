@@ -56,25 +56,28 @@ class StockView extends StatelessWidget {
                 builder: (context, state) {
                   final tabs = <ZTabItem<StockTabsName>>[
 
-                    if (login.hasPermission(12) ?? false)
+                    if (login.hasPermission(46) ?? false)
                       ZTabItem(
                         value: StockTabsName.orders,
                         label: locale.orderTitle,
                         screen: const OrdersView(),
                       ),
 
+                    if (login.hasPermission(48) ?? false)
                     ZTabItem(
                       value: StockTabsName.estimates,
                       label: locale.estimateTitle,
                       screen: const EstimateView(),
                     ),
 
+                    if (login.hasPermission(49) ?? false)
                     ZTabItem(
                       value: StockTabsName.shift,
                       label: locale.shift,
                       screen: const GoodsShiftView(),
                     ),
 
+                    if (login.hasPermission(50) ?? false)
                     ZTabItem(
                       value: StockTabsName.adjustment,
                       label: locale.adjustment,
@@ -150,7 +153,8 @@ class StockView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    if (login.hasPermission(19) ?? false)
+
+                    if (login.hasPermission(51) ?? false)
                       ZOutlineButton(
                         backgroundColor: color.primary.withValues(alpha: opacity),
                         toolTip: "F1",
@@ -159,7 +163,8 @@ class StockView extends StatelessWidget {
                         width: double.infinity,
                          onPressed: () => Utils.goto(context, NewPurchaseOrderView()),
                       ),
-                    if (login.hasPermission(18) ?? false)
+
+                    if (login.hasPermission(52) ?? false)
                       ZOutlineButton(
                         backgroundColor: color.primary.withValues(alpha: opacity),
                         toolTip: "F2",
@@ -169,6 +174,7 @@ class StockView extends StatelessWidget {
                         onPressed: () => Utils.goto(context, NewSaleView()),
                       ),
 
+                    if (login.hasPermission(53) ?? false)
                     ZOutlineButton(
                       backgroundColor: color.primary.withValues(alpha: opacity),
                       toolTip: "F3",
@@ -177,6 +183,8 @@ class StockView extends StatelessWidget {
                       width: double.infinity,
                        onPressed: () => Utils.goto(context, AddEstimateView()),
                     ),
+
+                    if (login.hasPermission(56) ?? false)
                     ZOutlineButton(
                       backgroundColor: color.primary.withValues(alpha: opacity),
                       toolTip: "F4",
@@ -198,6 +206,7 @@ class StockView extends StatelessWidget {
                       ],
                     ),
 
+                    if (login.hasPermission(54) ?? false)
                     ZOutlineButton(
                       backgroundColor: color.primary.withValues(alpha: opacity),
                       toolTip: "F7",
@@ -206,6 +215,8 @@ class StockView extends StatelessWidget {
                       width: double.infinity,
                        onPressed: () => Utils.goto(context, AddGoodsShiftView()),
                     ),
+
+                    if (login.hasPermission(55) ?? false)
                     ZOutlineButton(
                       backgroundColor: color.primary.withValues(alpha: opacity),
                       toolTip: "F8",

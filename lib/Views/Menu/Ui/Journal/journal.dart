@@ -21,7 +21,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfi
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
 import '../../../../Features/Date/z_generic_date.dart';
 import '../../../../Features/Generic/rounded_searchable_textfield.dart';
-import '../../../../Features/Generic/underline_tab.dart';
+import '../../../../Features/Generic/tab_bar.dart';
 import '../../../../Features/Other/cover.dart';
 import '../../../../Features/Other/responsive.dart';
 import '../../../../Features/Other/shortcut.dart';
@@ -2014,265 +2014,254 @@ class _DesktopState extends State<_Desktop> {
             },
             child: GlobalShortcuts(
               shortcuts: shortcuts,
-              child: Column(
+              child: Row(
                 children: [
-                  // -------------------- HEADER & TABS --------------------
-                  ZCover(
-                    margin: const EdgeInsets.only(top: 6, bottom: 5),
-                    radius: 5,
-                    color: Theme.of(context).colorScheme.surface,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0,
-                            vertical: 7,
+                  Expanded(
+                    child: BlocBuilder<JournalTabBloc, JournalTabState>(
+                      builder: (context, state) {
+                        final tabs = <ZTabItem<JournalTabName>>[
+                          if (login.hasPermission(19) ?? false)
+                          ZTabItem(
+                            value: JournalTabName.allTransactions,
+                            label: locale.allTransactions,
+                            screen: const AllTransactionsView(),
                           ),
-                          child: Row(
-                            children: [
-                              Text(
-                                locale.journal,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontSize: context.scaledFont(0.015),
-                                ),
-                              ),
-                            ],
+                          if (login.hasPermission(20) ?? false)
+                          ZTabItem(
+                            value: JournalTabName.authorized,
+                            label: locale.authorizedTransactions,
+                            screen: const AuthorizedTransactionsView(),
                           ),
-                        ),
-                        CustomUnderlineTabBar<JournalTabName>(
-                          tabs: [
-                            JournalTabName.allTransactions,
-                            JournalTabName.authorized,
-                            JournalTabName.pending,
-                          ],
-                          currentTab: context.watch<JournalTabBloc>().state.tab,
-                          onTabChanged: (tab) => context
+                          if (login.hasPermission(21) ?? false)
+                          ZTabItem(
+                            value: JournalTabName.pending,
+                            label: locale.pendingTransactions,
+                            screen: const PendingTransactionsView(),
+                          ),
+                        ];
+
+                        final availableValues = tabs.map((tab) => tab.value).toList();
+                        final selected = availableValues.contains(state.tab)
+                            ? state.tab
+                            : availableValues.first;
+
+                        return ZTabContainer<JournalTabName>(
+                          /// Tab data
+                          tabs: tabs,
+                          selectedValue: selected,
+
+                          /// Bloc update
+                          onChanged: (val) => context
                               .read<JournalTabBloc>()
-                              .add(JournalOnChangedEvent(tab)),
-                          labelBuilder: (tab) {
-                            switch (tab) {
-                              case JournalTabName.allTransactions:
-                                return locale.allTransactions;
-                              case JournalTabName.authorized:
-                                return locale.authorizedTransactions;
-                              case JournalTabName.pending:
-                                return locale.pendingTransactions;
-                            }
-                          },
-                        ),
-                      ],
+                              .add(JournalOnChangedEvent(val)),
+
+                          title: locale.journal,
+                          description: locale.journal,
+
+                          /// Colors and style
+                          style: ZTabStyle.rounded,
+                          tabBarPadding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                          borderRadius: 0,
+                          selectedColor: Theme.of(context).colorScheme.primary,
+                          unselectedTextColor: Theme.of(context).colorScheme.secondary,
+                          selectedTextColor: Theme.of(context).colorScheme.surface,
+                          tabContainerColor: Theme.of(context).colorScheme.surface,
+                        );
+                      },
                     ),
                   ),
-
-                  // -------------------- MAIN CONTENT --------------------
-                  Expanded(
-                    child: Row(
-                      children: [
-                        // LEFT SIDE — TAB SCREENS
-                        Expanded(
-                          child: BlocBuilder<JournalTabBloc, JournalTabState>(
-                            builder: (context, state) {
-                              switch (state.tab) {
-                                case JournalTabName.allTransactions:
-                                  return const AllTransactionsView();
-                                case JournalTabName.authorized:
-                                  return const AuthorizedTransactionsView();
-                                case JournalTabName.pending:
-                                  return const PendingTransactionsView();
-                              }
-                            },
-                          ),
-                        ),
-
-                        const SizedBox(width: 3),
-
-                        // RIGHT SIDE — SHORTCUT BUTTONS PANEL
-                        Container(
-                          width: 190,
-                          margin: EdgeInsets.symmetric(horizontal: 5,vertical: 8),
-                          height: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Theme.of(context).colorScheme.primary.withValues(alpha: .1,),
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                blurRadius: 3,
-                                spreadRadius: 2,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainerHighest
-                                    .withValues(alpha: .03),
-                              ),
-                            ],
-                            borderRadius: BorderRadius.circular(5),
-                            color: Theme.of(context).colorScheme.surface,
-                          ),
-                          child: SingleChildScrollView(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 12,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              spacing: 8,
-                              children: [
-                                Wrap(
-                                  spacing: 5,
-                                  children: [
-                                    const Icon(Icons.money, size: 20),
-                                    Text(
-                                      locale.cashFlow,
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.titleSmall,
-                                    ),
-                                  ],
-                                ),
-                                if (login.hasPermission(19) ?? false)
-                                  ZOutlineButton(
-                                    backgroundColor: color.primary.withValues(
-                                      alpha: opacity,
-                                    ),
-                                    toolTip: "F1",
-                                    label: Text(locale.deposit),
-                                    icon: Icons.arrow_circle_down_rounded,
-                                    width: double.infinity,
-                                    onPressed: () =>
-                                        onCashDepositWithdraw(trnType: "CHDP"),
-                                  ),
-                                if (login.hasPermission(18) ?? false)
-                                  ZOutlineButton(
-                                    backgroundColor: color.primary.withValues(
-                                      alpha: opacity,
-                                    ),
-                                    toolTip: "F2",
-                                    label: Text(locale.withdraw),
-                                    icon: Icons.arrow_circle_up_rounded,
-                                    width: double.infinity,
-                                    onPressed: () =>
-                                        onCashDepositWithdraw(trnType: "CHWL"),
-                                  ),
-                                if (login.hasPermission(22) ?? false)
-                                  ZOutlineButton(
-                                    backgroundColor: color.primary.withValues(
-                                      alpha: opacity,
-                                    ),
-                                    toolTip: "F3",
-                                    label: Text(locale.income),
-                                    icon: Icons.arrow_circle_down_rounded,
-                                    width: double.infinity,
-                                    onPressed: () =>
-                                        onCashIncome(trnType: "INCM"),
-                                  ),
-                                if (login.hasPermission(23) ?? false)
-                                  ZOutlineButton(
-                                    backgroundColor: color.primary.withValues(
-                                      alpha: opacity,
-                                    ),
-                                    toolTip: "F4",
-                                    label: Text(locale.expense),
-                                    icon: Icons.arrow_circle_up_rounded,
-                                    width: double.infinity,
-                                    onPressed: () =>
-                                        onCashExpense(trnType: "XPNS"),
-                                  ),
-                                SizedBox(height: 5),
-                                Wrap(
-                                  spacing: 5,
-                                  children: [
-                                    const Icon(
-                                      Icons.swap_horiz_rounded,
-                                      size: 20,
-                                    ),
-                                    Text(
-                                      locale.fundTransferTitle,
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.titleSmall,
-                                    ),
-                                  ],
-                                ),
-                                if (login.hasPermission(24) ?? false)
-                                  ZOutlineButton(
-                                    backgroundColor: color.primary.withValues(
-                                      alpha: opacity,
-                                    ),
-                                    toolTip: "F5",
-                                    label: Text(locale.singleAccount),
-                                    icon: Icons.swap_horiz_rounded,
-                                    width: double.infinity,
-                                    onPressed: () =>
-                                        accountToAccount(trnType: "ATAT"),
-                                  ),
-                                if (login.hasPermission(24) ?? false)
-                                  ZOutlineButton(
-                                    backgroundColor: color.primary.withValues(
-                                      alpha: opacity,
-                                    ),
-                                    toolTip: "F6",
-                                    label: Text(locale.multiAccount),
-                                    icon: Icons.swap_horiz_rounded,
-                                    width: double.infinity,
-                                    onPressed: onMultiATAT
-                                  ),
-                                if (login.hasPermission(24) ?? false)
-                                  ZOutlineButton(
-                                    backgroundColor: color.primary.withValues(
-                                      alpha: opacity,
-                                    ),
-                                    toolTip: "F7",
-                                    label: Text(locale.fxTransaction),
-                                    icon: Icons.swap_horiz_rounded,
-                                    width: double.infinity,
-                                    onPressed: onFxTxn
-                                  ),
-                                SizedBox(height: 5),
-                                Wrap(
-                                  spacing: 5,
-                                  children: [
-                                    const Icon(
-                                      Icons.computer_rounded,
-                                      size: 20,
-                                    ),
-                                    Text(
-                                      locale.systemAction,
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.titleSmall,
-                                    ),
-                                  ],
-                                ),
-
-                                if (login.hasPermission(21) ?? false)
-                                  ZOutlineButton(
-                                    backgroundColor: color.primary.withValues(
-                                      alpha: opacity,
-                                    ),
-                                    toolTip: "F8",
-                                    label: Text(locale.glCreditTitle),
-                                    width: double.infinity,
-                                    icon: Icons.menu_book_rounded,
-                                    onPressed: () => onGL(trnType: "GLCR"),
-                                  ),
-                                if (login.hasPermission(20) ?? false)
-                                  ZOutlineButton(
-                                    backgroundColor: color.primary.withValues(
-                                      alpha: opacity,
-                                    ),
-                                    toolTip: "F9",
-                                    label: Text(locale.glDebitTitle),
-                                    width: double.infinity,
-                                    icon: Icons.menu_book_rounded,
-                                    onPressed: () => onGL(trnType: "GLDR"),
-                                  ),
-                              ],
-                            ),
-                          ),
+                  // RIGHT SIDE — SHORTCUT BUTTONS PANEL
+                  Container(
+                    width: 190,
+                    margin: EdgeInsets.symmetric(horizontal: 5,vertical: 8),
+                    height: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: .1,),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 3,
+                          spreadRadius: 2,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest
+                              .withValues(alpha: .03),
                         ),
                       ],
+                      borderRadius: BorderRadius.circular(5),
+                      color: Theme.of(context).colorScheme.surface,
+                    ),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 12,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 8,
+                        children: [
+                          Wrap(
+                            spacing: 5,
+                            children: [
+                              const Icon(Icons.money, size: 20),
+                              Text(
+                                locale.cashFlow,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.titleSmall,
+                              ),
+                            ],
+                          ),
+
+                          //Cash Deposit
+                          if (login.hasPermission(22) ?? false)
+                            ZOutlineButton(
+                              backgroundColor: color.primary.withValues(
+                                alpha: opacity,
+                              ),
+                              toolTip: "F1",
+                              label: Text(locale.deposit),
+                              icon: Icons.arrow_circle_down_rounded,
+                              width: double.infinity,
+                              onPressed: () =>
+                                  onCashDepositWithdraw(trnType: "CHDP"),
+                            ),
+
+                          //Cash Withdraw
+                          if (login.hasPermission(23) ?? false)
+                            ZOutlineButton(
+                              backgroundColor: color.primary.withValues(
+                                alpha: opacity,
+                              ),
+                              toolTip: "F2",
+                              label: Text(locale.withdraw),
+                              icon: Icons.arrow_circle_up_rounded,
+                              width: double.infinity,
+                              onPressed: () =>
+                                  onCashDepositWithdraw(trnType: "CHWL"),
+                            ),
+
+                          //Income
+                          if (login.hasPermission(24) ?? false)
+                            ZOutlineButton(
+                              backgroundColor: color.primary.withValues(
+                                alpha: opacity,
+                              ),
+                              toolTip: "F3",
+                              label: Text(locale.income),
+                              icon: Icons.arrow_circle_down_rounded,
+                              width: double.infinity,
+                              onPressed: () =>
+                                  onCashIncome(trnType: "INCM"),
+                            ),
+
+                          //Expense
+                          if (login.hasPermission(25) ?? false)
+                            ZOutlineButton(
+                              backgroundColor: color.primary.withValues(
+                                alpha: opacity,
+                              ),
+                              toolTip: "F4",
+                              label: Text(locale.expense),
+                              icon: Icons.arrow_circle_up_rounded,
+                              width: double.infinity,
+                              onPressed: () =>
+                                  onCashExpense(trnType: "XPNS"),
+                            ),
+
+                          SizedBox(height: 5),
+                          Wrap(
+                            spacing: 5,
+                            children: [
+                              const Icon(
+                                Icons.swap_horiz_rounded,
+                                size: 20,
+                              ),
+                              Text(
+                                locale.fundTransferTitle,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.titleSmall,
+                              ),
+                            ],
+                          ),
+                          if (login.hasPermission(28) ?? false)
+                            ZOutlineButton(
+                              backgroundColor: color.primary.withValues(
+                                alpha: opacity,
+                              ),
+                              toolTip: "F5",
+                              label: Text(locale.singleAccount),
+                              icon: Icons.swap_horiz_rounded,
+                              width: double.infinity,
+                              onPressed: () =>
+                                  accountToAccount(trnType: "ATAT"),
+                            ),
+                          if (login.hasPermission(29) ?? false)
+                            ZOutlineButton(
+                                backgroundColor: color.primary.withValues(
+                                  alpha: opacity,
+                                ),
+                                toolTip: "F6",
+                                label: Text(locale.multiAccount),
+                                icon: Icons.swap_horiz_rounded,
+                                width: double.infinity,
+                                onPressed: onMultiATAT
+                            ),
+
+                          if (login.hasPermission(30) ?? false)
+                            ZOutlineButton(
+                                backgroundColor: color.primary.withValues(
+                                  alpha: opacity,
+                                ),
+                                toolTip: "F7",
+                                label: Text(locale.fxTransaction),
+                                icon: Icons.swap_horiz_rounded,
+                                width: double.infinity,
+                                onPressed: onFxTxn
+                            ),
+                          SizedBox(height: 5),
+                          Wrap(
+                            spacing: 5,
+                            children: [
+                              const Icon(
+                                Icons.computer_rounded,
+                                size: 20,
+                              ),
+                              Text(
+                                locale.systemAction,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.titleSmall,
+                              ),
+                            ],
+                          ),
+
+                          if (login.hasPermission(21) ?? false)
+                            ZOutlineButton(
+                              backgroundColor: color.primary.withValues(
+                                alpha: opacity,
+                              ),
+                              toolTip: "F8",
+                              label: Text(locale.glCreditTitle),
+                              width: double.infinity,
+                              icon: Icons.menu_book_rounded,
+                              onPressed: () => onGL(trnType: "GLCR"),
+                            ),
+                          if (login.hasPermission(20) ?? false)
+                            ZOutlineButton(
+                              backgroundColor: color.primary.withValues(
+                                alpha: opacity,
+                              ),
+                              toolTip: "F9",
+                              label: Text(locale.glDebitTitle),
+                              width: double.infinity,
+                              icon: Icons.menu_book_rounded,
+                              onPressed: () => onGL(trnType: "GLDR"),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

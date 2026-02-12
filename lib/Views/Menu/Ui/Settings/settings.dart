@@ -41,13 +41,13 @@ class _Desktop extends StatelessWidget {
       body: BlocBuilder<SettingsTabBloc, SettingsTabState>(
         builder: (context, state) {
           final tabs = <ZTabItem<SettingsTabName>>[
-            if (login.hasPermission(31) ?? false)
+            if (login.hasPermission(58) ?? false)
               ZTabItem(
                 value: SettingsTabName.general,
                 label: AppLocalizations.of(context)!.general,
                 screen: const GeneralView(),
               ),
-            if (login.hasPermission(32) ?? false)
+            if (login.hasPermission(61) ?? false)
               ZTabItem(
                 value: SettingsTabName.company,
                 label: AppLocalizations.of(context)!.company,
@@ -61,18 +61,20 @@ class _Desktop extends StatelessWidget {
                 screen: const TxnTypesView(),
               ),
 
+            if (login.hasPermission(61) ?? false)
             ZTabItem(
               value: SettingsTabName.stock,
               label: AppLocalizations.of(context)!.stock,
               screen: const StockSettingsView(),
             ),
+
             if (login.hasPermission(32) ?? false)
               ZTabItem(
                 value: SettingsTabName.backup,
                 label: AppLocalizations.of(context)!.backupTitle,
                 screen: const BackupView(),
               ),
-
+            if (login.hasPermission(70) ?? false)
             ZTabItem(
               value: SettingsTabName.about,
               label: AppLocalizations.of(context)!.about,

@@ -6,6 +6,8 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/IndividualDetail
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/model/individual_model.dart';
 import '../../../../../../Features/Generic/tab_bar.dart';
 import '../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../Auth/models/login_model.dart';
 
 class IndividualsDetailsTabView extends StatelessWidget {
   final IndividualsModel ind;
@@ -13,16 +15,25 @@ class IndividualsDetailsTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
     return Padding(
       padding: const EdgeInsets.only(top: 5.0),
       child: BlocBuilder<IndividualDetailTabBloc, IndividualDetailTabState>(
         builder: (context, state) {
           final tabs = <ZTabItem<IndividualDetailTabName>>[
+
+            if (login.hasPermission(55) ?? false)
             ZTabItem(
               value: IndividualDetailTabName.accounts,
               label: AppLocalizations.of(context)!.accounts,
               screen: AccountsByPerIdView(ind: ind),
             ),
+            if (login.hasPermission(55) ?? false)
             ZTabItem(
               value: IndividualDetailTabName.users,
               label: AppLocalizations.of(context)!.users,

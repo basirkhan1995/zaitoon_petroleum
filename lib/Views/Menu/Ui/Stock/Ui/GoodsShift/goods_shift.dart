@@ -13,7 +13,6 @@ import '../../../../../../../Localizations/l10n/translations/app_localizations.d
 import '../../../../../../Features/Other/utils.dart';
 import '../../../../../../Features/Widgets/no_data_widget.dart';
 import '../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
-import 'add_shift.dart';
 import 'bloc/goods_shift_bloc.dart';
 
 class GoodsShiftView extends StatelessWidget {
@@ -115,14 +114,6 @@ class _DesktopState extends State<_Desktop> {
                       icon: Icons.refresh,
                       onPressed: onRefresh,
                       label: Text(tr.refresh),
-                    ),
-                    ZOutlineButton(
-                      toolTip: "F5",
-                      isActive: true,
-                      width: 120,
-                      icon: Icons.add,
-                      onPressed: () => Utils.goto(context, AddGoodsShiftView()),
-                      label: Text(tr.newKeyword),
                     ),
                   ],
                 ),

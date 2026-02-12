@@ -7,6 +7,8 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/UserDetail/bloc/user_detai
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../../../../../../Features/Generic/rounded_tab.dart';
 import '../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../Auth/models/login_model.dart';
 
 
 class UserDetailsTabView extends StatelessWidget {
@@ -16,21 +18,29 @@ class UserDetailsTabView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
     return Scaffold(
       body: BlocBuilder<UserDetailsTabBloc, UserDetailsTabState>(
         builder: (context, state) {
           final tabs = <TabDefinition<UserDetailsTabNames>>[
-
+            if (login.hasPermission(39) ?? false)
             TabDefinition(
               value: UserDetailsTabNames.overview,
               label: locale.overview,
               screen:  UserOverviewView(user: user),
             ),
+            if (login.hasPermission(40) ?? false)
             TabDefinition(
               value: UserDetailsTabNames.permissions,
               label: locale.permissions,
               screen: PermissionsView(user: user),
             ),
+            if (login.hasPermission(41) ?? false)
             TabDefinition(
               value: UserDetailsTabNames.usrLog,
               label: locale.userLog,

@@ -47,14 +47,17 @@ class _DesktopState extends State<_Desktop> {
     final Map<String, List<int>> permissionGroups = {
       locale.menuTitle: [1,10,18,31,35,42,66,57,71],
       locale.dashboard: [2, 3, 4, 5,8,6],
-      locale.finance: [11,12,13,14,15,16,17,7,9,33],
-      locale.inventory: [48],
-      locale.usersAndAuthorizations: [45, 46],
-      locale.cashOperations: [19, 20, 21, 22, 23, 24, 25],
-      locale.settings: [32,26],
-      locale.transport: [28, 29, 30],
-      locale.report: [51, 52, 53,49, 50, 54,40,27, 34, 36, 37, 38, 39, 41, 43, 44, 55, 56],
-      locale.other: [58,59,60,61,62,63,64,65,67,68,69,70,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105]
+      locale.finance: [11,12,13,14,15,16,17,7,9],
+      locale.journal: [19,20,21,22,23,24,25,26,27,28, 29, 30],
+      locale.inventory: [46,48,49,50,51,52,53,54,55,56],
+      locale.hrTitle: [36,37,38,39,40,41],
+      locale.usersAndAuthorizations: [45],
+      locale.settings: [58,59,60,61,69,67,68,70],
+      locale.transport: [43, 44,96],
+      locale.report: [34,32],
+      locale.actions: [106,107,108,109],
+
+      locale.other: [33,61,62,63,64,65,67,68,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105]
     };
 
 

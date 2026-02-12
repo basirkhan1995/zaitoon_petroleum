@@ -12,7 +12,6 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import '../../../../../../Features/Other/extensions.dart';
 import '../../../../../../Features/Other/utils.dart';
 import '../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
-import 'add_adjustment.dart';
 import 'adjustment_details.dart';
 import 'bloc/adjustment_bloc.dart';
 
@@ -114,14 +113,6 @@ class _DesktopState extends State<_Desktop> {
                   onPressed: onRefresh,
                   label: Text(tr.refresh),
                 ),
-                ZOutlineButton(
-                  toolTip: "Ctrl+N",
-                  isActive: true,
-                  width: 120,
-                  icon: Icons.add,
-                  onPressed: () => Utils.goto(context, const AddAdjustmentView()),
-                  label: Text(tr.newKeyword),
-                ),
               ],
             ),
           ),
@@ -138,7 +129,7 @@ class _DesktopState extends State<_Desktop> {
                 SizedBox(width: 40, child: Text('#', style: titleStyle)),
                 SizedBox(width: 100, child: Text(tr.date, style: titleStyle)),
                 SizedBox(width: 215, child: Text(tr.referenceNumber, style: titleStyle)),
-                Expanded(child: Text('Expense Account', style: titleStyle)),
+                Expanded(child: Text(tr.accountNumber, style: titleStyle)),
                 SizedBox(width: 150, child: Text(tr.amount, style: titleStyle)),
                 SizedBox(width: 120, child: Text(tr.status, style: titleStyle)),
               ],

@@ -5,6 +5,8 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/vehicles.d
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/bloc/transport_tab_bloc.dart';
 import '../../../../Features/Generic/tab_bar.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../Auth/bloc/auth_bloc.dart';
+import '../../../Auth/models/login_model.dart';
 import 'Ui/Shipping/Ui/ShippingView/View/all_shipping.dart';
 
 
@@ -13,20 +15,30 @@ class TransportView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
     return Scaffold(
       body: BlocBuilder<TransportTabBloc, TransportTabState>(
         builder: (context, state) {
           final tabs = <ZTabItem<TransportTabName>>[
+
+            if (login.hasPermission(43) ?? false)
             ZTabItem(
               value: TransportTabName.shipping,
               label: AppLocalizations.of(context)!.shipping,
               screen: const ShippingView(),
             ),
+            if (login.hasPermission(44) ?? false)
             ZTabItem(
               value: TransportTabName.drivers,
               label: AppLocalizations.of(context)!.drivers,
               screen: const DriversView(),
             ),
+            if (login.hasPermission(96) ?? false)
             ZTabItem(
               value: TransportTabName.vehicles,
               label: AppLocalizations.of(context)!.vehicles,

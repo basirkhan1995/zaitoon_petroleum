@@ -11,7 +11,6 @@ import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import '../View/EstimateById/estimate_details.dart';
-import 'add_estimate.dart';
 
 class EstimateView extends StatelessWidget {
   const EstimateView({super.key});
@@ -128,14 +127,6 @@ class _DesktopState extends State<_Desktop> {
                   icon: Icons.refresh,
                   onPressed: onRefresh,
                   label: Text(tr.refresh),
-                ),
-                ZOutlineButton(
-                  toolTip: "F5",
-                  isActive: true,
-                  width: 120,
-                  icon: Icons.add,
-                  onPressed: () => Utils.goto(context, AddEstimateView()),
-                  label: Text(tr.newKeyword),
                 ),
               ],
             ),

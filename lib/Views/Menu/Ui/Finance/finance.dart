@@ -17,16 +17,15 @@ class FinanceView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AuthBloc>().state;
-
     if (state is! AuthenticatedState) {
       return const SizedBox();
     }
     final login = state.loginData;
     return Scaffold(
+
       body: BlocBuilder<FinanceTabBloc, FinanceTabState>(
         builder: (context, state) {
           final tabs = <ZTabItem<FinanceTabName>>[
-
             if (login.hasPermission(11) ?? false)...[
               ZTabItem(
                 value: FinanceTabName.currencies,

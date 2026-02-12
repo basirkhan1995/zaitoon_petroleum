@@ -4,6 +4,7 @@ import '../../../../../../Features/Generic/generic_menu.dart';
 import '../../../../../../Features/Other/responsive.dart';
 import '../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../Auth/models/login_model.dart';
 import 'Ui/Security/password.dart';
 import 'Ui/System/system.dart';
 import 'bloc/general_tab_bloc.dart';
@@ -28,14 +29,17 @@ class _Desktop extends StatelessWidget {
     if (state is! AuthenticatedState) {
       return const SizedBox();
     }
+    final login = state.loginData;
 
     final menuItems = [
+      if (login.hasPermission(59) ?? false)
       MenuDefinition(
         value: GeneralTabName.system,
         label: AppLocalizations.of(context)!.systemSettings,
         screen: const SystemView(),
         icon: Icons.tune,
       ),
+      if (login.hasPermission(60) ?? false)
       MenuDefinition(
         value: GeneralTabName.password,
         label: AppLocalizations.of(context)!.password,
