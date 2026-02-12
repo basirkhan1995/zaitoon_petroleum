@@ -43,11 +43,15 @@ class _Mobile extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            if (visibility.dashboardClock) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: const DigitalClock(),
-              ),
+
+            //Dashboard Clock
+            if (login.hasPermission(6) ?? false) ...[
+              if (visibility.dashboardClock) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: const DigitalClock(),
+                ),
+              ],
             ],
 
             //Exchange Rate Widget
@@ -112,11 +116,15 @@ class _Tablet extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            if (visibility.dashboardClock) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: const DigitalClock(),
-              ),
+
+            //Dashboard Clock
+            if (login.hasPermission(6) ?? false) ...[
+              if (visibility.dashboardClock) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: const DigitalClock(),
+                ),
+              ],
             ],
 
             //Exchange Rate Widget
@@ -217,9 +225,11 @@ class _Desktop extends StatelessWidget {
                 width: 500,
                 child: Column(
                   children: [
-                    if (visibility.dashboardClock) ...[
-                      const DigitalClock(),
-                      SizedBox(height: 3),
+                    if (login.hasPermission(6) ?? false) ...[
+                      if (visibility.dashboardClock) ...[
+                        const DigitalClock(),
+                        SizedBox(),
+                      ],
                     ],
 
                     //Exchange Rate Widget

@@ -46,10 +46,10 @@ class _DesktopState extends State<_Desktop> {
 
     final Map<String, List<int>> permissionGroups = {
       locale.menuTitle: [1,10,18,31,35,42,66,57,71],
-      locale.dashboard: [2, 3, 4, 5,8],
-      locale.finance: [6,7,9,33],
-      locale.inventory: [11, 12, 13,48],
-      locale.usersAndAuthorizations: [15, 14, 16, 17, 45, 46],
+      locale.dashboard: [2, 3, 4, 5,8,6],
+      locale.finance: [11,12,13,14,15,16,17,7,9,33],
+      locale.inventory: [48],
+      locale.usersAndAuthorizations: [45, 46],
       locale.cashOperations: [19, 20, 21, 22, 23, 24, 25],
       locale.settings: [32,26],
       locale.transport: [28, 29, 30],
@@ -115,8 +115,9 @@ class _DesktopState extends State<_Desktop> {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
+                        color: color.surface,
                         border: Border.all(
-                          color: color.primary.withValues(alpha: .3),
+                          color: color.outline.withValues(alpha: .3),
                         ),
                       ),
                       child: Column(

@@ -131,8 +131,6 @@ class GenericMenuWithScreen<T> extends StatefulWidget {
     this.fontSize,
     this.padding,
     this.margin,
-
-    /// NEW
     this.isExpanded = true,
   });
 
@@ -144,20 +142,184 @@ class GenericMenuWithScreen<T> extends StatefulWidget {
 class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
   double minScreenSize = 60;
   double maxScreenSize = 170;
-
-  /// internal variable controlled by the external parameter
   late bool isMenuExpanded;
+
+  // Track if we've already attempted to fix the selection
+  bool _fixAttempted = false;
 
   @override
   void initState() {
     super.initState();
-    isMenuExpanded = widget.isExpanded; // control initial expanded state
+    isMenuExpanded = widget.isExpanded;
+    _validateAndFixSelectedValue();
+  }
+
+  @override
+  void didUpdateWidget(GenericMenuWithScreen<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Check if items or selectedValue changed
+    if (oldWidget.items != widget.items ||
+        oldWidget.selectedValue != widget.selectedValue) {
+      _fixAttempted = false; // Reset for new validation
+      _validateAndFixSelectedValue();
+    }
+  }
+
+  void _validateAndFixSelectedValue() {
+    // Prevent infinite loops
+    if (_fixAttempted) return;
+
+    // If items list is empty, we can't fix anything
+    if (widget.items.isEmpty) {
+      _fixAttempted = true;
+      return;
+    }
+
+    // Check if current selectedValue exists in items
+    final isValid = widget.items.any((item) => item.value == widget.selectedValue);
+
+    if (!isValid) {
+      _fixAttempted = true;
+      // Current selection is invalid, use first available item
+      final firstAvailableValue = widget.items.first.value;
+
+      // Call onChanged with the first available value
+      // Use addPostFrameCallback to avoid calling during build
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          widget.onChanged(firstAvailableValue);
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final selectedItem =
-    widget.items.firstWhere((e) => e.value == widget.selectedValue);
+    // Handle empty items case - show empty state
+    if (widget.items.isEmpty) {
+      return Row(
+        children: [
+          /// Sidebar (collapsed or expanded)
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            width: isMenuExpanded ? maxScreenSize : minScreenSize,
+            height: double.infinity,
+            margin: widget.margin ??
+                const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+            padding: EdgeInsets.zero,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: .1),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 3,
+                  spreadRadius: 2,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surfaceContainerHighest
+                      .withValues(alpha: .03),
+                ),
+              ],
+              borderRadius: BorderRadius.circular(5),
+              color: Theme.of(context).colorScheme.surface,
+            ),
+            child: Column(
+              children: [
+                /// Toggle arrow (still functional)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withValues(alpha: .06),
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                        child: IconButton(
+                          hoverColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          icon: Icon(isMenuExpanded
+                              ? Icons.chevron_left
+                              : Icons.chevron_right),
+                          onPressed: () {
+                            setState(() {
+                              isMenuExpanded = !isMenuExpanded;
+                            });
+                          },
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                /// Header (if provided)
+                if (widget.menuHeaderBuilder != null) ...[
+                  widget.menuHeaderBuilder!(isMenuExpanded),
+                  const SizedBox(height: 8),
+                ],
+
+                /// Empty state message
+                Expanded(
+                  child: Center(
+                    child: isMenuExpanded
+                        ? Text(
+                      'No menu items available',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .5),
+                      ),
+                    )
+                        : const SizedBox.shrink(),
+                  ),
+                ),
+
+                /// Footer (if provided)
+                if (widget.menuFooterBuilder != null)
+                  widget.menuFooterBuilder!(isMenuExpanded),
+              ],
+            ),
+          ),
+
+          /// Empty content area
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: Theme.of(context).colorScheme.surface,
+              ),
+              child: const Center(
+                child: Text('No content available'),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    // Check if selected value exists in items
+    final bool isSelectedValid = widget.items.any(
+            (item) => item.value == widget.selectedValue
+    );
+
+    // If selected value doesn't exist, return SizedBox.shrink() as requested
+    if (!isSelectedValid) {
+      // We still want to attempt to fix it, but return empty widget for now
+      if (!_fixAttempted) {
+        _validateAndFixSelectedValue();
+      }
+      return const SizedBox.shrink();
+    }
+
+    // Safely get the selected item - we know it exists now
+    final selectedItem = widget.items.firstWhere(
+          (e) => e.value == widget.selectedValue,
+    );
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -175,7 +337,7 @@ class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
               padding: EdgeInsets.zero,
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: .1,),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: .1),
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -191,8 +353,7 @@ class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
                 color: Theme.of(context).colorScheme.surface,
               ),
               child: Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 0.0, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 2),
                 child: Column(
                   children: [
                     /// Toggle arrow
@@ -241,9 +402,10 @@ class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
                         padding: EdgeInsets.zero,
                         children: widget.items.map((item) {
                           return GenericMenuItem(
-                            isSelected:
-                            item.value == widget.selectedValue,
-                            onTap: () => widget.onChanged(item.value),
+                            isSelected: item.value == widget.selectedValue,
+                            onTap: () {
+                              widget.onChanged(item.value);
+                            },
                             label: item.label,
                             icon: item.icon,
                             fontSize: widget.fontSize,

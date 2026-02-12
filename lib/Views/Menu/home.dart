@@ -75,33 +75,29 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
     authBloc.add(OnLogoutEvent());
   }
 
-  // Helper method to get first available menu item
-  MenuName _getFirstAvailableMenu(List<MenuDefinition<MenuName>> menuItems) {
-    if (menuItems.isEmpty) {
-      // This should never happen, but just in case
-      return MenuName.settings; // settings is usually always available
-    }
-    return menuItems.first.value;
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
+    // Use context.select here, at the top of build method
     final currentTab = context.select((MenuBloc bloc) => bloc.state.tabs);
     final authState = context.select((AuthBloc bloc) => bloc.state);
     final visibility = context.watch<SettingsVisibleBloc>().state;
-
     if (authState is! AuthenticatedState) return const SizedBox();
 
     final String adminName = authState.loginData.usrFullName ?? "";
-    final String usrPhoto = authState.loginData.usrPhoto ?? "";
+    final String usrPhoto = authState.loginData.usrPhoto ??"";
     final String usrRole = authState.loginData.usrRole ?? "";
-    final login = authState.loginData;
 
-    // Build menu items with permissions
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
+
     final menuItems = [
-      if (login.hasPermission(1) ?? false) ...[
+      if(login.hasPermission(1) ?? false)...[
         MenuDefinition(
           value: MenuName.dashboard,
           label: AppLocalizations.of(context)!.dashboard,
@@ -109,33 +105,45 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
           icon: Icons.add_home_outlined,
         ),
       ],
-      if (login.hasPermission(10) ?? false) ...[
-        MenuDefinition(
-          value: MenuName.finance,
-          label: AppLocalizations.of(context)!.finance,
-          screen: const FinanceView(),
-          icon: Icons.money,
-        ),
-      ],
+
+    if(login.hasPermission(10) ?? false)...[
+      MenuDefinition(
+        value: MenuName.finance,
+        label: AppLocalizations.of(context)!.finance,
+        screen: const FinanceView(),
+        icon: Icons.money,
+      ),
+    ],
+
+    if(login.hasPermission(18) ?? false)...[
       MenuDefinition(
         value: MenuName.journal,
         label: AppLocalizations.of(context)!.journal,
         screen: const JournalView(),
         icon: Icons.menu_book,
       ),
+    ],
+
+    if(login.hasPermission(31) ?? false)...[
       MenuDefinition(
         value: MenuName.stakeholders,
         label: AppLocalizations.of(context)!.stakeholders,
         screen: const IndividualsView(),
         icon: Icons.account_circle_outlined,
       ),
+    ],
+
+    if(login.hasPermission(35) ?? false)...[
       MenuDefinition(
         value: MenuName.hr,
         label: AppLocalizations.of(context)!.hr,
         screen: const HrTabView(),
         icon: Icons.group_rounded,
       ),
-      if (visibility.transport) ...[
+    ],
+
+    if(login.hasPermission(42) ?? false)...[
+      if(visibility.transport)...[
         MenuDefinition(
           value: MenuName.transport,
           label: AppLocalizations.of(context)!.transport,
@@ -143,43 +151,36 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
           icon: Icons.fire_truck_rounded,
         ),
       ],
-      if (visibility.orders) ...[
-        MenuDefinition(
-          value: MenuName.stock,
-          label: AppLocalizations.of(context)!.orderTitle,
-          screen: const StockView(),
-          icon: Icons.shopping_basket_outlined,
-        ),
-      ],
+    ],
+
+
+    if(login.hasPermission(66) ?? false)...[
+    if(visibility.orders)...[
+      MenuDefinition(
+        value: MenuName.stock,
+        label: AppLocalizations.of(context)!.orderTitle,
+        screen: const StockView(),
+        icon: Icons.shopping_basket_outlined,
+      ),
+    ],
+    ],
+
+    if(login.hasPermission(57) ?? false)...[
       MenuDefinition(
         value: MenuName.settings,
         label: AppLocalizations.of(context)!.settings,
         screen: const SettingsView(),
         icon: Icons.settings_outlined,
       ),
+    ],
+    if(login.hasPermission(71) ?? false)...[
       MenuDefinition(
         value: MenuName.report,
         label: AppLocalizations.of(context)!.reports,
         screen: const ReportView(),
         icon: Icons.info_outlined,
       ),
-    ];
-
-    // 🔥 FIX: Determine the selected value - if currentTab is not in available items,
-    // select the first available menu item AND update the MenuBloc
-    final selectedValue = menuItems.any((item) => item.value == currentTab)
-        ? currentTab
-        : _getFirstAvailableMenu(menuItems);
-
-    // 🔥 FIX: If the selected value changed, update the MenuBloc
-    if (selectedValue != currentTab) {
-      // Use WidgetsBinding to avoid setState during build
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          context.read<MenuBloc>().add(MenuOnChangedEvent(selectedValue));
-        }
-      });
-    }
+    ]];
 
     return Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
@@ -192,7 +193,7 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
           key: const Key('main_menu'),
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
           margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-          selectedValue: selectedValue, // Use the validated value
+          selectedValue: currentTab,
           onChanged: (val) {
             // Only update if the tab is different
             if (currentTab != val) {
@@ -204,9 +205,9 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
           selectedTextColor: Theme.of(context).colorScheme.primary.withAlpha(230),
           unselectedTextColor: Theme.of(context).colorScheme.secondary,
           menuHeaderBuilder: (isExpanded) {
-            // ... rest of your header code remains the same
             return BlocConsumer<CompanyProfileBloc, CompanyProfileState>(
               listener: (context, state) {
+                // Cache the logo and company name when loaded
                 if (state is CompanyProfileLoadedState) {
                   if (_cachedComName != state.company.comName) {
                     _cachedComName = state.company.comName;
@@ -216,6 +217,7 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
                   if (base64Logo != null && base64Logo.isNotEmpty) {
                     try {
                       final newLogo = base64Decode(base64Logo);
+                      // Only update if different
                       if (!_areBytesEqual(_cachedLogo, newLogo)) {
                         _cachedLogo = newLogo;
                       }
@@ -228,6 +230,7 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
                 }
               },
               builder: (context, state) {
+                // Use cached values to prevent unnecessary rebuilds
                 final logo = _cachedLogo;
                 final comName = _cachedComName ?? "";
 
@@ -297,6 +300,7 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
             );
           },
           menuFooterBuilder: (isExpanded) {
+            // Pass the pre-fetched values instead of using context.select here
             return _MenuFooter(
               isExpanded: isExpanded,
               adminName: adminName,

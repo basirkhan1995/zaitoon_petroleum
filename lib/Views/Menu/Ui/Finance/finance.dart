@@ -26,36 +26,45 @@ class FinanceView extends StatelessWidget {
       body: BlocBuilder<FinanceTabBloc, FinanceTabState>(
         builder: (context, state) {
           final tabs = <ZTabItem<FinanceTabName>>[
-            if (login.hasPermission(33) ?? false)
+
+            if (login.hasPermission(11) ?? false)...[
               ZTabItem(
                 value: FinanceTabName.currencies,
                 label: AppLocalizations.of(context)!.currencyTitle,
                 screen: const CurrencyTabView(),
               ),
-            if (login.hasPermission(6) ?? false)
+            ],
+
+            if (login.hasPermission(14) ?? false)...[
               ZTabItem(
                 value: FinanceTabName.glAccounts,
                 label: AppLocalizations.of(context)!.glAccounts,
                 screen: const GlAccountsView(),
               ),
-            if (login.hasPermission(7) ?? false)
+            ],
+
+            if (login.hasPermission(15) ?? false)...[
               ZTabItem(
                 value: FinanceTabName.payroll,
                 label: AppLocalizations.of(context)!.payRoll,
                 screen: const PayrollView(),
               ),
-            if (login.hasPermission(9) ?? false)
+            ],
+
+            if (login.hasPermission(16) ?? false) ...[
               ZTabItem(
                 value: FinanceTabName.endOfYear,
                 label: AppLocalizations.of(context)!.fiscalYear,
                 screen: const EndOfYearView(),
               ),
+            ],
+          if (login.hasPermission(17) ?? false) ...[
             ZTabItem(
               value: FinanceTabName.reminder,
               label: AppLocalizations.of(context)!.reminders,
               screen: const ReminderView(),
             ),
-          ];
+          ]];
 
           if (tabs.isEmpty) {
             return Center(

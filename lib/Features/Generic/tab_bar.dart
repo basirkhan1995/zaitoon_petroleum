@@ -26,7 +26,7 @@ class ZTabItem<T> {
 /// ------------------------------------------------------------
 ///  Z TAB CONTAINER (Unified Layout)
 /// ------------------------------------------------------------
-class ZTabContainer<T> extends StatelessWidget {
+class ZTabContainer<T> extends StatefulWidget {
   final T selectedValue;
   final ValueChanged<T> onChanged;
   final List<ZTabItem<T>> tabs;
@@ -79,8 +79,81 @@ class ZTabContainer<T> extends StatelessWidget {
   });
 
   @override
+  State<ZTabContainer<T>> createState() => _ZTabContainerState<T>();
+}
+
+class _ZTabContainerState<T> extends State<ZTabContainer<T>> {
+  bool _fixAttempted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _validateAndFixSelectedValue();
+  }
+
+  @override
+  void didUpdateWidget(ZTabContainer<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.tabs != widget.tabs ||
+        oldWidget.selectedValue != widget.selectedValue) {
+      _fixAttempted = false;
+      _validateAndFixSelectedValue();
+    }
+  }
+
+  void _validateAndFixSelectedValue() {
+    if (_fixAttempted) return;
+
+    if (widget.tabs.isEmpty) {
+      _fixAttempted = true;
+      return;
+    }
+
+    final isValid = widget.tabs.any((tab) => tab.value == widget.selectedValue);
+
+    if (!isValid) {
+      _fixAttempted = true;
+      final firstAvailableValue = widget.tabs.first.value;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          widget.onChanged(firstAvailableValue);
+        }
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final selectedTab = tabs.firstWhere((e) => e.value == selectedValue);
+    // Handle empty tabs case
+    if (widget.tabs.isEmpty) {
+      return Center(
+        child: Text(
+          'No tabs available',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .5),
+          ),
+        ),
+      );
+    }
+
+    // Check if selected value exists in tabs
+    final bool isSelectedValid = widget.tabs.any(
+            (tab) => tab.value == widget.selectedValue
+    );
+
+    // If selected value doesn't exist, return SizedBox.shrink()
+    if (!isSelectedValid) {
+      if (!_fixAttempted) {
+        _validateAndFixSelectedValue();
+      }
+      return const SizedBox.shrink();
+    }
+
+    // Safely get the selected tab - we know it exists now
+    final selectedTab = widget.tabs.firstWhere(
+          (e) => e.value == widget.selectedValue,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,13 +161,13 @@ class ZTabContainer<T> extends StatelessWidget {
         /// ---------------- Header + Tabs
         Container(
           width: double.infinity,
-          margin: margin,
-          padding: tabBarPadding,
+          margin: widget.margin,
+          padding: widget.tabBarPadding,
           decoration: BoxDecoration(
-            color: tabContainerColor,
+            color: widget.tabContainerColor,
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(5),
-              topRight: Radius.circular(5)
+                topLeft: Radius.circular(5),
+                topRight: Radius.circular(5)
             ),
           ),
           child: Column(
@@ -107,22 +180,22 @@ class ZTabContainer<T> extends StatelessWidget {
                   Expanded(
                     child: Row(
                       children: [
-                        if (onBack != null)
+                        if (widget.onBack != null)
                           IconButton(
                             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-                            onPressed: onBack,
+                            onPressed: widget.onBack,
                             padding: EdgeInsets.zero,
                           ),
 
-                        if (onBack != null) const SizedBox(width: 5),
+                        if (widget.onBack != null) const SizedBox(width: 5),
 
-                        if (title != null)...[
+                        if (widget.title != null)...[
                           Row(
                             children: [
-                              if (icon != null) Icon(icon),
-                              if (icon != null) const SizedBox(width: 5),
+                              if (widget.icon != null) Icon(widget.icon),
+                              if (widget.icon != null) const SizedBox(width: 5),
                               Text(
-                                title!,
+                                widget.title!,
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -131,23 +204,24 @@ class ZTabContainer<T> extends StatelessWidget {
                           ),
                           const SizedBox(height: 10),
                         ],
-
                       ],
                     ),
                   ),
 
                   // RIGHT SIDE — close icon
-                  if(closeButton)
-                  InkWell(
-                      onTap: ()=> Navigator.of(context).pop(),
-                      child: Icon(Icons.close)),
+                  if(widget.closeButton)
+                    InkWell(
+                        onTap: ()=> Navigator.of(context).pop(),
+                        child: Icon(Icons.close)),
                 ],
               ),
               /// ---------------- Optional Description
-              if (description != null) ...[
+              if (widget.description != null) ...[
                 Text(
-                  description!,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.outline),
+                  widget.description!,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.outline
+                  ),
                 ),
                 const SizedBox(height: 10),
               ],
@@ -156,7 +230,7 @@ class ZTabContainer<T> extends StatelessWidget {
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  mainAxisAlignment: tabAlignment,
+                  mainAxisAlignment: widget.tabAlignment,
                   children: _buildZTabs(context),
                 ),
               ),
@@ -174,28 +248,28 @@ class ZTabContainer<T> extends StatelessWidget {
   ///  BUILD TABS (Renamed to avoid conflicts)
   /// ------------------------------------------------------------
   List<Widget> _buildZTabs(BuildContext context) {
-    switch (style) {
+    switch (widget.style) {
       case ZTabStyle.rounded:
-        return tabs.map((tab) => _ZRoundedTab<T>(
+        return widget.tabs.map((tab) => _ZRoundedTab<T>(
           tab: tab,
-          isSelected: tab.value == selectedValue,
-          onTap: () => onChanged(tab.value),
-          selectedColor: selectedColor,
-          unselectedColor: unselectedColor,
-          selectedTextColor: selectedTextColor,
-          unselectedTextColor: unselectedTextColor,
-          borderRadius: borderRadius,
-          padding: padding,
-          margin: margin,
+          isSelected: tab.value == widget.selectedValue,
+          onTap: () => widget.onChanged(tab.value),
+          selectedColor: widget.selectedColor,
+          unselectedColor: widget.unselectedColor,
+          selectedTextColor: widget.selectedTextColor,
+          unselectedTextColor: widget.unselectedTextColor,
+          borderRadius: widget.borderRadius,
+          padding: widget.padding,
+          margin: widget.margin,
         )).toList();
 
       case ZTabStyle.underline:
-        return tabs.map((tab) => _ZUnderlineTab<T>(
+        return widget.tabs.map((tab) => _ZUnderlineTab<T>(
           tab: tab,
-          isSelected: tab.value == selectedValue,
-          onTap: () => onChanged(tab.value),
-          activeColor: selectedColor,
-          inactiveColor: unselectedTextColor,
+          isSelected: tab.value == widget.selectedValue,
+          onTap: () => widget.onChanged(tab.value),
+          activeColor: widget.selectedColor,
+          inactiveColor: widget.unselectedTextColor,
         )).toList();
     }
   }
