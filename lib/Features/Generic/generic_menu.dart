@@ -115,6 +115,9 @@ class GenericMenuWithScreen<T> extends StatefulWidget {
   /// 🔹 Optional footer
   final Widget Function(bool isExpanded)? menuFooterBuilder;
 
+  /// 🔹 Widget to show when no items are available
+  final Widget? emptyStateWidget;
+
   const GenericMenuWithScreen({
     super.key,
     this.menuWidth,
@@ -123,6 +126,7 @@ class GenericMenuWithScreen<T> extends StatefulWidget {
     required this.items,
     this.menuHeaderBuilder,
     this.menuFooterBuilder,
+    this.emptyStateWidget,
     this.selectedColor = Colors.blue,
     this.unselectedColor = Colors.transparent,
     this.selectedTextColor = Colors.white,
@@ -144,46 +148,30 @@ class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
   double maxScreenSize = 170;
   late bool isMenuExpanded;
 
-  // Track if we've already attempted to fix the selection
-  bool _fixAttempted = false;
-
   @override
   void initState() {
     super.initState();
     isMenuExpanded = widget.isExpanded;
-    _validateAndFixSelectedValue();
+    _fixInvalidSelection();
   }
 
   @override
   void didUpdateWidget(GenericMenuWithScreen<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Check if items or selectedValue changed
-    if (oldWidget.items != widget.items ||
-        oldWidget.selectedValue != widget.selectedValue) {
-      _fixAttempted = false; // Reset for new validation
-      _validateAndFixSelectedValue();
-    }
+    _fixInvalidSelection();
   }
 
-  void _validateAndFixSelectedValue() {
-    // Prevent infinite loops
-    if (_fixAttempted) return;
-
-    // If items list is empty, we can't fix anything
-    if (widget.items.isEmpty) {
-      _fixAttempted = true;
-      return;
-    }
+  void _fixInvalidSelection() {
+    // Don't try to fix if items is empty
+    if (widget.items.isEmpty) return;
 
     // Check if current selectedValue exists in items
     final isValid = widget.items.any((item) => item.value == widget.selectedValue);
 
     if (!isValid) {
-      _fixAttempted = true;
       // Current selection is invalid, use first available item
       final firstAvailableValue = widget.items.first.value;
 
-      // Call onChanged with the first available value
       // Use addPostFrameCallback to avoid calling during build
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
@@ -195,7 +183,7 @@ class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
 
   @override
   Widget build(BuildContext context) {
-    // Handle empty items case - show empty state
+    // 🟢 Handle empty items case - show empty state
     if (widget.items.isEmpty) {
       return Row(
         children: [
@@ -226,7 +214,7 @@ class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
             ),
             child: Column(
               children: [
-                /// Toggle arrow (still functional)
+                /// Toggle arrow
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                   child: Row(
@@ -268,14 +256,33 @@ class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
                 /// Empty state message
                 Expanded(
                   child: Center(
-                    child: isMenuExpanded
-                        ? Text(
-                      'No menu items available',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .5),
-                      ),
-                    )
-                        : const SizedBox.shrink(),
+                    child: widget.emptyStateWidget ??
+                        (isMenuExpanded
+                            ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.menu_open_rounded,
+                              size: 32,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withValues(alpha: .3),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'No menu items available',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withValues(alpha: .5),
+                              ),
+                            ),
+                          ],
+                        )
+                            : const SizedBox.shrink()),
                   ),
                 ),
 
@@ -289,12 +296,55 @@ class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
           /// Empty content area
           Expanded(
             child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
               decoration: BoxDecoration(
+                border: Border.all(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: .1),
+                ),
                 borderRadius: BorderRadius.circular(5),
                 color: Theme.of(context).colorScheme.surface,
               ),
-              child: const Center(
-                child: Text('No content available'),
+              child: Center(
+                child: widget.emptyStateWidget ??
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.info_outline_rounded,
+                          size: 48,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: .3),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No content available',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: .5),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Please check your permissions',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: .4),
+                          ),
+                        ),
+                      ],
+                    ),
               ),
             ),
           ),
@@ -302,23 +352,30 @@ class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
       );
     }
 
-    // Check if selected value exists in items
-    final bool isSelectedValid = widget.items.any(
-            (item) => item.value == widget.selectedValue
+    // 🟢 Handle case where selected value doesn't exist in items
+    // Instead of throwing, show loading or return empty while we fix it
+    final isValid = widget.items.any(
+          (item) => item.value == widget.selectedValue,
     );
 
-    // If selected value doesn't exist, return SizedBox.shrink() as requested
-    if (!isSelectedValid) {
-      // We still want to attempt to fix it, but return empty widget for now
-      if (!_fixAttempted) {
-        _validateAndFixSelectedValue();
-      }
-      return const SizedBox.shrink();
+    if (!isValid) {
+      // Trigger fix if not already attempted
+      _fixInvalidSelection();
+
+      // Show loading state while fixing
+      return const Center(
+        child: SizedBox(
+          height: 40,
+          width: 40,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      );
     }
 
-    // Safely get the selected item - we know it exists now
+    // 🟢 Safely get the selected item - we know it exists now
     final selectedItem = widget.items.firstWhere(
           (e) => e.value == widget.selectedValue,
+      orElse: () => widget.items.first, // Fallback, though we already validated
     );
 
     return LayoutBuilder(
@@ -437,7 +494,14 @@ class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
             Expanded(
               flex: 1,
               child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                 decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: .1),
+                  ),
                   borderRadius: BorderRadius.circular(5),
                   color: Theme.of(context).colorScheme.surface,
                 ),

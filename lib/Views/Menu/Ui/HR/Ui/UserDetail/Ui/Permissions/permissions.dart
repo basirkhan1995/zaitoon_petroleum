@@ -46,13 +46,13 @@ class _DesktopState extends State<_Desktop> {
 
     final Map<String, List<int>> permissionGroups = {
       locale.menuTitle: [1,10,18,31,35,42,66,57,71],
-      locale.dashboard: [2, 3, 4, 5,8,6],
+      locale.dashboard: [2, 3, 4, 5, 8, 6, 9],
       locale.finance: [11,12,13,14,15,16,17,7,9],
       locale.journal: [19,20,21,22,23,24,25,26,27,28, 29, 30],
       locale.inventory: [46,48,49,50,51,52,53,54,55,56],
       locale.hrTitle: [36,37,38,39,40,41],
       locale.usersAndAuthorizations: [45],
-      locale.settings: [58,59,60,61,69,67,68,70],
+      locale.settings: [58,59,60,61,62,63,64,69,67,68,70],
       locale.transport: [43, 44,96],
       locale.report: [34,32],
       locale.actions: [106,107,108,109],

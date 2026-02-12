@@ -33,7 +33,7 @@ class IndividualsDetailsTabView extends StatelessWidget {
               label: AppLocalizations.of(context)!.accounts,
               screen: AccountsByPerIdView(ind: ind),
             ),
-            if (login.hasPermission(55) ?? false)
+            if (login.hasPermission(34) ?? false)
             ZTabItem(
               value: IndividualDetailTabName.users,
               label: AppLocalizations.of(context)!.users,
