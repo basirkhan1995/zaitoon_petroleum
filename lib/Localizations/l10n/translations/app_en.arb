@@ -819,5 +819,7 @@
   "dueToday": "Due today",
   "other": "Other",
   "menuTitle": "Menu",
-  "reports": "Reports"
+  "reports": "Reports",
+  "enableTitle": "Enabled",
+  "disabledTitle": "Disabled"
 }

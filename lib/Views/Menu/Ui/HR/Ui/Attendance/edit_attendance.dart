@@ -7,6 +7,8 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/bloc/attendance
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/model/attendance_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/time_selector.dart';
 import '../../../../../../Features/Other/toast.dart';
+import '../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../Auth/models/login_model.dart';
 import 'features/status_selector.dart';
 
 class EditAttendanceDialog extends StatefulWidget {
@@ -63,7 +65,12 @@ class _EditAttendanceDialogState extends State<EditAttendanceDialog> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
+    final state = context.watch<AuthBloc>().state;
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
 
+    final login = state.loginData;
     return BlocListener<AttendanceBloc, AttendanceState>(
       listenWhen: (prev, curr) =>
       curr is AttendanceSuccessState || curr is AttendanceErrorState,
@@ -101,7 +108,7 @@ class _EditAttendanceDialogState extends State<EditAttendanceDialog> {
         title: "${tr.edit} - ${widget.record.fullName}",
 
         onAction: _updateAttendance,
-
+        isActionTrue: (login.hasPermission(107) ?? false),
         actionLabel: BlocBuilder<AttendanceBloc, AttendanceState>(
           builder: (context, state) {
             final isLoading = state is AttendanceSilentLoadingState;

@@ -4899,6 +4899,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reports'**
   String get reports;
+
+  /// No description provided for @enableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get enableTitle;
+
+  /// No description provided for @disabledTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get disabledTitle;
 }
 
 class _AppLocalizationsDelegate

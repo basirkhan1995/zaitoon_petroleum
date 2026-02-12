@@ -13,6 +13,7 @@ import '../../../../../../Features/Date/z_generic_date.dart';
 import '../../../../../../Features/Other/attendance_status.dart';
 import '../../../../../../Features/Other/toast.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../Auth/models/login_model.dart';
 import 'edit_attendance.dart';
 import 'model/attendance_model.dart';
 
@@ -87,6 +88,7 @@ class _DesktopState extends State<_Desktop> {
       return const SizedBox();
     }
 
+    final login = state.loginData;
     usrName = state.loginData.usrName;
 
     return Scaffold(
@@ -137,14 +139,17 @@ class _DesktopState extends State<_Desktop> {
                             },
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        ZOutlineButton(
-                          height: 46,
-                          isActive: true,
-                          onPressed: () => addAttendance(tr),
-                          icon: Icons.add,
-                          label: Text(tr.addAttendance),
-                        )
+                        if(login.hasPermission(106) ?? false)...[
+                          const SizedBox(width: 8),
+                          ZOutlineButton(
+                            height: 46,
+                            isActive: true,
+                            onPressed: () => addAttendance(tr),
+                            icon: Icons.add,
+                            label: Text(tr.addAttendance),
+                          )
+                        ],
+
                       ],
                     ),
                   ],

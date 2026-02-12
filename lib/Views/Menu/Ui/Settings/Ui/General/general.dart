@@ -15,7 +15,7 @@ class GeneralView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-        tablet: _Tablet(),
+        tablet: _Desktop(),
         mobile: _Mobile(),
         desktop: _Desktop());
   }
@@ -47,6 +47,38 @@ class _Desktop extends StatelessWidget {
         icon: Icons.lock,
       ),
     ];
+    // 🟢 FIX: Handle empty tabs case
+    if (menuItems.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.no_accounts_rounded,
+              size: 48,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .3),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              AppLocalizations.of(context)!.accessDenied,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .5),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Please contact administrator",
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .4),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return BlocBuilder<GeneralTabBloc, GeneralTabState>(
       builder: (context, state) {
@@ -74,10 +106,4 @@ class _Mobile extends StatelessWidget {
   }
 }
 
-class _Tablet extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 

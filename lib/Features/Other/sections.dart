@@ -6,7 +6,8 @@ class SectionFormLayout extends StatelessWidget {
   final List<Widget> formFields;
   final double leftPanelWidth;
   final double spacing;
-  final Widget? trailing; // Optional right-side panel (like actions, help text, etc.)
+  final Widget? trailing;
+  final bool isStacked; // New parameter
 
   const SectionFormLayout({
     super.key,
@@ -16,18 +17,63 @@ class SectionFormLayout extends StatelessWidget {
     this.leftPanelWidth = 250,
     this.spacing = 4,
     this.trailing,
+    this.isStacked = false, // Default to false for desktop
   });
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        // For mobile/stacked layout
+        if (isStacked) {
+          return SizedBox(
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title & Subtitle
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    if (subtitle != null)
+                      Text(
+                        subtitle!,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                // Form fields
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: formFields
+                      .map((e) => Padding(
+                    padding: EdgeInsets.only(bottom: spacing),
+                    child: e,
+                  ))
+                      .toList(),
+                ),
+                // Optional trailing
+                if (trailing != null) ...[
+                  const SizedBox(height: 12),
+                  trailing!,
+                ],
+              ],
+            ),
+          );
+        }
+
+        // For desktop/tablet - row layout
         return SizedBox(
           width: double.infinity,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 🔹 Left: Title & Subtitle
+              // Left: Title & Subtitle
               SizedBox(
                 width: leftPanelWidth,
                 child: Column(
@@ -46,7 +92,7 @@ class SectionFormLayout extends StatelessWidget {
                 ),
               ),
 
-              // 🔹 Middle: Form fields
+              // Middle: Form fields
               Flexible(
                 flex: 2,
                 child: ConstrainedBox(
@@ -65,7 +111,7 @@ class SectionFormLayout extends StatelessWidget {
                 ),
               ),
 
-              // 🔹 Optional Right Panel
+              // Optional Right Panel
               if (trailing != null)
                 Flexible(
                   flex: 1,

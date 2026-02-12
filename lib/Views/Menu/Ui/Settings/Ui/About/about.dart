@@ -12,8 +12,8 @@ class AboutView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-        tablet: _Tablet(),
-        mobile: _Mobile(),
+        tablet: _Desktop(),
+        mobile: _Desktop(),
         desktop: _Desktop());
   }
 }
@@ -123,17 +123,4 @@ class _DesktopState extends State<_Desktop> {
   }
 }
 
-class _Mobile extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-class _Tablet extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 

@@ -2469,4 +2469,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get reports => 'گزارشات';
+
+  @override
+  String get enableTitle => 'فعال';
+
+  @override
+  String get disabledTitle => 'غیرفعال';
 }

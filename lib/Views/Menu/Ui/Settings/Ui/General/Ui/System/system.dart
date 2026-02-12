@@ -16,7 +16,7 @@ class SystemView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-      tablet: _Tablet(),
+      tablet: _Desktop(),
       mobile: _Mobile(),
       desktop: _Desktop(),
     );
@@ -208,9 +208,3 @@ class _Mobile extends StatelessWidget {
   }
 }
 
-class _Tablet extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}

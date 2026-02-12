@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/blur_loading.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/status_badge.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../Users/model/user_model.dart';
@@ -47,17 +48,16 @@ class _DesktopState extends State<_Desktop> {
     final Map<String, List<int>> permissionGroups = {
       locale.menuTitle: [1,10,18,31,35,42,66,57,71],
       locale.dashboard: [2, 3, 4, 5, 8, 6, 9],
-      locale.finance: [11,12,13,14,15,16,17,7,9],
+      locale.finance: [11,12,13,14,15,16,17,7],
       locale.journal: [19,20,21,22,23,24,25,26,27,28, 29, 30],
-      locale.inventory: [46,48,49,50,51,52,53,54,55,56],
+      locale.inventory: [48,49,50,46,51,52,53,54,55,56,],
       locale.hrTitle: [36,37,38,39,40,41],
-      locale.usersAndAuthorizations: [45],
       locale.settings: [58,59,60,61,62,63,64,69,67,68,70],
       locale.transport: [43, 44,96],
-      locale.report: [34,32],
+      locale.other: [32],
       locale.actions: [106,107,108,109],
+      locale.report: [72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105],
 
-      locale.other: [33,61,62,63,64,65,67,68,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105]
     };
 
 
@@ -148,15 +148,8 @@ class _DesktopState extends State<_Desktop> {
 
                             title: Text("${per.uprRole} | ${per.rsgName}"),
 
-                            trailing: Padding(
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 12.0),
-                              child: Text(
-                                per.uprStatus == 1
-                                    ? locale.active
-                                    : locale.blocked,
-                              ),
-                            ),
+                            trailing: StatusBadge(status: per.uprStatus!, trueValue: locale.enableTitle, falseValue: locale.disabledTitle),
+
                           );
                         }).toList(),
                       ),

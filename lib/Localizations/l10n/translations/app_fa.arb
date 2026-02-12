@@ -819,5 +819,7 @@
   "dueToday": "سررسید امروز",
   "other": "دیگر",
   "menuTitle": "مینو",
-  "reports": "گزارشات"
+  "reports": "گزارشات",
+  "enableTitle": "فعال",
+  "disabledTitle": "غیرفعال"
 }

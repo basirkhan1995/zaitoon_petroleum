@@ -2475,4 +2475,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reports => 'Reports';
+
+  @override
+  String get enableTitle => 'Enabled';
+
+  @override
+  String get disabledTitle => 'Disabled';
 }

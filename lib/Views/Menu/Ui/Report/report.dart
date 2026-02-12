@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/AllBalances/Ui/all_balances.dart';
@@ -11,6 +12,8 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/OrdersReport/Ui/
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/shipping_report.dart';
 import '../../../../Features/Other/utils.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../Auth/bloc/auth_bloc.dart';
+import '../../../Auth/models/login_model.dart';
 import 'TransactionRef/transaction_ref.dart';
 import 'TxnReport/txn_report.dart';
 import 'Ui/Finance/AccountStatement/acc_statement.dart';
@@ -33,8 +36,6 @@ enum ActionKey {
   receivable,
   accountsReport,
   trialBalance,
-
-
 
   //Transport
   shipping,
@@ -98,42 +99,72 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
 
     final List<Map<String, dynamic>> financeButtons = [
+      if(login.hasPermission(72) ?? false)
       {"title": tr.accountStatement, "icon": FontAwesomeIcons.buildingColumns, "action": ActionKey.accStatement},
+      if(login.hasPermission(73) ?? false)
       {"title": tr.glStatement, "icon": FontAwesomeIcons.buildingColumns, "action": ActionKey.glStatement},
+      if(login.hasPermission(74) ?? false)
       {"title": tr.glStatementSingleDate, "icon": FontAwesomeIcons.buildingColumns, "action": ActionKey.glStatementSingleDate},
+      if(login.hasPermission(75) ?? false)
       {"title": tr.creditors, "icon": FontAwesomeIcons.arrowTrendUp, "action": ActionKey.payable},
+      if(login.hasPermission(76) ?? false)
       {"title": tr.debtors, "icon": FontAwesomeIcons.arrowTrendDown, "action": ActionKey.receivable},
-
     ];
 
     final List<Map<String, dynamic>> stockButtons = [
-      {"title": tr.stockAvailability, "icon": Icons.storage        , "action": ActionKey.products},
+      if(login.hasPermission(77) ?? false)
+      {"title": tr.stockAvailability, "icon": Icons.storage, "action": ActionKey.products},
+      if(login.hasPermission(78) ?? false)
       {"title": tr.productMovement, "icon": Icons.shopping_bag_outlined, "action": ActionKey.stockRecord},
+      if(login.hasPermission(79) ?? false)
       {"title": tr.purchaseInvoice, "icon": Icons.add_shopping_cart_sharp, "action": ActionKey.purchase},
+      if(login.hasPermission(80) ?? false)
       {"title": tr.salesInvoice, "icon": Icons.add_shopping_cart_sharp, "action": ActionKey.sale},
+      if(login.hasPermission(81) ?? false)
       {"title": tr.estimateTitle, "icon": Icons.file_copy_outlined, "action": ActionKey.estimate},
     ];
 
     final List<Map<String, dynamic>> transactionsButtons = [
+      if(login.hasPermission(85) ?? false)
       {"title": "${tr.treasury} (${tr.all} ${tr.branches})", "icon":  FontAwesomeIcons.sackDollar, "action": ActionKey.allCashBalances},
+      if(login.hasPermission(86) ?? false)
       {"title": "${tr.treasury} (${tr.branch} Wise)", "icon": FontAwesomeIcons.sackDollar, "action": ActionKey.cashBalanceBranchWise},
+      if(login.hasPermission(87) ?? false)
       {"title": tr.exchangeRate, "icon": Icons.price_change_outlined, "action": ActionKey.exchangeRate},
+      if(login.hasPermission(110) ?? false)
       {"title": tr.balanceSheet, "icon": Icons.balance_rounded, "action": ActionKey.balanceSheet},
+      if(login.hasPermission(88) ?? false)
       {"title": tr.trialBalance, "icon": Icons.balance_rounded, "action": ActionKey.trialBalance},
+      if(login.hasPermission(89) ?? false)
       {"title": tr.transactionDetails, "icon": Icons.qr_code_2_rounded, "action": ActionKey.transactionByRef},
+      if(login.hasPermission(90) ?? false)
       {"title": "${tr.transactions} ${tr.report}", "icon": Icons.line_axis_sharp, "action": ActionKey.transactionReport},
+      if(login.hasPermission(91) ?? false)
       {"title": "All Balances", "icon": Icons.money, "action": ActionKey.allBalances},
     ];
 
     final List<Map<String, dynamic>> activitiesButtons = [
+      if(login.hasPermission(92) ?? false)
       {"title": tr.users, "icon": FontAwesomeIcons.users, "action": ActionKey.users},
+      if(login.hasPermission(94) ?? false)
       {"title": tr.userLog, "icon": Icons.scale_rounded, "action": ActionKey.userLog},
     ];
 
     final List<Map<String, dynamic>> transportButtons = [
+      if(login.hasPermission(95) ?? false)
       {"title": tr.shipping, "icon": Icons.emoji_transportation_rounded, "action": ActionKey.shipping},
+      if(login.hasPermission(96) ?? false)
+      {"title": tr.vehicle, "icon": Icons.car_crash_sharp, "action": ActionKey.shipping},
+      if(login.hasPermission(97) ?? false)
+        {"title": tr.drivers, "icon": Icons.person, "action": ActionKey.shipping},
     ];
 
     return Scaffold(

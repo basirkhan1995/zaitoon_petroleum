@@ -11,6 +11,8 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/a
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../../Auth/models/login_model.dart';
 import '../../../../HR/Ui/Employees/features/emp_card.dart';
 import '../../IndividualDetails/Ui/Profile/ind_profile.dart';
 import 'package:flutter/services.dart';
@@ -72,7 +74,12 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
+    final state = context.watch<AuthBloc>().state;
 
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): onAdd,
       const SingleActivator(LogicalKeyboardKey.f5): onRefresh,
@@ -124,6 +131,8 @@ class _DesktopState extends State<_Desktop> {
                         icon: Icons.refresh,
                         onPressed: onRefresh,
                         label: Text(tr.refresh)),
+
+                    if(login.hasPermission(106) ?? false)
                     ZOutlineButton(
                       toolTip: "F1",
                         width: 120,
@@ -214,12 +223,13 @@ class _DesktopState extends State<_Desktop> {
                               ),
                             ],
 
-                            onTap: () {
+                            onTap: (login.hasPermission(32) ?? false)? () {
                               Utils.goto(
                                 context,
                                 IndividualProfileView(ind: stk),
                               );
-                            },
+                            } : null,
+
                           );
                         },
                       );

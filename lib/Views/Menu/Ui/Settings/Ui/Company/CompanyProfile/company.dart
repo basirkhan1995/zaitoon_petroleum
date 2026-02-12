@@ -12,43 +12,37 @@ import '../../../../../../../Features/Widgets/button.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/textfield_entitled.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../../Auth/models/login_model.dart';
 
 class CompanySettingsView extends StatelessWidget {
   const CompanySettingsView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(
-        mobile: _Mobile(), tablet: _Tablet(), desktop: _Desktop());
+    return const ResponsiveLayout(
+      mobile: _MobileCompanyForm(),
+      tablet: _TabletCompanyForm(),
+      desktop: _DesktopCompanyForm(),
+    );
   }
 }
 
-class _Mobile extends StatelessWidget {
-  const _Mobile();
+// Base form widget that contains all the logic
+class _BaseCompanyForm extends StatefulWidget {
+  final bool isMobile;
+  final bool isTablet;
+
+  const _BaseCompanyForm({
+    required this.isMobile,
+    required this.isTablet,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
+  State<_BaseCompanyForm> createState() => _BaseCompanyFormState();
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-class _Desktop extends StatefulWidget {
-  const _Desktop();
-
-  @override
-  State<_Desktop> createState() => _DesktopState();
-}
-
-class _DesktopState extends State<_Desktop> {
+class _BaseCompanyFormState extends State<_BaseCompanyForm> {
   final TextEditingController businessName = TextEditingController();
   final TextEditingController phone = TextEditingController();
   final TextEditingController email = TextEditingController();
@@ -68,13 +62,12 @@ class _DesktopState extends State<_Desktop> {
   final TextEditingController comLicense = TextEditingController();
 
   CompanySettingsModel? loadedCompany;
-
   bool isUpdateMode = false;
   Uint8List _companyLogo = Uint8List(0);
   int? comId;
 
   Future<void> _pickLogoImage() async {
-    final bloc = context.read<CompanyProfileBloc>();  // SAFELY STORE BEFORE AWAIT
+    final bloc = context.read<CompanyProfileBloc>();
 
     final imageBytes = await Utils.pickImage();
     if (imageBytes == null || imageBytes.isEmpty) return;
@@ -115,17 +108,17 @@ class _DesktopState extends State<_Desktop> {
     phone.text = state.company.comPhone ?? "";
     website.text = state.company.comWebsite ?? "";
     comDetails.text = state.company.comDetails ?? "";
-    comWhatsApp.text = state.company.comWhatsapp ??"";
+    comWhatsApp.text = state.company.comWhatsapp ?? "";
     comInsta.text = state.company.comInsta ?? "";
     comFb.text = state.company.comFb ?? "";
-    comLicense.text = state.company.comLicenseNo??"";
-    comDetails.text = state.company.comSlogan??"";
-    comZipCode.text = state.company.addZipCode??"";
-    city.text = state.company.addCity??"";
-    province.text = state.company.addProvince??"";
-    country.text = state.company.addCountry??"";
+    comLicense.text = state.company.comLicenseNo ?? "";
+    comDetails.text = state.company.comSlogan ?? "";
+    comZipCode.text = state.company.addZipCode ?? "";
+    city.text = state.company.addCity ?? "";
+    province.text = state.company.addProvince ?? "";
+    country.text = state.company.addCountry ?? "";
     loadedCompany = state.company;
-    comLocalCcy.text = state.company.comLocalCcy??"";
+    comLocalCcy.text = state.company.comLocalCcy ?? "";
     final base64Logo = state.company.comLogo;
     if (base64Logo != null && base64Logo.isNotEmpty) {
       try {
@@ -170,33 +163,247 @@ class _DesktopState extends State<_Desktop> {
     ));
   }
 
+  Widget _buildHeader(LoginData login, AppLocalizations locale, CompanyProfileLoadedState state) {
+    if (widget.isMobile) {
+      // Mobile header - stacked layout
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Logo
+          Center(
+            child: Stack(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(5),
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: .09),
+                    ),
+                  ),
+                  child: (_companyLogo.isEmpty)
+                      ? Image.asset("assets/images/zaitoonLogo.png")
+                      : Image.memory(_companyLogo),
+                ),
+                if (isUpdateMode)
+                  Positioned(
+                    top: 70,
+                    left: 70,
+                    child: IconButton(
+                      onPressed: _pickLogoImage,
+                      icon: Container(
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.circular(3),
+                            border: Border.all(
+                                color: Theme.of(context).colorScheme.primary)),
+                        child: Icon(
+                          Icons.camera_alt_rounded,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Company info
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                state.company.comName ?? "",
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+              if (state.company.comEmail != null && state.company.comEmail!.isNotEmpty)
+                Text(state.company.comEmail ?? ""),
+              if (state.company.comPhone != null && state.company.comPhone!.isNotEmpty)
+                Text(state.company.comPhone ?? ""),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Action buttons
+          if (login.hasPermission(108) ?? false)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 8,
+              children: [
+                if (!isUpdateMode)
+                  ZOutlineButton(
+                    width: 100,
+                    icon: Icons.edit,
+                    label: Text(locale.edit),
+                    onPressed: () {
+                      setState(() {
+                        isUpdateMode = true;
+                      });
+                    },
+                  ),
+                if (isUpdateMode)
+                  ZOutlineButton(
+                    width: 100,
+                    icon: Icons.clear,
+                    backgroundHover: Theme.of(context).colorScheme.error,
+                    label: Text(locale.cancel),
+                    onPressed: _cancelUpdate,
+                  ),
+                if (isUpdateMode)
+                  ZButton(
+                    width: 110,
+                    label: Text(locale.saveChanges),
+                    onPressed: _updateCompanyProfile,
+                  ),
+              ],
+            ),
+        ],
+      );
+    } else {
+      // Desktop/Tablet header - row layout
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Row(
+            children: [
+              Stack(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(5),
+                    width: widget.isTablet ? 100 : 120,
+                    height: widget.isTablet ? 100 : 120,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: .09),
+                      ),
+                    ),
+                    child: (_companyLogo.isEmpty)
+                        ? Image.asset("assets/images/zaitoonLogo.png")
+                        : Image.memory(_companyLogo),
+                  ),
+                  if (isUpdateMode)
+                    Positioned(
+                      top: widget.isTablet ? 70 : 82,
+                      left: widget.isTablet ? 70 : 82,
+                      child: IconButton(
+                        onPressed: _pickLogoImage,
+                        icon: Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surface,
+                              borderRadius: BorderRadius.circular(3),
+                              border: Border.all(
+                                  color: Theme.of(context).colorScheme.primary)),
+                          child: Icon(
+                            Icons.camera_alt_rounded,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    state.company.comName ?? "",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  if (state.company.comEmail != null && state.company.comEmail!.isNotEmpty)
+                    Text(state.company.comEmail ?? ""),
+                  if (state.company.comPhone != null && state.company.comPhone!.isNotEmpty)
+                    Text(state.company.comPhone ?? ""),
+                ],
+              ),
+            ],
+          ),
+          if (login.hasPermission(108) ?? false)
+            Row(
+              spacing: 8,
+              children: [
+                if (!isUpdateMode)
+                  ZOutlineButton(
+                    width: widget.isTablet ? 100 : 110,
+                    icon: Icons.edit,
+                    label: Text(locale.edit),
+                    onPressed: () {
+                      setState(() {
+                        isUpdateMode = true;
+                      });
+                    },
+                  ),
+                if (isUpdateMode)
+                  ZOutlineButton(
+                    width: widget.isTablet ? 100 : 110,
+                    icon: Icons.clear,
+                    backgroundHover: Theme.of(context).colorScheme.error,
+                    label: Text(locale.cancel),
+                    onPressed: _cancelUpdate,
+                  ),
+                if (isUpdateMode)
+                  ZButton(
+                    width: widget.isTablet ? 110 : 120,
+                    label: Text(locale.saveChanges),
+                    onPressed: _updateCompanyProfile,
+                  ),
+              ],
+            ),
+        ],
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: widget.isMobile
+          ? AppBar(
+        title: Text(locale.settings),
+        centerTitle: true,
+      )
+          : null,
       body: BlocConsumer<CompanyProfileBloc, CompanyProfileState>(
-          listener: (context, state) {
-            if (state is CompanyProfileErrorState) {
-              Utils.showOverlayMessage(context, message: state.message, isError: true);
-            }
+        listener: (context, state) {
+          if (state is CompanyProfileErrorState) {
+            Utils.showOverlayMessage(
+                context, message: state.message, isError: true);
+          }
 
-            if (state is CompanyProfileLoadedState) {
-              // Update form fields with new data
-              _updateControllers(state);
+          if (state is CompanyProfileLoadedState) {
+            _updateControllers(state);
 
-              // Exit update mode after successful update
-              if (isUpdateMode) {
-                setState(() {
-                  isUpdateMode = false;
-                });
-                Utils.showOverlayMessage(context, message: "Successfully updated", isError: false);
-              }
+            if (isUpdateMode) {
+              setState(() {
+                isUpdateMode = false;
+              });
+              Utils.showOverlayMessage(
+                  context, message: "Successfully updated", isError: false);
             }
-          },
+          }
+        },
         builder: (context, state) {
           if (state is CompanyProfileLoadingState) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
@@ -206,7 +413,7 @@ class _DesktopState extends State<_Desktop> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(state.message),
                 ],
               ),
@@ -215,148 +422,69 @@ class _DesktopState extends State<_Desktop> {
 
           if (state is CompanyProfileLoadedState) {
             loadedCompany = state.company;
+
+            // Determine responsive values
+            final double leftPanelWidth = widget.isMobile
+                ? 0
+                : (widget.isTablet ? 180 : 250);
+            final bool isStacked = widget.isMobile;
+            final EdgeInsets contentPadding = widget.isMobile
+                ? const EdgeInsets.all(12)
+                : const EdgeInsets.all(16);
+
             return SingleChildScrollView(
-              padding: EdgeInsets.all(16),
+              padding: contentPadding,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header & Logo
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(
-                        children: [
-                          Stack(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(5),
-                                width: 120,
-                                height: 120,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  border: Border.all(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primary
-                                        .withValues(alpha: .09),
-                                  ),
-                                ),
-                                child: (_companyLogo.isEmpty)
-                                    ? Image.asset("assets/images/zaitoonLogo.png")
-                                    : Image.memory(_companyLogo),
-                              ),
-                              if (isUpdateMode)
-                                Positioned(
-                                  top: 82,
-                                  left: 82,
-                                  child: IconButton(
-                                    onPressed: _pickLogoImage,
-                                    icon: Container(
-                                      decoration: BoxDecoration(
-                                          color: Theme.of(context).colorScheme.surface,
-                                          borderRadius: BorderRadius.circular(3),
-                                          border: Border.all(
-                                              color: Theme.of(context).colorScheme.primary
-                                          )
-                                      ),
-                                      child: Icon(
-                                        Icons.camera_alt_rounded,
-                                        color: Theme.of(context).colorScheme.primary,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                state.company.comName ?? "",
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                              if (state.company.comEmail != null && state.company.comEmail!.isNotEmpty)
-                                Text(state.company.comEmail ?? ""),
-                              if (state.company.comPhone != null && state.company.comPhone!.isNotEmpty)
-                                Text(state.company.comPhone ?? ""),
-                            ],
-                          )
-                        ],
-                      ),
-                      Row(
-                        spacing: 8,
-                        children: [
-                          if (!isUpdateMode)
-                            ZOutlineButton(
-                              width: 110,
-                              icon: Icons.edit,
-                              label: Text(locale.edit),
-                              onPressed: () {
-                                setState(() {
-                                  isUpdateMode = true;
-                                });
-                              },
-                            ),
-                          if (isUpdateMode)
-                            ZOutlineButton(
-                              width: 110,
-                              icon: Icons.clear,
-                              backgroundHover: Theme.of(context).colorScheme.error,
-                              label: Text(locale.cancel),
-                              onPressed: _cancelUpdate,
-                            ),
-                          if (isUpdateMode)
-                            ZButton(
-                              width: 120,
-                              label: Text(locale.saveChanges),
-                              onPressed: _updateCompanyProfile,
-                            ),
-                        ],
-                      )
-                    ],
-                  ),
+                  // Header Section
+                  _buildHeader(login, locale, state),
 
-                  SizedBox(height: 5),
-                  Divider(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
+                  Divider(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .outline
+                          .withValues(alpha: .3)),
+                  const SizedBox(height: 5),
 
+                  // Address Section
                   SectionFormLayout(
                     title: AppLocalizations.of(context)!.address,
                     subtitle: locale.addressHint,
-                    trailing: SizedBox(),
+                    leftPanelWidth: leftPanelWidth,
+                    isStacked: isStacked,
                     formFields: [
                       ZTextFieldEntitled(
                         readOnly: !isUpdateMode,
                         controller: address,
                         title: locale.address,
-                        validator: (value){
-                          if(value.isEmpty){
+                        validator: (value) {
+                          if (value.isEmpty) {
                             return locale.required(locale.address);
                           }
                           return null;
                         },
                       ),
-                      SizedBox(height: 5),
-                      Row(
-                        spacing: 5,
-                        children: [
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              readOnly: !isUpdateMode,
-                              controller: city,
-                              title: locale.city,
-                            ),
+                      const SizedBox(height: 5),
+                      _buildResponsiveRow([
+                        Expanded(
+                          child: ZTextFieldEntitled(
+                            readOnly: !isUpdateMode,
+                            controller: city,
+                            title: locale.city,
                           ),
-
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              readOnly: !isUpdateMode,
-                              controller: province,
-                              title: locale.province,
-                            ),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: ZTextFieldEntitled(
+                            readOnly: !isUpdateMode,
+                            controller: province,
+                            title: locale.province,
                           ),
+                        ),
+                        if (!widget.isMobile) ...[
+                          const SizedBox(width: 5),
                           Expanded(
                             child: ZTextFieldEntitled(
                               readOnly: !isUpdateMode,
@@ -365,107 +493,122 @@ class _DesktopState extends State<_Desktop> {
                             ),
                           ),
                         ],
-                      ),
-                      SizedBox(height: 5),
-                      Row(
-                        spacing: 5,
-                        children: [
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              readOnly: !isUpdateMode,
-                              controller: phone,
-                              title: locale.mobile1,
-                            ),
+                      ]),
+                      if (widget.isMobile) ...[
+                        const SizedBox(height: 5),
+                        ZTextFieldEntitled(
+                          readOnly: !isUpdateMode,
+                          controller: country,
+                          title: locale.country,
+                        ),
+                      ],
+                      const SizedBox(height: 5),
+                      _buildResponsiveRow([
+                        Expanded(
+                          child: ZTextFieldEntitled(
+                            readOnly: !isUpdateMode,
+                            controller: phone,
+                            title: locale.mobile1,
                           ),
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              readOnly: !isUpdateMode,
-                              controller: comWhatsApp,
-                              title: locale.whatsApp,
-                            ),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: ZTextFieldEntitled(
+                            readOnly: !isUpdateMode,
+                            controller: comWhatsApp,
+                            title: locale.whatsApp,
                           ),
-                        ],
-                      ),
-                      SizedBox(height: 5),
+                        ),
+                      ]),
                     ],
                   ),
-                  SizedBox(height: 5),
-                  Divider(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
-                  SizedBox(height: 5),
+
+                  const SizedBox(height: 5),
+                  Divider(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .outline
+                          .withValues(alpha: .3)),
+                  const SizedBox(height: 5),
+
+                  // Social Media Section
                   SectionFormLayout(
                     title: AppLocalizations.of(context)!.socialMedia,
                     subtitle: AppLocalizations.of(context)!.profileHint,
-                    trailing: SizedBox(),
+                    leftPanelWidth: leftPanelWidth,
+                    isStacked: isStacked,
                     formFields: [
-                      Row(
-                        spacing: 5,
-                        children: [
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              readOnly: !isUpdateMode,
-                              controller: website,
-                              title: AppLocalizations.of(context)!.website,
-                            ),
+                      _buildResponsiveRow([
+                        Expanded(
+                          child: ZTextFieldEntitled(
+                            readOnly: !isUpdateMode,
+                            controller: website,
+                            title: AppLocalizations.of(context)!.website,
                           ),
-
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              readOnly: !isUpdateMode,
-                              controller: email,
-                              title: AppLocalizations.of(context)!.email,
-                            ),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: ZTextFieldEntitled(
+                            readOnly: !isUpdateMode,
+                            controller: email,
+                            title: AppLocalizations.of(context)!.email,
                           ),
-                        ],
-                      ),
-                      SizedBox(height: 5),
-                      Row(
-                        spacing: 5,
-                        children: [
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              readOnly: !isUpdateMode,
-                              controller: comFb,
-                              title: AppLocalizations.of(context)!.facebook,
-                            ),
+                        ),
+                      ]),
+                      const SizedBox(height: 5),
+                      _buildResponsiveRow([
+                        Expanded(
+                          child: ZTextFieldEntitled(
+                            readOnly: !isUpdateMode,
+                            controller: comFb,
+                            title: AppLocalizations.of(context)!.facebook,
                           ),
-
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              readOnly: !isUpdateMode,
-                              controller: comInsta,
-                              title: AppLocalizations.of(context)!.instagram,
-                            ),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: ZTextFieldEntitled(
+                            readOnly: !isUpdateMode,
+                            controller: comInsta,
+                            title: AppLocalizations.of(context)!.instagram,
                           ),
-                        ],
-                      ),
-                      SizedBox(height: 5),
+                        ),
+                      ]),
                     ],
                   ),
-                  SizedBox(height: 5),
-                  Divider(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
-                  SizedBox(height: 5),
+
+                  const SizedBox(height: 5),
+                  Divider(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .outline
+                          .withValues(alpha: .3)),
+                  const SizedBox(height: 5),
+
+                  // Company Details Section
                   SectionFormLayout(
                     title: AppLocalizations.of(context)!.comDetails,
                     subtitle: locale.addressHint,
-                    trailing: SizedBox(),
+                    leftPanelWidth: leftPanelWidth,
+                    isStacked: isStacked,
                     formFields: [
-                      Row(
-                        spacing: 5,
-                        children: [
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              readOnly: true,
-                              isEnabled: false,
-                              controller: comLicense,
-                              title: locale.comLicense,
-                            ),
+                      _buildResponsiveRow([
+                        Expanded(
+                          child: ZTextFieldEntitled(
+                            readOnly: true,
+                            isEnabled: false,
+                            controller: comLicense,
+                            title: locale.comLicense,
                           ),
-                          Expanded(
-                            child: ZTextFieldEntitled(
-                              controller: comZipCode,
-                              title: locale.zipCode,
-                            ),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: ZTextFieldEntitled(
+                            controller: comZipCode,
+                            title: locale.zipCode,
                           ),
+                        ),
+                        if (!widget.isMobile) ...[
+                          const SizedBox(width: 5),
                           Expanded(
                             child: ZTextFieldEntitled(
                               readOnly: true,
@@ -475,8 +618,17 @@ class _DesktopState extends State<_Desktop> {
                             ),
                           ),
                         ],
-                      ),
-                      SizedBox(height: 5),
+                      ]),
+                      if (widget.isMobile) ...[
+                        const SizedBox(height: 5),
+                        ZTextFieldEntitled(
+                          readOnly: true,
+                          isEnabled: false,
+                          controller: comLocalCcy,
+                          title: locale.baseCurrency,
+                        ),
+                      ],
+                      const SizedBox(height: 5),
                       ZTextFieldEntitled(
                         readOnly: !isUpdateMode,
                         controller: comDetails,
@@ -495,5 +647,56 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
+
+  Widget _buildResponsiveRow(List<Widget> children) {
+    if (widget.isMobile) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
+      );
+    }
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: children,
+    );
+  }
 }
 
+// Mobile Form
+class _MobileCompanyForm extends StatelessWidget {
+  const _MobileCompanyForm();
+
+  @override
+  Widget build(BuildContext context) {
+    return _BaseCompanyForm(
+      isMobile: true,
+      isTablet: false,
+    );
+  }
+}
+
+// Tablet Form
+class _TabletCompanyForm extends StatelessWidget {
+  const _TabletCompanyForm();
+
+  @override
+  Widget build(BuildContext context) {
+    return _BaseCompanyForm(
+      isMobile: false,
+      isTablet: true,
+    );
+  }
+}
+
+// Desktop Form
+class _DesktopCompanyForm extends StatelessWidget {
+  const _DesktopCompanyForm();
+
+  @override
+  Widget build(BuildContext context) {
+    return _BaseCompanyForm(
+      isMobile: false,
+      isTablet: false,
+    );
+  }
+}

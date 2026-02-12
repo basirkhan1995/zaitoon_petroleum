@@ -6,6 +6,7 @@ import '../../../../../../Features/Generic/generic_menu.dart';
 import '../../../../../../Features/Other/responsive.dart';
 import '../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../Auth/models/login_model.dart';
 import 'bloc/stock_settings_tab_bloc.dart';
 
 class StockSettingsView extends StatelessWidget {
@@ -14,7 +15,7 @@ class StockSettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-        tablet: _Tablet(),
+        tablet: _Desktop(),
         mobile: _Mobile(),
         desktop: _Desktop());
   }
@@ -28,14 +29,17 @@ class _Desktop extends StatelessWidget {
     if (state is! AuthenticatedState) {
       return const SizedBox();
     }
-    // final login = state.loginData;
+     final login = state.loginData;
     final menuItems = [
+
+      if (login.hasPermission(67) ?? false)
       MenuDefinition(
         value: StockSettingsTabName.products,
         label: AppLocalizations.of(context)!.products,
         screen: const ProductsView(),
         icon: Icons.production_quantity_limits_rounded,
       ),
+      if (login.hasPermission(68) ?? false)
       MenuDefinition(
         value: StockSettingsTabName.proCategory,
         label: AppLocalizations.of(context)!.categoryTitle,
@@ -70,10 +74,4 @@ class _Mobile extends StatelessWidget {
   }
 }
 
-class _Tablet extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 

@@ -21,7 +21,7 @@ class SettingsView extends StatelessWidget {
     return ResponsiveLayout(
       mobile: _Mobile(),
       desktop: _Desktop(),
-      tablet: _Tablet(),
+      tablet: _Desktop(),
     );
   }
 }
@@ -80,8 +80,40 @@ class _Desktop extends StatelessWidget {
               label: AppLocalizations.of(context)!.about,
               screen: const AboutView(),
             ),
-          ];
 
+          ];
+          // 🟢 FIX: Handle empty tabs case
+          if (tabs.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.no_accounts_rounded,
+                    size: 48,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .3),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    AppLocalizations.of(context)!.accessDenied,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .5),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Please contact administrator",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .4),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
           final availableValues = tabs.map((tab) => tab.value).toList();
           final selected = availableValues.contains(state.tabs)
               ? state.tabs
@@ -123,11 +155,3 @@ class _Mobile extends StatelessWidget {
   }
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}

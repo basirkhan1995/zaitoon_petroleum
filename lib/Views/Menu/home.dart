@@ -181,7 +181,37 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
         icon: Icons.info_outlined,
       ),
     ]];
-
+    if (menuItems.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.no_accounts_rounded,
+              size: 48,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .3),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              AppLocalizations.of(context)!.accessDenied,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .5),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Please contact administrator",
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .4),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
