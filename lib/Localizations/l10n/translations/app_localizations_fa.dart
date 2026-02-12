@@ -2458,4 +2458,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get dueToday => 'سررسید امروز';
+
+  @override
+  String get other => 'دیگر';
 }

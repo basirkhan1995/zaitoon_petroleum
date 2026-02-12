@@ -2466,4 +2466,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dueToday => 'Due today';
+
+  @override
+  String get other => 'Other';
 }

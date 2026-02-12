@@ -4881,6 +4881,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Due today'**
   String get dueToday;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
 }
 
 class _AppLocalizationsDelegate

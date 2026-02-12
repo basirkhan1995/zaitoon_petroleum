@@ -2460,4 +2460,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dueToday => 'نن نېټه';
+
+  @override
+  String get other => 'دیگر';
 }

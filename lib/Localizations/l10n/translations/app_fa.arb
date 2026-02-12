@@ -816,5 +816,6 @@
   "overdueByOne": "یک روز سررسید گذشته",
   "overdueBy": "گذشت زمان ",
   "dueTomorrow": "سررسید فردا",
-  "dueToday": "سررسید امروز"
+  "dueToday": "سررسید امروز",
+  "other": "دیگر"
 }

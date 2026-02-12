@@ -816,5 +816,6 @@
   "overdueByOne": "Overdue by 1 days",
   "overdueBy": "Overdue by",
   "dueTomorrow": "Due tomorrow",
-  "dueToday": "Due today"
+  "dueToday": "Due today",
+  "other": "Other"
 }

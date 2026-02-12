@@ -816,5 +816,6 @@
   "overdueByOne": "یو ورځ ځنډ",
   "overdueBy": "ورځ ځنډ",
   "dueTomorrow": "سبا نېټه",
-  "dueToday": "نن نېټه"
+  "dueToday": "نن نېټه",
+  "other": "دیگر"
 }
