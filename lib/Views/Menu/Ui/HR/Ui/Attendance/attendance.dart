@@ -25,7 +25,7 @@ class AttendanceView extends StatelessWidget {
     return const ResponsiveLayout(
       mobile: _Mobile(),
       desktop: _Desktop(),
-      tablet: _Tablet(),
+      tablet: _Desktop(),
     );
   }
 }
@@ -39,14 +39,7 @@ class _Mobile extends StatelessWidget {
   }
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
 
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 
 class _Desktop extends StatefulWidget {
   const _Desktop();
