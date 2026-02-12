@@ -57,7 +57,7 @@ class _DesktopState extends State<_Desktop> {
   bool usrFcp = true;
   int? usrStatus;
   int? branchCode;
-  String? usrRole;
+  UserRole? usrRole;
 
   final formKey = GlobalKey<FormState>();
 
@@ -69,7 +69,7 @@ class _DesktopState extends State<_Desktop> {
   void initState() {
     email.text = widget.user.usrEmail ?? "";
     usrName.text = widget.user.usrName ?? "";
-    usrRole = widget.user.usrRole;
+    usrRole = UserRole.fromDatabaseValue(widget.user.usrRole??"");
     branchCode = widget.user.usrBranch;
     usrFcp = widget.user.usrFcp == 1;
     usrStatus = widget.user.usrStatus;
@@ -87,9 +87,9 @@ class _DesktopState extends State<_Desktop> {
       if (companyState is AuthenticatedState) {
         return companyState.loginData.usrName;
       }
-      return ""; // Fallback currency
+      return "";
     } catch (e) {
-      return ""; // Fallback if provider not available
+      return "";
     }
   }
   void saveChanges() {
@@ -97,7 +97,7 @@ class _DesktopState extends State<_Desktop> {
       usrName: usrName.text,
       usrEmail: email.text,
       usrPass: usrPass.text,
-      usrRole: usrRole,
+      usrRole: usrRole?.toDatabaseValue(),
       usrBranch: branchCode,
       usrFcp: usrFcp ? 1 : 0,
       loggedInUser: currentUser(),
@@ -374,10 +374,10 @@ class _DesktopState extends State<_Desktop> {
                   });
                 })),
                 Expanded(child: UserRoleDropdown(
-                  selectedDatabaseValue: widget.user.usrRole,
+                  selectedRole: usrRole,
                     onRoleSelected: (e) {
                   setState(() {
-                    usrRole = e?.name;
+                    usrRole = e;
                   });
                 })),
               ],

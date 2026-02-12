@@ -157,7 +157,7 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
           }
         },
         child: GenericMenuWithScreen<MenuName>(
-          key: const Key('main_menu'), // Add a key for better widget identity
+          key: const Key('main_menu'),
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
           margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
           selectedValue: currentTab,

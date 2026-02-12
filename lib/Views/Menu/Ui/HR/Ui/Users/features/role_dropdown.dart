@@ -15,32 +15,35 @@ enum UserRole {
 
   String toDatabaseValue() {
     switch (this) {
-      case UserRole.ceo: return 'CEO';
-      case UserRole.manager: return 'Manager';
-      case UserRole.deputy: return 'Deputy';
-      case UserRole.admin: return 'Admin';
-      case UserRole.authorizer: return 'Authoriser';
-      case UserRole.cashier: return 'Cashier';
-      case UserRole.officer: return 'Officer';
-      case UserRole.customerService: return 'Customer Service';
-      case UserRole.customer: return 'Customer';
+      case UserRole.ceo: return 'ceo';
+      case UserRole.manager: return 'manager';
+      case UserRole.deputy: return 'deputy';
+      case UserRole.admin: return 'admin';
+      case UserRole.authorizer: return 'authorizer';
+      case UserRole.cashier: return 'cashier';
+      case UserRole.officer: return 'officer';
+      case UserRole.customerService: return 'customer service';
+      case UserRole.customer: return 'customer';
     }
   }
 
-  static UserRole fromDatabaseValue(String value) {
-    switch (value) {
-      case 'CEO': return UserRole.ceo;
-      case 'Manager': return UserRole.manager;
-      case 'Deputy': return UserRole.deputy;
-      case 'Admin': return UserRole.admin;
-      case 'Authoriser': return UserRole.authorizer;
-      case 'Cashier': return UserRole.cashier;
-      case 'Officer': return UserRole.officer;
-      case 'Customer Service': return UserRole.customerService;
-      case 'Customer': return UserRole.customer;
-      default: return UserRole.customer;
+  static UserRole? fromDatabaseValue(String? value) {
+    if (value == null) return null;
+
+    switch (value.toLowerCase().trim()) {
+      case 'ceo': return UserRole.ceo;
+      case 'manager': return UserRole.manager;
+      case 'deputy': return UserRole.deputy;
+      case 'admin': return UserRole.admin;
+      case 'authorizer': return UserRole.authorizer;
+      case 'cashier': return UserRole.cashier;
+      case 'officer': return UserRole.officer;
+      case 'customer service': return UserRole.customerService;
+      case 'customer': return UserRole.customer;
+      default: return null;
     }
   }
+
 }
 
 // Extension to add an "All" pseudo-role

@@ -70,8 +70,7 @@ class _DesktopState extends State<_Desktop> {
       locale.cashOperations: [18, 19, 20, 21, 22, 23, 24, 25],
       locale.settings: [31, 32,26],
       locale.transport: [28, 29, 30],
-      locale.report: [51, 52, 53,49, 50, 54,40,27, 34, 35, 36, 37,
-        38, 39, 41, 42, 43, 44, 55, 56],
+      locale.report: [51, 52, 53,49, 50, 54,40,27, 34, 35, 36, 37, 38, 39, 41, 42, 43, 44, 55, 56],
     };
 
 
@@ -159,7 +158,7 @@ class _DesktopState extends State<_Desktop> {
                               },
                             ),
 
-                            title: Text(per.rsgName ?? ""),
+                            title: Text("${per.uprRole} | ${per.rsgName}"),
 
                             trailing: Padding(
                               padding:
