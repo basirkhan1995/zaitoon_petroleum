@@ -408,7 +408,7 @@
   "driverName": "Driver Information",
   "vehicle": "Vehicle",
   "hireDate": "Hired date",
-  "vehicleModel": "Vehicle Model",
+  "vehicleModel": "Vehicle Model & Driver",
   "driver": "Driver",
   "manufacturedYear": "Model Year",
   "vehiclePlate": "Plate No",

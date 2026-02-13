@@ -1211,7 +1211,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hireDate => 'Hired date';
 
   @override
-  String get vehicleModel => 'Vehicle Model';
+  String get vehicleModel => 'Vehicle Model & Driver';
 
   @override
   String get driver => 'Driver';

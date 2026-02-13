@@ -408,7 +408,7 @@
   "driverName": "معلومات راننده",
   "vehicle": "واسطه نقلیه",
   "hireDate": "تاریخ استخدام",
-  "vehicleModel": "مدل موتر",
+  "vehicleModel": "مدل موتر و موتروان",
   "driver": "راننده",
   "manufacturedYear": "سال تولید",
   "vehiclePlate": "نمبر پلیت",

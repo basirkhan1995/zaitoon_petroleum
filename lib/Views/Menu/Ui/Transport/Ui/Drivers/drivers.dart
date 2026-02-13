@@ -19,7 +19,7 @@ class DriversView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-        mobile: _Mobile(), tablet: _Tablet(), desktop: _Desktop());
+        mobile: _Mobile(), tablet: _Desktop(), desktop: _Desktop());
   }
 }
 
@@ -32,14 +32,6 @@ class _Mobile extends StatelessWidget {
   }
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 
 class _Desktop extends StatefulWidget {
   const _Desktop();

@@ -30,20 +30,12 @@ class TxnReferenceView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobile: _Mobile(),
-      tablet: _Tablet(),
+      tablet: _Desktop(txnView),
       desktop: _Desktop(txnView),
     );
   }
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 class _Mobile extends StatelessWidget {
   const _Mobile();
 

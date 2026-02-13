@@ -43,14 +43,6 @@ class _Mobile extends StatelessWidget {
   }
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 
 class _Desktop extends StatefulWidget {
   const _Desktop();
@@ -326,7 +318,7 @@ class _DesktopState extends State<_Desktop> {
                             subtitle: Text(tr.pendingTransactionHint),
                           )),
                       Expanded(
-                        flex: 3,
+                        flex: 5,
                         child: ZSearchField(
                           icon: FontAwesomeIcons.magnifyingGlass,
                           controller: searchController,
@@ -382,7 +374,7 @@ class _DesktopState extends State<_Desktop> {
                         ),
 
                       SizedBox(
-                        width: 162,
+                        width: 140,
                         child: Text(
                           tr.txnDate,
                           style: titleStyle,
@@ -524,7 +516,7 @@ class _DesktopState extends State<_Desktop> {
                                       ),
 
                                     SizedBox(
-                                      width: 162,
+                                      width: 140,
                                       child: Row(
                                         children: [
                                           if (isLoadingThisItem)

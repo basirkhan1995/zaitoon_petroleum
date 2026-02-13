@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/status_badge.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/add_edit_vehicle.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/bloc/vehicle_bloc.dart';
@@ -16,18 +17,10 @@ class VehiclesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-      mobile: _Mobile(), desktop: _Desktop(), tablet: _Tablet(),);
+      mobile: _Mobile(), desktop: _Desktop(), tablet: _Desktop(),);
   }
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 
 
 class _Mobile extends StatelessWidget {
@@ -65,7 +58,7 @@ class _DesktopState extends State<_Desktop> {
     final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
-    TextStyle? titleStyle = textTheme.titleSmall;
+    TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.surface);
     return Scaffold(
        backgroundColor: color.surface,
         body: Column(
@@ -110,8 +103,12 @@ class _DesktopState extends State<_Desktop> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 1),
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 5),
+              margin: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 1),
               child: Row(
                 spacing: 5,
                 children: [
@@ -125,20 +122,17 @@ class _DesktopState extends State<_Desktop> {
                       child: Text(tr.fuelType,style: titleStyle)),
                   SizedBox(
                       width: 100,
-                      child: Text(tr.manufacturedYear,style: titleStyle)),
-                  SizedBox(
-                      width: 120,
                       child: Text(tr.vehicleType,style: titleStyle)),
                   SizedBox(
                       width: 100,
                       child: Text(tr.drivers,style: titleStyle)),
                   SizedBox(
-                      width: 80,
+                      width: 90,
                       child: Text(tr.status,style: titleStyle)),
                 ],
               ),
             ),
-            Divider(endIndent: 15,indent: 15,color: color.primary),
+
             Expanded(
               child: BlocBuilder<VehicleBloc, VehicleState>(
                 builder: (context, state) {
@@ -178,14 +172,22 @@ class _DesktopState extends State<_Desktop> {
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 8),
+                            margin:  const EdgeInsets.symmetric(horizontal: 15.0),
                             decoration: BoxDecoration(
                               color: index.isEven? color.primary.withValues(alpha: .05) : Colors.transparent
                             ),
                             child: Row(
                               spacing: 5,
                               children: [
-                                Icon(Icons.local_shipping_outlined,color: color.outline),
-                               Expanded(child: Text(vehicle.vclModel??"")),
+                                 Expanded(
+                                     child: Column(
+                                       crossAxisAlignment: CrossAxisAlignment.start,
+                                       children: [
+                                     Text(vehicle.vclModel??"",style: titleStyle?.copyWith(color: color.outline.withValues(alpha: .9)),),
+                                     Text(vehicle.driver??"")
+                                   ],
+
+                                 )),
                                 SizedBox(
                                     width: 100,
                                     child: Text(vehicle.vclOwnership??"")),
@@ -197,16 +199,11 @@ class _DesktopState extends State<_Desktop> {
                                     child: Text(vehicle.vclFuelType??"")),
                                 SizedBox(
                                     width: 100,
-                                    child: Text(vehicle.vclYear??"")),
-                                SizedBox(
-                                    width: 120,
                                     child: Text(vehicle.vclBodyType??"")),
+
                                 SizedBox(
-                                    width: 100,
-                                    child: Text(vehicle.driver??"")),
-                                SizedBox(
-                                    width: 80,
-                                    child: Text(vehicle.vclStatus == 1? tr.active : tr.inactive)),
+                                    width: 90,
+                                    child: StatusBadge(status: vehicle.vclStatus!,trueValue: tr.active, falseValue: tr.inactive)),
                               ],
                             ),
                           ),

@@ -1202,7 +1202,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get hireDate => 'تاریخ استخدام';
 
   @override
-  String get vehicleModel => 'مدل موتر';
+  String get vehicleModel => 'مدل موتر و موتروان';
 
   @override
   String get driver => 'راننده';
