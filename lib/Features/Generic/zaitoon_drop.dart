@@ -13,11 +13,11 @@ class ZDropdown<T> extends StatefulWidget {
 
   /// SINGLE
   final T? selectedItem;
-  final ValueChanged<T> onItemSelected; // ✅ REQUIRED
+  final ValueChanged<T> onItemSelected;
 
   /// MULTI
   final List<T>? selectedItems;
-  final ValueChanged<List<T>>? onMultiSelectChanged; // ✅ OPTIONAL
+  final ValueChanged<List<T>>? onMultiSelectChanged;
   final bool multiSelect;
 
   final Widget Function(T)? leadingBuilder;
@@ -202,7 +202,6 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
     final renderBox = _buttonKey.currentContext!.findRenderObject() as RenderBox;
     final offset = renderBox.localToGlobal(Offset.zero);
     final color = Theme.of(context).colorScheme;
-
     return OverlayEntry(
       builder: (_) => Positioned(
         left: offset.dx,
@@ -213,7 +212,7 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
           borderRadius: BorderRadius.circular(widget.radius ?? 4),
           child: Container(
             constraints: BoxConstraints(
-              maxHeight: 300, // Fixed max height
+              maxHeight: 300,
             ),
             child: AnimatedSize(
               duration: const Duration(milliseconds: 200),

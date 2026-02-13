@@ -678,6 +678,7 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.read<AuthBloc>().state as AuthenticatedState;
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is UnAuthenticatedState) {
@@ -687,10 +688,12 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
+          titleSpacing: 0,
           leading: IconButton(
             icon: const Icon(Icons.menu),
             onPressed: () => _scaffoldKey.currentState?.openDrawer(),
           ),
+          actionsPadding: EdgeInsets.all(8),
           title: BlocBuilder<MenuBloc, MenuState>(
             builder: (context, state) {
               return Text(
@@ -703,9 +706,15 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
             },
           ),
           actions: [
-            IconButton(
-              icon: const Icon(Icons.account_circle),
-              onPressed: () => _showProfileDialog(context),
+            InkWell(
+              onTap: () => _showProfileDialog(context),
+              child: ImageHelper.stakeholderProfile(
+                imageName: authState.loginData.usrPhoto,
+                size: 40,
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: .3),
+                ),
+              ),
             ),
           ],
         ),

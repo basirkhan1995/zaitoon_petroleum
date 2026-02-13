@@ -36,6 +36,7 @@ class StockView extends StatelessWidget {
     }
     final login = state.loginData;
     double opacity = .05;
+
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): () => gotoPurchase(context),
       const SingleActivator(LogicalKeyboardKey.f2): () => gotoSale(context),

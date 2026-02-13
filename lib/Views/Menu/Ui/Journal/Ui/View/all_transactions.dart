@@ -807,7 +807,7 @@ class _DesktopState extends State<_Desktop> {
                   child: Row(
                     children: [
                       SizedBox(
-                          width: 80,
+                          width: 100,
                           child: Text(tr.txnDate, style: titleStyle)),
                       SizedBox(width: 20),
                       Expanded(
@@ -923,7 +923,7 @@ class _DesktopState extends State<_Desktop> {
                                       child: Row(
                                         children: [
                                           SizedBox(
-                                            width: 80,
+                                            width: 100,
                                             child: Row(
                                               children: [
                                                 if (isLoadingThisItem)
