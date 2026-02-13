@@ -25,7 +25,7 @@ class EndOfYearView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobile: _Mobile(),
-      tablet: _Tablet(),
+      tablet: _Desktop(),
       desktop: _Desktop(),
     );
   }

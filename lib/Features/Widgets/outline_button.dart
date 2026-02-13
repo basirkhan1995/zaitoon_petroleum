@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ZOutlineButton extends StatefulWidget {
-  final Widget label;
+  final Widget? label;
   final VoidCallback? onPressed;
   final double? height;
   final double? width;
@@ -89,7 +89,7 @@ class ZOutlineButtonState extends State<ZOutlineButton> {
           if (widget.icon != null) const SizedBox(width: 5),
           DefaultTextStyle.merge(
             style: TextStyle(color: textColor),
-            child: widget.label,
+            child: widget.label ?? SizedBox(),
           ),
         ],
       ),

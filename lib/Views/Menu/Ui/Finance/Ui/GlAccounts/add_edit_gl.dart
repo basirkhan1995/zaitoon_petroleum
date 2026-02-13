@@ -19,18 +19,9 @@ class AddEditGl extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobile: _Mobile(),
-      tablet: _Tablet(),
+      tablet: _Desktop(model),
       desktop: _Desktop(model),
     );
-  }
-}
-
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
 
@@ -87,6 +78,7 @@ class _DesktopState extends State<_Desktop> {
     bool isEdit = widget.model != null;
     return ZFormDialog(
       onAction: onSubmit,
+      width: 500,
       padding: EdgeInsets.symmetric(vertical: 15,horizontal: 15),
       actionLabel: glState is GlAccountsLoadingState? SizedBox(
         height: 16,

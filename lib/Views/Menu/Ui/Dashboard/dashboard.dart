@@ -187,79 +187,76 @@ class _Desktop extends StatelessWidget {
     final login = state.loginData;
     return Scaffold(
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
 
-                    //Stats Count - Total Accounts, Total Stakeholders ...
-                    if (login.hasPermission(2) ?? false) ...[
-                      if (visibility.statsCount) ...[
-                        DashboardStatsView(),
-                      ],
+                  //Stats Count - Total Accounts, Total Stakeholders ...
+                  if (login.hasPermission(2) ?? false) ...[
+                    if (visibility.statsCount) ...[
+                      DashboardStatsView(),
                     ],
-
-                      //Exchange Rate Graph
-                      if (login.hasPermission(7) ?? false) ...[
-                        SizedBox(height: 400, child: FxRateDashboardChart()),
-                      ],
-
-                      if (login.hasPermission(4) ?? false) ...[
-                        TotalDailyColumnView(),
-                      ],
-
-                    if (login.hasPermission(5) ?? false) ...[
-                      const TotalDailyTxnView(),
-                    ],
-
                   ],
-                ),
-              ),
 
-              SizedBox(
-                width: 500,
-                child: Column(
-                  children: [
-                    if (login.hasPermission(6) ?? false) ...[
-                      if (visibility.dashboardClock) ...[
-                        const DigitalClock(),
-                        SizedBox(),
-                      ],
-                    ],
-
-                    //Exchange Rate Widget
+                    //Exchange Rate Graph
                     if (login.hasPermission(7) ?? false) ...[
-                      if (visibility.exchangeRate) ...[
-                        ExchangeRateView(
-                          settingButton: true,
-                          newRateButton: false,
-                        ),
-                      ],
+                      SizedBox(height: 400, child: FxRateDashboardChart()),
                     ],
 
-                    //Profit & Loss Graph
-                    if (login.hasPermission(8) ?? false) ...[
-                      if (visibility.profitAndLoss) ...[
-                        SizedBox(height: 3),
-                        DailyGrossView(),
-                      ],
+                    if (login.hasPermission(4) ?? false) ...[
+                      TotalDailyColumnView(),
                     ],
 
-                    //Reminder
-                    if (login.hasPermission(9) ?? false) ...[
-                      DashboardAlertReminder(),
-                    ],
-                    SizedBox(height: 3),
+                  if (login.hasPermission(5) ?? false) ...[
+                    const TotalDailyTxnView(),
                   ],
-                ),
+
+                ],
               ),
-            ],
-          ),
+            ),
+
+            SizedBox(
+              width: 500,
+              child: Column(
+                children: [
+                  if (login.hasPermission(6) ?? false) ...[
+                    if (visibility.dashboardClock) ...[
+                      const DigitalClock(),
+                      SizedBox(),
+                    ],
+                  ],
+
+                  //Exchange Rate Widget
+                  if (login.hasPermission(7) ?? false) ...[
+                    if (visibility.exchangeRate) ...[
+                      ExchangeRateView(
+                        settingButton: true,
+                        newRateButton: false,
+                      ),
+                    ],
+                  ],
+
+                  //Profit & Loss Graph
+                  if (login.hasPermission(8) ?? false) ...[
+                    if (visibility.profitAndLoss) ...[
+                      SizedBox(height: 3),
+                      DailyGrossView(),
+                    ],
+                  ],
+
+                  //Reminder
+                  if (login.hasPermission(9) ?? false) ...[
+                    DashboardAlertReminder(),
+                  ],
+                  SizedBox(height: 3),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

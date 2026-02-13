@@ -2481,4 +2481,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get disabledTitle => 'Disabled';
+
+  @override
+  String get shortcuts => 'Shortcuts';
 }

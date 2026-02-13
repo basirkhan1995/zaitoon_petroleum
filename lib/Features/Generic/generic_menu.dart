@@ -192,8 +192,7 @@ class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
             duration: const Duration(milliseconds: 300),
             width: isMenuExpanded ? maxScreenSize : minScreenSize,
             height: double.infinity,
-            margin: widget.margin ??
-                const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+            margin: widget.margin ?? const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
             padding: EdgeInsets.zero,
             decoration: BoxDecoration(
               border: Border.all(
@@ -467,9 +466,7 @@ class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
                             icon: item.icon,
                             fontSize: widget.fontSize,
                             isExpanded: isMenuExpanded,
-                            padding: widget.padding ??
-                                const EdgeInsets.symmetric(
-                                    horizontal: 5.0, vertical: 5),
+                            padding: widget.padding ?? const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5),
                             margin: const EdgeInsets.symmetric(
                                 horizontal: 2.0, vertical: 3),
                             borderRadius: widget.borderRadius,

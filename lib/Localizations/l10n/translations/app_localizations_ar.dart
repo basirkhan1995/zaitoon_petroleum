@@ -2475,4 +2475,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get disabledTitle => 'غیرفعال';
+
+  @override
+  String get shortcuts => 'میانبرها';
 }

@@ -821,5 +821,6 @@
   "menuTitle": "Menu",
   "reports": "Reports",
   "enableTitle": "Enabled",
-  "disabledTitle": "Disabled"
+  "disabledTitle": "Disabled",
+  "shortcuts": "Shortcuts"
 }

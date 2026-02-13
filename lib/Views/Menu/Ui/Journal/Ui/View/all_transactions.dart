@@ -28,7 +28,7 @@ class AllTransactionsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-        mobile: _Mobile(), tablet: _Tablet(), desktop: _Desktop());
+        mobile: _Mobile(), tablet: _Desktop(), desktop: _Desktop());
   }
 }
 
@@ -306,7 +306,7 @@ class _DesktopState extends State<_Desktop> {
                   child: Row(
                     children: [
                       SizedBox(
-                          width: 170,
+                          width: 80,
                           child: Text(tr.txnDate, style: titleStyle)),
                       SizedBox(width: 20),
                       Expanded(
@@ -422,7 +422,7 @@ class _DesktopState extends State<_Desktop> {
                                       child: Row(
                                         children: [
                                           SizedBox(
-                                            width: 170,
+                                            width: 80,
                                             child: Row(
                                               children: [
                                                 if (isLoadingThisItem)
@@ -435,7 +435,7 @@ class _DesktopState extends State<_Desktop> {
                                                       strokeWidth: 2,
                                                     ),
                                                   ),
-                                                Text(txn.trnEntryDate?.toDateTime ?? ""),
+                                                Text(txn.trnEntryDate?.toFormattedDate() ?? ""),
                                               ],
                                             ),
                                           ),

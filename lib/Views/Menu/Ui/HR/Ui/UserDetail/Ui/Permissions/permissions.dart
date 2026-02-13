@@ -31,7 +31,6 @@ class _Desktop extends StatefulWidget {
 
 class _DesktopState extends State<_Desktop> {
 
-
   @override
   void initState() {
     context.read<PermissionsBloc>().add(
@@ -56,7 +55,7 @@ class _DesktopState extends State<_Desktop> {
       locale.transport: [43, 44,96],
       locale.other: [32],
       locale.actions: [106,107,108,109],
-      locale.report: [72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105],
+      locale.report: [72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,110,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105],
 
     };
 
@@ -147,7 +146,6 @@ class _DesktopState extends State<_Desktop> {
                             ),
 
                             title: Text("${per.uprRole} | ${per.rsgName}"),
-
                             trailing: StatusBadge(status: per.uprStatus!, trueValue: locale.enableTitle, falseValue: locale.disabledTitle),
 
                           );
@@ -159,7 +157,6 @@ class _DesktopState extends State<_Desktop> {
               }).toList(),
             );
           }
-
           return SizedBox();
         },
       ),

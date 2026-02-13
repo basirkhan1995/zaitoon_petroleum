@@ -821,5 +821,6 @@
   "menuTitle": "مینو",
   "reports": "گزارشات",
   "enableTitle": "فعال",
-  "disabledTitle": "غیرفعال"
+  "disabledTitle": "غیرفعال",
+  "shortcuts": "میانبرها"
 }
