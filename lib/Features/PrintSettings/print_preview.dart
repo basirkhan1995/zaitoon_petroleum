@@ -145,7 +145,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
     return Container(
       margin: const EdgeInsets.all(8),
       padding: const EdgeInsets.all(12),
-      width: 250,
+      width: 220,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(5),

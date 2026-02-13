@@ -65,25 +65,7 @@ class ReportView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(mobile: _Mobile(), tablet: _Tablet(), desktop: _Desktop());
-  }
-}
-
-class _Mobile extends StatelessWidget {
-  const _Mobile();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
+    return ResponsiveLayout(mobile: _Desktop(), tablet: _Desktop(), desktop: _Desktop());
   }
 }
 
@@ -177,14 +159,6 @@ class _DesktopState extends State<_Desktop> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-               Row(
-                 spacing: 5,
-                 children: [
-                   Icon(Icons.add_chart),
-                   Text(tr.report,style: Theme.of(context).textTheme.titleLarge?.copyWith()),
-                 ],
-               ),
-               SizedBox(height: 15),
               _buildSectionTitle(title: tr.finance,icon: Icons.money_rounded),
               Divider(),
               SizedBox(height: 8),

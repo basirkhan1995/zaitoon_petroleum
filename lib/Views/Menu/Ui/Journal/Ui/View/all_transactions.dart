@@ -304,15 +304,10 @@ class _TabletState extends State<_Tablet> {
                               style: titleStyle)),
 
                       SizedBox(
-                          width: 110,
-                          child: Text(tr.createdBy,
+                          width: 120,
+                          child: Text(tr.users,
                               style: titleStyle)),
-                      SizedBox(width: 10),
-                      SizedBox(
-                          width: 110,
-                          child: Text(tr.checker,
-                              style: titleStyle)),
-                      SizedBox(width: 10),
+
                       SizedBox(
                           width: 115,
                           child: Text(tr.status,
@@ -326,9 +321,7 @@ class _TabletState extends State<_Tablet> {
                       if (state is TransactionSuccessState) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           Navigator.of(context).pop();
-                          context
-                              .read<TransactionsBloc>()
-                              .add(LoadAllTransactionsEvent('all'));
+                          context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('all'));
                         });
                       }
                     },
@@ -410,97 +403,97 @@ class _TabletState extends State<_Tablet> {
 
                                           SizedBox(
                                             width: 120,
+                                            child: Row(
+                                              children: [
+                                                if (isLoadingThisItem)
+                                                  Container(
+                                                    width: 16,
+                                                    height: 16,
+                                                    margin: EdgeInsets.only(right: myLocale == "en"? 8 : 0, left: myLocale == "en"? 0 : 8),
+                                                    child:
+                                                    const CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                    ),
+                                                  ),
+                                                Text(txn.trnEntryDate?.toFormattedDate() ?? ""),
+                                              ],
+                                            ),
+                                          ),
+                                          Expanded(
                                             child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                SizedBox(
-                                                  width: 80,
-                                                  child: Row(
-                                                    children: [
-                                                      if (isLoadingThisItem)
-                                                        Container(
-                                                          width: 16,
-                                                          height: 16,
-                                                          margin: EdgeInsets.only(right: myLocale == "en"? 8 : 0, left: myLocale == "en"? 0 : 8),
-                                                          child:
-                                                          const CircularProgressIndicator(
-                                                            strokeWidth: 2,
-                                                          ),
-                                                        ),
-                                                      Text(txn.trnEntryDate?.toFormattedDate() ?? ""),
-                                                    ],
-                                                  ),
-                                                ),
                                                 SizedBox(
                                                     width: 130,
                                                     child: Text(Utils.getTxnCode(
                                                         txn: txn.trnType ?? "",
                                                         context: context))),
-                                              ],
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Row(
-                                              children: [
-                                                SizedBox(
-                                                  width: 28,
-                                                  height: 28,
-                                                  child: Material(
-                                                    color: Colors.transparent,
-                                                    child: InkWell(
-                                                      onTap: () {
-                                                        _copyToClipboard(reference, context);
-                                                      },
-                                                      borderRadius: BorderRadius.circular(4),
-                                                      hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
-                                                      child: AnimatedContainer(
-                                                        duration: const Duration(milliseconds: 100),
-                                                        decoration: BoxDecoration(
-                                                          color: isCopied
-                                                              ? Theme.of(context).colorScheme.primary.withAlpha(25)
-                                                              : Colors.transparent,
-                                                          border: Border.all(
-                                                            color: isCopied
-                                                                ? Theme.of(context).colorScheme.primary
-                                                                : Theme.of(context).colorScheme.outline.withValues(alpha: .3),
-                                                            width: 1,
-                                                          ),
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 28,
+                                                      height: 28,
+                                                      child: Material(
+                                                        color: Colors.transparent,
+                                                        child: InkWell(
+                                                          onTap: () {
+                                                            _copyToClipboard(reference, context);
+                                                          },
                                                           borderRadius: BorderRadius.circular(4),
-                                                        ),
-                                                        child: Center(
-                                                          child: AnimatedSwitcher(
-                                                            duration: const Duration(milliseconds: 300),
-                                                            child: Icon(
-                                                              isCopied ? Icons.check : Icons.content_copy,
-                                                              key: ValueKey<bool>(isCopied),
-                                                              size: 15,
+                                                          hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
+                                                          child: AnimatedContainer(
+                                                            duration: const Duration(milliseconds: 100),
+                                                            decoration: BoxDecoration(
                                                               color: isCopied
-                                                                  ? Theme.of(context).colorScheme.primary
-                                                                  : Theme.of(context).colorScheme.outline.withValues(alpha: .6),
+                                                                  ? Theme.of(context).colorScheme.primary.withAlpha(25)
+                                                                  : Colors.transparent,
+                                                              border: Border.all(
+                                                                color: isCopied
+                                                                    ? Theme.of(context).colorScheme.primary
+                                                                    : Theme.of(context).colorScheme.outline.withValues(alpha: .3),
+                                                                width: 1,
+                                                              ),
+                                                              borderRadius: BorderRadius.circular(4),
+                                                            ),
+                                                            child: Center(
+                                                              child: AnimatedSwitcher(
+                                                                duration: const Duration(milliseconds: 300),
+                                                                child: Icon(
+                                                                  isCopied ? Icons.check : Icons.content_copy,
+                                                                  key: ValueKey<bool>(isCopied),
+                                                                  size: 15,
+                                                                  color: isCopied
+                                                                      ? Theme.of(context).colorScheme.primary
+                                                                      : Theme.of(context).colorScheme.outline.withValues(alpha: .6),
+                                                                ),
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
+                                                    const SizedBox(width: 8),
+                                                    // Reference text that takes remaining space
+                                                    Expanded(
+                                                        child:
+                                                        Text(txn.trnReference.toString())),
+                                                  ],
                                                 ),
-                                                const SizedBox(width: 8),
-                                                // Reference text that takes remaining space
-                                                Expanded(
-                                                    child:
-                                                    Text(txn.trnReference.toString())),
                                               ],
                                             ),
                                           ),
 
-                                          SizedBox(width: 20),
                                           SizedBox(
-                                              width: 110,
-                                              child: Text(txn.maker ?? "")),
-                                          SizedBox(width: 20),
-                                          SizedBox(
-                                              width: 110,
-                                              child: Text(txn.checker ?? "")),
+                                            width: 125,
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(txn.maker ?? ""),
+                                                Text(txn.checker ?? ""),
+                                              ],
+                                            ),
+                                          ),
                                           SizedBox(
                                               width: 115,
                                               child: TransactionStatusBadge(status: txn.trnStateText??"")),
@@ -557,7 +550,6 @@ class _Desktop extends StatefulWidget {
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> {
 
   final Map<String, bool> _copiedStates = {};

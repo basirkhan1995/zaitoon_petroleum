@@ -90,10 +90,12 @@ class TransactionStatusConfig {
 class TransactionStatusBadge extends StatelessWidget {
   /// API value like: "Deleted", "Pending", "Authorized", "Reversed"
   final String status;
+  final bool enableLabel;
 
   const TransactionStatusBadge({
     super.key,
     required this.status,
+    this.enableLabel = true,
   });
 
   @override
@@ -123,15 +125,17 @@ class TransactionStatusBadge extends StatelessWidget {
             size: 14,
             color: config.textColor,
           ),
-          const SizedBox(width: 6),
-          Text(
-            config.title,
-            style: TextStyle(
-              color: config.textColor,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+          if(enableLabel)...[
+            const SizedBox(width: 6),
+            Text(
+              config.title,
+              style: TextStyle(
+                color: config.textColor,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
+          ]
         ],
       ),
     );

@@ -85,8 +85,8 @@ class ZOutlineButtonState extends State<ZOutlineButton> {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (widget.icon != null)
-            Icon(widget.icon, color: textColor, size: widget.iconSize),
-          if (widget.icon != null) const SizedBox(width: 5),
+          Icon(widget.icon, color: textColor, size: widget.iconSize),
+          if (widget.icon != null && widget.label !=null) const SizedBox(width: 5),
           DefaultTextStyle.merge(
             style: TextStyle(color: textColor),
             child: widget.label ?? SizedBox(),

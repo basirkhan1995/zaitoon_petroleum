@@ -83,12 +83,16 @@ class _DesktopState extends State<_Desktop> {
   final company = ReportModel();
   TransactionsModel? transactionsModel;
   bool isPrint = true;
+  static bool isMobile(BuildContext context) => MediaQuery.of(context).size.width < 600;
+  static bool isTablet(BuildContext context) => MediaQuery.of(context).size.width >= 600 && MediaQuery.of(context).size.width < 1100;
 
   @override
   void initState() {
     super.initState();
-    // Delay context access until after initState
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if(isMobile(context) || isTablet(context)) {
+        _isExpanded = false;
+      }
       if (mounted) {
         setState(() {
           currentLocale = context.read<LocalizationBloc>().state.languageCode;
@@ -1963,8 +1967,6 @@ class _DesktopState extends State<_Desktop> {
         return AccountStatementView();
       });
     }
-
-
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): () => onCashDepositWithdraw(trnType: "CHDP"),
       const SingleActivator(LogicalKeyboardKey.f2): () => onCashDepositWithdraw(trnType: "CHWL"),
@@ -1979,7 +1981,6 @@ class _DesktopState extends State<_Desktop> {
       const SingleActivator(LogicalKeyboardKey.keyG,control: true, shift: true): () => showGlStatement(),
       const SingleActivator(LogicalKeyboardKey.keyA,control: true, shift: true): () => showAccountStatement(),
     };
-
 
     return Scaffold(
       body: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
@@ -2066,7 +2067,7 @@ class _DesktopState extends State<_Desktop> {
                   ),
                   // RIGHT SIDE — SHORTCUT BUTTONS PANEL
                   Container(
-                    width: _isExpanded ? 190 : 70,
+                    width: _isExpanded ? 170 : 70,
                     margin: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
                     height: double.infinity,
                     decoration: BoxDecoration(
@@ -2106,7 +2107,7 @@ class _DesktopState extends State<_Desktop> {
                               children: [
                                 if (_isExpanded)
                                   Text(
-                                    "Shortcuts",
+                                    locale.shortcuts,
                                     style: Theme.of(context).textTheme.titleSmall,
                                   ),
                                 Container(
@@ -2171,7 +2172,7 @@ class _DesktopState extends State<_Desktop> {
                               child: ZOutlineButton(
                                 backgroundColor: color.primary.withValues(alpha: opacity),
                                 toolTip: "F1 - ${locale.deposit}",
-                                label: const SizedBox.shrink(),
+                                label: null,
                                 icon: Icons.arrow_circle_down_rounded,
                                 width: double.infinity,
                                 onPressed: () => onCashDepositWithdraw(trnType: "CHDP"),
@@ -2195,7 +2196,7 @@ class _DesktopState extends State<_Desktop> {
                               child: ZOutlineButton(
                                 backgroundColor: color.primary.withValues(alpha: opacity),
                                 toolTip: "F2 - ${locale.withdraw}",
-                                label: const SizedBox.shrink(),
+                                label: null,
                                 icon: Icons.arrow_circle_up_rounded,
                                 width: double.infinity,
                                 onPressed: () => onCashDepositWithdraw(trnType: "CHWL"),
@@ -2219,7 +2220,7 @@ class _DesktopState extends State<_Desktop> {
                               child: ZOutlineButton(
                                 backgroundColor: color.primary.withValues(alpha: opacity),
                                 toolTip: "F3 - ${locale.income}",
-                                label: const SizedBox.shrink(),
+                                label: null,
                                 icon: Icons.arrow_circle_down_rounded,
                                 width: double.infinity,
                                 onPressed: () => onCashIncome(trnType: "INCM"),
@@ -2243,7 +2244,7 @@ class _DesktopState extends State<_Desktop> {
                               child: ZOutlineButton(
                                 backgroundColor: color.primary.withValues(alpha: opacity),
                                 toolTip: "F4 - ${locale.expense}",
-                                label: const SizedBox.shrink(),
+                                label: null,
                                 icon: Icons.arrow_circle_up_rounded,
                                 width: double.infinity,
                                 onPressed: () => onCashExpense(trnType: "XPNS"),
@@ -2281,7 +2282,7 @@ class _DesktopState extends State<_Desktop> {
                               child: ZOutlineButton(
                                 backgroundColor: color.primary.withValues(alpha: opacity),
                                 toolTip: "F5 - ${locale.singleAccount}",
-                                label: const SizedBox.shrink(),
+                                label: null,
                                 icon: Icons.swap_horiz_rounded,
                                 width: double.infinity,
                                 onPressed: () => accountToAccount(trnType: "ATAT"),
@@ -2305,7 +2306,7 @@ class _DesktopState extends State<_Desktop> {
                               child: ZOutlineButton(
                                 backgroundColor: color.primary.withValues(alpha: opacity),
                                 toolTip: "F6 - ${locale.multiAccount}",
-                                label: const SizedBox.shrink(),
+                                label: null,
                                 icon: Icons.swap_horiz_rounded,
                                 width: double.infinity,
                                 onPressed: onMultiATAT,
@@ -2329,7 +2330,7 @@ class _DesktopState extends State<_Desktop> {
                               child: ZOutlineButton(
                                 backgroundColor: color.primary.withValues(alpha: opacity),
                                 toolTip: "F7 - ${locale.fxTransaction}",
-                                label: const SizedBox.shrink(),
+                                label: null,
                                 icon: Icons.swap_horiz_rounded,
                                 width: double.infinity,
                                 onPressed: onFxTxn,
@@ -2367,7 +2368,7 @@ class _DesktopState extends State<_Desktop> {
                               child: ZOutlineButton(
                                 backgroundColor: color.primary.withValues(alpha: opacity),
                                 toolTip: "F8 - ${locale.glCreditTitle}",
-                                label: const SizedBox.shrink(),
+                                label: null,
                                 width: double.infinity,
                                 icon: Icons.menu_book_rounded,
                                 onPressed: () => onGL(trnType: "GLCR"),
@@ -2391,7 +2392,7 @@ class _DesktopState extends State<_Desktop> {
                               child: ZOutlineButton(
                                 backgroundColor: color.primary.withValues(alpha: opacity),
                                 toolTip: "F9 - ${locale.glDebitTitle}",
-                                label: const SizedBox.shrink(),
+                                label: null,
                                 width: double.infinity,
                                 icon: Icons.menu_book_rounded,
                                 onPressed: () => onGL(trnType: "GLDR"),
