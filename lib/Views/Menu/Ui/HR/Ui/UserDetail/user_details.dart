@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/UserDetail/details_tab.dart';
@@ -13,22 +14,13 @@ class UserDetailsView extends StatelessWidget {
     return ResponsiveLayout(
       mobile: _Mobile(),
       desktop: _Desktop(usr: usr),
-      tablet: _Tablet(),
+      tablet: _Desktop(usr: usr),
     );
   }
 }
 
 class _Mobile extends StatelessWidget {
   const _Mobile();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-class _Tablet extends StatelessWidget {
-  const _Tablet();
 
   @override
   Widget build(BuildContext context) {
@@ -63,22 +55,26 @@ class _Desktop extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 0),
-                    horizontalTitleGap: 7,
-                    title: Text(usr.usrFullName??""),
-                    subtitle: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(usr.usrName??""),
-                        Text(usr.usrEmail??""),
-                      ],
-                    ),
-                    leading: CircleAvatar(
-                      radius: 30,
-                      child: Text(usr.usrFullName!.getFirstLetter, style: theme.titleMedium),
+                  ZCover(
+                    radius: 5,
+                    child: ListTile(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 0),
+                      horizontalTitleGap: 7,
+                      title: Text(usr.usrFullName??"",style: theme.titleMedium,),
+                      subtitle: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(usr.usrEmail??""),
+                          Text(usr.usrName??""),
+                        ],
+                      ),
+                      leading: CircleAvatar(
+                        radius: 30,
+                        child: Text(usr.usrFullName!.getFirstLetter, style: theme.titleMedium),
+                      ),
                     ),
                   ),
                   Expanded(child: UserDetailsTabView(user: usr))

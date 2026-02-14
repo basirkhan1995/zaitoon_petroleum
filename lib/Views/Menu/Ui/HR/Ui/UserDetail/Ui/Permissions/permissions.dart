@@ -108,40 +108,26 @@ class _DesktopState extends State<_Desktop> {
     return Scaffold(
       backgroundColor: color.surface,
       floatingActionButton: _hasChanges
-          ? Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: color.surface,
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withAlpha(20),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            FloatingActionButton.small(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-              heroTag: locale.cancel,
-              onPressed: _cancelChanges,
-              backgroundColor: color.errorContainer,
-              child: Icon(Icons.close, color: color.error),
-            ),
-            const SizedBox(width: 8),
-            FloatingActionButton.small(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-              heroTag: locale.saveChanges,
-              onPressed: _saveAllChanges,
-              backgroundColor: color.primary,
-              child: Icon(Icons.check_rounded, color: color.onPrimary),
-            ),
-          ],
-        ),
-      )
+          ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FloatingActionButton.small(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                heroTag: locale.cancel,
+                onPressed: _cancelChanges,
+                backgroundColor: color.errorContainer,
+                child: Icon(Icons.close, color: color.error),
+              ),
+              const SizedBox(width: 8),
+              FloatingActionButton.small(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                heroTag: locale.saveChanges,
+                onPressed: _saveAllChanges,
+                backgroundColor: color.primary,
+                child: Icon(Icons.check_rounded, color: color.onPrimary),
+              ),
+            ],
+          )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: BlocBuilder<PermissionsBloc, PermissionsState>(
