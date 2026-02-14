@@ -20,15 +20,23 @@ class PermissionsBloc extends Bloc<PermissionsEvent, PermissionsState> {
       }
     });
 
-    on<UpdatePermissionsStatusEvent>((event, emit) async{
+    on<UpdatePermissionsEvent>((event, emit) async {
       emit(PermissionsLoadingState());
-      try{
-        final permissions = await _repo.updatePermissionStatus(
-            usrId: event.usrId, uprRole: event.uprRole,uprStatus: event.uprStatus,usrName: event.usrName);
-        if(permissions["msg"] == "success") {
+      try {
+        final response = await _repo.updatePermissions(
+          usrId: event.usrId,
+          usrName: event.usrName,
+          permissions: event.permissions,
+        );
+
+        if (response["msg"] == "success") {
+          // Show success message
+          // You might want to add a Success state here
           add(LoadPermissionsEvent(event.usrName));
+        } else {
+          emit(PermissionsErrorState(response["msg"] ?? "Update failed"));
         }
-      }catch(e){
+      } catch (e) {
         emit(PermissionsErrorState(e.toString()));
       }
     });

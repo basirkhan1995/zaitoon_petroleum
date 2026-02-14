@@ -4935,6 +4935,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage cash flow entries with Debit, Credit, and Amount.'**
   String get journalHint;
+
+  /// No description provided for @changedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed'**
+  String get changedTitle;
 }
 
 class _AppLocalizationsDelegate

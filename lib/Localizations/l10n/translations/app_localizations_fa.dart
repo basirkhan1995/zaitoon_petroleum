@@ -2486,4 +2486,7 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get journalHint =>
       'مدیریت ثبت‌های جریان نقدی با بدهکار، بستانکار و مبلغ.';
+
+  @override
+  String get changedTitle => 'تغییر یافته';
 }

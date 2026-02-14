@@ -63,7 +63,7 @@ class _StockViewState extends State<StockView> {
                 builder: (context, state) {
                   final tabs = <ZTabItem<StockTabsName>>[
 
-                    if (login.hasPermission(46) ?? false)
+                    if (login.hasPermission(47) ?? false)
                       ZTabItem(
                         value: StockTabsName.orders,
                         label: locale.orderTitle,

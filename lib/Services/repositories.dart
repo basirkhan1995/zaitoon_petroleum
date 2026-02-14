@@ -603,14 +603,24 @@ class Repositories {
     return [];
   }
 
-  Future<Map<String, dynamic>> updatePermissionStatus({required int uprRole, required int usrId, required String usrName, required bool uprStatus}) async {
+// In your Repositories class
+  Future<Map<String, dynamic>> updatePermissions({
+    required int usrId,
+    required String usrName,
+    required List<Map<String, dynamic>> permissions,
+  }) async {
     final response = await api.put(
-        endpoint: "/user/permissions.php",
-        data: {
-          "uprRole":uprRole,
-          "uprUserID":usrId,
-          "uprStatus":uprStatus
+      endpoint: "/user/permissions.php",
+      data: {
+        "LogedInUser": usrName,
+        "uprUserID": usrId,
+        "records": {
+          "records": permissions.map((p) => {
+            "uprRole": p["uprRole"],
+            "uprStatus": p["uprStatus"] ? 1 : 0,
+          }).toList(),
         }
+      },
     );
     return response.data;
   }

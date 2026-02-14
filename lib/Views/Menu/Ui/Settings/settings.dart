@@ -61,7 +61,7 @@ class _Desktop extends StatelessWidget {
                 screen: const TxnTypesView(),
               ),
 
-            if (login.hasPermission(61) ?? false)
+            if (login.hasPermission(66) ?? false)
             ZTabItem(
               value: SettingsTabName.stock,
               label: AppLocalizations.of(context)!.stock,
@@ -123,12 +123,8 @@ class _Desktop extends StatelessWidget {
             /// Tab data
             tabs: tabs,
             selectedValue: selected,
-
             /// Bloc update
-            onChanged: (val) => context
-                .read<SettingsTabBloc>()
-                .add(SettingsOnChangeEvent(val)),
-
+            onChanged: (val) => context.read<SettingsTabBloc>().add(SettingsOnChangeEvent(val)),
             title: AppLocalizations.of(context)!.settings,
             description: AppLocalizations.of(context)!.settingsHint,
             /// Colors and style

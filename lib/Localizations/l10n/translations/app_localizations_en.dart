@@ -2495,4 +2495,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get journalHint =>
       'Manage cash flow entries with Debit, Credit, and Amount.';
+
+  @override
+  String get changedTitle => 'Changed';
 }

@@ -11,13 +11,18 @@ class LoadPermissionsEvent extends PermissionsEvent{
   List<Object?> get props => [usrName];
 }
 
-class UpdatePermissionsStatusEvent extends PermissionsEvent{
+class UpdatePermissionsEvent extends PermissionsEvent {
   final String usrName;
   final int usrId;
-  final int uprRole;
-  final bool uprStatus;
-  const UpdatePermissionsStatusEvent({required this.uprStatus, required this.usrId, required this.uprRole, required this.usrName});
+  final List<Map<String, dynamic>> permissions;
+
+  const UpdatePermissionsEvent({
+    required this.usrName,
+    required this.usrId,
+    required this.permissions,
+  });
+
   @override
-  List<Object?> get props => [uprStatus, usrId, uprRole,usrName];
+  List<Object?> get props => [usrName, usrId, permissions];
 }
 

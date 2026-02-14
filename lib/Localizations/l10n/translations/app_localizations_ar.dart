@@ -2488,4 +2488,7 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get journalHint =>
       'د نغدي جریان ثبتونه د ډیبیټ، کریډیټ او اندازه سره اداره کړئ.';
+
+  @override
+  String get changedTitle => 'بدل شو';
 }
