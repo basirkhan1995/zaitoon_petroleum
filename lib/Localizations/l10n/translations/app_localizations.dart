@@ -4917,6 +4917,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Shortcuts'**
   String get shortcuts;
+
+  /// No description provided for @invoiceAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice Amount'**
+  String get invoiceAmount;
 }
 
 class _AppLocalizationsDelegate

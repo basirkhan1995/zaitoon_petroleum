@@ -7,6 +7,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Accounts/accou
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/balance_sheet.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/gl_statement.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/cash_branch.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/HR/AttendanceReport/attendance_report.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/Cardx/Ui/cardx.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/OrdersReport/Ui/order_report.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/shipping_report.dart';
@@ -59,6 +60,7 @@ enum ActionKey {
 
   userLog,
   users,
+  attendance,
 }
 class ReportView extends StatelessWidget {
   const ReportView({super.key});
@@ -138,6 +140,8 @@ class _DesktopState extends State<_Desktop> {
       {"title": tr.users, "icon": FontAwesomeIcons.users, "action": ActionKey.users},
       if(login.hasPermission(94) ?? false)
       {"title": tr.userLog, "icon": Icons.scale_rounded, "action": ActionKey.userLog},
+      if(login.hasPermission(94) ?? false)
+        {"title": tr.attendance, "icon": Icons.timeline_rounded, "action": ActionKey.attendance},
     ];
 
     final List<Map<String, dynamic>> transportButtons = [
@@ -313,7 +317,7 @@ class _DesktopState extends State<_Desktop> {
       // Activity
       case ActionKey.userLog: Utils.goto(context, UserLogReportView());
       case ActionKey.users: Utils.goto(context, UsersReportView());
-
+      case ActionKey.attendance: Utils.goto(context, AttendanceReportView());
       //Transport
       case ActionKey.shipping: Utils.goto(context, ShippingReportView());
     }

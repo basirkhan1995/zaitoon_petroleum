@@ -822,5 +822,6 @@
   "reports": "گزارشات",
   "enableTitle": "فعال",
   "disabledTitle": "غیرفعال",
-  "shortcuts": "میانبرها"
+  "shortcuts": "میانبرها",
+  "invoiceAmount": "مبلغ بل"
 }

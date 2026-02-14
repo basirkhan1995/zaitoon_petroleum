@@ -33,3 +33,10 @@ final class VehicleLoadedState extends VehicleState {
   @override
   List<Object> get props => [vehicles];
 }
+
+final class VehicleReportLoadedState extends VehicleState {
+  final List<VehicleReportModel> vehicles;
+  const VehicleReportLoadedState(this.vehicles);
+  @override
+  List<Object> get props => [vehicles];
+}

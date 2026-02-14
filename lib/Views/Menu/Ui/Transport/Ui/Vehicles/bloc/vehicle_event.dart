@@ -24,3 +24,10 @@ class UpdateVehicleEvent extends VehicleEvent{
   @override
   List<Object?> get props => [newVehicle];
 }
+
+class LoadVehicleReportEvent extends VehicleEvent{
+  final int regExpired;
+  const LoadVehicleReportEvent(this.regExpired);
+  @override
+  List<Object?> get props => [regExpired];
+}

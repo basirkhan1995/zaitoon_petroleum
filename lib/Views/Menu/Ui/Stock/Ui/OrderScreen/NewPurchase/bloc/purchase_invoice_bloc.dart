@@ -230,6 +230,7 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
     final current = state as PurchaseInvoiceLoaded;
     final savedState = current.copyWith();
 
+    // Validation
     if (current.supplier == null) {
       emit(PurchaseInvoiceError('Please select a supplier'));
       emit(savedState);
@@ -296,6 +297,7 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
       }
     }
 
+    // Emit saving state
     emit(PurchaseInvoiceSaving(
       items: current.items,
       supplier: current.supplier,
@@ -349,17 +351,31 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
 
       final message = response['msg']?.toString() ?? 'No response message';
 
-      if (message.toLowerCase().contains('success')) {
-        String invoiceNumber = response['invoiceNo']?.toString() ?? 'Generated';
-        emit(PurchaseInvoiceSaved(true, invoiceNumber: invoiceNumber));
+      if (message.toLowerCase().contains('success') || message.toLowerCase().contains('authorized')) {
+        String invoiceNumber = response['invoiceNo']?.toString() ??
+            response['ordID']?.toString() ??
+            'Generated';
+
+        // FIX: Create a copy of the current state to preserve for printing
+        final invoiceData = current.copyWith();
+
+        // Emit saved state WITH the invoice data
+        emit(PurchaseInvoiceSaved(
+          true,
+          invoiceNumber: invoiceNumber,
+          invoiceData: invoiceData, // Pass the preserved data
+        ));
+
+        // Complete the completer with invoice number
         event.completer.complete(invoiceNumber);
-        add(ResetPurchaseInvoiceEvent());
-      }
-      else if (message.toLowerCase().contains('authorized')) {
-        String invoiceNumber = response['invoiceNo']?.toString() ?? 'Authorized';
-        emit(PurchaseInvoiceSaved(true, invoiceNumber: invoiceNumber));
-        event.completer.complete(invoiceNumber);
-        add(ResetPurchaseInvoiceEvent());
+
+        // Reset the form after a microtask delay to allow UI to handle printing
+        // This ensures the saved state is processed first
+        Future.microtask(() {
+          if (!emit.isDone) {
+            add(ResetPurchaseInvoiceEvent());
+          }
+        });
       }
       else {
         String errorMessage;

@@ -154,9 +154,10 @@ class SaleInvoiceSaving extends SaleInvoiceLoaded {
 class SaleInvoiceSaved extends SaleInvoiceState {
   final bool success;
   final String? invoiceNumber;
+  final SaleInvoiceLoaded? invoiceData;
 
-  const SaleInvoiceSaved(this.success, {this.invoiceNumber});
+  const SaleInvoiceSaved(this.success, {this.invoiceNumber, this.invoiceData});
 
   @override
-  List<Object?> get props => [success, invoiceNumber];
+  List<Object?> get props => [success, invoiceNumber, invoiceData ?? const []];
 }

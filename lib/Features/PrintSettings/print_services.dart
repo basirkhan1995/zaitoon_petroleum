@@ -111,6 +111,7 @@ abstract class PrintServices {
                       tightBounds: true,
                       fontWeight: pw.FontWeight.bold
                   ),
+                  pw.SizedBox(height: 5),
                   if (report.comAddress != null && report.comAddress!.isNotEmpty)
                     text(
                       text: report.comAddress ?? "",
@@ -158,7 +159,7 @@ abstract class PrintServices {
             ),
             verticalDivider(height: 15, width: 0.6),
             text(
-              text: getTranslation(locale: 'producedBy', language: language),
+              text: getTranslation(text: 'producedBy', tr: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
             ),
@@ -264,7 +265,7 @@ abstract class PrintServices {
       alignment: pw.Alignment.centerRight,
       margin: const pw.EdgeInsets.only(top: 1),
       child: text(
-        text: '${getTranslation(locale: 'page', language: language)} $currentPage ${getTranslation(locale: 'of', language: language)} $totalPages',
+        text: '${getTranslation(text: 'page', tr: language)} $currentPage ${getTranslation(text: 'of', tr: language)} $totalPages',
         fontSize: 8,
       ),
     );
@@ -436,12 +437,27 @@ abstract class PrintServices {
     return language == 'en' ? pw.TextDirection.ltr : pw.TextDirection.rtl;
   }
 
-  String getTranslation({required String locale, required String language}) {
+  String getTranslation({required String text, required String tr}) {
     const translation = {
       'moneyReceipt' : {
         'en':"Money Receipt",
         'fa':"رسید پول",
         "ar":"پول رسید"
+      },
+      'saleAmount': {
+        'en': 'Sale Amount',
+        'fa': 'مقدار فروش',
+        'ps': 'د پلور مقدار'
+      },
+      'previousAccBalance': {
+        'en': 'Previous Balance',
+        'fa': 'مانده قبلی',
+        'ps': 'اوسنی پاتی'
+      },
+      'thisCredit': {
+        'en': 'Current Invoice',
+        'fa': 'این اعتبار',
+        'ps': 'دا کریډیټ'
       },
       'totalDebits' : {
         'en':"Total Debit",
@@ -883,11 +899,7 @@ abstract class PrintServices {
         'fa':'نام حساب',
         'ar':'حساب نوم',
       },
-      'status':{
-        'en':'Status ',
-        'fa':'وضعیت',
-        'ar':'وضعیت',
-      },
+
       'debtor':{
         'en':'Debtor ',
         'fa':'بدهکار',
@@ -898,7 +910,6 @@ abstract class PrintServices {
         'fa':'طلبکار',
         'ar':'طلبکار',
       },
-
 
       'accountNumber':{
         'en':'Account No',
@@ -992,7 +1003,7 @@ abstract class PrintServices {
         'ar':'فروش',
       },
       'invoiceNumber':{
-        'en':'Invoice#',
+        'en':'INV',
         'fa':'نمبر بل',
         'ar':'بل نمبر',
       },
@@ -1430,10 +1441,30 @@ abstract class PrintServices {
         'fa': 'شماره',
         'ar': 'شمیرہ'
       },
+      'thisTransaction': {
+        'en': 'Current Invoice',
+        'fa': 'این معامله',
+        'ps': 'دا راکړه ورکړه'
+      },
+      'newBalance': {
+        'en': 'New Balance',
+        'fa': 'موجودی جدید',
+        'ps': 'نوی بیلانس'
+      },
+      'status': {
+        'en': 'Status',
+        'fa': 'وضعیت',
+        'ps': 'حالت'
+      },
+      'settled': {
+        'en': 'Settled',
+        'fa': 'تسویه شده',
+        'ps': 'تصفیه شوی'
+      }
     };
 
     // Default to English if language not found
-    final languageMap = translation[locale] ?? {'en': '', 'fa': '', 'ar': ''};
-    return languageMap[language] ?? languageMap['en']!;
+    final languageMap = translation[text] ?? {'en': '', 'fa': '', 'ar': ''};
+    return languageMap[tr] ?? languageMap['en']!;
   }
 }

@@ -25,7 +25,6 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
     on<UpdateSaleReceivePaymentEvent>(_onUpdateReceivePayment);
     on<ResetSaleInvoiceEvent>(_onReset);
     on<SaveSaleInvoiceEvent>(_onSaveInvoice);
-    on<LoadSaleStoragesEvent>(_onLoadStorages);
     on<ClearCustomerAccountEvent>(_onClearSupplierAccount);
   }
 
@@ -356,18 +355,36 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
 
       final message = response['msg']?.toString() ?? 'No response message';
       final sp = response['specific']?.toString() ?? 'No response message';
-      if (message.toLowerCase().contains('success')) {
-        //final ref = response['ref']?.toString() ?? 'No Reference';
+
+      if (message.toLowerCase().contains('success') || message.toLowerCase().contains('authorized')) {
         final invoiceNumber = response['ordID']?.toString() ?? 'No Order Id';
-        emit(SaleInvoiceSaved(true, invoiceNumber: invoiceNumber));
+
+        // FIX: Create a copy of the current state to preserve for printing
+        final invoiceData = current.copyWith();
+
+        // Emit saved state WITH the invoice data
+        emit(SaleInvoiceSaved(
+          true,
+          invoiceNumber: invoiceNumber,
+          invoiceData: invoiceData, // Pass the preserved data
+        ));
+
+        // Complete the completer with invoice number
         event.completer.complete(invoiceNumber);
-        add(ResetSaleInvoiceEvent());
+
+        // Reset the form after a short delay to allow UI to handle printing
+        // Using a microtask to ensure the saved state is processed first
+        Future.microtask(() {
+          if (!emit.isDone) {
+            add(ResetSaleInvoiceEvent());
+          }
+        });
       }
-      else if (message.toLowerCase().contains('authorized')) {
-        final invoiceNumber = response['ordID']?.toString() ?? 'No Order Id';
-        emit(SaleInvoiceSaved(true, invoiceNumber: invoiceNumber));
-        event.completer.complete(invoiceNumber);
-        add(ResetSaleInvoiceEvent());
+      else if (message.toLowerCase().contains('not enough')) {
+        String errorMessage = '${tr.notEnoughMsg} $sp';
+        emit(SaleInvoiceError(errorMessage));
+        emit(savedState);
+        event.completer.complete('');
       }
       else {
         String errorMessage;
@@ -387,8 +404,6 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
           errorMessage = 'Payment amount exceeds total bill amount';
         } else if (msgLower.contains('failed')) {
           errorMessage = 'Invoice creation failed. Please try again.';
-        }else if(msgLower.contains('not enough')){
-          errorMessage = '${tr.notEnoughMsg} $sp';
         } else {
           errorMessage = message;
         }
@@ -409,14 +424,4 @@ class SaleInvoiceBloc extends Bloc<SaleInvoiceEvent, SaleInvoiceState> {
     }
   }
 
-  Future<void> _onLoadStorages(LoadSaleStoragesEvent event, Emitter<SaleInvoiceState> emit) async {
-    try {
-      if (state is SaleInvoiceLoaded) {
-        final current = state as SaleInvoiceLoaded;
-        emit(current.copyWith(storages: []));
-      }
-    } catch (e) {
-      // Handle error silently
-    }
-  }
 }

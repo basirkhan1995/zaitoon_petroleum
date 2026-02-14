@@ -145,7 +145,7 @@ import 'package:flutter/services.dart';
                pw.Row(
                  mainAxisAlignment: pw.MainAxisAlignment.start,
                  children: [
-                   text(text: getTranslation(locale: 'createdBy', language: language), fontSize: 7),
+                   text(text: getTranslation(text: 'createdBy', tr: language), fontSize: 7),
                    text(text: " ${data.transaction?.maker} ", fontSize: 7),
                  ],
                ),
@@ -159,7 +159,7 @@ import 'package:flutter/services.dart';
                pw.Row(
                  mainAxisAlignment: pw.MainAxisAlignment.start,
                  children: [
-                   text(text: getTranslation(locale: 'authorizedBy', language: language), fontSize: 7),
+                   text(text: getTranslation(text: 'authorizedBy', tr: language), fontSize: 7),
                    text(text: data.transaction?.checker??"", fontSize: 7),
                  ],
                ),
@@ -185,7 +185,7 @@ import 'package:flutter/services.dart';
              pw.Row(
                children: [
                  text(
-                   text: getTranslation(locale: 'vehicleDetails', language: language),
+                   text: getTranslation(text: 'vehicleDetails', tr: language),
                    fontSize: 16,
                    fontWeight: pw.FontWeight.bold,
                  ),
@@ -201,31 +201,31 @@ import 'package:flutter/services.dart';
                      crossAxisAlignment: pw.CrossAxisAlignment.start,
                      children: [
                        _buildDetailRow(
-                         label: getTranslation(locale: 'vehicleID', language: language),
+                         label: getTranslation(text: 'vehicleID', tr: language),
                          value: data.vclId?.toString() ?? 'N/A',
                        ),
                        _buildDetailRow(
-                         label: getTranslation(locale: 'model', language: language),
+                         label: getTranslation(text: 'model', tr: language),
                          value: data.vclModel ?? 'N/A',
                        ),
                        _buildDetailRow(
-                         label: getTranslation(locale: 'year', language: language),
+                         label: getTranslation(text: 'year', tr: language),
                          value: data.vclYear ?? 'N/A',
                        ),
                        _buildDetailRow(
-                         label: getTranslation(locale: 'vinNumber', language: language),
+                         label: getTranslation(text: 'vinNumber', tr: language),
                          value: data.vclVinNo ?? 'N/A',
                        ),
                        _buildDetailRow(
-                         label: getTranslation(locale: 'fuelType', language: language),
+                         label: getTranslation(text: 'fuelType', tr: language),
                          value: data.vclFuelType ?? 'N/A',
                        ),
                        _buildDetailRow(
-                         label: getTranslation(locale: 'enginePower', language: language),
+                         label: getTranslation(text: 'enginePower', tr: language),
                          value: data.vclEnginPower ?? 'N/A',
                        ),
                        _buildDetailRow(
-                         label: getTranslation(locale: 'bodyType', language: language),
+                         label: getTranslation(text: 'bodyType', tr: language),
                          value: data.vclBodyType ?? 'N/A',
                        ),
                      ],
@@ -239,31 +239,31 @@ import 'package:flutter/services.dart';
                      crossAxisAlignment: pw.CrossAxisAlignment.start,
                      children: [
                        _buildDetailRow(
-                         label: getTranslation(locale: 'plateNumber', language: language),
+                         label: getTranslation(text: 'plateNumber', tr: language),
                          value: data.vclPlateNo ?? 'N/A',
                        ),
                        _buildDetailRow(
-                         label: getTranslation(locale: 'registrationNumber', language: language),
+                         label: getTranslation(text: 'registrationNumber', tr: language),
                          value: data.vclRegNo ?? 'N/A',
                        ),
                        _buildDetailRow(
-                         label: getTranslation(locale: 'expiryDate', language: language),
+                         label: getTranslation(text: 'expiryDate', tr: language),
                          value: data.vclExpireDate.toFormattedDate(),
                        ),
                        _buildDetailRow(
-                         label: getTranslation(locale: 'odometer', language: language),
+                         label: getTranslation(text: 'odometer', tr: language),
                          value: data.vclOdoMeter?.toString() ?? 'N/A',
                        ),
                        _buildDetailRow(
-                         label: getTranslation(locale: 'purchaseAmount', language: language),
+                         label: getTranslation(text: 'purchaseAmount', tr: language),
                          value: '${data.vclPurchaseAmount?.toAmount()} ${data.transaction?.purchaseCurrency}',
                        ),
                        _buildDetailRow(
-                         label: getTranslation(locale: 'driver', language: language),
+                         label: getTranslation(text: 'driver', tr: language),
                          value: data.driver ?? 'N/A',
                        ),
                        _buildDetailRow(
-                         label: getTranslation(locale: 'status', language: language),
+                         label: getTranslation(text: 'status', tr: language),
                          value: _getStatusText(data.vclStatus ?? 0, language),
                        ),
                      ],
@@ -284,7 +284,7 @@ import 'package:flutter/services.dart';
                  crossAxisAlignment: pw.CrossAxisAlignment.start,
                  children: [
                    pw.Text(
-                     getTranslation(locale: 'transactionDetails', language: language),
+                     getTranslation(text: 'transactionDetails', tr: language),
                      style: pw.TextStyle(
                        fontSize: 14,
                        fontWeight: pw.FontWeight.bold,
@@ -302,15 +302,15 @@ import 'package:flutter/services.dart';
                              crossAxisAlignment: pw.CrossAxisAlignment.start,
                              children: [
                                _buildDetailRow(
-                                 label: getTranslation(locale: 'reference', language: language),
+                                 label: getTranslation(text: 'reference', tr: language),
                                  value: data.transaction!.trnReference ?? 'N/A',
                                ),
                                _buildDetailRow(
-                                 label: getTranslation(locale: 'amount', language: language),
+                                 label: getTranslation(text: 'amount', tr: language),
                                  value: '${data.transaction!.purchaseAmount?.toAmount()} ${data.transaction!.purchaseCurrency ?? ''}',
                                ),
                                _buildDetailRow(
-                                 label: getTranslation(locale: 'debitAccount', language: language),
+                                 label: getTranslation(text: 'debitAccount', tr: language),
                                  value: data.transaction!.debitAccount?.toString() ?? 'N/A',
                                ),
                              ],
@@ -324,17 +324,17 @@ import 'package:flutter/services.dart';
                              crossAxisAlignment: pw.CrossAxisAlignment.start,
                              children: [
                                _buildDetailRow(
-                                 label: getTranslation(locale: 'creditAccount', language: language),
+                                 label: getTranslation(text: 'creditAccount', tr: language),
                                  value: data.transaction!.creditAccount?.toString() ?? 'N/A',
                                ),
 
                                _buildDetailRow(
-                                 label: getTranslation(locale: 'transactionStatus', language: language),
+                                 label: getTranslation(text: 'transactionStatus', tr: language),
                                  value: _getTransactionStatusText(data.transaction!.trnStatus ?? 0, language),
                                ),
 
                                _buildDetailRow(
-                                 label: getTranslation(locale: 'narration', language: language),
+                                 label: getTranslation(text: 'narration', tr: language),
                                  value: data.transaction!.narration ?? 'N/A',
                                ),
                              ],
@@ -380,24 +380,24 @@ import 'package:flutter/services.dart';
    String _getStatusText(int status, String language) {
      switch (status) {
        case 0:
-         return getTranslation(locale: 'inactive', language: language);
+         return getTranslation(text: 'inactive', tr: language);
        case 1:
-         return getTranslation(locale: 'active', language: language);
+         return getTranslation(text: 'active', tr: language);
        default:
-         return getTranslation(locale: 'unknown', language: language);
+         return getTranslation(text: 'unknown', tr: language);
      }
    }
 
    String _getTransactionStatusText(int status, String language) {
      switch (status) {
        case 0:
-         return getTranslation(locale: 'pending', language: language);
+         return getTranslation(text: 'pending', tr: language);
        case 1:
-         return getTranslation(locale: 'approved', language: language);
+         return getTranslation(text: 'approved', tr: language);
        case 2:
-         return getTranslation(locale: 'rejected', language: language);
+         return getTranslation(text: 'rejected', tr: language);
        default:
-         return getTranslation(locale: 'unknown', language: language);
+         return getTranslation(text: 'unknown', tr: language);
      }
    }
 
@@ -452,7 +452,7 @@ import 'package:flutter/services.dart';
              ),
              verticalDivider(height: 15, width: 0.6),
              text(
-               text: getTranslation(locale: 'producedBy', language: language),
+               text: getTranslation(text: 'producedBy', tr: language),
                fontWeight: pw.FontWeight.normal,
                fontSize: 8,
              ),

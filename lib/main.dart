@@ -84,6 +84,7 @@ import 'Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/bloc/permissions_bloc.dart
 import 'Views/Menu/Ui/Reminder/bloc/reminder_bloc.dart';
 import 'Views/Menu/Ui/Report/TransactionRef/bloc/txn_ref_report_bloc.dart';
 import 'Views/Menu/Ui/Report/TxnReport/bloc/txn_report_bloc.dart';
+import 'Views/Menu/Ui/Report/Ui/HR/AttendanceReport/bloc/attendance_report_bloc.dart';
 import 'Views/Menu/Ui/Settings/Ui/Company/Branches/bloc/branch_bloc.dart';
 import 'Views/Menu/Ui/Settings/Ui/General/bloc/general_tab_bloc.dart';
 import 'Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/bloc/products_bloc.dart';
@@ -195,6 +196,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => OrderReportBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => StockRecordBloc(Repositories(ApiServices()))..add(ResetStockRecordEvent())),
         BlocProvider(create: (context) => BackupBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => AttendanceReportBloc(Repositories(ApiServices()))),
         ///Dashboard
         BlocProvider(create: (context) => DashboardStatsBloc(Repositories(ApiServices()))..add(FetchDashboardStatsEvent())),
         BlocProvider(create: (context) => DailyGrossBloc(Repositories(ApiServices()))),

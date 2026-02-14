@@ -822,5 +822,6 @@
   "reports": "Reports",
   "enableTitle": "Enabled",
   "disabledTitle": "Disabled",
-  "shortcuts": "Shortcuts"
+  "shortcuts": "Shortcuts",
+  "invoiceAmount": "Invoice Amount"
 }

@@ -39,7 +39,7 @@ class ArApPdfServices extends PrintServices {
           pw.SizedBox(height: 10),
           _buildReportTitle(
             language: language,
-            reportType: getTranslation(locale: 'debtor', language: language),
+            reportType: getTranslation(text: 'debtor', tr: language),
           ),
           pw.SizedBox(height: 15),
           _buildSummarySection(
@@ -98,7 +98,7 @@ class ArApPdfServices extends PrintServices {
           pw.SizedBox(height: 10),
           _buildReportTitle(
             language: language,
-            reportType: getTranslation(locale: 'creditor', language: language),
+            reportType: getTranslation(text: 'creditor', tr: language),
           ),
           pw.SizedBox(height: 15),
           _buildSummarySection(
@@ -146,7 +146,7 @@ class ArApPdfServices extends PrintServices {
           ),
           pw.SizedBox(width: 10),
           text(
-            text: '${getTranslation(locale: 'accountStatement', language: language)} - $reportType',
+            text: '${getTranslation(text: 'accountStatement', tr: language)} - $reportType',
             fontSize: 16,
             fontWeight: pw.FontWeight.bold,
             color: pw.PdfColors.blue700,
@@ -164,8 +164,8 @@ class ArApPdfServices extends PrintServices {
   }) {
     final totalAccounts = accounts.length;
     final reportType = isAR
-        ? getTranslation(locale: 'debtor', language: language)
-        : getTranslation(locale: 'creditor', language: language);
+        ? getTranslation(text: 'debtor', tr: language)
+        : getTranslation(text: 'creditor', tr: language);
 
     return pw.Container(
       decoration: pw.BoxDecoration(
@@ -177,7 +177,7 @@ class ArApPdfServices extends PrintServices {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           text(
-            text: '${getTranslation(locale: 'accountSummary', language: language)} ($reportType)',
+            text: '${getTranslation(text: 'accountSummary', tr: language)} ($reportType)',
             fontSize: 14,
             fontWeight: pw.FontWeight.bold,
           ),
@@ -188,17 +188,17 @@ class ArApPdfServices extends PrintServices {
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
               _buildSummaryItem(
-                label: getTranslation(locale: 'accounts', language: language),
+                label: getTranslation(text: 'accounts', tr: language),
                 value: totalAccounts.toString(),
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(locale: 'reportType', language: language),
+                label: getTranslation(text: 'reportType', tr: language),
                 value: reportType,
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(locale: 'date', language: language),
+                label: getTranslation(text: 'date', tr: language),
                 value: DateTime.now().toIso8601String().substring(0, 10),
                 language: language,
               ),
@@ -274,7 +274,7 @@ class ArApPdfServices extends PrintServices {
               pw.SizedBox(
                 width: accountNoWidth,
                 child: text(
-                  text: getTranslation(locale: 'accountNumber', language: language),
+                  text: getTranslation(text: 'accountNumber', tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.center,
@@ -283,7 +283,7 @@ class ArApPdfServices extends PrintServices {
               pw.SizedBox(
                 width: accountNameWidth,
                 child: text(
-                  text: getTranslation(locale: 'accountName', language: language),
+                  text: getTranslation(text: 'accountName', tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -291,7 +291,7 @@ class ArApPdfServices extends PrintServices {
               pw.SizedBox(
                 width: signatoryWidth,
                 child: text(
-                  text: getTranslation(locale: 'signatory', language: language),
+                  text: getTranslation(text: 'signatory', tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -299,7 +299,7 @@ class ArApPdfServices extends PrintServices {
               pw.SizedBox(
                 width: phoneWidth,
                 child: text(
-                  text: getTranslation(locale: 'mobile', language: language),
+                  text: getTranslation(text: 'mobile', tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -307,7 +307,7 @@ class ArApPdfServices extends PrintServices {
               pw.SizedBox(
                 width: limitWidth,
                 child: text(
-                  text: getTranslation(locale: 'accountLimit', language: language),
+                  text: getTranslation(text: 'accountLimit', tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.right,
@@ -316,7 +316,7 @@ class ArApPdfServices extends PrintServices {
               pw.SizedBox(
                 width: statusWidth,
                 child: text(
-                  text: getTranslation(locale: 'status', language: language),
+                  text: getTranslation(text: 'status', tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.center,
@@ -325,7 +325,7 @@ class ArApPdfServices extends PrintServices {
               pw.SizedBox(
                 width: balanceWidth,
                 child: text(
-                  text: getTranslation(locale: 'balance', language: language),
+                  text: getTranslation(text: 'balance', tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.right,
@@ -334,7 +334,7 @@ class ArApPdfServices extends PrintServices {
               pw.SizedBox(
                 width: currencyWidth,
                 child: text(
-                  text: getTranslation(locale: 'currency', language: language),
+                  text: getTranslation(text: 'currency', tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.center,
@@ -399,7 +399,7 @@ class ArApPdfServices extends PrintServices {
                   width: limitWidth,
                   child: text(
                     text: accounts[i].accLimit == "Unlimited"
-                        ? getTranslation(locale: 'unlimited', language: language)
+                        ? getTranslation(text: 'unlimited', tr: language)
                         : accounts[i].accLimit?.toAmount() ?? "0.00",
                     fontSize: 8,
                     textAlign: pw.TextAlign.right,
@@ -449,8 +449,8 @@ class ArApPdfServices extends PrintServices {
   }) {
     final isActive = status == 1;
     final statusText = isActive
-        ? getTranslation(locale: 'active', language: language)
-        : getTranslation(locale: 'blocked', language: language);
+        ? getTranslation(text: 'active', tr: language)
+        : getTranslation(text: 'blocked', tr: language);
 
     final color = isActive ? pw.PdfColors.green700 : pw.PdfColors.red700;
 

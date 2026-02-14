@@ -25,6 +25,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/model
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/TrialBalance/model/trial_balance_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/Cardx/model/cardx_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/model/daily_txn_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/View/model/vehicle_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/ProductCategory/model/pro_cat_model.dart';
@@ -54,6 +55,7 @@ import '../Views/Menu/Ui/Report/Ui/AllBalances/model/all_balances_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/ArApReport/model/ar_ap_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/model/bs_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/ExchangeRate/model/rate_report_model.dart';
+import '../Views/Menu/Ui/Report/Ui/HR/AttendanceReport/model/attendance_report_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Stock/OrdersReport/model/order_report_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Stock/StockAvailability/model/product_report_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Transport/model/shp_report_model.dart';
@@ -803,6 +805,38 @@ class Repositories {
     return response.data;
   }
 
+  Future<List<VehicleReportModel>> vehiclesReport({int? regExpired, CancelToken? cancelToken}) async {
+    // Build query parameters dynamically
+    final queryParams = {'regExpired': regExpired};
+
+    // Fetch data from API
+    final response = await api.post(
+      endpoint: "/report/vehiclesReport.php",
+      data: queryParams,
+      cancelToken: cancelToken,
+    );
+
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
+
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => VehicleReportModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
+  }
+
   /// Shipping .................................................................
   Future<Map<String, dynamic>> addShipping({required ShippingModel newShipping}) async {
     final response = await api.post(
@@ -1382,8 +1416,8 @@ class Repositories {
 
     return [];
   }
-  Future<List<ProductsStockModel>> getProductStock({int? proId, int? noStock, CancelToken? cancelToken}) async {
-    final queryParams = {'proID': proId,'av':noStock??0};
+  Future<List<ProductsStockModel>> getProductStock({int? proId, int? noStock, String? proName, CancelToken? cancelToken}) async {
+    final queryParams = {'proID': proId,'av':noStock ?? 0,"proName": proName};
     // Fetch data from API
     final response = await api.get(
       endpoint: "/inventory/availableProducts.php",
@@ -1403,12 +1437,8 @@ class Repositories {
 
     // Parse list of stakeholders safely
     if (response.data is List) {
-      return (response.data as List)
-          .whereType<Map<String, dynamic>>() // ensure map type
-          .map((json) => ProductsStockModel.fromMap(json))
-          .toList();
+      return (response.data as List).whereType<Map<String, dynamic>>().map((json) => ProductsStockModel.fromMap(json)).toList();
     }
-
     return [];
   }
 
@@ -2699,6 +2729,42 @@ class Repositories {
         data: newData.toMap()
     );
     return response.data;
+  }
+
+  Future<List<AttendanceReportModel>> attendanceReport({String? fromDate, String? toDate, int? empId, int? status, CancelToken? cancelToken}) async {
+    // Build query parameters dynamically
+    final queryParams = {
+        "fromDate": fromDate,
+        "toDate": toDate,
+        "empID": empId,
+        "status": status
+    };
+
+    // Fetch data from API
+    final response = await api.post(
+      endpoint: "/reports/attendenceReport.php",
+      data: queryParams,
+      cancelToken: cancelToken,
+    );
+
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
+
+    // If data is null or empty, return empty list
+    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => AttendanceReportModel.fromMap(json))
+          .toList();
+    }
+    return [];
   }
 
   ///Payroll ...................................................................

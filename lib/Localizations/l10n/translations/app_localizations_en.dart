@@ -2484,4 +2484,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shortcuts => 'Shortcuts';
+
+  @override
+  String get invoiceAmount => 'Invoice Amount';
 }

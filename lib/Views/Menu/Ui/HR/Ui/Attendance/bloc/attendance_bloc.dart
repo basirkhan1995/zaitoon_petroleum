@@ -37,7 +37,6 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
         emit(AttendanceErrorState(e.toString()));
       }
     });
-
     on<AddAttendanceEvent>((event, emit) async {
       final tr = localizationService.loc;
       // Keep current UI (silent loading)
@@ -78,7 +77,6 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
         }
       }
     });
-
     on<UpdateAttendanceEvent>((event, emit) async {
       final tr = localizationService.loc;
       // Silent loading - maintain current state

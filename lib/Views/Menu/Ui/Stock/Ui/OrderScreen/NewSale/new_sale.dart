@@ -141,6 +141,7 @@ class _DesktopState extends State<_Desktop> {
             Utils.showOverlayMessage(context, message: state.message, isError: true);
           }
           if (state is SaleInvoiceSaved) {
+            Navigator.of(context).pop();
             if (state.success) {
               // Store the invoice number first
               String? savedInvoiceNumber = state.invoiceNumber;
@@ -489,7 +490,7 @@ class _DesktopState extends State<_Desktop> {
                   hintText: tr.products,
                   bloc: context.read<ProductsBloc>(),
                   fetchAllFunction: (bloc) => bloc.add(LoadProductsStockEvent(noStock: 1)),
-                  searchFunction: (bloc, query) => bloc.add(LoadProductsStockEvent()),
+                  searchFunction: (bloc, query) => bloc.add(LoadProductsStockEvent(input: query)),
                   itemBuilder: (context, product) => ListTile(
                     tileColor: Colors.transparent,
                     title: Text(product.proName ?? ''),
@@ -789,7 +790,6 @@ class _DesktopState extends State<_Desktop> {
 
                 SizedBox(height: 5),
 
-
                 // Grand Total
                 _buildSummaryRow(
                   label: tr.grandTotal,
@@ -825,21 +825,67 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ],
 
-                // Account Information
+                // Account Information - FIXED CALCULATION
                 if (current.customerAccount != null) ...[
                   Divider(color: color.outline.withValues(alpha: .2)),
+
+                  // Account details
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${current.customerAccount!.accNumber} | ${current.customerAccount!.accName}',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Current Balance
                   _buildSummaryRow(
                     label: AppLocalizations.of(context)!.currentBalance,
                     value: current.currentBalance,
-                    color: Colors.deepOrangeAccent,
+                    color: _getBalanceColor(current.currentBalance),
                   ),
+
                   if (current.creditAmount > 0) ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
+                    // Transaction amount (credit)
+                    _buildSummaryRow(
+                      label: tr.invoiceAmount,
+                      value: current.creditAmount,
+                      color: Colors.orange,
+                    ),
+                    const SizedBox(height: 4),
+                    // New Balance - FOR SALE: Current Balance - Credit Amount
                     _buildSummaryRow(
                       label: AppLocalizations.of(context)!.newBalance,
-                      value: current.newBalance,
+                      value: current.currentBalance - current.creditAmount, // FIXED: subtraction for sale
                       isBold: true,
-                      color: color.primary,
+                      color: _getBalanceColor(current.currentBalance - current.creditAmount),
+                    ),
+                    // Status
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            tr.status, // Add this translation
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          Text(
+                            _getBalanceStatus(current.currentBalance - current.creditAmount),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: _getBalanceColor(current.currentBalance - current.creditAmount),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ],
@@ -850,6 +896,27 @@ class _DesktopState extends State<_Desktop> {
         return const SizedBox();
       },
     );
+  }
+
+// Add these helper methods
+  Color _getBalanceColor(double balance) {
+    if (balance < 0) {
+      return Colors.red; // Negative = Debtor (customer owes us)
+    } else if (balance > 0) {
+      return Colors.green; // Positive = Creditor (we owe customer)
+    } else {
+      return Colors.grey; // Zero balance
+    }
+  }
+
+  String _getBalanceStatus(double balance) {
+    if (balance < 0) {
+      return AppLocalizations.of(context)!.debtor; // Add this translation
+    } else if (balance > 0) {
+      return AppLocalizations.of(context)!.creditor; // Add this translation
+    } else {
+      return AppLocalizations.of(context)!.noAccountsFound; // Add this translation
+    }
   }
   Widget _buildProfitSummarySection(BuildContext context) {
     final color = Theme.of(context).colorScheme;
@@ -1130,11 +1197,23 @@ class _DesktopState extends State<_Desktop> {
   }
   void _onSalePrint({String? invoiceNumber}) {
     final state = context.read<SaleInvoiceBloc>().state;
-    if (state is! SaleInvoiceLoaded) {
-      Utils.showOverlayMessage(context, message: 'Cannot print: No invoice data loaded', isError: true);
+
+    // Handle both loaded and saved states
+    SaleInvoiceLoaded? current;
+
+    if (state is SaleInvoiceLoaded) {
+      current = state;
+    } else if (state is SaleInvoiceSaved && state.invoiceData != null) {
+      // Use the saved invoice data
+      current = state.invoiceData;
+    }
+
+    if (current == null) {
+      Utils.showOverlayMessage(context,
+          message: 'Cannot print: No invoice data available',
+          isError: true);
       return;
     }
-    final current = state;
 
     // Prepare invoice items for print
     final List<InvoiceItem> invoiceItems = current.items.map((item) {
@@ -1165,7 +1244,7 @@ class _DesktopState extends State<_Desktop> {
             invoiceNumber: invoiceNumber ?? "",
             reference: _xRefController.text,
             invoiceDate: DateTime.now(),
-            customerSupplierName: current.customer?.perName ?? "",
+            customerSupplierName: current!.customer?.perName ?? "",
             items: invoiceItems,
             grandTotal: current.grandTotal,
             cashPayment: current.cashPayment,
@@ -1176,6 +1255,7 @@ class _DesktopState extends State<_Desktop> {
             company: company,
             pageFormat: pageFormat,
             currency: baseCurrency,
+            isSale: true
           );
         },
         onPrint: ({
@@ -1192,7 +1272,7 @@ class _DesktopState extends State<_Desktop> {
             invoiceNumber: invoiceNumber ?? "",
             reference: _xRefController.text,
             invoiceDate: DateTime.now(),
-            customerSupplierName: current.customer?.perName ?? "",
+            customerSupplierName: current!.customer?.perName ?? "",
             items: invoiceItems,
             grandTotal: current.grandTotal,
             cashPayment: current.cashPayment,
@@ -1205,6 +1285,7 @@ class _DesktopState extends State<_Desktop> {
             pageFormat: pageFormat,
             copies: copies,
             currency: baseCurrency,
+            isSale: true
           );
         },
         onSave: ({
@@ -1218,7 +1299,7 @@ class _DesktopState extends State<_Desktop> {
             invoiceNumber: invoiceNumber ?? "",
             reference: _xRefController.text,
             invoiceDate: DateTime.now(),
-            customerSupplierName: current.customer?.perName ?? "",
+            customerSupplierName: current!.customer?.perName ?? "",
             items: invoiceItems,
             grandTotal: current.grandTotal,
             cashPayment: current.cashPayment,
@@ -1229,6 +1310,7 @@ class _DesktopState extends State<_Desktop> {
             company: company,
             pageFormat: pageFormat,
             currency: baseCurrency,
+            isSale: true
           );
         },
       ),

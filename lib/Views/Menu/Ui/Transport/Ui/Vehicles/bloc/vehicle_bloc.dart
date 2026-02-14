@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/View/model/vehicle_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/model/vehicle_model.dart';
 
 part 'vehicle_event.dart';
@@ -51,6 +52,17 @@ class VehicleBloc extends Bloc<VehicleEvent, VehicleState> {
         emit(VehicleErrorState(e.toString()));
       }
     });
+
+    on<LoadVehicleReportEvent>((event, emit) async{
+      emit(VehicleLoadingState());
+      try{
+        final vehicles = await _repo.vehiclesReport(regExpired: event.regExpired);
+        emit(VehicleReportLoadedState(vehicles));
+      }catch(e){
+        emit(VehicleErrorState(e.toString()));
+      }
+    });
+
 
   }
 }

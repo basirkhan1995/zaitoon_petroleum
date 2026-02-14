@@ -124,7 +124,10 @@ class _DesktopState extends State<_Desktop> {
             Utils.showOverlayMessage(context, message: state.message, isError: true);
           }
           if (state is PurchaseInvoiceSaved) {
+            Navigator.of(context).pop();
             if (state.success) {
+              String? savedInvoiceNumber = state.invoiceNumber;
+
               Utils.showOverlayMessage(
                 context,
                 title: tr.successTitle,
@@ -134,6 +137,13 @@ class _DesktopState extends State<_Desktop> {
               _accountController.clear();
               _personController.clear();
               _xRefController.clear();
+
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (savedInvoiceNumber != null && savedInvoiceNumber.isNotEmpty) {
+                  _onPrint(invoiceNumber: savedInvoiceNumber);
+                }
+              });
+
             } else {
               Utils.showOverlayMessage(context, message: "Failed to create invoice", isError: true);
             }
@@ -436,7 +446,7 @@ class _DesktopState extends State<_Desktop> {
                   searchFunction: (bloc, query) => bloc.add(LoadProductsEvent()),
                   itemBuilder: (context, product) => Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(product.proName ?? ''),
+                    child: Text("${product.proCode} | ${product.proName}"),
                   ),
                   itemToString: (product) => product.proName ?? '',
                   stateToLoading: (state) => state is ProductsLoadingState,
@@ -654,8 +664,7 @@ class _DesktopState extends State<_Desktop> {
       builder: (context, state) {
         if (state is PurchaseInvoiceLoaded || state is PurchaseInvoiceSaving) {
           final current = state is PurchaseInvoiceSaving ?
-          state :
-          (state as PurchaseInvoiceLoaded);
+          state : (state as PurchaseInvoiceLoaded);
 
           return Container(
             padding: const EdgeInsets.all(16),
@@ -697,44 +706,91 @@ class _DesktopState extends State<_Desktop> {
                 if (current.paymentMode == PaymentMode.cash) ...[
                   _buildSummaryRow(
                     label: AppLocalizations.of(context)!.cashPayment,
-                    value: current.cashPayment, // Use cashPayment getter
+                    value: current.cashPayment,
                     color: Colors.green,
                   ),
                 ] else if (current.paymentMode == PaymentMode.credit) ...[
                   _buildSummaryRow(
                     label: AppLocalizations.of(context)!.accountPayment,
-                    value: current.creditAmount, // Use creditAmount getter
+                    value: current.creditAmount,
                     color: Colors.orange,
                   ),
                 ] else if (current.paymentMode == PaymentMode.mixed) ...[
                   _buildSummaryRow(
                     label: AppLocalizations.of(context)!.accountPayment,
-                    value: current.creditAmount, // Use creditAmount getter
+                    value: current.creditAmount,
                     color: Colors.orange,
                   ),
                   const SizedBox(height: 4),
                   _buildSummaryRow(
                     label: AppLocalizations.of(context)!.cashPayment,
-                    value: current.cashPayment, // Use cashPayment getter
+                    value: current.cashPayment,
                     color: Colors.green,
                   ),
                 ],
 
-                // Account Information
+                // Account Information - FIXED FOR PURCHASE
                 if (current.supplierAccount != null) ...[
                   Divider(color: color.outline.withValues(alpha: .2)),
+
+                  // Account details
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${current.supplierAccount!.accNumber} | ${current.supplierAccount!.accName}',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Current Balance
                   _buildSummaryRow(
                     label: AppLocalizations.of(context)!.currentBalance,
                     value: current.currentBalance,
-                    color: Colors.deepOrangeAccent,
+                    color: _getBalanceColor(current.currentBalance),
                   ),
+
                   if (current.creditAmount > 0) ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
+                    // Transaction amount (credit) - For PURCHASE, this increases what we owe
+                    _buildSummaryRow(
+                      label: tr.invoiceAmount, // Add this translation
+                      value: current.creditAmount,
+                      color: Colors.orange,
+                    ),
+                    const SizedBox(height: 4),
+                    // New Balance - FOR PURCHASE: Current Balance + Credit Amount
+                    // Because we owe more to supplier
                     _buildSummaryRow(
                       label: AppLocalizations.of(context)!.newBalance,
-                      value: current.newBalance,
+                      value: current.currentBalance + current.creditAmount, // ADDITION for purchase
                       isBold: true,
-                      color: color.primary,
+                      color: _getBalanceColor(current.currentBalance + current.creditAmount),
+                    ),
+                    // Status
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            tr.status, // Add this translation
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          Text(
+                            _getBalanceStatus(current.currentBalance + current.creditAmount),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: _getBalanceColor(current.currentBalance + current.creditAmount),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ],
@@ -747,12 +803,26 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  Widget _buildSummaryRow({
-    required String label,
-    required double value,
-    bool isBold = false,
-    Color? color,
-  }) {
+  Color _getBalanceColor(double balance) {
+    if (balance < 0) {
+      return Colors.red; // Negative = Debtor (supplier owes us)
+    } else if (balance > 0) {
+      return Colors.green; // Positive = Creditor (we owe supplier)
+    } else {
+      return Colors.grey; // Zero balance
+    }
+  }
+
+  String _getBalanceStatus(double balance) {
+    if (balance < 0) {
+      return AppLocalizations.of(context)!.debtor; // Supplier owes us
+    } else if (balance > 0) {
+      return AppLocalizations.of(context)!.creditor; // We owe supplier
+    } else {
+      return AppLocalizations.of(context)!.noAccountsFound;
+    }
+  }
+  Widget _buildSummaryRow({required String label, required double value, bool isBold = false, Color? color}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -971,16 +1041,25 @@ class _DesktopState extends State<_Desktop> {
     ));
   }
 
-  // In _DesktopState class of NewPurchaseOrderView
   void _onPrint({String? invoiceNumber}) {
     final state = context.read<PurchaseInvoiceBloc>().state;
 
-    if (state is! PurchaseInvoiceLoaded) {
-      Utils.showOverlayMessage(context, message: 'Cannot print: No invoice data loaded', isError: true);
-      return;
+    // Handle both loaded and saved states
+    PurchaseInvoiceLoaded? current;
+
+    if (state is PurchaseInvoiceLoaded) {
+      current = state;
+    } else if (state is PurchaseInvoiceSaved && state.invoiceData != null) {
+      // Use the saved invoice data
+      current = state.invoiceData;
     }
 
-    final current = state;
+    if (current == null) {
+      Utils.showOverlayMessage(context,
+          message: 'Cannot print: No invoice data available',
+          isError: true);
+      return;
+    }
 
     // Get company info
     final companyState = context.read<CompanyProfileBloc>().state;
@@ -1003,7 +1082,7 @@ class _DesktopState extends State<_Desktop> {
       try {
         company.comLogo = base64Decode(base64Logo);
       } catch (e) {
-       "";
+        // Handle error silently
       }
     }
 
@@ -1030,21 +1109,22 @@ class _DesktopState extends State<_Desktop> {
           required pageFormat,
         }) {
           return InvoicePrintService().printInvoicePreview(
-            invoiceType: "Purchase",
-            invoiceNumber: invoiceNumber ?? "",
-            reference: _xRefController.text,
-            invoiceDate: DateTime.now(),
-            customerSupplierName: current.supplier?.perName ?? "",
-            items: invoiceItems,
-            grandTotal: current.grandTotal,
-            cashPayment: current.cashPayment,
-            creditAmount: current.creditAmount,
-            account: current.supplierAccount,
-            language: language,
-            orientation: orientation,
-            company: company,
-            pageFormat: pageFormat,
-            currency: baseCurrency,
+              invoiceType: "Purchase",
+              invoiceNumber: invoiceNumber ?? "",
+              reference: _xRefController.text,
+              invoiceDate: DateTime.now(),
+              customerSupplierName: current!.supplier?.perName ?? "",
+              items: invoiceItems,
+              grandTotal: current.grandTotal,
+              cashPayment: current.cashPayment,
+              creditAmount: current.creditAmount,
+              account: current.supplierAccount,
+              language: language,
+              orientation: orientation,
+              company: company,
+              pageFormat: pageFormat,
+              currency: baseCurrency,
+              isSale: false
           );
         },
         onPrint: ({
@@ -1057,23 +1137,24 @@ class _DesktopState extends State<_Desktop> {
           required pages,
         }) {
           return InvoicePrintService().printInvoiceDocument(
-            invoiceType: "Purchase",
-            invoiceNumber: invoiceNumber ?? "",
-            reference: _xRefController.text,
-            invoiceDate: DateTime.now(),
-            customerSupplierName: current.supplier?.perName ?? "",
-            items: invoiceItems,
-            grandTotal: current.grandTotal,
-            cashPayment: current.cashPayment,
-            creditAmount: current.creditAmount,
-            account: current.supplierAccount,
-            language: language,
-            orientation: orientation,
-            company: company,
-            selectedPrinter: selectedPrinter,
-            pageFormat: pageFormat,
-            copies: copies,
-            currency: baseCurrency,
+              invoiceType: "Purchase",
+              invoiceNumber: invoiceNumber ?? "",
+              reference: _xRefController.text,
+              invoiceDate: DateTime.now(),
+              customerSupplierName: current!.supplier?.perName ?? "",
+              items: invoiceItems,
+              grandTotal: current.grandTotal,
+              cashPayment: current.cashPayment,
+              creditAmount: current.creditAmount,
+              account: current.supplierAccount,
+              language: language,
+              orientation: orientation,
+              company: company,
+              selectedPrinter: selectedPrinter,
+              pageFormat: pageFormat,
+              copies: copies,
+              currency: baseCurrency,
+              isSale: false
           );
         },
         onSave: ({
@@ -1083,21 +1164,22 @@ class _DesktopState extends State<_Desktop> {
           required pageFormat,
         }) {
           return InvoicePrintService().createInvoiceDocument(
-            invoiceType: "Purchase",
-            invoiceNumber: invoiceNumber ?? "",
-            reference: _xRefController.text,
-            invoiceDate: DateTime.now(),
-            customerSupplierName: current.supplier?.perName ?? "",
-            items: invoiceItems,
-            grandTotal: current.grandTotal,
-            cashPayment: current.cashPayment,
-            creditAmount: current.creditAmount,
-            account: current.supplierAccount,
-            language: language,
-            orientation: orientation,
-            company: company,
-            pageFormat: pageFormat,
-            currency: baseCurrency,
+              invoiceType: "Purchase",
+              invoiceNumber: invoiceNumber ?? "",
+              reference: _xRefController.text,
+              invoiceDate: DateTime.now(),
+              customerSupplierName: current!.supplier?.perName ?? "",
+              items: invoiceItems,
+              grandTotal: current.grandTotal,
+              cashPayment: current.cashPayment,
+              creditAmount: current.creditAmount,
+              account: current.supplierAccount,
+              language: language,
+              orientation: orientation,
+              company: company,
+              pageFormat: pageFormat,
+              currency: baseCurrency,
+              isSale: false
           );
         },
       ),

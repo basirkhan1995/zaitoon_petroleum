@@ -203,7 +203,7 @@ class ShippingReportPdfServices extends PrintServices {
         pw.Row(
           children: [
             text(
-              text: "${getTranslation(locale: 'dateRange', language: language)}: ",
+              text: "${getTranslation(text: 'dateRange', tr: language)}: ",
               fontSize: 9,
               fontWeight: pw.FontWeight.bold,
             ),
@@ -221,7 +221,7 @@ class ShippingReportPdfServices extends PrintServices {
         pw.Row(
           children: [
             text(
-              text: "${getTranslation(locale: 'customer', language: language)}: ",
+              text: "${getTranslation(text: 'customer', tr: language)}: ",
               fontSize: 9,
               fontWeight: pw.FontWeight.bold,
             ),
@@ -236,7 +236,7 @@ class ShippingReportPdfServices extends PrintServices {
         pw.Row(
           children: [
             text(
-              text: "${getTranslation(locale: 'vehicle', language: language)}: ",
+              text: "${getTranslation(text: 'vehicle', tr: language)}: ",
               fontSize: 9,
               fontWeight: pw.FontWeight.bold,
             ),
@@ -249,16 +249,16 @@ class ShippingReportPdfServices extends PrintServices {
     if (filterStatus != null) {
       String statusText = filterStatus;
       if (filterStatus == "1") {
-        statusText = getTranslation(locale: 'completed', language: language);
+        statusText = getTranslation(text: 'completed', tr: language);
       } else if (filterStatus == "0") {
-        statusText = getTranslation(locale: 'pending', language: language);
+        statusText = getTranslation(text: 'pending', tr: language);
       }
 
       filters.add(
         pw.Row(
           children: [
             text(
-              text: "${getTranslation(locale: 'status', language: language)}: ",
+              text: "${getTranslation(text: 'status', tr: language)}: ",
               fontSize: 9,
               fontWeight: pw.FontWeight.bold,
             ),
@@ -272,7 +272,7 @@ class ShippingReportPdfServices extends PrintServices {
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         text(
-          text: getTranslation(locale: 'details', language: language),
+          text: getTranslation(text: 'details', tr: language),
           fontSize: 10,
           fontWeight: pw.FontWeight.bold,
         ),
@@ -354,7 +354,7 @@ class ShippingReportPdfServices extends PrintServices {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           text(
-            text: getTranslation(locale: 'shippingReportSummary', language: language),
+            text: getTranslation(text: 'shippingReportSummary', tr: language),
             fontSize: 14,
             fontWeight: pw.FontWeight.bold,
           ),
@@ -366,52 +366,52 @@ class ShippingReportPdfServices extends PrintServices {
             runSpacing: 10,
             children: [
               _buildSummaryItem(
-                label: getTranslation(locale: 'totalShipments', language: language),
+                label: getTranslation(text: 'totalShipments', tr: language),
                 value: totalShipments.toString(),
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(locale: 'completed', language: language),
+                label: getTranslation(text: 'completed', tr: language),
                 value: completedShipments.toString(),
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(locale: 'pending', language: language),
+                label: getTranslation(text: 'pending', tr: language),
                 value: pendingShipments.toString(),
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(locale: 'totalLoadSize', language: language),
+                label: getTranslation(text: 'totalLoadSize', tr: language),
                 value: "${totalLoadSize.toStringAsFixed(2)} $unit",
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(locale: 'totalUnLoadSize', language: language),
+                label: getTranslation(text: 'totalUnLoadSize', tr: language),
                 value: "${totalUnloadingSize.toStringAsFixed(2)} $unit",
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(locale: 'avgLoadSize', language: language),
+                label: getTranslation(text: 'avgLoadSize', tr: language),
                 value: "${avgLoadSize.toStringAsFixed(2)} $unit",
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(locale: 'avgUnLoadSize', language: language),
+                label: getTranslation(text: 'avgUnLoadSize', tr: language),
                 value: "${avgUnloadingSize.toStringAsFixed(2)} $unit",
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(locale: 'avgDifference', language: language),
+                label: getTranslation(text: 'avgDifference', tr: language),
                 value: "${avgDifference.toStringAsFixed(2)} $unit",
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(locale: 'totalRevenue', language: language),
+                label: getTranslation(text: 'totalRevenue', tr: language),
                 value: "${totalRevenue.toAmount()} $baseCurrency",
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(locale: 'avgRentPerUnit', language: language),
+                label: getTranslation(text: 'avgRentPerUnit', tr: language),
                 value: "${avgRent.toStringAsFixed(2)} $baseCurrency/$unit",
                 language: language,
               ),
@@ -486,7 +486,7 @@ class ShippingReportPdfServices extends PrintServices {
               pw.SizedBox(
                 width: noWidth,
                 child: text(
-                  text: getTranslation(locale: "no", language: language),
+                  text: getTranslation(text: "no", tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.center,
@@ -513,7 +513,7 @@ class ShippingReportPdfServices extends PrintServices {
               pw.SizedBox(
                 width: vehicleWidth,
                 child: text(
-                  text: getTranslation(locale: "vehicle", language: language),
+                  text: getTranslation(text: "vehicle", tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -521,7 +521,7 @@ class ShippingReportPdfServices extends PrintServices {
               pw.SizedBox(
                 width: driverWidth,
                 child: text(
-                  text: getTranslation(locale: "driver", language: language),
+                  text: getTranslation(text: "driver", tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -529,7 +529,7 @@ class ShippingReportPdfServices extends PrintServices {
               pw.SizedBox(
                 width: productWidth,
                 child: text(
-                  text: getTranslation(locale: "product", language: language),
+                  text: getTranslation(text: "product", tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -537,7 +537,7 @@ class ShippingReportPdfServices extends PrintServices {
               pw.SizedBox(
                 width: customerWidth,
                 child: text(
-                  text: getTranslation(locale: "customer", language: language),
+                  text: getTranslation(text: "customer", tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),

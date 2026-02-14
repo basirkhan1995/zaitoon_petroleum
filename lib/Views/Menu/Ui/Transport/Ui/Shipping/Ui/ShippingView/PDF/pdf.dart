@@ -199,7 +199,7 @@ class AllShippingPdfServices extends PrintServices {
             ),
             verticalDivider(height: 15, width: 0.6),
             text(
-              text: getTranslation(locale: 'producedBy', language: language),
+              text: getTranslation(text: 'producedBy', tr: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
             ),
@@ -291,7 +291,7 @@ class AllShippingPdfServices extends PrintServices {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           text(
-            text: getTranslation(locale: 'shippingSummary', language: language),
+            text: getTranslation(text: 'shippingSummary', tr: language),
             fontSize: 14,
             fontWeight: pw.FontWeight.bold,
           ),
@@ -302,34 +302,34 @@ class AllShippingPdfServices extends PrintServices {
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
               _buildSummaryItem(
-                label: getTranslation(locale: 'totalShipments', language: language),
+                label: getTranslation(text: 'totalShipments', tr: language),
                 value: totalShipments.toString(),
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(locale: 'completed', language: language),
+                label: getTranslation(text: 'completed', tr: language),
                 value: completedShipments.toString(),
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(locale: 'pending', language: language),
+                label: getTranslation(text: 'pending', tr: language),
                 value: pendingShipments.toString(),
                 language: language,
               ),
 
               _buildSummaryItem(
-                label: getTranslation(locale: 'avgUnLoadSize', language: language),
+                label: getTranslation(text: 'avgUnLoadSize', tr: language),
                 value: "${avgUnloadingSize.toStringAsFixed(2)} $unit",
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(locale: 'avgLoadSize', language: language),
+                label: getTranslation(text: 'avgLoadSize', tr: language),
                 value: "${avgUnloadingSize.toStringAsFixed(2)} $unit",
                 language: language,
               ),
 
               _buildSummaryItem(
-                label: getTranslation(locale: 'totalRevenue', language: language),
+                label: getTranslation(text: 'totalRevenue', tr: language),
                 value: "${totalRevenue.toAmount()} $baseCurrency",
                 language: language,
               ),
@@ -393,7 +393,7 @@ class AllShippingPdfServices extends PrintServices {
               pw.SizedBox(
                 width: idWidth,
                 child: text(
-                  text: getTranslation(locale: "id", language: language),
+                  text: getTranslation(text: "id", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.center,
@@ -402,14 +402,14 @@ class AllShippingPdfServices extends PrintServices {
               pw.SizedBox(
                 width: dateWidth,
                 child: text(
-                  text: getTranslation(locale: "date", language: language),
+                  text: getTranslation(text: "date", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
               pw.Expanded(
                 child: text(
-                  text: getTranslation(locale: "vehicles", language: language),
+                  text: getTranslation(text: "vehicles", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -417,7 +417,7 @@ class AllShippingPdfServices extends PrintServices {
               pw.SizedBox(
                 width: productWidth,
                 child: text(
-                  text: getTranslation(locale: "products", language: language),
+                  text: getTranslation(text: "products", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -425,7 +425,7 @@ class AllShippingPdfServices extends PrintServices {
               pw.SizedBox(
                 width: customerWidth,
                 child: text(
-                  text: getTranslation(locale: "customer", language: language),
+                  text: getTranslation(text: "customer", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -433,7 +433,7 @@ class AllShippingPdfServices extends PrintServices {
               pw.SizedBox(
                 width: rentWidth,
                 child: text(
-                  text: getTranslation(locale: "shippingRent", language: language),
+                  text: getTranslation(text: "shippingRent", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.right,
@@ -451,7 +451,7 @@ class AllShippingPdfServices extends PrintServices {
               pw.SizedBox(
                 width: unloadWidth,
                 child: text(
-                  text: getTranslation(locale: "unloadingSize", language: language),
+                  text: getTranslation(text: "unloadingSize", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.right,
@@ -460,7 +460,7 @@ class AllShippingPdfServices extends PrintServices {
               pw.SizedBox(
                 width: totalWidth,
                 child: text(
-                  text: getTranslation(locale: "total", language: language),
+                  text: getTranslation(text: "total", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.right,

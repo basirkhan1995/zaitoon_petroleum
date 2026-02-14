@@ -66,6 +66,7 @@ class PurchaseInvoiceItemForPrint implements InvoiceItem {
 }
 
 class InvoicePrintService extends PrintServices {
+
   Future<void> createInvoiceDocument({
     required String invoiceType,
     required String invoiceNumber,
@@ -81,6 +82,7 @@ class InvoicePrintService extends PrintServices {
     required pw.PageOrientation orientation,
     required ReportModel company,
     required pw.PdfPageFormat pageFormat,
+    required bool isSale,
     String? currency,
   }) async {
     try {
@@ -99,6 +101,7 @@ class InvoicePrintService extends PrintServices {
         orientation: orientation,
         company: company,
         pageFormat: pageFormat,
+        isSale: isSale,
         currency: currency,
       );
 
@@ -128,6 +131,7 @@ class InvoicePrintService extends PrintServices {
     required Printer selectedPrinter,
     required pw.PdfPageFormat pageFormat,
     required int copies,
+    required bool isSale,
     String? currency,
   }) async {
     try {
@@ -147,6 +151,7 @@ class InvoicePrintService extends PrintServices {
         company: company,
         pageFormat: pageFormat,
         currency: currency,
+        isSale: isSale,
       );
 
       for (int i = 0; i < copies; i++) {
@@ -181,6 +186,7 @@ class InvoicePrintService extends PrintServices {
     required pw.PageOrientation orientation,
     required ReportModel company,
     required pw.PdfPageFormat pageFormat,
+    required bool isSale,
     String? currency,
   }) async {
     return generateInvoiceDocument(
@@ -199,6 +205,7 @@ class InvoicePrintService extends PrintServices {
       company: company,
       pageFormat: pageFormat,
       currency: currency,
+      isSale: isSale
     );
   }
 
@@ -217,6 +224,7 @@ class InvoicePrintService extends PrintServices {
     required pw.PageOrientation orientation,
     required ReportModel company,
     required pw.PdfPageFormat pageFormat,
+    required bool isSale,
     String? currency,
   }) async {
     final document = pw.Document();
@@ -225,7 +233,7 @@ class InvoicePrintService extends PrintServices {
     final Uint8List imageBytes = imageData.buffer.asUint8List();
     final pw.MemoryImage logoImage = pw.MemoryImage(imageBytes);
 
-    final isSale = invoiceType.toLowerCase().contains('sale');
+   // final isSale = invoiceType.toLowerCase().contains('sale');
 
     document.addPage(
       pw.MultiPage(
@@ -261,6 +269,7 @@ class InvoicePrintService extends PrintServices {
             creditAmount: creditAmount,
             account: account,
             currency: currency,
+            isSale: isSale,
           ),
         ],
         header: (context) => prebuiltHeader,
@@ -283,11 +292,11 @@ class InvoicePrintService extends PrintServices {
     required String? reference,
   }) {
     final invoiceTitle = invoiceType.toLowerCase().contains('sale')
-        ? getTranslation(locale: 'SEL', language: language)
-        : getTranslation(locale: 'PUR', language: language);
+        ? getTranslation(text: 'SEL', tr: language)
+        : getTranslation(text: 'PUR', tr: language);
 
     return pw.Container(
-      padding: pw.EdgeInsets.symmetric(vertical: 10),
+      padding: pw.EdgeInsets.symmetric(vertical: 0),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
@@ -299,34 +308,28 @@ class InvoicePrintService extends PrintServices {
                 children: [
                   text(
                     text: invoiceTitle,
-                    fontSize: 18,
+                    fontSize: 14,
                     fontWeight: pw.FontWeight.bold,
-                    color: pw.PdfColors.blue700,
                   ),
                   text(
                     text:
-                    "${getTranslation(locale: 'invoiceNumber', language: language)}: $invoiceNumber",
-                    fontSize: 10,
+                    "${getTranslation(text: 'invoiceNumber', tr: language)} | $invoiceNumber",
+                    fontSize: 8,
                   ),
                 ],
               ),
               pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.end,
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   text(
-                    text: getTranslation(locale: 'invDate', language: language),
+                    text: DateTime.now().toDateTime,
                     fontSize: 9,
-                    color: pw.PdfColors.grey700,
-                  ),
-                  text(
-                    text: DateTime.now().toFormattedDate(),
-                    fontSize: 10,
                     fontWeight: pw.FontWeight.bold,
                   ),
                   text(
-                    text: invoiceDate?.toAfghanShamsi.toFormattedDate() ?? "",
+                    text: DateTime.now().shamsiDateFormatted,
                     fontSize: 10,
-                    color: pw.PdfColors.blue600,
+                    color: pw.PdfColors.grey800,
                   ),
                 ],
               ),
@@ -336,7 +339,7 @@ class InvoicePrintService extends PrintServices {
           if (reference != null && reference.isNotEmpty)
             text(
               text:
-              "${getTranslation(locale: 'referenceNumber', language: language)}: $reference",
+              "${getTranslation(text: 'referenceNumber', tr: language)}: $reference",
               fontSize: 11,
             ),
         ],
@@ -350,23 +353,23 @@ class InvoicePrintService extends PrintServices {
     required bool isSale,
   }) {
     final title = isSale
-        ? getTranslation(locale: 'customer', language: language)
-        : getTranslation(locale: 'supplier', language: language);
+        ? getTranslation(text: 'customer', tr: language)
+        : getTranslation(text: 'supplier', tr: language);
 
     return pw.Container(
       child: pw.Row(
         crossAxisAlignment: pw.CrossAxisAlignment.center,
         children: [
           text(
-            text: title,
-            fontSize: 10,
+            text: "$title |",
+            fontSize: 8,
             color: pw.PdfColors.grey600,
-            fontWeight: pw.FontWeight.bold,
+
           ),
           pw.SizedBox(width: 4),
           text(
             text: customerSupplierName,
-            fontSize: 10,
+            fontSize: 8,
           ),
         ],
       ),
@@ -403,7 +406,7 @@ class InvoicePrintService extends PrintServices {
             pw.Padding(
               padding: pw.EdgeInsets.all(4),
               child: text(
-                text: getTranslation(locale: 'number', language: language),
+                text: getTranslation(text: 'number', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
                 textAlign: pw.TextAlign.center,
@@ -412,7 +415,7 @@ class InvoicePrintService extends PrintServices {
             pw.Padding(
               padding: pw.EdgeInsets.all(4),
               child: text(
-                text: getTranslation(locale: 'description', language: language),
+                text: getTranslation(text: 'description', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
               ),
@@ -420,16 +423,7 @@ class InvoicePrintService extends PrintServices {
             pw.Padding(
               padding: pw.EdgeInsets.all(4),
               child: text(
-                text: getTranslation(locale: 'qty', language: language),
-                fontSize: 9,
-                fontWeight: pw.FontWeight.bold,
-                textAlign: pw.TextAlign.center,
-              ),
-            ),
-            pw.Padding(
-              padding: pw.EdgeInsets.all(4),
-              child: text(
-                text: getTranslation(locale: 'unitPrice', language: language),
+                text: getTranslation(text: 'qty', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
                 textAlign: pw.TextAlign.center,
@@ -438,7 +432,7 @@ class InvoicePrintService extends PrintServices {
             pw.Padding(
               padding: pw.EdgeInsets.all(4),
               child: text(
-                text: getTranslation(locale: 'total', language: language),
+                text: getTranslation(text: 'unitPrice', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
                 textAlign: pw.TextAlign.center,
@@ -447,7 +441,16 @@ class InvoicePrintService extends PrintServices {
             pw.Padding(
               padding: pw.EdgeInsets.all(4),
               child: text(
-                text: getTranslation(locale: 'storage', language: language),
+                text: getTranslation(text: 'total', tr: language),
+                fontSize: 9,
+                fontWeight: pw.FontWeight.bold,
+                textAlign: pw.TextAlign.center,
+              ),
+            ),
+            pw.Padding(
+              padding: pw.EdgeInsets.all(4),
+              child: text(
+                text: getTranslation(text: 'storage', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
                 textAlign: pw.TextAlign.center,
@@ -523,13 +526,13 @@ class InvoicePrintService extends PrintServices {
     required double creditAmount,
     required AccountsModel? account,
     String? currency,
+    required bool isSale,
   }) {
     final lang = NumberToWords.getLanguageFromLocale(Locale(language));
     final cleanAmount = grandTotal.toString().replaceAll(',', '');
     final parsedAmount = int.tryParse(
       double.tryParse(cleanAmount)?.toStringAsFixed(0) ?? "0",
-    ) ??
-        0;
+    ) ?? 0;
     final amountInWords = NumberToWords.convert(parsedAmount, lang);
     final ccy = currency ?? '';
 
@@ -541,11 +544,7 @@ class InvoicePrintService extends PrintServices {
         children: [
           // Payment Breakdown
           pw.Container(
-            padding: pw.EdgeInsets.all(10),
-            decoration: pw.BoxDecoration(
-              border: pw.Border.all(color: pw.PdfColors.grey300),
-              borderRadius: pw.BorderRadius.circular(5),
-            ),
+            padding: pw.EdgeInsets.all(2),
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
@@ -555,7 +554,7 @@ class InvoicePrintService extends PrintServices {
                   children: [
                     text(
                       text: getTranslation(
-                          locale: 'grandTotal', language: language),
+                          text: 'grandTotal', tr: language),
                       fontSize: 11,
                       fontWeight: pw.FontWeight.bold,
                     ),
@@ -568,55 +567,153 @@ class InvoicePrintService extends PrintServices {
                   ],
                 ),
 
+                // Cash Payment (if any)
                 if (cashPayment > 0)
                   _buildPaymentRow(
                     label: getTranslation(
-                        locale: 'cashPayment', language: language),
+                        text: 'cashPayment', tr: language),
                     value: cashPayment,
                     ccy: ccy,
                   ),
 
+                // Credit/Account Payment (if any)
                 if (creditAmount > 0 && account != null)
                   _buildPaymentRow(
                     label:
-                    "${getTranslation(locale: 'accountPayment', language: language)} (${account.accNumber})",
+                    "${getTranslation(text: 'accountPayment', tr: language)} (${account.accNumber})",
                     value: creditAmount,
                     ccy: ccy,
                   ),
 
+                // Total Payment
                 _buildPaymentRow(
                   label: getTranslation(
-                      locale: 'totalPayment', language: language),
+                      text: 'totalPayment', tr: language),
                   value: cashPayment + creditAmount,
                   ccy: ccy,
                   isBold: true,
                 ),
+
+                // Account Balance Information - ONLY show when credit is used AND account exists
+                if (account != null && creditAmount > 0) ...[
+                  pw.Divider(color: pw.PdfColors.grey300),
+
+                  // Account Info
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      text(
+                          text: "${account.accNumber} | ${account.accName}",
+                          fontSize: 10,
+                          fontWeight: pw.FontWeight.bold
+                      ),
+                    ],
+                  ),
+
+                  // Previous Balance
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      text(
+                        text: getTranslation(text: 'previousAccBalance', tr: language),
+                        fontSize: 10,
+                      ),
+                      text(
+                        text: "${_getAccountBalance(account).toAmount()} $ccy",
+                        fontSize: 10,
+                        fontWeight: pw.FontWeight.bold,
+                        color: _getBalanceColor(_getAccountBalance(account)),
+                      ),
+                    ],
+                  ),
+
+                  // Current Transaction - Show based on invoice type
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      text(
+                        text: isSale
+                            ? getTranslation(text: 'saleAmount', tr: language)
+                            : getTranslation(text: 'purchaseAmount', tr: language),
+                        fontSize: 10,
+                      ),
+                      text(
+                        text: "${creditAmount.toAmount()} $ccy",
+                        fontSize: 10,
+                        color: isSale ? pw.PdfColors.red : pw.PdfColors.green,
+                      ),
+                    ],
+                  ),
+
+                  // New Balance Calculation
+                  // SALE: Previous Balance - Credit Amount (customer owes me, reduces what I owe)
+                  // PURCHASE: Previous Balance + Credit Amount (I owe more to supplier)
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      text(
+                        text: getTranslation(
+                            text: 'newBalance', tr: language),
+                        fontSize: 10,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                      text(
+                        text: isSale
+                            ? "${(_getAccountBalance(account) - creditAmount).toAmount()} $ccy"
+                            : "${(_getAccountBalance(account) + creditAmount).toAmount()} $ccy",
+                        fontSize: 10,
+                        fontWeight: pw.FontWeight.bold,
+                        color: isSale
+                            ? _getBalanceColor(_getAccountBalance(account) - creditAmount)
+                            : _getBalanceColor(_getAccountBalance(account) + creditAmount),
+                      ),
+                    ],
+                  ),
+
+                  // Status (Debtor/Creditor)
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      text(
+                        text: getTranslation(
+                            text: 'status', tr: language),
+                        fontSize: 10,
+                      ),
+                      text(
+                        text: isSale
+                            ? _getBalanceStatus(_getAccountBalance(account) - creditAmount, language)
+                            : _getBalanceStatus(_getAccountBalance(account) + creditAmount, language),
+                        fontSize: 10,
+                        fontWeight: pw.FontWeight.bold,
+                        color: isSale
+                            ? _getBalanceColor(_getAccountBalance(account) - creditAmount)
+                            : _getBalanceColor(_getAccountBalance(account) + creditAmount),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
 
           // Amount in words
-          pw.SizedBox(height: 10),
+          pw.SizedBox(height: 5),
           pw.Container(
-            padding: pw.EdgeInsets.all(10),
-            decoration: pw.BoxDecoration(
-              border: pw.Border.all(color: pw.PdfColors.grey300),
-              borderRadius: pw.BorderRadius.circular(5),
-            ),
+            padding: pw.EdgeInsets.all(2),
             width: double.infinity,
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 text(
                   text: getTranslation(
-                      locale: 'amountInWords', language: language),
-                  fontSize: 10,
+                      text: 'amountInWords', tr: language),
+                  fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
-                pw.SizedBox(height: 5),
+                pw.SizedBox(height: 1),
                 text(
                   text: amountInWords.isNotEmpty ? "$amountInWords $ccy" : "",
-                  fontSize: 10,
+                  fontSize: 8,
                 ),
               ],
             ),
@@ -624,6 +721,31 @@ class InvoicePrintService extends PrintServices {
         ],
       ),
     );
+  }
+
+// Helper methods remain the same
+  double _getAccountBalance(AccountsModel account) {
+    return double.tryParse(account.accAvailBalance ?? "0.0") ?? 0.0;
+  }
+
+  pw.PdfColor _getBalanceColor(double balance) {
+    if (balance < 0) {
+      return pw.PdfColors.red; // Negative = Debtor (customer owes me) - RED
+    } else if (balance > 0) {
+      return pw.PdfColors.green; // Positive = Creditor (I owe them) - GREEN
+    } else {
+      return pw.PdfColors.grey700; // Zero balance - GREY
+    }
+  }
+
+  String _getBalanceStatus(double balance, String language) {
+    if (balance < 0) {
+      return getTranslation(text: 'debtor', tr: language); // Negative = Debtor
+    } else if (balance > 0) {
+      return getTranslation(text: 'creditor', tr: language); // Positive = Creditor
+    } else {
+      return getTranslation(text: 'settled', tr: language);
+    }
   }
 
   pw.Widget _buildPaymentRow({

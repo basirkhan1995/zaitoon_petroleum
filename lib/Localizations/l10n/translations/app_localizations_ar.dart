@@ -2478,4 +2478,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get shortcuts => 'میانبرها';
+
+  @override
+  String get invoiceAmount => 'مبلغ بل';
 }
