@@ -158,7 +158,7 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
     if(visibility.orders)...[
       MenuDefinition(
         value: MenuName.stock,
-        label: AppLocalizations.of(context)!.stock,
+        label: AppLocalizations.of(context)!.inventory,
         screen: const StockView(),
         icon: Icons.shopping_basket_outlined,
       ),
@@ -900,7 +900,7 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
       ),
       _DrawerMenuItem(
         icon: Icons.shopping_basket_outlined,
-        label: AppLocalizations.of(context)!.stock,
+        label: AppLocalizations.of(context)!.inventory,
         isSelected: currentTab == MenuName.stock,
         onTap: () => _onMenuItemTap(MenuName.stock),
       ),

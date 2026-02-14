@@ -2051,7 +2051,7 @@ class _DesktopState extends State<_Desktop> {
                               .add(JournalOnChangedEvent(val)),
 
                           title: locale.journal,
-                          description: locale.journal,
+                          description: locale.journalHint,
 
                           /// Colors and style
                           style: ZTabStyle.rounded,
@@ -2066,7 +2066,9 @@ class _DesktopState extends State<_Desktop> {
                     ),
                   ),
                   // RIGHT SIDE — SHORTCUT BUTTONS PANEL
-                  Container(
+                  AnimatedContainer(
+                    clipBehavior: Clip.hardEdge,
+                    duration: const Duration(milliseconds: 300),
                     width: _isExpanded ? 170 : 70,
                     margin: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
                     height: double.infinity,
@@ -2099,16 +2101,20 @@ class _DesktopState extends State<_Desktop> {
                         children: [
                           /// Toggle arrow
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2), // CHANGED: Reduced horizontal
+                            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 0), // CHANGED: Reduced horizontal
                             child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: _isExpanded
                                   ? MainAxisAlignment.spaceBetween
                                   : MainAxisAlignment.start,
                               children: [
                                 if (_isExpanded)
-                                  Text(
-                                    locale.shortcuts,
-                                    style: Theme.of(context).textTheme.titleSmall,
+                                  Flexible(
+                                    child: Text(
+                                      locale.shortcuts,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context).textTheme.titleSmall,
+                                    ),
                                   ),
                                 Container(
                                   decoration: BoxDecoration(
@@ -2121,22 +2127,16 @@ class _DesktopState extends State<_Desktop> {
                                   child: IconButton(
                                     hoverColor: Colors.transparent,
                                     highlightColor: Colors.transparent,
-                                    iconSize: 18, // CHANGED: Slightly smaller icon
-                                    icon: Icon(
-                                      _isExpanded
-                                          ? Icons.chevron_left_rounded // CHANGED: Better icon for expand/collapse
-                                          : Icons.chevron_right_rounded,
-                                    ),
+                                    icon: Icon(_isExpanded
+                                        ? Icons.chevron_right
+                                        : Icons.chevron_left),
                                     onPressed: () {
                                       setState(() {
                                         _isExpanded = !_isExpanded;
                                       });
                                     },
-                                    padding: const EdgeInsets.all(4), // CHANGED: Fixed padding
-                                    constraints: const BoxConstraints(
-                                      minWidth: 28,
-                                      minHeight: 28,
-                                    ),
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
                                   ),
                                 ),
                               ],
@@ -2150,6 +2150,7 @@ class _DesktopState extends State<_Desktop> {
                                 const Icon(Icons.money, size: 20),
                                 Text(
                                   locale.cashFlow,
+                                  overflow: TextOverflow.ellipsis,
                                   style: Theme.of(context).textTheme.titleSmall,
                                 ),
                               ],
@@ -2260,6 +2261,7 @@ class _DesktopState extends State<_Desktop> {
                                 const Icon(Icons.swap_horiz_rounded, size: 20),
                                 Text(
                                   locale.fundTransferTitle,
+                                  overflow: TextOverflow.ellipsis,
                                   style: Theme.of(context).textTheme.titleSmall,
                                 ),
                               ],
@@ -2346,6 +2348,7 @@ class _DesktopState extends State<_Desktop> {
                                 const Icon(Icons.computer_rounded, size: 20),
                                 Text(
                                   locale.systemAction,
+                                  overflow: TextOverflow.ellipsis,
                                   style: Theme.of(context).textTheme.titleSmall,
                                 ),
                               ],

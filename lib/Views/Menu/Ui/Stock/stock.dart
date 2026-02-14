@@ -22,9 +22,15 @@ import 'Ui/GoodsShift/goods_shift.dart';
 import 'Ui/OrderScreen/GetOrderById/order_by_id.dart';
 import 'bloc/stock_tab_bloc.dart';
 
-class StockView extends StatelessWidget {
+class StockView extends StatefulWidget {
   const StockView({super.key});
 
+  @override
+  State<StockView> createState() => _StockViewState();
+}
+
+class _StockViewState extends State<StockView> {
+  bool _isExpanded = true;
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
@@ -91,8 +97,8 @@ class StockView extends StatelessWidget {
                   return ZTabContainer<StockTabsName>(
                     tabBarPadding: EdgeInsets.symmetric(horizontal: 5,vertical: 2),
                     borderRadius: 0,
-                    title: AppLocalizations.of(context)!.orders,
-                    description: "Manage Sales, Purchase Invoices & Estimates",
+                    title: locale.inventory,
+                    description: locale.inventorySubtitle,
                     /// Tab data
                     tabs: tabs,
                     selectedValue: selected,
@@ -114,8 +120,10 @@ class StockView extends StatelessWidget {
             const SizedBox(width: 3),
 
             // RIGHT SIDE — SHORTCUT BUTTONS PANEL
-            Container(
-              width: 190,
+            AnimatedContainer(
+              clipBehavior: Clip.hardEdge,
+              duration: const Duration(milliseconds: 300),
+              width: _isExpanded ? 170 : 70,
               margin: EdgeInsets.symmetric(horizontal: 3,vertical: 5),
               height: double.infinity,
               decoration: BoxDecoration(
@@ -142,23 +150,71 @@ class StockView extends StatelessWidget {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 10,
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 8,
                   children: [
-                    Wrap(
-                      spacing: 5,
-                      children: [
-                        Icon(Icons.shopify_rounded, size: 20,color: color.outline),
-                        Text(
-                          locale.invoiceTitle,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                      ],
+                    /// Toggle arrow
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 0), // CHANGED: Reduced horizontal
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: _isExpanded
+                            ? MainAxisAlignment.spaceBetween
+                            : MainAxisAlignment.start,
+                        children: [
+                          if (_isExpanded)
+                            Flexible(
+                              child: Text(
+                                locale.shortcuts,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                            ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withValues(alpha: .06),
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                            child: IconButton(
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              icon: Icon(_isExpanded
+                                  ? Icons.chevron_right
+                                  : Icons.chevron_left),
+                              onPressed: () {
+                                setState(() {
+                                  _isExpanded = !_isExpanded;
+                                });
+                              },
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+
+                    if(_isExpanded)...[
+                      Wrap(
+                        spacing: 5,
+                        children: [
+                          Icon(Icons.shopify_rounded, size: 20,color: color.outline),
+                          if(_isExpanded)
+                            Text(
+                              locale.invoiceTitle,
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                        ],
+                      ),
+                    ],
 
                     if (login.hasPermission(51) ?? false)
                       ZOutlineButton(
                         backgroundColor: color.primary.withValues(alpha: opacity),
-                        toolTip: "F1",
+                        toolTip: "F1 - ${locale.newPurchase}",
                         label: Text(locale.newPurchase),
                         icon: Icons.shopping_bag_outlined,
                         width: double.infinity,
@@ -168,7 +224,7 @@ class StockView extends StatelessWidget {
                     if (login.hasPermission(52) ?? false)
                       ZOutlineButton(
                         backgroundColor: color.primary.withValues(alpha: opacity),
-                        toolTip: "F2",
+                        toolTip: "F2 - ${locale.newSale}",
                         label: Text(locale.newSale),
                         icon: Icons.shopping_bag_outlined,
                         width: double.infinity,
@@ -178,7 +234,7 @@ class StockView extends StatelessWidget {
                     if (login.hasPermission(53) ?? false)
                     ZOutlineButton(
                       backgroundColor: color.primary.withValues(alpha: opacity),
-                      toolTip: "F3",
+                      toolTip: "F3 - ${locale.newEstimate}",
                       label: Text(locale.newEstimate),
                       icon: Icons.file_open_outlined,
                       width: double.infinity,
@@ -188,29 +244,31 @@ class StockView extends StatelessWidget {
                     if (login.hasPermission(56) ?? false)
                     ZOutlineButton(
                       backgroundColor: color.primary.withValues(alpha: opacity),
-                      toolTip: "F4",
+                      toolTip: "F4 - ${locale.findInvoice}",
                       label: Text(locale.findInvoice),
                       icon: Icons.filter_alt_outlined,
                       width: double.infinity,
                        onPressed: () => getInvoiceById(context),
                     ),
 
-                    SizedBox(height: 3),
-                    Wrap(
-                      spacing: 5,
-                      children: [
-                         Icon(Icons.inventory_2_outlined, size: 18,color: color.outline,),
-                        Text(
-                          locale.stock,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                      ],
-                    ),
+                    if(_isExpanded)...[
+                      SizedBox(height: 3),
+                      Wrap(
+                        spacing: 5,
+                        children: [
+                          Icon(Icons.inventory_2_outlined, size: 18,color: color.outline,),
+                          Text(
+                            locale.stock,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ],
+                      ),
+                    ],
 
                     if (login.hasPermission(54) ?? false)
                     ZOutlineButton(
                       backgroundColor: color.primary.withValues(alpha: opacity),
-                      toolTip: "F7",
+                      toolTip: "F7 - ${locale.shift}",
                       label: Text(locale.shift),
                       icon: Icons.edit_location_outlined,
                       width: double.infinity,
@@ -220,7 +278,7 @@ class StockView extends StatelessWidget {
                     if (login.hasPermission(55) ?? false)
                     ZOutlineButton(
                       backgroundColor: color.primary.withValues(alpha: opacity),
-                      toolTip: "F8",
+                      toolTip: "F8 - ${locale.adjustment}",
                       label: Text(locale.adjustment),
                       icon: Icons.settings_backup_restore_rounded,
                       width: double.infinity,
@@ -235,6 +293,7 @@ class StockView extends StatelessWidget {
       ),
     );
   }
+
   void getInvoiceById(BuildContext context){
     final invController = TextEditingController();
     final tr = AppLocalizations.of(context)!;
@@ -281,9 +340,11 @@ class StockView extends StatelessWidget {
       );
     });
   }
+
   void gotoPurchase(BuildContext context){
     Utils.goto(context, NewPurchaseOrderView());
   }
+
   void gotoSale(BuildContext context){
     Utils.goto(context, NewSaleView());
   }

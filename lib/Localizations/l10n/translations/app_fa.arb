@@ -823,5 +823,7 @@
   "enableTitle": "فعال",
   "disabledTitle": "غیرفعال",
   "shortcuts": "میانبرها",
-  "invoiceAmount": "مبلغ بل"
+  "invoiceAmount": "مبلغ بل",
+  "inventorySubtitle": "مدیریت همه عملیات موجودی در یک مکان",
+  "journalHint": "مدیریت ثبت‌های جریان نقدی با بدهکار، بستانکار و مبلغ."
 }

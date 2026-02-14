@@ -2481,4 +2481,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get invoiceAmount => 'مبلغ بل';
+
+  @override
+  String get inventorySubtitle => 'ټولې د موجودي کړنې په یوه ځای کې اداره کړئ';
+
+  @override
+  String get journalHint =>
+      'د نغدي جریان ثبتونه د ډیبیټ، کریډیټ او اندازه سره اداره کړئ.';
 }

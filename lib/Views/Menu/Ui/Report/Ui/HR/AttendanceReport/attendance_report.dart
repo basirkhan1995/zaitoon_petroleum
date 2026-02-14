@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Attendance/features/status_selector.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/HR/AttendanceReport/bloc/attendance_report_bloc.dart';
 import '../../../../../../../Features/Date/z_generic_date.dart';
 import '../../../../../../../Features/Other/attendance_status.dart';
@@ -61,9 +62,7 @@ class _DesktopState extends State<_Desktop> {
     });
     super.initState();
   }
-
   String? usrName;
-
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
@@ -113,6 +112,15 @@ class _DesktopState extends State<_Desktop> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                SizedBox(
+                    width: 200,
+                    child: AttendanceDropdown(
+                        onStatusSelected: (e){
+                          setState(() {
+
+                          });
+                        })),
+                SizedBox(width: 5),
                 SizedBox(
                   width: 160,
                   child: ZDatePicker(

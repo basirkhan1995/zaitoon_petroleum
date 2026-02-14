@@ -81,17 +81,20 @@ class ZOutlineButtonState extends State<ZOutlineButton> {
         ),
       ),
       onPressed: widget.disable ? null : widget.onPressed,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (widget.icon != null)
-          Icon(widget.icon, color: textColor, size: widget.iconSize),
-          if (widget.icon != null && widget.label !=null) const SizedBox(width: 5),
-          DefaultTextStyle.merge(
-            style: TextStyle(color: textColor),
-            child: widget.label ?? SizedBox(),
-          ),
-        ],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (widget.icon != null)
+            Icon(widget.icon, color: textColor, size: widget.iconSize),
+            if (widget.icon != null && widget.label !=null) const SizedBox(width: 5),
+            DefaultTextStyle.merge(
+              style: TextStyle(color: textColor),
+              child: widget.label ?? SizedBox(),
+            ),
+          ],
+        ),
       ),
     );
 

@@ -1,86 +1,57 @@
+import 'dart:async';
+import 'dart:ui';
+import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart' as pw;
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import 'package:flutter/services.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/amount_to_word.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/PrintSettings/print_services.dart';
-import '../../../../../../../Features/PrintSettings/report_model.dart';
+import 'package:zaitoon_petroleum/Features/PrintSettings/report_model.dart';
 import '../model/get_order_model.dart';
 
 class OrderTxnPrintSettings extends PrintServices {
 
-  Future<pw.Document> generateStatement({
-    required String language,
-    required ReportModel report,
+  Future<void> createDocument({
     required OrderTxnModel data,
-    required pw.PageOrientation orientation,
-    required pw.PdfPageFormat pageFormat,
-  }) async {
-    final document = pw.Document();
-    final prebuiltHeader = await header(report: report);
-
-    final ByteData imageData = await rootBundle.load('assets/images/zaitoonLogo.png');
-    final Uint8List imageBytes = imageData.buffer.asUint8List();
-    final pw.MemoryImage logoImage = pw.MemoryImage(imageBytes);
-
-    document.addPage(
-      pw.MultiPage(
-        maxPages: 1000,
-        margin: pw.EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-        pageFormat: pageFormat,
-        textDirection: documentLanguage(language: language),
-        orientation: orientation,
-        build: (context) => [
-          horizontalDivider(),
-          pw.SizedBox(height: 5),
-          buildResponseData(data: data, language: language),
-          signatory(language: language, data: data)
-        ],
-        header: (context) => prebuiltHeader,
-        footer: (context) => footer(
-          report: report,
-          context: context,
-          language: language,
-          logoImage: logoImage,
-        ),
-      ),
-    );
-    return document;
-  }
-
-  // Real Time document show
-  Future<pw.Document> printPreview({
-    required String language,
     required ReportModel company,
+    required String language,
     required pw.PageOrientation orientation,
-    required OrderTxnModel data,
     required pw.PdfPageFormat pageFormat,
   }) async {
-    return generateStatement(
-      report: company,
-      language: language,
-      orientation: orientation,
-      data: data,
-      pageFormat: pageFormat,
-    );
+    try {
+      final document = await generateDocument(
+        data: data,
+        company: company,
+        language: language,
+        orientation: orientation,
+        pageFormat: pageFormat,
+      );
+
+      await saveDocument(
+        suggestedName: "${data.trnReference}_${DateTime.now().millisecondsSinceEpoch}.pdf",
+        pdf: document,
+      );
+    } catch (e) {
+      throw e.toString();
+    }
   }
 
-  // To Print
   Future<void> printDocument({
     required OrderTxnModel data,
+    required ReportModel company,
     required String language,
     required pw.PageOrientation orientation,
-    required ReportModel company,
-    required Printer selectedPrinter,
     required pw.PdfPageFormat pageFormat,
+    required Printer selectedPrinter,
     required int copies,
     required String pages,
   }) async {
     try {
-      final document = await generateStatement(
-        report: company,
+      final document = await generateDocument(
         data: data,
+        company: company,
         language: language,
         orientation: orientation,
         pageFormat: pageFormat,
@@ -95,7 +66,7 @@ class OrderTxnPrintSettings extends PrintServices {
         );
 
         if (i < copies - 1) {
-          await Future.delayed(Duration(milliseconds: 100));
+          await Future.delayed(const Duration(milliseconds: 100));
         }
       }
     } catch (e) {
@@ -103,77 +74,168 @@ class OrderTxnPrintSettings extends PrintServices {
     }
   }
 
-  Future<void> createDocument({
+  Future<pw.Document> printPreview({
     required OrderTxnModel data,
+    required ReportModel company,
     required String language,
     required pw.PageOrientation orientation,
-    required ReportModel company,
     required pw.PdfPageFormat pageFormat,
   }) async {
-    try {
-      final document = await generateStatement(
-        report: company,
-        data: data,
-        language: language,
-        orientation: orientation,
-        pageFormat: pageFormat,
-      );
-
-      // Save the document
-      await saveDocument(
-        suggestedName: "Order_Transaction_${data.trnReference ?? 'Unknown'}.pdf",
-        pdf: document,
-      );
-    } catch (e) {
-      throw e.toString();
-    }
+    return generateDocument(
+      data: data,
+      company: company,
+      language: language,
+      orientation: orientation,
+      pageFormat: pageFormat,
+    );
   }
 
-  // Signature
-  signatory({required language, required OrderTxnModel data}) {
-    return pw.Padding(
-      padding: pw.EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-      child: pw.Row(
-        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+  Future<pw.Document> generateDocument({
+    required OrderTxnModel data,
+    required ReportModel company,
+    required String language,
+    required pw.PageOrientation orientation,
+    required pw.PdfPageFormat pageFormat,
+  }) async {
+    final document = pw.Document();
+    final prebuiltHeader = await header(report: company);
+
+    final ByteData imageData = await rootBundle.load('assets/images/zaitoonLogo.png');
+    final Uint8List imageBytes = imageData.buffer.asUint8List();
+    final pw.MemoryImage logoImage = pw.MemoryImage(imageBytes);
+
+    final isSale = data.trnType?.toLowerCase().contains('sale') ?? false;
+    final isPurchase = data.trnType?.toLowerCase().contains('purchase') ?? false;
+    final invoiceType = isSale ? 'SEL' : (isPurchase ? 'PUR' : 'TRN');
+
+    final grandTotal = double.tryParse(data.totalBill ?? "0") ?? 0;
+    final records = data.records ?? [];
+    final billItems = data.bill ?? [];
+
+    document.addPage(
+      pw.MultiPage(
+        maxPages: 1000,
+        margin: const pw.EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+        pageFormat: pageFormat,
+        textDirection: documentLanguage(language: language),
+        orientation: orientation,
+        build: (context) => [
+          _invoiceHeaderWidget(
+            language: language,
+            invoiceType: invoiceType,
+            invoiceNumber: data.trnReference ?? "",
+            invoiceDate: data.trnEntryDate,
+            reference: data.trnReference,
+            status: data.trnStateText ?? "",
+          ),
+          _itemsTable(
+            billItems: billItems,
+            language: language,
+          ),
+          pw.SizedBox(height: 15),
+          _paymentSummary(
+            language: language,
+            grandTotal: grandTotal,
+            records: records,
+            currency: data.ccy,
+            trnReference: data.trnReference ?? "",
+            maker: data.maker ?? "",
+            checker: data.checker ?? "",
+            remark: data.remark,
+          ),
+        ],
+        header: (context) => prebuiltHeader,
+        footer: (context) => footer(
+          report: company,
+          context: context,
+          language: language,
+          logoImage: logoImage,
+        ),
+      ),
+    );
+    return document;
+  }
+
+  pw.Widget _invoiceHeaderWidget({
+    required String language,
+    required String invoiceType,
+    required String invoiceNumber,
+    required DateTime? invoiceDate,
+    required String? reference,
+    required String status,
+  }) {
+    final invoiceTitle = invoiceType == 'SEL'
+        ? getTranslation(text: 'SEL', tr: language)
+        : (invoiceType == 'PUR'
+        ? getTranslation(text: 'PUR', tr: language)
+        : getTranslation(text: 'transaction', tr: language));
+
+    final isAuthorized = status.toLowerCase().contains('authorize');
+
+    return pw.Container(
+      padding: const pw.EdgeInsets.symmetric(vertical: 0),
+      child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.Column(
-            mainAxisAlignment: pw.MainAxisAlignment.start,
-            crossAxisAlignment: pw.CrossAxisAlignment.center,
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              horizontalDivider(width: 120),
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.start,
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   text(
-                    text: getTranslation(text: 'createdBy', tr: language),
-                    fontSize: 7,
+                    text: invoiceTitle,
+                    fontSize: 14,
+                    fontWeight: pw.FontWeight.bold,
                   ),
                   text(
-                    text: " ${data.maker ?? 'N/A'} ",
-                    fontSize: 7,
+                    text: "${getTranslation(text: 'invoiceNumber', tr: language)} | $invoiceNumber",
+                    fontSize: 8,
+                  ),
+                ],
+              ),
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.end,
+                children: [
+                  text(
+                    text: DateTime.now().toDateTime,
+                    fontSize: 9,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                  text(
+                    text: DateTime.now().shamsiDateFormatted,
+                    fontSize: 10,
+                    color: pw.PdfColors.grey800,
                   ),
                 ],
               ),
             ],
           ),
-          pw.Column(
-            mainAxisAlignment: pw.MainAxisAlignment.start,
-            crossAxisAlignment: pw.CrossAxisAlignment.center,
+          pw.SizedBox(height: 8),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              horizontalDivider(width: 120),
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.start,
-                children: [
-                  text(
-                    text: getTranslation(text: 'authorizedBy', tr: language),
-                    fontSize: 7,
+              if (reference != null && reference.isNotEmpty)
+                text(
+                  text: "${getTranslation(text: 'referenceNumber', tr: language)}: $reference",
+                  fontSize: 11,
+                ),
+              pw.Container(
+                padding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: pw.BoxDecoration(
+                  color: isAuthorized ? pw.PdfColors.green50 : pw.PdfColors.orange50,
+                  border: pw.Border.all(
+                    color: isAuthorized ? pw.PdfColors.green : pw.PdfColors.orange,
+                    width: 1,
                   ),
-                  // buildTextWidget(
-                  //   text: data.checker ?? getTranslation(locale: 'pendingTitle', language: language),
-                  //   fontSize: 7,
-                  // ),
-                ],
+                  borderRadius: pw.BorderRadius.circular(3),
+                ),
+                child: text(
+                  text: status,
+                  fontSize: 8,
+                  color: isAuthorized ? pw.PdfColors.green : pw.PdfColors.orange,
+                  fontWeight: pw.FontWeight.bold,
+                ),
               ),
             ],
           ),
@@ -182,620 +244,361 @@ class OrderTxnPrintSettings extends PrintServices {
     );
   }
 
-  pw.Widget buildResponseData({required OrderTxnModel data, required String language}) {
-    final billItems = data.bill ?? [];
-    final records = data.records ?? [];
+  pw.Widget _itemsTable({
+    required List<Bill> billItems,
+    required String language,
+  }) {
+    const numberWidth = 30.0;
+    const descriptionWidth = 200.0;
+    const qtyWidth = 60.0;
+    const priceWidth = 80.0;
+    const totalWidth = 90.0;
+    const storageWidth = 100.0;
 
-    // Calculate total
-    double total = 0;
-    for (final item in billItems) {
-      final parsed = double.tryParse(item.totalPrice ?? '');
-      total += parsed ?? 0;
-    }
+    return pw.Table(
+      border: pw.TableBorder.all(color: pw.PdfColors.grey300, width: 1),
+      columnWidths: {
+        0: pw.FixedColumnWidth(numberWidth),
+        1: pw.FixedColumnWidth(descriptionWidth),
+        2: pw.FixedColumnWidth(qtyWidth),
+        3: pw.FixedColumnWidth(priceWidth),
+        4: pw.FixedColumnWidth(totalWidth),
+        5: pw.FixedColumnWidth(storageWidth),
+      },
+      children: [
+        // Header Row
+        pw.TableRow(
+          decoration: pw.BoxDecoration(color: pw.PdfColors.grey50),
+          children: [
+            pw.Padding(
+              padding: const pw.EdgeInsets.all(4),
+              child: text(
+                text: getTranslation(text: 'number', tr: language),
+                fontSize: 9,
+                fontWeight: pw.FontWeight.bold,
+                textAlign: pw.TextAlign.center,
+              ),
+            ),
+            pw.Padding(
+              padding: const pw.EdgeInsets.all(4),
+              child: text(
+                text: getTranslation(text: 'description', tr: language),
+                fontSize: 9,
+                fontWeight: pw.FontWeight.bold,
+              ),
+            ),
+            pw.Padding(
+              padding: const pw.EdgeInsets.all(4),
+              child: text(
+                text: getTranslation(text: 'qty', tr: language),
+                fontSize: 9,
+                fontWeight: pw.FontWeight.bold,
+                textAlign: pw.TextAlign.center,
+              ),
+            ),
+            pw.Padding(
+              padding: const pw.EdgeInsets.all(4),
+              child: text(
+                text: getTranslation(text: 'unitPrice', tr: language),
+                fontSize: 9,
+                fontWeight: pw.FontWeight.bold,
+                textAlign: pw.TextAlign.center,
+              ),
+            ),
+            pw.Padding(
+              padding: const pw.EdgeInsets.all(4),
+              child: text(
+                text: getTranslation(text: 'total', tr: language),
+                fontSize: 9,
+                fontWeight: pw.FontWeight.bold,
+                textAlign: pw.TextAlign.center,
+              ),
+            ),
+            pw.Padding(
+              padding: const pw.EdgeInsets.all(4),
+              child: text(
+                text: getTranslation(text: 'storage', tr: language),
+                fontSize: 9,
+                fontWeight: pw.FontWeight.bold,
+                textAlign: pw.TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+
+        // Data Rows
+        for (int i = 0; i < billItems.length; i++)
+          pw.TableRow(
+            decoration: i.isOdd ? pw.BoxDecoration(color: pw.PdfColors.grey50) : null,
+            children: [
+              pw.Padding(
+                padding: const pw.EdgeInsets.all(5),
+                child: text(
+                  text: (i + 1).toString(),
+                  fontSize: 9,
+                  textAlign: pw.TextAlign.center,
+                ),
+              ),
+              pw.Padding(
+                padding: const pw.EdgeInsets.all(5),
+                child: text(
+                  text: billItems[i].productName ?? "-",
+                  fontSize: 9,
+                ),
+              ),
+              pw.Padding(
+                padding: const pw.EdgeInsets.all(5),
+                child: text(
+                  text: "${billItems[i].quantity ?? "0"} T",
+                  fontSize: 9,
+                  textAlign: pw.TextAlign.center,
+                ),
+              ),
+              pw.Padding(
+                padding: const pw.EdgeInsets.all(5),
+                child: text(
+                  text: (double.tryParse(billItems[i].unitPrice ?? "0") ?? 0).toAmount(),
+                  fontSize: 9,
+                  textAlign: pw.TextAlign.center,
+                ),
+              ),
+              pw.Padding(
+                padding: const pw.EdgeInsets.all(5),
+                child: text(
+                  text: (double.tryParse(billItems[i].totalPrice ?? "0") ?? 0).toAmount(),
+                  fontSize: 9,
+                  fontWeight: pw.FontWeight.bold,
+                  textAlign: pw.TextAlign.center,
+                ),
+              ),
+              pw.Padding(
+                padding: const pw.EdgeInsets.all(5),
+                child: text(
+                  text: billItems[i].storageName ?? "-",
+                  fontSize: 9,
+                  textAlign: pw.TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+
+  pw.Widget _paymentSummary({
+    required String language,
+    required double grandTotal,
+    required List<Record> records,
+    String? currency,
+    required String trnReference,
+    required String maker,
+    required String checker,
+    String? remark,
+  }) {
+    final lang = NumberToWords.getLanguageFromLocale(Locale(language));
+    final cleanAmount = grandTotal.toString().replaceAll(',', '');
+    final parsedAmount = int.tryParse(
+      double.tryParse(cleanAmount)?.toStringAsFixed(0) ?? "0",
+    ) ?? 0;
+    final amountInWords = NumberToWords.convert(parsedAmount, lang);
+    final ccy = currency ?? '';
+
+    // Separate debit and credit records
+    final debitRecords = records.where((r) => r.debitCredit?.toLowerCase() == "debit").toList();
+    final creditRecords = records.where((r) => r.debitCredit?.toLowerCase() == "credit").toList();
 
     return pw.Container(
-      decoration: pw.BoxDecoration(
-        borderRadius: pw.BorderRadius.circular(5),
-      ),
-      child: pw.Padding(
-        padding: pw.EdgeInsets.all(15),
-        child: pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
-          children: [
-            // Header
-            pw.Row(
-              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-              children: [
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    text(
-                      text: data.trnReference ?? 'N/A',
-                      fontSize: 18,
-                      fontWeight: pw.FontWeight.bold,
-                      color: pw.PdfColors.blue800,
-                    ),
-                    pw.SizedBox(height: 5),
-                    pw.Container(
-                      padding: pw.EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: pw.BoxDecoration(
-                        color: pw.PdfColors.blue50,
-                        borderRadius: pw.BorderRadius.circular(3),
-                      ),
-                      child: text(
-                        text: data.trntName ?? data.trnType ?? 'N/A',
-                        fontSize: 10,
-                        color: pw.PdfColors.blue800,
-                      ),
-                    ),
-                    pw.SizedBox(height: 5),
-                    pw.Row(
-                      children: [
-                        text(
-                          text: "${getTranslation(text: 'branch', tr: language)}: ",
-                          fontSize: 9,
-                        ),
-                        text(
-                          text: data.branch ?? 'N/A',
-                          fontSize: 9,
-                          fontWeight: pw.FontWeight.bold,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.end,
-                  children: [
-                    _buildStatusBadge(data.trnStatus ?? 0, language),
-                    pw.SizedBox(height: 5),
-                    text(
-                      text: data.trnEntryDate?.toDateTime ?? 'N/A',
-                      fontSize: 9,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            pw.SizedBox(height: 15),
-
-            // Total Amount Card
-            pw.Container(
-              decoration: pw.BoxDecoration(
-                color: pw.PdfColors.grey50,
-                borderRadius: pw.BorderRadius.circular(5),
-              ),
-              padding: pw.EdgeInsets.all(12),
-              child: pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                children: [
-                  pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      text(
-                        text: getTranslation(text: 'totalAmount', tr: language),
-                        fontSize: 11,
-                        color: pw.PdfColors.grey600,
-                      ),
-                      pw.SizedBox(height: 3),
-                      pw.Row(
-                        children: [
-                          text(
-                            text: total.toAmount(),
-                            fontSize: 20,
-                            fontWeight: pw.FontWeight.bold,
-                            color: pw.PdfColors.blue800,
-                          ),
-                          pw.SizedBox(width: 5),
-                          text(
-                            text: data.ccy ?? 'USD',
-                            fontSize: 14,
-                            color: pw.PdfColors.grey700,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            pw.SizedBox(height: 20),
-
-            // Main Content (Two Columns)
-            pw.Row(
+      width: 300,
+      alignment: pw.Alignment.centerRight,
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.end,
+        children: [
+          // Grand Total
+          pw.Container(
+            padding: const pw.EdgeInsets.all(2),
+            child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                // Bill Items Column
-                pw.Expanded(
-                  flex: 3,
-                  child: _buildBillItemsSection(billItems, data.ccy ?? '', language),
-                ),
-
-                pw.SizedBox(width: 10),
-
-                // Accounting Records Column
-                pw.Expanded(
-                  flex: 2,
-                  child: _buildAccountingSection(records, data.ccy ?? '', language),
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    text(
+                      text: getTranslation(text: 'grandTotal', tr: language),
+                      fontSize: 11,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                    text(
+                      text: "${grandTotal.toAmount()} $ccy",
+                      fontSize: 11,
+                      fontWeight: pw.FontWeight.bold,
+                      color: pw.PdfColors.blue700,
+                    ),
+                  ],
                 ),
               ],
             ),
+          ),
 
-            // User Info
-            pw.SizedBox(height: 20),
+          pw.SizedBox(height: 10),
+
+          // Accounting Entries
+          if (records.isNotEmpty) ...[
             pw.Container(
+              padding: const pw.EdgeInsets.all(2),
               decoration: pw.BoxDecoration(
-                border: pw.Border.all(color: pw.PdfColors.grey300, width: 0.5),
-                borderRadius: pw.BorderRadius.circular(5),
+                border: pw.Border.all(color: pw.PdfColors.grey300),
+                borderRadius: pw.BorderRadius.circular(3),
               ),
-              padding: pw.EdgeInsets.all(12),
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   text(
-                    text: getTranslation(text: 'userInfo', tr: language),
-                    fontSize: 12,
+                    text: getTranslation(text: 'accountingEntries', tr: language),
+                    fontSize: 10,
                     fontWeight: pw.FontWeight.bold,
-                    color: pw.PdfColors.blue800,
+                    color: pw.PdfColors.blue700,
                   ),
-                  pw.SizedBox(height: 8),
-                  _buildDetailRow(
-                    label: getTranslation(text: 'createdBy', tr: language),
-                    value: data.maker ?? 'N/A',
-                  ),
-                  _buildDetailRow(
-                    label: getTranslation(text: 'currencyTitle', tr: language),
-                    value: "${data.ccySymbol ?? "\$"} ${data.ccyName ?? data.ccy ?? 'N/A'}",
-                  ),
+                  pw.SizedBox(height: 5),
+
+                  // Debit Entries
+                  if (debitRecords.isNotEmpty) ...[
+                    text(
+                      text: getTranslation(text: 'debit', tr: language),
+                      fontSize: 9,
+                      fontWeight: pw.FontWeight.bold,
+                      color: pw.PdfColors.red,
+                    ),
+                    ...debitRecords.map((r) => _buildRecordRow(r, ccy, language)),
+                    pw.SizedBox(height: 3),
+                  ],
+
+                  // Credit Entries
+                  if (creditRecords.isNotEmpty) ...[
+                    text(
+                      text: getTranslation(text: 'credit', tr: language),
+                      fontSize: 9,
+                      fontWeight: pw.FontWeight.bold,
+                      color: pw.PdfColors.green,
+                    ),
+                    ...creditRecords.map((r) => _buildRecordRow(r, ccy, language)),
+                  ],
                 ],
               ),
             ),
-
-            // Remark (if any)
-            if (data.remark?.isNotEmpty == true) ...[
-              pw.SizedBox(height: 20),
-              pw.Container(
-                decoration: pw.BoxDecoration(
-                  border: pw.Border.all(color: pw.PdfColors.grey300, width: 0.5),
-                  borderRadius: pw.BorderRadius.circular(5),
-                ),
-                padding: pw.EdgeInsets.all(12),
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    text(
-                      text: getTranslation(text: 'remark', tr: language),
-                      fontSize: 12,
-                      fontWeight: pw.FontWeight.bold,
-                      color: pw.PdfColors.blue800,
-                    ),
-                    pw.SizedBox(height: 8),
-                    text(
-                      text: data.remark!,
-                      fontSize: 9,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            pw.SizedBox(height: 10),
           ],
-        ),
-      ),
-    );
-  }
 
-  pw.Widget _buildStatusBadge(int status, String language) {
-    final isAuthorized = status == 1;
-    final color = isAuthorized ? pw.PdfColors.green : pw.PdfColors.orange;
-
-    return pw.Container(
-      padding: pw.EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: pw.BoxDecoration(
-
-        borderRadius: pw.BorderRadius.circular(3),
-        border: pw.Border.all(color: pw.PdfColors.grey),
-      ),
-      child: pw.Row(
-        mainAxisSize: pw.MainAxisSize.min,
-        children: [
-          pw.Icon(
-            isAuthorized ? pw.IconData(0xf058) : pw.IconData(0xf254),
-            size: 8,
-            color: color,
-          ),
-          pw.SizedBox(width: 4),
-          text(
-            text: isAuthorized
-                ? getTranslation(text: 'authorizedTitle', tr: language)
-                : getTranslation(text: 'pendingTitle', tr: language),
-            fontSize: 8,
-            fontWeight: pw.FontWeight.bold,
-            color: color,
-          ),
-        ],
-      ),
-    );
-  }
-
-  pw.Widget _buildBillItemsSection(List<Bill> billItems, String currency, String language) {
-    return pw.Container(
-      decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: pw.PdfColors.grey300, width: 0.5),
-        borderRadius: pw.BorderRadius.circular(5),
-      ),
-      padding: pw.EdgeInsets.all(12),
-      child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          pw.Row(
-            children: [
-              pw.Icon(
-                pw.IconData(0xf290), // shopping cart icon
-                size: 12,
-                color: pw.PdfColors.blue800,
-              ),
-              pw.SizedBox(width: 6),
-              text(
-                text: getTranslation(text: 'items', tr: language),
-                fontSize: 14,
-                fontWeight: pw.FontWeight.bold,
-                color: pw.PdfColors.blue800,
-              ),
-            ],
-          ),
-          pw.SizedBox(height: 12),
-
-          if (billItems.isEmpty)
-            pw.Center(
-              child: text(
-                text: getTranslation(text: 'noItems', tr: language),
-                fontSize: 9,
-                color: pw.PdfColors.grey600,
-              ),
-            )
-          else
-            pw.Table(
-              border: pw.TableBorder.all(color: pw.PdfColors.grey200),
+          // Transaction Info
+          pw.Container(
+            padding: const pw.EdgeInsets.all(2),
+            width: double.infinity,
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                // Header Row
-                pw.TableRow(
-                  decoration: pw.BoxDecoration(color: pw.PdfColors.grey100),
-                  children: [
-                    pw.Padding(
-                      padding: pw.EdgeInsets.all(6),
-                      child: text(
-                        text: getTranslation(text: 'productName', tr: language),
-                        fontSize: 8,
-                        fontWeight: pw.FontWeight.bold,
-                        textAlign: pw.TextAlign.left,
-                      ),
-                    ),
-                    pw.Padding(
-                      padding: pw.EdgeInsets.all(6),
-                      child: text(
-                        text: getTranslation(text: 'storage', tr: language),
-                        fontSize: 8,
-                        fontWeight: pw.FontWeight.bold,
-                        textAlign: pw.TextAlign.center,
-                      ),
-                    ),
-                    pw.Padding(
-                      padding: pw.EdgeInsets.all(6),
-                      child: text(
-                        text: getTranslation(text: 'qty', tr: language),
-                        fontSize: 8,
-                        fontWeight: pw.FontWeight.bold,
-                        textAlign: pw.TextAlign.center,
-                      ),
-                    ),
-                    pw.Padding(
-                      padding: pw.EdgeInsets.all(6),
-                      child: text(
-                        text: getTranslation(text: 'unitPrice', tr: language),
-                        fontSize: 8,
-                        fontWeight: pw.FontWeight.bold,
-                        textAlign: pw.TextAlign.center,
-                      ),
-                    ),
-                    pw.Padding(
-                      padding: pw.EdgeInsets.all(6),
-                      child: text(
-                        text: getTranslation(text: 'totalTitle', tr: language),
-                        fontSize: 8,
-                        fontWeight: pw.FontWeight.bold,
-                        textAlign: pw.TextAlign.center,
-                      ),
-                    ),
-                  ],
+                _buildInfoRow(
+                  label: getTranslation(text: 'referenceNumber', tr: language),
+                  value: trnReference,
                 ),
-                // Data Rows
-                ...billItems.map((item) {
-
-                  return pw.TableRow(
-                    decoration: pw.BoxDecoration(
-                      color: billItems.indexOf(item) % 2 == 0
-                          ? pw.PdfColors.white
-                          : pw.PdfColors.grey50,
-                    ),
-                    children: [
-                      pw.Padding(
-                        padding: pw.EdgeInsets.all(6),
-                        child: text(
-                          text: item.productName ?? 'N/A',
-                          fontSize: 8,
-                          textAlign: pw.TextAlign.left,
-                        ),
-                      ),
-                      pw.Padding(
-                        padding: pw.EdgeInsets.all(6),
-                        child: text(
-                          text: item.storageName ?? 'N/A',
-                          fontSize: 8,
-                          textAlign: pw.TextAlign.center,
-                        ),
-                      ),
-                      pw.Padding(
-                        padding: pw.EdgeInsets.all(6),
-                        child: text(
-                          text: "${item.quantity ?? "0"} T",
-                          fontSize: 8,
-                          textAlign: pw.TextAlign.center,
-                        ),
-                      ),
-                      pw.Padding(
-                        padding: pw.EdgeInsets.all(6),
-                        child: text(
-                          text: item.unitPrice?.toAmount() ?? "0.00",
-                          fontSize: 8,
-                          textAlign: pw.TextAlign.center,
-                        ),
-                      ),
-                      pw.Padding(
-                        padding: pw.EdgeInsets.all(6),
-                        child: text(
-                          text: "${item.totalPrice?.toAmount()}",
-                          fontSize: 8,
-                          fontWeight: pw.FontWeight.bold,
-                          textAlign: pw.TextAlign.center,
-                        ),
-                      ),
-                    ],
-                  );
-                }),
+                _buildInfoRow(
+                  label: getTranslation(text: 'maker', tr: language),
+                  value: maker,
+                ),
+                _buildInfoRow(
+                  label: getTranslation(text: 'checker', tr: language),
+                  value: checker,
+                ),
+                if (remark != null && remark.isNotEmpty) ...[
+                  _buildInfoRow(
+                    label: getTranslation(text: 'remark', tr: language),
+                    value: remark,
+                  ),
+                ],
               ],
             ),
-        ],
-      ),
-    );
-  }
-
-  pw.Widget _buildAccountingSection(List<Record> records, String currency, String language) {
-    return pw.Container(
-      decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: pw.PdfColors.grey300, width: 0.5),
-        borderRadius: pw.BorderRadius.circular(5),
-      ),
-      padding: pw.EdgeInsets.all(12),
-      child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          pw.Row(
-            children: [
-              pw.Icon(
-                pw.IconData(0xf1ad), // building columns icon
-                size: 12,
-                color: pw.PdfColors.blue800,
-              ),
-              pw.SizedBox(width: 6),
-              text(
-                text: getTranslation(text: 'accountingEntries', tr: language),
-                fontSize: 14,
-                fontWeight: pw.FontWeight.bold,
-                color: pw.PdfColors.blue800,
-              ),
-            ],
           ),
-          pw.SizedBox(height: 12),
 
-          if (records.isEmpty)
-            pw.Center(
-              child: text(
-                text: getTranslation(text: 'noRecords', tr: language),
-                fontSize: 9,
-                color: pw.PdfColors.grey600,
-              ),
-            )
-          else
-            pw.Column(
-              children: records.map((record) {
-                final isDebit = record.debitCredit?.toLowerCase() == 'debit';
-                return pw.Container(
-                  margin: pw.EdgeInsets.only(bottom: 6),
-                  decoration: pw.BoxDecoration(
-                    border: pw.Border.all(color: pw.PdfColors.grey200),
-                    borderRadius: pw.BorderRadius.circular(4),
-                  ),
-                  child: pw.Padding(
-                    padding: pw.EdgeInsets.all(8),
-                    child: pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.start,
-                      children: [
-                        pw.Row(
-                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                          children: [
-                            pw.Expanded(
-                              child: text(
-                                text: record.accountName ?? 'N/A',
-                                fontSize: 9,
-                                fontWeight: pw.FontWeight.bold,
-                              ),
-                            ),
-                            pw.Container(
-                              padding: pw.EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: pw.BoxDecoration(
-                                color: isDebit
-                                    ? pw.PdfColors.red50
-                                    : pw.PdfColors.green50,
-                                borderRadius: pw.BorderRadius.circular(3),
-                              ),
-                              child: text(
-                                text: record.debitCredit ?? 'N/A',
-                                fontSize: 8,
-                                fontWeight: pw.FontWeight.bold,
-                                color: isDebit
-                                    ? pw.PdfColors.red700
-                                    : pw.PdfColors.green700,
-                              ),
-                            ),
-                          ],
-                        ),
-                        pw.SizedBox(height: 4),
-                        pw.Row(
-                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                          children: [
-                            // buildTextWidget(
-                            //   text: record.accountNumber ?? 'N/A',
-                            //   fontSize: 8,
-                            //   color: pw.PdfColors.grey600,
-                            // ),
-                            text(
-                              text: "${record.amount?.toAmount()} $currency",
-                              fontSize: 10,
-                              fontWeight: pw.FontWeight.bold,
-                              color: isDebit
-                                  ? pw.PdfColors.red700
-                                  : pw.PdfColors.green700,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
+          // Amount in words
+          pw.SizedBox(height: 5),
+          pw.Container(
+            padding: const pw.EdgeInsets.all(2),
+            width: double.infinity,
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                text(
+                  text: getTranslation(text: 'amountInWords', tr: language),
+                  fontSize: 9,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+                pw.SizedBox(height: 1),
+                text(
+                  text: amountInWords.isNotEmpty ? "$amountInWords $ccy" : "",
+                  fontSize: 8,
+                ),
+              ],
             ),
+          ),
         ],
       ),
     );
   }
 
-  pw.Widget _buildDetailRow({required String label, required String value}) {
-    return pw.Padding(
-      padding: pw.EdgeInsets.symmetric(vertical: 3),
+  pw.Widget _buildRecordRow(Record record, String ccy, String language) {
+    final isDebit = record.debitCredit?.toLowerCase() == "debit";
+    final amount = double.tryParse(record.amount ?? "0") ?? 0;
+
+    return pw.Container(
+      margin: const pw.EdgeInsets.only(bottom: 2),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          pw.Expanded(
+            flex: 3,
+            child: text(
+              text: "${record.accountName ?? "-"} (${record.accountNumber ?? "-"})",
+              fontSize: 8,
+            ),
+          ),
+          pw.Expanded(
+            flex: 1,
+            child: text(
+              text: "${amount.toAmount()} $ccy",
+              fontSize: 8,
+              fontWeight: pw.FontWeight.bold,
+              color: isDebit ? pw.PdfColors.red : pw.PdfColors.green,
+              textAlign: pw.TextAlign.right,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildInfoRow({
+    required String label,
+    required String value,
+  }) {
+    return pw.Container(
+      margin: const pw.EdgeInsets.only(bottom: 2),
       child: pw.Row(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.Expanded(
-            flex: 2,
+          pw.SizedBox(
+            width: 70,
             child: text(
-              text: '$label:',
-              fontSize: 9,
+              text: "$label:",
+              fontSize: 8,
               fontWeight: pw.FontWeight.bold,
             ),
           ),
           pw.Expanded(
-            flex: 3,
             child: text(
               text: value,
-              fontSize: 9,
+              fontSize: 8,
             ),
           ),
         ],
       ),
-    );
-  }
-
-  @override
-  Future<pw.Widget> header({required ReportModel report}) async {
-    final image = (report.comLogo != null &&
-        report.comLogo is Uint8List &&
-        report.comLogo!.isNotEmpty)
-        ? pw.MemoryImage(report.comLogo!)
-        : null;
-
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.start,
-      children: [
-        pw.Row(
-          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: pw.CrossAxisAlignment.center,
-          children: [
-            // Company info (left side)
-            pw.Expanded(
-              flex: 3,
-              child: pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                mainAxisAlignment: pw.MainAxisAlignment.center,
-                children: [
-                  text(text: report.comName ?? "", fontSize: 20, tightBounds: true),
-                  pw.SizedBox(height: 3),
-                  text(text: report.statementDate ?? "", fontSize: 10),
-                ],
-              ),
-            ),
-            // Logo (right side)
-            if (image != null)
-              pw.Container(
-                width: 40,
-                height: 40,
-                child: pw.Image(image, fit: pw.BoxFit.contain),
-              ),
-          ],
-        ),
-        pw.SizedBox(height: 5)
-      ],
-    );
-  }
-
-  @override
-  pw.Widget footer({required ReportModel report, required pw.Context context, required String language, required pw.MemoryImage logoImage}) {
-    return pw.Column(
-      children: [
-        pw.Row(
-          mainAxisAlignment: pw.MainAxisAlignment.start,
-          children: [
-            pw.Container(
-              height: 20,
-              child: pw.Image(logoImage),
-            ),
-            verticalDivider(height: 15, width: 0.6),
-            text(
-              text: getTranslation(text: 'producedBy', tr: language),
-              fontWeight: pw.FontWeight.normal,
-              fontSize: 8,
-            ),
-          ],
-        ),
-        pw.SizedBox(height: 3),
-        horizontalDivider(),
-        pw.SizedBox(height: 3),
-        pw.Row(
-          children: [
-            text(text: report.comAddress ?? "", fontSize: 9),
-          ],
-        ),
-        pw.SizedBox(height: 3),
-        pw.Row(
-          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: pw.CrossAxisAlignment.end,
-          children: [
-            pw.Row(
-              children: [
-                text(text: report.compPhone ?? "", fontSize: 9),
-                verticalDivider(height: 10, width: 1),
-                text(text: report.comEmail ?? "", fontSize: 9),
-              ],
-            ),
-            pw.Row(
-              children: [
-                buildPage(context.pageNumber, context.pagesCount, language),
-              ],
-            ),
-          ],
-        ),
-      ],
     );
   }
 }

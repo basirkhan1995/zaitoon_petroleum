@@ -2479,4 +2479,11 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get invoiceAmount => 'مبلغ بل';
+
+  @override
+  String get inventorySubtitle => 'مدیریت همه عملیات موجودی در یک مکان';
+
+  @override
+  String get journalHint =>
+      'مدیریت ثبت‌های جریان نقدی با بدهکار، بستانکار و مبلغ.';
 }

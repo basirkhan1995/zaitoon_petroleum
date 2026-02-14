@@ -2487,4 +2487,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invoiceAmount => 'Invoice Amount';
+
+  @override
+  String get inventorySubtitle =>
+      'All inventory operations managed in one place';
+
+  @override
+  String get journalHint =>
+      'Manage cash flow entries with Debit, Credit, and Amount.';
 }

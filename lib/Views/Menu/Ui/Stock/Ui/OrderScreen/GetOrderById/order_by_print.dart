@@ -45,7 +45,6 @@ class OrderPrintService extends PrintServices {
         selectedSupplier: selectedSupplier,
       );
 
-      // Save the document
       await saveDocument(
         suggestedName: "${order.ordName}_${order.ordId}.pdf",
         pdf: document,
@@ -87,7 +86,6 @@ class OrderPrintService extends PrintServices {
         selectedSupplier: selectedSupplier,
       );
 
-      // Use copies parameter for multiple print jobs
       for (int i = 0; i < copies; i++) {
         await Printing.directPrintPdf(
           printer: selectedPrinter,
@@ -96,7 +94,6 @@ class OrderPrintService extends PrintServices {
           },
         );
 
-        // Optional: Add a small delay between copies if needed
         if (i < copies - 1) {
           await Future.delayed(Duration(milliseconds: 100));
         }
@@ -106,7 +103,6 @@ class OrderPrintService extends PrintServices {
     }
   }
 
-  // Real Time document show for preview
   Future<pw.Document> printPreview({
     required OrderByIdModel order,
     required String language,
@@ -154,15 +150,12 @@ class OrderPrintService extends PrintServices {
     final document = pw.Document();
     final prebuiltHeader = await header(report: company);
 
-    // Load your image asset
     final ByteData imageData = await rootBundle.load('assets/images/zaitoonLogo.png');
     final Uint8List imageBytes = imageData.buffer.asUint8List();
     final pw.MemoryImage logoImage = pw.MemoryImage(imageBytes);
 
-    // Calculate totals
     final isPurchase = order.ordName?.toLowerCase().contains('purchase') ?? true;
     final grandTotal = _calculateOrderTotal(order, isPurchase);
-    final subTotal = grandTotal; // If no tax/discount, subTotal = grandTotal
 
     document.addPage(
       pw.MultiPage(
@@ -179,7 +172,6 @@ class OrderPrintService extends PrintServices {
             company: company,
             isPurchase: isPurchase,
           ),
-
           customerSupplierInfo(
             order: order,
             language: language,
@@ -196,16 +188,14 @@ class OrderPrintService extends PrintServices {
           ),
           pw.SizedBox(height: 15),
           paymentSummary(
-            order: order,
             language: language,
             grandTotal: grandTotal,
-            subTotal: subTotal,
             cashPayment: cashPayment,
             creditAmount: creditAmount,
-            selectedAccount: selectedAccount,
+            account: selectedAccount,
+            currency: "", // Add currency if needed
+            isPurchase: isPurchase,
           ),
-          pw.SizedBox(height: 20),
-          signatureSection(language: language),
         ],
         header: (context) => prebuiltHeader,
         footer: (context) => footer(
@@ -231,24 +221,22 @@ class OrderPrintService extends PrintServices {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            // Company info (left side)
             pw.Expanded(
               flex: 3,
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  text(text: report.comName ?? "", fontSize: 25, tightBounds: true),
+                  text(text: report.comName ?? "",fontWeight: pw.FontWeight.bold, fontSize: 25, tightBounds: true),
                   pw.SizedBox(height: 3),
                   text(text: report.comAddress ?? "", fontSize: 10),
                   text(text: "${report.compPhone ?? ""} | ${report.comEmail ?? ""}", fontSize: 9),
                 ],
               ),
             ),
-            // Logo (right side)
             if (image != null)
               pw.Container(
-                width: 80,
-                height: 80,
+                width: 50,
+                height: 50,
                 child: pw.Image(image, fit: pw.BoxFit.contain),
               ),
           ],
@@ -308,7 +296,7 @@ class OrderPrintService extends PrintServices {
         : getTranslation(text: 'SEL', tr: language);
 
     return pw.Container(
-      padding: pw.EdgeInsets.symmetric(vertical: 10),
+      padding: pw.EdgeInsets.symmetric(vertical: 5),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
@@ -320,13 +308,12 @@ class OrderPrintService extends PrintServices {
                 children: [
                   text(
                     text: invoiceType,
-                    fontSize: 24,
+                    fontSize: 14,
                     fontWeight: pw.FontWeight.bold,
-                    color: pw.PdfColors.blue700,
                   ),
                   text(
                     text: "${getTranslation(text: 'invoiceNumber', tr: language)}: ${order.ordId}",
-                    fontSize: 14,
+                    fontSize: 10,
                   ),
                 ],
               ),
@@ -334,29 +321,24 @@ class OrderPrintService extends PrintServices {
                 crossAxisAlignment: pw.CrossAxisAlignment.end,
                 children: [
                   text(
-                    text: getTranslation(text: 'date', tr: language),
+                    text: order.ordEntryDate?.toDateTime ?? DateTime.now().toFormattedDate(),
                     fontSize: 10,
                   ),
                   text(
-                    text: order.ordEntryDate?.toDateTime ?? DateTime.now().toFormattedDate(),
-                    fontSize: 14,
+                    text: order.ordEntryDate?.shamsiDateFormatted ?? DateTime.now().toFormattedDate(),
+                    fontSize: 10,
                     fontWeight: pw.FontWeight.bold,
                   ),
-                  text(
-                    text: order.ordEntryDate?.toAfghanShamsi.toFormattedDate() ?? "",
-                    fontSize: 10,
-                    color: pw.PdfColors.blue600,
-                  ),
+
                 ],
               ),
             ],
           ),
-
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
               text(
-                text: "${getTranslation(text: 'referenceNumber', tr: language)}: ${order.ordTrnRef ?? ""}",
+                text: order.ordTrnRef ?? "",
                 fontSize: 11,
               ),
             ],
@@ -384,14 +366,12 @@ class OrderPrintService extends PrintServices {
         children: [
           text(
             text: title,
-            fontSize: 10,
-            color: pw.PdfColors.grey600,
-            fontWeight: pw.FontWeight.bold,
+            fontSize: 9,
+            color: pw.PdfColors.grey500,
           ),
-          pw.SizedBox(height: 2),
           text(
             text: name,
-            fontSize: 13,
+            fontSize: 12,
           ),
         ],
       ),
@@ -425,7 +405,6 @@ class OrderPrintService extends PrintServices {
         5: pw.FixedColumnWidth(storageWidth),
       },
       children: [
-        // Header Row
         pw.TableRow(
           decoration: pw.BoxDecoration(color: pw.PdfColors.grey200),
           children: [
@@ -485,12 +464,9 @@ class OrderPrintService extends PrintServices {
           ],
         ),
 
-        // Data Rows
         for (int i = 0; i < records.length; i++)
           pw.TableRow(
-            decoration: i.isOdd
-                ? pw.BoxDecoration(color: pw.PdfColors.grey50)
-                : null,
+            decoration: i.isOdd ? pw.BoxDecoration(color: pw.PdfColors.grey50) : null,
             children: [
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
@@ -548,26 +524,23 @@ class OrderPrintService extends PrintServices {
     );
   }
 
+  // NEW: Updated paymentSummary method exactly matching InvoicePrintService style
   pw.Widget paymentSummary({
-    required OrderByIdModel order,
     required String language,
     required double grandTotal,
-    required double subTotal,
     required double cashPayment,
     required double creditAmount,
-    required AccountsModel? selectedAccount,
+    required AccountsModel? account,
+    String? currency,
+    required bool isPurchase,
   }) {
-    final isPurchase = order.ordName?.toLowerCase().contains('purchase') ?? true;
-    final ccy = isPurchase ? "" : "";
     final lang = NumberToWords.getLanguageFromLocale(Locale(language));
-
-    // Use cleaned amount for number to words conversion
     final cleanAmount = grandTotal.toString().replaceAll(',', '');
     final parsedAmount = int.tryParse(
       double.tryParse(cleanAmount)?.toStringAsFixed(0) ?? "0",
     ) ?? 0;
-
     final amountInWords = NumberToWords.convert(parsedAmount, lang);
+    final ccy = currency ?? '';
 
     return pw.Container(
       width: 300,
@@ -575,58 +548,31 @@ class OrderPrintService extends PrintServices {
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.end,
         children: [
-          // Subtotal
-          _buildSummaryRow(
-            label: getTranslation(text: 'subTotal', tr: language),
-            value: 34,
-            ccy: ccy,
-          ),
-          pw.SizedBox(height: 5),
-
-          // Grand Total
-          pw.Container(
-            padding: pw.EdgeInsets.all(10),
-            decoration: pw.BoxDecoration(
-              color: pw.PdfColors.grey100,
-              border: pw.Border.all(color: pw.PdfColors.grey300),
-              borderRadius: pw.BorderRadius.circular(5),
-            ),
-            child: pw.Row(
-              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-              children: [
-                text(
-                  text: getTranslation(text: 'grandTotal', tr: language),
-                  fontSize: 14,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-                text(
-                  text: "${grandTotal.toAmount()} $ccy",
-                  fontSize: 14,
-                  fontWeight: pw.FontWeight.bold,
-                  color: pw.PdfColors.blue700,
-                ),
-              ],
-            ),
-          ),
-          pw.SizedBox(height: 10),
-
           // Payment Breakdown
           pw.Container(
-            padding: pw.EdgeInsets.all(10),
-            decoration: pw.BoxDecoration(
-              border: pw.Border.all(color: pw.PdfColors.grey300),
-              borderRadius: pw.BorderRadius.circular(5),
-            ),
+            padding: pw.EdgeInsets.all(2),
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                text(
-                  text: getTranslation(text: 'payment', tr: language),
-                  fontSize: 12,
-                  fontWeight: pw.FontWeight.bold,
+                // Grand Total
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    text(
+                      text: getTranslation(text: 'grandTotal', tr: language),
+                      fontSize: 11,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                    text(
+                      text: "${grandTotal.toAmount()} $ccy",
+                      fontSize: 11,
+                      fontWeight: pw.FontWeight.bold,
+                      color: pw.PdfColors.blue700,
+                    ),
+                  ],
                 ),
-                pw.SizedBox(height: 5),
 
+                // Cash Payment (if any)
                 if (cashPayment > 0)
                   _buildPaymentRow(
                     label: getTranslation(text: 'cashPayment', tr: language),
@@ -634,114 +580,143 @@ class OrderPrintService extends PrintServices {
                     ccy: ccy,
                   ),
 
-                if (creditAmount > 0 && selectedAccount != null)
+                // Credit/Account Payment (if any)
+                if (creditAmount > 0 && account != null)
                   _buildPaymentRow(
-                    label: "${getTranslation(text: 'accountPayment', tr: language)} (${selectedAccount.accNumber})",
+                    label: "${getTranslation(text: 'accountPayment', tr: language)} (${account.accNumber})",
                     value: creditAmount,
                     ccy: ccy,
                   ),
 
-                pw.SizedBox(height: 5),
-                pw.Divider(color: pw.PdfColors.grey300),
-                pw.SizedBox(height: 5),
+                // Total Payment
                 _buildPaymentRow(
                   label: getTranslation(text: 'totalPayment', tr: language),
                   value: cashPayment + creditAmount,
                   ccy: ccy,
                   isBold: true,
                 ),
+
+                // Account Balance Information - ONLY show when credit is used AND account exists
+                if (account != null && creditAmount > 0) ...[
+                  pw.Divider(color: pw.PdfColors.grey300),
+
+                  // Account Info
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      text(
+                          text: "${account.accNumber} | ${account.accName}",
+                          fontSize: 10,
+                          fontWeight: pw.FontWeight.bold
+                      ),
+                    ],
+                  ),
+
+                  // Previous Balance
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      text(
+                        text: getTranslation(text: 'previousAccBalance', tr: language),
+                        fontSize: 10,
+                      ),
+                      text(
+                        text: "${_getAccountBalance(account).toAmount()} $ccy",
+                        fontSize: 10,
+                        fontWeight: pw.FontWeight.bold,
+                        color: _getBalanceColor(_getAccountBalance(account)),
+                      ),
+                    ],
+                  ),
+
+                  // Current Transaction - Show based on order type
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      text(
+                        text: isPurchase
+                            ? getTranslation(text: 'purchaseAmount', tr: language)
+                            : getTranslation(text: 'saleAmount', tr: language),
+                        fontSize: 10,
+                      ),
+                      text(
+                        text: "${creditAmount.toAmount()} $ccy",
+                        fontSize: 10,
+                        color: isPurchase ? pw.PdfColors.green : pw.PdfColors.red,
+                      ),
+                    ],
+                  ),
+
+                  // New Balance Calculation
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      text(
+                        text: getTranslation(text: 'newBalance', tr: language),
+                        fontSize: 10,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                      text(
+                        text: isPurchase
+                            ? "${(_getAccountBalance(account) + creditAmount).toAmount()} $ccy"
+                            : "${(_getAccountBalance(account) - creditAmount).toAmount()} $ccy",
+                        fontSize: 10,
+                        fontWeight: pw.FontWeight.bold,
+                        color: isPurchase
+                            ? _getBalanceColor(_getAccountBalance(account) + creditAmount)
+                            : _getBalanceColor(_getAccountBalance(account) - creditAmount),
+                      ),
+                    ],
+                  ),
+
+                  // Status (Debtor/Creditor)
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      text(
+                        text: getTranslation(text: 'status', tr: language),
+                        fontSize: 10,
+                      ),
+                      text(
+                        text: isPurchase
+                            ? _getBalanceStatus(_getAccountBalance(account) + creditAmount, language)
+                            : _getBalanceStatus(_getAccountBalance(account) - creditAmount, language),
+                        fontSize: 10,
+                        fontWeight: pw.FontWeight.bold,
+                        color: isPurchase
+                            ? _getBalanceColor(_getAccountBalance(account) + creditAmount)
+                            : _getBalanceColor(_getAccountBalance(account) - creditAmount),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
 
           // Amount in words
-          pw.SizedBox(height: 10),
+          pw.SizedBox(height: 5),
           pw.Container(
-            padding: pw.EdgeInsets.all(10),
-            decoration: pw.BoxDecoration(
-              border: pw.Border.all(color: pw.PdfColors.grey300),
-              borderRadius: pw.BorderRadius.circular(5),
-            ),
+            padding: pw.EdgeInsets.all(2),
             width: double.infinity,
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 text(
                   text: getTranslation(text: 'amountInWords', tr: language),
-                  fontSize: 10,
+                  fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
-                pw.SizedBox(height: 5),
+                pw.SizedBox(height: 1),
                 text(
                   text: amountInWords.isNotEmpty ? "$amountInWords $ccy" : "",
-                  fontSize: 10,
+                  fontSize: 8,
                 ),
               ],
             ),
           ),
         ],
       ),
-    );
-  }
-
-  pw.Widget signatureSection({required String language}) {
-    return pw.Row(
-      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-      children: [
-        pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
-          children: [
-            pw.Container(
-              width: 200,
-              height: 1,
-              color: pw.PdfColors.black,
-            ),
-            text(
-              text: getTranslation(text: 'customerSignature', tr: language),
-              fontSize: 10,
-            ),
-          ],
-        ),
-        pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.end,
-          children: [
-            pw.Container(
-              width: 200,
-              height: 1,
-              color: pw.PdfColors.black,
-            ),
-            text(
-              text: getTranslation(text: 'authorizedBy', tr: language),
-              fontSize: 10,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  pw.Widget _buildSummaryRow({
-    required String label,
-    required double value,
-    String ccy = "",
-    bool isBold = false,
-    bool isTotal = false,
-  }) {
-    return pw.Row(
-      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-      children: [
-        text(
-          text: label,
-          fontSize: isTotal ? 14 : 11,
-          fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
-        ),
-        text(
-          text: "${value.toAmount()} $ccy",
-          fontSize: isTotal ? 14 : 11,
-          fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
-          color: isTotal ? pw.PdfColors.blue700 : null,
-        ),
-      ],
     );
   }
 
@@ -756,12 +731,12 @@ class OrderPrintService extends PrintServices {
       children: [
         text(
           text: label,
-          fontSize: 10,
+          fontSize: 11,
           fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
         ),
         text(
           text: "${value.toAmount()} $ccy",
-          fontSize: 10,
+          fontSize: 11,
           fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
           color: isBold ? pw.PdfColors.blue700 : null,
         ),
@@ -769,16 +744,37 @@ class OrderPrintService extends PrintServices {
     );
   }
 
-  // FIXED: Proper calculation methods
+  // Helper methods for account balance
+  double _getAccountBalance(AccountsModel account) {
+    return double.tryParse(account.accAvailBalance ?? "0.0") ?? 0.0;
+  }
+
+  pw.PdfColor _getBalanceColor(double balance) {
+    if (balance < 0) {
+      return pw.PdfColors.red;
+    } else if (balance > 0) {
+      return pw.PdfColors.green;
+    } else {
+      return pw.PdfColors.grey700;
+    }
+  }
+
+  String _getBalanceStatus(double balance, String language) {
+    if (balance < 0) {
+      return getTranslation(text: 'debtor', tr: language);
+    } else if (balance > 0) {
+      return getTranslation(text: 'creditor', tr: language);
+    } else {
+      return getTranslation(text: 'settled', tr: language);
+    }
+  }
+
   double _calculateOrderTotal(OrderByIdModel order, bool isPurchase) {
     if (order.records == null || order.records!.isEmpty) return 0.0;
-
     double total = 0.0;
-
     for (final record in order.records!) {
       total += _calculateItemTotal(record, isPurchase);
     }
-
     return total;
   }
 
@@ -786,13 +782,11 @@ class OrderPrintService extends PrintServices {
     try {
       final quantity = double.tryParse(record.stkQuantity ?? "0") ?? 0.0;
       double price;
-
       if (isPurchase) {
         price = double.tryParse(record.stkPurPrice ?? "0") ?? 0.0;
       } else {
         price = double.tryParse(record.stkSalePrice ?? "0") ?? 0.0;
       }
-
       return quantity * price;
     } catch (e) {
       return 0.0;

@@ -823,5 +823,7 @@
   "enableTitle": "Enabled",
   "disabledTitle": "Disabled",
   "shortcuts": "Shortcuts",
-  "invoiceAmount": "Invoice Amount"
+  "invoiceAmount": "Invoice Amount",
+  "inventorySubtitle": "All inventory operations managed in one place",
+  "journalHint": "Manage cash flow entries with Debit, Credit, and Amount."
 }

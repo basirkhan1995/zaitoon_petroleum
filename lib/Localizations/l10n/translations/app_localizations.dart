@@ -4923,6 +4923,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invoice Amount'**
   String get invoiceAmount;
+
+  /// No description provided for @inventorySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All inventory operations managed in one place'**
+  String get inventorySubtitle;
+
+  /// No description provided for @journalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage cash flow entries with Debit, Credit, and Amount.'**
+  String get journalHint;
 }
 
 class _AppLocalizationsDelegate

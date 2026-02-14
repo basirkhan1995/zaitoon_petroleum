@@ -141,7 +141,7 @@ class _DesktopState extends State<_Desktop> {
       if(login.hasPermission(94) ?? false)
       {"title": tr.userLog, "icon": Icons.scale_rounded, "action": ActionKey.userLog},
       if(login.hasPermission(94) ?? false)
-        {"title": tr.attendance, "icon": Icons.timeline_rounded, "action": ActionKey.attendance},
+        {"title": tr.attendance, "icon": Icons.timer, "action": ActionKey.attendance},
     ];
 
     final List<Map<String, dynamic>> transportButtons = [

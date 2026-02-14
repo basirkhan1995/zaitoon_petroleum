@@ -39,7 +39,7 @@ class NewPurchaseOrderView extends StatelessWidget {
     return ResponsiveLayout(
       mobile: const _Mobile(),
       desktop: const _Desktop(),
-      tablet: const _Tablet(),
+      tablet: const _Desktop(),
     );
   }
 }
@@ -1184,14 +1184,6 @@ class _DesktopState extends State<_Desktop> {
         },
       ),
     );
-  }
-}
-
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
 
