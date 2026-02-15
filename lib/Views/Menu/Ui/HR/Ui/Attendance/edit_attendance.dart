@@ -37,9 +37,9 @@ class _EditAttendanceDialogState extends State<EditAttendanceDialog> {
     selectedStatus = AttendanceStatusEnum.fromDatabaseValue(widget.record.emaStatus ?? "Present");
   }
   AttendanceStatusEnum? selectedStatus;
-  void _updateAttendance() {
+  void _updateAttendance({String? usrName}) {
     final updatedRecord = AttendanceRecord(
-      usrName: widget.record.usrName,
+      usrName: usrName,
       emaId: widget.record.emaId,
       emaEmployee: widget.record.emaEmployee,
       fullName: widget.record.fullName,
@@ -52,7 +52,7 @@ class _EditAttendanceDialogState extends State<EditAttendanceDialog> {
 
     // Create AttendanceModel with updated record
     final attendanceModel = AttendanceModel(
-      usrName: widget.record.usrName,
+      usrName: usrName,
       records: [updatedRecord],
     );
 
@@ -107,7 +107,7 @@ class _EditAttendanceDialogState extends State<EditAttendanceDialog> {
         icon: Icons.edit,
         title: "${tr.edit} - ${widget.record.fullName}",
 
-        onAction: _updateAttendance,
+        onAction: ()=> _updateAttendance(usrName: login.usrName),
         isActionTrue: (login.hasPermission(107) ?? false),
         actionLabel: BlocBuilder<AttendanceBloc, AttendanceState>(
           builder: (context, state) {

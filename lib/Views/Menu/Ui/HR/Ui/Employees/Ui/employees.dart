@@ -151,7 +151,7 @@ class _MobileState extends State<_Mobile> {
                     ),
                     onTap: login.hasPermission(108) ?? false
                         ? () {
-                      // Just show details without dialog for now
+                       Utils.goto(context, AddEditEmployeeView(model: emp));
                     }
                         : null,
                     showActions: false,

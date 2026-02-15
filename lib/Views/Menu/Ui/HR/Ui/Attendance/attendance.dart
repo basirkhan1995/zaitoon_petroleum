@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
@@ -15,6 +14,7 @@ import '../../../../../../Features/Other/toast.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../../../Auth/models/login_model.dart';
 import 'edit_attendance.dart';
+import 'features/status_selector.dart';
 import 'model/attendance_model.dart';
 
 class AttendanceView extends StatelessWidget {
@@ -74,11 +74,10 @@ class _MobileState extends State<_Mobile> {
       body: BlocConsumer<AttendanceBloc, AttendanceState>(
         listener: (context, state) {
           if (state is AttendanceErrorState) {
-            Utils.showOverlayMessage(
-              context,
-              message: state.message,
-              isError: true,
-            );
+            ToastManager.show(context: context, message: state.message, type: ToastType.error);
+          }
+          if (state is AttendanceErrorState) {
+            ToastManager.show(context: context, message: state.message, type: ToastType.error);
           }
         },
         builder: (context, state) {
@@ -506,11 +505,7 @@ class _MobileState extends State<_Mobile> {
     }
   }
 
-  void _showAddAttendanceBottomSheet(
-      BuildContext context,
-      AppLocalizations tr,
-      String? usrName,
-      ) {
+  void _showAddAttendanceBottomSheet(BuildContext context, AppLocalizations tr, String? usrName) {
     String? checkIn;
     String? checkOut;
     String localDate = selectedDate;
@@ -566,246 +561,27 @@ class _MobileState extends State<_Mobile> {
                   child: Column(
                     children: [
                       // Date Picker
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: .3),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.calendar_today_rounded, size: 16, color: Theme.of(context).colorScheme.primary),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: ZDatePicker(
-                                label: tr.date,
-                                value: localDate,
-                                onDateChanged: (v) => localDate = v,
-                              ),
-                            ),
-                          ],
-                        ),
+                      ZDatePicker(
+                        label: tr.date,
+                        value: localDate,
+                        onDateChanged: (v) => localDate = v,
                       ),
 
                       const SizedBox(height: 16),
-
-                      // Check In Time
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: .3),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: TimePickerField(
-                          label: tr.checkIn,
-                          initialTime: '08:00:00',
-                          onChanged: (time) => checkIn = time,
-                        ),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Check Out Time
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: .3),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: TimePickerField(
-                          label: tr.checkOut,
-                          initialTime: '16:00:00',
-                          onChanged: (time) => checkOut = time,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Action Buttons
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(tr.cancel),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: BlocBuilder<AttendanceBloc, AttendanceState>(
-                        builder: (context, state) {
-                          final isLoading = state is AttendanceSilentLoadingState;
-
-                          return ElevatedButton(
-                            onPressed: isLoading
-                                ? null
-                                : () {
-                              context.read<AttendanceBloc>().add(
-                                AddAttendanceEvent(
-                                  usrName: usrName ?? "",
-                                  checkIn: checkIn ?? "08:00:00",
-                                  checkOut: checkOut ?? "16:00:00",
-                                  date: localDate,
-                                ),
-                              );
-                              Navigator.pop(context);
-                            },
-                            child: isLoading
-                                ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                                : Text(tr.submit),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _showEditAttendanceBottomSheet(
-      BuildContext context,
-      AttendanceRecord record,
-      AppLocalizations tr,
-      String? usrName,
-      ) {
-    String? checkIn = record.emaCheckedIn;
-    String? checkOut = record.emaCheckedOut;
-    String? localDate = record.emaDate;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.6,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Column(
-            children: [
-              // Handle
-              Container(
-                margin: const EdgeInsets.only(top: 8),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-
-              // Header
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 5),
-                child: Row(
-                  children: [
-                    Text(
-                      tr.edit,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const Divider(height: 1),
-
-              // Employee Info
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            record.fullName ?? "-",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            record.empPosition ?? "-",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(record.emaStatus ?? "").withValues(alpha: .1),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Text(
-                        record.emaStatus ?? "-",
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: _getStatusColor(record.emaStatus ?? ""),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Form
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      // Date Picker
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ZDatePicker(
-                              label: tr.date,
-                              value: localDate,
-                              onDateChanged: (v) => localDate = v,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 10),
 
                       // Check In Time
                       TimePickerField(
                         label: tr.checkIn,
-                        initialTime: checkIn ?? '08:00:00',
+                        initialTime: '08:00:00',
                         onChanged: (time) => checkIn = time,
                       ),
 
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 16),
 
                       // Check Out Time
                       TimePickerField(
                         label: tr.checkOut,
-                        initialTime: checkOut ?? '16:00:00',
+                        initialTime: '16:00:00',
                         onChanged: (time) => checkOut = time,
                       ),
                     ],
@@ -834,18 +610,23 @@ class _MobileState extends State<_Mobile> {
                             onPressed: isLoading
                                 ? null
                                 : () {
-                              // Add update attendance event here
-                              // context.read<AttendanceBloc>().add(UpdateAttendanceEvent(...));
+                              context.read<AttendanceBloc>().add(
+                                AddAttendanceEvent(
+                                  usrName: usrName ?? "",
+                                  checkIn: checkIn ?? "08:00:00",
+                                  checkOut: checkOut ?? "16:00:00",
+                                  date: localDate,
+                                ),
+                              );
                               Navigator.pop(context);
                             },
-                            isActive: true,
                             label: isLoading
                                 ? const SizedBox(
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                                : Text(tr.update),
+                                : Text(tr.submit),
                           );
                         },
                       ),
@@ -859,9 +640,247 @@ class _MobileState extends State<_Mobile> {
       },
     );
   }
+
+  void _showEditAttendanceBottomSheet(BuildContext context, AttendanceRecord record, AppLocalizations tr, String? usrName,) {
+    String? checkIn = record.emaCheckedIn;
+    String? checkOut = record.emaCheckedOut;
+    String? localDate = record.emaDate;
+    AttendanceStatusEnum? selectedStatus = AttendanceStatusEnum.fromDatabaseValue(record.emaStatus ?? "Present");
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.75,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Column(
+                children: [
+                  // Handle
+                  Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                    child: Row(
+                      children: [
+                        Text(
+                          "${tr.edit} - ${record.fullName}",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const Divider(height: 1),
+
+                  // Employee Info
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                record.fullName ?? "-",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                record.empPosition ?? "-",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _getStatusColor(record.emaStatus ?? "").withValues(alpha: .1),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            record.emaStatus ?? "-",
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: _getStatusColor(record.emaStatus ?? ""),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Form
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+
+                          // Check In Time
+                          TimePickerField(
+                            label: tr.checkIn,
+                            initialTime: checkIn ?? '08:00:00',
+                            onChanged: (time) => checkIn = time,
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          // Check Out Time
+                          TimePickerField(
+                            label: tr.checkOut,
+                            initialTime: checkOut ?? '16:00:00',
+                            onChanged: (time) => checkOut = time,
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          // Status Dropdown - Using AttendanceDropdown
+                          AttendanceDropdown(
+                            selectedStatus: selectedStatus,
+                            onStatusSelected: (status) {
+                              setState(() {
+                                selectedStatus = status;
+                              });
+                            },
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          // Current Values Info
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: .5),
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.outline.withValues(alpha: .2),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  tr.currentValues,
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("${tr.checkIn}: ${record.emaCheckedIn ?? '--:--:--'}"),
+                                    Text("${tr.checkOut}: ${record.emaCheckedOut ?? '--:--:--'}"),
+                                  ],
+                                ),
+                                Text("${tr.status}: ${record.emaStatus ?? '--'}"),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Action Buttons
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ZOutlineButton(
+                            onPressed: () => Navigator.pop(context),
+                            label: Text(tr.cancel),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: BlocBuilder<AttendanceBloc, AttendanceState>(
+                            builder: (context, state) {
+                              final isLoading = state is AttendanceSilentLoadingState;
+
+                              return ZOutlineButton(
+                                onPressed: isLoading
+                                    ? null
+                                    : () {
+                                  // Create updated record
+                                  final updatedRecord = AttendanceRecord(
+                                    usrName: record.usrName,
+                                    emaId: record.emaId,
+                                    emaEmployee: record.emaEmployee,
+                                    fullName: record.fullName,
+                                    emaCheckedIn: checkIn,
+                                    emaCheckedOut: checkOut,
+                                    emaStatus: selectedStatus?.toDatabaseValue(),
+                                    emaDate: localDate,
+                                    empPosition: record.empPosition,
+                                  );
+
+                                  // Create AttendanceModel with updated record
+                                  final attendanceModel = AttendanceModel(
+                                    usrName: usrName,
+                                    records: [updatedRecord],
+                                  );
+
+                                  // Dispatch update event
+                                  context.read<AttendanceBloc>().add(
+                                    UpdateAttendanceEvent(attendanceModel),
+                                  );
+                                  Navigator.pop(context);
+                                },
+                                isActive: true,
+                                label: isLoading
+                                    ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                                    : Text(tr.update),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 }
-
-
 
 class _Desktop extends StatefulWidget {
   const _Desktop();
@@ -1001,13 +1020,7 @@ class _DesktopState extends State<_Desktop> {
           ),
           SizedBox(height: 5),
           Expanded(
-            child: BlocConsumer<AttendanceBloc, AttendanceState>(
-              listener: (BuildContext context, AttendanceState state) {
-                if (state is AttendanceErrorState) {
-                  Utils.showOverlayMessage(context,
-                      message: state.message, isError: true);
-                }
-              },
+            child: BlocBuilder<AttendanceBloc, AttendanceState>(
               builder: (context, state) {
                 if (state is AttendanceLoadingState) {
                   return const Center(
@@ -1158,7 +1171,13 @@ class _DesktopState extends State<_Desktop> {
 
             if (state is AttendanceSuccessState) {
               Navigator.pop(dialogContext);
-              Utils.showOverlayMessage(context, title: tr.successTitle, message: state.message, isError: false);
+              ToastManager.show(
+                context: context,
+                title: tr.successTitle,
+                message: state.message,
+                type: ToastType.success,
+                durationInSeconds: 4,
+              );
             }
 
             /// ❌ Keep dialog open on error

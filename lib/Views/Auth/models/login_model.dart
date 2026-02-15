@@ -20,7 +20,7 @@ class LoginData {
   final int? usrBranch;
   final String? brcName;
   final List<UsrPermission>? permissions;
-  final List<Company>? company;
+  final Company? company;
 
   LoginData({
     this.usrName,
@@ -49,7 +49,7 @@ class LoginData {
     int? usrBranch,
     String? brcName,
     List<UsrPermission>? permissions,
-    List<Company>? company,
+    Company? company,
   }) =>
       LoginData(
         usrName: usrName ?? this.usrName,
@@ -78,7 +78,7 @@ class LoginData {
     usrBranch: json["usrBranch"],
     brcName: json["brcName"],
     permissions: json["permissions"] == null ? [] : List<UsrPermission>.from(json["permissions"]!.map((x) => UsrPermission.fromMap(x))),
-    company: json["company"] == null ? [] : List<Company>.from(json["company"]!.map((x) => Company.fromMap(x))),
+    company: json["company"] == null ? null : Company.fromMap(json["company"]),
   );
 
   Map<String, dynamic> toMap() => {
@@ -93,24 +93,24 @@ class LoginData {
     "usrBranch": usrBranch,
     "brcName": brcName,
     "permissions": permissions == null ? [] : List<dynamic>.from(permissions!.map((x) => x.toMap())),
-    "company": company == null ? [] : List<dynamic>.from(company!.map((x) => x.toMap())),
+    "company": company?.toMap(),
   };
 }
 
 class Company {
   final int? comId;
   final String? comName;
-  final String? comLicenseNo;
-  final String? comSlogan;
-  final String? comDetails;
+  final dynamic comLicenseNo;
+  final dynamic comSlogan;
+  final dynamic comDetails;
   final String? comPHone;
   final String? comEmail;
   final String? comWebsite;
   final int? comOwner;
-  final String? comFb;
-  final String? comInsta;
-  final String? comWhatsapp;
-  final int? comVerify;
+  final dynamic comFb;
+  final dynamic comInsta;
+  final dynamic comWhatsapp;
+  final dynamic comVerify;
   final String? comLocalCcy;
   final String? comTimeZone;
   final String? comAddress;
@@ -137,17 +137,17 @@ class Company {
   Company copyWith({
     int? comId,
     String? comName,
-    String? comLicenseNo,
-    String? comSlogan,
-    String? comDetails,
+    dynamic comLicenseNo,
+    dynamic comSlogan,
+    dynamic comDetails,
     String? comPHone,
     String? comEmail,
     String? comWebsite,
     int? comOwner,
-    String? comFb,
-    String? comInsta,
-    String? comWhatsapp,
-    int? comVerify,
+    dynamic comFb,
+    dynamic comInsta,
+    dynamic comWhatsapp,
+    dynamic comVerify,
     String? comLocalCcy,
     String? comTimeZone,
     String? comAddress,
@@ -244,7 +244,6 @@ class UsrPermission {
     "rsgName": rsgName,
   };
 }
-
 
 extension LoginPermissionExt on LoginData {
   bool? hasPermission(int uprRole) {
