@@ -270,7 +270,7 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
                     Container(
                       padding: const EdgeInsets.all(3),
                       margin: const EdgeInsets.all(5),
-                      width: 120,
+                      width: 110,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                         border: Border.all(
@@ -285,11 +285,10 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
                         "assets/images/zaitoonLogo.png",
                         cacheHeight: 120,
                         cacheWidth: 120,
-                      )
-                          : Image.memory(
+                      ) : Image.memory(
                         logo,
-                        cacheHeight: 120,
-                        cacheWidth: 120,
+                        cacheHeight: 110,
+                        cacheWidth: 110,
                       ),
                     ),
 

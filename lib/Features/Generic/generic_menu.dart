@@ -145,7 +145,7 @@ class GenericMenuWithScreen<T> extends StatefulWidget {
 
 class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
   double minScreenSize = 60;
-  double maxScreenSize = 170;
+  double maxScreenSize = 165;
   late bool isMenuExpanded;
 
   @override

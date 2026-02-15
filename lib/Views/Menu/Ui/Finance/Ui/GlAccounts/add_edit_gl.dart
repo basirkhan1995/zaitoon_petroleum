@@ -18,19 +18,10 @@ class AddEditGl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-      mobile: _Mobile(),
+      mobile: _Desktop(model),
       tablet: _Desktop(model),
       desktop: _Desktop(model),
     );
-  }
-}
-
-class _Mobile extends StatelessWidget {
-  const _Mobile();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
 

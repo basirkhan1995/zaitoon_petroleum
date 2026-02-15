@@ -14,6 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../../Features/Other/image_helper.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
+import '../../../../../../../Features/Widgets/zcard_mobile.dart';
 import '../../../../../../Auth/bloc/auth_bloc.dart';
 import '../features/emp_card.dart';
 import 'package:flutter/services.dart';
@@ -28,14 +29,145 @@ class EmployeesView extends StatelessWidget {
   }
 }
 
-class _Mobile extends StatelessWidget {
+class _Mobile extends StatefulWidget {
   const _Mobile();
 
   @override
+  State<_Mobile> createState() => _MobileState();
+}
+
+class _MobileState extends State<_Mobile> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<EmployeeBloc>().add(LoadEmployeeEvent());
+    });
+  }
+
+  Future<void> _onRefresh() async {
+    context.read<EmployeeBloc>().add(LoadEmployeeEvent());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final tr = AppLocalizations.of(context)!;
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
+
+    return Scaffold(
+      body: BlocConsumer<EmployeeBloc, EmployeeState>(
+        listener: (context, state) {
+          if (state is EmployeeErrorState) {
+            Utils.showOverlayMessage(
+              context,
+              title: tr.accessDenied,
+              message: state.message,
+              isError: true,
+            );
+          }
+          if (state is EmployeeSuccessState) {
+            Navigator.of(context).pop();
+          }
+        },
+        builder: (context, state) {
+          if (state is EmployeeLoadingState && state is! EmployeeLoadedState) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (state is EmployeeErrorState) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 48,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    state.message,
+                    style: const TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _onRefresh,
+                    child: Text(tr.retry),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (state is EmployeeLoadedState) {
+            final employees = state.employees;
+
+            if (employees.isEmpty) {
+              return Center(
+                child: Text(tr.noDataFound),
+              );
+            }
+
+            return RefreshIndicator(
+              onRefresh: _onRefresh,
+              child: ListView.builder(
+                padding: const EdgeInsets.all(12),
+                itemCount: employees.length,
+                itemBuilder: (context, index) {
+                  final emp = employees[index];
+
+                  return MobileInfoCard(
+                    imageUrl: emp.empImage,
+                    title: "${emp.perName} ${emp.perLastName}",
+                    subtitle: emp.empPosition,
+                    infoItems: [
+                      MobileInfoItem(
+                        icon: Icons.apartment_outlined,
+                        text: emp.empDepartment ?? "-",
+                      ),
+                      MobileInfoItem(
+                        icon: Icons.payments_outlined,
+                        text: emp.empSalary?.toAmount() ?? "-",
+                      ),
+                      MobileInfoItem(
+                        icon: Icons.calendar_today_outlined,
+                        text: emp.empHireDate?.toFormattedDate() ?? "-",
+                      ),
+                    ],
+                    status: MobileStatus(
+                      label: emp.empStatus == 1 ? tr.active : tr.inactive,
+                      color: emp.empStatus == 1 ? Colors.green : Colors.red,
+                      backgroundColor: emp.empStatus == 1
+                          ? Colors.green.withValues(alpha: .1)
+                          : Colors.red.withValues(alpha: .1),
+                    ),
+                    onTap: login.hasPermission(108) ?? false
+                        ? () {
+                      // Just show details without dialog for now
+                    }
+                        : null,
+                    showActions: false,
+                  );
+                },
+              ),
+            );
+          }
+
+          return const SizedBox();
+        },
+      ),
+    );
   }
 }
+
 
 
 

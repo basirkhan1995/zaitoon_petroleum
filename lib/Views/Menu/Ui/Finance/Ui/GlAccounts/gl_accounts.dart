@@ -21,12 +21,209 @@ class GlAccountsView extends StatelessWidget {
   }
 }
 
-class _Mobile extends StatelessWidget {
+class _Mobile extends StatefulWidget {
   const _Mobile();
 
   @override
+  State<_Mobile> createState() => _MobileState();
+}
+
+class _MobileState extends State<_Mobile> {
+  String? myLocale;
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      myLocale = Localizations.localeOf(context).languageCode;
+      context.read<GlAccountsBloc>().add(LoadGlAccountEvent());
+    });
+    super.initState();
+  }
+  final searchController = TextEditingController();
+  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final shortcuts = {
+      const SingleActivator(LogicalKeyboardKey.f1): onAdd,
+      const SingleActivator(LogicalKeyboardKey.f5): onRefresh,
+    };
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: GlobalShortcuts(
+        shortcuts: shortcuts,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(child: Text(tr.glAccountsComplete,style: textTheme.titleSmall?.copyWith(color: color.outline))),
+
+                  ZOutlineButton(
+                      toolTip: 'F5',
+                      width: 90,
+                      height: 30,
+                      isActive: true,
+                      icon: Icons.add,
+                      onPressed: onAdd,
+                      label: Text(AppLocalizations.of(context)!.newKeyword)),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 3),
+                child: ZSearchField(
+                  controller: searchController,
+                  hint: AppLocalizations.of(context)!.accNameOrNumber,
+                  title: '',
+                  end: searchController.text.isNotEmpty? InkWell(
+                      splashColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: (){
+                        setState(() {
+                          searchController.clear();
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Icon(Icons.clear,size: 15,),
+                      )) : SizedBox(),
+                  onChanged: (e){
+                    setState(() {
+                    });
+                  },
+                  icon: FontAwesomeIcons.magnifyingGlass,
+                ),
+              ),
+            ),
+
+            SizedBox(height: 8),
+            Divider(endIndent: 2,indent: 2,color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),),
+
+      Expanded(
+        child: BlocConsumer<GlAccountsBloc, GlAccountsState>(
+          listener: (context, state) {
+            if (state is GlSuccessState) {
+              Navigator.of(context).pop();
+            }
+            if (state is GlAccountsErrorState) {
+              Utils.showOverlayMessage(context, message: state.message, isError: true);
+            }
+          },
+          builder: (context, state) {
+            if (state is GlAccountsLoadingState) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (state is GlAccountLoadedState) {
+              final query = searchController.text.toLowerCase().trim();
+
+              final filteredList = state.gl.where((item) {
+                final name = item.accName?.toLowerCase() ?? '';
+                final number = item.accNumber?.toString() ?? '';
+                return name.contains(query.toLowerCase()) || number.contains(query);
+              }).toList();
+
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<GlAccountsBloc>().add(LoadGlAccountEvent());
+                },
+                child: ListView.builder(
+                  itemCount: filteredList.length,
+                  itemBuilder: (context, index) {
+                    final gl = filteredList[index];
+                    return InkWell(
+                      onLongPress: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return ZAlertDialog(
+                              title: tr.areYouSure,
+                              content: "Do wanna delete this code?",
+                              onYes: () {
+                                context.read<GlAccountsBloc>().add(DeleteGlEvent(gl.accNumber!));
+                              },
+                            );
+                          },
+                        );
+                      },
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AddEditGl(model: gl);
+                          },
+                        );
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: index.isEven
+                              ? Theme.of(context).colorScheme.primary.withValues(alpha: .05)
+                              : Colors.transparent,
+                        ),
+                        child: Row(
+                          spacing: 10,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(gl.accName ?? "", style: Theme.of(context).textTheme.titleSmall),
+                                  Text(
+                                    gl.accNumber.toString(),
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(color: color.outline),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  gl.acgName ?? "",
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                  textAlign: TextAlign.center,
+                                ),
+                                Text(
+                                  Utils.glCategories(category: gl.accCategory!, locale: tr),
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(color: color.outline),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            }
+            return SizedBox();
+          },
+        ),
+      )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> onRefresh() async {
+    context.read<GlAccountsBloc>().add(LoadGlAccountEvent());
+  }
+
+  void onAdd(){
+    showDialog(context: context, builder: (context){
+      return AddEditGl();
+    });
   }
 }
 

@@ -21,8 +21,6 @@ class ReminderView extends StatelessWidget {
   }
 }
 
-
-
 class _Desktop extends StatefulWidget {
   const _Desktop();
 
@@ -166,6 +164,10 @@ class _DesktopState extends State<_Desktop> {
         ),
       ),
     );
+  }
+
+  Future<void> onRefresh()async{
+    context.read<ReminderBloc>().add(LoadAlertReminders(alert: 0));
   }
 
   /// GROUP BUILDER

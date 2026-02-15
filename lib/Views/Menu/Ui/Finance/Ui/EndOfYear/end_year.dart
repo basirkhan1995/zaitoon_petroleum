@@ -40,15 +40,6 @@ class _Mobile extends StatelessWidget {
   }
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
 class _Desktop extends StatefulWidget {
   const _Desktop();
 
@@ -144,7 +135,7 @@ class _DesktopState extends State<_Desktop> {
               }
               return Column(
                 children: [
-                  _HeaderRow(titleStyle: titleStyle, tr: tr),
+                  _HeaderRow(titleStyle: titleStyle, tr: tr, myLocale: myLocale??"en"),
                   Expanded(
                     child: BlocConsumer<EoyBloc, EoyState>(
                       listener: (context, state) {
@@ -463,9 +454,10 @@ class _InfoRow extends StatelessWidget {
 /// Header Row
 class _HeaderRow extends StatelessWidget {
   final TextStyle? titleStyle;
+  final String myLocale;
   final AppLocalizations tr;
 
-  const _HeaderRow({required this.titleStyle, required this.tr});
+  const _HeaderRow({required this.titleStyle, required this.myLocale, required this.tr});
 
   @override
   Widget build(BuildContext context) {
@@ -500,7 +492,7 @@ class _HeaderRow extends StatelessWidget {
               width: 150,
               child: Text(
                 tr.debitTitle,
-                textAlign: TextAlign.right,
+                textAlign: myLocale == "en" ? TextAlign.right : TextAlign.left,
                 style: titleStyle,
               ),
             ),
@@ -508,7 +500,7 @@ class _HeaderRow extends StatelessWidget {
               width: 150,
               child: Text(
                 tr.creditTitle,
-                textAlign: TextAlign.right,
+                textAlign: myLocale == "en" ? TextAlign.right : TextAlign.left,
                 style: titleStyle,
               ),
             ),

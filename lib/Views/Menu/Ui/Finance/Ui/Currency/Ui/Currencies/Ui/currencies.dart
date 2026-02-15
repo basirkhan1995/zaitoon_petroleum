@@ -57,58 +57,53 @@ class _MobileState extends State<_Mobile> {
         shortcuts: shortcuts,
         child: Column(
           children: [
-            Row(
-              children: [
-                Text(tr.allCurrencies,style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.outline),),
-              ],
-            ),
-            ZSearchField(
-              controller: searchController,
-              title: '',
-              hint: tr.search,
-              end: searchController.text.isNotEmpty
-                  ? InkWell(
-                splashColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                onTap: () {
-                  setState(() {
-                    searchController.clear();
-                  });
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                  ),
-                  child: Icon(Icons.clear, size: 15),
-                ),
-              ) : SizedBox(),
-              onChanged: (e) {
-                setState(() {});
-              },
-              icon: FontAwesomeIcons.magnifyingGlass,
-            ),
-            Row(
-              spacing: 8,
-              children: [
-                Expanded(
-                  child: ZOutlineButton(
-                      toolTip: 'F5',
-                      icon: Icons.refresh,
-                      label: Text(AppLocalizations.of(context)!.refresh),
-                      onPressed: onRefresh
-                  ),
-                ),
-                Expanded(
-                  child: ZOutlineButton(
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(child: Text(tr.allCurrencies,style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.outline),)),
+                  ZOutlineButton(
+                      width: 100,
+                      icon: Icons.add,
+                      height: 35,
                       toolTip: 'F1',
                       isActive: true,
                       label: Text(AppLocalizations.of(context)!.newKeyword),
                       onPressed: onAdd
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ZSearchField(
+                controller: searchController,
+                title: '',
+                hint: tr.search,
+                end: searchController.text.isNotEmpty
+                    ? InkWell(
+                  splashColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  onTap: () {
+                    setState(() {
+                      searchController.clear();
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                    ),
+                    child: Icon(Icons.clear, size: 15),
+                  ),
+                ) : SizedBox(),
+                onChanged: (e) {
+                  setState(() {});
+                },
+                icon: FontAwesomeIcons.magnifyingGlass,
+              ),
+            ),
+
             SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
@@ -177,83 +172,86 @@ class _MobileState extends State<_Mobile> {
                       return ccyCode.contains(query) || ccyName.contains(query);
                     }).toList();
 
-                    return ListView.builder(
-                        itemCount: filteredCcy.length,
-                        itemBuilder: (context,index){
-                          final ccy = filteredCcy[index];
-                          return InkWell(
-                            hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
-                            highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
-                            onTap: (){
-                              showDialog(context: context, builder: (context){
-                                return AddEditCurrencyView(currency: ccy);
-                              });
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 5,
-                                horizontal: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: index.isOdd
-                                    ? Theme.of(
-                                  context,
-                                ).colorScheme.primary.withValues(alpha: .05)
-                                    : Colors.transparent,
-                              ),
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 30,
-                                    child: Flag.fromString(
-                                      ccy.ccyCountryCode??"",
-                                      height: 20,
+                    return RefreshIndicator(
+                       onRefresh: onRefresh,
+                      child: ListView.builder(
+                          itemCount: filteredCcy.length,
+                          itemBuilder: (context,index){
+                            final ccy = filteredCcy[index];
+                            return InkWell(
+                              hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
+                              highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
+                              onTap: (){
+                                showDialog(context: context, builder: (context){
+                                  return AddEditCurrencyView(currency: ccy);
+                                });
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 5,
+                                  horizontal: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: index.isOdd
+                                      ? Theme.of(
+                                    context,
+                                  ).colorScheme.primary.withValues(alpha: .05)
+                                      : Colors.transparent,
+                                ),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
                                       width: 30,
-                                      borderRadius: 2,
-                                      fit: BoxFit.fill,
+                                      child: Flag.fromString(
+                                        ccy.ccyCountryCode??"",
+                                        height: 20,
+                                        width: 30,
+                                        borderRadius: 2,
+                                        fit: BoxFit.fill,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 20),
-                                  SizedBox(
-                                    width: 60,
-                                    child: Text(
-                                      ccy.ccyCode ?? "",
-                                      style: Theme.of(context).textTheme.titleMedium,
+                                    SizedBox(width: 20),
+                                    SizedBox(
+                                      width: 60,
+                                      child: Text(
+                                        ccy.ccyCode ?? "",
+                                        style: Theme.of(context).textTheme.titleMedium,
+                                      ),
                                     ),
-                                  ),
 
-                                  Spacer(),
-                                  ZCover(
-                                    margin: EdgeInsets.symmetric(horizontal: 5),
-                                    child: Text(
-                                      ccy.ccySymbol ?? "",
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context).textTheme.titleMedium,
+                                    Spacer(),
+                                    ZCover(
+                                      margin: EdgeInsets.symmetric(horizontal: 5),
+                                      child: Text(
+                                        ccy.ccySymbol ?? "",
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context).textTheme.titleMedium,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 30),
-                                  SizedBox(
-                                    width: 70,
-                                    child: Checkbox(
-                                        visualDensity: VisualDensity(vertical: -4),
-                                        value: ccy.ccyStatus == 1,
-                                        onChanged: (e){
-                                          showDialog(context: context, builder: (context){
-                                            return ZAlertDialog(
-                                              title: tr.areYouSure,
-                                              content: tr.currencyActivationMessage,
-                                              onYes: () {
-                                                context.read<CurrenciesBloc>().add(UpdateCcyStatusEvent(ccyCode: ccy.ccyCode!,status: e ?? false));
-                                              },
-                                            );
-                                          });
-                                        }),
-                                  ),
-                                ],
+                                    SizedBox(width: 30),
+                                    SizedBox(
+                                      width: 70,
+                                      child: Checkbox(
+                                          visualDensity: VisualDensity(vertical: -4),
+                                          value: ccy.ccyStatus == 1,
+                                          onChanged: (e){
+                                            showDialog(context: context, builder: (context){
+                                              return ZAlertDialog(
+                                                title: tr.areYouSure,
+                                                content: tr.currencyActivationMessage,
+                                                onYes: () {
+                                                  context.read<CurrenciesBloc>().add(UpdateCcyStatusEvent(ccyCode: ccy.ccyCode!,status: e ?? false));
+                                                },
+                                              );
+                                            });
+                                          }),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        });
+                            );
+                          }),
+                    );
                   }
                   return const SizedBox();
                 },
@@ -264,7 +262,7 @@ class _MobileState extends State<_Mobile> {
       ),
     );
   }
-  void onRefresh(){
+  Future<void> onRefresh()async{
     context.read<CurrenciesBloc>().add(LoadCurrenciesEvent());
   }
 
