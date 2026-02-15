@@ -30,7 +30,7 @@ class AddEditEmployeeView extends StatelessWidget {
     super.key,
     this.model,
     this.isDriver = false,
-    this.employeeType, // Add this parameter
+    this.employeeType,
   });
 
   @override
