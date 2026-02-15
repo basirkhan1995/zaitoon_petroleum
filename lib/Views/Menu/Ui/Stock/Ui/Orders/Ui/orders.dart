@@ -36,13 +36,15 @@ class _Mobile extends StatelessWidget {
     return const Placeholder();
   }
 }
-
 class _Tablet extends StatelessWidget {
   const _Tablet();
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: _Desktop(),
+    );
   }
 }
 
@@ -52,7 +54,6 @@ class _Desktop extends StatefulWidget {
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> {
   String? baseCurrency;
   final Map<String, bool> _copiedStates = {};

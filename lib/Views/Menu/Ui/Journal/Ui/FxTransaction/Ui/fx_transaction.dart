@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
+import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
@@ -20,14 +21,33 @@ import '../../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
 import '../bloc/fx_bloc.dart';
 import '../model/fx_model.dart';
 
-class FxTransactionScreen extends StatefulWidget {
-  const FxTransactionScreen({super.key});
+class FxTransactionView extends StatelessWidget {
+  const FxTransactionView({super.key});
 
   @override
-  State<FxTransactionScreen> createState() => _FxTransactionScreenState();
+  Widget build(BuildContext context) {
+    return ResponsiveLayout(mobile: _Mobile(), tablet: _Desktop(), desktop: _Desktop());
+  }
 }
 
-class _FxTransactionScreenState extends State<FxTransactionScreen> {
+class _Mobile extends StatelessWidget {
+  const _Mobile();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+
+class _Desktop extends StatefulWidget {
+  const _Desktop();
+
+  @override
+  State<_Desktop> createState() => _DesktopState();
+}
+
+class _DesktopState extends State<_Desktop> {
   final Map<int, List<TextEditingController>> _debitControllers = {};
   final Map<int, List<TextEditingController>> _creditControllers = {};
   final TextEditingController _narrationController = TextEditingController();
@@ -58,7 +78,13 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
       }
     }
   }
-
+  @override
+  void dispose() {
+    _isDisposed = true;
+    _clearAllControllers();
+    _narrationController.dispose();
+    super.dispose();
+  }
   Future<double> _fetchExchangeRate(String fromCcy, String toCcy) async {
     if (_baseCurrency == null) return 1.0;
 
@@ -195,14 +221,6 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
   }
 
   @override
-  void dispose() {
-    _isDisposed = true;
-    _clearAllControllers();
-    _narrationController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
@@ -233,8 +251,8 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          title: Text(AppLocalizations.of(context)!.fxTransactionTitle),
+          titleSpacing: 0,
+          title: Text(AppLocalizations.of(context)!.fxTransaction),
         ),
         body: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, auth) {
@@ -539,11 +557,11 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 2),
-            child: Row(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Debit Section
-                Expanded(
+                Flexible(
                   child: _buildSideSection(
                     context,
                     title: AppLocalizations.of(context)!.debitSide,
@@ -555,10 +573,10 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   ),
                 ),
 
-                const SizedBox(width: 16),
+                const SizedBox(height: 10),
 
                 // Credit Section
-                Expanded(
+                Flexible(
                   child: _buildSideSection(
                     context,
                     title: AppLocalizations.of(context)!.creditSide,
@@ -601,9 +619,10 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
         required String? baseCurrency,
       }) {
     final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: color.outline.withValues(alpha: .3)),
         borderRadius: BorderRadius.circular(5),
       ),
       child: Column(
@@ -612,8 +631,8 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             decoration: BoxDecoration(
-              color: isDebit ? Colors.blue.shade50 : Colors.green.shade50,
-              border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+              color: isDebit ? Theme.of(context).colorScheme.primary.withValues(alpha: .08) : Colors.green.shade50,
+              border: Border(bottom: BorderSide(color: color.outline.withValues(alpha: .3))),
             ),
             child: Row(
               children: [
@@ -621,7 +640,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   title,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: isDebit ? Colors.blue.shade800 : Colors.green.shade800,
+                    color: isDebit ? color.primary.withValues(alpha: .8) : Colors.green.shade800,
                   ),
                 ),
                 const Spacer(),
@@ -651,12 +670,12 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                   Icon(
                     Icons.receipt_long_outlined,
                     size: 48,
-                    color: Colors.grey.shade400,
+                    color: color.outline.withValues(alpha: .4),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'No entries',
-                    style: TextStyle(color: Colors.grey.shade600),
+                    style: TextStyle(color: color.outline.withValues(alpha: .7)),
                   ),
                 ],
               ),
@@ -752,8 +771,8 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              border: Border(top: BorderSide(color: Colors.grey.shade300)),
+              color: color.outline.withValues(alpha: .04),
+              border: Border(top: BorderSide(color: color.outline.withValues(alpha: .3))),
             ),
             child: Row(
               children: [
@@ -773,7 +792,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
                       '${baseCurrency ?? ''} ${totalBase.toAmount()} (${tr.baseTitle})',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade600,
+                        color: color.outline.withValues(alpha: .8),
                       ),
                     ),
                   ],
@@ -884,7 +903,7 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     return ZOutlineButton(
       height: 40,
       isActive: true,
-      icon: isSaving? null : Icons.screen_rotation_alt_rounded,
+      icon: isSaving? null : Icons.refresh,
       onPressed: !isValid || userName == null || isSaving
           ? null
           : () async {
@@ -915,6 +934,8 @@ class _FxTransactionScreenState extends State<FxTransactionScreen> {
     );
   }
 }
+
+
 
 class _TableHeaderRow extends StatelessWidget {
   final bool isDebit;

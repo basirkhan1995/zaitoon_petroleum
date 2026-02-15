@@ -1,4 +1,3 @@
-// adjustment_view.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -34,7 +33,6 @@ class _Desktop extends StatefulWidget {
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> {
   String? baseCurrency;
   final TextEditingController searchController = TextEditingController();
@@ -126,12 +124,14 @@ class _DesktopState extends State<_Desktop> {
             ),
             child: Row(
               children: [
-                SizedBox(width: 40, child: Text('#', style: titleStyle)),
-                SizedBox(width: 100, child: Text(tr.date, style: titleStyle)),
-                SizedBox(width: 215, child: Text(tr.referenceNumber, style: titleStyle)),
-                Expanded(child: Text(tr.accountNumber, style: titleStyle)),
+                SizedBox(width: 35, child: Text('#', style: titleStyle)),
+                SizedBox(width: 90, child: Text(tr.date, style: titleStyle)),
+                Expanded(child: Text(tr.referenceNumber, style: titleStyle)),
+                SizedBox(
+                    width: 100,
+                    child: Text(tr.accountNumber, style: titleStyle)),
                 SizedBox(width: 150, child: Text(tr.amount, style: titleStyle)),
-                SizedBox(width: 120, child: Text(tr.status, style: titleStyle)),
+                SizedBox(width: 115, child: Text(tr.status, style: titleStyle)),
               ],
             ),
           ),
@@ -232,25 +232,25 @@ class _DesktopState extends State<_Desktop> {
                           child: Row(
                             children: [
                               SizedBox(
-                                width: 40,
+                                width: 35,
                                 child: Text(adjustment.ordId.toString()),
                               ),
                               SizedBox(
-                                width: 100,
+                                width: 90,
                                 child: Text(
                                   adjustment.ordEntryDate != null
                                       ? adjustment.ordEntryDate!.toFormattedDate()
                                       : "",
                                 ),
                               ),
-                              SizedBox(
-                                width: 215,
+                              Expanded(
                                 child: Text(
                                   adjustment.ordxRef ?? "-",
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              Expanded(
+                              SizedBox(
+                                width: 100,
                                 child: Text(
                                   adjustment.account?.toString() ?? "-",
                                   overflow: TextOverflow.ellipsis,
@@ -265,7 +265,7 @@ class _DesktopState extends State<_Desktop> {
                                 ),
                               ),
                               SizedBox(
-                                width: 120,
+                                width: 115,
                                 child: TransactionStatusBadge(
                                   status: adjustment.trnStateText ?? "",
                                 ),
@@ -294,7 +294,10 @@ class _Tablet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Padding(
+      padding: const EdgeInsets.all(2.0),
+      child: const _Desktop(),
+    );
   }
 }
 

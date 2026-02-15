@@ -8,6 +8,7 @@ import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import '../../../../../../Features/Widgets/no_data_widget.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
@@ -87,7 +88,12 @@ class _AdjustmentDetailViewState extends State<AdjustmentDetailView> {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
+    final state = context.watch<AuthBloc>().state;
 
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
     return BlocListener<AdjustmentBloc, AdjustmentState>(
       listener: (context, state) {
         if (state is AdjustmentDeletingState) {
@@ -138,6 +144,7 @@ class _AdjustmentDetailViewState extends State<AdjustmentDetailView> {
               onPressed: () {},
             ),
             const SizedBox(width: 8),
+            if(login.hasPermission(109) ?? false)
             ZOutlineButton(
               isActive: true,
               backgroundHover: Theme.of(context).colorScheme.error,

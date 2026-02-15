@@ -678,7 +678,9 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = context.read<AuthBloc>().state as AuthenticatedState;
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! AuthenticatedState) return const SizedBox();
+
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is UnAuthenticatedState) {
@@ -735,13 +737,14 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
     final String adminName = authState.loginData.usrFullName ?? "";
     final String usrPhoto = authState.loginData.usrPhoto ?? "";
     final String usrRole = authState.loginData.usrRole ?? "";
+    final login = authState.loginData;
+    final visibility = context.watch<SettingsVisibleBloc>().state;
 
     final drawerWidth = widget.isTablet ? 280.0 : 250.0;
 
     return Drawer(
       width: drawerWidth,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0
-      )),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
       child: BlocConsumer<CompanyProfileBloc, CompanyProfileState>(
         listener: (context, state) {},
         builder: (context, state) {
@@ -777,7 +780,7 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        companyName??"",
+                        companyName ?? "",
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -788,14 +791,14 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
                     ],
                   ),
                 ),
-            
-                // Menu Items
+
+                // Menu Items - WITH PERMISSION CHECKING
                 Expanded(
                   child: ListView(
-                    children: _buildMenuItems(context),
+                    children: _buildMenuItems(context, login, visibility),
                   ),
                 ),
-            
+
                 // User Profile & Logout
                 Container(
                   padding: const EdgeInsets.all(10),
@@ -843,10 +846,11 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
                       SizedBox(
                         width: double.infinity,
                         child: ZOutlineButton(
-                            isActive: true,
-                            backgroundHover: Theme.of(context).colorScheme.error,
-                            onPressed: _logout,
-                            label: Text(AppLocalizations.of(context)!.logout))
+                          isActive: true,
+                          backgroundHover: Theme.of(context).colorScheme.error,
+                          onPressed: _logout,
+                          label: Text(AppLocalizations.of(context)!.logout),
+                        ),
                       ),
                     ],
                   ),
@@ -859,64 +863,160 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
     );
   }
 
-  List<Widget> _buildMenuItems(BuildContext context) {
+  List<Widget> _buildMenuItems(
+      BuildContext context,
+      LoginData login,
+      SettingsVisibilityState visibility,
+      ) {
     final currentTab = context.watch<MenuBloc>().state.tabs;
-    final menuItems = [
-      _DrawerMenuItem(
-        icon: Icons.add_home_outlined,
-        label: AppLocalizations.of(context)!.dashboard,
-        isSelected: currentTab == MenuName.dashboard,
-        onTap: () => _onMenuItemTap(MenuName.dashboard),
-      ),
-      _DrawerMenuItem(
-        icon: Icons.money,
-        label: AppLocalizations.of(context)!.finance,
-        isSelected: currentTab == MenuName.finance,
-        onTap: () => _onMenuItemTap(MenuName.finance),
-      ),
-      _DrawerMenuItem(
-        icon: Icons.menu_book,
-        label: AppLocalizations.of(context)!.journal,
-        isSelected: currentTab == MenuName.journal,
-        onTap: () => _onMenuItemTap(MenuName.journal),
-      ),
-      _DrawerMenuItem(
-        icon: Icons.account_circle_outlined,
-        label: AppLocalizations.of(context)!.stakeholders,
-        isSelected: currentTab == MenuName.stakeholders,
-        onTap: () => _onMenuItemTap(MenuName.stakeholders),
-      ),
-      _DrawerMenuItem(
-        icon: Icons.group_rounded,
-        label: AppLocalizations.of(context)!.hr,
-        isSelected: currentTab == MenuName.hr,
-        onTap: () => _onMenuItemTap(MenuName.hr),
-      ),
-      _DrawerMenuItem(
-        icon: Icons.fire_truck_rounded,
-        label: AppLocalizations.of(context)!.transport,
-        isSelected: currentTab == MenuName.transport,
-        onTap: () => _onMenuItemTap(MenuName.transport),
-      ),
-      _DrawerMenuItem(
-        icon: Icons.shopping_basket_outlined,
-        label: AppLocalizations.of(context)!.inventory,
-        isSelected: currentTab == MenuName.stock,
-        onTap: () => _onMenuItemTap(MenuName.stock),
-      ),
-      _DrawerMenuItem(
-        icon: Icons.settings_outlined,
-        label: AppLocalizations.of(context)!.settings,
-        isSelected: currentTab == MenuName.settings,
-        onTap: () => _onMenuItemTap(MenuName.settings),
-      ),
-      _DrawerMenuItem(
-        icon: Icons.info_outlined,
-        label: AppLocalizations.of(context)!.report,
-        isSelected: currentTab == MenuName.report,
-        onTap: () => _onMenuItemTap(MenuName.report),
-      ),
-    ];
+    final menuItems = <Widget>[];
+
+    // Dashboard - Permission 1
+    if (login.hasPermission(1) ?? false) {
+      menuItems.add(
+        _DrawerMenuItem(
+          icon: Icons.add_home_outlined,
+          label: AppLocalizations.of(context)!.dashboard,
+          isSelected: currentTab == MenuName.dashboard,
+          onTap: () => _onMenuItemTap(MenuName.dashboard),
+        ),
+      );
+    }
+
+    // Finance - Permission 10
+    if (login.hasPermission(10) ?? false) {
+      menuItems.add(
+        _DrawerMenuItem(
+          icon: Icons.money,
+          label: AppLocalizations.of(context)!.finance,
+          isSelected: currentTab == MenuName.finance,
+          onTap: () => _onMenuItemTap(MenuName.finance),
+        ),
+      );
+    }
+
+    // Journal - Permission 18
+    if (login.hasPermission(18) ?? false) {
+      menuItems.add(
+        _DrawerMenuItem(
+          icon: Icons.menu_book,
+          label: AppLocalizations.of(context)!.journal,
+          isSelected: currentTab == MenuName.journal,
+          onTap: () => _onMenuItemTap(MenuName.journal),
+        ),
+      );
+    }
+
+    // Stakeholders - Permission 31
+    if (login.hasPermission(31) ?? false) {
+      menuItems.add(
+        _DrawerMenuItem(
+          icon: Icons.account_circle_outlined,
+          label: AppLocalizations.of(context)!.stakeholders,
+          isSelected: currentTab == MenuName.stakeholders,
+          onTap: () => _onMenuItemTap(MenuName.stakeholders),
+        ),
+      );
+    }
+
+    // HR - Permission 35
+    if (login.hasPermission(35) ?? false) {
+      menuItems.add(
+        _DrawerMenuItem(
+          icon: Icons.group_rounded,
+          label: AppLocalizations.of(context)!.hr,
+          isSelected: currentTab == MenuName.hr,
+          onTap: () => _onMenuItemTap(MenuName.hr),
+        ),
+      );
+    }
+
+    // Transport - Permission 42 (with visibility check)
+    if ((login.hasPermission(42) ?? false) && visibility.transport) {
+      menuItems.add(
+        _DrawerMenuItem(
+          icon: Icons.fire_truck_rounded,
+          label: AppLocalizations.of(context)!.transport,
+          isSelected: currentTab == MenuName.transport,
+          onTap: () => _onMenuItemTap(MenuName.transport),
+        ),
+      );
+    }
+
+    // Stock/Inventory - Permission 66 (with visibility check)
+    if ((login.hasPermission(66) ?? false) && visibility.orders) {
+      menuItems.add(
+        _DrawerMenuItem(
+          icon: Icons.shopping_basket_outlined,
+          label: AppLocalizations.of(context)!.inventory,
+          isSelected: currentTab == MenuName.stock,
+          onTap: () => _onMenuItemTap(MenuName.stock),
+        ),
+      );
+    }
+
+    // Settings - Permission 57
+    if (login.hasPermission(57) ?? false) {
+      menuItems.add(
+        _DrawerMenuItem(
+          icon: Icons.settings_outlined,
+          label: AppLocalizations.of(context)!.settings,
+          isSelected: currentTab == MenuName.settings,
+          onTap: () => _onMenuItemTap(MenuName.settings),
+        ),
+      );
+    }
+
+    // Report - Permission 71
+    if (login.hasPermission(71) ?? false) {
+      menuItems.add(
+        _DrawerMenuItem(
+          icon: Icons.info_outlined,
+          label: AppLocalizations.of(context)!.report,
+          isSelected: currentTab == MenuName.report,
+          onTap: () => _onMenuItemTap(MenuName.report),
+        ),
+      );
+    }
+
+    // If no menu items, show a message
+    if (menuItems.isEmpty) {
+      menuItems.add(
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: Column(
+              children: [
+                Icon(
+                  Icons.no_accounts_rounded,
+                  size: 48,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .3),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  AppLocalizations.of(context)!.accessDenied,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .5),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Please contact administrator",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .4),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     return menuItems;
   }
@@ -1083,12 +1183,13 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
               ),
               const SizedBox(height: 8),
               SizedBox(
-                  width: double.infinity,
-                  child: ZOutlineButton(
-                      isActive: true,
-                      backgroundHover: Theme.of(context).colorScheme.error,
-                      onPressed: _logout,
-                      label: Text(AppLocalizations.of(context)!.logout))
+                width: double.infinity,
+                child: ZOutlineButton(
+                  isActive: true,
+                  backgroundHover: Theme.of(context).colorScheme.error,
+                  onPressed: _logout,
+                  label: Text(AppLocalizations.of(context)!.logout),
+                ),
               ),
             ],
           ),
@@ -1116,7 +1217,7 @@ class _DrawerMenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 15),
-      visualDensity: VisualDensity(vertical: -4),
+      visualDensity: VisualDensity(vertical: -3),
       leading: Icon(
         icon,
         color: isSelected

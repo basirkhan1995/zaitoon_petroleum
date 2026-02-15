@@ -7,12 +7,14 @@ import 'package:zaitoon_petroleum/Features/Other/shortcut.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/Ui/add_edit_employee.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/bloc/employee_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../../Features/Other/image_helper.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
+import '../../../../../../Auth/bloc/auth_bloc.dart';
 import '../features/emp_card.dart';
 import 'package:flutter/services.dart';
 
@@ -34,6 +36,7 @@ class _Mobile extends StatelessWidget {
     return const Placeholder();
   }
 }
+
 
 
 
@@ -65,6 +68,12 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
     final shortcuts = {
       const SingleActivator(LogicalKeyboardKey.f1): onAdd,
       const SingleActivator(LogicalKeyboardKey.f5): onRefresh,
@@ -109,6 +118,7 @@ class _DesktopState extends State<_Desktop> {
                       icon: Icons.refresh,
                       onPressed: onRefresh,
                       label: Text(tr.refresh)),
+                  if(login.hasPermission(106) ?? false)
                   ZOutlineButton(
                       toolTip: 'F1',
                       width: 120,
@@ -193,15 +203,12 @@ class _DesktopState extends State<_Desktop> {
                               text: emp.empHireDate?.toFormattedDate() ?? "",
                             ),
                           ],
-                          onTap: () {
-                            print(emp.empPmntMethod);
-                            print(emp.empSalCalcBase);
-
+                          onTap: login.hasPermission (108) ?? false ? () {
                             showDialog(
                               context: context,
                               builder: (_) => AddEditEmployeeView(model: emp),
                             );
-                          },
+                          } : null,
                         );
                       },
                     );

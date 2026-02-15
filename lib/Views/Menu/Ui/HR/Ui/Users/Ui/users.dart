@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/shortcut.dart';
+import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/Ui/add_user.dart';
 import '../../../../../../../Features/Other/image_helper.dart';
 import '../../../../../../../Features/Widgets/no_data_widget.dart';
@@ -68,7 +69,7 @@ class _DesktopState extends State<_Desktop> {
     if (state is! AuthenticatedState) {
       return const SizedBox();
     }
-   // final login = state.loginData;
+    final login = state.loginData;
     return Scaffold(
       body: GlobalShortcuts(
         shortcuts: shortcuts,
@@ -99,6 +100,8 @@ class _DesktopState extends State<_Desktop> {
                       icon: Icons.refresh,
                       onPressed: onRefresh,
                       label: Text(locale.refresh)),
+
+                  if(login.hasPermission(106) ?? false)
                   ZOutlineButton(
                       toolTip: 'F5',
                       width: 120,
@@ -188,12 +191,13 @@ class _DesktopState extends State<_Desktop> {
                           ],
 
                           // ---------- Action ----------
-                          onTap: () {
+
+                          onTap: login.hasPermission(107) ?? false ? () {
                             showDialog(
                               context: context,
                               builder: (_) => UserDetailsView(usr: usr),
                             );
-                          },
+                          } : null,
                         );
                       },
                     );

@@ -39,7 +39,10 @@ class _Tablet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: const _Desktop(),
+    );
   }
 }
 

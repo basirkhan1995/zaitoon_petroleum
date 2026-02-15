@@ -226,7 +226,7 @@ class _DesktopState extends State<_Desktop> {
                             itemBuilder: (context, index) {
                               final at = attendance[index];
                               return InkWell(
-                                onTap: () => _editAttendance(at, tr),
+                                onTap: login.hasPermission(108) ?? false ? () => _editAttendance(at, tr) : null,
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 8, horizontal: 5),

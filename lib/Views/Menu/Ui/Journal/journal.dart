@@ -2473,7 +2473,7 @@ class _DesktopState extends State<_Desktop> {
   }
 
   void onFxTxn(){
-    Utils.goto(context, FxTransactionScreen());
+    Utils.goto(context, FxTransactionView());
   }
 
   void getPrinted({required TransactionsModel data, required ReportModel company}) {
