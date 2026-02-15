@@ -40,7 +40,6 @@ class _Mobile extends StatefulWidget {
 class _MobileState extends State<_Mobile> {
   late String selectedDate;
 
-
   @override
   void initState() {
     super.initState();
@@ -50,10 +49,12 @@ class _MobileState extends State<_Mobile> {
     });
   }
 
-
-
   Future<void> _onRefresh() async {
     context.read<AttendanceBloc>().add(LoadAllAttendanceEvent(date: selectedDate));
+    // Optional: Wait for the loading to complete
+    await context.read<AttendanceBloc>().stream.firstWhere(
+          (state) => state is! AttendanceLoadingState && state is! AttendanceSilentLoadingState,
+    );
   }
 
   @override
@@ -73,12 +74,9 @@ class _MobileState extends State<_Mobile> {
       appBar: AppBar(
         title: Text(tr.attendance),
         centerTitle: true,
+        titleSpacing: 0,
         elevation: 0,
         backgroundColor: color.surface,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         actions: [
           if (login.hasPermission(106) ?? false)
             IconButton(
@@ -158,36 +156,15 @@ class _MobileState extends State<_Mobile> {
                 child: Column(
                   children: [
                     // Date Picker Row
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: color.surfaceContainerHighest.withValues(alpha: .3),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.calendar_today_rounded, size: 16, color: color.primary),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: ZDatePicker(
-                                    label: "",
-                                    value: selectedDate,
-                                    onDateChanged: (v) {
-                                      setState(() => selectedDate = v);
-                                      context.read<AttendanceBloc>().add(
-                                        LoadAllAttendanceEvent(date: selectedDate),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                    ZDatePicker(
+                      label: "",
+                      value: selectedDate,
+                      onDateChanged: (v) {
+                        setState(() => selectedDate = v);
+                        context.read<AttendanceBloc>().add(
+                          LoadAllAttendanceEvent(date: selectedDate),
+                        );
+                      },
                     ),
 
                     // Summary Cards
@@ -812,57 +789,34 @@ class _MobileState extends State<_Mobile> {
                   child: Column(
                     children: [
                       // Date Picker
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: .3),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.calendar_today_rounded, size: 16, color: Theme.of(context).colorScheme.primary),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: ZDatePicker(
-                                label: tr.date,
-                                value: localDate,
-                                onDateChanged: (v) => localDate = v,
-                              ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ZDatePicker(
+                              label: tr.date,
+                              value: localDate,
+                              onDateChanged: (v) => localDate = v,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
 
                       // Check In Time
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: .3),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: TimePickerField(
-                          label: tr.checkIn,
-                          initialTime: checkIn ?? '08:00:00',
-                          onChanged: (time) => checkIn = time,
-                        ),
+                      TimePickerField(
+                        label: tr.checkIn,
+                        initialTime: checkIn ?? '08:00:00',
+                        onChanged: (time) => checkIn = time,
                       ),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
 
                       // Check Out Time
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: .3),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: TimePickerField(
-                          label: tr.checkOut,
-                          initialTime: checkOut ?? '16:00:00',
-                          onChanged: (time) => checkOut = time,
-                        ),
+                      TimePickerField(
+                        label: tr.checkOut,
+                        initialTime: checkOut ?? '16:00:00',
+                        onChanged: (time) => checkOut = time,
                       ),
                     ],
                   ),
@@ -875,9 +829,9 @@ class _MobileState extends State<_Mobile> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: OutlinedButton(
+                      child: ZOutlineButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text(tr.cancel),
+                        label: Text(tr.cancel),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -886,7 +840,7 @@ class _MobileState extends State<_Mobile> {
                         builder: (context, state) {
                           final isLoading = state is AttendanceSilentLoadingState;
 
-                          return ElevatedButton(
+                          return ZOutlineButton(
                             onPressed: isLoading
                                 ? null
                                 : () {
@@ -894,7 +848,8 @@ class _MobileState extends State<_Mobile> {
                               // context.read<AttendanceBloc>().add(UpdateAttendanceEvent(...));
                               Navigator.pop(context);
                             },
-                            child: isLoading
+                            isActive: true,
+                            label: isLoading
                                 ? const SizedBox(
                               width: 20,
                               height: 20,
