@@ -70,7 +70,7 @@ class MobileInfoCard extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: theme.textTheme.titleMedium?.copyWith(
+                          style: theme.textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
                           maxLines: 1,

@@ -198,6 +198,7 @@ class _ZTabContainerState<T> extends State<ZTabContainer<T>> {
                                 widget.title!,
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
+                                  fontSize: context.scaledFont(0.04)
                                 ),
                               ),
                             ],
@@ -220,7 +221,8 @@ class _ZTabContainerState<T> extends State<ZTabContainer<T>> {
                 Text(
                   widget.description!,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.outline
+                      color: Theme.of(context).colorScheme.outline,
+                      fontSize: context.scaledFont(0.03)
                   ),
                 ),
                 const SizedBox(height: 10),

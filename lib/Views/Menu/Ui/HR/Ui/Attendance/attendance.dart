@@ -71,20 +71,6 @@ class _MobileState extends State<_Mobile> {
     final usrName = state.loginData.usrName;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(tr.attendance),
-        centerTitle: true,
-        titleSpacing: 0,
-        elevation: 0,
-        backgroundColor: color.surface,
-        actions: [
-          if (login.hasPermission(106) ?? false)
-            IconButton(
-              icon: const Icon(Icons.add_rounded),
-              onPressed: () => _showAddAttendanceBottomSheet(context, tr, usrName),
-            ),
-        ],
-      ),
       body: BlocConsumer<AttendanceBloc, AttendanceState>(
         listener: (context, state) {
           if (state is AttendanceErrorState) {
@@ -140,36 +126,42 @@ class _MobileState extends State<_Mobile> {
               // Date Selector and Summary
               Container(
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.surface,
-                  borderRadius: const BorderRadius.vertical(
-                    bottom: Radius.circular(16),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: .05),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
+
                 child: Column(
                   children: [
                     // Date Picker Row
-                    ZDatePicker(
-                      label: "",
-                      value: selectedDate,
-                      onDateChanged: (v) {
-                        setState(() => selectedDate = v);
-                        context.read<AttendanceBloc>().add(
-                          LoadAllAttendanceEvent(date: selectedDate),
-                        );
-                      },
+                    Row(
+                      spacing: 5,
+                      children: [
+                        Expanded(
+                          flex: 4,
+                          child: ZDatePicker(
+                            label: "",
+                            value: selectedDate,
+                            onDateChanged: (v) {
+                              setState(() => selectedDate = v);
+                              context.read<AttendanceBloc>().add(
+                                LoadAllAttendanceEvent(date: selectedDate),
+                              );
+                            },
+                          ),
+                        ),
+                        if (login.hasPermission(106) ?? false)
+                          Expanded(
+                            flex: 2,
+                            child: ZOutlineButton(
+                              height: 40,
+                              isActive: true,
+                              label: Text(tr.newKeyword),
+                              onPressed: () => _showAddAttendanceBottomSheet(context, tr, usrName),
+                            ),
+                          ),
+                      ],
                     ),
 
                     // Summary Cards
                     if (attendance.isNotEmpty) ...[
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -292,7 +284,7 @@ class _MobileState extends State<_Mobile> {
           ),
           const SizedBox(width: 4),
           Container(
-            padding: const EdgeInsets.all(2),
+            padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               color: color,
               shape: BoxShape.circle,
@@ -719,11 +711,9 @@ class _MobileState extends State<_Mobile> {
 
               // Header
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 5),
                 child: Row(
                   children: [
-                    Icon(Icons.edit, color: Theme.of(context).colorScheme.primary),
-                    const SizedBox(width: 8),
                     Text(
                       tr.edit,
                       style: const TextStyle(

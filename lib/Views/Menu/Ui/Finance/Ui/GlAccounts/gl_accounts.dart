@@ -102,9 +102,7 @@ class _MobileState extends State<_Mobile> {
               ),
             ),
 
-            SizedBox(height: 8),
-            Divider(endIndent: 2,indent: 2,color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),),
-
+            SizedBox(height: 4),
       Expanded(
         child: BlocConsumer<GlAccountsBloc, GlAccountsState>(
           listener: (context, state) {
@@ -187,13 +185,13 @@ class _MobileState extends State<_Mobile> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  gl.acgName ?? "",
-                                  style: Theme.of(context).textTheme.titleSmall,
+                                  Utils.glCategories(category: gl.accCategory!, locale: tr),
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(color: color.outline),
                                   textAlign: TextAlign.center,
                                 ),
                                 Text(
-                                  Utils.glCategories(category: gl.accCategory!, locale: tr),
-                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(color: color.outline),
+                                  gl.acgName ?? "",
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 11),
                                   textAlign: TextAlign.center,
                                 ),
                               ],
