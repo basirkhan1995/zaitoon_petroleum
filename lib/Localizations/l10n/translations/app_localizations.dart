@@ -4983,6 +4983,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Personal Information'**
   String get personalInfo;
+
+  /// No description provided for @avbShort.
+  ///
+  /// In en, this message translates to:
+  /// **'AVB'**
+  String get avbShort;
 }
 
 class _AppLocalizationsDelegate

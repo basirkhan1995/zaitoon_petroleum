@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
@@ -35,20 +36,70 @@ class _Mobile extends StatefulWidget {
 }
 
 class _MobileState extends State<_Mobile> {
+  final ScrollController _scrollController = ScrollController();
+  bool _isFabVisible = true;
+
   @override
   void initState() {
     super.initState();
     context.read<UsersBloc>().add(LoadUsersEvent());
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_scrollController.hasClients) {
+      if (_scrollController.offset > 100 &&
+          _scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+        // Scrolling down and past threshold - hide FAB
+        if (_isFabVisible) {
+          setState(() {
+            _isFabVisible = false;
+          });
+        }
+      } else if (_scrollController.offset < 50 ||
+          _scrollController.position.userScrollDirection == ScrollDirection.forward) {
+        // Scrolling up or near the top - show FAB
+        if (!_isFabVisible) {
+          setState(() {
+            _isFabVisible = true;
+          });
+        }
+      }
+    }
   }
 
   Future<void> _onRefresh() async {
     context.read<UsersBloc>().add(LoadUsersEvent());
   }
 
+  void _onAddUser() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: const AddUserView(), // No indId passed
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     final state = context.watch<AuthBloc>().state;
+    final color = Theme.of(context).colorScheme;
 
     if (state is! AuthenticatedState) {
       return const SizedBox();
@@ -56,6 +107,26 @@ class _MobileState extends State<_Mobile> {
     final login = state.loginData;
 
     return Scaffold(
+      backgroundColor: color.surface,
+      floatingActionButton: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        transform: Matrix4.translationValues(
+          0,
+          _isFabVisible ? 0 : 100,
+          0,
+        ),
+        child: AnimatedOpacity(
+          duration: const Duration(milliseconds: 200),
+          opacity: _isFabVisible ? 1.0 : 0.0,
+          child: FloatingActionButton.extended(
+            onPressed: (login.hasPermission(106) ?? false) ? _onAddUser : null,
+            tooltip: locale.newKeyword,
+            icon: const Icon(Icons.add),
+            label: Text(locale.newKeyword),
+          ),
+        ),
+      ),
       body: BlocConsumer<UsersBloc, UsersState>(
         listener: (context, state) {
           if (state is UsersErrorState) {
@@ -103,49 +174,84 @@ class _MobileState extends State<_Mobile> {
 
             if (users.isEmpty) {
               return Center(
-                child: Text(locale.noDataFound),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.people_outline,
+                      size: 64,
+                      color: color.outline.withValues(alpha: .3),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      locale.noDataFound,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: color.outline,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    if (login.hasPermission(106) ?? false)
+                      ElevatedButton.icon(
+                        onPressed: _onAddUser,
+                        icon: const Icon(Icons.add),
+                        label: Text(locale.addUserTitle),
+                      ),
+                  ],
+                ),
               );
             }
 
             return RefreshIndicator(
               onRefresh: _onRefresh,
+              color: color.primary,
+              backgroundColor: color.surface,
               child: ListView.builder(
-                padding: const EdgeInsets.all(12),
+                controller: _scrollController,
+                padding: const EdgeInsets.only(
+                  left: 12,
+                  right: 12,
+                  top: 12,
+                  bottom: 80, // Space for FAB
+                ),
                 itemCount: users.length,
                 itemBuilder: (context, index) {
                   final usr = users[index];
 
-                  return MobileInfoCard(
-                    imageUrl: usr.usrPhoto,
-                    title: usr.usrName ?? "-",
-                    subtitle: usr.usrRole ?? "-",
-                    infoItems: [
-                      MobileInfoItem(
-                        icon: Icons.person_outline,
-                        text: usr.usrFullName ?? "-",
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: MobileInfoCard(
+                      imageUrl: usr.usrPhoto,
+                      title: usr.usrName ?? "-",
+                      subtitle: usr.usrRole ?? "-",
+                      infoItems: [
+                        MobileInfoItem(
+                          icon: Icons.person_outline,
+                          text: usr.usrFullName ?? "-",
+                        ),
+                        MobileInfoItem(
+                          icon: Icons.email_outlined,
+                          text: usr.usrEmail ?? "-",
+                        ),
+                        MobileInfoItem(
+                          icon: Icons.apartment_outlined,
+                          text: usr.usrBranch?.toString() ?? "-",
+                        ),
+                      ],
+                      status: MobileStatus(
+                        label: usr.usrStatus == 1 ? locale.active : locale.blocked,
+                        color: usr.usrStatus == 1 ? Colors.green : Colors.red,
+                        backgroundColor: usr.usrStatus == 1
+                            ? Colors.green.withValues(alpha: .1)
+                            : Colors.red.withValues(alpha: .1),
                       ),
-                      MobileInfoItem(
-                        icon: Icons.email_outlined,
-                        text: usr.usrEmail ?? "-",
-                      ),
-                      MobileInfoItem(
-                        icon: Icons.apartment_outlined,
-                        text: usr.usrEmail ?? usr.usrBranch?.toString() ?? "-",
-                      ),
-                    ],
-                    status: MobileStatus(
-                      label: usr.usrStatus == 1 ? locale.active : locale.blocked,
-                      color: usr.usrStatus == 1 ? Colors.green : Colors.red,
-                      backgroundColor: usr.usrStatus == 1
-                          ? Colors.green.withValues(alpha: .1)
-                          : Colors.red.withValues(alpha: .1),
+                      onTap: (login.hasPermission(107) ?? false)
+                          ? () {
+                        Utils.goto(context, UserDetailsView(usr: usr));
+                      }
+                          : null,
+                      showActions: true,
                     ),
-                    onTap: (login.hasPermission(107) ?? false)
-                        ? () {
-                      Utils.goto(context, UserDetailsView(usr: usr));
-                    }
-                        : null,
-                    showActions: false, // Hide the "View Details" button
                   );
                 },
               ),

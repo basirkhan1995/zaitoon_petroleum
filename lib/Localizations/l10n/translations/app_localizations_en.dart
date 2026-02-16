@@ -2519,4 +2519,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get personalInfo => 'Personal Information';
+
+  @override
+  String get avbShort => 'AVB';
 }

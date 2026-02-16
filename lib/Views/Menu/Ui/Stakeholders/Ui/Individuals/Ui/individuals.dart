@@ -73,7 +73,7 @@ class _MobileState extends State<_Mobile> {
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(10),
+          preferredSize: const Size.fromHeight(20),
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: ZSearchField(
@@ -194,7 +194,7 @@ class _MobileState extends State<_Mobile> {
                       );
                     } : null,
                     accentColor: colorScheme.primary,
-                    showActions: true,
+                    showActions: false,
                   );
                 },
               ),

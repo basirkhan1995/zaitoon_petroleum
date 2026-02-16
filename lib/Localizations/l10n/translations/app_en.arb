@@ -833,5 +833,6 @@
   "jobAndSalary": "Job Title & Salary",
   "errorTitle": "Error",
   "contactInfo": "Contact",
-  "personalInfo": "Personal Information"
+  "personalInfo": "Personal Information",
+  "avbShort": "AVB"
 }

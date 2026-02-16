@@ -2510,4 +2510,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get personalInfo => 'معلومات شخصی';
+
+  @override
+  String get avbShort => 'م. ق. ب';
 }

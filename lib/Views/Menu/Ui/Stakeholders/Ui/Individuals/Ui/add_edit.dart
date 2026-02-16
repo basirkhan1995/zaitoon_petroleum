@@ -38,7 +38,6 @@ class _Mobile extends StatefulWidget {
 }
 
 class _MobileState extends State<_Mobile> {
-  // Controllers
   final TextEditingController firstName = TextEditingController();
   final TextEditingController lastName = TextEditingController();
   final TextEditingController phone = TextEditingController();

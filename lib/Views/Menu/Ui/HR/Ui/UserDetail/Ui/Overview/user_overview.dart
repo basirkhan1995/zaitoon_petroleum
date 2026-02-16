@@ -263,7 +263,7 @@ class _MobileState extends State<_Mobile> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: Theme.of(context).colorScheme.outline.withValues(alpha: .02),),
+          Icon(icon, size: 20, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .9),),
           const SizedBox(width: 12),
           Expanded(
             flex: 2,
@@ -277,7 +277,7 @@ class _MobileState extends State<_Mobile> {
             child: Text(
               value,
               style: TextStyle(
-                color: valueColor ?? Colors.black87,
+                color: valueColor ?? Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -1288,8 +1288,8 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
             const SizedBox(height: 8),
-            const Row(
-              children: [Text("RESET PASSWORD")],
+              Row(
+              children: [Text(locale.resetPassword.toUpperCase())],
             ),
             Row(
               spacing: 5,
