@@ -50,7 +50,7 @@ class JournalView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-      mobile: _Mobile(),
+      mobile: _Desktop(),
       desktop: _Desktop(),
       tablet: _Desktop(),
     );

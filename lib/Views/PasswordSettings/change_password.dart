@@ -211,7 +211,6 @@ class _DesktopState extends State<_Desktop> {
     }
   }
 }
-
 class _Mobile extends StatelessWidget {
 
   const _Mobile();

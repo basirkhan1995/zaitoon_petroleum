@@ -32,12 +32,244 @@ class AllTransactionsView extends StatelessWidget {
   }
 }
 
-class _Mobile extends StatelessWidget {
+// class _Mobile extends StatelessWidget {
+//   const _Mobile();
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Placeholder();
+//   }
+// }
+
+class _Mobile extends StatefulWidget {
   const _Mobile();
 
   @override
+  State<_Mobile> createState() => _MobileState();
+}
+class _MobileState extends State<_Mobile> {
+  final Map<String, bool> _copiedStates = {};
+  bool _isLoadingDialog = false;
+  String? _loadingRef;
+  String? myLocale;
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('all'));
+    });
+    myLocale = context.read<LocalizationBloc>().state.languageCode;
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void _handleTransactionTap(dynamic txn) {
+    setState(() {
+      _isLoadingDialog = true;
+      _loadingRef = txn.trnReference;
+    });
+
+    final handlers = <String, void Function(String)>{
+      "ATAT": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
+      "SLRY": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
+      "PLCL": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
+      "CRFX": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
+      "TRPT": (ref) => context.read<TrptBloc>().add(LoadTrptEvent(ref)),
+      "GLAT": (ref) => context.read<GlatBloc>().add(LoadGlatEvent(ref)),
+      "SALE": (ref) => context.read<OrderTxnBloc>().add(FetchOrderTxnEvent(reference: ref)),
+      "PRCH": (ref) => context.read<OrderTxnBloc>().add(FetchOrderTxnEvent(reference: ref)),
+    };
+
+    final handler = handlers[txn.trnType];
+    if (handler != null) {
+      handler(txn.trnReference ?? "");
+    } else {
+      context.read<TxnReferenceBloc>().add(FetchTxnByReferenceEvent(txn.trnReference ?? ""));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final tr = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
+    final color = Theme.of(context).colorScheme;
+
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            title: Text(tr.todayTransaction),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(60),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: TextField(
+                  controller: searchController,
+                  onChanged: (_) => setState(() {}),
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search),
+                    hintText: tr.search,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.refresh),
+                      onPressed: () {
+                        context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('all'));
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          body: BlocConsumer<TransactionsBloc, TransactionsState>(
+            listener: (context, state) {
+              if (state is TransactionSuccessState) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.of(context).pop();
+                  context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('all'));
+                });
+              }
+            },
+            builder: (context, state) {
+              if (state is TransactionErrorState) {
+                return Center(
+                  child: Text(tr.noDataFound),
+                );
+              }
+
+              if (state is TxnLoadingState) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (state is TransactionLoadedState) {
+                final query = searchController.text.toLowerCase().trim();
+                final filteredList = state.txn.where((item) {
+                  final name = item.trnReference?.toLowerCase() ?? '';
+                  final status = item.trnStateText?.toLowerCase() ?? '';
+                  final trnName = item.trnType?.toLowerCase() ?? '';
+                  final usrName = item.usrName?.toLowerCase() ?? '';
+                  return name.contains(query) ||
+                      status.contains(query) ||
+                      usrName.contains(query) ||
+                      trnName.contains(query);
+                }).toList();
+
+                if (filteredList.isEmpty) {
+                  return Center(child: Text(tr.noDataFound));
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: filteredList.length,
+                  itemBuilder: (context, index) {
+                    final txn = filteredList[index];
+                    final isLoadingThisItem = _isLoadingDialog && _loadingRef == txn.trnReference;
+                    final isCopied = _copiedStates[txn.trnReference ?? ""] ?? false;
+                    final reference = txn.trnReference ?? "";
+
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      child: InkWell(
+                        onTap: isLoadingThisItem ? null : () => _handleTransactionTap(txn),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Date and Loading
+                              Row(
+                                children: [
+                                  if (isLoadingThisItem)
+                                    const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    Utils.getTxnCode(txn: txn.trnType ?? "", context: context),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              // Reference with copy
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      txn.trnReference ?? "",
+                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => _copyToClipboard(reference, context),
+                                    child: Icon(
+                                      isCopied ? Icons.check : Icons.content_copy,
+                                      size: 20,
+                                      color: isCopied ? color.primary : color.onSurface.withOpacity(0.6),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              // Type and User
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(txn.trnEntryDate?.toFormattedDate() ?? "")
+                                  ),
+                                  Text(txn.usrName ?? ""),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              // Status
+                              TransactionStatusBadge(status: txn.trnStateText ?? ""),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
+
+              return const SizedBox();
+            },
+          ),
+        ),
+        if (_isLoadingDialog && _loadingRef == null)
+          Container(
+            color: Colors.black.withAlpha(100),
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+      ],
+    );
+  }
+
+  Future<void> _copyToClipboard(String reference, BuildContext context) async {
+    await Utils.copyToClipboard(reference);
+
+    setState(() {
+      _copiedStates[reference] = true;
+    });
+
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _copiedStates.remove(reference);
+        });
+      }
+    });
   }
 }
 
@@ -47,7 +279,6 @@ class _Tablet extends StatefulWidget {
   @override
   State<_Tablet> createState() => _TabletState();
 }
-
 class _TabletState extends State<_Tablet> {
   final Map<String, bool> _copiedStates = {};
   bool _isLoadingDialog = false;
