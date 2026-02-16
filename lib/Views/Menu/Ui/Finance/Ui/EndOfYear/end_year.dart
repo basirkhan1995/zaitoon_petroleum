@@ -84,13 +84,13 @@ class _DesktopState extends State<_Desktop> {
         title: Text(tr.profitAndLoss, style: titleStyle?.copyWith(fontSize: 25,color: Theme.of(context).colorScheme.onSurface)),
         actionsPadding: const EdgeInsets.all(8),
         actions: [
-          ZOutlineButton(
-            width: 110,
-            label: Text(tr.print),
-            icon: Icons.print,
-            onPressed: () {},
-          ),
-          const SizedBox(width: 8),
+          // ZOutlineButton(
+          //   width: 110,
+          //   label: Text(tr.print),
+          //   icon: Icons.print,
+          //   onPressed: () {},
+          // ),
+          // const SizedBox(width: 8),
           ZOutlineButton(
             width: 110,
             label: Text(tr.refresh),

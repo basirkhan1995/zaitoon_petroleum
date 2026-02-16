@@ -378,11 +378,11 @@ class _DesktopState extends State<_Desktop> {
                       return InkWell(
                         highlightColor: color.primary.withValues(alpha: .06),
                         hoverColor: color.primary.withValues(alpha: .06),
-                        onTap: () {
+                        onTap: login.hasPermission (107) ?? false ? () {
                           showDialog(context: context, builder: (context){
                             return UserDetailsView(usr: user);
                           });
-                        },
+                        } : null,
                         child: Container(
                           decoration: BoxDecoration(
                             color: index.isOdd
