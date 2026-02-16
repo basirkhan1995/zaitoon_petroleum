@@ -12,6 +12,8 @@ import '../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../../../Features/Widgets/zcard_mobile.dart';
 import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../../../Auth/models/login_model.dart';
 import '../../../../../HR/Ui/UserDetail/user_details.dart';
 
 
@@ -37,7 +39,6 @@ class _Mobile extends StatefulWidget {
   @override
   State<_Mobile> createState() => _MobileState();
 }
-
 class _MobileState extends State<_Mobile> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController searchController = TextEditingController();
@@ -244,7 +245,6 @@ class _MobileState extends State<_Mobile> {
   }
 }
 
-
 class _Desktop extends StatefulWidget {
   final int perId;
   const _Desktop(this.perId);
@@ -273,7 +273,12 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final locale = AppLocalizations.of(context)!;
+    final state = context.watch<AuthBloc>().state;
 
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
     return Scaffold(
       backgroundColor: color.surface,
       body: Column(
@@ -300,6 +305,14 @@ class _DesktopState extends State<_Desktop> {
                   onPressed: onRefresh,
                   label: Text(locale.refresh),
                 ),
+                if(login.hasPermission(106) ?? false)
+                  ZOutlineButton(
+                      toolTip: 'F5',
+                      width: 120,
+                      icon: Icons.add,
+                      isActive: true,
+                      onPressed: onAdd,
+                      label: Text(locale.newKeyword)),
               ],
             ),
           ),
@@ -366,7 +379,9 @@ class _DesktopState extends State<_Desktop> {
                         highlightColor: color.primary.withValues(alpha: .06),
                         hoverColor: color.primary.withValues(alpha: .06),
                         onTap: () {
-                          // Handle tap
+                          showDialog(context: context, builder: (context){
+                            return UserDetailsView(usr: user);
+                          });
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -446,7 +461,11 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
+  void onAdd(){
+    showDialog(context: context, builder: (context){
+      return AddUserView(indId: widget.perId);
+    });
+  }
   void onRefresh() {
     context.read<UsersBloc>().add(LoadUsersEvent(usrOwner: widget.perId));
   }
