@@ -21,6 +21,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/mode
 import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../../Features/Other/toast.dart';
+import '../../../../../../../Features/Widgets/outline_button.dart';
 
 class AddEditEmployeeView extends StatelessWidget {
   final EmployeeModel? model;
@@ -167,10 +168,9 @@ class _MobileState extends State<_Mobile> {
           if (state is EmployeeSuccessState) {
             ToastManager.show(
               context: context,
-              message: 'state.message',
+              message: locale.successMessage,
               type: ToastType.success,
             );
-            Navigator.pop(context);
           }
           if (state is EmployeeErrorState) {
             ToastManager.show(
@@ -284,321 +284,270 @@ class _MobileState extends State<_Mobile> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 5),
                     ],
 
                     // Account Information Card
-                    _buildSectionTitle(locale, 'accountInfo', Icons.account_balance),
-                    Card(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(
-                          color: colorScheme.outline.withValues(alpha: .1),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: GenericTextfield<AccountsModel, AccountsBloc,
-                            AccountsState>(
-                          showAllOnFocus: true,
-                          controller: indAccountCtrl,
-                          title: locale.accounts,
-                          hintText: locale.accNameOrNumber,
-                          isRequired: true,
-                          bloc: context.read<AccountsBloc>(),
-                          fetchAllFunction: (bloc) =>
-                              bloc.add(LoadAccountsEvent(ownerId: perId)),
-                          searchFunction: (bloc, query) =>
-                              bloc.add(LoadAccountsEvent(ownerId: perId)),
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return locale.required(locale.accounts);
-                            }
-                            return null;
-                          },
-                          itemBuilder: (context, account) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 5,
-                              vertical: 8,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        "${account.accNumber} | ${account.accName}",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge,
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Utils.currencyColors(
-                                            account.actCurrency ?? "")
-                                            .withValues(alpha: .1),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        "${account.actCurrency}",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall
-                                            ?.copyWith(
-                                          color: Utils.currencyColors(
-                                              account.actCurrency ?? ""),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                    _buildSectionTitle(locale, locale.accountInfo, Icons.account_circle_outlined),
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: GenericTextfield<AccountsModel, AccountsBloc,
+                          AccountsState>(
+                        showAllOnFocus: true,
+                        controller: indAccountCtrl,
+                        title: locale.accounts,
+                        hintText: locale.accNameOrNumber,
+                        isRequired: true,
+                        bloc: context.read<AccountsBloc>(),
+                        fetchAllFunction: (bloc) =>
+                            bloc.add(LoadAccountsEvent(ownerId: perId)),
+                        searchFunction: (bloc, query) =>
+                            bloc.add(LoadAccountsEvent(ownerId: perId)),
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return locale.required(locale.accounts);
+                          }
+                          return null;
+                        },
+                        itemBuilder: (context, account) => Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 8,
                           ),
-                          itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
-                          stateToLoading: (state) => state is AccountLoadingState,
-                          loadingBuilder: (context) => const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                          stateToItems: (state) {
-                            if (state is AccountLoadedState) {
-                              return state.accounts;
-                            }
-                            return [];
-                          },
-                          onSelected: (value) {
-                            setState(() {
-                              accNumber = value.accNumber ?? 1;
-                            });
-                          },
-                          noResultsText: locale.noDataFound,
-                          showClearButton: true,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Employment Details Card
-                    _buildSectionTitle(locale, 'employmentDetails', Icons.work),
-                    Card(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(
-                          color: colorScheme.outline.withValues(alpha: .1),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          children: [
-                            // Department Dropdown
-                            DepartmentDropdown(
-                              selectedDepartment: department,
-                              onDepartmentSelected: (e) {
-                                setState(() {
-                                  department = e;
-                                });
-                              },
-                            ),
-                            const SizedBox(height: 12),
-
-                            // Salary Calculation and Payment Method
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: SalaryCalcBaseDropdown(
-                                    selectedBase: salaryCalculationBase,
-                                    onSelected: (e) {
-                                      setState(() {
-                                        salaryCalculationBase = e;
-                                        salaryCalBase = e.name;
-                                      });
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: PaymentMethodDropdown(
-                                    selectedMethod: employeePaymentMethod,
-                                    onSelected: (e) {
-                                      setState(() {
-                                        employeePaymentMethod = e;
-                                        paymentBase = e.name;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Job & Salary Card
-                    _buildSectionTitle(locale, 'jobAndSalary', Icons.attach_money),
-                    Card(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(
-                          color: colorScheme.outline.withValues(alpha: .1),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          children: [
-                            // Job Title
-                            ZTextFieldEntitled(
-                              isEnabled: !isDriverEmployee,
-                              controller: jobTitle,
-                              title: locale.jobTitle,
-                              isRequired: true,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return locale.required(locale.jobTitle);
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 12),
-
-                            // Salary
-                            ZTextFieldEntitled(
-                              isRequired: true,
-                              keyboardInputType:
-                              TextInputType.numberWithOptions(decimal: true),
-                              inputFormat: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'[0-9.,]*')),
-                                SmartThousandsDecimalFormatter(),
-                              ],
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return locale.required(locale.salary);
-                                }
-
-                                // Remove formatting (e.g. commas)
-                                final clean =
-                                value.replaceAll(RegExp(r'[^\d.]'), '');
-                                final amount = double.tryParse(clean);
-
-                                if (amount == null || amount <= 0.0) {
-                                  return locale.amountGreaterZero;
-                                }
-
-                                return null;
-                              },
-                              controller: empSalary,
-                              title: locale.salary,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Additional Information Card
-                    _buildSectionTitle(locale, 'additionalInfo', Icons.info),
-                    Card(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(
-                          color: colorScheme.outline.withValues(alpha: .1),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          children: [
-                            ZTextFieldEntitled(
-                              controller: empTaxInfo,
-                              title: locale.taxInfo,
-                            ),
-                            const SizedBox(height: 12),
-                            ZTextFieldEntitled(
-                              controller: empEmail,
-                              validator: (value) => Utils.validateEmail(
-                                  email: value, context: context),
-                              title: locale.email,
-                              keyboardInputType: TextInputType.emailAddress,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Status Toggle for Edit
-                    if (widget.model != null) ...[
-                      Card(
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(
-                            color: colorScheme.outline.withValues(alpha: .1),
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Row(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Switch(
-                                value: empStatus == 1,
-                                onChanged: (e) {
-                                  setState(() {
-                                    empStatus = e == true ? 1 : 0;
-                                  });
-                                },
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  empStatus == 1
-                                      ? locale.active
-                                      : locale.blocked,
-                                  style: TextStyle(
-                                    color: empStatus == 1
-                                        ? Colors.green
-                                        : Colors.red,
-                                    fontWeight: FontWeight.w500,
+                              Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "${account.accNumber} | ${account.accName}",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge,
+                                    ),
                                   ),
-                                ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Utils.currencyColors(
+                                          account.actCurrency ?? "")
+                                          .withValues(alpha: .1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      "${account.actCurrency}",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall
+                                          ?.copyWith(
+                                        color: Utils.currencyColors(
+                                            account.actCurrency ?? ""),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ),
+                        itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
+                        stateToLoading: (state) => state is AccountLoadingState,
+                        loadingBuilder: (context) => const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        stateToItems: (state) {
+                          if (state is AccountLoadedState) {
+                            return state.accounts;
+                          }
+                          return [];
+                        },
+                        onSelected: (value) {
+                          setState(() {
+                            accNumber = value.accNumber ?? 1;
+                          });
+                        },
+                        noResultsText: locale.noDataFound,
+                        showClearButton: true,
                       ),
-                      const SizedBox(height: 16),
+                    ),
+                    const SizedBox(height: 5),
+
+                    // Employment Details Card
+                    _buildSectionTitle(locale, 'employmentDetails', Icons.work),
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: [
+                          // Department Dropdown
+                          DepartmentDropdown(
+                            selectedDepartment: department,
+                            onDepartmentSelected: (e) {
+                              setState(() {
+                                department = e;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 12),
+
+                          // Salary Calculation and Payment Method
+                          Row(
+                            children: [
+                              Expanded(
+                                child: SalaryCalcBaseDropdown(
+                                  selectedBase: salaryCalculationBase,
+                                  onSelected: (e) {
+                                    setState(() {
+                                      salaryCalculationBase = e;
+                                      salaryCalBase = e.name;
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: PaymentMethodDropdown(
+                                  selectedMethod: employeePaymentMethod,
+                                  onSelected: (e) {
+                                    setState(() {
+                                      employeePaymentMethod = e;
+                                      paymentBase = e.name;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+
+                    // Job & Salary Card
+                    _buildSectionTitle(locale, locale.jobAndSalary, Icons.attach_money),
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: [
+                          // Job Title
+                          ZTextFieldEntitled(
+                            isEnabled: !isDriverEmployee,
+                            controller: jobTitle,
+                            title: locale.jobTitle,
+                            isRequired: true,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return locale.required(locale.jobTitle);
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 12),
+
+                          // Salary
+                          ZTextFieldEntitled(
+                            isRequired: true,
+                            keyboardInputType:
+                            TextInputType.numberWithOptions(decimal: true),
+                            inputFormat: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9.,]*')),
+                              SmartThousandsDecimalFormatter(),
+                            ],
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return locale.required(locale.salary);
+                              }
+
+                              // Remove formatting (e.g. commas)
+                              final clean =
+                              value.replaceAll(RegExp(r'[^\d.]'), '');
+                              final amount = double.tryParse(clean);
+
+                              if (amount == null || amount <= 0.0) {
+                                return locale.amountGreaterZero;
+                              }
+
+                              return null;
+                            },
+                            controller: empSalary,
+                            title: locale.salary,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+
+                    // Additional Information Card
+                    _buildSectionTitle(locale, 'additionalInfo', Icons.info),
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: [
+                          ZTextFieldEntitled(
+                            controller: empTaxInfo,
+                            title: locale.taxInfo,
+                          ),
+                          const SizedBox(height: 12),
+                          ZTextFieldEntitled(
+                            controller: empEmail,
+                            validator: (value) => Utils.validateEmail(
+                                email: value, context: context),
+                            title: locale.email,
+                            keyboardInputType: TextInputType.emailAddress,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Status Toggle for Edit
+                    if (widget.model != null) ...[
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            Switch(
+                              value: empStatus == 1,
+                              onChanged: (e) {
+                                setState(() {
+                                  empStatus = e == true ? 1 : 0;
+                                });
+                              },
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                empStatus == 1
+                                    ? locale.active
+                                    : locale.blocked,
+                                style: TextStyle(
+                                  color: empStatus == 1
+                                      ? Colors.green
+                                      : Colors.red,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
 
                     // Submit Button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 5),
+                      child: ZOutlineButton(
+                        isActive: true,
+                        width: double.infinity,
                         onPressed: isLoading ? null : onSubmit,
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: isLoading
+                        label: isLoading
                             ? const SizedBox(
                           width: 24,
                           height: 24,
@@ -608,12 +557,8 @@ class _MobileState extends State<_Mobile> {
                         )
                             : Text(
                           widget.model == null
-                              ? locale.create
-                              : locale.update,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                              ? locale.create.toUpperCase()
+                              : locale.update.toUpperCase(),
                         ),
                       ),
                     ),

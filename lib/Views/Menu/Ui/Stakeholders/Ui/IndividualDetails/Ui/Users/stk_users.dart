@@ -15,24 +15,7 @@ class UsersByPerIdView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(mobile: _Mobile(), tablet: _Tablet(), desktop: _Desktop(perId));
-  }
-}
-
-class _Mobile extends StatelessWidget {
-  const _Mobile();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
+    return ResponsiveLayout(mobile: _Desktop(perId), tablet: _Desktop(perId), desktop: _Desktop(perId));
   }
 }
 

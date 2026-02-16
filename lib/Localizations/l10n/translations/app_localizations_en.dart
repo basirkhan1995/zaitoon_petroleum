@@ -754,7 +754,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'The old password you entered is incorrect.';
 
   @override
-  String get forceChangePasswordTitle => 'Require Password Change';
+  String get forceChangePasswordTitle => 'Password Change';
 
   @override
   String get forceEmailVerificationTitle => 'Require Email Verification';
@@ -2498,4 +2498,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get changedTitle => 'Changed';
+
+  @override
+  String get resetPassword => 'Reset Password';
+
+  @override
+  String get roleAndBranch => 'Role & Branch';
+
+  @override
+  String get accountInfo => 'Salary Account';
+
+  @override
+  String get jobAndSalary => 'Job Title & Salary';
+
+  @override
+  String get errorTitle => 'Error';
+
+  @override
+  String get contactInfo => 'Contact';
+
+  @override
+  String get personalInfo => 'Personal Information';
 }

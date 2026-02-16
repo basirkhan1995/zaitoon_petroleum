@@ -263,7 +263,7 @@
   "oldPassword": "Old Password",
   "errorHint": "Check your services or refresh to try again.",
   "oldPasswordIncorrect": "The old password you entered is incorrect.",
-  "forceChangePasswordTitle": "Require Password Change",
+  "forceChangePasswordTitle": "Password Change",
   "forceEmailVerificationTitle": "Require Email Verification",
   "rate": "Exchange Rate",
   "from": "From CCY",
@@ -826,5 +826,12 @@
   "invoiceAmount": "Invoice Amount",
   "inventorySubtitle": "All inventory operations managed in one place",
   "journalHint": "Manage cash flow entries with Debit, Credit, and Amount.",
-  "changedTitle": "Changed"
+  "changedTitle": "Changed",
+  "resetPassword": "Reset Password",
+  "roleAndBranch": "Role & Branch",
+  "accountInfo": "Salary Account",
+  "jobAndSalary": "Job Title & Salary",
+  "errorTitle": "Error",
+  "contactInfo": "Contact",
+  "personalInfo": "Personal Information"
 }

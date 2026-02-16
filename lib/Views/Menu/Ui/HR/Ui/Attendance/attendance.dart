@@ -125,7 +125,6 @@ class _MobileState extends State<_Mobile> {
               // Date Selector and Summary
               Container(
                 padding: const EdgeInsets.all(12),
-
                 child: Column(
                   children: [
                     // Date Picker Row

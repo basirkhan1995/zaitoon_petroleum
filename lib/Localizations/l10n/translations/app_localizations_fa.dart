@@ -2489,4 +2489,25 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get changedTitle => 'تغییر یافته';
+
+  @override
+  String get resetPassword => 'بازنشانی رمز عبور';
+
+  @override
+  String get roleAndBranch => 'صلاحیت کاربر و شعبه';
+
+  @override
+  String get accountInfo => 'حساب معاش';
+
+  @override
+  String get jobAndSalary => 'مقام و معاش';
+
+  @override
+  String get errorTitle => 'خطا';
+
+  @override
+  String get contactInfo => 'تماس';
+
+  @override
+  String get personalInfo => 'معلومات شخصی';
 }

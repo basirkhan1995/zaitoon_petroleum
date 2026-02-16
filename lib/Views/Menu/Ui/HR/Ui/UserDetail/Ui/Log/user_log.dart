@@ -16,28 +16,10 @@ class UserLogView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-      mobile: _Mobile(),
+      mobile: _Desktop(usrName),
       desktop: _Desktop(usrName),
-      tablet: _Tablet(),
+      tablet: _Desktop(usrName),
     );
-  }
-}
-
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-class _Mobile extends StatelessWidget {
-  const _Mobile();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
 

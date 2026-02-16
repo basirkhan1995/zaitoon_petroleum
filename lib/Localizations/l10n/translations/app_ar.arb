@@ -826,5 +826,12 @@
   "invoiceAmount": "مبلغ بل",
   "inventorySubtitle": "ټولې د موجودي کړنې په یوه ځای کې اداره کړئ",
   "journalHint": "د نغدي جریان ثبتونه د ډیبیټ، کریډیټ او اندازه سره اداره کړئ.",
-  "changedTitle": "بدل شو"
+  "changedTitle": "بدل شو",
+  "resetPassword": "د پاسورډ بیا ترتیب",
+  "roleAndBranch": "صلاحیت کاربر و شعبه",
+  "accountInfo": "حساب معاش",
+  "jobAndSalary": "مقام و معاش",
+  "errorTitle": "خطا",
+  "contactInfo": "تماس",
+  "personalInfo": "معلومات شخصی"
 }

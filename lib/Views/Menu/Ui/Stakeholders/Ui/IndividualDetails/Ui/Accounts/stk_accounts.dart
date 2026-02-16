@@ -19,27 +19,10 @@ class AccountsByPerIdView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(mobile: _Mobile(), tablet: _Tablet(), desktop: _Desktop(ind));
+    return ResponsiveLayout(mobile: _Desktop(ind), tablet: _Desktop(ind), desktop: _Desktop(ind));
   }
 }
 
-class _Mobile extends StatelessWidget {
-  const _Mobile();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 
 class _Desktop extends StatefulWidget {
   final IndividualsModel ind;
@@ -116,13 +99,13 @@ class _DesktopState extends State<_Desktop> {
             padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 5),
             child: Row(
               children: [
-                Expanded(child: Text(locale.accountInformation,style: Theme.of(context).textTheme.titleMedium)),
-                SizedBox(
-                    width: 100,
-                    child: Text(locale.status,style: Theme.of(context).textTheme.titleMedium)),
+                Expanded(child: Text(locale.accountInformation,style: Theme.of(context).textTheme.titleSmall)),
+
                 SizedBox(
                     width: 200,
-                    child: Text(locale.balance,style: Theme.of(context).textTheme.titleMedium)),
+                    child: Text(
+                        textAlign: TextAlign.right,
+                        locale.balance,style: Theme.of(context).textTheme.titleSmall)),
 
               ],
             ),
@@ -192,12 +175,12 @@ class _DesktopState extends State<_Desktop> {
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 3),
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 // ---------- Avatar ----------
                                 CircleAvatar(
                                   backgroundColor: Utils.currencyColors(acc.actCurrency??""),
-                                  radius: 25,
+                                  radius: 22,
                                   child: Text(
                                     acc.accName?.getFirstLetter??"",
                                     style: TextStyle(
@@ -236,41 +219,42 @@ class _DesktopState extends State<_Desktop> {
                                               child: Text(acc.actCurrency.toString()),
                                             ),
                                           ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(right: 3.0),
+                                            child: ZCover(
+                                              color: color.surface,
+                                              child: Text(acc.accStatus == 1? locale.active : locale.blocked),
+                                            ),
+                                          ),
                                         ],
                                       )
                                     ],
                                   ),
                                 ),
 
-                                SizedBox(
-                                  width: 100,
-                                  child: Text(acc.accStatus == 1? locale.active : locale.blocked),
-                                ),
-                                SizedBox(
-                                    width: 200,
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    if(!isAvailableEqualCurrent)
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
                                       children: [
-                                        if(!isAvailableEqualCurrent)
-                                        Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(locale.currentBalance,style: amountTitle),
-                                            Text("${acc.accBalance?.toAmount()} ${acc.actCurrency}",style: amountStyle),
-                                          ],
-                                        ),
-                                        Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(locale.availableBalance,style: amountTitle),
-                                            Text("${acc.accAvailBalance?.toAmount()} ${acc.actCurrency}",style: amountStyle),
-                                          ],
-                                        ),
+                                        Text(locale.currentBalance,style: amountTitle, textAlign: TextAlign.right),
+                                        Text("${acc.accBalance?.toAmount()} ${acc.actCurrency}",style: amountStyle, textAlign: TextAlign.right),
                                       ],
-                                    )),
+                                    ),
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Text(locale.availableBalance,style: amountTitle, textAlign: TextAlign.right),
+                                        Text("${acc.accAvailBalance?.toAmount()} ${acc.actCurrency}",style: amountStyle, textAlign: TextAlign.right),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),

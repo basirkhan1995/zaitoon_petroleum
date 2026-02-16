@@ -1561,7 +1561,7 @@ abstract class AppLocalizations {
   /// No description provided for @forceChangePasswordTitle.
   ///
   /// In en, this message translates to:
-  /// **'Require Password Change'**
+  /// **'Password Change'**
   String get forceChangePasswordTitle;
 
   /// No description provided for @forceEmailVerificationTitle.
@@ -4941,6 +4941,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Changed'**
   String get changedTitle;
+
+  /// No description provided for @resetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPassword;
+
+  /// No description provided for @roleAndBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Role & Branch'**
+  String get roleAndBranch;
+
+  /// No description provided for @accountInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary Account'**
+  String get accountInfo;
+
+  /// No description provided for @jobAndSalary.
+  ///
+  /// In en, this message translates to:
+  /// **'Job Title & Salary'**
+  String get jobAndSalary;
+
+  /// No description provided for @errorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get errorTitle;
+
+  /// No description provided for @contactInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get contactInfo;
+
+  /// No description provided for @personalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Information'**
+  String get personalInfo;
 }
 
 class _AppLocalizationsDelegate

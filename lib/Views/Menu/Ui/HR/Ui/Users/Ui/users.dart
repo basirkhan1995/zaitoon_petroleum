@@ -142,7 +142,7 @@ class _MobileState extends State<_Mobile> {
                     ),
                     onTap: (login.hasPermission(107) ?? false)
                         ? () {
-                      // Just show details without dialog for now
+                      Utils.goto(context, UserDetailsView(usr: usr));
                     }
                         : null,
                     showActions: false, // Hide the "View Details" button

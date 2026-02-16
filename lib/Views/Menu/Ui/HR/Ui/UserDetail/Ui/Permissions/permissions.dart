@@ -202,12 +202,13 @@ class _DesktopState extends State<_Desktop> {
 
                             return ListTile(
                               hoverColor: color.primary.withValues(alpha: .05),
-                              visualDensity: const VisualDensity(vertical: -3),
+                              visualDensity: const VisualDensity(vertical: -3,horizontal: -4),
                               dense: true,
                               contentPadding:
                               const EdgeInsets.symmetric(horizontal: 5),
 
                               leading: Checkbox(
+                                visualDensity: VisualDensity(horizontal: -2),
                                 value: currentValue,
                                 onChanged: (value) {
                                   if (value != null) {
@@ -217,7 +218,7 @@ class _DesktopState extends State<_Desktop> {
                                 },
                               ),
 
-                              title: Text("${per.uprRole} | ${per.rsgName}"),
+                              title: Text("${per.rsgName}"),
                               subtitle: hasLocalChange
                                   ? Text(
                                 locale.changedTitle,

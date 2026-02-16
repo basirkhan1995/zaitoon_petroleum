@@ -2491,4 +2491,25 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get changedTitle => 'بدل شو';
+
+  @override
+  String get resetPassword => 'د پاسورډ بیا ترتیب';
+
+  @override
+  String get roleAndBranch => 'صلاحیت کاربر و شعبه';
+
+  @override
+  String get accountInfo => 'حساب معاش';
+
+  @override
+  String get jobAndSalary => 'مقام و معاش';
+
+  @override
+  String get errorTitle => 'خطا';
+
+  @override
+  String get contactInfo => 'تماس';
+
+  @override
+  String get personalInfo => 'معلومات شخصی';
 }
