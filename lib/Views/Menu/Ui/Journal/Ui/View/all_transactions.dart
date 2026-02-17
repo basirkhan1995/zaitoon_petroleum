@@ -32,14 +32,6 @@ class AllTransactionsView extends StatelessWidget {
   }
 }
 
-// class _Mobile extends StatelessWidget {
-//   const _Mobile();
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return const Placeholder();
-//   }
-// }
 
 class _Mobile extends StatefulWidget {
   const _Mobile();
@@ -97,7 +89,6 @@ class _MobileState extends State<_Mobile> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
-    final textTheme = Theme.of(context).textTheme;
     final color = Theme.of(context).colorScheme;
 
     return Stack(
@@ -215,7 +206,7 @@ class _MobileState extends State<_Mobile> {
                                     child: Icon(
                                       isCopied ? Icons.check : Icons.content_copy,
                                       size: 20,
-                                      color: isCopied ? color.primary : color.onSurface.withOpacity(0.6),
+                                      color: isCopied ? color.primary : color.onSurface.withValues(alpha: .6),
                                     ),
                                   )
                                 ],
