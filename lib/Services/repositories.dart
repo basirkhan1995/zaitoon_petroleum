@@ -172,9 +172,9 @@ class Repositories {
   }
 
   ///Stakeholder | Individuals .................................................
-  Future<List<IndividualsModel>> getStakeholders({int? indId, CancelToken? cancelToken}) async {
+  Future<List<IndividualsModel>> getStakeholders({int? indId, String? query, CancelToken? cancelToken}) async {
     // Build query parameters dynamically
-    final queryParams = indId != null ? {'perID': indId} : null;
+    final queryParams = indId != null ? {'perID': indId, 'search': query} : null;
 
     // Fetch data from API
     final response = await api.get(

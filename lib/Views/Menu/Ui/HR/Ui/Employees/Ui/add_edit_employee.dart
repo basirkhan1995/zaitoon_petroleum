@@ -17,6 +17,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/features/salary_
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/model/emp_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/model/acc_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/add_edit.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/model/individual_model.dart';
 import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
@@ -40,19 +41,12 @@ class AddEditEmployeeView extends StatelessWidget {
     return ResponsiveLayout(
       mobile: _Mobile(model: model, isDriver: isDriver,employeeType: employeeType),
       desktop: _Desktop(model: model, isDriver: isDriver, employeeType: employeeType),
-      tablet: _Tablet(),
+      tablet: _Desktop(model: model, isDriver: isDriver, employeeType: employeeType),
     );
   }
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
 
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 
 class _Mobile extends StatefulWidget {
   final EmployeeModel? model;
@@ -150,7 +144,6 @@ class _MobileState extends State<_Mobile> {
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     final isLoading = context.watch<EmployeeBloc>().state is EmployeeLoadingState;
-    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -186,103 +179,86 @@ class _MobileState extends State<_Mobile> {
             Form(
               key: formKey,
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Personal Information Card
                     if (widget.model == null) ...[
                       SectionTitle(title:  locale.personalInfo),
-                      Card(
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(
-                            color: colorScheme.outline.withValues(alpha: .1),
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: GenericTextfield<IndividualsModel, IndividualsBloc,
-                              IndividualsState>(
-                            showAllOnFocus: true,
-                            controller: individualCtrl,
-                            title: locale.individuals,
-                            hintText: locale.individuals,
-                            isRequired: true,
-                            bloc: context.read<IndividualsBloc>(),
-                            fetchAllFunction: (bloc) =>
-                                bloc.add(LoadIndividualsEvent()),
-                            searchFunction: (bloc, query) =>
-                                bloc.add(LoadIndividualsEvent()),
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return locale.required(locale.individuals);
-                              }
-                              return null;
-                            },
-                            itemBuilder: (context, account) => Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 5,
-                                vertical: 8,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          "${account.perName} ${account.perLastName}",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  if (account.perPhone != null)
-                                    Text(
-                                      account.perPhone!,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(
-                                        color: colorScheme.outline,
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
+                          showAllOnFocus: true,
+                          controller: individualCtrl,
+                          title: locale.individuals,
+                          hintText: locale.individuals,
+                          trailing: IconButton(
+                              onPressed: (){
+                                showDialog(context: context, builder: (context){
+                                  return IndividualAddEditView();
+                                });
+                              },
+                              icon: Icon(Icons.add)),
+                          isRequired: true,
+                          bloc: context.read<IndividualsBloc>(),
+                          fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
+                          searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return locale.required(locale.individuals);
+                            }
+                            return null;
+                          },
+                          itemBuilder: (context, account) => Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 8,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        "${account.perName} ${account.perLastName}",
+                                        style: Theme.of(context).textTheme.bodyLarge,
                                       ),
                                     ),
-                                ],
-                              ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            itemToString: (acc) =>
-                            "${acc.perName} ${acc.perLastName}",
-                            stateToLoading: (state) =>
-                            state is IndividualLoadingState,
-                            loadingBuilder: (context) => const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                            stateToItems: (state) {
-                              if (state is IndividualLoadedState) {
-                                return state.individuals;
-                              }
-                              return [];
-                            },
-                            onSelected: (value) {
-                              setState(() {
-                                perId = value.perId!;
-                                indAccountCtrl.clear();
-                                context
-                                    .read<AccountsBloc>()
-                                    .add(LoadAccountsEvent(ownerId: perId));
-                              });
-                            },
-                            noResultsText: locale.noDataFound,
-                            showClearButton: true,
                           ),
+                          itemToString: (acc) =>
+                          "${acc.perName} ${acc.perLastName}",
+                          stateToLoading: (state) =>
+                          state is IndividualLoadingState,
+                          loadingBuilder: (context) => const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                          stateToItems: (state) {
+                            if (state is IndividualLoadedState) {
+                              return state.individuals;
+                            }
+                            return [];
+                          },
+                          onSelected: (value) {
+                            setState(() {
+                              perId = value.perId!;
+                              indAccountCtrl.clear();
+                              context
+                                  .read<AccountsBloc>()
+                                  .add(LoadAccountsEvent(ownerId: perId));
+                            });
+                          },
+                          noResultsText: locale.noDataFound,
+                          showClearButton: true,
                         ),
                       ),
                       const SizedBox(height: 5),
@@ -489,7 +465,7 @@ class _MobileState extends State<_Mobile> {
                     // Additional Information Card
                     SectionTitle(title: 'Additional Info'),
                     Padding(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(8),
                       child: Column(
                         children: [
                           ZTextFieldEntitled(
@@ -511,7 +487,7 @@ class _MobileState extends State<_Mobile> {
                     // Status Toggle for Edit
                     if (widget.model != null) ...[
                       Padding(
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(8),
                         child: Row(
                           children: [
                             Switch(
@@ -543,7 +519,7 @@ class _MobileState extends State<_Mobile> {
 
                     // Submit Button
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 5),
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
                       child: ZOutlineButton(
                         isActive: true,
                         width: double.infinity,
@@ -724,7 +700,7 @@ class _DesktopState extends State<_Desktop> {
       onAction: onSubmit,
       title: widget.model == null
           ? (widget.isDriver == true || widget.employeeType == 'driver'
-          ? locale.driverRegistration // Custom title for driver
+          ? locale.driverRegistration
           : locale.employeeRegistration)
           : "${locale.update} ${widget.model?.perName} ${widget.model?.perLastName}",
       child: SingleChildScrollView(
@@ -736,18 +712,22 @@ class _DesktopState extends State<_Desktop> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (widget.model == null)
-                  GenericTextfield<IndividualsModel, IndividualsBloc,
-                      IndividualsState>(
+                  GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
                     showAllOnFocus: true,
                     controller: individualCtrl,
                     title: locale.individuals,
                     hintText: locale.individuals,
+                    trailing: IconButton(
+                        onPressed: (){
+                          showDialog(context: context, builder: (context){
+                            return IndividualAddEditView();
+                          });
+                        },
+                        icon: Icon(Icons.add)),
                     isRequired: true,
                     bloc: context.read<IndividualsBloc>(),
-                    fetchAllFunction: (bloc) =>
-                        bloc.add(LoadIndividualsEvent()),
-                    searchFunction: (bloc, query) =>
-                        bloc.add(LoadIndividualsEvent()),
+                    fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
+                    searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent(search: query)),
                     validator: (value) {
                       if (value.isEmpty) {
                         return locale.required(locale.individuals);

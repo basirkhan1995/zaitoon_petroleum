@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../../Features/Other/image_helper.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
+import '../../../../../../Features/Other/utils.dart';
 import '../../../../../../Features/Widgets/zcard_mobile.dart';
 import '../../../HR/Ui/Employees/Ui/add_edit_employee.dart';
 import '../../../HR/Ui/Employees/features/emp_card.dart';
@@ -66,7 +67,7 @@ class _MobileDriversViewState extends State<_MobileDriversView> {
         children: [
           // Search Bar
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(2),
             child: Container(
               decoration: BoxDecoration(
                 color: color.surfaceContainerHighest.withValues(alpha: 0.3),
@@ -119,7 +120,7 @@ class _MobileDriversViewState extends State<_MobileDriversView> {
                           size: 64,
                           color: color.error,
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 8),
                         Text(
                           'Error',
                           style: Theme.of(context).textTheme.titleLarge,
@@ -153,7 +154,7 @@ class _MobileDriversViewState extends State<_MobileDriversView> {
                             size: 64,
                             color: color.outline,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 8),
                           Text(
                             'No Drivers Found',
                             style: Theme.of(context).textTheme.titleLarge,
@@ -171,50 +172,46 @@ class _MobileDriversViewState extends State<_MobileDriversView> {
                   }
 
                   return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {
                       final driver = filteredList[index];
                       final fullName = '${driver.perName ?? ""} ${driver.perLastName ?? ""}'.trim();
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: MobileInfoCard(
-                          imageUrl: driver.empImage,
-                          title: fullName.isNotEmpty ? fullName : 'Unnamed Driver',
-                          subtitle: driver.empPosition ?? 'No Position',
-                          status: MobileStatus(
-                            label: driver.empStatus == 1 ? 'Active' : 'Inactive',
-                            color: driver.empStatus == 1 ? Colors.green : Colors.red,
-                            backgroundColor: driver.empStatus == 1
-                                ? Colors.green.withValues(alpha: 0.12)
-                                : Colors.red.withValues(alpha: 0.12),
-                          ),
-                          infoItems: [
-                            if (driver.empDepartment != null)
-                              MobileInfoItem(
-                                icon: Icons.business_center,
-                                text: driver.empDepartment!,
-                                iconColor: color.primary,
-                              ),
-                            if (driver.empSalary != null)
-                              MobileInfoItem(
-                                icon: Icons.payments,
-                                text: driver.empSalary!.toAmount(),
-                                iconColor: Colors.green,
-                              ),
-                            if (driver.empHireDate != null)
-                              MobileInfoItem(
-                                icon: Icons.calendar_today,
-                                text: driver.empHireDate!.toFormattedDate(),
-                                iconColor: color.secondary,
-                              ),
-                          ],
-                          onTap: () {
-                            _showDriverDetails(context, driver);
-                          },
-                          accentColor: color.primary,
-                          showActions: true,
+                      return MobileInfoCard(
+                        imageUrl: driver.empImage,
+                        title: fullName.isNotEmpty ? fullName : 'Unnamed Driver',
+                        subtitle: driver.empPosition ?? 'No Position',
+                        status: MobileStatus(
+                          label: driver.empStatus == 1 ? 'Active' : 'Inactive',
+                          color: driver.empStatus == 1 ? Colors.green : Colors.red,
+                          backgroundColor: driver.empStatus == 1
+                              ? Colors.green.withValues(alpha: 0.12)
+                              : Colors.red.withValues(alpha: 0.12),
                         ),
+                        infoItems: [
+                          if (driver.empDepartment != null)
+                            MobileInfoItem(
+                              icon: Icons.business_center,
+                              text: driver.empDepartment!,
+                              iconColor: color.primary,
+                            ),
+                          if (driver.empSalary != null)
+                            MobileInfoItem(
+                              icon: Icons.payments,
+                              text: driver.empSalary!.toAmount(),
+                              iconColor: Colors.green,
+                            ),
+                          if (driver.empHireDate != null)
+                            MobileInfoItem(
+                              icon: Icons.calendar_today,
+                              text: driver.empHireDate!.toFormattedDate(),
+                              iconColor: color.secondary,
+                            ),
+                        ],
+                        onTap: () {
+                          Utils.goto(context, AddEditEmployeeView(model: driver));
+                        },
+                        accentColor: color.primary,
+                        showActions: true,
                       );
                     },
                   );
@@ -226,287 +223,16 @@ class _MobileDriversViewState extends State<_MobileDriversView> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) => const AddEditEmployeeView(
-              isDriver: true,
-              employeeType: 'driver',
-            ),
-          );
+          Utils.goto(context, const AddEditEmployeeView(
+            isDriver: true,
+            employeeType: 'driver',
+          ),);
         },
-        icon: const Icon(Icons.add),
-        label: const Text('Add Driver'),
         backgroundColor: color.primary,
         foregroundColor: color.surface,
-      ),
-    );
-  }
-
-  void _showDriverDetails(BuildContext context, dynamic driver) {
-    final color = Theme.of(context).colorScheme;
-    final fullName = '${driver.perName ?? ""} ${driver.perLastName ?? ""}'.trim();
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      backgroundColor: color.surface,
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.7,
-          minChildSize: 0.5,
-          maxChildSize: 0.9,
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Driver Details',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
-                  ),
-                  const Divider(height: 20),
-
-                  // Driver Info
-                  Expanded(
-                    child: ListView(
-                      controller: scrollController,
-                      children: [
-                        // Profile Image and Basic Info
-                        Center(
-                          child: Column(
-                            children: [
-                              ImageHelper.stakeholderProfile(
-                                imageName: driver.empImage,
-                                size: 100,
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                fullName,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              if (driver.empPosition != null)
-                                Text(
-                                  driver.empPosition!,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: color.secondary,
-                                  ),
-                                ),
-                              const SizedBox(height: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: driver.empStatus == 1
-                                      ? Colors.green.withValues(alpha: 0.12)
-                                      : Colors.red.withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  driver.empStatus == 1 ? 'Active' : 'Inactive',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: driver.empStatus == 1
-                                        ? Colors.green
-                                        : Colors.red,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Details
-                        _buildDetailItem(
-                          context,
-                          icon: Icons.badge,
-                          label: 'Employee ID',
-                          value: driver.empCode ?? '-',
-                        ),
-                        _buildDetailItem(
-                          context,
-                          icon: Icons.person,
-                          label: 'First Name',
-                          value: driver.perName ?? '-',
-                        ),
-                        _buildDetailItem(
-                          context,
-                          icon: Icons.person_outline,
-                          label: 'Last Name',
-                          value: driver.perLastName ?? '-',
-                        ),
-                        _buildDetailItem(
-                          context,
-                          icon: Icons.phone,
-                          label: 'Phone',
-                          value: driver.perPhone ?? '-',
-                        ),
-                        _buildDetailItem(
-                          context,
-                          icon: Icons.email,
-                          label: 'Email',
-                          value: driver.perEmail ?? '-',
-                        ),
-                        _buildDetailItem(
-                          context,
-                          icon: Icons.business_center,
-                          label: 'Department',
-                          value: driver.empDepartment ?? '-',
-                        ),
-                        _buildDetailItem(
-                          context,
-                          icon: Icons.work,
-                          label: 'Position',
-                          value: driver.empPosition ?? '-',
-                        ),
-                        _buildDetailItem(
-                          context,
-                          icon: Icons.payments,
-                          label: 'Salary',
-                          value: driver.empSalary?.toAmount() ?? '-',
-                        ),
-                        _buildDetailItem(
-                          context,
-                          icon: Icons.calendar_today,
-                          label: 'Hire Date',
-                          value: driver.empHireDate?.toFormattedDate() ?? '-',
-                        ),
-                        if (driver.empLicenseNumber != null)
-                          _buildDetailItem(
-                            context,
-                            icon: Icons.drive_eta,
-                            label: 'License Number',
-                            value: driver.empLicenseNumber!,
-                          ),
-                      ],
-                    ),
-                  ),
-
-                  // Action Buttons
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              showDialog(
-                                context: context,
-                                builder: (_) => AddEditEmployeeView(
-                                  model: driver,
-                                  isDriver: true,
-                                  employeeType: 'driver',
-                                ),
-                              );
-                            },
-                            icon: const Icon(Icons.edit),
-                            label: const Text('Edit'),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              // Add view trips functionality here
-                            },
-                            icon: const Icon(Icons.route),
-                            label: const Text('View Trips'),
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildDetailItem(
-      BuildContext context, {
-        required IconData icon,
-        required String label,
-        required String value,
-      }) {
-    final color = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              icon,
-              size: 18,
-              color: color.primary,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: color.secondary,
-                  ),
-                ),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        child: const Icon(Icons.add),
       ),
     );
   }

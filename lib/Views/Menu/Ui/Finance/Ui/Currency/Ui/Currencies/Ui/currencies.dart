@@ -108,33 +108,30 @@ class _MobileState extends State<_Mobile> {
         shortcuts: shortcuts,
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ZSearchField(
-                controller: searchController,
-                title: '',
-                hint: tr.search,
-                end: searchController.text.isNotEmpty
-                    ? InkWell(
-                  splashColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  onTap: () {
-                    setState(() {
-                      searchController.clear();
-                    });
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Icon(Icons.clear, size: 15),
-                  ),
-                )
-                    : const SizedBox(),
-                onChanged: (e) {
-                  setState(() {});
+            ZSearchField(
+              controller: searchController,
+              title: '',
+              hint: tr.search,
+              end: searchController.text.isNotEmpty
+                  ? InkWell(
+                splashColor: Colors.transparent,
+                hoverColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onTap: () {
+                  setState(() {
+                    searchController.clear();
+                  });
                 },
-                icon: FontAwesomeIcons.magnifyingGlass,
-              ),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Icon(Icons.clear, size: 15),
+                ),
+              )
+                  : const SizedBox(),
+              onChanged: (e) {
+                setState(() {});
+              },
+              icon: FontAwesomeIcons.magnifyingGlass,
             ),
 
             const SizedBox(height: 8),
@@ -146,7 +143,7 @@ class _MobileState extends State<_Mobile> {
               ),
               child: Row(
                 children: [
-                  const SizedBox(width: 50, child: Text('Flag')),
+                  SizedBox(width: 50, child: Text(tr.flag,style: titleStyle)),
                   SizedBox(
                     width: 60,
                     child: Text(
@@ -208,7 +205,7 @@ class _MobileState extends State<_Mobile> {
                     return RefreshIndicator(
                       onRefresh: onRefresh,
                       child: ListView.builder(
-                        controller: _scrollController, // 🔴 THIS WAS MISSING
+                        controller: _scrollController,
                         itemCount: filteredCcy.length,
                         itemBuilder: (context, index) {
                           final ccy = filteredCcy[index];

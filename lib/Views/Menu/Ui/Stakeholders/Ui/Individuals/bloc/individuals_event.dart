@@ -6,9 +6,10 @@ sealed class IndividualsEvent extends Equatable {
 
 class LoadIndividualsEvent extends IndividualsEvent{
   final int? indId;
-  const LoadIndividualsEvent({this.indId});
+  final String? search;
+  const LoadIndividualsEvent({this.indId,this.search});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [search];
 }
 
 class SearchIndividualsEvent extends IndividualsEvent {

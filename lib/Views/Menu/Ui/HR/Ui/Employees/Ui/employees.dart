@@ -60,6 +60,14 @@ class _MobileState extends State<_Mobile> {
     final login = state.loginData;
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: (){
+            showDialog(
+                context: context, builder: (context){
+                return AddEditEmployeeView();
+            });
+          }),
       body: BlocConsumer<EmployeeBloc, EmployeeState>(
         listener: (context, state) {
           if (state is EmployeeErrorState) {
