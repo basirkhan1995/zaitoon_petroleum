@@ -2522,4 +2522,72 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get avbShort => 'AVB';
+
+  @override
+  String get forgotPasswordTitle => 'Forgot Password';
+
+  @override
+  String get forgotPasswordMessage =>
+      'Enter your email or username to reset your password';
+
+  @override
+  String get emailOrUsername => 'Email or Username';
+
+  @override
+  String get passwordResetTitle => 'Password Reset';
+
+  @override
+  String get otpSendMessage => 'Code sent to';
+
+  @override
+  String get verifyOtp => 'Verify OTP';
+
+  @override
+  String get continueTitle => 'Continue';
+
+  @override
+  String get notReceiveCode => 'Didn\'t receive the code?';
+
+  @override
+  String get resend => 'Resend';
+
+  @override
+  String get remainingTime => 'Remaining time:';
+
+  @override
+  String get createPasswordTitle => 'Create New Password';
+
+  @override
+  String get doneTitle => 'Done!';
+
+  @override
+  String get passwordResetMessage =>
+      'Your password has been reset successfully';
+
+  @override
+  String get loginTitle => 'Login';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get userNotFound => 'User not found';
+
+  @override
+  String get invalidOtp => 'Invalid OTP code';
+
+  @override
+  String get otpExpired => 'OTP has expired';
+
+  @override
+  String get resetFailed => 'Password reset failed';
+
+  @override
+  String get otpRequired => 'Please enter the 6-digit code';
+
+  @override
+  String get resetSuccess => 'Password reset successful';
+
+  @override
+  String get otpVerified => 'OTP verified successfully';
 }

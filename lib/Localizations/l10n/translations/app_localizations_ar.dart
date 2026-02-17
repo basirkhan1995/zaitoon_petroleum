@@ -2515,4 +2515,72 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get avbShort => 'م. ق. ب';
+
+  @override
+  String get forgotPasswordTitle => 'د پاسورډ هېرول';
+
+  @override
+  String get forgotPasswordMessage =>
+      'مهرباني وکړئ خپل بریښنالیک یا کارن نوم دننه کړئ ترڅو خپل پاسورډ بیا تنظیم کړئ';
+
+  @override
+  String get emailOrUsername => 'بریښنالیک یا کارن نوم';
+
+  @override
+  String get passwordResetTitle => 'د پاسورډ بیا تنظیمول';
+
+  @override
+  String get otpSendMessage => 'کوډ ته لیږل شوی';
+
+  @override
+  String get verifyOtp => 'د کوډ تایید';
+
+  @override
+  String get continueTitle => 'ادامه';
+
+  @override
+  String get notReceiveCode => 'کوډ مو ترلاسه نه کړ؟';
+
+  @override
+  String get resend => 'بیا لیږل';
+
+  @override
+  String get remainingTime => 'پاتې وخت:';
+
+  @override
+  String get createPasswordTitle => 'نوی پاسورډ جوړ کړئ';
+
+  @override
+  String get doneTitle => 'ترسره شو!';
+
+  @override
+  String get passwordResetMessage =>
+      'ستاسو پاسورډ په بریالیتوب سره بیا تنظیم شو';
+
+  @override
+  String get loginTitle => 'ننوتل';
+
+  @override
+  String get back => 'بېرته';
+
+  @override
+  String get userNotFound => 'کارګر ونه موندل شو';
+
+  @override
+  String get invalidOtp => 'ناسم کوډ';
+
+  @override
+  String get otpExpired => 'کوډ ختم شوی دی';
+
+  @override
+  String get resetFailed => 'د پاسورډ بیا تنظیمول ناکام شول';
+
+  @override
+  String get otpRequired => 'مهرباني وکړئ ۶ عدده کوډ دننه کړئ';
+
+  @override
+  String get resetSuccess => 'پاسورډ په بریالیتوب سره بیا تنظیم شو';
+
+  @override
+  String get otpVerified => 'کوډ په بریالیتوب سره تایید شو';
 }

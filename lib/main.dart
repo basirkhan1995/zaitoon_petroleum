@@ -6,6 +6,7 @@ import 'package:zaitoon_petroleum/Features/PrintSettings/bloc/Printer/printer_cu
 import 'package:zaitoon_petroleum/Features/PrintSettings/print_services.dart';
 import 'package:zaitoon_petroleum/Services/api_services.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
+import 'package:zaitoon_petroleum/Views/Auth/ForgotPassword/bloc/forgot_password_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/Ui/login.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/DailyGross/bloc/daily_gross_bloc.dart';
@@ -147,6 +148,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => StakeholderByIdBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => PermissionsBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => AuthBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => ForgotPasswordBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => PasswordBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => ExchangeRateBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => TransactionsBloc(Repositories(ApiServices()))),

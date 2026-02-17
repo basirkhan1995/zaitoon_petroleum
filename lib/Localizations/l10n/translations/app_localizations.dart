@@ -4989,6 +4989,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'AVB'**
   String get avbShort;
+
+  /// No description provided for @forgotPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password'**
+  String get forgotPasswordTitle;
+
+  /// No description provided for @forgotPasswordMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email or username to reset your password'**
+  String get forgotPasswordMessage;
+
+  /// No description provided for @emailOrUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Email or Username'**
+  String get emailOrUsername;
+
+  /// No description provided for @passwordResetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Password Reset'**
+  String get passwordResetTitle;
+
+  /// No description provided for @otpSendMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Code sent to'**
+  String get otpSendMessage;
+
+  /// No description provided for @verifyOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify OTP'**
+  String get verifyOtp;
+
+  /// No description provided for @continueTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueTitle;
+
+  /// No description provided for @notReceiveCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t receive the code?'**
+  String get notReceiveCode;
+
+  /// No description provided for @resend.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend'**
+  String get resend;
+
+  /// No description provided for @remainingTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining time:'**
+  String get remainingTime;
+
+  /// No description provided for @createPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create New Password'**
+  String get createPasswordTitle;
+
+  /// No description provided for @doneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Done!'**
+  String get doneTitle;
+
+  /// No description provided for @passwordResetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password has been reset successfully'**
+  String get passwordResetMessage;
+
+  /// No description provided for @loginTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get loginTitle;
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
+  /// No description provided for @userNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'User not found'**
+  String get userNotFound;
+
+  /// No description provided for @invalidOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid OTP code'**
+  String get invalidOtp;
+
+  /// No description provided for @otpExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP has expired'**
+  String get otpExpired;
+
+  /// No description provided for @resetFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset failed'**
+  String get resetFailed;
+
+  /// No description provided for @otpRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the 6-digit code'**
+  String get otpRequired;
+
+  /// No description provided for @resetSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset successful'**
+  String get resetSuccess;
+
+  /// No description provided for @otpVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP verified successfully'**
+  String get otpVerified;
 }
 
 class _AppLocalizationsDelegate

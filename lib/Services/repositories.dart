@@ -73,7 +73,10 @@ class Repositories {
   const Repositories(this.api);
 
   ///Authentication ............................................................
-  Future<Map<String, dynamic>> login({required String username, required String password}) async {
+  Future<Map<String, dynamic>> login({
+    required String username,
+    required String password,
+  }) async {
     final response = await api.post(
       endpoint: "/user/login.php",
       data: {"usrName": username, "usrPass": password},
@@ -83,14 +86,14 @@ class Repositories {
   }
 
   ///Finance ...................................................................
-  Future<Map<String, dynamic>> eoyOperationProcess({required String usrName, required String remark, required int branchCode}) async {
+  Future<Map<String, dynamic>> eoyOperationProcess({
+    required String usrName,
+    required String remark,
+    required int branchCode,
+  }) async {
     final response = await api.post(
-        endpoint: "/finance/eoyOperation.php",
-        data: {
-          "usrName": usrName,
-          "remark": remark,
-          "parkingBranch": branchCode
-        }
+      endpoint: "/finance/eoyOperation.php",
+      data: {"usrName": usrName, "remark": remark, "parkingBranch": branchCode},
     );
     return response.data;
   }
@@ -108,7 +111,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -124,7 +128,9 @@ class Repositories {
   }
 
   ///Get Company ...............................................................
-  Future<CompanySettingsModel> getCompanyProfile({CancelToken? cancelToken}) async {
+  Future<CompanySettingsModel> getCompanyProfile({
+    CancelToken? cancelToken,
+  }) async {
     final response = await api.get(
       endpoint: "/setting/companyProfile.php",
       cancelToken: cancelToken,
@@ -143,17 +149,22 @@ class Repositories {
     throw Exception("Invalid API response format");
   }
 
-  Future<Map<String, dynamic>> editCompanyProfile({required CompanySettingsModel newData}) async {
+  Future<Map<String, dynamic>> editCompanyProfile({
+    required CompanySettingsModel newData,
+  }) async {
     final response = await api.put(
-        endpoint: "/setting/companyProfile.php",
-        data: newData.toMap()
+      endpoint: "/setting/companyProfile.php",
+      data: newData.toMap(),
     );
     return response.data;
   }
 
-  Future<Map<String, dynamic>> uploadCompanyProfile({required Uint8List image}) async {
+  Future<Map<String, dynamic>> uploadCompanyProfile({
+    required Uint8List image,
+  }) async {
     // Create a valid filename like Postman does
-    final String fileName = "photo_${DateTime.now().millisecondsSinceEpoch}.jpg";
+    final String fileName =
+        "photo_${DateTime.now().millisecondsSinceEpoch}.jpg";
 
     FormData formData = FormData.fromMap({
       "image": MultipartFile.fromBytes(
@@ -172,9 +183,15 @@ class Repositories {
   }
 
   ///Stakeholder | Individuals .................................................
-  Future<List<IndividualsModel>> getStakeholders({int? indId, String? query, CancelToken? cancelToken}) async {
+  Future<List<IndividualsModel>> getStakeholders({
+    int? indId,
+    String? query,
+    CancelToken? cancelToken,
+  }) async {
     // Build query parameters dynamically
-    final queryParams = indId != null ? {'perID': indId, 'search': query} : null;
+    final queryParams = indId != null
+        ? {'perID': indId, 'search': query}
+        : null;
 
     // Fetch data from API
     final response = await api.get(
@@ -189,7 +206,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -204,23 +222,30 @@ class Repositories {
     return [];
   }
 
-  Future<Map<String, dynamic>> addStakeholder({required IndividualsModel stk}) async {
+  Future<Map<String, dynamic>> addStakeholder({
+    required IndividualsModel stk,
+  }) async {
     final response = await api.post(
-        endpoint: "/stakeholder/personal.php",
-        data: stk.toMap()
+      endpoint: "/stakeholder/personal.php",
+      data: stk.toMap(),
     );
     return response.data;
   }
 
-  Future<Map<String, dynamic>> editStakeholder({required IndividualsModel stk}) async {
+  Future<Map<String, dynamic>> editStakeholder({
+    required IndividualsModel stk,
+  }) async {
     final response = await api.put(
-        endpoint: "/stakeholder/personal.php",
-        data: stk.toMap()
+      endpoint: "/stakeholder/personal.php",
+      data: stk.toMap(),
     );
     return response.data;
   }
 
-  Future<IndividualsModel> getPersonProfileById({required int perId, CancelToken? cancelToken}) async {
+  Future<IndividualsModel> getPersonProfileById({
+    required int perId,
+    CancelToken? cancelToken,
+  }) async {
     final response = await api.get(
       endpoint: "/stakeholder/personal.php",
       queryParams: {'perID': perId},
@@ -252,9 +277,13 @@ class Repositories {
     throw Exception("Invalid API response format");
   }
 
-  Future<Map<String, dynamic>> uploadPersonalPhoto({required int perID, required Uint8List image,}) async {
+  Future<Map<String, dynamic>> uploadPersonalPhoto({
+    required int perID,
+    required Uint8List image,
+  }) async {
     // Create a valid filename like Postman does
-    final String fileName = "photo_${DateTime.now().millisecondsSinceEpoch}.jpg";
+    final String fileName =
+        "photo_${DateTime.now().millisecondsSinceEpoch}.jpg";
 
     FormData formData = FormData.fromMap({
       "perID": perID.toString(),
@@ -274,7 +303,10 @@ class Repositories {
   }
 
   ///Accounts | Stakeholder's Account ..........................................
-  Future<List<AccountsModel>> getAccounts({int? ownerId, CancelToken? cancelToken}) async {
+  Future<List<AccountsModel>> getAccounts({
+    int? ownerId,
+    CancelToken? cancelToken,
+  }) async {
     // Build query parameters dynamically
     final queryParams = ownerId != null ? {'perID': ownerId} : null;
 
@@ -291,7 +323,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -306,12 +339,12 @@ class Repositories {
     return [];
   }
 
-  Future<List<StakeholdersAccountsModel>> getStakeholdersAccounts({String? search}) async {
+  Future<List<StakeholdersAccountsModel>> getStakeholdersAccounts({
+    String? search,
+  }) async {
     final response = await api.post(
-        endpoint: "/journal/accountDetails.php",
-        data: {
-          "searchValue": search
-        }
+      endpoint: "/journal/accountDetails.php",
+      data: {"searchValue": search},
     );
 
     // Handle error messages from server
@@ -320,7 +353,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -335,32 +369,41 @@ class Repositories {
     return [];
   }
 
-  Future<Map<String, dynamic>> addAccount({required AccountsModel newAccount}) async {
+  Future<Map<String, dynamic>> addAccount({
+    required AccountsModel newAccount,
+  }) async {
     final response = await api.post(
-        endpoint: "/stakeholder/account.php",
-        data: newAccount.toMap()
+      endpoint: "/stakeholder/account.php",
+      data: newAccount.toMap(),
     );
     return response.data;
   }
 
-  Future<Map<String, dynamic>> editAccount({required AccountsModel newAccount}) async {
+  Future<Map<String, dynamic>> editAccount({
+    required AccountsModel newAccount,
+  }) async {
     final response = await api.put(
-        endpoint: "/stakeholder/account.php",
-        data: newAccount.toMap()
+      endpoint: "/stakeholder/account.php",
+      data: newAccount.toMap(),
     );
     return response.data;
   }
 
-  Future<List<AccountsModel>> getAccountFilter({final String? include, final String? input,final String? exclude, final String? ccy,}) async {
+  Future<List<AccountsModel>> getAccountFilter({
+    final String? include,
+    final String? input,
+    final String? exclude,
+    final String? ccy,
+  }) async {
     // Fetch data from API
     final response = await api.post(
-        endpoint: "/journal/allAccounts.php",
-        data: {
-          "ccy": ccy,
-          "input": input,
-          "include": include,
-          "account": exclude
-        }
+      endpoint: "/journal/allAccounts.php",
+      data: {
+        "ccy": ccy,
+        "input": input,
+        "include": include,
+        "account": exclude,
+      },
     );
 
     // Handle error messages from server
@@ -369,7 +412,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -398,7 +442,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -413,41 +458,44 @@ class Repositories {
     return [];
   }
 
-  Future<Map<String, dynamic>> addGl({required GlAccountsModel newAccount}) async {
+  Future<Map<String, dynamic>> addGl({
+    required GlAccountsModel newAccount,
+  }) async {
     final response = await api.post(
-        endpoint: "/finance/glAccount.php",
-        data: newAccount.toMap()
+      endpoint: "/finance/glAccount.php",
+      data: newAccount.toMap(),
     );
     return response.data;
   }
 
-  Future<Map<String, dynamic>> editGl({required GlAccountsModel newAccount}) async {
+  Future<Map<String, dynamic>> editGl({
+    required GlAccountsModel newAccount,
+  }) async {
     final response = await api.put(
-        endpoint: "/finance/glAccount.php",
-        data: newAccount.toMap()
+      endpoint: "/finance/glAccount.php",
+      data: newAccount.toMap(),
     );
     return response.data;
   }
 
   Future<Map<String, dynamic>> deleteGl({required int accNumber}) async {
     final response = await api.delete(
-        endpoint: "/finance/glAccount.php",
-        data: {
-          "acc":accNumber
-        }
+      endpoint: "/finance/glAccount.php",
+      data: {"acc": accNumber},
     );
 
     return response.data;
   }
 
   /// GL Sub Categories ........................................................
-  Future<List<GlCategoriesModel>> getGlSubCategories({required int catId, CancelToken? cancelToken}) async {
+  Future<List<GlCategoriesModel>> getGlSubCategories({
+    required int catId,
+    CancelToken? cancelToken,
+  }) async {
     // Fetch data from API
     final response = await api.get(
       endpoint: "/finance/accountCategory.php",
-      queryParams: {
-        "cat":catId
-      },
+      queryParams: {"cat": catId},
       cancelToken: cancelToken,
     );
 
@@ -457,7 +505,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -473,7 +522,10 @@ class Repositories {
   }
 
   ///Users .....................................................................
-  Future<List<UsersModel>> getUsers({int? usrOwner, CancelToken? cancelToken}) async {
+  Future<List<UsersModel>> getUsers({
+    int? usrOwner,
+    CancelToken? cancelToken,
+  }) async {
     // Build query parameters dynamically
     final queryParams = usrOwner != null ? {'perID': usrOwner} : null;
 
@@ -490,7 +542,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -507,22 +560,25 @@ class Repositories {
 
   Future<Map<String, dynamic>> addUser({required UsersModel newUser}) async {
     final response = await api.post(
-        endpoint: "/HR/users.php",
-        data: newUser.toMap()
+      endpoint: "/HR/users.php",
+      data: newUser.toMap(),
     );
     return response.data;
   }
 
   Future<Map<String, dynamic>> editUser({required UsersModel newUser}) async {
     final response = await api.put(
-        endpoint: "/HR/users.php",
-        data: newUser.toMap()
+      endpoint: "/HR/users.php",
+      data: newUser.toMap(),
     );
     return response.data;
   }
 
   ///Employees .................................................................
-  Future<List<EmployeeModel>> getEmployees({String? cat, CancelToken? cancelToken}) async {
+  Future<List<EmployeeModel>> getEmployees({
+    String? cat,
+    CancelToken? cancelToken,
+  }) async {
     // Build query parameters dynamically
     final queryParams = cat != null ? {'cat': cat} : null;
 
@@ -539,7 +595,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -554,24 +611,31 @@ class Repositories {
     return [];
   }
 
-  Future<Map<String, dynamic>> addEmployee({required EmployeeModel newEmployee}) async {
+  Future<Map<String, dynamic>> addEmployee({
+    required EmployeeModel newEmployee,
+  }) async {
     final response = await api.post(
-        endpoint: "/HR/employees.php",
-        data: newEmployee.toMap()
+      endpoint: "/HR/employees.php",
+      data: newEmployee.toMap(),
     );
     return response.data;
   }
 
-  Future<Map<String, dynamic>> updateEmployee({required EmployeeModel newEmployee}) async {
+  Future<Map<String, dynamic>> updateEmployee({
+    required EmployeeModel newEmployee,
+  }) async {
     final response = await api.put(
-        endpoint: "/HR/employees.php",
-        data: newEmployee.toMap()
+      endpoint: "/HR/employees.php",
+      data: newEmployee.toMap(),
     );
     return response.data;
   }
 
   ///Permissions ..............................................................
-  Future<List<UserPermissionsModel>> getPermissions({required String usrName, CancelToken? cancelToken}) async {
+  Future<List<UserPermissionsModel>> getPermissions({
+    required String usrName,
+    CancelToken? cancelToken,
+  }) async {
     // Build query parameters dynamically
     final queryParams = {'username': usrName};
 
@@ -588,7 +652,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -603,7 +668,7 @@ class Repositories {
     return [];
   }
 
-// In your Repositories class
+  // In your Repositories class
   Future<Map<String, dynamic>> updatePermissions({
     required int usrId,
     required String usrName,
@@ -615,18 +680,25 @@ class Repositories {
         "LogedInUser": usrName,
         "uprUserID": usrId,
         "records": {
-          "records": permissions.map((p) => {
-            "uprRole": p["uprRole"],
-            "uprStatus": p["uprStatus"] ? 1 : 0,
-          }).toList(),
-        }
+          "records": permissions
+              .map(
+                (p) => {
+                  "uprRole": p["uprRole"],
+                  "uprStatus": p["uprStatus"] ? 1 : 0,
+                },
+              )
+              .toList(),
+        },
       },
     );
     return response.data;
   }
 
   ///Currencies ................................................................
-  Future<List<CurrenciesModel>> getCurrencies({required int? status, CancelToken? cancelToken}) async {
+  Future<List<CurrenciesModel>> getCurrencies({
+    required int? status,
+    CancelToken? cancelToken,
+  }) async {
     // Build query parameters dynamically
     final queryParams = {'status': status};
 
@@ -643,7 +715,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -658,19 +731,22 @@ class Repositories {
     return [];
   }
 
-  Future<Map<String, dynamic>> updateCcyStatus({required bool status, required String? ccyCode}) async {
+  Future<Map<String, dynamic>> updateCcyStatus({
+    required bool status,
+    required String? ccyCode,
+  }) async {
     final response = await api.put(
-        endpoint: "/finance/currency.php",
-        data: {
-          "ccyStatus": status,
-          "ccyCode":ccyCode,
-        }
+      endpoint: "/finance/currency.php",
+      data: {"ccyStatus": status, "ccyCode": ccyCode},
     );
     return response.data;
   }
 
   ///Exchange Rate .............................................................
-  Future<List<ExchangeRateModel>> getExchangeRate({required String? ccyCode, CancelToken? cancelToken}) async {
+  Future<List<ExchangeRateModel>> getExchangeRate({
+    required String? ccyCode,
+    CancelToken? cancelToken,
+  }) async {
     // Build query parameters dynamically
     final queryParams = {'ccy': ccyCode};
 
@@ -687,7 +763,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -702,26 +779,27 @@ class Repositories {
     return [];
   }
 
-  Future<Map<String, dynamic>> addExchangeRate({required ExchangeRateModel newRate}) async {
+  Future<Map<String, dynamic>> addExchangeRate({
+    required ExchangeRateModel newRate,
+  }) async {
     final response = await api.post(
-        endpoint: "/finance/exchangeRate.php",
-        data: newRate.toMap()
+      endpoint: "/finance/exchangeRate.php",
+      data: newRate.toMap(),
     );
     return response.data;
   }
 
-  Future<String?> getSingleRate({required String fromCcy, required String toCcy}) async {
+  Future<String?> getSingleRate({
+    required String fromCcy,
+    required String toCcy,
+  }) async {
     final response = await api.post(
       endpoint: "/journal/getSingleExRate.php",
-      data: {
-        'ccyFrom': fromCcy,
-        'ccyTo': toCcy,
-      },
+      data: {'ccyFrom': fromCcy, 'ccyTo': toCcy},
     );
 
     // Handle server error response
-    if (response.data is Map<String, dynamic> &&
-        response.data['msg'] != null) {
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
       throw Exception(response.data['msg']);
     }
 
@@ -734,7 +812,10 @@ class Repositories {
   }
 
   ///Driver ....................................................................
-  Future<List<DriverModel>> getDrivers({int? empId, CancelToken? cancelToken}) async {
+  Future<List<DriverModel>> getDrivers({
+    int? empId,
+    CancelToken? cancelToken,
+  }) async {
     // Build query parameters dynamically
     final queryParams = {'empID': empId};
 
@@ -751,7 +832,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -767,7 +849,10 @@ class Repositories {
   }
 
   ///Vehicles ..................................................................
-  Future<List<VehicleModel>> getVehicles({int? vehicleId, CancelToken? cancelToken}) async {
+  Future<List<VehicleModel>> getVehicles({
+    int? vehicleId,
+    CancelToken? cancelToken,
+  }) async {
     // Build query parameters dynamically
     final queryParams = {'vclID': vehicleId};
 
@@ -784,7 +869,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -799,23 +885,30 @@ class Repositories {
     return [];
   }
 
-  Future<Map<String, dynamic>> addVehicle({required VehicleModel newVehicle}) async {
+  Future<Map<String, dynamic>> addVehicle({
+    required VehicleModel newVehicle,
+  }) async {
     final response = await api.post(
-        endpoint: "/transport/vehicle.php",
-        data: newVehicle.toMap()
+      endpoint: "/transport/vehicle.php",
+      data: newVehicle.toMap(),
     );
     return response.data;
   }
 
-  Future<Map<String, dynamic>> updateVehicle({required VehicleModel newVehicle}) async {
+  Future<Map<String, dynamic>> updateVehicle({
+    required VehicleModel newVehicle,
+  }) async {
     final response = await api.put(
-        endpoint: "/transport/vehicle.php",
-        data: newVehicle.toMap()
+      endpoint: "/transport/vehicle.php",
+      data: newVehicle.toMap(),
     );
     return response.data;
   }
 
-  Future<List<VehicleReportModel>> vehiclesReport({int? regExpired, CancelToken? cancelToken}) async {
+  Future<List<VehicleReportModel>> vehiclesReport({
+    int? regExpired,
+    CancelToken? cancelToken,
+  }) async {
     // Build query parameters dynamically
     final queryParams = {'regExpired': regExpired};
 
@@ -832,7 +925,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -848,23 +942,30 @@ class Repositories {
   }
 
   /// Shipping .................................................................
-  Future<Map<String, dynamic>> addShipping({required ShippingModel newShipping}) async {
+  Future<Map<String, dynamic>> addShipping({
+    required ShippingModel newShipping,
+  }) async {
     final response = await api.post(
-        endpoint: "/transport/shipping.php",
-        data: newShipping.toMap()
+      endpoint: "/transport/shipping.php",
+      data: newShipping.toMap(),
     );
     return response.data;
   }
 
-  Future<Map<String, dynamic>> updateShipping({required ShippingModel newShipping}) async {
+  Future<Map<String, dynamic>> updateShipping({
+    required ShippingModel newShipping,
+  }) async {
     final response = await api.put(
-        endpoint: "/transport/shipping.php",
-        data: newShipping.toMap()
+      endpoint: "/transport/shipping.php",
+      data: newShipping.toMap(),
     );
     return response.data;
   }
 
-  Future<List<ShippingModel>> getAllShipping({int? id, CancelToken? cancelToken}) async {
+  Future<List<ShippingModel>> getAllShipping({
+    int? id,
+    CancelToken? cancelToken,
+  }) async {
     final Map<String, dynamic> queryParams = {};
     if (id != null) {
       queryParams['shpID'] = id;
@@ -902,7 +1003,10 @@ class Repositories {
     return [];
   }
 
-  Future<ShippingDetailsModel> getShippingById({required int shpId, CancelToken? cancelToken}) async {
+  Future<ShippingDetailsModel> getShippingById({
+    required int shpId,
+    CancelToken? cancelToken,
+  }) async {
     final queryParams = {'shpID': shpId};
     final response = await api.get(
       endpoint: '/transport/shipping.php',
@@ -940,7 +1044,10 @@ class Repositories {
     throw Exception("Invalid API response format");
   }
 
-  Future<TrptModel> getTrpt({required String reference, CancelToken? cancelToken}) async {
+  Future<TrptModel> getTrpt({
+    required String reference,
+    CancelToken? cancelToken,
+  }) async {
     final queryParams = {'ref': reference};
     final response = await api.get(
       endpoint: '/transport/shippingTransaction.php',
@@ -969,67 +1076,97 @@ class Repositories {
     throw Exception("Invalid API response format");
   }
 
-  Future<Map<String, dynamic>> updateShippingExpense({required String? usrName, required int shpId, required String amount, required String reference, required String narration}) async {
+  Future<Map<String, dynamic>> updateShippingExpense({
+    required String? usrName,
+    required int shpId,
+    required String amount,
+    required String reference,
+    required String narration,
+  }) async {
     final response = await api.put(
-        endpoint: "/transport/shippingTransaction.php",
-        data: {
-          "usrName": usrName,
-          "shpID": shpId,
-          "trnReference": reference,
-          "amount": amount,
-          "narration": narration
-        }
+      endpoint: "/transport/shippingTransaction.php",
+      data: {
+        "usrName": usrName,
+        "shpID": shpId,
+        "trnReference": reference,
+        "amount": amount,
+        "narration": narration,
+      },
     );
     return response.data;
   }
 
-  Future<Map<String, dynamic>> addShippingExpense({required String? usrName, required int shpId, required String amount, required int accNumber, required String narration}) async {
+  Future<Map<String, dynamic>> addShippingExpense({
+    required String? usrName,
+    required int shpId,
+    required String amount,
+    required int accNumber,
+    required String narration,
+  }) async {
     final response = await api.post(
-        endpoint: "/transport/shippingTransaction.php",
-        data: {
-          "usrName": usrName,
-          "shpID": shpId,
-          "accNumber": accNumber,
-          "amount": amount,
-          "narration": narration
-        }
+      endpoint: "/transport/shippingTransaction.php",
+      data: {
+        "usrName": usrName,
+        "shpID": shpId,
+        "accNumber": accNumber,
+        "amount": amount,
+        "narration": narration,
+      },
     );
     return response.data;
   }
 
-  Future<Map<String, dynamic>> addShippingPayment({required String? usrName, required String paymentType, required int shpId, double? cashAmount, double? accountAmount, int? accNumber}) async {
+  Future<Map<String, dynamic>> addShippingPayment({
+    required String? usrName,
+    required String paymentType,
+    required int shpId,
+    double? cashAmount,
+    double? accountAmount,
+    int? accNumber,
+  }) async {
     final response = await api.post(
-        endpoint: "/transport/shippingPayment.php",
-        data: {
-          "usrName": usrName,
-          "shpID": shpId,
-          "pType": paymentType,
-          "cashAmount": cashAmount,
-          "cardAmount": accountAmount,
-          "account": accNumber
-        }
+      endpoint: "/transport/shippingPayment.php",
+      data: {
+        "usrName": usrName,
+        "shpID": shpId,
+        "pType": paymentType,
+        "cashAmount": cashAmount,
+        "cardAmount": accountAmount,
+        "account": accNumber,
+      },
     );
     return response.data;
   }
 
-  Future<Map<String, dynamic>> editShippingPayment({required String? reference, required String? usrName, required String paymentType, required int shpId, double? cashAmount, double? accountAmount, int? accNumber}) async {
+  Future<Map<String, dynamic>> editShippingPayment({
+    required String? reference,
+    required String? usrName,
+    required String paymentType,
+    required int shpId,
+    double? cashAmount,
+    double? accountAmount,
+    int? accNumber,
+  }) async {
     final response = await api.put(
-        endpoint: "/transport/shippingPayment.php",
-        data: {
-          "trdReference":reference,
-          "usrName": usrName,
-          "shpID": shpId,
-          "pType": paymentType,
-          "cashAmount": cashAmount,
-          "cardAmount": accountAmount,
-          "account": accNumber
-        }
+      endpoint: "/transport/shippingPayment.php",
+      data: {
+        "trdReference": reference,
+        "usrName": usrName,
+        "shpID": shpId,
+        "pType": paymentType,
+        "cashAmount": cashAmount,
+        "cardAmount": accountAmount,
+        "account": accNumber,
+      },
     );
     return response.data;
   }
 
   /// Fetch GL transaction by Vehicle ID
-  Future<GlatModel> getGlatTransaction(String ref, {CancelToken? cancelToken}) async {
+  Future<GlatModel> getGlatTransaction(
+    String ref, {
+    CancelToken? cancelToken,
+  }) async {
     final response = await api.get(
       endpoint: "/transport/vehicleTransaction.php",
       queryParams: {"ref": ref},
@@ -1044,7 +1181,10 @@ class Repositories {
   }
 
   /// Transactions | Cash Deposit | Withdraw ...................................
-  Future<List<TransactionsModel>> getTransactionsByStatus({String? status, CancelToken? cancelToken}) async {
+  Future<List<TransactionsModel>> getTransactionsByStatus({
+    String? status,
+    CancelToken? cancelToken,
+  }) async {
     // Build query parameters dynamically
     final queryParams = {'status': status};
 
@@ -1061,7 +1201,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -1075,7 +1216,11 @@ class Repositories {
 
     return [];
   }
-  Future<TxnByReferenceModel> getTxnByReference({required String reference, CancelToken? cancelToken}) async {
+
+  Future<TxnByReferenceModel> getTxnByReference({
+    required String reference,
+    CancelToken? cancelToken,
+  }) async {
     final queryParams = {'ref': reference};
     final response = await api.get(
       endpoint: '/journal/getSingleTransaction.php',
@@ -1095,7 +1240,11 @@ class Repositories {
     }
     throw Exception("Invalid API response format");
   }
-  Future<FetchAtatModel> getATATByReference({required String reference, CancelToken? cancelToken}) async {
+
+  Future<FetchAtatModel> getATATByReference({
+    required String reference,
+    CancelToken? cancelToken,
+  }) async {
     final queryParams = {'ref': reference};
     final response = await api.get(
       endpoint: '/journal/fundTransfer.php',
@@ -1116,27 +1265,34 @@ class Repositories {
 
     throw Exception("Invalid API response format: $data");
   }
-  Future<Map<String, dynamic>> cashFlowOperations({required TransactionsModel newTransaction}) async {
+
+  Future<Map<String, dynamic>> cashFlowOperations({
+    required TransactionsModel newTransaction,
+  }) async {
     final response = await api.post(
-        endpoint: "/journal/cashWD.php",
-        data: newTransaction.toMap()
+      endpoint: "/journal/cashWD.php",
+      data: newTransaction.toMap(),
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> fundTransfer({required TransactionsModel newTransaction}) async {
+
+  Future<Map<String, dynamic>> fundTransfer({
+    required TransactionsModel newTransaction,
+  }) async {
     final response = await api.post(
-        endpoint: "/journal/fundTransfer.php",
-        data: newTransaction.toMap()
+      endpoint: "/journal/fundTransfer.php",
+      data: newTransaction.toMap(),
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> bulkTransfer({required String userName, required List<Map<String, dynamic>> records,}) async {
+
+  Future<Map<String, dynamic>> bulkTransfer({
+    required String userName,
+    required List<Map<String, dynamic>> records,
+  }) async {
     final response = await api.post(
       endpoint: '/journal/fundTransferMA.php',
-      data: {
-        'usrName': userName,
-        'records': records,
-      },
+      data: {'usrName': userName, 'records': records},
     );
 
     // Parse response
@@ -1150,13 +1306,14 @@ class Repositories {
 
     return {'msg': 'Unknown response format'};
   }
-  Future<Map<String, dynamic>> fxTransfer({required String userName, required List<Map<String, dynamic>> records,}) async {
+
+  Future<Map<String, dynamic>> fxTransfer({
+    required String userName,
+    required List<Map<String, dynamic>> records,
+  }) async {
     final response = await api.post(
       endpoint: '/journal/crossCurrency.php',
-      data: {
-        'usrName': userName,
-        'records': records,
-      },
+      data: {'usrName': userName, 'records': records},
     );
 
     // Parse response
@@ -1170,79 +1327,95 @@ class Repositories {
 
     return {'msg': 'Unknown response format'};
   }
-  Future<Map<String, dynamic>> authorizeTxn({required String reference, required String? usrName}) async {
+
+  Future<Map<String, dynamic>> authorizeTxn({
+    required String reference,
+    required String? usrName,
+  }) async {
     final response = await api.put(
-        endpoint: "/journal/transactionActivity.php",
-        data: {
-          "reference": reference,
-          "username":usrName,
-        }
+      endpoint: "/journal/transactionActivity.php",
+      data: {"reference": reference, "username": usrName},
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> reverseTxn({required String reference, required String? usrName}) async {
+
+  Future<Map<String, dynamic>> reverseTxn({
+    required String reference,
+    required String? usrName,
+  }) async {
     final response = await api.post(
-        endpoint: "/journal/transactionActivity.php",
-        data: {
-          "reference": reference,
-          "username":usrName,
-        }
+      endpoint: "/journal/transactionActivity.php",
+      data: {"reference": reference, "username": usrName},
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> deleteTxn({required String reference, required String? usrName}) async {
+
+  Future<Map<String, dynamic>> deleteTxn({
+    required String reference,
+    required String? usrName,
+  }) async {
     final response = await api.delete(
-        endpoint: "/journal/transactionActivity.php",
-        data: {
-          "reference": reference,
-          "username":usrName,
-        }
+      endpoint: "/journal/transactionActivity.php",
+      data: {"reference": reference, "username": usrName},
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> updateTxn({required TransactionsModel newTxn}) async {
+
+  Future<Map<String, dynamic>> updateTxn({
+    required TransactionsModel newTxn,
+  }) async {
     final response = await api.put(
-        endpoint: "/journal/cashWD.php",
-        data: newTxn.toMap()
+      endpoint: "/journal/cashWD.php",
+      data: newTxn.toMap(),
     );
     return response.data;
   }
 
   ///Password Settings .........................................................
-  Future<Map<String, dynamic>> forceChangePassword({required String credential, required String newPassword}) async {
+  Future<Map<String, dynamic>> forceChangePassword({
+    required String credential,
+    required String newPassword,
+  }) async {
     final response = await api.put(
-        endpoint: "/user/changePass.php",
-        data: {
-          "usrName": credential,
-          "usrPass": newPassword
-        }
+      endpoint: "/user/changePass.php",
+      data: {"usrName": credential, "usrPass": newPassword},
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> changePassword({required String credential,required String oldPassword, required String newPassword}) async {
+
+  Future<Map<String, dynamic>> changePassword({
+    required String credential,
+    required String oldPassword,
+    required String newPassword,
+  }) async {
     final response = await api.post(
-        endpoint: "/user/changePass.php",
-        data: {
-          "usrName": credential,
-          "usrPass": oldPassword,
-          "usrNewPass": newPassword
-        }
+      endpoint: "/user/changePass.php",
+      data: {
+        "usrName": credential,
+        "usrPass": oldPassword,
+        "usrNewPass": newPassword,
+      },
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> resetPassword({required String credential,required String oldPassword, required String newPassword}) async {
+
+  Future<Map<String, dynamic>> resetPassword({
+    required String credential,
+    required String oldPassword,
+    required String newPassword,
+  }) async {
     final response = await api.put(
-        endpoint: "/user/users.php",
-        data: {
-          "credential": credential,
-          "newPassword": newPassword
-        }
+      endpoint: "/user/users.php",
+      data: {"credential": credential, "newPassword": newPassword},
     );
     return response.data;
   }
 
   ///Branches & Limits  .................................................
-  Future<List<BranchModel>> getBranches({int? brcId, CancelToken? cancelToken}) async {
+  Future<List<BranchModel>> getBranches({
+    int? brcId,
+    CancelToken? cancelToken,
+  }) async {
     // Build query parameters dynamically
     final queryParams = {'brcID': brcId};
 
@@ -1259,7 +1432,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -1273,21 +1447,31 @@ class Repositories {
 
     return [];
   }
-  Future<Map<String, dynamic>> addBranch({required BranchModel newBranch}) async {
+
+  Future<Map<String, dynamic>> addBranch({
+    required BranchModel newBranch,
+  }) async {
     final response = await api.post(
-        endpoint: "/setting/branch.php",
-        data: newBranch.toMap()
+      endpoint: "/setting/branch.php",
+      data: newBranch.toMap(),
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> updateBranch({required BranchModel newBranch}) async {
+
+  Future<Map<String, dynamic>> updateBranch({
+    required BranchModel newBranch,
+  }) async {
     final response = await api.put(
-        endpoint: "/setting/branch.php",
-        data: newBranch.toMap()
+      endpoint: "/setting/branch.php",
+      data: newBranch.toMap(),
     );
     return response.data;
   }
-  Future<List<BranchLimitModel>> getBranchLimits({int? brcCode, CancelToken? cancelToken}) async {
+
+  Future<List<BranchLimitModel>> getBranchLimits({
+    int? brcCode,
+    CancelToken? cancelToken,
+  }) async {
     // Build query parameters dynamically
     final queryParams = {'code': brcCode};
 
@@ -1304,7 +1488,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -1318,10 +1503,13 @@ class Repositories {
 
     return [];
   }
-  Future<Map<String, dynamic>> addEditBranchLimit({required BranchLimitModel newLimit}) async {
+
+  Future<Map<String, dynamic>> addEditBranchLimit({
+    required BranchLimitModel newLimit,
+  }) async {
     final response = await api.post(
-        endpoint: "/setting/branchAuthLimit.php",
-        data: newLimit.toMap()
+      endpoint: "/setting/branchAuthLimit.php",
+      data: newLimit.toMap(),
     );
     return response.data;
   }
@@ -1340,7 +1528,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -1354,46 +1543,60 @@ class Repositories {
 
     return [];
   }
-  Future<Map<String, dynamic>> addStorage({required StorageModel newStorage}) async {
+
+  Future<Map<String, dynamic>> addStorage({
+    required StorageModel newStorage,
+  }) async {
     final response = await api.post(
-        endpoint: "/setting/storage.php",
-        data: newStorage.toMap()
+      endpoint: "/setting/storage.php",
+      data: newStorage.toMap(),
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> updateStorage({required StorageModel newStorage}) async {
+
+  Future<Map<String, dynamic>> updateStorage({
+    required StorageModel newStorage,
+  }) async {
     final response = await api.put(
-        endpoint: "/setting/storage.php",
-        data: newStorage.toMap()
+      endpoint: "/setting/storage.php",
+      data: newStorage.toMap(),
     );
     return response.data;
   }
 
   /// StockAvailability .................................................................
-  Future<Map<String, dynamic>> addProduct({required ProductsModel newProduct}) async {
+  Future<Map<String, dynamic>> addProduct({
+    required ProductsModel newProduct,
+  }) async {
     final response = await api.post(
-        endpoint: "/inventory/product.php",
-        data: newProduct.toMap()
+      endpoint: "/inventory/product.php",
+      data: newProduct.toMap(),
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> updateProduct({required ProductsModel newProduct}) async {
+
+  Future<Map<String, dynamic>> updateProduct({
+    required ProductsModel newProduct,
+  }) async {
     final response = await api.put(
-        endpoint: "/inventory/product.php",
-        data: newProduct.toMap()
+      endpoint: "/inventory/product.php",
+      data: newProduct.toMap(),
     );
     return response.data;
   }
+
   Future<Map<String, dynamic>> deleteProduct({required int proId}) async {
     final response = await api.delete(
-        endpoint: "/inventory/product.php",
-        data: {
-          "proID": proId
-        }
+      endpoint: "/inventory/product.php",
+      data: {"proID": proId},
     );
     return response.data;
   }
-  Future<List<ProductsModel>> getProduct({int? proId, CancelToken? cancelToken}) async {
+
+  Future<List<ProductsModel>> getProduct({
+    int? proId,
+    CancelToken? cancelToken,
+  }) async {
     final queryParams = {'proID': proId};
     final response = await api.get(
       endpoint: "/inventory/product.php",
@@ -1411,7 +1614,8 @@ class Repositories {
 
     // Handle single product
     if (response.data is Map<String, dynamic>) {
-      if (response.data.containsKey('proID') || response.data.containsKey('proId')) {
+      if (response.data.containsKey('proID') ||
+          response.data.containsKey('proId')) {
         return [ProductsModel.fromMap(response.data)];
       }
     }
@@ -1426,8 +1630,18 @@ class Repositories {
 
     return [];
   }
-  Future<List<ProductsStockModel>> getProductStock({int? proId, int? noStock, String? proName, CancelToken? cancelToken}) async {
-    final queryParams = {'proID': proId,'av':noStock ?? 0,"proName": proName};
+
+  Future<List<ProductsStockModel>> getProductStock({
+    int? proId,
+    int? noStock,
+    String? proName,
+    CancelToken? cancelToken,
+  }) async {
+    final queryParams = {
+      'proID': proId,
+      'av': noStock ?? 0,
+      "proName": proName,
+    };
     // Fetch data from API
     final response = await api.get(
       endpoint: "/inventory/availableProducts.php",
@@ -1441,33 +1655,46 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
     // Parse list of stakeholders safely
     if (response.data is List) {
-      return (response.data as List).whereType<Map<String, dynamic>>().map((json) => ProductsStockModel.fromMap(json)).toList();
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>()
+          .map((json) => ProductsStockModel.fromMap(json))
+          .toList();
     }
     return [];
   }
 
   /// Product Category .........................................................
-  Future<Map<String, dynamic>> addProCategory({required ProCategoryModel newCategory}) async {
+  Future<Map<String, dynamic>> addProCategory({
+    required ProCategoryModel newCategory,
+  }) async {
     final response = await api.post(
-        endpoint: "/setting/productCategory.php",
-        data: newCategory.toMap()
+      endpoint: "/setting/productCategory.php",
+      data: newCategory.toMap(),
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> updateProCategory({required ProCategoryModel newCategory}) async {
+
+  Future<Map<String, dynamic>> updateProCategory({
+    required ProCategoryModel newCategory,
+  }) async {
     final response = await api.put(
-        endpoint: "/setting/productCategory.php",
-        data: newCategory.toMap()
+      endpoint: "/setting/productCategory.php",
+      data: newCategory.toMap(),
     );
     return response.data;
   }
-  Future<List<ProCategoryModel>> getProCategory({int? catId, CancelToken? cancelToken}) async {
+
+  Future<List<ProCategoryModel>> getProCategory({
+    int? catId,
+    CancelToken? cancelToken,
+  }) async {
     final queryParams = {'pcID': catId};
     // Fetch data from API
     final response = await api.get(
@@ -1482,7 +1709,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -1498,7 +1726,10 @@ class Repositories {
   }
 
   /// Orders ...................................................................
-  Future<List<OrdersModel>> getOrders({int? orderId, CancelToken? cancelToken}) async {
+  Future<List<OrdersModel>> getOrders({
+    int? orderId,
+    CancelToken? cancelToken,
+  }) async {
     final queryParams = {'ordID': orderId};
     final response = await api.get(
       endpoint: "/inventory/ordersView.php",
@@ -1512,7 +1743,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -1526,7 +1758,11 @@ class Repositories {
 
     return [];
   }
-  Future<List<OrderByIdModel>> getOrderById({int? orderId, CancelToken? cancelToken}) async {
+
+  Future<List<OrderByIdModel>> getOrderById({
+    int? orderId,
+    CancelToken? cancelToken,
+  }) async {
     final queryParams = {'ordID': orderId};
     final response = await api.get(
       endpoint: "/inventory/salePurchase.php",
@@ -1564,9 +1800,7 @@ class Repositories {
 
   ///Adjustment
   Future<List<AdjustmentModel>> allAdjustments() async {
-    final response = await api.get(
-        endpoint: "/inventory/adjustment.php"
-    );
+    final response = await api.get(endpoint: "/inventory/adjustment.php");
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
       throw Exception(response.data['msg']);
@@ -1575,7 +1809,7 @@ class Repositories {
     // Parse as list
     if (response.data is List) {
       return List<AdjustmentModel>.from(
-          response.data.map((x) => AdjustmentModel.fromMap(x))
+        response.data.map((x) => AdjustmentModel.fromMap(x)),
       );
     }
 
@@ -1586,19 +1820,29 @@ class Repositories {
 
     return [];
   }
-  Future<Map<String, dynamic>> addAdjustment({required String usrName, required String xReference, required int xAccount, required List<Map<String, dynamic>> records}) async {
+
+  Future<Map<String, dynamic>> addAdjustment({
+    required String usrName,
+    required String xReference,
+    required int xAccount,
+    required List<Map<String, dynamic>> records,
+  }) async {
     final response = await api.post(
-        endpoint: "/inventory/adjustment.php",
-        data: {
-          "usrName": usrName,
-          "ordxRef": xReference,
-          "account": xAccount,
-          "records": records,
-        }
+      endpoint: "/inventory/adjustment.php",
+      data: {
+        "usrName": usrName,
+        "ordxRef": xReference,
+        "account": xAccount,
+        "records": records,
+      },
     );
     return response.data;
   }
-  Future<AdjustmentModel?> getAdjustmentById({int? orderId, CancelToken? cancelToken}) async {
+
+  Future<AdjustmentModel?> getAdjustmentById({
+    int? orderId,
+    CancelToken? cancelToken,
+  }) async {
     final queryParams = {'ordID': orderId};
     final response = await api.get(
       endpoint: "/inventory/adjustment.php",
@@ -1628,19 +1872,23 @@ class Repositories {
 
     return null;
   }
-  Future<Map<String, dynamic>> deleteAdjustment({required int orderId, required String usrName}) async {
+
+  Future<Map<String, dynamic>> deleteAdjustment({
+    required int orderId,
+    required String usrName,
+  }) async {
     final response = await api.delete(
-        endpoint: "/inventory/adjustment.php",
-        data: {
-          "usrName": usrName,
-          "ordID": orderId.toString(),
-        }
+      endpoint: "/inventory/adjustment.php",
+      data: {"usrName": usrName, "ordID": orderId.toString()},
     );
     return response.data;
   }
 
   ///Shift Goods ...............................................................
-  Future<List<GoodShiftModel>> getShifts({int? orderId, CancelToken? cancelToken}) async {
+  Future<List<GoodShiftModel>> getShifts({
+    int? orderId,
+    CancelToken? cancelToken,
+  }) async {
     final queryParams = {'ordID': orderId};
     final response = await api.get(
       endpoint: "/inventory/goodsShifting.php",
@@ -1682,7 +1930,13 @@ class Repositories {
 
     return [];
   }
-  Future<Map<String, dynamic>> addShift({required String usrName, required String account, required String amount, required List<ShiftRecord> records,}) async {
+
+  Future<Map<String, dynamic>> addShift({
+    required String usrName,
+    required String account,
+    required String amount,
+    required List<ShiftRecord> records,
+  }) async {
     final data = {
       "usrName": usrName,
       "account": account,
@@ -1699,19 +1953,22 @@ class Repositories {
         ? response.data
         : {'msg': 'Invalid response format'};
   }
-  Future<Map<String, dynamic>> deleteShift({required int orderId, required String usrName}) async {
+
+  Future<Map<String, dynamic>> deleteShift({
+    required int orderId,
+    required String usrName,
+  }) async {
     final response = await api.delete(
-        endpoint: "/inventory/goodsShifting.php",
-        data: {
-          "usrName": usrName,
-          "ordID": orderId.toString(),
-        }
+      endpoint: "/inventory/goodsShifting.php",
+      data: {"usrName": usrName, "ordID": orderId.toString()},
     );
     return response.data;
   }
 
   ///Estimate ..................................................................
-  Future<List<EstimateModel>> getAllEstimates({CancelToken? cancelToken}) async {
+  Future<List<EstimateModel>> getAllEstimates({
+    CancelToken? cancelToken,
+  }) async {
     final response = await api.get(
       endpoint: "/inventory/estimate.php",
       cancelToken: cancelToken,
@@ -1721,7 +1978,8 @@ class Repositories {
       throw Exception(response.data['msg']);
     }
 
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -1734,7 +1992,11 @@ class Repositories {
 
     return [];
   }
-  Future<EstimateModel?> getEstimateById({required int orderId, CancelToken? cancelToken}) async {
+
+  Future<EstimateModel?> getEstimateById({
+    required int orderId,
+    CancelToken? cancelToken,
+  }) async {
     final queryParams = {'ordID': orderId};
     final response = await api.get(
       endpoint: "/inventory/estimate.php",
@@ -1756,7 +2018,13 @@ class Repositories {
 
     return null;
   }
-  Future<Map<String, dynamic>> addEstimate({required String usrName, required int perID, required String? xRef, required List<EstimateRecord> records}) async {
+
+  Future<Map<String, dynamic>> addEstimate({
+    required String usrName,
+    required int perID,
+    required String? xRef,
+    required List<EstimateRecord> records,
+  }) async {
     final data = {
       "usrName": usrName,
       "ordName": "Estimate",
@@ -1774,7 +2042,14 @@ class Repositories {
         ? response.data
         : {'msg': 'Invalid response format'};
   }
-  Future<Map<String, dynamic>> updateEstimate({required String usrName, required int orderId, required int perID, required String? xRef, required List<EstimateRecord> records}) async {
+
+  Future<Map<String, dynamic>> updateEstimate({
+    required String usrName,
+    required int orderId,
+    required int perID,
+    required String? xRef,
+    required List<EstimateRecord> records,
+  }) async {
     final data = {
       "usrName": usrName,
       "ordName": "Estimate",
@@ -1792,20 +2067,28 @@ class Repositories {
         ? response.data
         : {'msg': 'Invalid response format'};
   }
-  Future<Map<String, dynamic>> deleteEstimate({required int orderId, required String usrName}) async {
+
+  Future<Map<String, dynamic>> deleteEstimate({
+    required int orderId,
+    required String usrName,
+  }) async {
     final response = await api.delete(
-        endpoint: "/inventory/estimate.php",
-        data: {
-          "ordID": orderId,
-          "usrName": usrName
-        }
+      endpoint: "/inventory/estimate.php",
+      data: {"ordID": orderId, "usrName": usrName},
     );
 
     return response.data is Map<String, dynamic>
         ? response.data
         : {'msg': 'Invalid response format'};
   }
-  Future<Map<String, dynamic>> convertEstimateToSale({required String usrName, required int orderId, required int perID, required int account, required String amount}) async {
+
+  Future<Map<String, dynamic>> convertEstimateToSale({
+    required String usrName,
+    required int orderId,
+    required int perID,
+    required int account,
+    required String amount,
+  }) async {
     final data = {
       "usrName": usrName,
       "ordID": orderId,
@@ -1904,13 +2187,12 @@ class Repositories {
     required String usrName,
     required String? ref,
     required String? ordName,
-
   }) async {
     final data = {
       "ordID": orderId,
       "usrName": usrName,
-      "ordTrnRef":ref,
-      "ordName":ordName
+      "ordTrnRef": ref,
+      "ordName": ordName,
     };
 
     final response = await api.delete(
@@ -1921,7 +2203,10 @@ class Repositories {
     return response.data['msg'] == 'success';
   }
 
-  Future<OrderTxnModel> fetchOrderTxn({required String reference, CancelToken? cancelToken}) async {
+  Future<OrderTxnModel> fetchOrderTxn({
+    required String reference,
+    CancelToken? cancelToken,
+  }) async {
     final response = await api.get(
       endpoint: "/inventory/spTransaction.php",
       queryParams: {'ref': reference},
@@ -1933,33 +2218,38 @@ class Repositories {
   }
 
   /// Transaction Types ........................................................
-  Future<Map<String, dynamic>> addTxnType({required TxnTypeModel newType}) async {
+  Future<Map<String, dynamic>> addTxnType({
+    required TxnTypeModel newType,
+  }) async {
     final response = await api.post(
-        endpoint: "/setting/trnType.php",
-        data: newType.toMap()
+      endpoint: "/setting/trnType.php",
+      data: newType.toMap(),
     );
     return response.data;
   }
 
-  Future<Map<String, dynamic>> updateTxnType({required TxnTypeModel newType}) async {
+  Future<Map<String, dynamic>> updateTxnType({
+    required TxnTypeModel newType,
+  }) async {
     final response = await api.put(
-        endpoint: "/setting/trnType.php",
-        data: newType.toMap()
+      endpoint: "/setting/trnType.php",
+      data: newType.toMap(),
     );
     return response.data;
   }
 
   Future<Map<String, dynamic>> deleteTxnType({required String trnCode}) async {
     final response = await api.delete(
-        endpoint: "/setting/trnType.php",
-        data: {
-          "trntCode": trnCode
-        }
+      endpoint: "/setting/trnType.php",
+      data: {"trntCode": trnCode},
     );
     return response.data;
   }
 
-  Future<List<TxnTypeModel>> getTxnTypes({String? trnCode, CancelToken? cancelToken}) async {
+  Future<List<TxnTypeModel>> getTxnTypes({
+    String? trnCode,
+    CancelToken? cancelToken,
+  }) async {
     final queryParams = {'trntCode': trnCode};
     // Fetch data from API
     final response = await api.get(
@@ -1974,7 +2264,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -1990,16 +2281,20 @@ class Repositories {
   }
 
   /// User Log .................................................................
-  Future<List<UserLogModel>> getUserLog({String? usrName, String? fromDate, String? toDate}) async {
+  Future<List<UserLogModel>> getUserLog({
+    String? usrName,
+    String? fromDate,
+    String? toDate,
+  }) async {
     final queryParams = {
       'usrName': usrName,
       'fromDate': fromDate,
-      'toDate': toDate
+      'toDate': toDate,
     };
     // Fetch data from API
     final response = await api.post(
-        endpoint: "/reports/userLogs.php",
-        data: queryParams
+      endpoint: "/reports/userLogs.php",
+      data: queryParams,
     );
 
     // Handle error messages from server
@@ -2008,7 +2303,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -2025,14 +2321,14 @@ class Repositories {
 
   ///Reports ...................................................................
   // Account Statement
-  Future<AccountStatementModel> getAccountStatement({required int account, required String fromDate, required String toDate}) async {
+  Future<AccountStatementModel> getAccountStatement({
+    required int account,
+    required String fromDate,
+    required String toDate,
+  }) async {
     final response = await api.post(
-        endpoint: "/reports/accountStatement.php",
-        data: {
-          "account": account,
-          "fromDate": fromDate,
-          "toDate": toDate
-        }
+      endpoint: "/reports/accountStatement.php",
+      data: {"account": account, "fromDate": fromDate, "toDate": toDate},
     );
 
     // Handle message response
@@ -2052,16 +2348,22 @@ class Repositories {
     return AccountStatementModel.fromApiResponse(decodedData);
   }
 
-  Future<GlStatementModel> getGlStatement({required int account, required String currency, required int branchCode, required String fromDate, required String toDate}) async {
+  Future<GlStatementModel> getGlStatement({
+    required int account,
+    required String currency,
+    required int branchCode,
+    required String fromDate,
+    required String toDate,
+  }) async {
     final response = await api.post(
-        endpoint: "/reports/glStatement.php",
-        data: {
-          "ccy": currency,
-          "branch": branchCode,
-          "account": account,
-          "fromDate": fromDate,
-          "toDate": toDate
-        }
+      endpoint: "/reports/glStatement.php",
+      data: {
+        "ccy": currency,
+        "branch": branchCode,
+        "account": account,
+        "fromDate": fromDate,
+        "toDate": toDate,
+      },
     );
 
     // Handle message response
@@ -2082,12 +2384,13 @@ class Repositories {
   }
 
   //Get Transaction Details By Ref
-  Future<TxnReportByRefModel> getTransactionByRefReport({required String ref, CancelToken? cancelToken}) async {
+  Future<TxnReportByRefModel> getTransactionByRefReport({
+    required String ref,
+    CancelToken? cancelToken,
+  }) async {
     final response = await api.get(
       endpoint: "/reports/referenceHistory.php",
-      queryParams: {
-        "ref": ref,
-      },
+      queryParams: {"ref": ref},
       cancelToken: cancelToken,
     );
 
@@ -2109,22 +2412,28 @@ class Repositories {
   }
 
   /// Dashboard Statistics.....................................................
-  Future<List<DailyGrossModel>> getDailyGross({required String from, required String to, required int startGroup, required int stopGroup}) async {
+  Future<List<DailyGrossModel>> getDailyGross({
+    required String from,
+    required String to,
+    required int startGroup,
+    required int stopGroup,
+  }) async {
     final response = await api.post(
-        endpoint: "/reports/dailyGrossing.php",
-        data: {
-          "from": from,
-          "to": to,
-          "startGroup": startGroup,
-          "stopGroup": stopGroup
-        }
+      endpoint: "/reports/dailyGrossing.php",
+      data: {
+        "from": from,
+        "to": to,
+        "startGroup": startGroup,
+        "stopGroup": stopGroup,
+      },
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
       throw Exception(response.data['msg']);
     }
 
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -2137,7 +2446,10 @@ class Repositories {
 
     return [];
   }
-  Future<DashboardStatsModel> getDashboardStats({CancelToken? cancelToken}) async {
+
+  Future<DashboardStatsModel> getDashboardStats({
+    CancelToken? cancelToken,
+  }) async {
     final response = await api.get(
       endpoint: "/reports/counts.php",
       cancelToken: cancelToken,
@@ -2155,20 +2467,19 @@ class Repositories {
       Map<String, dynamic>.from(response.data),
     );
   }
+
   Future<List<ArApModel>> getArApReport({String? name, String? ccy}) async {
     final response = await api.post(
-        endpoint: "/reports/stakeholderBalances.php",
-        data: {
-          "name":name,
-          "ccy":ccy
-        }
+      endpoint: "/reports/stakeholderBalances.php",
+      data: {"name": name, "ccy": ccy},
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
       throw Exception(response.data['msg']);
     }
 
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -2181,19 +2492,21 @@ class Repositories {
 
     return [];
   }
-  Future<List<TrialBalanceModel>> getTrialBalance({required String date}) async {
+
+  Future<List<TrialBalanceModel>> getTrialBalance({
+    required String date,
+  }) async {
     final response = await api.post(
-        endpoint: "/reports/trialBalance.php",
-        data: {
-          "date":date,
-        }
+      endpoint: "/reports/trialBalance.php",
+      data: {"date": date},
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
       throw Exception(response.data['msg']);
     }
 
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -2206,20 +2519,22 @@ class Repositories {
 
     return [];
   }
-  Future<List<TotalDailyTxnModel>> totalDailyTxnReport({required String fromDate, required String toDate}) async {
+
+  Future<List<TotalDailyTxnModel>> totalDailyTxnReport({
+    required String fromDate,
+    required String toDate,
+  }) async {
     final response = await api.post(
-        endpoint: "/reports/dailyTotalTransactions.php",
-        data: {
-          "fromDate":fromDate,
-          "toDate":toDate
-        }
+      endpoint: "/reports/dailyTotalTransactions.php",
+      data: {"fromDate": fromDate, "toDate": toDate},
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
       throw Exception(response.data['msg']);
     }
 
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -2256,22 +2571,29 @@ class Repositories {
 
     throw Exception("Unexpected response format");
   }
-  Future<List<ExchangeRateReportModel>> exchangeRateReport({String? fromDate, String? toDate, String? fromCcy, String? toCcy}) async {
+
+  Future<List<ExchangeRateReportModel>> exchangeRateReport({
+    String? fromDate,
+    String? toDate,
+    String? fromCcy,
+    String? toCcy,
+  }) async {
     final response = await api.post(
-        endpoint: "/reports/currencyRate.php",
-        data: {
-          "fromDate":fromDate,
-          "toDate":toDate,
-          "fromCcy": fromCcy,
-          "toCcy": toCcy
-        }
+      endpoint: "/reports/currencyRate.php",
+      data: {
+        "fromDate": fromDate,
+        "toDate": toDate,
+        "fromCcy": fromCcy,
+        "toCcy": toCcy,
+      },
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
       throw Exception(response.data['msg']);
     }
 
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -2284,22 +2606,29 @@ class Repositories {
 
     return [];
   }
-  Future<List<UsersReportModel>> getUsersReport({String? usrName, int? status, int? branch, String? role}) async {
+
+  Future<List<UsersReportModel>> getUsersReport({
+    String? usrName,
+    int? status,
+    int? branch,
+    String? role,
+  }) async {
     final response = await api.post(
-        endpoint: "/reports/usersList.php",
-        data: {
-          "username":usrName,
-          "status":status,
-          "branch": branch,
-          "role": role
-        }
+      endpoint: "/reports/usersList.php",
+      data: {
+        "username": usrName,
+        "status": status,
+        "branch": branch,
+        "role": role,
+      },
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
       throw Exception(response.data['msg']);
     }
 
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -2312,24 +2641,33 @@ class Repositories {
 
     return [];
   }
-  Future<List<ShippingReportModel>> getShippingReport({int? vehicle, int? status, int? customer, String? fromDate, int? driverId, String? toDate}) async {
+
+  Future<List<ShippingReportModel>> getShippingReport({
+    int? vehicle,
+    int? status,
+    int? customer,
+    String? fromDate,
+    int? driverId,
+    String? toDate,
+  }) async {
     final response = await api.post(
-        endpoint: "/reports/shippingList.php",
-        data: {
-          "fromDate": fromDate,
-          "toDate": toDate,
-          "vehicle": vehicle,
-          "customer": customer,
-          "driver": driverId,
-          "status": status
-        }
+      endpoint: "/reports/shippingList.php",
+      data: {
+        "fromDate": fromDate,
+        "toDate": toDate,
+        "vehicle": vehicle,
+        "customer": customer,
+        "driver": driverId,
+        "status": status,
+      },
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
       throw Exception(response.data['msg']);
     }
 
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -2344,12 +2682,13 @@ class Repositories {
   }
 
   ///Cash Balances .............................................................
-  Future<CashBalancesModel> cashBalances({int? branchId, CancelToken? cancelToken}) async {
+  Future<CashBalancesModel> cashBalances({
+    int? branchId,
+    CancelToken? cancelToken,
+  }) async {
     final response = await api.get(
       endpoint: "/reports/cashBalance.php",
-      queryParams: {
-        "brcID": branchId
-      },
+      queryParams: {"brcID": branchId},
       cancelToken: cancelToken,
     );
 
@@ -2381,7 +2720,10 @@ class Repositories {
 
     throw Exception("Unexpected response format: ${response.data.runtimeType}");
   }
-  Future<List<CashBalancesModel>> allCashBalances({CancelToken? cancelToken}) async {
+
+  Future<List<CashBalancesModel>> allCashBalances({
+    CancelToken? cancelToken,
+  }) async {
     final response = await api.get(
       endpoint: "/reports/cashBalance.php",
       cancelToken: cancelToken,
@@ -2398,7 +2740,7 @@ class Repositories {
     // Parse as list
     if (response.data is List) {
       return List<CashBalancesModel>.from(
-          response.data.map((x) => CashBalancesModel.fromMap(x))
+        response.data.map((x) => CashBalancesModel.fromMap(x)),
       );
     }
 
@@ -2409,18 +2751,27 @@ class Repositories {
 
     throw Exception("Unexpected response format");
   }
-  Future<List<TransactionReportModel>> transactionReport({String? fromDate, String? toDate, String? txnType, int? status, String? maker, String? checker, String? currency}) async {
+
+  Future<List<TransactionReportModel>> transactionReport({
+    String? fromDate,
+    String? toDate,
+    String? txnType,
+    int? status,
+    String? maker,
+    String? checker,
+    String? currency,
+  }) async {
     final response = await api.post(
-        endpoint: "/reports/transactionsReport.php",
-        data: {
-          "fromDate": fromDate,
-          "toDate": toDate,
-          "type": txnType,
-          "status": status,
-          "maker": maker,
-          "checker": checker,
-          "currency": currency
-        }
+      endpoint: "/reports/transactionsReport.php",
+      data: {
+        "fromDate": fromDate,
+        "toDate": toDate,
+        "type": txnType,
+        "status": status,
+        "maker": maker,
+        "checker": checker,
+        "currency": currency,
+      },
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
@@ -2430,7 +2781,7 @@ class Repositories {
     // Parse as list
     if (response.data is List) {
       return List<TransactionReportModel>.from(
-          response.data.map((x) => TransactionReportModel.fromMap(x))
+        response.data.map((x) => TransactionReportModel.fromMap(x)),
       );
     }
 
@@ -2441,12 +2792,14 @@ class Repositories {
 
     return [];
   }
-  Future<List<AllBalancesModel>> allBalances({int? catId, CancelToken? cancelToken}) async {
+
+  Future<List<AllBalancesModel>> allBalances({
+    int? catId,
+    CancelToken? cancelToken,
+  }) async {
     final response = await api.get(
       endpoint: "/reports/allBalances.php",
-      queryParams: {
-        "cat": catId,
-      },
+      queryParams: {"cat": catId},
       cancelToken: cancelToken,
     );
 
@@ -2457,7 +2810,7 @@ class Repositories {
     // Parse as list
     if (response.data is List) {
       return List<AllBalancesModel>.from(
-          response.data.map((x) => AllBalancesModel.fromMap(x))
+        response.data.map((x) => AllBalancesModel.fromMap(x)),
       );
     }
 
@@ -2468,14 +2821,19 @@ class Repositories {
 
     return [];
   }
-  Future<List<ProductReportModel>> stockAvailabilityReport({int? productId, int? storageId, int? isNoStock}) async {
+
+  Future<List<ProductReportModel>> stockAvailabilityReport({
+    int? productId,
+    int? storageId,
+    int? isNoStock,
+  }) async {
     final response = await api.post(
-        endpoint: "/reports/stockAvailability.php",
-        data: {
-          "product": productId,
-          "storage": storageId,
-          "availability": isNoStock,
-        }
+      endpoint: "/reports/stockAvailability.php",
+      data: {
+        "product": productId,
+        "storage": storageId,
+        "availability": isNoStock,
+      },
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
@@ -2485,7 +2843,7 @@ class Repositories {
     // Parse as list
     if (response.data is List) {
       return List<ProductReportModel>.from(
-          response.data.map((x) => ProductReportModel.fromMap(x))
+        response.data.map((x) => ProductReportModel.fromMap(x)),
       );
     }
 
@@ -2496,17 +2854,25 @@ class Repositories {
 
     return [];
   }
-  Future<List<OrderReportModel>> ordersReport({String? fromDate, String? toDate, int? ordID, int? customerId, int? branchId, String? orderName}) async {
+
+  Future<List<OrderReportModel>> ordersReport({
+    String? fromDate,
+    String? toDate,
+    int? ordID,
+    int? customerId,
+    int? branchId,
+    String? orderName,
+  }) async {
     final response = await api.post(
-        endpoint: "/reports/allOrders.php",
-        data: {
-          "fromDate": fromDate,
-          "toDate": toDate,
-          "orderName": orderName,
-          "ordID": ordID,
-          "customer": customerId,
-          "branch": branchId
-        }
+      endpoint: "/reports/allOrders.php",
+      data: {
+        "fromDate": fromDate,
+        "toDate": toDate,
+        "orderName": orderName,
+        "ordID": ordID,
+        "customer": customerId,
+        "branch": branchId,
+      },
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
@@ -2516,7 +2882,7 @@ class Repositories {
     // Parse as list
     if (response.data is List) {
       return List<OrderReportModel>.from(
-          response.data.map((x) => OrderReportModel.fromMap(x))
+        response.data.map((x) => OrderReportModel.fromMap(x)),
       );
     }
 
@@ -2527,16 +2893,23 @@ class Repositories {
 
     return [];
   }
-  Future<List<StockRecordModel>> stockRecord({String? fromDate, String? toDate, int? proId, int? storageId, int? partyId}) async {
+
+  Future<List<StockRecordModel>> stockRecord({
+    String? fromDate,
+    String? toDate,
+    int? proId,
+    int? storageId,
+    int? partyId,
+  }) async {
     final response = await api.post(
-        endpoint: "/reports/runningStock.php",
-        data: {
-          "fromDate": fromDate,
-          "toDate": toDate,
-          "proID": proId,
-          "stgID": storageId,
-          "perID":partyId,
-        }
+      endpoint: "/reports/runningStock.php",
+      data: {
+        "fromDate": fromDate,
+        "toDate": toDate,
+        "proID": proId,
+        "stgID": storageId,
+        "perID": partyId,
+      },
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
@@ -2546,7 +2919,7 @@ class Repositories {
     // Parse as list
     if (response.data is List) {
       return List<StockRecordModel>.from(
-          response.data.map((x) => StockRecordModel.fromMap(x))
+        response.data.map((x) => StockRecordModel.fromMap(x)),
       );
     }
 
@@ -2561,10 +2934,8 @@ class Repositories {
   ///Reminder ..................................................................
   Future<List<ReminderModel>> getAlertReminders({int? alert}) async {
     final response = await api.get(
-        endpoint: "/finance/reminders.php",
-        queryParams: {
-          "alerts": alert
-        }
+      endpoint: "/finance/reminders.php",
+      queryParams: {"alerts": alert},
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
@@ -2574,7 +2945,7 @@ class Repositories {
     // Parse as list
     if (response.data is List) {
       return List<ReminderModel>.from(
-          response.data.map((x) => ReminderModel.fromMap(x))
+        response.data.map((x) => ReminderModel.fromMap(x)),
       );
     }
 
@@ -2585,18 +2956,24 @@ class Repositories {
 
     return [];
   }
-  Future<Map<String, dynamic>> addNewReminder({required ReminderModel newData}) async {
+
+  Future<Map<String, dynamic>> addNewReminder({
+    required ReminderModel newData,
+  }) async {
     final response = await api.post(
-        endpoint: "/finance/reminders.php",
-        data: newData.toMap()
+      endpoint: "/finance/reminders.php",
+      data: newData.toMap(),
     );
 
     return response.data;
   }
-  Future<Map<String, dynamic>> updateReminder({required ReminderModel newData}) async {
+
+  Future<Map<String, dynamic>> updateReminder({
+    required ReminderModel newData,
+  }) async {
     final response = await api.put(
-        endpoint: "/finance/reminders.php",
-        data: newData.toMap()
+      endpoint: "/finance/reminders.php",
+      data: newData.toMap(),
     );
     return response.data;
   }
@@ -2616,6 +2993,7 @@ class Repositories {
     // Windows / macOS / Linux
     return await getApplicationDocumentsDirectory();
   }
+
   Future<File> downloadBackup() async {
     Directory baseDir;
 
@@ -2666,22 +3044,22 @@ class Repositories {
 
     return File(filePath);
   }
+
   Future<List<FileSystemEntity>> getBackupFiles() async {
     final baseDir = await _getBackupBaseDirectory();
     final backupDir = Directory('${baseDir.path}/ZaitoonBackups');
 
     if (!await backupDir.exists()) return [];
 
-    final files = backupDir
-        .listSync()
-        .whereType<File>()
-        .toList();
+    final files = backupDir.listSync().whereType<File>().toList();
 
-    files.sort((a, b) =>
-        b.statSync().modified.compareTo(a.statSync().modified));
+    files.sort(
+      (a, b) => b.statSync().modified.compareTo(a.statSync().modified),
+    );
 
     return files;
   }
+
   Future<void> deleteBackup(String filePath) async {
     final file = File(filePath);
     if (await file.exists()) {
@@ -2689,14 +3067,11 @@ class Repositories {
     }
   }
 
-
   ///Attendance ...............................................................
-  Future<List<AttendanceRecord>> getAllAttendance({String? date}) async{
+  Future<List<AttendanceRecord>> getAllAttendance({String? date}) async {
     final response = await api.get(
-        endpoint: "/HR/attendence.php",
-        queryParams: {
-          "date": date ?? DateTime.now().toFormattedDate()
-        }
+      endpoint: "/HR/attendence.php",
+      queryParams: {"date": date ?? DateTime.now().toFormattedDate()},
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
@@ -2710,7 +3085,7 @@ class Repositories {
     // Parse as list
     if (response.data is List) {
       return List<AttendanceRecord>.from(
-          response.data.map((x) => AttendanceRecord.fromMap(x))
+        response.data.map((x) => AttendanceRecord.fromMap(x)),
       );
     }
 
@@ -2721,33 +3096,48 @@ class Repositories {
 
     return [];
   }
-  Future<Map<String, dynamic>> addNewAttendance({required String usrName, required String checkIn, required String checkOut, required String date}) async {
+
+  Future<Map<String, dynamic>> addNewAttendance({
+    required String usrName,
+    required String checkIn,
+    required String checkOut,
+    required String date,
+  }) async {
     final response = await api.post(
-        endpoint: "/HR/attendence.php",
-        data: {
-          "usrName": usrName,
-          "emaDate": date,
-          "emaCheckedIn": checkIn,
-          "empCheckedOut": checkOut
-        }
-    );
-    return response.data;
-  }
-  Future<Map<String, dynamic>> updateAttendance({required AttendanceModel newData}) async {
-    final response = await api.put(
-        endpoint: "/HR/attendence.php",
-        data: newData.toMap()
+      endpoint: "/HR/attendence.php",
+      data: {
+        "usrName": usrName,
+        "emaDate": date,
+        "emaCheckedIn": checkIn,
+        "empCheckedOut": checkOut,
+      },
     );
     return response.data;
   }
 
-  Future<List<AttendanceReportModel>> attendanceReport({String? fromDate, String? toDate, int? empId, int? status, CancelToken? cancelToken}) async {
+  Future<Map<String, dynamic>> updateAttendance({
+    required AttendanceModel newData,
+  }) async {
+    final response = await api.put(
+      endpoint: "/HR/attendence.php",
+      data: newData.toMap(),
+    );
+    return response.data;
+  }
+
+  Future<List<AttendanceReportModel>> attendanceReport({
+    String? fromDate,
+    String? toDate,
+    int? empId,
+    int? status,
+    CancelToken? cancelToken,
+  }) async {
     // Build query parameters dynamically
     final queryParams = {
-        "fromDate": fromDate,
-        "toDate": toDate,
-        "empID": empId,
-        "status": status
+      "fromDate": fromDate,
+      "toDate": toDate,
+      "empID": empId,
+      "status": status,
     };
 
     // Fetch data from API
@@ -2763,7 +3153,8 @@ class Repositories {
     }
 
     // If data is null or empty, return empty list
-    if (response.data == null || (response.data is List && response.data.isEmpty)) {
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
       return [];
     }
 
@@ -2778,12 +3169,10 @@ class Repositories {
   }
 
   ///Payroll ...................................................................
-  Future<List<PayrollModel>> getPayroll({String? date}) async{
+  Future<List<PayrollModel>> getPayroll({String? date}) async {
     final response = await api.get(
-        endpoint: "/finance/payroll.php",
-        queryParams: {
-          "date": date
-        }
+      endpoint: "/finance/payroll.php",
+      queryParams: {"date": date},
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
@@ -2797,7 +3186,7 @@ class Repositories {
     // Parse as list
     if (response.data is List) {
       return List<PayrollModel>.from(
-          response.data.map((x) => PayrollModel.fromMap(x))
+        response.data.map((x) => PayrollModel.fromMap(x)),
       );
     }
 
@@ -2808,16 +3197,74 @@ class Repositories {
 
     return [];
   }
-  Future<Map<String, dynamic>> postPayroll({required String usrName, required List<PayrollModel> records}) async {
-      final response = await api.post(
-          endpoint: "/finance/payroll.php",
-          data: {
-            "usrName": usrName,
-            "records": records.map((r) => r.toMap()).toList(),
-          }
-      );
-      return response.data;
+
+  Future<Map<String, dynamic>> postPayroll({
+    required String usrName,
+    required List<PayrollModel> records,
+  }) async {
+    final response = await api.post(
+      endpoint: "/finance/payroll.php",
+      data: {
+        "usrName": usrName,
+        "records": records.map((r) => r.toMap()).toList(),
+      },
+    );
+    return response.data;
   }
+
+  ///Forgot Password ...........................................................
+  // identity could be username or email to verify whether we have any credentials provided by user or not if found - return success else not found
+  /*
+   {
+    "msg": "success",
+    "timeLimit": "2026-02-17 22:40:25",
+    "email": "basirkhan.hashemi@gmail.com"
+   }
+   */
+
+  Future<Map<String, dynamic>> requestResetPassword({
+    required String identity,
+  }) async {
+    final response = await api.post(
+      endpoint: "/HR/resetPassword.php",
+      data: {"identity": identity},
+    );
+    return response.data;
+  }
+
+  //To verify otp
+  Future<Map<String, dynamic>> verifyOtp({
+    required String otp,
+  }) async {
+    final response = await api.get(
+      endpoint: "/HR/resetPassword.php",
+      queryParams: {"otp": otp},
+    );
+    return response.data;
+  }
+  /*
+   {
+    "rstExpiry": "2026-02-17 22:40:25",
+    "rstStatus": 1,
+    "usrName": "basir.h",
+    "usrEmail": "basirkhan.hashemi@gmail.com",
+    "fullName": "Basir Hashimi"
+    }
+   */
+
+  Future<Map<String, dynamic>> resetPasswordMethod({
+    required String usrName,
+    required String usrPass,
+    required int? otp,
+  }) async {
+    final response = await api.put(
+      endpoint: "/HR/resetPassword.php",
+      data: {"usrName": usrName, "usrPass":usrPass, "otp": otp},
+    );
+    return response.data;
+  }
+
+
+
+
 }
-
-

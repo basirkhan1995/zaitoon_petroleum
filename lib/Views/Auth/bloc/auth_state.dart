@@ -23,6 +23,7 @@ final class AuthLoadingState extends AuthState {
   @override
   List<Object> get props => [];
 }
+
 final class UnAuthenticatedState extends AuthState {
   @override
   List<Object> get props => [];
@@ -41,3 +42,4 @@ final class AuthenticatedState extends AuthState {
   @override
   List<Object> get props => [loginData];
 }
+

@@ -2513,4 +2513,71 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get avbShort => 'م. ق. ب';
+
+  @override
+  String get forgotPasswordTitle => 'فراموشی رمز عبور';
+
+  @override
+  String get forgotPasswordMessage =>
+      'ایمیل یا نام کاربری خود را وارد کنید تا رمز عبور خود را بازنشانی کنید';
+
+  @override
+  String get emailOrUsername => 'ایمیل یا نام کاربری';
+
+  @override
+  String get passwordResetTitle => 'بازنشانی رمز عبور';
+
+  @override
+  String get otpSendMessage => 'کد ارسال شد به';
+
+  @override
+  String get verifyOtp => 'تایید کد';
+
+  @override
+  String get continueTitle => 'ادامه';
+
+  @override
+  String get notReceiveCode => 'کد را دریافت نکردید؟';
+
+  @override
+  String get resend => 'ارسال مجدد';
+
+  @override
+  String get remainingTime => 'زمان باقی‌مانده:';
+
+  @override
+  String get createPasswordTitle => 'ایجاد رمز عبور جدید';
+
+  @override
+  String get doneTitle => 'انجام شد!';
+
+  @override
+  String get passwordResetMessage => 'رمز عبور شما با موفقیت بازنشانی شد';
+
+  @override
+  String get loginTitle => 'ورود';
+
+  @override
+  String get back => 'بازگشت';
+
+  @override
+  String get userNotFound => 'کاربر یافت نشد';
+
+  @override
+  String get invalidOtp => 'کد تایید نامعتبر است';
+
+  @override
+  String get otpExpired => 'کد تایید منقضی شده است';
+
+  @override
+  String get resetFailed => 'بازنشانی رمز عبور ناموفق بود';
+
+  @override
+  String get otpRequired => 'لطفاً کد ۶ رقمی را وارد کنید';
+
+  @override
+  String get resetSuccess => 'بازنشانی رمز عبور موفقیت‌آمیز بود';
+
+  @override
+  String get otpVerified => 'کد تایید با موفقیت تأیید شد';
 }
