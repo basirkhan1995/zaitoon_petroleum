@@ -27,7 +27,10 @@ class _Mobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _BackupContent();
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: _BackupContent(),
+    );
   }
 }
 

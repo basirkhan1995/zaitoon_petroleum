@@ -147,7 +147,101 @@ class _Mobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final state = context.watch<AuthBloc>().state;
+
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
+    final login = state.loginData;
+    return Scaffold(
+      body: BlocBuilder<SettingsTabBloc, SettingsTabState>(
+        builder: (context, state) {
+          final tabs = <ZTabItem<SettingsTabName>>[
+            if (login.hasPermission(58) ?? false)
+              ZTabItem(
+                value: SettingsTabName.general,
+                label: AppLocalizations.of(context)!.general,
+                screen: const GeneralView(),
+              ),
+
+            if (login.usrRole == "Super")
+              ZTabItem(
+                value: SettingsTabName.txnTypes,
+                label: AppLocalizations.of(context)!.transactionType,
+                screen: const TxnTypesView(),
+              ),
+
+
+            if (login.hasPermission(32) ?? false)
+              ZTabItem(
+                value: SettingsTabName.backup,
+                label: AppLocalizations.of(context)!.backupTitle,
+                screen: const BackupView(),
+              ),
+            if (login.hasPermission(70) ?? false)
+              ZTabItem(
+                value: SettingsTabName.about,
+                label: AppLocalizations.of(context)!.about,
+                screen: const AboutView(),
+              ),
+
+          ];
+          // 🟢 FIX: Handle empty tabs case
+          if (tabs.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.no_accounts_rounded,
+                    size: 48,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .3),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    AppLocalizations.of(context)!.accessDenied,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .5),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Please contact administrator",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .4),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+          final availableValues = tabs.map((tab) => tab.value).toList();
+          final selected = availableValues.contains(state.tabs)
+              ? state.tabs
+              : availableValues.first;
+
+          return ZTabContainer<SettingsTabName>(
+            /// Tab data
+            tabs: tabs,
+            selectedValue: selected,
+            /// Bloc update
+            onChanged: (val) => context.read<SettingsTabBloc>().add(SettingsOnChangeEvent(val)),
+
+            /// Colors and style
+            style: ZTabStyle.rounded,
+            tabBarPadding: EdgeInsets.symmetric(horizontal: 5,vertical: 3),
+            borderRadius: 0,
+            selectedColor: Theme.of(context).colorScheme.primary,
+            unselectedTextColor: Theme.of(context).colorScheme.secondary,
+            selectedTextColor: Theme.of(context).colorScheme.surface,
+            tabContainerColor: Theme.of(context).colorScheme.surface,
+          );
+        },
+      ),
+    );
   }
 }
 

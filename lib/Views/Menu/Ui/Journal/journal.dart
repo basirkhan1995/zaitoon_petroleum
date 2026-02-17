@@ -57,24 +57,12 @@ class JournalView extends StatelessWidget {
   }
 }
 
-class _Mobile extends StatelessWidget {
-  const _Mobile();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-
-
 class _Desktop extends StatefulWidget {
   const _Desktop();
 
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> {
   String? currentLocale;
 
@@ -2044,15 +2032,11 @@ class _DesktopState extends State<_Desktop> {
                           /// Tab data
                           tabs: tabs,
                           selectedValue: selected,
-
                           /// Bloc update
-                          onChanged: (val) => context
-                              .read<JournalTabBloc>()
-                              .add(JournalOnChangedEvent(val)),
+                          onChanged: (val) => context.read<JournalTabBloc>().add(JournalOnChangedEvent(val)),
 
                           title: locale.journal,
                           description: locale.journalHint,
-
                           /// Colors and style
                           style: ZTabStyle.rounded,
                           tabBarPadding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
@@ -2080,10 +2064,7 @@ class _DesktopState extends State<_Desktop> {
                         BoxShadow(
                           blurRadius: 3,
                           spreadRadius: 2,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainerHighest
-                              .withValues(alpha: .03),
+                          color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: .03),
                         ),
                       ],
                       borderRadius: BorderRadius.circular(5),
@@ -2101,7 +2082,7 @@ class _DesktopState extends State<_Desktop> {
                         children: [
                           /// Toggle arrow
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 0), // CHANGED: Reduced horizontal
+                            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 0),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: _isExpanded

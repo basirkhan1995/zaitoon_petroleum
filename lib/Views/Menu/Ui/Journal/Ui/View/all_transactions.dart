@@ -91,7 +91,149 @@ class _MobileState extends State<_Mobile> {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
 
-    return Stack(
+    return MultiBlocListener(
+
+    listeners: [
+      BlocListener<OrderTxnBloc, OrderTxnState>(
+        listener: (context, state) {
+          if (state is OrderTxnLoadedState) {
+            setState(() {
+              _isLoadingDialog = false;
+              _loadingRef = null;
+            });
+            showDialog(
+              context: context,
+              builder: (context) => OrderTxnView(reference: state.data.trnReference ?? ""),
+            );
+          } else if (state is OrderTxnErrorState) {
+            setState(() {
+              _isLoadingDialog = false;
+              _loadingRef = null;
+            });
+            Utils.showOverlayMessage(
+              context,
+              title: tr.noData,
+              message: state.message,
+              isError: true,
+            );
+          }
+        },
+      ),
+      BlocListener<TrptBloc, TrptState>(
+        listener: (context, state) {
+          if (state is TrptLoadedState) {
+            setState(() {
+              _isLoadingDialog = false;
+              _loadingRef = null;
+            });
+            showDialog(
+              context: context,
+              builder: (context) => TrptView(reference: state.trpt.shdTrnRef ?? ""),
+            );
+          } else if (state is TrptErrorState) {
+            setState(() {
+              _isLoadingDialog = false;
+              _loadingRef = null;
+            });
+            Utils.showOverlayMessage(
+              context,
+              title: tr.noData,
+              message: state.error,
+              isError: true,
+            );
+          }
+        },
+      ),
+      BlocListener<GlatBloc, GlatState>(
+        listener: (context, state) {
+          if (state is GlatLoadedState) {
+            setState(() {
+              _isLoadingDialog = false;
+              _loadingRef = null;
+            });
+            showDialog(
+              context: context,
+              builder: (context) => GlatView(),
+            );
+          } else if (state is GlatErrorState) {
+            setState(() {
+              _isLoadingDialog = false;
+              _loadingRef = null;
+            });
+            Utils.showOverlayMessage(
+              context,
+              title: tr.noData,
+              message: state.message,
+              isError: true,
+            );
+          } else if (state is GlatLoadingState) {
+            setState(() {
+              _isLoadingDialog = true;
+            });
+          }
+        },
+      ),
+      BlocListener<FetchAtatBloc, FetchAtatState>(
+        listener: (context, state) {
+          if (state is FetchATATLoadedState) {
+            setState(() {
+              _isLoadingDialog = false;
+              _loadingRef = null;
+            });
+            showDialog(
+              context: context,
+              builder: (context) => FetchAtatView(),
+            );
+          } else if (state is FetchATATErrorState) {
+            setState(() {
+              _isLoadingDialog = false;
+              _loadingRef = null;
+            });
+            Utils.showOverlayMessage(
+              context,
+              title: tr.noData,
+              message: state.message,
+              isError: true,
+            );
+          } else if (state is FetchATATLoadingState) {
+            setState(() {
+              _isLoadingDialog = true;
+            });
+          }
+        },
+      ),
+      BlocListener<TxnReferenceBloc, TxnReferenceState>(
+        listener: (context, state) {
+          if (state is TxnReferenceLoadedState) {
+            setState(() {
+              _isLoadingDialog = false;
+              _loadingRef = null;
+            });
+            showDialog(
+              context: context,
+              builder: (context) => TxnReferenceView(),
+            );
+          } else if (state is TxnReferenceErrorState) {
+            setState(() {
+              _isLoadingDialog = false;
+              _loadingRef = null;
+            });
+            Utils.showOverlayMessage(
+              context,
+              title: tr.accessDenied,
+              message: state.error,
+              isError: true,
+            );
+          } else if (state is TxnReferenceLoadingState) {
+            setState(() {
+              _isLoadingDialog = true;
+            });
+          }
+        },
+      ),
+    ],
+
+  child: Stack(
       children: [
         Scaffold(
           appBar: AppBar(
@@ -100,23 +242,13 @@ class _MobileState extends State<_Mobile> {
               preferredSize: const Size.fromHeight(60),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: TextField(
+                child: ZSearchField(
+                  title: '',
                   controller: searchController,
                   onChanged: (_) => setState(() {}),
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search),
-                    hintText: tr.search,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.refresh),
-                      onPressed: () {
-                        context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('all'));
-                      },
-                    ),
-                  ),
+                  trailing: IconButton(onPressed: () {
+                    context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('all'));
+                  }, icon: Icon(Icons.search)),
                 ),
               ),
             ),
@@ -244,7 +376,8 @@ class _MobileState extends State<_Mobile> {
             child: const Center(child: CircularProgressIndicator()),
           ),
       ],
-    );
+    ),
+);
   }
 
   Future<void> _copyToClipboard(String reference, BuildContext context) async {

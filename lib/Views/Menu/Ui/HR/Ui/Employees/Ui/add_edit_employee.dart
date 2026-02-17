@@ -7,6 +7,7 @@ import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/section_title.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/bloc/employee_bloc.dart';
@@ -191,7 +192,7 @@ class _MobileState extends State<_Mobile> {
                   children: [
                     // Personal Information Card
                     if (widget.model == null) ...[
-                      _buildSectionTitle(locale, 'personalInfo', Icons.person),
+                      SectionTitle(title:  locale.personalInfo),
                       Card(
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -288,7 +289,7 @@ class _MobileState extends State<_Mobile> {
                     ],
 
                     // Account Information Card
-                    _buildSectionTitle(locale, locale.accountInfo, Icons.account_circle_outlined),
+                    SectionTitle(title: locale.accountInfo),
                     Padding(
                       padding: const EdgeInsets.all(12),
                       child: GenericTextfield<AccountsModel, AccountsBloc,
@@ -381,7 +382,7 @@ class _MobileState extends State<_Mobile> {
                     const SizedBox(height: 5),
 
                     // Employment Details Card
-                    _buildSectionTitle(locale, 'employmentDetails', Icons.work),
+                    SectionTitle(title: 'Employment Details'),
                     Padding(
                       padding: const EdgeInsets.all(12),
                       child: Column(
@@ -431,7 +432,7 @@ class _MobileState extends State<_Mobile> {
                     const SizedBox(height: 5),
 
                     // Job & Salary Card
-                    _buildSectionTitle(locale, locale.jobAndSalary, Icons.attach_money),
+                    SectionTitle(title: locale.jobAndSalary),
                     Padding(
                       padding: const EdgeInsets.all(12),
                       child: Column(
@@ -486,7 +487,7 @@ class _MobileState extends State<_Mobile> {
                     const SizedBox(height: 5),
 
                     // Additional Information Card
-                    _buildSectionTitle(locale, 'additionalInfo', Icons.info),
+                    SectionTitle(title: 'Additional Info'),
                     Padding(
                       padding: const EdgeInsets.all(12),
                       child: Column(
@@ -582,46 +583,6 @@ class _MobileState extends State<_Mobile> {
     );
   }
 
-  Widget _buildSectionTitle(AppLocalizations locale, String title, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8, bottom: 8),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            size: 20,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            _getSectionTitle(locale, title),
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _getSectionTitle(AppLocalizations locale, String key) {
-    // You might want to add these keys to your localizations
-    switch (key) {
-      case 'personalInfo':
-        return 'Personal Information';
-      case 'accountInfo':
-        return 'Account Information';
-      case 'employmentDetails':
-        return 'Employment Details';
-      case 'jobAndSalary':
-        return 'Job & Salary';
-      case 'additionalInfo':
-        return 'Additional Information';
-      default:
-        return key;
-    }
-  }
 
   void onSubmit() {
     if (!formKey.currentState!.validate()) return;

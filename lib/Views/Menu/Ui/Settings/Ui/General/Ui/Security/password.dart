@@ -11,7 +11,7 @@ class PasswordView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveLayout(
         tablet: _Desktop(),
-        mobile: _Desktop(),
+        mobile: _Mobile(),
         desktop: _Desktop());
   }
 }
@@ -54,5 +54,42 @@ class _Desktop extends StatelessWidget {
   }
 }
 
-
+class _Mobile extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: ZOutlineButton(
+                        icon: Icons.lock_clock_rounded,
+                        backgroundHover: Theme.of(context).colorScheme.primary,
+                        height: 50,
+                        label: Text(AppLocalizations.of(context)!.changePasswordTitle),
+                        onPressed: (){
+                          showDialog(context: context, builder: (context){
+                            return const PasswordSettingsView();
+                          });
+                        }),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
 

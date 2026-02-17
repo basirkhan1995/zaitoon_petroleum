@@ -1102,10 +1102,11 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
       isScrollControlled: true,
       builder: (context) {
         return Container(
-          margin: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15),
+                topRight: Radius.circular(15)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: .2),
@@ -1167,12 +1168,12 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
                       icon: Icons.email_outlined,
                       text: authState.loginData.usrEmail ?? "No Email",
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     _BottomSheetDetailRow(
                       icon: Icons.work_outline,
                       text: authState.loginData.usrRole ?? "No Role",
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     _BottomSheetDetailRow(
                       icon: Icons.business_outlined,
                       text: authState.loginData.brcName ?? "No Branch",
@@ -1180,11 +1181,12 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
-              SizedBox(
+              Container(
+                margin: EdgeInsets.all(8),
                 width: double.infinity,
                 child: ZOutlineButton(
                   isActive: true,
+                  height: 45,
                   backgroundHover: Theme.of(context).colorScheme.error,
                   onPressed: _logout,
                   label: Text(AppLocalizations.of(context)!.logout),

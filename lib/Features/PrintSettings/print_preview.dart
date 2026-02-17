@@ -37,7 +37,7 @@ class PrintPreviewDialog<T> extends StatefulWidget {
   required PdfPageFormat pageFormat,
   required Printer selectedPrinter,
   required int copies,
-  required String pages, // Added pages parameter
+  required String pages,
   }) onPrint;
 
   final Future<void> Function({
@@ -70,7 +70,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
   void initState() {
     super.initState();
     _copiesController = TextEditingController(text: "1");
-    _pagesController = TextEditingController(text: ""); // Initialize pages controller
+    _pagesController = TextEditingController(text: "");
   }
 
   @override
@@ -138,6 +138,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
   // ---------------------------------------------------------------------------
   // SIDEBAR
   // ---------------------------------------------------------------------------
+
   Widget _buildSidebar(BuildContext context, AppLocalizations locale) {
     final currentLocale = context.watch<LocalizationBloc>();
     String sysLanguage = currentLocale.toString();
@@ -166,7 +167,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
               Text(locale.print,style: Theme.of(context).textTheme.titleMedium,)
             ],
           ),
-          SizedBox(height: 5), // Add some spacing
+          SizedBox(height: 5),
           Row(
             spacing: 8,
             crossAxisAlignment: CrossAxisAlignment.end,

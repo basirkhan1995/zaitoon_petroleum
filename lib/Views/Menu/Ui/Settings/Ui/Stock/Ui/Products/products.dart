@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/status_badge.dart';
@@ -122,17 +123,16 @@ class _DesktopState extends State<_Desktop> {
             padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 0),
             child: Row(
               children: [
-                SizedBox(
-                    width: 200,
+                Expanded(
                     child: Text(tr.productName,style: titleStyle)),
+
                 Expanded(
                     child: Text(tr.details,style: titleStyle)),
-                SizedBox(
-                    width: 150,
-                    child: Text(tr.productCode,style: titleStyle)),
+
                 SizedBox(
                     width: 150,
                     child: Text(tr.madeIn,style: titleStyle)),
+
                 SizedBox(
                     width: 90,
                     child: Text(tr.status,style: titleStyle)),
@@ -184,14 +184,24 @@ class _DesktopState extends State<_Desktop> {
                           ),
                           child: Row(
                             children: [
-                              SizedBox(
-                                  width: 200,
-                                  child: Text(product.proName??"")),
                               Expanded(
-                                  child: Text(product.proDetails??"")),
-                              SizedBox(
-                                  width: 150,
-                                  child: Text(product.proCode??"")),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  spacing: 2,
+                                  children: [
+                                    Text(product.proName??"",style: Theme.of(context).textTheme.titleMedium),
+                                    Row(
+                                      spacing: 5,
+                                      children: [
+                                        ZCover(child: Text(product.proCode??"")),
+                                        Text(product.proDetails??""),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+
                               SizedBox(
                                   width: 150,
                                   child: Text(product.proMadeIn??"")),

@@ -15,8 +15,8 @@ class PasswordSettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-        mobile: _Mobile(),
-        tablet: _Tablet(),
+        mobile: _Desktop(),
+        tablet: _Desktop(),
         desktop: _Desktop());
   }
 }
@@ -211,21 +211,5 @@ class _DesktopState extends State<_Desktop> {
     }
   }
 }
-class _Mobile extends StatelessWidget {
 
-  const _Mobile();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 

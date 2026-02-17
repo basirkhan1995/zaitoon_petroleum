@@ -16,7 +16,7 @@ class GeneralView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveLayout(
         tablet: _Desktop(),
-        mobile: _Mobile(),
+        mobile: _Desktop(),
         desktop: _Desktop());
   }
 }
@@ -99,11 +99,6 @@ class _Desktop extends StatelessWidget {
   }
 }
 
-class _Mobile extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
+
 
 
