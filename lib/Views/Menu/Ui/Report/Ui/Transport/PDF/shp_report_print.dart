@@ -35,7 +35,7 @@ class ShippingReportPdfServices extends PrintServices {
 
       // Save the document
       await saveDocument(
-        suggestedName: "Shipping_Report_${DateTime.now().toIso8601String()}.pdf",
+        suggestedName: "Shipping_Report_${company.comName}.pdf",
         pdf: document,
       );
     } catch (e) {

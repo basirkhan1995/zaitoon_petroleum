@@ -2,7 +2,6 @@
 import 'dart:convert';
 
 List<TotalDailyTxnModel> totalDailyTxnModelFromMap(String str) => List<TotalDailyTxnModel>.from(json.decode(str).map((x) => TotalDailyTxnModel.fromMap(x)));
-
 String totalDailyTxnModelToMap(List<TotalDailyTxnModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toMap())));
 
 class TotalDailyTxnModel {
@@ -31,9 +30,8 @@ class TotalDailyTxnModel {
       TotalDailyTxnModel(
         txnName: json["trntName"],
         totalAmount: double.tryParse(json["total"].toString()) ?? 0.0,
-        totalCount: json["total_trn"] ?? 0,
+        totalCount: int.tryParse(json["total_trn"] ?? "0") ?? 0,
       );
-
 
   Map<String, dynamic> toMap() => {
     "trntName": txnName,

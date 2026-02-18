@@ -125,7 +125,7 @@ class _DesktopState extends State<_Desktop> {
 
                     // AMOUNT
                     Text(
-                      item.today.totalAmount?.toAmount() ?? "0.00",
+                      item.today.totalAmount.toAmount(),
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.primary,

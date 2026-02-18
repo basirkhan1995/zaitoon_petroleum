@@ -408,7 +408,6 @@ class _MobileState extends State<_Mobile> {
                         context.read<FinanceTabBloc>().add(FinanceOnChangedEvent(FinanceTabName.exchangeRate));
                         context.read<CurrencyTabBloc>().add(CcyOnChangedEvent(CurrencyTabName.rates));
                       },
-
                     ),
                   ),
               ],

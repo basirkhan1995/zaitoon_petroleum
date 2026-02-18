@@ -390,7 +390,6 @@ class _DesktopState extends State<_Desktop> {
                     "${shp.shpUnloadSize?.toDoubleAmount()} ${shp.shpUnit}",
                   ),
                 ),
-
                 /// TOTAL
                 Expanded(
                   flex: flexTotal,
