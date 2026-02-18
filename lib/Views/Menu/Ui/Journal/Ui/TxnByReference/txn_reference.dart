@@ -45,7 +45,6 @@ class _Mobile extends StatelessWidget {
     return const _MobileTxnReferenceView();
   }
 }
-
 class _MobileTxnReferenceView extends StatefulWidget {
   const _MobileTxnReferenceView();
 
@@ -148,7 +147,7 @@ class _MobileTxnReferenceViewState extends State<_MobileTxnReferenceView> {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: color.surface,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: color.outline.withValues(alpha: 0.1)),
                         ),
                         child: Column(
@@ -179,7 +178,7 @@ class _MobileTxnReferenceViewState extends State<_MobileTxnReferenceView> {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: color.surface,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: color.outline.withValues(alpha: 0.1)),
                         ),
                         child: Column(
@@ -201,8 +200,8 @@ class _MobileTxnReferenceViewState extends State<_MobileTxnReferenceView> {
                             const Divider(height: 16),
 
                             // Transaction Details Grid
-                            _buildDetailRow(locale.transactionRef, state.transaction.trnReferenceText, context),
-                            _buildDetailRow(locale.transactionDate, state.transaction.trnEntryDate!.toFullDateTime, context),
+                            _buildDetailRow(locale.referenceNumber, state.transaction.trnReferenceText, context),
+                            _buildDetailRow(locale.date, state.transaction.trnEntryDate!.toFullDateTime, context),
                             _buildDetailRow(locale.accountNumber, state.transaction.accountText, context),
                             _buildDetailRow(locale.accountName, state.transaction.accNameText, context),
                             _buildDetailRow(locale.branch, state.transaction.branchText, context),
@@ -214,60 +213,40 @@ class _MobileTxnReferenceViewState extends State<_MobileTxnReferenceView> {
                       const SizedBox(height: 16),
 
                       // Editable Fields Card
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: color.surface,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: color.outline.withValues(alpha: 0.1)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              locale.edit,
-                              style: textTheme.titleMedium?.copyWith(
-                                color: color.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const Divider(height: 16),
-
-                            ZTextFieldEntitled(
-                              isRequired: true,
-                              keyboardInputType: const TextInputType.numberWithOptions(decimal: true),
-                              inputFormat: [
-                                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
-                                SmartThousandsDecimalFormatter(),
-                              ],
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return locale.required(locale.exchangeRate);
-                                }
-                                final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
-                                final amount = double.tryParse(clean);
-                                if (amount == null || amount <= 0.0) {
-                                  return locale.amountGreaterZero;
-                                }
-                                return null;
-                              },
-                              controller: amount,
-                              title: locale.amount,
-                            ),
-
-                            const SizedBox(height: 12),
-
-                            ZTextFieldEntitled(
-                              keyboardInputType: TextInputType.multiline,
-                              controller: narration,
-                              title: locale.narration,
-
-                            ),
-                          ],
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ZTextFieldEntitled(
+                            isRequired: true,
+                            keyboardInputType: const TextInputType.numberWithOptions(decimal: true),
+                            inputFormat: [
+                              FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
+                              SmartThousandsDecimalFormatter(),
+                            ],
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return locale.required(locale.exchangeRate);
+                              }
+                              final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
+                              final amount = double.tryParse(clean);
+                              if (amount == null || amount <= 0.0) {
+                                return locale.amountGreaterZero;
+                              }
+                              return null;
+                            },
+                            controller: amount,
+                            title: locale.amount,
+                          ),
+                          const SizedBox(height: 12),
+                          ZTextFieldEntitled(
+                            keyboardInputType: TextInputType.multiline,
+                            controller: narration,
+                            title: locale.narration,
+                          ),
+                        ],
                       ),
 
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 15),
 
                       // Action Buttons
                       if (showAuthorizeButton || showReverseButton || showUpdateButton || showDeleteButton)
@@ -278,7 +257,8 @@ class _MobileTxnReferenceViewState extends State<_MobileTxnReferenceView> {
                                 padding: const EdgeInsets.only(bottom: 8),
                                 child: SizedBox(
                                   width: double.infinity,
-                                  child: ElevatedButton.icon(
+                                  child: ZOutlineButton(
+                                    isActive: true,
                                     onPressed: isAuthorizeLoading ? null : () {
                                       context.read<TransactionsBloc>().add(
                                         AuthorizeTxnEvent(
@@ -287,19 +267,14 @@ class _MobileTxnReferenceViewState extends State<_MobileTxnReferenceView> {
                                         ),
                                       );
                                     },
-                                    icon: isAuthorizeLoading
+                                    icon: Icons.check_circle_outline ,
+                                    label: isAuthorizeLoading
                                         ? const SizedBox(
                                       width: 20,
                                       height: 20,
                                       child: CircularProgressIndicator(strokeWidth: 2),
                                     )
-                                        : const Icon(Icons.check_circle_outline),
-                                    label: Text(locale.authorize),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: color.primary,
-                                      foregroundColor: color.surface,
-                                      padding: const EdgeInsets.symmetric(vertical: 12),
-                                    ),
+                                        : Text(locale.authorize),
                                   ),
                                 ),
                               ),
@@ -309,7 +284,8 @@ class _MobileTxnReferenceViewState extends State<_MobileTxnReferenceView> {
                                 padding: const EdgeInsets.only(bottom: 8),
                                 child: SizedBox(
                                   width: double.infinity,
-                                  child: ElevatedButton.icon(
+                                  child: ZOutlineButton(
+                                    isActive: true,
                                     onPressed: isReverseLoading ? null : () {
                                       context.read<TransactionsBloc>().add(
                                         ReverseTxnEvent(
@@ -318,19 +294,14 @@ class _MobileTxnReferenceViewState extends State<_MobileTxnReferenceView> {
                                         ),
                                       );
                                     },
-                                    icon: isReverseLoading
+                                    icon: Icons.screen_rotation_alt,
+                                    label: isReverseLoading
                                         ? const SizedBox(
                                       width: 20,
                                       height: 20,
                                       child: CircularProgressIndicator(strokeWidth: 2),
                                     )
-                                        : const Icon(Icons.screen_rotation_alt),
-                                    label: Text(locale.reverseTitle),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.orange,
-                                      foregroundColor: color.surface,
-                                      padding: const EdgeInsets.symmetric(vertical: 12),
-                                    ),
+                                        : Text(locale.reverseTitle),
                                   ),
                                 ),
                               ),
@@ -340,7 +311,8 @@ class _MobileTxnReferenceViewState extends State<_MobileTxnReferenceView> {
                                 padding: const EdgeInsets.only(bottom: 8),
                                 child: SizedBox(
                                   width: double.infinity,
-                                  child: ElevatedButton.icon(
+                                  child: ZOutlineButton(
+                                    isActive: true,
                                     onPressed: isUpdateLoading ? null : () {
                                       context.read<TransactionsBloc>().add(
                                         UpdatePendingTransactionEvent(
@@ -354,19 +326,14 @@ class _MobileTxnReferenceViewState extends State<_MobileTxnReferenceView> {
                                         ),
                                       );
                                     },
-                                    icon: isUpdateLoading
+                                    icon: Icons.refresh,
+                                    label: isUpdateLoading
                                         ? const SizedBox(
                                       width: 20,
                                       height: 20,
                                       child: CircularProgressIndicator(strokeWidth: 2),
                                     )
-                                        : const Icon(Icons.refresh),
-                                    label: Text(locale.update),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.green,
-                                      foregroundColor: color.surface,
-                                      padding: const EdgeInsets.symmetric(vertical: 12),
-                                    ),
+                                        : Text(locale.update),
                                   ),
                                 ),
                               ),
@@ -376,7 +343,7 @@ class _MobileTxnReferenceViewState extends State<_MobileTxnReferenceView> {
                                 padding: const EdgeInsets.only(bottom: 8),
                                 child: SizedBox(
                                   width: double.infinity,
-                                  child: ElevatedButton.icon(
+                                  child: ZOutlineButton(
                                     onPressed: isDeleteLoading ? null : () {
                                       _showDeleteConfirmation(
                                         context,
@@ -390,19 +357,14 @@ class _MobileTxnReferenceViewState extends State<_MobileTxnReferenceView> {
                                         },
                                       );
                                     },
-                                    icon: isDeleteLoading
+                                    icon: Icons.delete_outline,
+                                    label: isDeleteLoading
                                         ? const SizedBox(
                                       width: 20,
                                       height: 20,
                                       child: CircularProgressIndicator(strokeWidth: 2),
                                     )
-                                        : const Icon(Icons.delete_outline),
-                                    label: Text(locale.delete),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: color.error,
-                                      foregroundColor: color.surface,
-                                      padding: const EdgeInsets.symmetric(vertical: 12),
-                                    ),
+                                        : Text(locale.delete),
                                   ),
                                 ),
                               ),
@@ -546,6 +508,8 @@ class _MobileTxnReferenceViewState extends State<_MobileTxnReferenceView> {
       ),
     );
   }
+
+
 }
 
 class _Desktop extends StatefulWidget {

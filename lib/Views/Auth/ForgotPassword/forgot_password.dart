@@ -298,7 +298,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
   final GlobalKey<FormState> formKeyPassword = GlobalKey<FormState>();
 
   Timer? _timer;
-  int _remainingTime = 300; // 5 minutes
+  int _remainingTime = 600; // 10 minutes
   String _verifiedEmail = '';
   String _verifiedUsername = '';
   bool _isPasswordVisible = false;
@@ -401,7 +401,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
           setState(() {
             _currentStep = 1;
             _verifiedEmail = state.email;
-            _remainingTime = 300;
+            _remainingTime = 600;
           });
           _startCountdown();
           widget.animationController.forward(from: 0);
@@ -568,18 +568,24 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
           ZTextFieldEntitled(
             title: locale.emailOrUsername,
             controller: identityController,
-            icon: Icons.person_outline,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return locale.required(locale.emailOrUsername);
               }
               return null;
             },
+            onSubmit: (e){
+              if (formKeyIdentity.currentState!.validate()) {
+                context.read<ForgotPasswordBloc>().add(
+                  RequestResetEvent(identity: identityController.text.trim()),
+                );
+              }
+            },
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 15),
           ZButton(
             width: double.infinity,
-            height: 50,
+            height: 40,
             label: isLoading
                 ? SizedBox(
               width: 24,
@@ -649,7 +655,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(4),
           ),
           child: Wrap(
             alignment: WrapAlignment.center,
@@ -679,15 +685,15 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
           }),
         ),
 
-        const SizedBox(height: 24),
+        const SizedBox(height: 8),
 
         // Timer
         if (_remainingTime > 0)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(30),
+              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(4),
             ),
             child: Center(
               child: Text.rich(
@@ -782,7 +788,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                 );
                 _clearOtpFields();
                 setState(() {
-                  _remainingTime = 300;
+                  _remainingTime = 600;
                 });
                 _startCountdown();
               }
@@ -806,7 +812,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
   Widget _buildOtpTextField(int index, ThemeData theme) {
     return Container(
       width: 50,
-      height: 56,
+      height: 50,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
       ),
@@ -852,7 +858,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
             filled: true,
             fillColor: otpFocusNodes[index].hasFocus
                 ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
-                : theme.colorScheme.surfaceContainerHighest,
+                : theme.colorScheme.outline.withValues(alpha: .07),
             contentPadding: EdgeInsets.zero,
           ),
           onChanged: (value) {
@@ -999,10 +1005,10 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
             width: double.infinity,
             height: 50,
             label: isLoading
-                ? const SizedBox(
+                ? SizedBox(
               width: 24,
               height: 24,
-              child: CircularProgressIndicator(strokeWidth: 3, color: Colors.white),
+              child: CircularProgressIndicator(strokeWidth: 3, color: Theme.of(context).colorScheme.surface),
             )
                 : Text(
               locale.update,
@@ -1106,9 +1112,10 @@ class AnimatedIllustration extends StatelessWidget {
           CurvedAnimation(parent: animationController, curve: Curves.easeOut),
         ),
         child: Container(
+
           constraints: const BoxConstraints(maxWidth: 400),
           child: Image.asset(
-            _getIllustrationAsset(),
+          "assets/images/forgot_password.png",
             fit: BoxFit.contain,
             errorBuilder: (context, error, stackTrace) {
               return Container(
@@ -1129,13 +1136,13 @@ class AnimatedIllustration extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        _getIllustrationIcon(),
+                        Icons.lock_reset,
                         size: 100,
                         color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        _getIllustrationText(),
+                        AppLocalizations.of(context)!.resetPassword,
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -1151,18 +1158,5 @@ class AnimatedIllustration extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _getIllustrationAsset() {
-    // You can determine current step from context if needed
-    return 'assets/images/forgot_password.png';
-  }
-
-  IconData _getIllustrationIcon() {
-    return Icons.lock_reset;
-  }
-
-  String _getIllustrationText() {
-    return 'Reset Password';
   }
 }
