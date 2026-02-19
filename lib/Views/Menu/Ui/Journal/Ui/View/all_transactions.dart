@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
@@ -238,11 +239,13 @@ class _MobileState extends State<_Mobile> {
         Scaffold(
           appBar: AppBar(
             title: Text(tr.todayTransaction),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(60),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          ),
+          body: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: ZSearchField(
+                  hint: tr.search,
                   title: '',
                   controller: searchController,
                   onChanged: (_) => setState(() {}),
@@ -251,123 +254,127 @@ class _MobileState extends State<_Mobile> {
                   }, icon: Icon(Icons.search)),
                 ),
               ),
-            ),
-          ),
-          body: BlocConsumer<TransactionsBloc, TransactionsState>(
-            listener: (context, state) {
-              if (state is TransactionSuccessState) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Navigator.of(context).pop();
-                  context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('all'));
-                });
-              }
-            },
-            builder: (context, state) {
-              if (state is TransactionErrorState) {
-                return Center(
-                  child: Text(tr.noDataFound),
-                );
-              }
-
-              if (state is TxnLoadingState) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (state is TransactionLoadedState) {
-                final query = searchController.text.toLowerCase().trim();
-                final filteredList = state.txn.where((item) {
-                  final name = item.trnReference?.toLowerCase() ?? '';
-                  final status = item.trnStateText?.toLowerCase() ?? '';
-                  final trnName = item.trnType?.toLowerCase() ?? '';
-                  final usrName = item.usrName?.toLowerCase() ?? '';
-                  return name.contains(query) ||
-                      status.contains(query) ||
-                      usrName.contains(query) ||
-                      trnName.contains(query);
-                }).toList();
-
-                if (filteredList.isEmpty) {
-                  return Center(child: Text(tr.noDataFound));
-                }
-
-                return ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: filteredList.length,
-                  itemBuilder: (context, index) {
-                    final txn = filteredList[index];
-                    final isLoadingThisItem = _isLoadingDialog && _loadingRef == txn.trnReference;
-                    final isCopied = _copiedStates[txn.trnReference ?? ""] ?? false;
-                    final reference = txn.trnReference ?? "";
-
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      child: InkWell(
-                        onTap: isLoadingThisItem ? null : () => _handleTransactionTap(txn),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Date and Loading
-                              Row(
-                                children: [
-                                  if (isLoadingThisItem)
-                                    const SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
-                                    ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    Utils.getTxnCode(txn: txn.trnType ?? "", context: context),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              // Reference with copy
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      txn.trnReference ?? "",
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () => _copyToClipboard(reference, context),
-                                    child: Icon(
-                                      isCopied ? Icons.check : Icons.content_copy,
-                                      size: 20,
-                                      color: isCopied ? color.primary : color.onSurface.withValues(alpha: .6),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              // Type and User
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(txn.trnEntryDate?.toFormattedDate() ?? "")
-                                  ),
-                                  Text(txn.usrName ?? ""),
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              // Status
-                              TransactionStatusBadge(status: txn.trnStateText ?? ""),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
+              Expanded(
+                child: BlocConsumer<TransactionsBloc, TransactionsState>(
+                  listener: (context, state) {
+                    if (state is TransactionSuccessState) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        Navigator.of(context).pop();
+                        context.read<TransactionsBloc>().add(LoadAllTransactionsEvent('all'));
+                      });
+                    }
                   },
-                );
-              }
+                  builder: (context, state) {
+                    if (state is TransactionErrorState) {
+                      return Center(
+                        child: Text(tr.noDataFound),
+                      );
+                    }
 
-              return const SizedBox();
-            },
+                    if (state is TxnLoadingState) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (state is TransactionLoadedState) {
+                      final query = searchController.text.toLowerCase().trim();
+                      final filteredList = state.txn.where((item) {
+                        final name = item.trnReference?.toLowerCase() ?? '';
+                        final status = item.trnStateText?.toLowerCase() ?? '';
+                        final trnName = item.trnType?.toLowerCase() ?? '';
+                        final usrName = item.usrName?.toLowerCase() ?? '';
+                        return name.contains(query) ||
+                            status.contains(query) ||
+                            usrName.contains(query) ||
+                            trnName.contains(query);
+                      }).toList();
+
+                      if (filteredList.isEmpty) {
+                        return Center(child: Text(tr.noDataFound));
+                      }
+
+                      return ListView.builder(
+                        padding: const EdgeInsets.all(8),
+                        itemCount: filteredList.length,
+                        itemBuilder: (context, index) {
+                          final txn = filteredList[index];
+                          final isLoadingThisItem = _isLoadingDialog && _loadingRef == txn.trnReference;
+                          final isCopied = _copiedStates[txn.trnReference ?? ""] ?? false;
+                          final reference = txn.trnReference ?? "";
+
+                          return ZCover(
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            radius: 5,
+                            child: InkWell(
+                              onTap: isLoadingThisItem ? null : () => _handleTransactionTap(txn),
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Date and Loading
+                                    Row(
+                                      children: [
+                                        if (isLoadingThisItem)...[
+                                          const SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(strokeWidth: 2),
+                                          ),
+                                          const SizedBox(width: 8),
+                                        ],
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          Utils.getTxnCode(txn: txn.trnType ?? "", context: context),
+                                        ),
+                                        TransactionStatusBadge(status: txn.trnStateText ?? ""),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 6),
+                                    // Reference with copy
+
+                                        Text(
+                                          txn.trnReference ?? "",
+                                          style: const TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+
+                                    const SizedBox(height: 6),
+                                    // Type and User
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(txn.trnEntryDate?.toFormattedDate() ?? "")
+                                        ),
+                                        GestureDetector(
+                                          onTap: () => _copyToClipboard(reference, context),
+                                          child: Icon(
+                                            isCopied ? Icons.check : Icons.content_copy,
+                                            size: 20,
+                                            color: isCopied ? color.primary : color.onSurface.withValues(alpha: .6),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+
+
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }
+
+                    return const SizedBox();
+                  },
+                ),
+              ),
+            ],
           ),
         ),
         if (_isLoadingDialog && _loadingRef == null)

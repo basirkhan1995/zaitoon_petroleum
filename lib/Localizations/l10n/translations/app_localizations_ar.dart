@@ -2583,4 +2583,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get otpVerified => 'کوډ په بریالیتوب سره تایید شو';
+
+  @override
+  String get share => 'به اشتراک گذاشتن';
+
+  @override
+  String get printPreview => 'نمایش چاپ';
+
+  @override
+  String get saveTitle => 'ذخیره';
 }

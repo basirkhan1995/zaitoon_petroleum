@@ -2580,4 +2580,13 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get otpVerified => 'کد تایید با موفقیت تأیید شد';
+
+  @override
+  String get share => 'به اشتراک گذاشتن';
+
+  @override
+  String get printPreview => 'نمایش چاپ';
+
+  @override
+  String get saveTitle => 'ذخیره';
 }

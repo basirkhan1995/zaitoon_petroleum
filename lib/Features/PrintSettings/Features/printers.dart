@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:printing/printing.dart';
 import '../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../Generic/generic_drop.dart';
+import '../bloc/Printer/printer_cubit.dart';
 
 class PrinterDropdown extends StatefulWidget {
   final Function(Printer) onPrinterSelected;
@@ -14,8 +16,8 @@ class PrinterDropdown extends StatefulWidget {
 
 class _PrinterDropdownState extends State<PrinterDropdown> {
   List<Printer> _printers = [];
-  Printer? _selectedPrinter;
   bool _isLoading = true;
+  bool _noPrinters = false;
 
   @override
   void initState() {
@@ -24,35 +26,102 @@ class _PrinterDropdownState extends State<PrinterDropdown> {
   }
 
   Future<void> _fetchPrinters() async {
-    final printers = await Printing.listPrinters();
-    if (mounted) {
+    try {
+      final printers = await Printing.listPrinters();
+
+      if (!mounted) return;
+
+      if (printers.isEmpty) {
+        setState(() {
+          _isLoading = false;
+          _noPrinters = true;
+        });
+        return;
+      }
+
+      final cubit = context.read<PrinterCubit>();
+
       setState(() {
         _printers = printers;
-        _selectedPrinter = printers.isNotEmpty ? printers.first : null; // Default to first printer
         _isLoading = false;
+        _noPrinters = false;
       });
 
-      if (_selectedPrinter != null) {
-        widget.onPrinterSelected(_selectedPrinter!);
+      await cubit.loadSavedPrinter(printers);
+
+      if (cubit.state == null) {
+        await cubit.setPrinter(printers.first);
       }
+
+      widget.onPrinterSelected(cubit.state!);
+
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+        _noPrinters = true;
+      });
     }
   }
+
   @override
   Widget build(BuildContext context) {
-    return CustomDropdown<Printer>(
-      itemStyle: TextStyle(fontSize: 12),
-      title: AppLocalizations.of(context)!.printers,
-      isLoading: _isLoading,
-      initialValue: _selectedPrinter?.name ?? "No printers available",
-      items: _printers,
+    final selectedPrinter = context.watch<PrinterCubit>().state;
 
+    // 🔄 Loading State
+    if (_isLoading) {
+      return CustomDropdown<Printer>(
+        title: AppLocalizations.of(context)!.printers,
+        isLoading: true,
+        items: const [],
+        initialValue: "",
+        itemLabel: (printer) => "",
+        onItemSelected: (_) {},
+      );
+    }
+
+    // ❌ No Printers State
+    if (_noPrinters) {
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: .4),
+          ),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.print_disabled,
+                size: 18,
+                color: Theme.of(context).colorScheme.error),
+            const SizedBox(width: 8),
+            Text(
+              "No printers found",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // ✅ Normal Dropdown
+    return CustomDropdown<Printer>(
+      itemStyle: const TextStyle(fontSize: 11),
+      title: AppLocalizations.of(context)!.printers,
+      isLoading: false,
+      initialValue: selectedPrinter?.name ?? "",
+      items: _printers,
       itemLabel: (printer) => printer.name,
-      onItemSelected: (printer) {
-        setState(() {
-          _selectedPrinter = printer;
-        });
+      onItemSelected: (printer) async {
+        await context.read<PrinterCubit>().setPrinter(printer);
         widget.onPrinterSelected(printer);
       },
     );
   }
 }
+

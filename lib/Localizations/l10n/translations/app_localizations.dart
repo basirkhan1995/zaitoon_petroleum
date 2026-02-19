@@ -5121,6 +5121,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'OTP verified successfully'**
   String get otpVerified;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @printPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Print Preview'**
+  String get printPreview;
+
+  /// No description provided for @saveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveTitle;
 }
 
 class _AppLocalizationsDelegate

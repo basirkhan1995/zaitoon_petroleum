@@ -93,7 +93,7 @@ class _UnitDropdownState extends State<UnitDropdown> {
   @override
   void initState() {
     super.initState();
-    _selectedUnit = widget.selectedUnit ?? UnitType.kg;
+    _selectedUnit = widget.selectedUnit ?? UnitType.tn;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onUnitSelected(_selectedUnit);

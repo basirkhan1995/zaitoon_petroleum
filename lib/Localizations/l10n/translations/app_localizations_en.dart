@@ -2590,4 +2590,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get otpVerified => 'OTP verified successfully';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get printPreview => 'Print Preview';
+
+  @override
+  String get saveTitle => 'Save';
 }

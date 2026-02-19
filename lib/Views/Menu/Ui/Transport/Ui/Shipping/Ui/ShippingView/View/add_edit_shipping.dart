@@ -4418,9 +4418,10 @@ class _MobileState extends State<_Mobile> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
+        titleSpacing: 0,
         title: Text(
           tr.updateShipping,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.primary,
           ),
@@ -4434,7 +4435,7 @@ class _MobileState extends State<_Mobile> {
         children: [
           // Mobile Stepper Header
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child: Row(
               children: [
                 Expanded(
@@ -4478,13 +4479,6 @@ class _MobileState extends State<_Mobile> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: .05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -5),
-                ),
-              ],
             ),
             child: Row(
               children: [
@@ -4655,12 +4649,6 @@ class _MobileState extends State<_Mobile> {
   Widget _buildStepIndicator(int step, String label, bool isActive) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: isActive
-            ? Theme.of(context).colorScheme.primary.withValues(alpha: .1)
-            : Colors.transparent,
-        borderRadius: BorderRadius.circular(4),
-      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -5080,7 +5068,7 @@ class _MobileState extends State<_Mobile> {
                   },
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 5),
               Expanded(
                 child: ZTextFieldEntitled(
                   isRequired: true,
@@ -5108,7 +5096,7 @@ class _MobileState extends State<_Mobile> {
                   title: tr.loadingDate,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               Expanded(
                 child: _datePicker(
                   isActive: isDelivered,
@@ -5121,7 +5109,7 @@ class _MobileState extends State<_Mobile> {
           const SizedBox(height: 16),
 
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
                 child: ZTextFieldEntitled(
@@ -5146,7 +5134,7 @@ class _MobileState extends State<_Mobile> {
                   },
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 5),
               Expanded(
                 child: ZTextFieldEntitled(
                   readOnly: isDelivered,
@@ -5170,7 +5158,7 @@ class _MobileState extends State<_Mobile> {
                   },
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 5),
               Expanded(
                 child: UnitDropdown(
                   isActive: isDelivered,
@@ -5807,6 +5795,7 @@ class _MobileState extends State<_Mobile> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
+        titleSpacing: 0,
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.of(context).pop(),

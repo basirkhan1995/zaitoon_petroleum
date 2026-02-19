@@ -856,5 +856,8 @@
   "resetFailed": "Password reset failed",
   "otpRequired": "Please enter the 6-digit code",
   "resetSuccess": "Password reset successful",
-  "otpVerified": "OTP verified successfully"
+  "otpVerified": "OTP verified successfully",
+  "share": "Share",
+  "printPreview": "Print Preview",
+  "saveTitle": "Save"
 }

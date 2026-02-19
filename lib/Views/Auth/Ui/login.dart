@@ -31,6 +31,7 @@ class _Mobile extends StatefulWidget {
   @override
   State<_Mobile> createState() => _MobileState();
 }
+
 class _MobileState extends State<_Mobile> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -56,7 +57,12 @@ class _MobileState extends State<_Mobile> {
             Utils.gotoReplacement(context, HomeView());
           }
           if (state is AuthErrorState) {
-            ToastManager.show(context: context,title: tr.accessDenied, message: state.message, type: ToastType.error);
+            ToastManager.show(
+              context: context,
+              title: tr.accessDenied,
+              message: state.message,
+              type: ToastType.error,
+            );
           }
           if (state is ForceChangePasswordState) {
             Utils.goto(
@@ -67,16 +73,33 @@ class _MobileState extends State<_Mobile> {
           if (state is EmailVerificationState) {}
         },
         child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                // Title section at the top
-                _zaitoonTitle(context: context),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
+                  ),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Title section at the top
+                        _zaitoonTitle(context: context),
 
-                // Centered login form
-                Center(child: _loginForm()),
-              ],
-            ),
+                        // Expanded section that will take remaining space
+                        // and center its content
+                        Expanded(
+                          child: Center(
+                            child: _loginForm(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -104,7 +127,7 @@ class _MobileState extends State<_Mobile> {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 5),
             ZTextFieldEntitled(
               controller: _emailController,
               title: locale.emailOrUsrname,
@@ -204,9 +227,7 @@ class _MobileState extends State<_Mobile> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
                   border: Border.all(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: .09),
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: .09),
                   ),
                 ),
                 child: Image.asset('assets/images/zaitoonLogo.png'),
