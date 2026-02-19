@@ -14,7 +14,6 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/transport.dart';
 import '../../Features/Generic/generic_menu.dart';
 import '../../Features/Other/image_helper.dart';
 import '../../Features/Other/responsive.dart';
-import '../../Features/Other/secure_storage.dart';
 import '../../Features/Other/utils.dart';
 import '../../Localizations/l10n/translations/app_localizations.dart';
 import 'Ui/Dashboard/dashboard.dart';
@@ -71,7 +70,6 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
 
   void _logout() async {
     final authBloc = context.read<AuthBloc>();
-    await SecureStorage.clearCredentials();
     authBloc.add(OnLogoutEvent());
   }
 
@@ -671,7 +669,6 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
 
   void _logout() async {
     final authBloc = context.read<AuthBloc>();
-    await SecureStorage.clearCredentials();
     authBloc.add(OnLogoutEvent());
   }
 

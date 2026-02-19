@@ -15,7 +15,6 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/model/individual_model.dart';
 import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../features/branch_dropdown.dart';
-import 'package:flutter/services.dart';
 
 class AddUserView extends StatelessWidget {
   final int? indId; // Optional parameter for individual-specific users

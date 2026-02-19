@@ -138,7 +138,7 @@ class _ZCardState extends State<ZCard> {
           child: Padding(
             padding: widget.padding,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 /// Header (Image + Title + Status)

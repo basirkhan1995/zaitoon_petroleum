@@ -38,7 +38,6 @@ class _Mobile extends StatefulWidget {
   @override
   State<_Mobile> createState() => _MobileState();
 }
-
 class _MobileState extends State<_Mobile> {
   final TextEditingController searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
