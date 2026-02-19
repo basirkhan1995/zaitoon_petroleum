@@ -29,9 +29,10 @@ class ShippingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-      mobile: _MobileView(), // New mobile view with cards
+      mobile: _MobileView(),
       desktop: _DesktopView(),
-      tablet: _DesktopView(), // Tablet can use desktop view or you can create a tablet-specific view
+      tablet:
+      _DesktopView(),
     );
   }
 }
@@ -47,8 +48,6 @@ class _MobileView extends StatefulWidget {
 class _MobileViewState extends State<_MobileView> {
   final TextEditingController searchController = TextEditingController();
   String _baseCurrency = "";
-  bool _isDialogOpen = false;
-  int? _loadingShpId;
   int? _perId;
   Uint8List _companyLogo = Uint8List(0);
   final company = ReportModel();
@@ -92,50 +91,19 @@ class _MobileViewState extends State<_MobileView> {
   void _handleShippingTap(ShippingModel shp) {
     if (shp.shpId == null) return;
 
-    if (_isDialogOpen && _loadingShpId == shp.shpId) {
-      return;
-    }
-
-    if (_loadingShpId != null && _loadingShpId != shp.shpId) {
-      _loadingShpId = null;
-    }
-
-    _loadingShpId = shp.shpId;
-    context.read<ShippingBloc>().add(ClearShippingDetailEvent());
-    context.read<ShippingBloc>().add(LoadShippingDetailEvent(shp.shpId!));
+    // Store the perId for passing to the details screen
     setState(() {
       _perId = shp.perId;
     });
-  }
 
-  void _showShippingDetailDialog(BuildContext context, ShippingDetailsModel shipping) {
-    if (_isDialogOpen) return;
-
-    _isDialogOpen = true;
-
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) => Dialog(
-        insetPadding: const EdgeInsets.all(16),
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.9,
-          height: MediaQuery.of(context).size.height * 0.8,
-          child: ShippingByIdView(
-            shippingId: shipping.shpId,
-            perId: _perId,
-          ),
-        ),
+    // Navigate to the shipping details screen
+    Utils.goto(
+      context,
+      ShippingByIdView(
+        shippingId: shp.shpId,
+        perId: _perId, // This is why we keep _perId
       ),
-    ).then((value) {
-      _isDialogOpen = false;
-      _loadingShpId = null;
-      if (mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          context.read<ShippingBloc>().add(ClearShippingDetailEvent());
-        });
-      }
-    });
+    );
   }
 
   @override
@@ -147,28 +115,10 @@ class _MobileViewState extends State<_MobileView> {
       listeners: [
         BlocListener<ShippingBloc, ShippingState>(
           listener: (context, state) {
-            if (state is ShippingDetailLoadedState &&
-                state.currentShipping != null &&
-                state.shouldOpenDialog) {
-              if (!_isDialogOpen && _loadingShpId == state.currentShipping!.shpId) {
-                _showShippingDetailDialog(context, state.currentShipping!);
-              }
-            }
-            if (state is ShippingDetailLoadingState) {
-              _loadingShpId = state.loadingShpId;
-            }
-            if (state is ShippingErrorState ||
-                (state is ShippingListLoadedState && state.currentShipping == null)) {
-              _loadingShpId = null;
-            }
             if (state is ShippingSuccessState) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 context.read<ShippingBloc>().add(ClearShippingSuccessEvent());
               });
-            }
-            if (state is ShippingListLoadedState && state.currentShipping == null) {
-              _isDialogOpen = false;
-              _loadingShpId = null;
             }
           },
         ),
@@ -176,7 +126,6 @@ class _MobileViewState extends State<_MobileView> {
       child: Scaffold(
         backgroundColor: theme.colorScheme.surface,
         appBar: AppBar(
-
           backgroundColor: theme.colorScheme.surface,
           elevation: 0,
           title: Column(
@@ -214,7 +163,7 @@ class _MobileViewState extends State<_MobileView> {
             ),
           ],
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(60),
+            preferredSize: const Size.fromHeight(70),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: ZSearchField(
@@ -261,10 +210,7 @@ class _MobileViewState extends State<_MobileView> {
     }
 
     if (shippingList.isEmpty && !isLoading) {
-      return NoDataWidget(
-        message: tr.noDataFound,
-        onRefresh: _onRefresh,
-      );
+      return NoDataWidget(message: tr.noDataFound, onRefresh: _onRefresh);
     }
 
     final query = searchController.text.toLowerCase().trim();
@@ -273,7 +219,8 @@ class _MobileViewState extends State<_MobileView> {
       final vehicle = shp.vehicle?.toLowerCase() ?? '';
       final product = shp.proName?.toLowerCase() ?? '';
       final customer = shp.customer?.toLowerCase() ?? '';
-      final status = (shp.shpStatus == 1 ? tr.completedTitle : tr.pendingTitle).toLowerCase();
+      final status = (shp.shpStatus == 1 ? tr.completedTitle : tr.pendingTitle)
+          .toLowerCase();
       return id.contains(query) ||
           vehicle.contains(query) ||
           product.contains(query) ||
@@ -302,7 +249,10 @@ class _MobileViewState extends State<_MobileView> {
     return _buildShippingCardListView(filteredList, loadingShpId);
   }
 
-  Widget _buildShippingCardListView(List<ShippingModel> shippingList, int? loadingShpId) {
+  Widget _buildShippingCardListView(
+    List<ShippingModel> shippingList,
+    int? loadingShpId,
+  ) {
     final tr = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -316,7 +266,7 @@ class _MobileViewState extends State<_MobileView> {
               size: 80,
               color: theme.colorScheme.outline.withValues(alpha: .3),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
             Text(
               tr.noDataFound,
               style: theme.textTheme.titleMedium?.copyWith(
@@ -335,13 +285,11 @@ class _MobileViewState extends State<_MobileView> {
       itemBuilder: (context, index) {
         final shp = shippingList[index];
         final isLoadingThisItem = loadingShpId == shp.shpId;
-        final isCurrentlyViewing = _loadingShpId == shp.shpId && _isDialogOpen;
 
         return _buildShippingCard(
           shp: shp,
           isLoading: isLoadingThisItem,
-          isViewing: isCurrentlyViewing,
-          onTap: (isLoadingThisItem || isCurrentlyViewing) ? null : () => _handleShippingTap(shp),
+          onTap: isLoadingThisItem ? null : () => _handleShippingTap(shp),
         );
       },
     );
@@ -350,7 +298,6 @@ class _MobileViewState extends State<_MobileView> {
   Widget _buildShippingCard({
     required ShippingModel shp,
     required bool isLoading,
-    required bool isViewing,
     required VoidCallback? onTap,
   }) {
     final tr = AppLocalizations.of(context)!;
@@ -361,9 +308,9 @@ class _MobileViewState extends State<_MobileView> {
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: BorderRadius.circular(8),
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -372,10 +319,13 @@ class _MobileViewState extends State<_MobileView> {
                 children: [
                   // ID with loading indicator
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primary.withValues(alpha: .1),
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(6),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -399,16 +349,13 @@ class _MobileViewState extends State<_MobileView> {
                   ),
                   const Spacer(),
                   // Status Badge
-                  ShippingStatusBadge(
-                    status: shp.shpStatus ?? 0,
-                    tr: tr,
-                  ),
+                  ShippingStatusBadge(status: shp.shpStatus ?? 0, tr: tr),
                 ],
               ),
 
               const SizedBox(height: 12),
 
-              // Main Content in Grid
+              // Main Content
               _buildInfoRow(
                 icon: Icons.calendar_today,
                 label: tr.date,
@@ -453,13 +400,13 @@ class _MobileViewState extends State<_MobileView> {
                   ),
                   _buildAmountChip(
                     label: tr.loadingSize,
-                    amount: double.tryParse(shp.shpLoadSize!),
+                    amount: shp.shpLoadSize.toDoubleAmount(),
                     unit: shp.shpUnit,
                     icon: Icons.arrow_upward,
                   ),
                   _buildAmountChip(
                     label: tr.unloadingSize,
-                    amount: double.tryParse(shp.shpUnloadSize!),
+                    amount: shp.shpUnloadSize.toDoubleAmount(),
                     unit: shp.shpUnit,
                     icon: Icons.arrow_downward,
                   ),
@@ -471,10 +418,13 @@ class _MobileViewState extends State<_MobileView> {
               // Total Amount
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 12,
+                ),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primary.withValues(alpha: .05),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: theme.colorScheme.primary.withValues(alpha: .2),
                   ),
@@ -515,11 +465,7 @@ class _MobileViewState extends State<_MobileView> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          size: 16,
-          color: theme.colorScheme.outline,
-        ),
+        Icon(icon, size: 16, color: theme.colorScheme.outline),
         const SizedBox(width: 8),
         SizedBox(
           width: 70,
@@ -557,11 +503,7 @@ class _MobileViewState extends State<_MobileView> {
     return Expanded(
       child: Column(
         children: [
-          Icon(
-            icon,
-            size: 14,
-            color: theme.colorScheme.primary,
-          ),
+          Icon(icon, size: 14, color: theme.colorScheme.primary),
           const SizedBox(height: 4),
           Text(
             label,
@@ -573,10 +515,10 @@ class _MobileViewState extends State<_MobileView> {
           Text(
             amount != null
                 ? currency != null
-                ? '${amount.toAmount()} $currency'
-                : unit != null
-                ? '${amount.toAmount()} $unit'
-                : amount.toAmount()
+                      ? '${amount.toAmount()} $currency'
+                      : unit != null
+                      ? '${amount.toAmount()} $unit'
+                      : amount.toAmount()
                 : '-',
             style: theme.textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.bold,
@@ -607,8 +549,7 @@ class _MobileViewState extends State<_MobileView> {
     }
 
     if (shippingList.isEmpty) {
-      Utils.showOverlayMessage(context,
-          message: locale.noData, isError: true);
+      Utils.showOverlayMessage(context, message: locale.noData, isError: true);
       return;
     }
 
@@ -617,81 +558,63 @@ class _MobileViewState extends State<_MobileView> {
       builder: (_) => PrintPreviewDialog<List<ShippingModel>>(
         data: shippingList,
         company: company,
-        buildPreview: ({
-          required data,
-          required language,
-          required orientation,
-          required pageFormat,
-        }) {
-          return AllShippingPdfServices().printPreview(
-            company: company,
-            language: language,
-            orientation: orientation,
-            pageFormat: pageFormat,
-            shippingList: data,
-          );
-        },
-        onPrint: ({
-          required data,
-          required language,
-          required orientation,
-          required pageFormat,
-          required selectedPrinter,
-          required copies,
-          required pages,
-        }) {
-          return AllShippingPdfServices().printDocument(
-            company: company,
-            language: language,
-            orientation: orientation,
-            pageFormat: pageFormat,
-            selectedPrinter: selectedPrinter,
-            shippingList: data,
-            copies: copies,
-            pages: pages,
-          );
-        },
-        onSave: ({
-          required data,
-          required language,
-          required orientation,
-          required pageFormat,
-        }) {
-          return AllShippingPdfServices().createDocument(
-            company: company,
-            language: language,
-            orientation: orientation,
-            pageFormat: pageFormat,
-            shippingList: data,
-          );
-        },
+        buildPreview:
+            ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+            }) {
+              return AllShippingPdfServices().printPreview(
+                company: company,
+                language: language,
+                orientation: orientation,
+                pageFormat: pageFormat,
+                shippingList: data,
+              );
+            },
+        onPrint:
+            ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+              required selectedPrinter,
+              required copies,
+              required pages,
+            }) {
+              return AllShippingPdfServices().printDocument(
+                company: company,
+                language: language,
+                orientation: orientation,
+                pageFormat: pageFormat,
+                selectedPrinter: selectedPrinter,
+                shippingList: data,
+                copies: copies,
+                pages: pages,
+              );
+            },
+        onSave:
+            ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+            }) {
+              return AllShippingPdfServices().createDocument(
+                company: company,
+                language: language,
+                orientation: orientation,
+                pageFormat: pageFormat,
+                shippingList: data,
+              );
+            },
       ),
     );
   }
 
   void _onAdd() {
-    context.read<ShippingBloc>().add(ClearShippingDetailEvent());
-    _isDialogOpen = false;
-    _loadingShpId = null;
-
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        insetPadding: const EdgeInsets.all(16),
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.9,
-          height: MediaQuery.of(context).size.height * 0.8,
-          child: const ShippingByIdView(),
-        ),
-      ),
-    ).then((value) {
-      if (mounted) {
-        setState(() {
-          _isDialogOpen = false;
-          _loadingShpId = null;
-        });
-      }
-    });
+    Utils.goto(context, const ShippingByIdView());
   }
 
   void _onRefresh() {
@@ -699,7 +622,6 @@ class _MobileViewState extends State<_MobileView> {
   }
 }
 
-// Renamed original _Desktop class to _DesktopView for clarity
 class _DesktopView extends StatefulWidget {
   const _DesktopView();
 
@@ -771,7 +693,10 @@ class _DesktopViewState extends State<_DesktopView> {
     });
   }
 
-  void _showShippingDetailDialog(BuildContext context, ShippingDetailsModel shipping) {
+  void _showShippingDetailDialog(
+    BuildContext context,
+    ShippingDetailsModel shipping,
+  ) {
     if (_isDialogOpen) return;
 
     _isDialogOpen = true;
@@ -779,10 +704,8 @@ class _DesktopViewState extends State<_DesktopView> {
     showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (context) => ShippingByIdView(
-        shippingId: shipping.shpId,
-        perId: _perId,
-      ),
+      builder: (context) =>
+          ShippingByIdView(shippingId: shipping.shpId, perId: _perId),
     ).then((value) {
       _isDialogOpen = false;
       _loadingShpId = null;
@@ -808,7 +731,8 @@ class _DesktopViewState extends State<_DesktopView> {
             if (state is ShippingDetailLoadedState &&
                 state.currentShipping != null &&
                 state.shouldOpenDialog) {
-              if (!_isDialogOpen && _loadingShpId == state.currentShipping!.shpId) {
+              if (!_isDialogOpen &&
+                  _loadingShpId == state.currentShipping!.shpId) {
                 _showShippingDetailDialog(context, state.currentShipping!);
               }
             }
@@ -816,7 +740,8 @@ class _DesktopViewState extends State<_DesktopView> {
               _loadingShpId = state.loadingShpId;
             }
             if (state is ShippingErrorState ||
-                (state is ShippingListLoadedState && state.currentShipping == null)) {
+                (state is ShippingListLoadedState &&
+                    state.currentShipping == null)) {
               _loadingShpId = null;
             }
             if (state is ShippingSuccessState) {
@@ -824,7 +749,8 @@ class _DesktopViewState extends State<_DesktopView> {
                 context.read<ShippingBloc>().add(ClearShippingSuccessEvent());
               });
             }
-            if (state is ShippingListLoadedState && state.currentShipping == null) {
+            if (state is ShippingListLoadedState &&
+                state.currentShipping == null) {
               _isDialogOpen = false;
               _loadingShpId = null;
             }
@@ -838,7 +764,10 @@ class _DesktopViewState extends State<_DesktopView> {
           body: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 8,
+                ),
                 child: Row(
                   spacing: 8,
                   children: [
@@ -850,15 +779,15 @@ class _DesktopViewState extends State<_DesktopView> {
                         children: [
                           Text(
                             tr.allShipping,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           Text(
                             tr.lastMonthShipments,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.outline,
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.outline,
+                                ),
                           ),
                         ],
                       ),
@@ -932,7 +861,10 @@ class _DesktopViewState extends State<_DesktopView> {
           SizedBox(width: 130, child: Text(tr.customer, style: titleStyle)),
           SizedBox(width: 110, child: Text(tr.shippingRent, style: titleStyle)),
           SizedBox(width: 110, child: Text(tr.loadingSize, style: titleStyle)),
-          SizedBox(width: 110, child: Text(tr.unloadingSize, style: titleStyle)),
+          SizedBox(
+            width: 110,
+            child: Text(tr.unloadingSize, style: titleStyle),
+          ),
           SizedBox(width: 120, child: Text(tr.totalTitle, style: titleStyle)),
           SizedBox(width: 100, child: Text(tr.status, style: titleStyle)),
         ],
@@ -940,7 +872,10 @@ class _DesktopViewState extends State<_DesktopView> {
     );
   }
 
-  Widget _buildShippingListView(List<ShippingModel> shippingList, int? loadingShpId) {
+  Widget _buildShippingListView(
+    List<ShippingModel> shippingList,
+    int? loadingShpId,
+  ) {
     return ListView.builder(
       itemCount: shippingList.length,
       itemBuilder: (context, index) {
@@ -949,7 +884,9 @@ class _DesktopViewState extends State<_DesktopView> {
         final isCurrentlyViewing = _loadingShpId == shp.shpId && _isDialogOpen;
 
         return InkWell(
-          onTap: (isLoadingThisItem || isCurrentlyViewing) ? null : () => _handleShippingTap(shp),
+          onTap: (isLoadingThisItem || isCurrentlyViewing)
+              ? null
+              : () => _handleShippingTap(shp),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             decoration: BoxDecoration(
@@ -960,9 +897,9 @@ class _DesktopViewState extends State<_DesktopView> {
                   : Colors.transparent,
               border: isCurrentlyViewing
                   ? Border.all(
-                color: Theme.of(context).colorScheme.primary,
-                width: 1,
-              )
+                      color: Theme.of(context).colorScheme.primary,
+                      width: 1,
+                    )
                   : null,
             ),
             child: Row(
@@ -976,7 +913,9 @@ class _DesktopViewState extends State<_DesktopView> {
                         SizedBox(
                           width: 20,
                           height: 20,
-                          child: const CircularProgressIndicator(strokeWidth: 2),
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
                         ),
                       if (!isLoadingThisItem)
                         Flexible(
@@ -988,7 +927,10 @@ class _DesktopViewState extends State<_DesktopView> {
                     ],
                   ),
                 ),
-                SizedBox(width: 100, child: Text(shp.shpMovingDate.toFormattedDate())),
+                SizedBox(
+                  width: 100,
+                  child: Text(shp.shpMovingDate.toFormattedDate()),
+                ),
                 Expanded(child: Text(shp.vehicle ?? "")),
                 SizedBox(width: 200, child: Text(shp.proName ?? "")),
                 SizedBox(width: 130, child: Text(shp.customer ?? "")),
@@ -1002,7 +944,9 @@ class _DesktopViewState extends State<_DesktopView> {
                 ),
                 SizedBox(
                   width: 110,
-                  child: Text("${shp.shpUnloadSize?.toAmount()} ${shp.shpUnit}"),
+                  child: Text(
+                    "${shp.shpUnloadSize?.toAmount()} ${shp.shpUnit}",
+                  ),
                 ),
                 SizedBox(
                   width: 120,
@@ -1048,10 +992,7 @@ class _DesktopViewState extends State<_DesktopView> {
     }
 
     if (shippingList.isEmpty && !isLoading) {
-      return NoDataWidget(
-        message: tr.noDataFound,
-        onRefresh: _onRefresh,
-      );
+      return NoDataWidget(message: tr.noDataFound, onRefresh: _onRefresh);
     }
 
     final query = searchController.text.toLowerCase().trim();
@@ -1060,7 +1001,8 @@ class _DesktopViewState extends State<_DesktopView> {
       final vehicle = shp.vehicle?.toLowerCase() ?? '';
       final product = shp.proName?.toLowerCase() ?? '';
       final customer = shp.customer?.toLowerCase() ?? '';
-      final status = (shp.shpStatus == 1 ? tr.completedTitle : tr.pendingTitle).toLowerCase();
+      final status = (shp.shpStatus == 1 ? tr.completedTitle : tr.pendingTitle)
+          .toLowerCase();
       return id.contains(query) ||
           vehicle.contains(query) ||
           product.contains(query) ||
@@ -1105,8 +1047,7 @@ class _DesktopViewState extends State<_DesktopView> {
     }
 
     if (shippingList.isEmpty) {
-      Utils.showOverlayMessage(context,
-          message: locale.noData, isError: true);
+      Utils.showOverlayMessage(context, message: locale.noData, isError: true);
       return;
     }
 
@@ -1115,54 +1056,57 @@ class _DesktopViewState extends State<_DesktopView> {
       builder: (_) => PrintPreviewDialog<List<ShippingModel>>(
         data: shippingList,
         company: company,
-        buildPreview: ({
-          required data,
-          required language,
-          required orientation,
-          required pageFormat,
-        }) {
-          return AllShippingPdfServices().printPreview(
-            company: company,
-            language: language,
-            orientation: orientation,
-            pageFormat: pageFormat,
-            shippingList: data,
-          );
-        },
-        onPrint: ({
-          required data,
-          required language,
-          required orientation,
-          required pageFormat,
-          required selectedPrinter,
-          required copies,
-          required pages,
-        }) {
-          return AllShippingPdfServices().printDocument(
-            company: company,
-            language: language,
-            orientation: orientation,
-            pageFormat: pageFormat,
-            selectedPrinter: selectedPrinter,
-            shippingList: data,
-            copies: copies,
-            pages: pages,
-          );
-        },
-        onSave: ({
-          required data,
-          required language,
-          required orientation,
-          required pageFormat,
-        }) {
-          return AllShippingPdfServices().createDocument(
-            company: company,
-            language: language,
-            orientation: orientation,
-            pageFormat: pageFormat,
-            shippingList: data,
-          );
-        },
+        buildPreview:
+            ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+            }) {
+              return AllShippingPdfServices().printPreview(
+                company: company,
+                language: language,
+                orientation: orientation,
+                pageFormat: pageFormat,
+                shippingList: data,
+              );
+            },
+        onPrint:
+            ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+              required selectedPrinter,
+              required copies,
+              required pages,
+            }) {
+              return AllShippingPdfServices().printDocument(
+                company: company,
+                language: language,
+                orientation: orientation,
+                pageFormat: pageFormat,
+                selectedPrinter: selectedPrinter,
+                shippingList: data,
+                copies: copies,
+                pages: pages,
+              );
+            },
+        onSave:
+            ({
+              required data,
+              required language,
+              required orientation,
+              required pageFormat,
+            }) {
+              return AllShippingPdfServices().createDocument(
+                company: company,
+                language: language,
+                orientation: orientation,
+                pageFormat: pageFormat,
+                shippingList: data,
+              );
+            },
       ),
     );
   }
@@ -1200,23 +1144,24 @@ class ShippingStatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isCompleted = status == 1;
 
-    final Color bgColor =
-    isCompleted ? const Color(0xFFE8F5E9) : const Color(0xFFFFF3E0);
+    final Color bgColor = isCompleted
+        ? const Color(0xFFE8F5E9)
+        : const Color(0xFFFFF3E0);
 
-    final Color textColor =
-    isCompleted ? const Color(0xFF2E7D32) : const Color(0xFFEF6C00);
+    final Color textColor = isCompleted
+        ? const Color(0xFF2E7D32)
+        : const Color(0xFFEF6C00);
 
-    final IconData icon =
-    isCompleted ? Icons.check_circle_rounded : Icons.schedule_rounded;
+    final IconData icon = isCompleted
+        ? Icons.check_circle_rounded
+        : Icons.schedule_rounded;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(5),
-        border: Border.all(
-          color: textColor.withValues(alpha: .4),
-        ),
+        border: Border.all(color: textColor.withValues(alpha: .4)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
