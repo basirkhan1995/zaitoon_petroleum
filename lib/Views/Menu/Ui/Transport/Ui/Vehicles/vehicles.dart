@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/status_badge.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/add_edit_vehicle.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/bloc/vehicle_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../Features/Widgets/search_field.dart';
+import '../../../../../../Features/Widgets/zcard_mobile.dart';
 
 class VehiclesView extends StatelessWidget {
   const VehiclesView({super.key});
@@ -28,7 +29,141 @@ class _Mobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final color = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context)!;
+
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: (){
+            Utils.goto(context, AddEditVehicleView());
+          }),
+      body: Column(
+        children: [
+          // Search Field
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: ZSearchField(
+              icon: FontAwesomeIcons.magnifyingGlass,
+              controller: TextEditingController(),
+              hint: tr.search,
+              onChanged: (value) {
+                // Handle search
+              },
+              title: "",
+            ),
+          ),
+
+          // Vehicle List
+          Expanded(
+            child: BlocBuilder<VehicleBloc, VehicleState>(
+              builder: (context, state) {
+                if (state is VehicleLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (state is VehicleErrorState) {
+                  return NoDataWidget(
+                    message: state.message,
+                    onRefresh: () {
+                      context.read<VehicleBloc>().add(LoadVehicleEvent());
+                    },
+                  );
+                }
+
+                if (state is VehicleLoadedState) {
+                  final vehicles = state.vehicles;
+
+                  if (vehicles.isEmpty) {
+                    return NoDataWidget(
+                      title: tr.noData,
+                      message: tr.noDataFound,
+                      onRefresh: () {
+                        context.read<VehicleBloc>().add(LoadVehicleEvent());
+                      },
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    itemCount: vehicles.length,
+                    itemBuilder: (context, index) {
+                      final vehicle = vehicles[index];
+
+                      // Prepare info items for the card
+                      final List<MobileInfoItem> infoItems = [
+                        MobileInfoItem(
+                          icon: Icons.local_gas_station,
+                          text: vehicle.vclFuelType ?? '',
+                          iconColor: color.primary,
+                        ),
+                        MobileInfoItem(
+                          icon: Icons.directions_car,
+                          text: vehicle.vclBodyType ?? '',
+                          iconColor: color.secondary,
+                        ),
+                        MobileInfoItem(
+                          icon: Icons.numbers,
+                          text: vehicle.vclPlateNo ?? '',
+                          iconColor: color.tertiary,
+                        ),
+                      ];
+
+                      // Add driver if available
+                      if (vehicle.driver != null && vehicle.driver!.isNotEmpty) {
+                        infoItems.add(
+                          MobileInfoItem(
+                            icon: Icons.person,
+                            text: vehicle.driver!,
+                            iconColor: color.primary,
+                          ),
+                        );
+                      }
+
+                      // Add ownership if available
+                      if (vehicle.vclOwnership != null && vehicle.vclOwnership!.isNotEmpty) {
+                        infoItems.add(
+                          MobileInfoItem(
+                            icon: Icons.business,
+                            text: vehicle.vclOwnership!,
+                            iconColor: color.secondary,
+                          ),
+                        );
+                      }
+
+                      return MobileInfoCard(
+
+                        title: vehicle.vclModel ?? '',
+                        subtitle: vehicle.driver ?? '',
+                        infoItems: infoItems,
+                        status: MobileStatus(
+                          label: vehicle.vclStatus == 1 ? tr.active : tr.inactive,
+                          color: vehicle.vclStatus == 1
+                              ? Colors.green
+                              : Colors.red,
+                          backgroundColor: vehicle.vclStatus == true
+                              ? Colors.green.withValues(alpha: .1)
+                              : Colors.red.withValues(alpha: .1),
+                        ),
+                        onTap: () {
+                          Utils.goto(context, AddEditVehicleView(model: vehicle));
+                        },
+                        accentColor: color.primary,
+                        showActions: true,
+                      );
+                    },
+                  );
+                }
+
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -123,9 +258,6 @@ class _DesktopState extends State<_Desktop> {
                   SizedBox(
                       width: 100,
                       child: Text(tr.vehicleType,style: titleStyle)),
-                  SizedBox(
-                      width: 100,
-                      child: Text(tr.drivers,style: titleStyle)),
                   SizedBox(
                       width: 90,
                       child: Text(tr.status,style: titleStyle)),
