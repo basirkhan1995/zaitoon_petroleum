@@ -483,28 +483,11 @@ class _BaseStorageViewState extends State<_BaseStorageView> {
     final color = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: color.surface,
+
       appBar: widget.isMobile
           ? AppBar(
         title: Text(locale.storage),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              context.read<StorageBloc>().add(LoadStorageEvent());
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => const StorageAddEditView(),
-              );
-            },
-          ),
-        ],
+
       )
           : null,
       body: Column(
@@ -532,6 +515,15 @@ class _BaseStorageViewState extends State<_BaseStorageView> {
                 if (state is StorageLoadingState) {
                   return const Center(
                     child: CircularProgressIndicator(),
+                  );
+                }
+                if (state is StorageErrorState) {
+                  return NoDataWidget(
+                    title: locale.accessDenied,
+                    message: state.error,
+                    onRefresh: () {
+                      context.read<StorageBloc>().add(LoadStorageEvent());
+                    },
                   );
                 }
                 if (state is StorageLoadedState) {

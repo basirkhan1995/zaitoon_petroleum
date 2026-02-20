@@ -66,12 +66,6 @@ class _BaseStockSettings extends StatelessWidget {
         builder: (context, state) {
           return Scaffold(
             backgroundColor: colorScheme.surface,
-            appBar: AppBar(
-              title: Text(locale.stock),
-              centerTitle: true,
-              elevation: 0,
-              backgroundColor: colorScheme.surface,
-            ),
             body: IndexedStack(
               index: menuItems.indexWhere((item) => item.value == state.tab),
               children: menuItems.map((item) => item.screen).toList(),
@@ -100,12 +94,12 @@ class _BaseStockSettings extends StatelessWidget {
                             StockSettingsTabOnChangedEvent(item.value),
                           ),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.symmetric(vertical: 4),
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? colorScheme.primary.withValues(alpha: .1)
                                   : Colors.transparent,
-                              borderRadius: BorderRadius.circular(30),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,

@@ -527,27 +527,6 @@ class _BaseProductsViewState extends State<_BaseProductsView> {
 
     return Scaffold(
       backgroundColor: color.surface,
-      appBar: widget.isMobile
-          ? AppBar(
-        title: Text(tr.products),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: onRefresh,
-          ),
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => const AddEditProductView(),
-              );
-            },
-          ),
-        ],
-      )
-          : null,
       body: Column(
         children: [
           // Header Section

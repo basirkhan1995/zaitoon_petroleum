@@ -466,24 +466,6 @@ class _BaseBranchesViewState extends State<_BaseBranchesView> {
       appBar: widget.isMobile
           ? AppBar(
         title: Text(locale.branches),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              context.read<BranchBloc>().add(LoadBranchesEvent());
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => const BranchAddEditView(),
-              );
-            },
-          ),
-        ],
       )
           : null,
       body: Column(
