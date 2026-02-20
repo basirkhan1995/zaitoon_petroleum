@@ -14,14 +14,22 @@ class GeneralView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(
-        tablet: _Desktop(),
-        mobile: _Desktop(),
-        desktop: _Desktop());
+    return const ResponsiveLayout(
+      mobile: _MobileGeneralView(),
+      tablet: _DesktopGeneralView(),
+      desktop: _DesktopGeneralView(),
+    );
   }
 }
 
-class _Desktop extends StatelessWidget {
+// Base class to share common functionality
+class _BaseGeneralView extends StatelessWidget {
+  final bool isMobile;
+
+  const _BaseGeneralView({
+    required this.isMobile,
+  });
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AuthBloc>().state;
@@ -30,24 +38,26 @@ class _Desktop extends StatelessWidget {
       return const SizedBox();
     }
     final login = state.loginData;
+    final colorScheme = Theme.of(context).colorScheme;
 
     final menuItems = [
       if (login.hasPermission(59) ?? false)
-      MenuDefinition(
-        value: GeneralTabName.system,
-        label: AppLocalizations.of(context)!.systemSettings,
-        screen: const SystemView(),
-        icon: Icons.tune,
-      ),
+        MenuDefinition(
+          value: GeneralTabName.system,
+          label: AppLocalizations.of(context)!.systemSettings,
+          screen: const SystemView(),
+          icon: Icons.tune,
+        ),
       if (login.hasPermission(60) ?? false)
-      MenuDefinition(
-        value: GeneralTabName.password,
-        label: AppLocalizations.of(context)!.password,
-        screen: const PasswordView(),
-        icon: Icons.lock,
-      ),
+        MenuDefinition(
+          value: GeneralTabName.password,
+          label: AppLocalizations.of(context)!.password,
+          screen: const PasswordView(),
+          icon: Icons.lock,
+        ),
     ];
-    // 🟢 FIX: Handle empty tabs case
+
+    // Handle empty tabs case
     if (menuItems.isEmpty) {
       return Center(
         child: Column(
@@ -56,7 +66,7 @@ class _Desktop extends StatelessWidget {
             Icon(
               Icons.no_accounts_rounded,
               size: 48,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .3),
+              color: colorScheme.onSurface.withValues(alpha: .3),
             ),
             const SizedBox(height: 16),
             Text(
@@ -64,7 +74,7 @@ class _Desktop extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .5),
+                color: colorScheme.onSurface.withValues(alpha: .5),
               ),
             ),
             const SizedBox(height: 8),
@@ -72,7 +82,7 @@ class _Desktop extends StatelessWidget {
               "Please contact administrator",
               style: TextStyle(
                 fontSize: 14,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .4),
+                color: colorScheme.onSurface.withValues(alpha: .4),
               ),
             ),
           ],
@@ -81,24 +91,143 @@ class _Desktop extends StatelessWidget {
     }
 
     return BlocBuilder<GeneralTabBloc, GeneralTabState>(
-      builder: (context, state) {
-        return GenericMenuWithScreen(
+      builder: (context, blocState) {
+        if (isMobile) {
+          // Mobile layout with bottom navigation bar
+          final currentIndex = menuItems.indexWhere(
+                (item) => item.value == blocState.tab,
+          );
+
+          return Scaffold(
+            backgroundColor: colorScheme.surface,
+            body: IndexedStack(
+              index: currentIndex >= 0 ? currentIndex : 0,
+              children: menuItems.map((item) => item.screen).toList(),
+            ),
+            bottomNavigationBar: _buildBottomNavigationBar(
+              context,
+              menuItems,
+              blocState.tab,
+            ),
+          );
+        } else {
+          // Desktop/Tablet layout with side menu
+          return GenericMenuWithScreen(
             isExpanded: false,
             menuWidth: 190,
-            padding: EdgeInsets.symmetric(vertical: 7, horizontal: 8),
-            margin: EdgeInsets.symmetric(vertical: 5, horizontal: 4),
-            selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha:.09),
-            selectedTextColor: Theme.of(context).colorScheme.onSurface,
-            unselectedTextColor: Theme.of(context).colorScheme.secondary,
-            selectedValue: state.tab,
-            onChanged: (value)=> context.read<GeneralTabBloc>().add(GeneralTabOnChangedEvent(value)),
-            items: menuItems
-        );
+            padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 8),
+            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 4),
+            selectedColor: colorScheme.primary.withValues(alpha: .09),
+            selectedTextColor: colorScheme.onSurface,
+            unselectedTextColor: colorScheme.secondary,
+            selectedValue: blocState.tab,
+            onChanged: (value) => context
+                .read<GeneralTabBloc>()
+                .add(GeneralTabOnChangedEvent(value)),
+            items: menuItems,
+          );
+        }
       },
+    );
+  }
+
+  Widget _buildBottomNavigationBar(
+      BuildContext context,
+      List<MenuDefinition> menuItems,
+      GeneralTabName currentTab,
+      ) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .08),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: menuItems.map((item) {
+              final isSelected = item.value == currentTab;
+              return Expanded(
+                child: InkWell(
+                  onTap: () => context
+                      .read<GeneralTabBloc>()
+                      .add(GeneralTabOnChangedEvent(item.value)),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? colorScheme.primary.withValues(alpha: .1)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          item.icon,
+                          color: isSelected
+                              ? colorScheme.primary
+                              : colorScheme.outline,
+                          size: 24,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          item.label,
+                          style: TextStyle(
+                            color: isSelected
+                                ? colorScheme.primary
+                                : colorScheme.outline,
+                            fontSize: 11,
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
     );
   }
 }
 
+// Mobile View
+class _MobileGeneralView extends StatelessWidget {
+  const _MobileGeneralView();
 
+  @override
+  Widget build(BuildContext context) {
+    return const _BaseGeneralView(
+      isMobile: true,
+    );
+  }
+}
 
+// Desktop/Tablet View
+class _DesktopGeneralView extends StatelessWidget {
+  const _DesktopGeneralView();
 
+  @override
+  Widget build(BuildContext context) {
+    return const _BaseGeneralView(
+      isMobile: false,
+    );
+  }
+}
