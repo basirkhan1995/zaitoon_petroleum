@@ -14,14 +14,24 @@ class StockSettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(
-        tablet: _Desktop(),
-        mobile: _Desktop(),
-        desktop: _Desktop());
+    return const ResponsiveLayout(
+      mobile: _MobileStockSettings(),
+      tablet: _TabletStockSettings(),
+      desktop: _DesktopStockSettings(),
+    );
   }
 }
 
-class _Desktop extends StatelessWidget {
+// Base class to share common functionality
+class _BaseStockSettings extends StatelessWidget {
+  final bool isMobile;
+  final bool isTablet;
+
+  const _BaseStockSettings({
+    required this.isMobile,
+    required this.isTablet,
+  });
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AuthBloc>().state;
@@ -29,43 +39,257 @@ class _Desktop extends StatelessWidget {
     if (state is! AuthenticatedState) {
       return const SizedBox();
     }
-     final login = state.loginData;
-    final menuItems = [
+    final login = state.loginData;
+    final locale = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
 
+    final menuItems = [
       if (login.hasPermission(67) ?? false)
-      MenuDefinition(
-        value: StockSettingsTabName.products,
-        label: AppLocalizations.of(context)!.products,
-        screen: const ProductsView(),
-        icon: Icons.production_quantity_limits_rounded,
-      ),
+        MenuDefinition(
+          value: StockSettingsTabName.products,
+          label: locale.products,
+          screen: const ProductsView(),
+          icon: Icons.production_quantity_limits_rounded,
+        ),
       if (login.hasPermission(68) ?? false)
-      MenuDefinition(
-        value: StockSettingsTabName.proCategory,
-        label: AppLocalizations.of(context)!.categoryTitle,
-        screen: const ProCatView(),
-        icon: Icons.dialpad_rounded,
-      ),
+        MenuDefinition(
+          value: StockSettingsTabName.proCategory,
+          label: locale.categoryTitle,
+          screen: const ProCatView(),
+          icon: Icons.dialpad_rounded,
+        ),
     ];
 
-    return BlocBuilder<StockSettingsTabBloc, StockSettingsTabState>(
-      builder: (context, state) {
-        return GenericMenuWithScreen(
+    if (isMobile) {
+      // Mobile layout with bottom navigation bar
+      return BlocBuilder<StockSettingsTabBloc, StockSettingsTabState>(
+        builder: (context, state) {
+          return Scaffold(
+            backgroundColor: colorScheme.surface,
+            appBar: AppBar(
+              title: Text(locale.stock),
+              centerTitle: true,
+              elevation: 0,
+              backgroundColor: colorScheme.surface,
+            ),
+            body: IndexedStack(
+              index: menuItems.indexWhere((item) => item.value == state.tab),
+              children: menuItems.map((item) => item.screen).toList(),
+            ),
+            bottomNavigationBar: Container(
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: .05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: menuItems.map((item) {
+                      final isSelected = item.value == state.tab;
+                      return Expanded(
+                        child: InkWell(
+                          onTap: () => context.read<StockSettingsTabBloc>().add(
+                            StockSettingsTabOnChangedEvent(item.value),
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? colorScheme.primary.withValues(alpha: .1)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  item.icon,
+                                  color: isSelected
+                                      ? colorScheme.primary
+                                      : colorScheme.outline,
+                                  size: 24,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  item.label,
+                                  style: TextStyle(
+                                    color: isSelected
+                                        ? colorScheme.primary
+                                        : colorScheme.outline,
+                                    fontSize: 11,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.normal,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    } else if (isTablet) {
+      // Tablet layout with side-by-side menu and content
+      return BlocBuilder<StockSettingsTabBloc, StockSettingsTabState>(
+        builder: (context, state) {
+          return Scaffold(
+            backgroundColor: colorScheme.surface,
+            appBar: AppBar(
+              title: Text(locale.stock),
+              centerTitle: true,
+              elevation: 0,
+              backgroundColor: colorScheme.surface,
+            ),
+            body: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Side menu for tablet
+                Container(
+                  width: 200,
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface,
+                    border: Border(
+                      right: BorderSide(
+                        color: colorScheme.outline.withValues(alpha: .1),
+                      ),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 8),
+                      ...menuItems.map((item) {
+                        final isSelected = item.value == state.tab;
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: isSelected
+                                ? colorScheme.primary.withValues(alpha: .1)
+                                : Colors.transparent,
+                          ),
+                          child: ListTile(
+                            onTap: () => context.read<StockSettingsTabBloc>().add(
+                              StockSettingsTabOnChangedEvent(item.value),
+                            ),
+                            leading: Icon(
+                              item.icon,
+                              color: isSelected
+                                  ? colorScheme.primary
+                                  : colorScheme.outline,
+                              size: 20,
+                            ),
+                            title: Text(
+                              item.label,
+                              style: TextStyle(
+                                color: isSelected
+                                    ? colorScheme.primary
+                                    : colorScheme.onSurface,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            dense: true,
+                          ),
+                        );
+                      }).toList(),
+                    ],
+                  ),
+                ),
+                // Content area
+                Expanded(
+                  child: IndexedStack(
+                    index: menuItems.indexWhere((item) => item.value == state.tab),
+                    children: menuItems.map((item) => item.screen).toList(),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } else {
+      // Desktop layout (original)
+      return BlocBuilder<StockSettingsTabBloc, StockSettingsTabState>(
+        builder: (context, state) {
+          return GenericMenuWithScreen(
             isExpanded: false,
             menuWidth: 190,
-            padding: EdgeInsets.symmetric(vertical: 7, horizontal: 8),
-            margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-            selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha:.09),
-            selectedTextColor: Theme.of(context).colorScheme.onSurface,
-            unselectedTextColor: Theme.of(context).colorScheme.secondary,
+            padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 8),
+            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+            selectedColor: colorScheme.primary.withValues(alpha: .09),
+            selectedTextColor: colorScheme.onSurface,
+            unselectedTextColor: colorScheme.secondary,
             selectedValue: state.tab,
-            onChanged: (value)=> context.read<StockSettingsTabBloc>().add(StockSettingsTabOnChangedEvent(value)),
-            items: menuItems
-        );
-      },
+            onChanged: (value) => context.read<StockSettingsTabBloc>().add(
+              StockSettingsTabOnChangedEvent(value),
+            ),
+            items: menuItems,
+          );
+        },
+      );
+    }
+  }
+}
+
+// Mobile View
+class _MobileStockSettings extends StatelessWidget {
+  const _MobileStockSettings();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _BaseStockSettings(
+      isMobile: true,
+      isTablet: false,
     );
   }
 }
 
+// Tablet View
+class _TabletStockSettings extends StatelessWidget {
+  const _TabletStockSettings();
 
+  @override
+  Widget build(BuildContext context) {
+    return const _BaseStockSettings(
+      isMobile: false,
+      isTablet: true,
+    );
+  }
+}
 
+// Desktop View
+class _DesktopStockSettings extends StatelessWidget {
+  const _DesktopStockSettings();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _BaseStockSettings(
+      isMobile: false,
+      isTablet: false,
+    );
+  }
+}

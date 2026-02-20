@@ -41,12 +41,14 @@ class _Desktop extends StatelessWidget {
       body: BlocBuilder<SettingsTabBloc, SettingsTabState>(
         builder: (context, state) {
           final tabs = <ZTabItem<SettingsTabName>>[
+
             if (login.hasPermission(58) ?? false)
               ZTabItem(
                 value: SettingsTabName.general,
                 label: AppLocalizations.of(context)!.general,
                 screen: const GeneralView(),
               ),
+
             if (login.hasPermission(61) ?? false)
               ZTabItem(
                 value: SettingsTabName.company,
@@ -74,6 +76,7 @@ class _Desktop extends StatelessWidget {
                 label: AppLocalizations.of(context)!.backupTitle,
                 screen: const BackupView(),
               ),
+
             if (login.hasPermission(70) ?? false)
             ZTabItem(
               value: SettingsTabName.about,
@@ -82,6 +85,7 @@ class _Desktop extends StatelessWidget {
             ),
 
           ];
+
           // 🟢 FIX: Handle empty tabs case
           if (tabs.isEmpty) {
             return Center(
@@ -114,6 +118,7 @@ class _Desktop extends StatelessWidget {
               ),
             );
           }
+
           final availableValues = tabs.map((tab) => tab.value).toList();
           final selected = availableValues.contains(state.tabs)
               ? state.tabs
@@ -164,6 +169,20 @@ class _Mobile extends StatelessWidget {
                 screen: const GeneralView(),
               ),
 
+            if (login.hasPermission(61) ?? false)
+              ZTabItem(
+                value: SettingsTabName.company,
+                label: AppLocalizations.of(context)!.company,
+                screen: const CompanyTabsView(),
+              ),
+
+            if (login.hasPermission(66) ?? false)
+              ZTabItem(
+                value: SettingsTabName.stock,
+                label: AppLocalizations.of(context)!.stock,
+                screen: const StockSettingsView(),
+              ),
+
             if (login.usrRole == "Super")
               ZTabItem(
                 value: SettingsTabName.txnTypes,
@@ -171,13 +190,13 @@ class _Mobile extends StatelessWidget {
                 screen: const TxnTypesView(),
               ),
 
-
             if (login.hasPermission(32) ?? false)
               ZTabItem(
                 value: SettingsTabName.backup,
                 label: AppLocalizations.of(context)!.backupTitle,
                 screen: const BackupView(),
               ),
+
             if (login.hasPermission(70) ?? false)
               ZTabItem(
                 value: SettingsTabName.about,

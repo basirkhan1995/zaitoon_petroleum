@@ -334,8 +334,8 @@ class _MobileState extends State<_Mobile> {
                                       ],
                                     ),
                                     const SizedBox(height: 6),
-                                    // Reference with copy
 
+                                    // Reference with copy
                                         Text(
                                           txn.trnReference ?? "",
                                           style: const TextStyle(fontWeight: FontWeight.bold),

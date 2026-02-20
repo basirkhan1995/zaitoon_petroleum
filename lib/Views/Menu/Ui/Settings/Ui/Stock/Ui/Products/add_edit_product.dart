@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
+import 'package:zaitoon_petroleum/Features/Other/zform_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../ProductCategory/features/pro_cat_drop.dart';
 import '../ProductCategory/model/pro_cat_model.dart';
 import 'bloc/products_bloc.dart';
@@ -13,45 +12,35 @@ import 'dart:math';
 
 class AddEditProductView extends StatelessWidget {
   final ProductsModel? model;
-  const AddEditProductView({super.key,this.model});
+  const AddEditProductView({super.key, this.model});
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-      mobile: _Mobile(),
-      desktop: _Desktop(model),
-      tablet: _Tablet(),
+      mobile: _MobileProductAddEdit(model: model),
+      tablet: _TabletProductAddEdit(model: model),
+      desktop: _DesktopProductAddEdit(model: model),
     );
   }
 }
 
-class _Mobile extends StatelessWidget {
-  const _Mobile();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-class _Desktop extends StatefulWidget {
+// Base class to share common functionality
+class _BaseProductAddEdit extends StatefulWidget {
   final ProductsModel? model;
-  const _Desktop(this.model);
+  final bool isMobile;
+  final bool isTablet;
+
+  const _BaseProductAddEdit({
+    required this.model,
+    required this.isMobile,
+    required this.isTablet,
+  });
 
   @override
-  State<_Desktop> createState() => _DesktopState();
+  State<_BaseProductAddEdit> createState() => _BaseProductAddEditState();
 }
 
-class _DesktopState extends State<_Desktop> {
+class _BaseProductAddEditState extends State<_BaseProductAddEdit> {
   final formKey = GlobalKey<FormState>();
 
   final productName = TextEditingController();
@@ -63,35 +52,410 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   void initState() {
-    if(widget.model !=null){
-      productName.text = widget.model?.proName??"";
-      productCode.text = widget.model?.proCode??"";
-      madeIn.text = widget.model?.proMadeIn??"";
-      details.text = widget.model?.proDetails??"";
+    super.initState();
+    if (widget.model != null) {
+      productName.text = widget.model?.proName ?? "";
+      productCode.text = widget.model?.proCode ?? "";
+      madeIn.text = widget.model?.proMadeIn ?? "";
+      details.text = widget.model?.proDetails ?? "";
       catId = widget.model?.proCategory;
-    }if(widget.model == null){
+    }
+    if (widget.model == null) {
       productCode.text = generateProductCode();
     }
+  }
 
-    super.initState();
+  @override
+  void dispose() {
+    productName.dispose();
+    productCode.dispose();
+    madeIn.dispose();
+    details.dispose();
+    super.dispose();
+  }
+
+  String generateProductCode({String prefix = 'PRD'}) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    final rand = Random.secure();
+    final now = DateTime.now();
+
+    final batch = List.generate(3, (_) => chars[rand.nextInt(chars.length)]).join();
+    final date = '${now.year % 100}${now.month.toString().padLeft(2, '0')}';
+    return '$prefix-$date-$batch';
+  }
+
+  void onSubmit() {
+    if (!formKey.currentState!.validate()) return;
+    final bloc = context.read<ProductsBloc>();
+    final data = ProductsModel(
+      proId: widget.model?.proId,
+      proCode: productCode.text,
+      proName: productName.text,
+      proMadeIn: madeIn.text,
+      proCategory: _selectedCategory?.pcId,
+      proDetails: details.text,
+      proStatus: 1,
+    );
+    if (widget.model != null) {
+      bloc.add(UpdateProductEvent(data));
+    } else {
+      bloc.add(AddProductEvent(data));
+    }
+  }
+
+  // Build action button based on screen size and state
+  Widget _buildActionButton(AppLocalizations tr, ColorScheme color, bool isEdit) {
+    if (widget.isMobile) {
+      return SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: (context.watch<ProductsBloc>().state is ProductsLoadingState)
+              ? null
+              : onSubmit,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: color.primary,
+            foregroundColor: color.surface,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: (context.watch<ProductsBloc>().state is ProductsLoadingState)
+              ? SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 3,
+              color: color.surface,
+            ),
+          )
+              : Text(
+            isEdit ? tr.update : tr.create,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
+    } else {
+      return (context.watch<ProductsBloc>().state is ProductsLoadingState)
+          ? SizedBox(
+        height: 16,
+        width: 16,
+        child: CircularProgressIndicator(
+          color: color.surface,
+        ),
+      )
+          : Text(isEdit ? tr.update : tr.create);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
-    bool isEdit = widget.model != null;
-    return BlocBuilder<ProductsBloc, ProductsState>(
-      builder: (context, state) {
-        return ZFormDialog(
+    final textTheme = Theme.of(context).textTheme;
+    final isEdit = widget.model != null;
+
+    if (widget.isMobile) {
+      // Mobile full-screen dialog
+      return Dialog(
+        insetPadding: EdgeInsets.zero,
+        backgroundColor: Colors.transparent,
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          margin: EdgeInsets.zero,
+          color: color.surface,
+          child: Column(
+            children: [
+              // Header with gradient
+              Container(
+                padding: const EdgeInsets.fromLTRB(16, 48, 16, 16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      color.primary,
+                      color.primary.withValues(alpha: .8),
+                    ],
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(24),
+                    bottomRight: Radius.circular(24),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            isEdit ? tr.update : tr.newKeyword,
+                            style: textTheme.headlineSmall?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            isEdit ? tr.edit : tr.newKeyword,
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: Colors.white.withValues(alpha: .8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: .2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(
+                          Icons.close,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Form Body
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Form(
+                    key: formKey,
+                    child: BlocBuilder<ProductsBloc, ProductsState>(
+                      builder: (context, state) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Product Code
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: color.surface,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: .05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: ZTextFieldEntitled(
+                                title: tr.productCode,
+                                controller: productCode,
+                                maxLength: 13,
+                                isRequired: true,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return tr.required(tr.productCode);
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Product Name
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: color.surface,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: .05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: ZTextFieldEntitled(
+                                title: tr.productName,
+                                controller: productName,
+                                isRequired: true,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return tr.required(tr.productName);
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Category Dropdown
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: color.surface,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: .05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: ProductCategoryDropdown(
+                                selectedCategoryId: catId,
+                                onCategorySelected: (cat) {
+                                  _selectedCategory = cat;
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Made In
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: color.surface,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: .05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: ZTextFieldEntitled(
+                                title: tr.madeIn,
+                                controller: madeIn,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Details
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: color.surface,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: .05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: ZTextFieldEntitled(
+                                title: tr.details,
+                                controller: details,
+                                keyboardInputType: TextInputType.multiline,
+                                maxLength: 100,
+                              ),
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // Action Button
+                            _buildActionButton(tr, color, isEdit),
+
+                            const SizedBox(height: 16),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else if (widget.isTablet) {
+      // Tablet dialog
+      return ZFormDialog(
+        onAction: onSubmit,
+        title: isEdit ? tr.update : tr.newKeyword,
+        actionLabel: _buildActionButton(tr, color, isEdit),
+        width: 550,
+        child: Form(
+          key: formKey,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: BlocBuilder<ProductsBloc, ProductsState>(
+              builder: (context, state) {
+                return SingleChildScrollView(
+                  child: Column(
+                    spacing: 12,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ZTextFieldEntitled(
+                        title: tr.productCode,
+                        controller: productCode,
+                        maxLength: 13,
+                        isRequired: true,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return tr.required(tr.productCode);
+                          }
+                          return null;
+                        },
+                      ),
+                      ZTextFieldEntitled(
+                        title: tr.productName,
+                        controller: productName,
+                        isRequired: true,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return tr.required(tr.productName);
+                          }
+                          return null;
+                        },
+                      ),
+                      ProductCategoryDropdown(
+                        selectedCategoryId: catId,
+                        onCategorySelected: (cat) {
+                          _selectedCategory = cat;
+                        },
+                      ),
+                      ZTextFieldEntitled(
+                        title: tr.madeIn,
+                        controller: madeIn,
+                      ),
+                      ZTextFieldEntitled(
+                        title: tr.details,
+                        controller: details,
+                        keyboardInputType: TextInputType.multiline,
+                        maxLength: 100,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+    } else {
+      // Desktop dialog (existing)
+      return BlocBuilder<ProductsBloc, ProductsState>(
+        builder: (context, state) {
+          return ZFormDialog(
             onAction: onSubmit,
-            title: isEdit? tr.update : tr.newKeyword,
-            actionLabel: state is ProductsLoadingState? SizedBox(
-                height: 16,
-                width: 16,
-                child: CircularProgressIndicator(
-                  color: color.surface,
-                )) : Text(isEdit? tr.update : tr.create),
+            title: isEdit ? tr.update : tr.newKeyword,
+            actionLabel: state is ProductsLoadingState
+                ? SizedBox(
+              height: 16,
+              width: 16,
+              child: CircularProgressIndicator(
+                color: color.surface,
+              ),
+            )
+                : Text(isEdit ? tr.update : tr.create),
             child: Form(
               key: formKey,
               child: Padding(
@@ -105,38 +469,34 @@ class _DesktopState extends State<_Desktop> {
                       controller: productCode,
                       maxLength: 13,
                       isRequired: true,
-                      validator: (value){
-                        if(value.isEmpty){
+                      validator: (value) {
+                        if (value.isEmpty) {
                           return tr.required(tr.productCode);
                         }
                         return null;
                       },
                     ),
                     ZTextFieldEntitled(
-                        title: tr.productName,
-                        controller: productName,
-                        isRequired: true,
-                        validator: (value){
-                          if(value.isEmpty){
-                            return tr.required(tr.productName);
-                          }
-                          return null;
-                        },
+                      title: tr.productName,
+                      controller: productName,
+                      isRequired: true,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return tr.required(tr.productName);
+                        }
+                        return null;
+                      },
                     ),
                     ProductCategoryDropdown(
-
                       selectedCategoryId: catId,
                       onCategorySelected: (cat) {
                         _selectedCategory = cat;
                       },
                     ),
-
-
                     ZTextFieldEntitled(
                       title: tr.madeIn,
                       controller: madeIn,
                     ),
-
                     ZTextFieldEntitled(
                       title: tr.details,
                       controller: details,
@@ -147,43 +507,57 @@ class _DesktopState extends State<_Desktop> {
                 ),
               ),
             ),
-        );
-      },
-    );
-  }
-
-
-
-
-  String generateProductCode({String prefix = 'PRD'}) {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    final rand = Random.secure();
-    final now = DateTime.now();
-
-    final batch = List.generate(3, (_) => chars[rand.nextInt(chars.length)],).join();
-    final date = '${now.year % 100}${now.month.toString().padLeft(2, '0')}';
-    return '$prefix-$date-$batch';
-  }
-
-
-
-
-  void onSubmit(){
-    if (!formKey.currentState!.validate()) return;
-    final bloc = context.read<ProductsBloc>();
-    final data = ProductsModel(
-      proId: widget.model?.proId,
-      proCode: productCode.text,
-      proName: productName.text,
-      proMadeIn: madeIn.text,
-      proCategory: _selectedCategory?.pcId,
-      proDetails: details.text,
-      proStatus: 1
-    );
-    if(widget.model != null){
-      bloc.add(UpdateProductEvent(data));
-    }else{
-      bloc.add(AddProductEvent(data));
+          );
+        },
+      );
     }
+  }
+}
+
+// Mobile View
+class _MobileProductAddEdit extends StatelessWidget {
+  final ProductsModel? model;
+
+  const _MobileProductAddEdit({this.model});
+
+  @override
+  Widget build(BuildContext context) {
+    return _BaseProductAddEdit(
+      model: model,
+      isMobile: true,
+      isTablet: false,
+    );
+  }
+}
+
+// Tablet View
+class _TabletProductAddEdit extends StatelessWidget {
+  final ProductsModel? model;
+
+  const _TabletProductAddEdit({this.model});
+
+  @override
+  Widget build(BuildContext context) {
+    return _BaseProductAddEdit(
+      model: model,
+      isMobile: false,
+      isTablet: true,
+    );
+  }
+}
+
+// Desktop View
+class _DesktopProductAddEdit extends StatelessWidget {
+  final ProductsModel? model;
+
+  const _DesktopProductAddEdit({this.model});
+
+  @override
+  Widget build(BuildContext context) {
+    return _BaseProductAddEdit(
+      model: model,
+      isMobile: false,
+      isTablet: false,
+    );
   }
 }
