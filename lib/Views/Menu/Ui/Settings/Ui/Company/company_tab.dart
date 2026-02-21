@@ -96,11 +96,7 @@ class _CompanyTabsViewState extends State<CompanyTabsView> {
     );
   }
 
-  Widget _buildBottomNavigationBar(
-      BuildContext context,
-      List<MenuDefinition> menuItems,
-      CompanySettingsMenuName currentTab,
-      ) {
+  Widget _buildBottomNavigationBar(BuildContext context, List<MenuDefinition> menuItems, CompanySettingsMenuName currentTab) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(

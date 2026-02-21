@@ -20,43 +20,27 @@ class OrdersView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(
-      mobile: _Mobile(),
-      tablet: _Tablet(),
-      desktop: _Desktop(),
+    return const ResponsiveLayout(
+      mobile: _MobileOrdersView(),
+      tablet: _TabletOrdersView(),
+      desktop: _DesktopOrdersView(),
     );
   }
 }
 
-class _Mobile extends StatelessWidget {
-  const _Mobile();
+// Mobile View
+class _MobileOrdersView extends StatefulWidget {
+  const _MobileOrdersView();
 
   @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: _Desktop(),
-    );
-  }
+  State<_MobileOrdersView> createState() => _MobileOrdersViewState();
 }
 
-class _Desktop extends StatefulWidget {
-  const _Desktop();
-
-  @override
-  State<_Desktop> createState() => _DesktopState();
-}
-class _DesktopState extends State<_Desktop> {
+class _MobileOrdersViewState extends State<_MobileOrdersView> {
   String? baseCurrency;
   final Map<String, bool> _copiedStates = {};
+  final TextEditingController searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -70,7 +54,321 @@ class _DesktopState extends State<_Desktop> {
     }
   }
 
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void onRefresh() {
+    context.read<OrdersBloc>().add(LoadOrdersEvent());
+  }
+
+  Future<void> _copyToClipboard(String reference, BuildContext context) async {
+    await Utils.copyToClipboard(reference);
+    setState(() {
+      _copiedStates[reference] = true;
+    });
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _copiedStates.remove(reference);
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context)!;
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<PurchaseInvoiceBloc, PurchaseInvoiceState>(
+            listener: (context, state) {
+              if (state is PurchaseInvoiceSaved && state.success) {
+                context.read<OrdersBloc>().add(LoadOrdersEvent());
+              }
+            },
+          ),
+          BlocListener<SaleInvoiceBloc, SaleInvoiceState>(
+            listener: (context, state) {
+              if (state is SaleInvoiceSaved && state.success) {
+                context.read<OrdersBloc>().add(LoadOrdersEvent());
+              }
+            },
+          ),
+        ],
+        child: Column(
+          children: [
+            // Search Bar
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ZSearchField(
+                icon: FontAwesomeIcons.magnifyingGlass,
+                controller: searchController,
+                hint: tr.orderSearchHint,
+                onChanged: (e) {
+                  setState(() {});
+                },
+                title: "",
+              ),
+            ),
+
+            // Orders List
+            Expanded(
+              child: BlocBuilder<OrdersBloc, OrdersState>(
+                builder: (context, state) {
+                  if (state is OrdersErrorState) {
+                    return NoDataWidget(
+                      message: state.message,
+                      onRefresh: onRefresh,
+                    );
+                  }
+                  if (state is OrdersLoadingState) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state is OrdersLoadedState) {
+                    final query = searchController.text.toLowerCase().trim();
+                    final filteredList = state.order.where((item) {
+                      final ref = item.ordTrnRef?.toLowerCase() ?? '';
+                      final ordId = item.ordId?.toString() ?? '';
+                      final ordName = item.ordName?.toLowerCase() ?? '';
+                      final personal = item.personal?.toLowerCase() ?? '';
+                      return ref.contains(query) ||
+                          ordId.contains(query) ||
+                          ordName.contains(query) ||
+                          personal.contains(query);
+                    }).toList();
+
+                    if (filteredList.isEmpty) {
+                      return NoDataWidget(
+                        message: tr.noDataFound,
+                        onRefresh: onRefresh,
+                      );
+                    }
+
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      itemCount: filteredList.length,
+                      itemBuilder: (context, index) {
+                        final ord = filteredList[index];
+                        final isCopied = _copiedStates[ord.ordTrnRef ?? ""] ?? false;
+                        final reference = ord.ordTrnRef ?? "";
+
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          elevation: 1,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              Utils.goto(
+                                context,
+                                OrderByIdView(
+                                  orderId: ord.ordId!,
+                                  ordName: ord.ordName,
+                                ),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(12),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Header Row with ID and Date
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: color.primary.withValues(alpha: .1),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Text(
+                                          "#${ord.ordId}",
+                                          style: TextStyle(
+                                            color: color.primary,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          ord.ordEntryDate?.toFormattedDate() ?? "",
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                      // Copy Button
+                                      Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () => _copyToClipboard(reference, context),
+                                          borderRadius: BorderRadius.circular(4),
+                                          child: AnimatedContainer(
+                                            duration: const Duration(milliseconds: 100),
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: BoxDecoration(
+                                              color: isCopied
+                                                  ? color.primary.withAlpha(25)
+                                                  : Colors.transparent,
+                                              border: Border.all(
+                                                color: isCopied
+                                                    ? color.primary
+                                                    : color.outline.withValues(alpha: .3),
+                                                width: 1,
+                                              ),
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: AnimatedSwitcher(
+                                              duration: const Duration(milliseconds: 300),
+                                              child: Icon(
+                                                isCopied ? Icons.check : Icons.content_copy,
+                                                key: ValueKey<bool>(isCopied),
+                                                size: 15,
+                                                color: isCopied
+                                                    ? color.primary
+                                                    : color.outline.withValues(alpha: .6),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+
+                                  // Reference Number
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.receipt,
+                                        size: 16,
+                                        color: color.outline,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Expanded(
+                                        child: Text(
+                                          reference,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+
+                                  // Party Name
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.person,
+                                        size: 16,
+                                        color: color.outline,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Expanded(
+                                        child: Text(
+                                          ord.personal ?? "",
+                                          style: const TextStyle(fontSize: 13),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+
+                                  // Bottom Row with Type and Amount
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: color.primary.withValues(alpha: .05),
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        child: Text(
+                                          Utils.getInvoiceType(
+                                            txn: ord.ordName ?? "",
+                                            context: context,
+                                          ),
+                                          style: TextStyle(
+                                            color: color.primary,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        "${ord.totalBill?.toAmount()} $baseCurrency",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                  return const SizedBox();
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Tablet View
+class _TabletOrdersView extends StatefulWidget {
+  const _TabletOrdersView();
+
+  @override
+  State<_TabletOrdersView> createState() => _TabletOrdersViewState();
+}
+
+class _TabletOrdersViewState extends State<_TabletOrdersView> {
+  String? baseCurrency;
+  final Map<String, bool> _copiedStates = {};
   final TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<OrdersBloc>().add(const LoadOrdersEvent());
+    });
+
+    final companyState = context.read<CompanyProfileBloc>().state;
+    if (companyState is CompanyProfileLoadedState) {
+      baseCurrency = companyState.company.comLocalCcy ?? "";
+    }
+  }
 
   @override
   void dispose() {
@@ -78,11 +376,330 @@ class _DesktopState extends State<_Desktop> {
     super.dispose();
   }
 
+  void onRefresh() {
+    context.read<OrdersBloc>().add(LoadOrdersEvent());
+  }
+
+  Future<void> _copyToClipboard(String reference, BuildContext context) async {
+    await Utils.copyToClipboard(reference);
+    setState(() {
+      _copiedStates[reference] = true;
+    });
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _copiedStates.remove(reference);
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.surface);
+    final tr = AppLocalizations.of(context)!;
+    final titleStyle = textTheme.titleSmall?.copyWith(color: color.surface);
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<PurchaseInvoiceBloc, PurchaseInvoiceState>(
+            listener: (context, state) {
+              if (state is PurchaseInvoiceSaved && state.success) {
+                context.read<OrdersBloc>().add(LoadOrdersEvent());
+              }
+            },
+          ),
+          BlocListener<SaleInvoiceBloc, SaleInvoiceState>(
+            listener: (context, state) {
+              if (state is SaleInvoiceSaved && state.success) {
+                context.read<OrdersBloc>().add(LoadOrdersEvent());
+              }
+            },
+          ),
+        ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              // Header with Title and Search
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          tr.orderTitle,
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          tr.ordersSubtitle,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: color.outline,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: ZSearchField(
+                      icon: FontAwesomeIcons.magnifyingGlass,
+                      controller: searchController,
+                      hint: tr.orderSearchHint,
+                      onChanged: (e) {
+                        setState(() {});
+                      },
+                      title: "",
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ZOutlineButton(
+                    toolTip: "F5",
+                    width: 100,
+                    icon: Icons.refresh,
+                    onPressed: onRefresh,
+                    label: Text(tr.refresh),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 10),
+
+              // Table Header
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                decoration: BoxDecoration(
+                  color: color.primary.withValues(alpha: .9),
+                ),
+                child: Row(
+                  children: [
+                    SizedBox(width: 80, child: Text(tr.date, style: titleStyle)),
+                    Expanded(
+                      flex: 2,
+                      child: Text(tr.referenceNumber, style: titleStyle),
+                    ),
+                    Expanded(child: Text(tr.party, style: titleStyle)),
+                    SizedBox(
+                      width: 90,
+                      child: Text(tr.totalInvoice, style: titleStyle),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 5),
+
+              // Orders List
+              Expanded(
+                child: BlocBuilder<OrdersBloc, OrdersState>(
+                  builder: (context, state) {
+                    if (state is OrdersErrorState) {
+                      return NoDataWidget(
+                        message: state.message,
+                        onRefresh: onRefresh,
+                      );
+                    }
+                    if (state is OrdersLoadingState) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (state is OrdersLoadedState) {
+                      final query = searchController.text.toLowerCase().trim();
+                      final filteredList = state.order.where((item) {
+                        final ref = item.ordTrnRef?.toLowerCase() ?? '';
+                        final ordId = item.ordId?.toString() ?? '';
+                        final ordName = item.ordName?.toLowerCase() ?? '';
+                        final personal = item.personal?.toLowerCase() ?? '';
+                        return ref.contains(query) ||
+                            ordId.contains(query) ||
+                            ordName.contains(query) ||
+                            personal.contains(query);
+                      }).toList();
+
+                      if (filteredList.isEmpty) {
+                        return NoDataWidget(
+                          message: tr.noDataFound,
+                          onRefresh: onRefresh,
+                        );
+                      }
+
+                      return ListView.builder(
+                        itemCount: filteredList.length,
+                        itemBuilder: (context, index) {
+                          final ord = filteredList[index];
+                          final isCopied = _copiedStates[ord.ordTrnRef ?? ""] ?? false;
+                          final reference = ord.ordTrnRef ?? "";
+
+                          return InkWell(
+                            onTap: () {
+                              Utils.goto(
+                                context,
+                                OrderByIdView(
+                                  orderId: ord.ordId!,
+                                  ordName: ord.ordName,
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: index.isEven
+                                    ? color.primary.withValues(alpha: .05)
+                                    : Colors.transparent,
+                              ),
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 80,
+                                    child: Text(
+                                      ord.ordEntryDate?.toFormattedDate() ?? "",
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Row(
+                                      children: [
+                                        Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                            onTap: () => _copyToClipboard(reference, context),
+                                            borderRadius: BorderRadius.circular(4),
+                                            child: AnimatedContainer(
+                                              duration: const Duration(milliseconds: 100),
+                                              padding: const EdgeInsets.all(4),
+                                              decoration: BoxDecoration(
+                                                color: isCopied
+                                                    ? color.primary.withAlpha(25)
+                                                    : Colors.transparent,
+                                                border: Border.all(
+                                                  color: isCopied
+                                                      ? color.primary
+                                                      : color.outline.withValues(alpha: .3),
+                                                  width: 1,
+                                                ),
+                                                borderRadius: BorderRadius.circular(4),
+                                              ),
+                                              child: AnimatedSwitcher(
+                                                duration: const Duration(milliseconds: 300),
+                                                child: Icon(
+                                                  isCopied ? Icons.check : Icons.content_copy,
+                                                  key: ValueKey<bool>(isCopied),
+                                                  size: 15,
+                                                  color: isCopied
+                                                      ? color.primary
+                                                      : color.outline.withValues(alpha: .6),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            reference,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      ord.personal ?? "",
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 90,
+                                    child: Text(
+                                      "${ord.totalBill?.toAmount()} $baseCurrency",
+                                      textAlign: TextAlign.right,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }
+                    return const SizedBox();
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Desktop View - Keep exactly as original
+class _DesktopOrdersView extends StatefulWidget {
+  const _DesktopOrdersView();
+
+  @override
+  State<_DesktopOrdersView> createState() => _DesktopOrdersViewState();
+}
+
+class _DesktopOrdersViewState extends State<_DesktopOrdersView> {
+  String? baseCurrency;
+  final Map<String, bool> _copiedStates = {};
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<OrdersBloc>().add(const LoadOrdersEvent());
+    });
+
+    final companyState = context.read<CompanyProfileBloc>().state;
+    if (companyState is CompanyProfileLoadedState) {
+      baseCurrency = companyState.company.comLocalCcy ?? "";
+    }
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void onRefresh() {
+    context.read<OrdersBloc>().add(LoadOrdersEvent());
+  }
+
+  Future<void> _copyToClipboard(String reference, BuildContext context) async {
+    await Utils.copyToClipboard(reference);
+    setState(() {
+      _copiedStates[reference] = true;
+    });
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _copiedStates.remove(reference);
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final titleStyle = textTheme.titleSmall?.copyWith(color: color.surface);
     final tr = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -90,19 +707,15 @@ class _DesktopState extends State<_Desktop> {
         listeners: [
           BlocListener<PurchaseInvoiceBloc, PurchaseInvoiceState>(
             listener: (context, state) {
-              if (state is PurchaseInvoiceSaved) {
-                if (state.success) {
-                  context.read<OrdersBloc>().add(LoadOrdersEvent());
-                }
+              if (state is PurchaseInvoiceSaved && state.success) {
+                context.read<OrdersBloc>().add(LoadOrdersEvent());
               }
             },
           ),
           BlocListener<SaleInvoiceBloc, SaleInvoiceState>(
             listener: (context, state) {
-              if (state is SaleInvoiceSaved) {
-                if (state.success) {
-                  context.read<OrdersBloc>().add(LoadOrdersEvent());
-                }
+              if (state is SaleInvoiceSaved && state.success) {
+                context.read<OrdersBloc>().add(LoadOrdersEvent());
               }
             },
           ),
@@ -129,7 +742,7 @@ class _DesktopState extends State<_Desktop> {
                       ),
                       subtitle: Text(
                         tr.ordersSubtitle,
-                        style: TextStyle(fontSize: 12),
+                        style: const TextStyle(fontSize: 12),
                       ),
                     ),
                   ),
@@ -157,9 +770,9 @@ class _DesktopState extends State<_Desktop> {
             ),
 
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
               decoration: BoxDecoration(
-                color: color.primary.withValues(alpha: .9)
+                color: color.primary.withValues(alpha: .9),
               ),
               child: Row(
                 children: [
@@ -169,14 +782,11 @@ class _DesktopState extends State<_Desktop> {
                     width: 215,
                     child: Text(tr.referenceNumber, style: titleStyle),
                   ),
-
                   Expanded(child: Text(tr.party, style: titleStyle)),
-
                   SizedBox(
                     width: 100,
                     child: Text(tr.invoiceType, style: titleStyle),
                   ),
-
                   SizedBox(
                     width: 130,
                     child: Text(tr.totalInvoice, style: titleStyle),
@@ -184,8 +794,7 @@ class _DesktopState extends State<_Desktop> {
                 ],
               ),
             ),
-            SizedBox(height: 5),
-
+            const SizedBox(height: 5),
 
             Expanded(
               child: BlocBuilder<OrdersBloc, OrdersState>(
@@ -194,7 +803,7 @@ class _DesktopState extends State<_Desktop> {
                     return NoDataWidget(message: state.message);
                   }
                   if (state is OrdersLoadingState) {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   }
                   if (state is OrdersLoadedState) {
                     final query = searchController.text.toLowerCase().trim();
@@ -211,24 +820,26 @@ class _DesktopState extends State<_Desktop> {
                       return NoDataWidget(message: tr.noDataFound);
                     }
                     if (state.order.isEmpty) {
-                      return NoDataWidget(enableAction: false);
+                      return const NoDataWidget(enableAction: false);
                     }
                     return ListView.builder(
                       itemCount: filteredList.length,
                       itemBuilder: (context, index) {
                         final ord = filteredList[index];
-                        final isCopied =
-                            _copiedStates[ord.ordTrnRef ?? ""] ?? false;
+                        final isCopied = _copiedStates[ord.ordTrnRef ?? ""] ?? false;
                         final reference = ord.ordTrnRef ?? "";
                         return InkWell(
                           onTap: () {
                             Utils.goto(
                               context,
-                              OrderByIdView(orderId: ord.ordId!,ordName: ord.ordName),
+                              OrderByIdView(
+                                orderId: ord.ordId!,
+                                ordName: ord.ordName,
+                              ),
                             );
                           },
                           child: Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 8,
                               vertical: 8,
                             ),
@@ -261,9 +872,7 @@ class _DesktopState extends State<_Desktop> {
                                             reference,
                                             context,
                                           ),
-                                          borderRadius: BorderRadius.circular(
-                                            4,
-                                          ),
+                                          borderRadius: BorderRadius.circular(4),
                                           hoverColor: Theme.of(context)
                                               .colorScheme
                                               .primary
@@ -275,25 +884,22 @@ class _DesktopState extends State<_Desktop> {
                                             decoration: BoxDecoration(
                                               color: isCopied
                                                   ? Theme.of(context)
-                                                        .colorScheme
-                                                        .primary
-                                                        .withAlpha(25)
+                                                  .colorScheme
+                                                  .primary
+                                                  .withAlpha(25)
                                                   : Colors.transparent,
                                               border: Border.all(
                                                 color: isCopied
-                                                    ? Theme.of(
-                                                        context,
-                                                      ).colorScheme.primary
+                                                    ? Theme.of(context)
+                                                    .colorScheme
+                                                    .primary
                                                     : Theme.of(context)
-                                                          .colorScheme
-                                                          .outline
-                                                          .withValues(
-                                                            alpha: .3,
-                                                          ),
+                                                    .colorScheme
+                                                    .outline
+                                                    .withValues(alpha: .3),
                                                 width: 1,
                                               ),
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
+                                              borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Center(
                                               child: AnimatedSwitcher(
@@ -304,20 +910,16 @@ class _DesktopState extends State<_Desktop> {
                                                   isCopied
                                                       ? Icons.check
                                                       : Icons.content_copy,
-                                                  key: ValueKey<bool>(
-                                                    isCopied,
-                                                  ), // Important for AnimatedSwitcher
+                                                  key: ValueKey<bool>(isCopied),
                                                   size: 15,
                                                   color: isCopied
-                                                      ? Theme.of(
-                                                          context,
-                                                        ).colorScheme.primary
+                                                      ? Theme.of(context)
+                                                      .colorScheme
+                                                      .primary
                                                       : Theme.of(context)
-                                                            .colorScheme
-                                                            .outline
-                                                            .withValues(
-                                                              alpha: .6,
-                                                            ),
+                                                      .colorScheme
+                                                      .outline
+                                                      .withValues(alpha: .6),
                                                 ),
                                               ),
                                             ),
@@ -326,7 +928,6 @@ class _DesktopState extends State<_Desktop> {
                                       ),
                                     ),
                                     const SizedBox(width: 8),
-                                    // Reference text that takes remaining space
                                     SizedBox(
                                       width: 180,
                                       child: Text(ord.ordTrnRef ?? ""),
@@ -343,7 +944,6 @@ class _DesktopState extends State<_Desktop> {
                                     ),
                                   ),
                                 ),
-
                                 SizedBox(
                                   width: 130,
                                   child: Text(
@@ -365,28 +965,5 @@ class _DesktopState extends State<_Desktop> {
         ),
       ),
     );
-  }
-
-  // Method to copy reference to clipboard
-  Future<void> _copyToClipboard(String reference, BuildContext context) async {
-    await Utils.copyToClipboard(reference);
-
-    // Set copied state to true
-    setState(() {
-      _copiedStates[reference] = true;
-    });
-
-    // Reset after 2 seconds
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          _copiedStates.remove(reference);
-        });
-      }
-    });
-  }
-
-  void onRefresh() {
-    context.read<OrdersBloc>().add(LoadOrdersEvent());
   }
 }
