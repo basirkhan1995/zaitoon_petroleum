@@ -800,7 +800,7 @@ class _DesktopOrdersViewState extends State<_DesktopOrdersView> {
               child: BlocBuilder<OrdersBloc, OrdersState>(
                 builder: (context, state) {
                   if (state is OrdersErrorState) {
-                    return NoDataWidget(message: state.message);
+                    return NoDataWidget(message: state.message, onRefresh: onRefresh);
                   }
                   if (state is OrdersLoadingState) {
                     return const Center(child: CircularProgressIndicator());

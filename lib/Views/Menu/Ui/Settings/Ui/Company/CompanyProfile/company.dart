@@ -229,8 +229,8 @@ class _BaseCompanyFormState extends State<_BaseCompanyForm> with SingleTickerPro
                 ),
                 if (isUpdateMode)
                   Positioned(
-                    top: 70,
-                    left: 70,
+                    top: 60,
+                    left: 60,
                     child: IconButton(
                       onPressed: _pickLogoImage,
                       icon: Container(
@@ -249,7 +249,7 @@ class _BaseCompanyFormState extends State<_BaseCompanyForm> with SingleTickerPro
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           // Company info
           Column(
             mainAxisSize: MainAxisSize.min,
@@ -285,18 +285,21 @@ class _BaseCompanyFormState extends State<_BaseCompanyForm> with SingleTickerPro
                     },
                   ),
                 if (isUpdateMode) ...[
-                  ZOutlineButton(
-                    width: 100,
-                    icon: Icons.clear,
-                    backgroundHover: Theme.of(context).colorScheme.error,
-                    label: Text(locale.cancel),
-                    onPressed: _cancelUpdate,
+                  Expanded(
+                    child: ZOutlineButton(
+
+                      backgroundHover: Theme.of(context).colorScheme.error,
+                      label: Text(locale.cancel),
+                      onPressed: _cancelUpdate,
+                    ),
                   ),
                   const SizedBox(width: 8),
-                  ZButton(
-                    width: 110,
-                    label: Text(locale.saveChanges),
-                    onPressed: _updateCompanyProfile,
+                  Expanded(
+                    child: ZButton(
+
+                      label: Text(locale.saveChanges),
+                      onPressed: _updateCompanyProfile,
+                    ),
                   ),
                 ],
               ],
@@ -421,13 +424,6 @@ class _BaseCompanyFormState extends State<_BaseCompanyForm> with SingleTickerPro
     final login = authState.loginData;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: widget.isMobile
-          ? AppBar(
-        title: Text(locale.settings),
-        centerTitle: true,
-      )
-          : null,
       body: SafeArea(
         child: BlocConsumer<CompanyProfileBloc, CompanyProfileState>(
           listener: (context, state) {
@@ -488,13 +484,8 @@ class _BaseCompanyFormState extends State<_BaseCompanyForm> with SingleTickerPro
                   children: [
                     // Header Section
                     _buildHeader(login, locale, state),
-
                     const SizedBox(height: 5),
-                    Divider(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .outline
-                            .withValues(alpha: .3)),
+                    Divider(color: Theme.of(context).colorScheme.outline.withValues(alpha: .3)),
                     const SizedBox(height: 5),
 
                     // Address Section

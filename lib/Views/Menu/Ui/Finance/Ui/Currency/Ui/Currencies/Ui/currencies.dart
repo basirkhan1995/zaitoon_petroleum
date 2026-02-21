@@ -108,30 +108,33 @@ class _MobileState extends State<_Mobile> {
         shortcuts: shortcuts,
         child: Column(
           children: [
-            ZSearchField(
-              controller: searchController,
-              title: '',
-              hint: tr.search,
-              end: searchController.text.isNotEmpty
-                  ? InkWell(
-                splashColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                onTap: () {
-                  setState(() {
-                    searchController.clear();
-                  });
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: ZSearchField(
+                controller: searchController,
+                title: '',
+                hint: tr.search,
+                end: searchController.text.isNotEmpty
+                    ? InkWell(
+                  splashColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  onTap: () {
+                    setState(() {
+                      searchController.clear();
+                    });
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Icon(Icons.clear, size: 15),
+                  ),
+                )
+                    : const SizedBox(),
+                onChanged: (e) {
+                  setState(() {});
                 },
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Icon(Icons.clear, size: 15),
-                ),
-              )
-                  : const SizedBox(),
-              onChanged: (e) {
-                setState(() {});
-              },
-              icon: FontAwesomeIcons.magnifyingGlass,
+                icon: FontAwesomeIcons.magnifyingGlass,
+              ),
             ),
 
             const SizedBox(height: 8),

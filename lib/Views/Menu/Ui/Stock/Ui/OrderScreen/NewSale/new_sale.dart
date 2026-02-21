@@ -4,15 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
-import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Reminder/add_edit_reminders.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/model/individual_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewSale/bloc/sale_invoice_bloc.dart';
+import '../../../../../../../Features/Generic/product_info_field.dart';
 import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
-import '../../../../../../../Features/Generic/underline_searchable_textfield.dart';
 import '../../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../../Features/Other/utils.dart';
 import '../../../../../../../Features/Other/zForm_dialog.dart';
@@ -446,8 +445,6 @@ class _DesktopState extends State<_Desktop> {
   }) {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    TextStyle? title = textTheme.titleSmall?.copyWith(color: color.primary);
 
     final productController = TextEditingController(text: item.productName);
     final qtyController = _qtyControllers.putIfAbsent(
@@ -481,80 +478,149 @@ class _DesktopState extends State<_Desktop> {
                   textAlign: TextAlign.center,
                 ),
               ),
-
-              // Product Selection
+              // Product Selection - Simpler version
               Expanded(
-                child: GenericUnderlineTextfield<ProductsStockModel, ProductsBloc, ProductsState>(
-                  title: "",
+                child: ProductSearchField<ProductsStockModel, ProductsBloc, ProductsState>(
                   controller: productController,
                   hintText: tr.products,
                   bloc: context.read<ProductsBloc>(),
-                  fetchAllFunction: (bloc) => bloc.add(LoadProductsStockEvent(noStock: 1)),
                   searchFunction: (bloc, query) => bloc.add(LoadProductsStockEvent(input: query)),
-                  itemBuilder: (context, product) => ListTile(
-                    tileColor: Colors.transparent,
-                    title: Text(product.proName ?? ''),
-                    subtitle: Row(
-                      spacing: 5,
-                      children: [
-                       Wrap(
-                         children: [
-                           ZCover(radius: 0,child: Text(tr.purchasePrice,style: title),),
-                           ZCover(radius: 0,child: Text(product.averagePrice?.toAmount()??"")),
-                         ],
-                       ),
-                        Wrap(
-                          children: [
-                            ZCover(radius: 0,child: Text(tr.salePriceBrief,style: title)),
-                            ZCover(radius: 0,child: Text(product.sellPrice?.toAmount()??"")),
-                          ],
-                        ),
-                      ],
-                    ),
-                    trailing: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(product.available?.toAmount()??"",style: TextStyle(fontSize: 18),),
-                        Text(product.stgName??"",style: TextStyle(
-                          color: Theme.of(context).colorScheme.outline,
-                        ),),
-                      ],
-                    ),
-                  ),
-                  itemToString: (product) => product.proName ?? '',
-                  stateToLoading: (state) => state is ProductsLoadingState,
+                  fetchAllFunction: (bloc) => bloc.add(LoadProductsStockEvent()),
                   stateToItems: (state) {
                     if (state is ProductsStockLoadedState) return state.products;
                     return [];
                   },
-                  onSelected: (product) {
-                    final purchasePrice = double.tryParse(product.averagePrice?.toAmount() ?? "0.0") ?? 0.0;
-                    final salePrice = double.tryParse(product.sellPrice?.toAmount() ?? "0.0") ?? 0.0;
+                  stateToLoading: (state) => state is ProductsLoadingState,
+                  itemToString: (product) => product.proName ?? '',
 
-                    // Get storage ID and name from product
-                    final storageId = product.stkStorage;
-                    final storageName = product.stgName ?? '';
+                  // Product field getters
+                  getProductId: (product) => product.proId?.toString(),
+                  getProductName: (product) => product.proName,
+                  getProductCode: (product) => product.proCode,
+                  getStorageId: (product) => product.stkStorage,
+                  getStorageName: (product) => product.stgName,
+                  getAvailable: (product) => product.available,
+                  getAveragePrice: (product) => product.averagePrice,
+                  getRecentPrice: (product) => product.recentPrice,
+                  getSellPrice: (product) => product.sellPrice,
 
-                    context.read<SaleInvoiceBloc>().add(UpdateSaleItemEvent(
-                      rowId: item.rowId,
-                      productId: product.proId.toString(),
-                      productName: product.proName ?? '',
-                      storageId: storageId,
-                      storageName: storageName,
-                      purPrice: purchasePrice,
-                      salePrice: salePrice,
-                    ));
+                  // Handle product selection
+                  onProductSelected: (product) {
+                    if (product != null) {
+                      final purchasePrice = double.tryParse(
+                          product.averagePrice?.toAmount() ?? "0.0"
+                      ) ?? 0.0;
+                      final salePrice = double.tryParse(
+                          product.sellPrice?.toAmount() ?? "0.0"
+                      ) ?? 0.0;
 
-                    // Update controllers
-                    purchasePriceController.text = purchasePrice.toAmount();
-                    salePriceController.text = salePrice.toAmount();
-                    storageController.text = storageName;
+                      context.read<SaleInvoiceBloc>().add(UpdateSaleItemEvent(
+                        rowId: item.rowId,
+                        productId: product.proId.toString(),
+                        productName: product.proName ?? '',
+                        storageId: product.stkStorage,
+                        storageName: product.stgName ?? '',
+                        purPrice: purchasePrice,
+                        salePrice: salePrice,
+                      ));
 
-                    nodes[1].requestFocus(); // Focus on quantity field
+                      purchasePriceController.text = purchasePrice.toAmount();
+                      salePriceController.text = salePrice.toAmount();
+                      storageController.text = product.stgName ?? '';
+
+                      nodes[1].requestFocus();
+                    } else {
+                      // Handle clear
+                      context.read<SaleInvoiceBloc>().add(UpdateSaleItemEvent(
+                        rowId: item.rowId,
+                        productId: null,
+                        productName: '',
+                        storageId: null,
+                        storageName: '',
+                        purPrice: 0,
+                        salePrice: 0,
+                      ));
+
+                      purchasePriceController.clear();
+                      salePriceController.clear();
+                      storageController.clear();
+                    }
                   },
                 ),
               ),
+              // Product Selection
+              // Expanded(
+              //   child: GenericUnderlineTextfield<ProductsStockModel, ProductsBloc, ProductsState>(
+              //     title: "",
+              //     controller: productController,
+              //     hintText: tr.products,
+              //     bloc: context.read<ProductsBloc>(),
+              //     fetchAllFunction: (bloc) => bloc.add(LoadProductsStockEvent(noStock: 1)),
+              //     searchFunction: (bloc, query) => bloc.add(LoadProductsStockEvent(input: query)),
+              //     itemBuilder: (context, product) => ListTile(
+              //       tileColor: Colors.transparent,
+              //       title: Text(product.proName ?? ''),
+              //       subtitle: Row(
+              //         spacing: 5,
+              //         children: [
+              //          Wrap(
+              //            children: [
+              //              ZCover(radius: 0,child: Text(tr.purchasePrice,style: title),),
+              //              ZCover(radius: 0,child: Text(product.averagePrice?.toAmount()??"")),
+              //            ],
+              //          ),
+              //           Wrap(
+              //             children: [
+              //               ZCover(radius: 0,child: Text(tr.salePriceBrief,style: title)),
+              //               ZCover(radius: 0,child: Text(product.sellPrice?.toAmount()??"")),
+              //             ],
+              //           ),
+              //         ],
+              //       ),
+              //       trailing: Column(
+              //         mainAxisAlignment: MainAxisAlignment.end,
+              //         crossAxisAlignment: CrossAxisAlignment.end,
+              //         children: [
+              //           Text(product.available?.toAmount()??"",style: TextStyle(fontSize: 18),),
+              //           Text(product.stgName??"",style: TextStyle(
+              //             color: Theme.of(context).colorScheme.outline,
+              //           ),),
+              //         ],
+              //       ),
+              //     ),
+              //     itemToString: (product) => product.proName ?? '',
+              //     stateToLoading: (state) => state is ProductsLoadingState,
+              //     stateToItems: (state) {
+              //       if (state is ProductsStockLoadedState) return state.products;
+              //       return [];
+              //     },
+              //     onSelected: (product) {
+              //       final purchasePrice = double.tryParse(product.averagePrice?.toAmount() ?? "0.0") ?? 0.0;
+              //       final salePrice = double.tryParse(product.sellPrice?.toAmount() ?? "0.0") ?? 0.0;
+              //
+              //       // Get storage ID and name from product
+              //       final storageId = product.stkStorage;
+              //       final storageName = product.stgName ?? '';
+              //
+              //       context.read<SaleInvoiceBloc>().add(UpdateSaleItemEvent(
+              //         rowId: item.rowId,
+              //         productId: product.proId.toString(),
+              //         productName: product.proName ?? '',
+              //         storageId: storageId,
+              //         storageName: storageName,
+              //         purPrice: purchasePrice,
+              //         salePrice: salePrice,
+              //       ));
+              //
+              //       // Update controllers
+              //       purchasePriceController.text = purchasePrice.toAmount();
+              //       salePriceController.text = salePrice.toAmount();
+              //       storageController.text = storageName;
+              //
+              //       nodes[1].requestFocus(); // Focus on quantity field
+              //     },
+              //   ),
+              // ),
 
               // Quantity
               SizedBox(

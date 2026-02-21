@@ -15,7 +15,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/bl
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/model/product_stock_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/model/individual_model.dart';
-import '../../../../../../../Features/Other/cover.dart';
+import '../../../../../../../Features/Generic/product_info_field.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
@@ -427,8 +427,6 @@ class _AddEstimateViewState extends State<AddEstimateView> {
     final color = Theme.of(context).colorScheme;
     final record = _records[index];
     final tr = AppLocalizations.of(context)!;
-    final textTheme = Theme.of(context).textTheme;
-    TextStyle? title = textTheme.titleSmall?.copyWith(color: color.primary);
 
     // Calculate profit color
     final profitColor = record.profit >= 0 ? Colors.green : Colors.red;
@@ -443,74 +441,139 @@ class _AddEstimateViewState extends State<AddEstimateView> {
         children: [
           SizedBox(width: 40, child: Text((index + 1).toString())),
 
-          // Product
           Expanded(
-            child: GenericUnderlineTextfield<ProductsStockModel, ProductsBloc, ProductsState>(
+            child: ProductSearchField<ProductsStockModel, ProductsBloc, ProductsState>(
               controller: _productControllers[index],
               hintText: tr.products,
               bloc: context.read<ProductsBloc>(),
+              searchFunction: (bloc, query) => bloc.add(LoadProductsStockEvent(input: query)),
               fetchAllFunction: (bloc) => bloc.add(LoadProductsStockEvent()),
-              searchFunction: (bloc, query) => bloc.add(LoadProductsStockEvent()),
-              itemBuilder: (context, product) => ListTile(
-                title: Text(product.proName ?? ''),
-                subtitle: Row(
-                  spacing: 5,
-                  children: [
-                    Wrap(
-                      children: [
-                        ZCover(radius: 0,child: Text(tr.purchasePrice,style: title),),
-                        ZCover(radius: 0,child: Text(product.averagePrice?.toAmount()??"")),
-                      ],
-                    ),
-                    Wrap(
-                      children: [
-                        ZCover(radius: 0,child: Text(tr.salePriceBrief,style: title)),
-                        ZCover(radius: 0,child: Text(product.sellPrice?.toAmount()??"")),
-                      ],
-                    ),
-                  ],
-                ),
-                trailing: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(product.available?.toAmount()??"",style: TextStyle(fontSize: 18),),
-                    Text(product.stgName??"",style: TextStyle(
-                      color: Theme.of(context).colorScheme.outline,
-                    ),),
-                  ],
-                ),
-              ),
-              itemToString: (product) => product.proName ?? '',
-              stateToLoading: (state) => state is ProductsLoadingState,
               stateToItems: (state) {
                 if (state is ProductsStockLoadedState) return state.products;
                 return [];
               },
-              onSelected: (product) {
-                final purchasePrice = double.tryParse(
-                  product.averagePrice?.replaceAll(',', '') ?? "0.0",
-                ) ?? 0.0;
-                final salePrice = double.tryParse(
-                  product.sellPrice?.replaceAll(',', '') ?? "0.0",
-                ) ?? 0.0;
+              stateToLoading: (state) => state is ProductsLoadingState,
+              itemToString: (product) => product.proName ?? '',
 
-                _selectedProducts[index] = product;
-                _storageControllers[index].text = product.stgName ?? '';
-                _salePriceControllers[index].text = salePrice.toAmount();
-                _purchasePriceControllers[index].text = purchasePrice.toAmount();
+              // Just provide the field getters - no need to build UI!
+              getProductId: (product) => product.proId?.toString(),
+              getProductName: (product) => product.proName,
+              getProductCode: (product) => product.proCode,
+              getStorageId: (product) => product.stkStorage,
+              getStorageName: (product) => product.stgName,
+              getAvailable: (product) => product.available,
+              getAveragePrice: (product) => product.averagePrice,
+              getRecentPrice: (product) => product.recentPrice,
+              getSellPrice: (product) => product.sellPrice,
 
-                _updateRecord(index,
-                  productId: product.proId,
-                  salePrice: salePrice,
-                  purchasePrice: purchasePrice,
-                  storageId: product.stkStorage,
-                );
+              // Handle selection
+              onProductSelected: (product) {
+                if (product != null) {
+                  final purchasePrice = double.tryParse(
+                    product.averagePrice?.replaceAll(',', '') ?? "0.0",
+                  ) ?? 0.0;
+                  final salePrice = double.tryParse(
+                    product.sellPrice?.replaceAll(',', '') ?? "0.0",
+                  ) ?? 0.0;
+
+                  _storageControllers[index].text = product.stgName ?? '';
+                  _salePriceControllers[index].text = salePrice.toAmount();
+                  _purchasePriceControllers[index].text = purchasePrice.toAmount();
+
+                  _updateRecord(index,
+                    productId: product.proId,
+                    salePrice: salePrice,
+                    purchasePrice: purchasePrice,
+                    storageId: product.stkStorage,
+                  );
+                } else {
+
+                  _storageControllers[index].clear();
+                  _salePriceControllers[index].clear();
+                  _purchasePriceControllers[index].clear();
+
+                  _updateRecord(index,
+                    productId: null,
+                    salePrice: 0,
+                    purchasePrice: 0,
+                    storageId: null,
+                  );
+
+                }
               },
-              title: '',
-             // enabled: !_isSaving,
+
+              enabled: !_isSaving,
             ),
           ),
+
+          // Product
+          // Expanded(
+          //   child: GenericUnderlineTextfield<ProductsStockModel, ProductsBloc, ProductsState>(
+          //     controller: _productControllers[index],
+          //     hintText: tr.products,
+          //     bloc: context.read<ProductsBloc>(),
+          //     fetchAllFunction: (bloc) => bloc.add(LoadProductsStockEvent()),
+          //     searchFunction: (bloc, query) => bloc.add(LoadProductsStockEvent(input: query)),
+          //     itemBuilder: (context, product) => ListTile(
+          //       title: Text(product.proName ?? ''),
+          //       subtitle: Row(
+          //         spacing: 5,
+          //         children: [
+          //           Wrap(
+          //             children: [
+          //               ZCover(radius: 0,child: Text(tr.purchasePrice,style: title),),
+          //               ZCover(radius: 0,child: Text(product.averagePrice?.toAmount()??"")),
+          //             ],
+          //           ),
+          //           Wrap(
+          //             children: [
+          //               ZCover(radius: 0,child: Text(tr.salePriceBrief,style: title)),
+          //               ZCover(radius: 0,child: Text(product.sellPrice?.toAmount()??"")),
+          //             ],
+          //           ),
+          //         ],
+          //       ),
+          //       trailing: Column(
+          //         mainAxisAlignment: MainAxisAlignment.end,
+          //         crossAxisAlignment: CrossAxisAlignment.end,
+          //         children: [
+          //           Text(product.available?.toAmount()??"",style: TextStyle(fontSize: 18),),
+          //           Text(product.stgName??"",style: TextStyle(
+          //             color: Theme.of(context).colorScheme.outline,
+          //           ),),
+          //         ],
+          //       ),
+          //     ),
+          //     itemToString: (product) => product.proName ?? '',
+          //     stateToLoading: (state) => state is ProductsLoadingState,
+          //     stateToItems: (state) {
+          //       if (state is ProductsStockLoadedState) return state.products;
+          //       return [];
+          //     },
+          //     onSelected: (product) {
+          //       final purchasePrice = double.tryParse(
+          //         product.averagePrice?.replaceAll(',', '') ?? "0.0",
+          //       ) ?? 0.0;
+          //       final salePrice = double.tryParse(
+          //         product.sellPrice?.replaceAll(',', '') ?? "0.0",
+          //       ) ?? 0.0;
+          //
+          //       _selectedProducts[index] = product;
+          //       _storageControllers[index].text = product.stgName ?? '';
+          //       _salePriceControllers[index].text = salePrice.toAmount();
+          //       _purchasePriceControllers[index].text = purchasePrice.toAmount();
+          //
+          //       _updateRecord(index,
+          //         productId: product.proId,
+          //         salePrice: salePrice,
+          //         purchasePrice: purchasePrice,
+          //         storageId: product.stkStorage,
+          //       );
+          //     },
+          //     title: '',
+          //    // enabled: !_isSaving,
+          //   ),
+          // ),
 
           // Quantity
           SizedBox(
@@ -727,7 +790,6 @@ class _AddEstimateViewState extends State<AddEstimateView> {
       ),
     );
   }
-
   Widget _buildSummaryRow({
     required String label,
     required double value,
