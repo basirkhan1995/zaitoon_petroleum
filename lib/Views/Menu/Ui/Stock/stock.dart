@@ -309,17 +309,14 @@ class _StockViewState extends State<StockView> {
                 tabs: tabs,
                 selectedValue: selected,
                 onChanged: (val) => context.read<StockTabBloc>().add(StockOnChangeEvent(val)),
-
-                // Use rounded style for desktop/tablet
                 style: ZTabStyle.rounded,
-
-                // Colors
                 selectedColor: color.primary,
                 unselectedColor: Colors.transparent,
                 selectedTextColor: color.surface,
                 unselectedTextColor: color.secondary,
+                borderRadius: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                margin: const EdgeInsets.symmetric(horizontal: 2),
+                margin: const EdgeInsets.symmetric(horizontal: 0),
                 tabBarPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                 tabAlignment: MainAxisAlignment.start,
                 tabContainerColor: color.surface,
