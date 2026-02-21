@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/section_title.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/AllBalances/Ui/all_balances.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Accounts/accounts.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/balance_sheet.dart';
@@ -163,35 +164,30 @@ class _DesktopState extends State<_Desktop> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionTitle(title: tr.finance,icon: Icons.money_rounded),
-              Divider(),
+              SectionTitle(title: tr.finance),
               SizedBox(height: 8),
               _buildButtonGroup(financeButtons, color),
               const SizedBox(height: 15),
 
-              _buildSectionTitle(title: tr.inventory,icon: Icons.shopping_cart_checkout_rounded),
-              Divider(),
+              SectionTitle(title: tr.inventory),
               SizedBox(height: 8),
               _buildButtonGroup(stockButtons, color),
 
               const SizedBox(height: 15),
-
-              _buildSectionTitle(title: "Cash & Balances",icon: Icons.ssid_chart),
-              Divider(),
+              SectionTitle(title: "Cash & Balances"),
               SizedBox(height: 8),
               _buildButtonGroup(transactionsButtons, color),
 
               const SizedBox(height: 15),
 
-              _buildSectionTitle(title: "${tr.users} & ${tr.activities}",icon: Icons.supervised_user_circle_sharp),
-              Divider(),
+              //_buildSectionTitle(title: "${tr.users} & ${tr.activities}",icon: Icons.supervised_user_circle_sharp),
+              SectionTitle(title: "${tr.users} & ${tr.activities}"),
               SizedBox(height: 8),
               _buildButtonGroup(activitiesButtons, color),
 
               const SizedBox(height: 15),
 
-              _buildSectionTitle(title: tr.transport,icon: Icons.local_shipping_outlined),
-              Divider(),
+              SectionTitle(title: tr.transport),
               SizedBox(height: 8),
               _buildButtonGroup(transportButtons, color),
             ],
@@ -201,19 +197,6 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  /// Title widget for each section
-  Widget _buildSectionTitle({required String title, required IconData icon}) {
-    return Row(
-      spacing: 5,
-      children: [
-        Icon(icon,color: Theme.of(context).colorScheme.secondary,size: 20),
-        Text(
-          title,
-          style: const TextStyle(fontSize: 15),
-        ),
-      ],
-    );
-  }
   /// Wrap-based button layout for compact and responsive placement
   Widget _buildButtonGroup(List<Map<String, dynamic>> buttons, ColorScheme color) {
     return Directionality(
@@ -228,10 +211,10 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
+
   Widget _buildButton(Map<String, dynamic> button) {
     final color = Theme.of(context).colorScheme;
     final hoverNotifier = ValueNotifier(false);
-
     return MouseRegion(
       onEnter: (_) => hoverNotifier.value = true,
       onExit: (_) => hoverNotifier.value = false,
@@ -242,8 +225,8 @@ class _DesktopState extends State<_Desktop> {
             onTap: () => reportAction(button['action'] as ActionKey),
             child: AnimatedContainer(
               duration: Duration(milliseconds: 150),
-              width: 115,
-              height: 125,
+              width: 110,
+              height: 120,
               padding: EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
                   color: isHovered
@@ -255,16 +238,9 @@ class _DesktopState extends State<_Desktop> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(3),
-                      color: isHovered? Theme.of(context).colorScheme.outline.withValues(alpha: .3) : Theme.of(context).colorScheme.outline.withValues(alpha: .05)
-                    ),
-                    child: Icon(button['icon'], size: 30, color: isHovered
-                        ? color.surface
-                        : color.primary,
-                    ),
+                  Icon(button['icon'], size: 30, color: isHovered
+                      ? color.surface
+                      : color.primary.withValues(alpha: .9),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -275,7 +251,7 @@ class _DesktopState extends State<_Desktop> {
                       fontWeight: FontWeight.bold,
                       color: isHovered
                           ? color.surface
-                          : color.primary,
+                          : color.outline.withValues(alpha: .9),
                     ),
                   ),
                 ],
@@ -314,10 +290,12 @@ class _DesktopState extends State<_Desktop> {
       case ActionKey.purchase: Utils.goto(context, OrderReportView(orderName: "Purchase"));
       case ActionKey.sale: Utils.goto(context, OrderReportView(orderName: "Sale"));
       case ActionKey.estimate: Utils.goto(context, OrderReportView(orderName: "Estimate"));
+
       // Activity
       case ActionKey.userLog: Utils.goto(context, UserLogReportView());
       case ActionKey.users: Utils.goto(context, UsersReportView());
       case ActionKey.attendance: Utils.goto(context, AttendanceReportView());
+
       //Transport
       case ActionKey.shipping: Utils.goto(context, ShippingReportView());
     }
