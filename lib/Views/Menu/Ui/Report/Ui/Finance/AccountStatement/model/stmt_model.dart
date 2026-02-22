@@ -13,7 +13,7 @@ class AccountStatementModel {
   final String? avilBalance;
   final int? actStatus;
   final String? trnStatus;
-  final List<Record>? records;
+  final List<StmtRecord>? records;
 
   AccountStatementModel({
     this.accNumber,
@@ -45,7 +45,7 @@ class AccountStatementModel {
     String? curBalance,
     String? avilBalance,
     int? actStatus,
-    List<Record>? records,
+    List<StmtRecord>? records,
   }) =>
       AccountStatementModel(
         accNumber: accNumber ?? this.accNumber,
@@ -81,7 +81,7 @@ class AccountStatementModel {
       curBalance: data["curBalance"] as String?,
       avilBalance: data["avilBalance"] as String?,
       actStatus: data["actStatus"] as int?,
-      records: data["records"] == null ? [] : List<Record>.from((data["records"] as List).map((x) => Record.fromMap(x))),
+      records: data["records"] == null ? [] : List<StmtRecord>.from((data["records"] as List).map((x) => StmtRecord.fromMap(x))),
     );
   }
 
@@ -127,7 +127,7 @@ class AccountStatementModel {
   }
 }
 
-class Record {
+class StmtRecord {
   final int? sortOrder;
   final String? trnEntryDate;
   final String? trnReference;
@@ -137,7 +137,7 @@ class Record {
   final String? total;
   final String? status;
 
-  Record({
+  StmtRecord({
     this.sortOrder,
     this.trnEntryDate,
     this.trnReference,
@@ -148,7 +148,7 @@ class Record {
     this.status,
   });
 
-  Record copyWith({
+  StmtRecord copyWith({
     int? sortOrder,
     String? trnEntryDate,
     String? trnReference,
@@ -157,7 +157,7 @@ class Record {
     String? credit,
     String? total,
     String? status,
-    }) => Record(
+    }) => StmtRecord(
         sortOrder: sortOrder ?? this.sortOrder,
         trnEntryDate: trnEntryDate ?? this.trnEntryDate,
         trnReference: trnReference ?? this.trnReference,
@@ -169,10 +169,10 @@ class Record {
       );
 
   // Updated factory method to handle Map<dynamic, dynamic>
-  factory Record.fromMap(dynamic json) {
+  factory StmtRecord.fromMap(dynamic json) {
     final Map<String, dynamic> data = AccountStatementModel._convertMap(json);
 
-    return Record(
+    return StmtRecord(
       sortOrder: data["sort_order"] as int?,
       trnEntryDate: data["trnEntryDate"] as String?,
       trnReference: data["trnReference"] as String?,

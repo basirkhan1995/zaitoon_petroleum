@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/shortcut.dart';
@@ -40,12 +41,483 @@ class AccountStatementView extends StatelessWidget {
   }
 }
 
-class _Mobile extends StatelessWidget {
+
+class _Mobile extends StatefulWidget {
   const _Mobile();
 
   @override
+  State<_Mobile> createState() => _MobileState();
+}
+class _MobileState extends State<_Mobile> {
+  final accountController = TextEditingController();
+  int? accNumber;
+  String? myLocale;
+  final formKey = GlobalKey<FormState>();
+  Uint8List _companyLogo = Uint8List(0);
+  final company = ReportModel();
+  String fromDate = DateTime.now().subtract(const Duration(days: 7)).toFormattedDate();
+  String toDate = DateTime.now().toFormattedDate();
+  Jalali shamsiFromDate = DateTime.now().subtract(const Duration(days: 7)).toAfghanShamsi;
+  Jalali shamsiToDate = DateTime.now().toAfghanShamsi;
+
+  List<StmtRecord> records = [];
+  AccountStatementModel? accountStatementModel;
+
+  @override
+  void initState() {
+    myLocale = context.read<LocalizationBloc>().state.languageCode;
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
+    context.read<AccStatementBloc>().add(ResetAccStmtEvent());
+    super.initState();
+  }
+
+  void showTxnDetails() {
+    showDialog(
+      context: context,
+      builder: (context) => const TransactionByReferenceView(),
+    );
+  }
+
+  void _generateAndShowPDF(BuildContext context) {
+    if (formKey.currentState!.validate() && accNumber != null) {
+      setState(() {
+        records = [];
+        accountStatementModel = null;
+      });
+
+      context.read<AccStatementBloc>().add(
+        LoadAccountStatementEvent(
+          accountNumber: accNumber!,
+          fromDate: fromDate,
+          toDate: toDate,
+        ),
+      );
+    } else {
+      Utils.showOverlayMessage(
+        context,
+        message: AppLocalizations.of(context)!.accountStatementMessage,
+        isError: true,
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final tr = AppLocalizations.of(context)!;
+
+    final shortcuts = {
+      const SingleActivator(LogicalKeyboardKey.keyR, control: true, shift: true):
+          () => showTxnDetails(),
+    };
+
+    return GlobalShortcuts(
+      shortcuts: shortcuts,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        appBar: AppBar(
+          title: Text(tr.accountStatement),
+          titleSpacing: 0,
+        ),
+        body: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
+          builder: (context, state) {
+            if (state is CompanyProfileLoadedState) {
+              company.comName = state.company.comName ?? "";
+              company.comAddress = state.company.addName ?? "";
+              company.compPhone = state.company.comPhone ?? "";
+              company.comEmail = state.company.comEmail ?? "";
+              company.startDate = fromDate;
+              company.endDate = toDate;
+              company.statementDate = DateTime.now().toFullDateTime;
+
+              final base64Logo = state.company.comLogo;
+              if (base64Logo != null && base64Logo.isNotEmpty) {
+                try {
+                  _companyLogo = base64Decode(base64Logo);
+                  company.comLogo = _companyLogo;
+                } catch (e) {
+                  _companyLogo = Uint8List(0);
+                }
+              }
+            }
+
+            return BlocConsumer<TxnReferenceBloc, TxnReferenceState>(
+              listener: (context, state) {
+                if (state is TxnReferenceLoadedState) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => const TxnReferenceView(),
+                  );
+                }
+              },
+              builder: (context, txnState) {
+                return BlocConsumer<AccStatementBloc, AccStatementState>(
+                  listener: (context, state) {
+                    if (state is AccStatementLoadedState) {
+                      final statementDetails = state.accStatementDetails;
+
+                      setState(() {
+                        accountStatementModel = statementDetails;
+                        records = statementDetails.records ?? [];
+                      });
+
+                      if (records.isNotEmpty) {
+                        showDialog(
+                          context: context,
+                          builder: (_) => PrintPreviewDialog<AccountStatementModel>(
+                            data: accountStatementModel!,
+                            company: company,
+                            buildPreview: ({
+                              required data,
+                              required language,
+                              required orientation,
+                              required pageFormat,
+                            }) {
+                              return AccountStatementPrintSettings().printPreview(
+                                company: company,
+                                language: language,
+                                orientation: orientation,
+                                pageFormat: pageFormat,
+                                info: accountStatementModel!,
+                              );
+                            },
+                            onPrint: ({
+                              required data,
+                              required language,
+                              required orientation,
+                              required pageFormat,
+                              required selectedPrinter,
+                              required copies,
+                              required pages,
+                            }) {
+                              return AccountStatementPrintSettings().printDocument(
+                                statement: [accountStatementModel!],
+                                company: company,
+                                language: language,
+                                orientation: orientation,
+                                pageFormat: pageFormat,
+                                selectedPrinter: selectedPrinter,
+                                info: accountStatementModel!,
+                                copies: copies,
+                                pages: pages,
+                              );
+                            },
+                            onSave: ({
+                              required data,
+                              required language,
+                              required orientation,
+                              required pageFormat,
+                            }) {
+                              return AccountStatementPrintSettings().createDocument(
+                                statement: [accountStatementModel!],
+                                company: company,
+                                language: language,
+                                orientation: orientation,
+                                pageFormat: pageFormat,
+                                info: accountStatementModel!,
+                              );
+                            },
+                          ),
+                        );
+                      } else {
+                        Utils.showOverlayMessage(
+                          context,
+                          message: "No transactions found",
+                          isError: true,
+                        );
+                      }
+                    } else if (state is AccStatementErrorState) {
+                      Utils.showOverlayMessage(
+                        context,
+                        message: state.message,
+                        isError: true,
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    return Form(
+                      key: formKey,
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          children: [
+                            // Account Selection
+                            ZCover(
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
+                                  showAllOnFocus: true,
+                                  controller: accountController,
+                                  title: tr.accounts,
+                                  hintText: tr.accNameOrNumber,
+                                  isRequired: true,
+                                  bloc: context.read<AccountsBloc>(),
+                                  fetchAllFunction: (bloc) => bloc.add(
+                                    const LoadStkAccountsEvent(),
+                                  ),
+                                  searchFunction: (bloc, query) => bloc.add(
+                                    LoadStkAccountsEvent(search: query),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return tr.required(tr.accounts);
+                                    }
+                                    return null;
+                                  },
+                                  itemBuilder: (context, account) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 5,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "${account.accnumber} | ${account.accName}",
+                                          style: Theme.of(context).textTheme.bodyLarge,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  itemToString: (acc) => "${acc.accnumber} | ${acc.accName}",
+                                  stateToLoading: (state) => state is AccountLoadingState,
+                                  loadingBuilder: (context) => const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(strokeWidth: 3),
+                                  ),
+                                  stateToItems: (state) {
+                                    if (state is StkAccountLoadedState) {
+                                      return state.accounts;
+                                    }
+                                    return [];
+                                  },
+                                  onSelected: (value) {
+                                    setState(() {
+                                      accNumber = value.accnumber;
+                                    });
+                                  },
+                                  noResultsText: tr.noDataFound,
+                                  showClearButton: true,
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 12),
+
+                            // Date Range
+                            ZCover(
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Column(
+                                  children: [
+                                    ZDatePicker(
+                                      label: tr.fromDate,
+                                      value: fromDate,
+                                      onDateChanged: (v) {
+                                        setState(() {
+                                          fromDate = v;
+                                          shamsiFromDate = v.toAfghanShamsi;
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(height: 12),
+                                    ZDatePicker(
+                                      label: tr.toDate,
+                                      value: toDate,
+                                      onDateChanged: (v) {
+                                        setState(() {
+                                          toDate = v;
+                                          shamsiToDate = v.toAfghanShamsi;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            // Generate PDF Button
+                            SizedBox(
+                              width: double.infinity,
+                              height: 40,
+                              child: ZOutlineButton(
+                                isActive: (state is AccStatementLoadingState || accNumber == null) ? false : true,
+                                onPressed: (state is AccStatementLoadingState || accNumber == null)
+                                    ? null
+                                    : () => _generateAndShowPDF(context),
+                                icon: FontAwesomeIcons.solidFilePdf,
+                                label: state is AccStatementLoadingState
+                                    ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                    : const Text("PDF"),
+                              ),
+                            ),
+
+                            if (accountStatementModel != null && records.isNotEmpty) ...[
+                              const SizedBox(height: 16),
+
+                              // Quick Summary Card
+                              ZCover(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      ListTile(
+                                        visualDensity: VisualDensity(vertical: -4,horizontal: -4),
+                                        contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                                        title: Text(
+                                          "Account Summary",
+                                          style: Theme.of(context).textTheme.titleMedium,
+                                        ),
+                                        subtitle: Text(accountStatementModel?.accName ?? ""),
+                                      ),
+                                      const Divider(),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(tr.currentBalance),
+                                            Text(
+                                              accountStatementModel?.curBalance.toAmount() ?? "0",
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 5),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(tr.availableBalance),
+                                            Text(
+                                              accountStatementModel?.avilBalance.toAmount() ?? "0",
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 8),
+
+                              // Share buttons
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ZOutlineButton(
+                                      onPressed: () {
+                                        final helper = WhatsAppShareHelper(context);
+                                        helper.shareViaWhatsApp(
+                                          accountNumber: accNumber.toString(),
+                                          signatory: accountStatementModel?.signatory ?? "",
+                                          accountName: accountStatementModel?.accName ?? "",
+                                          currentBalance: accountStatementModel?.curBalance.toDoubleAmount(),
+                                          availableBalance: accountStatementModel?.avilBalance.toDoubleAmount(),
+                                          currencySymbol: accountStatementModel?.actCurrency ?? "",
+                                        );
+                                      },
+                                      isActive: true,
+                                      icon: FontAwesomeIcons.whatsapp,
+                                      label: const Text("Share"),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: ZOutlineButton(
+                                      onPressed: () {
+                                        _generateAndShowPDF(context);
+                                      },
+                                      icon: Icons.refresh,
+                                      label: const Text("Regenerate"),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: 8),
+
+                              // Transaction count and info
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary.withAlpha(10),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Total Transactions",
+                                      style: Theme.of(context).textTheme.titleSmall,
+                                    ),
+                                    Text(
+                                      "${records.length}",
+                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              // Add some bottom padding for better scrolling experience
+                              const SizedBox(height: 20),
+                            ],
+
+                            // Hint text - only show when no data
+                            if (accountStatementModel == null)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 32.0),
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      FontAwesomeIcons.solidFilePdf,
+                                      size: 64,
+                                      color: Theme.of(context).colorScheme.outline.withAlpha(100),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      "Select an account and date range,\nthen tap the PDF button to generate statement",
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: Theme.of(context).colorScheme.outline,
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
   }
 }
 
@@ -55,7 +527,6 @@ class _Desktop extends StatefulWidget {
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> {
   final Map<String, bool> _copiedStates = {};
   final accountController = TextEditingController();
