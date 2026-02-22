@@ -444,6 +444,26 @@ abstract class PrintServices {
         'fa':"رسید پول",
         "ar":"پول رسید"
       },
+      'currencyBreakdown' : {
+        'en':"Currency Breakdown",
+        'fa':"خلاصه حسابها",
+        "ar":"حسابونه خلاصه"
+      },
+      'totalAccounts' : {
+        'en':"Total Accounts",
+        'fa':"همه حسابها",
+        "ar":"تول حسابونه"
+      },
+      'activeAccounts' : {
+        'en':"Active Accounts",
+        'fa':"حسابهای فعال",
+        "ar":"فعال حسابونه"
+      },
+      'inactiveAccounts' : {
+        'en':"Inactive Accounts",
+        'fa':"حسابهای غیرفعال",
+        "ar":"غیرفعال حسابونه"
+      },
       'saleAmount': {
         'en': 'Sale Amount',
         'fa': 'مقدار فروش',

@@ -30,14 +30,12 @@ class PayablesView extends StatelessWidget {
   }
 }
 
-
 class _Mobile extends StatefulWidget {
   const _Mobile();
 
   @override
   State<_Mobile> createState() => _MobileState();
 }
-
 class _MobileState extends State<_Mobile> {
   final searchController = TextEditingController();
   final company = ReportModel();
@@ -111,7 +109,6 @@ class _MobileState extends State<_Mobile> {
                   if (state is ArApLoadedState) {
                     final filteredList = state.apAccounts;
                     final totalsByCurrency = calculateTotalPayableByCurrency(filteredList);
-
                     return Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -200,7 +197,7 @@ class _MobileState extends State<_Mobile> {
                           return Container(
                             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                              color: Theme.of(context).colorScheme.surfaceContainer,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: Theme.of(context).colorScheme.outline.withValues(alpha: .1),
@@ -222,11 +219,11 @@ class _MobileState extends State<_Mobile> {
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
-                                      ZCover(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary
-                                            .withValues(alpha: .1),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).colorScheme.primary.withValues(alpha: .1),
+                                          borderRadius: BorderRadius.circular(3),
+                                        ),
                                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                         child: Text(
                                           ap.accNumber.toString(),
@@ -241,29 +238,30 @@ class _MobileState extends State<_Mobile> {
                                   // Status and Limit Row
                                   Row(
                                     children: [
+
+                                      Expanded(
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              tr.signatory,
+                                              style: subTitle,
+                                            ),
+                                            Text(
+                                              ap.fullName ?? "",
+                                              style: Theme.of(context).textTheme.bodyMedium,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
                                       StatusBadge(
                                         status: ap.accStatus!,
                                         trueValue: tr.active,
                                         falseValue: tr.blocked,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              "${tr.signatory}: ",
-                                              style: subTitle,
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                ap.fullName ?? "",
-                                                style: Theme.of(context).textTheme.bodyMedium,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
                                       ),
                                     ],
                                   ),
@@ -275,25 +273,23 @@ class _MobileState extends State<_Mobile> {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       // Account Limit
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              "${tr.accountLimit}: ",
-                                              style: subTitle,
-                                            ),
-                                            Flexible(
-                                              child: Text(
-                                                ap.accLimit == "Unlimited"
-                                                    ? tr.unlimited
-                                                    : "${ap.accLimit.toAmount()} ${ap.accCurrency ?? ''}",
-                                                style: Theme.of(context).textTheme.bodyMedium,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                      Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "${tr.accountLimit}: ",
+                                            style: subTitle,
+                                          ),
+                                          Text(
+                                            ap.accLimit == "Unlimited"
+                                                ? tr.unlimited
+                                                : "${ap.accLimit.toAmount()} ${ap.accCurrency ?? ''}",
+                                            style: Theme.of(context).textTheme.bodyMedium,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
                                       ),
 
                                       // Balance
@@ -301,7 +297,7 @@ class _MobileState extends State<_Mobile> {
                                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                         decoration: BoxDecoration(
                                           color: Theme.of(context).colorScheme.primary.withValues(alpha: .1),
-                                          borderRadius: BorderRadius.circular(6),
+                                          borderRadius: BorderRadius.circular(3),
                                         ),
                                         child: Text(
                                           "${ap.accBalance.toAmount()} ${ap.accCurrency}",
@@ -426,7 +422,6 @@ class _Desktop extends StatefulWidget {
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> {
   final searchController = TextEditingController();
   final company = ReportModel();

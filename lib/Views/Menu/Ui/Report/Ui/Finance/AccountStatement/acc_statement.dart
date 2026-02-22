@@ -241,99 +241,89 @@ class _MobileState extends State<_Mobile> {
                         child: Column(
                           children: [
                             // Account Selection
-                            ZCover(
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
-                                  showAllOnFocus: true,
-                                  controller: accountController,
-                                  title: tr.accounts,
-                                  hintText: tr.accNameOrNumber,
-                                  isRequired: true,
-                                  bloc: context.read<AccountsBloc>(),
-                                  fetchAllFunction: (bloc) => bloc.add(
-                                    const LoadStkAccountsEvent(),
-                                  ),
-                                  searchFunction: (bloc, query) => bloc.add(
-                                    LoadStkAccountsEvent(search: query),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return tr.required(tr.accounts);
-                                    }
-                                    return null;
-                                  },
-                                  itemBuilder: (context, account) => Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 5,
-                                      vertical: 5,
+                            GenericTextfield<StakeholdersAccountsModel, AccountsBloc, AccountsState>(
+                              showAllOnFocus: true,
+                              controller: accountController,
+                              title: tr.accounts,
+                              hintText: tr.accNameOrNumber,
+                              isRequired: true,
+                              bloc: context.read<AccountsBloc>(),
+                              fetchAllFunction: (bloc) => bloc.add(
+                                const LoadStkAccountsEvent(),
+                              ),
+                              searchFunction: (bloc, query) => bloc.add(
+                                LoadStkAccountsEvent(search: query),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return tr.required(tr.accounts);
+                                }
+                                return null;
+                              },
+                              itemBuilder: (context, account) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 5,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "${account.accnumber} | ${account.accName}",
+                                      style: Theme.of(context).textTheme.bodyLarge,
                                     ),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "${account.accnumber} | ${account.accName}",
-                                          style: Theme.of(context).textTheme.bodyLarge,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  itemToString: (acc) => "${acc.accnumber} | ${acc.accName}",
-                                  stateToLoading: (state) => state is AccountLoadingState,
-                                  loadingBuilder: (context) => const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(strokeWidth: 3),
-                                  ),
-                                  stateToItems: (state) {
-                                    if (state is StkAccountLoadedState) {
-                                      return state.accounts;
-                                    }
-                                    return [];
-                                  },
-                                  onSelected: (value) {
-                                    setState(() {
-                                      accNumber = value.accnumber;
-                                    });
-                                  },
-                                  noResultsText: tr.noDataFound,
-                                  showClearButton: true,
+                                  ],
                                 ),
                               ),
+                              itemToString: (acc) => "${acc.accnumber} | ${acc.accName}",
+                              stateToLoading: (state) => state is AccountLoadingState,
+                              loadingBuilder: (context) => const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(strokeWidth: 3),
+                              ),
+                              stateToItems: (state) {
+                                if (state is StkAccountLoadedState) {
+                                  return state.accounts;
+                                }
+                                return [];
+                              },
+                              onSelected: (value) {
+                                setState(() {
+                                  accNumber = value.accnumber;
+                                });
+                              },
+                              noResultsText: tr.noDataFound,
+                              showClearButton: true,
                             ),
 
                             const SizedBox(height: 12),
 
                             // Date Range
-                            ZCover(
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Column(
-                                  children: [
-                                    ZDatePicker(
-                                      label: tr.fromDate,
-                                      value: fromDate,
-                                      onDateChanged: (v) {
-                                        setState(() {
-                                          fromDate = v;
-                                          shamsiFromDate = v.toAfghanShamsi;
-                                        });
-                                      },
-                                    ),
-                                    const SizedBox(height: 12),
-                                    ZDatePicker(
-                                      label: tr.toDate,
-                                      value: toDate,
-                                      onDateChanged: (v) {
-                                        setState(() {
-                                          toDate = v;
-                                          shamsiToDate = v.toAfghanShamsi;
-                                        });
-                                      },
-                                    ),
-                                  ],
+                            Column(
+                              children: [
+                                ZDatePicker(
+                                  label: tr.fromDate,
+                                  value: fromDate,
+                                  onDateChanged: (v) {
+                                    setState(() {
+                                      fromDate = v;
+                                      shamsiFromDate = v.toAfghanShamsi;
+                                    });
+                                  },
                                 ),
-                              ),
+                                const SizedBox(height: 12),
+                                ZDatePicker(
+                                  label: tr.toDate,
+                                  value: toDate,
+                                  onDateChanged: (v) {
+                                    setState(() {
+                                      toDate = v;
+                                      shamsiToDate = v.toAfghanShamsi;
+                                    });
+                                  },
+                                ),
+                              ],
                             ),
 
                             const SizedBox(height: 16),

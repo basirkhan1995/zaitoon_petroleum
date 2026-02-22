@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart' as pw;
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -8,6 +7,14 @@ import 'package:zaitoon_petroleum/Features/PrintSettings/report_model.dart';
 import '../model/ar_ap_model.dart';
 
 class ArApPdfServices extends PrintServices {
+  // Clean color palette
+  static const _primaryColor = pw.PdfColors.blue800;
+  static const _secondaryColor = pw.PdfColors.blue50;
+  static const _textPrimary = pw.PdfColors.grey900;
+  static const _textSecondary = pw.PdfColors.grey700;
+  static const _borderColor = pw.PdfColors.grey300;
+  static const _headerBgColor = pw.PdfColors.grey50;
+
   Future<pw.Document> generateArReport({
     required ReportModel report,
     required List<ArApModel> arAccounts,
@@ -15,56 +22,15 @@ class ArApPdfServices extends PrintServices {
     required pw.PageOrientation orientation,
     required pw.PdfPageFormat pageFormat,
   }) async {
-    final document = pw.Document();
-    final prebuiltHeader = await header(report: report);
-
-    // Load logo image
-    final ByteData imageData = await rootBundle.load('assets/images/zaitoonLogo.png');
-    final Uint8List imageBytes = imageData.buffer.asUint8List();
-    final pw.MemoryImage logoImage = pw.MemoryImage(imageBytes);
-
-    // Calculate totals by currency for AR
-    final arTotalsByCurrency = calculateTotalByCurrency(arAccounts, isAR: true);
-
-    document.addPage(
-      pw.MultiPage(
-        maxPages: 1000,
-        margin: const pw.EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-        pageFormat: pageFormat,
-        textDirection: documentLanguage(language: language),
-        orientation: orientation,
-        build: (context) => [
-          pw.SizedBox(height: 5),
-          horizontalDivider(),
-          pw.SizedBox(height: 10),
-          _buildReportTitle(
-            language: language,
-            reportType: getTranslation(text: 'debtor', tr: language),
-          ),
-          pw.SizedBox(height: 15),
-          _buildSummarySection(
-            accounts: arAccounts,
-            totalsByCurrency: arTotalsByCurrency,
-            language: language,
-            isAR: true,
-          ),
-          pw.SizedBox(height: 15),
-          _buildAccountsTable(
-            accounts: arAccounts,
-            language: language,
-            isAR: true,
-          ),
-        ],
-        header: (context) => prebuiltHeader,
-        footer: (context) => footer(
-          report: report,
-          context: context,
-          language: language,
-          logoImage: logoImage,
-        ),
-      ),
+    return _generateReport(
+      report: report,
+      accounts: arAccounts.where((e) => e.isAR).toList(),
+      language: language,
+      orientation: orientation,
+      pageFormat: pageFormat,
+      reportType: 'debtor',
+      isAR: true,
     );
-    return document;
   }
 
   Future<pw.Document> generateApReport({
@@ -74,380 +40,356 @@ class ArApPdfServices extends PrintServices {
     required pw.PageOrientation orientation,
     required pw.PdfPageFormat pageFormat,
   }) async {
+    return _generateReport(
+      report: report,
+      accounts: apAccounts.where((e) => e.isAP).toList(),
+      language: language,
+      orientation: orientation,
+      pageFormat: pageFormat,
+      reportType: 'creditor',
+      isAR: false,
+    );
+  }
+
+  Future<pw.Document> _generateReport({
+    required ReportModel report,
+    required List<ArApModel> accounts,
+    required String language,
+    required pw.PageOrientation orientation,
+    required pw.PdfPageFormat pageFormat,
+    required String reportType,
+    required bool isAR,
+  }) async {
     final document = pw.Document();
-    final prebuiltHeader = await header(report: report);
-
-    // Load logo image
-    final ByteData imageData = await rootBundle.load('assets/images/zaitoonLogo.png');
-    final Uint8List imageBytes = imageData.buffer.asUint8List();
-    final pw.MemoryImage logoImage = pw.MemoryImage(imageBytes);
-
-    // Calculate totals by currency for AP
-    final apTotalsByCurrency = calculateTotalByCurrency(apAccounts, isAR: false);
+    final totalsByCurrency = _calculateTotalsByCurrency(accounts);
+    final totalAccounts = accounts.length;
+    final activeAccounts = accounts.where((acc) => acc.accStatus == 1).length;
 
     document.addPage(
       pw.MultiPage(
         maxPages: 1000,
-        margin: const pw.EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+        margin: const pw.EdgeInsets.all(30),
         pageFormat: pageFormat,
         textDirection: documentLanguage(language: language),
         orientation: orientation,
         build: (context) => [
-          pw.SizedBox(height: 5),
-          horizontalDivider(),
-          pw.SizedBox(height: 10),
-          _buildReportTitle(
-            language: language,
-            reportType: getTranslation(text: 'creditor', tr: language),
-          ),
+          _buildReportHeader(language, reportType),
           pw.SizedBox(height: 15),
-          _buildSummarySection(
-            accounts: apAccounts,
-            totalsByCurrency: apTotalsByCurrency,
-            language: language,
-            isAR: false,
-          ),
+          _buildSimpleStats(totalAccounts, activeAccounts, language),
           pw.SizedBox(height: 15),
-          _buildAccountsTable(
-            accounts: apAccounts,
-            language: language,
-            isAR: false,
-          ),
+          _buildCurrencySummary(totalsByCurrency, language, isAR),
+          pw.SizedBox(height: 20),
+          _buildAccountsTable(accounts, language),
         ],
-        header: (context) => prebuiltHeader,
-        footer: (context) => footer(
-          report: report,
-          context: context,
-          language: language,
-          logoImage: logoImage,
-        ),
       ),
     );
+
     return document;
   }
 
-  pw.Widget _buildReportTitle({
-    required String language,
-    required String reportType,
-  }) {
+  pw.Widget _buildReportHeader(String language, String reportType) {
     return pw.Container(
-      padding: const pw.EdgeInsets.all(10),
+      padding: const pw.EdgeInsets.symmetric(vertical: 8, horizontal: 15),
       decoration: pw.BoxDecoration(
-        color: pw.PdfColors.blue50,
-        borderRadius: pw.BorderRadius.circular(5),
+        color: _secondaryColor,
+        borderRadius: pw.BorderRadius.circular(3),
+        border: pw.Border.all(color: _borderColor),
       ),
       child: pw.Row(
-        mainAxisAlignment: pw.MainAxisAlignment.center,
         children: [
-          pw.Icon(
-            pw.IconData(0xf2b9), // Document icon
-            size: 20,
-            color: pw.PdfColors.blue700,
-          ),
-          pw.SizedBox(width: 10),
-          text(
-            text: '${getTranslation(text: 'accountStatement', tr: language)} - $reportType',
-            fontSize: 16,
-            fontWeight: pw.FontWeight.bold,
-            color: pw.PdfColors.blue700,
-          ),
-        ],
-      ),
-    );
-  }
-
-  pw.Widget _buildSummarySection({
-    required List<ArApModel> accounts,
-    required Map<String, double> totalsByCurrency,
-    required String language,
-    required bool isAR,
-  }) {
-    final totalAccounts = accounts.length;
-    final reportType = isAR
-        ? getTranslation(text: 'debtor', tr: language)
-        : getTranslation(text: 'creditor', tr: language);
-
-    return pw.Container(
-      decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: pw.PdfColors.grey300, width: 0.7),
-        borderRadius: pw.BorderRadius.circular(5),
-      ),
-      padding: const pw.EdgeInsets.all(10),
-      child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          text(
-            text: '${getTranslation(text: 'accountSummary', tr: language)} ($reportType)',
-            fontSize: 14,
-            fontWeight: pw.FontWeight.bold,
-          ),
-          pw.SizedBox(height: 8),
-          horizontalDivider(),
-          pw.SizedBox(height: 8),
-          pw.Row(
-            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-            children: [
-              _buildSummaryItem(
-                label: getTranslation(text: 'accounts', tr: language),
-                value: totalAccounts.toString(),
-                language: language,
-              ),
-              _buildSummaryItem(
-                label: getTranslation(text: 'reportType', tr: language),
-                value: reportType,
-                language: language,
-              ),
-              _buildSummaryItem(
-                label: getTranslation(text: 'date', tr: language),
-                value: DateTime.now().toIso8601String().substring(0, 10),
-                language: language,
-              ),
-            ],
-          ),
-          pw.SizedBox(height: 10),
-          // Currency-wise totals
-          pw.Wrap(
-            spacing: 15,
-            runSpacing: 10,
-            children: totalsByCurrency.entries.map((entry) {
-              return pw.Container(
-                padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: pw.BoxDecoration(
-                  color: pw.PdfColors.grey100,
-                  borderRadius: pw.BorderRadius.circular(4),
-                  border: pw.Border.all(color: pw.PdfColors.grey300),
-                ),
-                child: pw.Row(
-                  mainAxisSize: pw.MainAxisSize.min,
-                  children: [
-                    text(
-                      text: entry.key,
-                      fontSize: 10,
-                      fontWeight: pw.FontWeight.bold,
-                    ),
-                    pw.SizedBox(width: 5),
-                    text(
-                      text: entry.value.abs().toStringAsFixed(2),
-                      fontSize: 12,
-                      fontWeight: pw.FontWeight.bold,
-                      color: isAR ? pw.PdfColors.red700 : pw.PdfColors.green700,
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  pw.Widget _buildAccountsTable({
-    required List<ArApModel> accounts,
-    required String language,
-    required bool isAR,
-  }) {
-    const accountNoWidth = 40.0;
-    const accountNameWidth = 100.0;
-    const signatoryWidth = 80.0;
-    const phoneWidth = 60.0;
-    const limitWidth = 60.0;
-    const statusWidth = 50.0;
-    const balanceWidth = 70.0;
-    const currencyWidth = 40.0;
-
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.start,
-      children: [
-        // Table Header
-        pw.Container(
-          width: double.infinity,
-          padding: const pw.EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-          decoration: pw.BoxDecoration(
-            color: pw.PdfColors.blue50,
-            border: pw.Border(
-              bottom: pw.BorderSide(width: 1, color: pw.PdfColors.blue300),
-            ),
-          ),
-          child: pw.Row(
-            children: [
-              pw.SizedBox(
-                width: accountNoWidth,
-                child: text(
-                  text: getTranslation(text: 'accountNumber', tr: language),
-                  fontSize: 9,
-                  fontWeight: pw.FontWeight.bold,
-                  textAlign: pw.TextAlign.center,
-                ),
-              ),
-              pw.SizedBox(
-                width: accountNameWidth,
-                child: text(
-                  text: getTranslation(text: 'accountName', tr: language),
-                  fontSize: 9,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              pw.SizedBox(
-                width: signatoryWidth,
-                child: text(
-                  text: getTranslation(text: 'signatory', tr: language),
-                  fontSize: 9,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              pw.SizedBox(
-                width: phoneWidth,
-                child: text(
-                  text: getTranslation(text: 'mobile', tr: language),
-                  fontSize: 9,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              pw.SizedBox(
-                width: limitWidth,
-                child: text(
-                  text: getTranslation(text: 'accountLimit', tr: language),
-                  fontSize: 9,
-                  fontWeight: pw.FontWeight.bold,
-                  textAlign: pw.TextAlign.right,
-                ),
-              ),
-              pw.SizedBox(
-                width: statusWidth,
-                child: text(
-                  text: getTranslation(text: 'status', tr: language),
-                  fontSize: 9,
-                  fontWeight: pw.FontWeight.bold,
-                  textAlign: pw.TextAlign.center,
-                ),
-              ),
-              pw.SizedBox(
-                width: balanceWidth,
-                child: text(
-                  text: getTranslation(text: 'balance', tr: language),
-                  fontSize: 9,
-                  fontWeight: pw.FontWeight.bold,
-                  textAlign: pw.TextAlign.right,
-                ),
-              ),
-              pw.SizedBox(
-                width: currencyWidth,
-                child: text(
-                  text: getTranslation(text: 'currency', tr: language),
-                  fontSize: 9,
-                  fontWeight: pw.FontWeight.bold,
-                  textAlign: pw.TextAlign.center,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // Data Rows
-        for (var i = 0; i < accounts.length; i++)
           pw.Container(
-            width: double.infinity,
-            padding: const pw.EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-            decoration: pw.BoxDecoration(
-              color: i.isOdd ? pw.PdfColors.grey50 : null,
-              border: pw.Border(
-                bottom: pw.BorderSide(width: 0.25, color: pw.PdfColors.grey300),
-              ),
-            ),
-            child: pw.Row(
+            width: 4,
+            height: 50,
+            color: _primaryColor,
+            margin: const pw.EdgeInsets.symmetric(horizontal: 12),
+          ),
+          pw.Expanded(
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                // Account Number
-                pw.SizedBox(
-                  width: accountNoWidth,
-                  child: text(
-                    text: accounts[i].accNumber?.toString() ?? "-",
-                    fontSize: 8,
-                    textAlign: pw.TextAlign.center,
-                  ),
+                text(
+                 text: getTranslation(text: 'accountStatement', tr: language).toUpperCase(),
+                    fontSize: 14,
+                    color: _textSecondary,
                 ),
-
-                // Account Name
-                pw.SizedBox(
-                  width: accountNameWidth,
-                  child: text(
-                    text: accounts[i].accName ?? "-",
-                    fontSize: 8,
-                  ),
-                ),
-
-                // Signatory
-                pw.SizedBox(
-                  width: signatoryWidth,
-                  child: text(
-                    text: accounts[i].fullName ?? "-",
-                    fontSize: 8,
-                  ),
-                ),
-
-                // Phone
-                pw.SizedBox(
-                  width: phoneWidth,
-                  child: text(
-                    text: accounts[i].perPhone ?? "-",
-                    fontSize: 8,
-                  ),
-                ),
-
-                // Account Limit
-                pw.SizedBox(
-                  width: limitWidth,
-                  child: text(
-                    text: accounts[i].accLimit == "Unlimited"
-                        ? getTranslation(text: 'unlimited', tr: language)
-                        : accounts[i].accLimit?.toAmount() ?? "0.00",
-                    fontSize: 8,
-                    textAlign: pw.TextAlign.right,
-                  ),
-                ),
-
-                // Status
-                pw.SizedBox(
-                  width: statusWidth,
-                  child: _buildStatusBadge(
-                    status: accounts[i].accStatus ?? 0,
-                    language: language,
-                  ),
-                ),
-
-                // Balance (with color coding)
-                pw.SizedBox(
-                  width: balanceWidth,
-                  child: text(
-                    text: accounts[i].balance.abs().toStringAsFixed(2),
-                    fontSize: 8,
+                text(
+                 text: getTranslation(text: reportType, tr: language),
+                    fontSize: 24,
                     fontWeight: pw.FontWeight.bold,
-                    color: accounts[i].balance < 0 ? pw.PdfColors.red700 : pw.PdfColors.green700,
-                    textAlign: pw.TextAlign.right,
-                  ),
-                ),
-
-                // Currency
-                pw.SizedBox(
-                  width: currencyWidth,
-                  child: text(
-                    text: accounts[i].accCurrency ?? "-",
-                    fontSize: 8,
-                    textAlign: pw.TextAlign.center,
-                  ),
+                    color: _primaryColor,
                 ),
               ],
             ),
           ),
+          pw.Container(
+            padding: const pw.EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: pw.BoxDecoration(
+              color: pw.PdfColors.white,
+              borderRadius: pw.BorderRadius.circular(4),
+              border: pw.Border.all(color: _borderColor),
+            ),
+            child: pw.Text(
+              DateTime.now().toIso8601String().substring(0, 10),
+              style: pw.TextStyle(
+                fontSize: 12,
+                color: _textSecondary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildSimpleStats(int total, int active, String language) {
+    return pw.Row(
+      children: [
+        pw.Container(
+          padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: pw.BoxDecoration(
+            color: pw.PdfColors.grey100,
+            borderRadius: pw.BorderRadius.circular(4),
+          ),
+          child: pw.Row(
+            children: [
+              text(
+               text: '${getTranslation(text: 'total', tr: language)}: ',
+                fontSize: 10, color: _textSecondary,
+              ),
+              pw.Text(
+                total.toString(),
+                style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: _primaryColor),
+              ),
+            ],
+          ),
+        ),
+        pw.SizedBox(width: 10),
+        pw.Container(
+          padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: pw.BoxDecoration(
+            color: pw.PdfColors.grey100,
+            borderRadius: pw.BorderRadius.circular(4),
+          ),
+          child: pw.Row(
+            children: [
+              text(
+              text: '${getTranslation(text: 'active', tr: language)}: ',
+                fontSize: 10, color: _textSecondary,
+              ),
+              pw.Text(
+                active.toString(),
+                style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: pw.PdfColors.green700),
+              ),
+            ],
+          ),
+        ),
+        pw.SizedBox(width: 10),
+        pw.Container(
+          padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: pw.BoxDecoration(
+            color: pw.PdfColors.grey100,
+            borderRadius: pw.BorderRadius.circular(4),
+          ),
+          child: pw.Row(
+            children: [
+              text(
+               text: '${getTranslation(text: 'inactive', tr: language)}: ',
+                fontSize: 10, color: _textSecondary,
+              ),
+              text(
+               text: (total - active).toString(),
+                fontSize: 12, fontWeight: pw.FontWeight.bold, color: pw.PdfColors.grey700,
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
 
-  pw.Widget _buildStatusBadge({
-    required int status,
-    required String language,
-  }) {
-    final isActive = status == 1;
+  pw.Widget _buildCurrencySummary(Map<String, double> totalsByCurrency, String language, bool isAR) {
+    final balanceColor = isAR ? pw.PdfColors.red700 : pw.PdfColors.green700;
+
+    return pw.Container(
+      padding: const pw.EdgeInsets.all(12),
+      decoration: pw.BoxDecoration(
+        color: pw.PdfColors.white,
+        borderRadius: pw.BorderRadius.circular(4),
+        border: pw.Border.all(color: _borderColor),
+      ),
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          text(
+           text: getTranslation(text: 'currencyBreakdown', tr: language),
+            fontSize: 11, fontWeight: pw.FontWeight.bold, color: _textPrimary,
+          ),
+          pw.SizedBox(height: 4),
+          pw.Divider(color: _borderColor, height: 1),
+          pw.SizedBox(height: 4),
+          ...totalsByCurrency.entries.map((entry) => pw.Padding(
+            padding: const pw.EdgeInsets.symmetric(vertical: 2),
+            child: pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                pw.Row(
+                  children: [
+                    pw.Container(
+                      width: 3,
+                      height: 3,
+                      color: balanceColor,
+                      margin: pw.EdgeInsets.symmetric(horizontal: 6),
+                    ),
+                    pw.Text(
+                      entry.key,
+                      style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, color: _textPrimary),
+                    ),
+                  ],
+                ),
+                pw.Text(
+                  entry.value.toAmount(),
+                  style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: balanceColor),
+                ),
+              ],
+            ),
+          )),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildAccountsTable(
+      List<ArApModel> accounts,
+      String language,
+      ) {
+    // Define fixed column widths
+    const colSNo = 0.4;
+    const colAccount = 2.5;
+    const colSignatory = 2.0;
+    const colBalance = 1.2;
+    const colStatus = 0.7;
+
+    return pw.Container(
+      decoration: pw.BoxDecoration(
+        border: pw.Border.all(color: _borderColor),
+        borderRadius: pw.BorderRadius.circular(4),
+      ),
+      child: pw.Column(
+        children: [
+          // Table Header
+          pw.Container(
+            padding: const pw.EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            decoration: pw.BoxDecoration(
+              color: pw.PdfColors.blue50,
+              borderRadius: const pw.BorderRadius.only(
+                topLeft: pw.Radius.circular(4),
+                topRight: pw.Radius.circular(4),
+              ),
+            ),
+            child: pw.Row(
+              children: [
+                pw.Expanded(flex: (colSNo * 10).toInt(), child: pw.Text('#', style: _headerStyle())),
+                pw.Expanded(flex: (colAccount * 10).toInt(), child: text(text: getTranslation(text: 'accounts', tr: language), fontWeight: pw.FontWeight.bold,color: _textPrimary, fontSize: 9)),
+                pw.Expanded(flex: (colSignatory * 10).toInt(), child: text(text: getTranslation(text: 'signatory', tr: language), fontWeight: pw.FontWeight.bold,color: _textPrimary, fontSize: 9)),
+                pw.Expanded(flex: (colBalance * 10).toInt(), child: text(text: getTranslation(text: 'balance', tr: language), textAlign: language == "en"? pw.TextAlign.right : pw.TextAlign.left, fontWeight: pw.FontWeight.bold,color: _textPrimary, fontSize: 9)),
+                pw.Expanded(flex: (colStatus * 10).toInt(), child: text(text: getTranslation(text: 'status', tr: language),textAlign: language == "en"? pw.TextAlign.right : pw.TextAlign.left, fontWeight: pw.FontWeight.bold,color: _textPrimary, fontSize: 9)),
+              ],
+            ),
+          ),
+
+          // Table Rows
+          for (var i = 0; i < accounts.length; i++)
+            pw.Container(
+              padding: const pw.EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+              decoration: pw.BoxDecoration(
+                color: i.isEven ? _headerBgColor : pw.PdfColors.white,
+                border: i < accounts.length - 1
+                    ? pw.Border(bottom: pw.BorderSide(color: _borderColor))
+                    : null,
+              ),
+              child: pw.Row(
+                children: [
+                  // Serial No
+                  pw.Expanded(
+                    flex: (colSNo * 10).toInt(),
+                    child: pw.Text(
+                      (i + 1).toString(),
+                      style: _cellStyle(),
+                    ),
+                  ),
+
+                  // Account Details (Name + Number)
+                  pw.Expanded(
+                    flex: (colAccount * 10).toInt(),
+                    child: pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        text(
+                         text: accounts[i].accName ?? '-',
+                          fontSize: 9, fontWeight: pw.FontWeight.bold,
+                        ),
+                        text(
+                          text: accounts[i].accNumber?.toString() ?? '-',
+                          fontSize: 7, color: _textSecondary,
+                        ),
+                        text(
+                          text: accounts[i].accCurrency?.toString() ?? '-',
+                          fontSize: 7, fontWeight: pw.FontWeight.bold, color: _textSecondary,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Signatory
+                  pw.Expanded(
+                    flex: (colSignatory * 10).toInt(),
+                    child: text(
+                     text: accounts[i].fullName ?? '-',
+                      fontSize: 9,
+                      textAlign: language == "en"? pw.TextAlign.left : pw.TextAlign.right,
+                    ),
+                  ),
+
+                  // Balance (without currency header)
+                  pw.Expanded(
+                    flex: (colBalance * 10).toInt(),
+                    child: pw.Text(
+                      accounts[i].balance.abs().toAmount(),
+                      style: pw.TextStyle(
+                        fontSize: 9,
+                        fontWeight: pw.FontWeight.bold,
+                        color: accounts[i].balance < 0 ? pw.PdfColors.red700 : pw.PdfColors.green700,
+                      ),
+                      textAlign: language == "en"? pw.TextAlign.right : pw.TextAlign.left,
+                    ),
+                  ),
+
+                  // Status
+                  pw.Expanded(
+                    flex: (colStatus * 10).toInt(),
+                    child: _buildStatusText(accounts[i].accStatus == 1, language),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  pw.TextStyle _headerStyle() {
+    return pw.TextStyle(
+      fontSize: 9,
+      fontWeight: pw.FontWeight.bold,
+      color: _textPrimary,
+    );
+  }
+
+  pw.TextStyle _cellStyle() {
+    return const pw.TextStyle(fontSize: 9);
+  }
+
+  pw.Widget _buildStatusText(bool isActive, String language) {
     final statusText = isActive
         ? getTranslation(text: 'active', tr: language)
         : getTranslation(text: 'blocked', tr: language);
@@ -455,56 +397,23 @@ class ArApPdfServices extends PrintServices {
     final color = isActive ? pw.PdfColors.green700 : pw.PdfColors.red700;
 
     return pw.Container(
-      padding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: pw.BoxDecoration(
-        color: pw.PdfColors.blue,
-        borderRadius: pw.BorderRadius.circular(3),
-        border: pw.Border.all(color: color, width: 0.5),
-      ),
+      padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       child: text(
         text: statusText,
-        fontSize: 7,
-        color: color,
-        textAlign: pw.TextAlign.center,
+          fontSize: 8,
+          fontWeight: pw.FontWeight.bold,
+          color: color,
+        textAlign: language == "en"? pw.TextAlign.right : pw.TextAlign.left,
       ),
     );
   }
 
-  pw.Widget _buildSummaryItem({
-    required String label,
-    required String value,
-    required String language,
-  }) {
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.start,
-      children: [
-        text(
-          text: label,
-          fontSize: 9,
-          color: pw.PdfColors.grey600,
-        ),
-        pw.SizedBox(height: 2),
-        text(
-          text: value,
-          fontSize: 12,
-          fontWeight: pw.FontWeight.bold,
-        ),
-      ],
-    );
-  }
-
-  Map<String, double> calculateTotalByCurrency(List<ArApModel> accounts, {required bool isAR}) {
+  Map<String, double> _calculateTotalsByCurrency(List<ArApModel> accounts) {
     final Map<String, double> totals = {};
-
     for (var account in accounts) {
-      // Filter based on AR/AP
-      if ((isAR && account.isAR) || (!isAR && account.isAP)) {
-        final currency = account.accCurrency ?? 'N/A';
-        final currentTotal = totals[currency] ?? 0.0;
-        totals[currency] = currentTotal + account.absBalance;
-      }
+      final currency = account.accCurrency ?? 'N/A';
+      totals[currency] = (totals[currency] ?? 0.0) + account.absBalance;
     }
-
     return totals;
   }
 
@@ -515,27 +424,27 @@ class ArApPdfServices extends PrintServices {
     required String language,
     required pw.PageOrientation orientation,
     required pw.PdfPageFormat pageFormat,
-    required bool isAR, // true for AR, false for AP
+    required bool isAR,
   }) async {
     try {
       final document = isAR
           ? await generateArReport(
         report: company,
-        arAccounts: accounts.where((e) => e.isAR).toList(),
+        arAccounts: accounts,
         language: language,
         orientation: orientation,
         pageFormat: pageFormat,
       )
           : await generateApReport(
         report: company,
-        apAccounts: accounts.where((e) => e.isAP).toList(),
+        apAccounts: accounts,
         language: language,
         orientation: orientation,
         pageFormat: pageFormat,
       );
 
       await saveDocument(
-        suggestedName: "${isAR ? 'AR' : 'AP'}_Report_${DateTime.now().toIso8601String()}.pdf",
+        suggestedName: "${isAR ? 'Receivables' : 'Payables'}_Report_${DateTime.now().toIso8601String()}.pdf",
         pdf: document,
       );
     } catch (e) {
@@ -559,14 +468,14 @@ class ArApPdfServices extends PrintServices {
       final document = isAR
           ? await generateArReport(
         report: company,
-        arAccounts: accounts.where((e) => e.isAR).toList(),
+        arAccounts: accounts,
         language: language,
         orientation: orientation,
         pageFormat: pageFormat,
       )
           : await generateApReport(
         report: company,
-        apAccounts: accounts.where((e) => e.isAP).toList(),
+        apAccounts: accounts,
         language: language,
         orientation: orientation,
         pageFormat: pageFormat,
@@ -575,9 +484,7 @@ class ArApPdfServices extends PrintServices {
       for (int i = 0; i < copies; i++) {
         await Printing.directPrintPdf(
           printer: selectedPrinter,
-          onLayout: (pw.PdfPageFormat format) async {
-            return document.save();
-          },
+          onLayout: (pw.PdfPageFormat format) async => document.save(),
         );
 
         if (i < copies - 1) {

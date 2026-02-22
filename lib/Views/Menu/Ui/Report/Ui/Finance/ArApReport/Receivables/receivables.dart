@@ -30,12 +30,388 @@ class ReceivablesView extends StatelessWidget {
   }
 }
 
-class _Mobile extends StatelessWidget {
+class _Mobile extends StatefulWidget {
   const _Mobile();
 
   @override
+  State<_Mobile> createState() => _MobileState();
+}
+
+class _MobileState extends State<_Mobile> {
+  final searchController = TextEditingController();
+  final company = ReportModel();
+  List<ArApModel> receivables = [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ArApBloc>().add(LoadArApEvent());
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final title = Theme.of(context).textTheme.titleMedium;
+    final subTitle = Theme.of(context)
+        .textTheme
+        .bodySmall
+        ?.copyWith(color: Theme.of(context).colorScheme.outline);
+    final subtitle1 = Theme.of(context)
+        .textTheme
+        .titleSmall
+        ?.copyWith(color: Theme.of(context).colorScheme.onSurface);
+    final tr = AppLocalizations.of(context)!;
+
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            title: Text(tr.debtors),
+            titleSpacing: 0,
+            actions: [
+              // PDF button only
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: IconButton(
+                  icon: const Icon(FontAwesomeIcons.solidFilePdf),
+                  onPressed: onPDF,
+                  tooltip: "PDF",
+                ),
+              ),
+            ],
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(60),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                child: ZSearchField(
+                  icon: FontAwesomeIcons.magnifyingGlass,
+                  controller: searchController,
+                  title: '',
+                  hint: tr.accountName,
+                  onChanged: (_) => setState(() {}),
+                ),
+              ),
+            ),
+          ),
+          body: Column(
+            children: [
+              // Total receivables row - Horizontal scrolling cards
+              BlocBuilder<ArApBloc, ArApState>(
+                builder: (context, state) {
+                  if (state is ArApLoadedState) {
+                    final filteredList = state.arAccounts;
+                    final totalsByCurrency = calculateTotalReceivableByCurrency(filteredList);
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          spacing: 12,
+                          children: totalsByCurrency.entries.map((entry) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "${tr.totalUpperCase} ${entry.key}",
+                                    style: TextStyle(
+                                      color: Theme.of(context).colorScheme.outline,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        entry.value.toAmount(),
+                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        entry.key,
+                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                          color: Utils.currencyColors(entry.key),
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    );
+                  }
+                  return const SizedBox();
+                },
+              ),
+
+              // Accounts list
+              Expanded(
+                child: BlocBuilder<ArApBloc, ArApState>(
+                  builder: (context, state) {
+                    if (state is ArApErrorState) {
+                      return NoDataWidget(message: state.error);
+                    }
+                    if (state is ArApLoadingState) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (state is ArApLoadedState) {
+                      final query = searchController.text.toLowerCase().trim();
+                      final filteredList = state.arAccounts.where((item) {
+                        final name = item.accName?.toLowerCase() ?? '';
+                        final accNumber = item.accNumber?.toString() ?? '';
+                        return name.contains(query) || accNumber.contains(query);
+                      }).toList();
+                      receivables = filteredList;
+
+                      if (filteredList.isEmpty) {
+                        return const NoDataWidget(message: 'No receivables found');
+                      }
+
+                      return ListView.builder(
+                        itemCount: filteredList.length,
+                        padding: const EdgeInsets.only(bottom: 16),
+                        itemBuilder: (context, index) {
+                          final ar = filteredList[index];
+                          return Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surfaceContainer,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.outline.withValues(alpha: .1),
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Account Name and Number Row
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          ar.accName ?? "",
+                                          style: title?.copyWith(fontWeight: FontWeight.bold),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).colorScheme.primary.withValues(alpha: .1),
+                                          borderRadius: BorderRadius.circular(3),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        child: Text(
+                                          ar.accNumber.toString(),
+                                          style: subtitle1?.copyWith(fontSize: 12),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 8),
+
+                                  // Status and Signatory Row
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              tr.signatory,
+                                              style: subTitle,
+                                            ),
+                                            Text(
+                                              ar.fullName ?? "",
+                                              style: Theme.of(context).textTheme.bodyMedium,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      StatusBadge(
+                                        status: ar.accStatus ?? 0,
+                                        trueValue: tr.active,
+                                        falseValue: tr.blocked,
+                                      ),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 8),
+
+                                  // Limit and Balance Row
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      // Account Limit
+                                      Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "${tr.accountLimit}: ",
+                                            style: subTitle,
+                                          ),
+                                          Text(
+                                            ar.accLimit == "Unlimited"
+                                                ? tr.unlimited
+                                                : "${ar.accLimit?.toAmount() ?? '0'} ${ar.accCurrency ?? ''}",
+                                            style: Theme.of(context).textTheme.bodyMedium,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+
+                                      // Balance
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).colorScheme.primary.withValues(alpha: .1),
+                                          borderRadius: BorderRadius.circular(3),
+                                        ),
+                                        child: Text(
+                                          "${ar.balance.toAmount()} ${ar.accCurrency}",
+                                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context).colorScheme.primary,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }
+                    return const SizedBox();
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void onPDF() {
+    final locale = AppLocalizations.of(context)!;
+    final state = context.read<ArApBloc>().state;
+
+    List<ArApModel> receivablesList = [];
+    ReportModel company = ReportModel();
+
+    if (state is ArApLoadedState) {
+      receivablesList = state.arAccounts;
+    }
+
+    if (receivablesList.isEmpty) {
+      Utils.showOverlayMessage(
+        context,
+        message: locale.noData,
+        isError: true,
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (_) => PrintPreviewDialog<List<ArApModel>>(
+        data: receivablesList,
+        company: company,
+        buildPreview: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+        }) {
+          return ArApPdfServices().generateApReport(
+            apAccounts: data,
+            language: language,
+            orientation: orientation,
+            pageFormat: pageFormat,
+            report: company,
+          );
+        },
+        onPrint: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+          required selectedPrinter,
+          required copies,
+          required pages,
+        }) {
+          return ArApPdfServices().printDocument(
+            company: company,
+            accounts: data,
+            language: language,
+            orientation: orientation,
+            pageFormat: pageFormat,
+            selectedPrinter: selectedPrinter,
+            copies: copies,
+            pages: pages,
+            isAR: true,
+          );
+        },
+        onSave: ({
+          required data,
+          required language,
+          required orientation,
+          required pageFormat,
+        }) {
+          return ArApPdfServices().createDocument(
+            company: company,
+            accounts: data,
+            language: language,
+            orientation: orientation,
+            pageFormat: pageFormat,
+            isAR: true,
+          );
+        },
+      ),
+    );
+  }
+
+  Map<String, double> calculateTotalReceivableByCurrency(List<ArApModel> list) {
+    final Map<String, double> totals = {};
+    for (var acc in list.where((e) => e.isAR)) {
+      final currency = acc.accCurrency ?? 'N/A';
+      totals[currency] = (totals[currency] ?? 0.0) + acc.absBalance;
+    }
+    return totals;
   }
 }
 
@@ -310,8 +686,8 @@ class _DesktopState extends State<_Desktop> {
           required orientation,
           required pageFormat,
         }) {
-          return ArApPdfServices().generateApReport(
-            apAccounts: data,
+          return ArApPdfServices().generateArReport(
+            arAccounts: data,
             language: language,
             orientation: orientation,
             pageFormat: pageFormat,
@@ -336,7 +712,7 @@ class _DesktopState extends State<_Desktop> {
             selectedPrinter: selectedPrinter,
             copies: copies,
             pages: pages,
-            isAR: true, // false for AP
+            isAR: true,
           );
         },
         onSave: ({
@@ -351,7 +727,7 @@ class _DesktopState extends State<_Desktop> {
             language: language,
             orientation: orientation,
             pageFormat: pageFormat,
-            isAR: true, // false for AP
+            isAR: true,
           );
         },
       ),
