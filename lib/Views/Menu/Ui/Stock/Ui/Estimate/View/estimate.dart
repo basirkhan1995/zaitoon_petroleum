@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
@@ -9,7 +10,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Estimate/bloc/estimate_
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Features/Widgets/search_field.dart';
-import '../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
+import '../../../../../../Auth/bloc/auth_bloc.dart';
 import '../View/EstimateById/estimate_details.dart';
 
 class EstimateView extends StatelessWidget {
@@ -45,9 +46,9 @@ class _MobileEstimateViewState extends State<_MobileEstimateView> {
       context.read<EstimateBloc>().add(LoadEstimatesEvent());
     });
 
-    final companyState = context.read<CompanyProfileBloc>().state;
-    if (companyState is CompanyProfileLoadedState) {
-      baseCurrency = companyState.company.comLocalCcy ?? "";
+    final companyState = context.read<AuthBloc>().state;
+    if (companyState is AuthenticatedState) {
+      baseCurrency = companyState.loginData.company?.comLocalCcy ?? "";
     }
   }
 
@@ -154,15 +155,12 @@ class _MobileEstimateViewState extends State<_MobileEstimateView> {
                     itemBuilder: (context, index) {
                       final estimate = filteredList[index];
 
-                      return Card(
+                      return ZCover(
                         margin: const EdgeInsets.symmetric(
                           horizontal: 8,
                           vertical: 4,
                         ),
-                        elevation: 1,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        radius: 4,
                         child: InkWell(
                           onTap: () {
                             Utils.goto(
@@ -311,9 +309,9 @@ class _TabletEstimateViewState extends State<_TabletEstimateView> {
       context.read<EstimateBloc>().add(LoadEstimatesEvent());
     });
 
-    final companyState = context.read<CompanyProfileBloc>().state;
-    if (companyState is CompanyProfileLoadedState) {
-      baseCurrency = companyState.company.comLocalCcy ?? "";
+    final companyState = context.read<AuthBloc>().state;
+    if (companyState is AuthenticatedState) {
+      baseCurrency = companyState.loginData.company?.comLocalCcy ?? "";
     }
   }
 
@@ -565,9 +563,9 @@ class _DesktopEstimateViewState extends State<_DesktopEstimateView> {
       context.read<EstimateBloc>().add(LoadEstimatesEvent());
     });
 
-    final companyState = context.read<CompanyProfileBloc>().state;
-    if (companyState is CompanyProfileLoadedState) {
-      baseCurrency = companyState.company.comLocalCcy ?? "";
+    final companyState = context.read<AuthBloc>().state;
+    if (companyState is AuthenticatedState) {
+      baseCurrency = companyState.loginData.company?.comLocalCcy ?? "";
     }
   }
 

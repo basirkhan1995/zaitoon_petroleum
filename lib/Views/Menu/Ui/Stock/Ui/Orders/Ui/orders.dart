@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewPurchase/bloc/purchase_invoice_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/OrderScreen/NewSale/bloc/sale_invoice_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stock/Ui/Orders/bloc/orders_bloc.dart';
@@ -48,9 +50,9 @@ class _MobileOrdersViewState extends State<_MobileOrdersView> {
       context.read<OrdersBloc>().add(const LoadOrdersEvent());
     });
 
-    final companyState = context.read<CompanyProfileBloc>().state;
-    if (companyState is CompanyProfileLoadedState) {
-      baseCurrency = companyState.company.comLocalCcy ?? "";
+    final companyState = context.read<AuthBloc>().state;
+    if (companyState is AuthenticatedState) {
+      baseCurrency = companyState.loginData.company?.comLocalCcy ?? "";
     }
   }
 
@@ -159,15 +161,12 @@ class _MobileOrdersViewState extends State<_MobileOrdersView> {
                         final isCopied = _copiedStates[ord.ordTrnRef ?? ""] ?? false;
                         final reference = ord.ordTrnRef ?? "";
 
-                        return Card(
+                        return ZCover(
                           margin: const EdgeInsets.symmetric(
                             horizontal: 8,
                             vertical: 4,
                           ),
-                          elevation: 1,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                          radius: 4,
                           child: InkWell(
                             onTap: () {
                               Utils.goto(
@@ -665,9 +664,9 @@ class _DesktopOrdersViewState extends State<_DesktopOrdersView> {
       context.read<OrdersBloc>().add(const LoadOrdersEvent());
     });
 
-    final companyState = context.read<CompanyProfileBloc>().state;
-    if (companyState is CompanyProfileLoadedState) {
-      baseCurrency = companyState.company.comLocalCcy ?? "";
+    final companyState = context.read<AuthBloc>().state;
+    if (companyState is AuthenticatedState) {
+      baseCurrency = companyState.loginData.company?.comLocalCcy ?? "";
     }
   }
 

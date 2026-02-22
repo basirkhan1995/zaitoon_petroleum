@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/txn_status_widget.dart';
@@ -12,7 +13,6 @@ import '../../../../../../../Features/Widgets/search_field.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../../Features/Other/utils.dart';
 import '../../../../../../Features/Widgets/no_data_widget.dart';
-import '../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import 'bloc/goods_shift_bloc.dart';
 
 class GoodsShiftView extends StatelessWidget {
@@ -47,9 +47,9 @@ class _MobileGoodsShiftViewState extends State<_MobileGoodsShiftView> {
       context.read<GoodsShiftBloc>().add(LoadGoodsShiftsEvent());
     });
 
-    final companyState = context.read<CompanyProfileBloc>().state;
-    if (companyState is CompanyProfileLoadedState) {
-      baseCurrency = companyState.company.comLocalCcy ?? "";
+    final companyState = context.read<AuthBloc>().state;
+    if (companyState is AuthenticatedState) {
+      baseCurrency = companyState.loginData.company?.comLocalCcy ?? "";
     }
   }
 
@@ -161,15 +161,12 @@ class _MobileGoodsShiftViewState extends State<_MobileGoodsShiftView> {
                         itemBuilder: (context, index) {
                           final shift = filteredList[index];
 
-                          return Card(
+                          return ZCover(
                             margin: const EdgeInsets.symmetric(
                               horizontal: 8,
                               vertical: 4,
                             ),
-                            elevation: 1,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                            radius: 4,
                             child: InkWell(
                               onTap: () {
                                 Utils.goto(
@@ -318,9 +315,9 @@ class _TabletGoodsShiftViewState extends State<_TabletGoodsShiftView> {
       context.read<GoodsShiftBloc>().add(LoadGoodsShiftsEvent());
     });
 
-    final companyState = context.read<CompanyProfileBloc>().state;
-    if (companyState is CompanyProfileLoadedState) {
-      baseCurrency = companyState.company.comLocalCcy ?? "";
+    final companyState = context.read<AuthBloc>().state;
+    if (companyState is AuthenticatedState) {
+      baseCurrency = companyState.loginData.company?.comLocalCcy ?? "";
     }
   }
 
@@ -604,9 +601,9 @@ class _DesktopGoodsShiftViewState extends State<_DesktopGoodsShiftView> {
       context.read<GoodsShiftBloc>().add(LoadGoodsShiftsEvent());
     });
 
-    final companyState = context.read<CompanyProfileBloc>().state;
-    if (companyState is CompanyProfileLoadedState) {
-      baseCurrency = companyState.company.comLocalCcy ?? "";
+    final companyState = context.read<AuthBloc>().state;
+    if (companyState is AuthenticatedState) {
+      baseCurrency = companyState.loginData.company?.comLocalCcy ?? "";
     }
   }
 
