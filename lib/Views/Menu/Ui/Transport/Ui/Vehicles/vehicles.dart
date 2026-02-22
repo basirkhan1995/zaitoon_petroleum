@@ -143,7 +143,7 @@ class _Mobile extends StatelessWidget {
                           color: vehicle.vclStatus == 1
                               ? Colors.green
                               : Colors.red,
-                          backgroundColor: vehicle.vclStatus == true
+                          backgroundColor: vehicle.vclStatus == 1
                               ? Colors.green.withValues(alpha: .1)
                               : Colors.red.withValues(alpha: .1),
                         ),

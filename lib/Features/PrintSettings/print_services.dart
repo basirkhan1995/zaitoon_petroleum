@@ -42,8 +42,6 @@ abstract class PrintServices {
     }
   }
 
-
-
   // Load Persian fonts (regular and bold)
   static Future<void> _loadPersianFonts() async {
     try {

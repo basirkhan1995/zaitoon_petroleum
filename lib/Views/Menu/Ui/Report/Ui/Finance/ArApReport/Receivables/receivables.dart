@@ -50,6 +50,7 @@ class _MobileState extends State<_Mobile> {
     });
   }
 
+
   @override
   void dispose() {
     searchController.dispose();
