@@ -1680,9 +1680,9 @@ class _MobileNewSaleViewState extends State<_MobileNewSaleView> {
     );
 
     return ZCover(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 5),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1690,7 +1690,7 @@ class _MobileNewSaleViewState extends State<_MobileNewSaleView> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${tr.items} #${item.rowId}',
+                  '${tr.items} #${item.rowId.length}',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: color.primary,
@@ -1706,7 +1706,6 @@ class _MobileNewSaleViewState extends State<_MobileNewSaleView> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
 
             // Product Selection using GenericUnderlineTextfield
             GenericTextfield<ProductsStockModel, ProductsBloc, ProductsState>(
@@ -1822,6 +1821,7 @@ class _MobileNewSaleViewState extends State<_MobileNewSaleView> {
 
                 // Sale Price
                 Expanded(
+                  flex: 3,
                   child: TextFormField(
                     controller: salePriceController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -1960,10 +1960,10 @@ class _MobileNewSaleViewState extends State<_MobileNewSaleView> {
                 InkWell(
                   onTap: () => _showPaymentModeDialog(current),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                     decoration: BoxDecoration(
                       color: color.primary.withValues(alpha: .05),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(2),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2011,7 +2011,7 @@ class _MobileNewSaleViewState extends State<_MobileNewSaleView> {
                   children: [
                     Text(tr.profit),
                     Text(
-                      "${current.totalProfit.toAmount()} $baseCurrency",
+                      "${current.totalProfit.toAmount()} $baseCurrency (${current.profitPercentage.toStringAsFixed(2)}%)",
                       style: TextStyle(
                         color: current.totalProfit >= 0 ? Colors.green : Colors.red,
                         fontWeight: FontWeight.w500,
@@ -2019,22 +2019,22 @@ class _MobileNewSaleViewState extends State<_MobileNewSaleView> {
                     ),
                   ],
                 ),
-                if (current.totalPurchaseCost > 0) ...[
-                  const SizedBox(height: 4),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('${tr.profit} %'),
-                      Text(
-                        '${current.profitPercentage.toStringAsFixed(2)}%',
-                        style: TextStyle(
-                          color: current.totalProfit >= 0 ? Colors.green : Colors.red,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                // if (current.totalPurchaseCost > 0) ...[
+                //   const SizedBox(height: 4),
+                //   Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     children: [
+                //       Text('${tr.profit} %'),
+                //       Text(
+                //         '${current.profitPercentage.toStringAsFixed(2)}%',
+                //         style: TextStyle(
+                //           color: current.totalProfit >= 0 ? Colors.green : Colors.red,
+                //           fontWeight: FontWeight.w500,
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ],
 
                 // Payment breakdown
                 if (current.paymentMode == PaymentMode.cash) ...[
@@ -2087,7 +2087,7 @@ class _MobileNewSaleViewState extends State<_MobileNewSaleView> {
 
                 // Account info if available
                 if (current.customerAccount != null && current.creditAmount > 0) ...[
-                  const Divider(height: 16),
+                  const Divider(height: 12),
                   Text(
                     '${current.customerAccount!.accNumber} | ${current.customerAccount!.accName}',
                     style: const TextStyle(fontSize: 12),
