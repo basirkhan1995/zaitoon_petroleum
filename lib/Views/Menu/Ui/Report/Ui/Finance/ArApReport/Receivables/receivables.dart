@@ -326,7 +326,7 @@ class _MobileState extends State<_Mobile> {
     );
   }
 
-  void onPDF() {
+  void onPDF(){
     final locale = AppLocalizations.of(context)!;
     final state = context.read<ArApBloc>().state;
 
