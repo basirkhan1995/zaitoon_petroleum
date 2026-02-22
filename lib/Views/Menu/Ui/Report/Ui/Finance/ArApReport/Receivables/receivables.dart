@@ -357,8 +357,8 @@ class _MobileState extends State<_Mobile> {
           required orientation,
           required pageFormat,
         }) {
-          return ArApPdfServices().generateApReport(
-            apAccounts: data,
+          return ArApPdfServices().generateArReport(
+            arAccounts: data,
             language: language,
             orientation: orientation,
             pageFormat: pageFormat,
