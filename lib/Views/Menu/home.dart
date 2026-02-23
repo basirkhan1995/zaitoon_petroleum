@@ -8,6 +8,7 @@ import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/Ui/login.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/hr.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/projects.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/individuals.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/transport.dart';
@@ -150,7 +151,14 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
         ),
       ],
     ],
-
+      if(login.hasPermission(42) ?? false)...[
+          MenuDefinition(
+            value: MenuName.projects,
+            label: AppLocalizations.of(context)!.projects,
+            screen: const ProjectsView(),
+            icon: Icons.file_copy_outlined,
+          ),
+      ],
 
     if(login.hasPermission(66) ?? false)...[
     if(visibility.orders)...[
@@ -939,6 +947,18 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
       );
     }
 
+    // Projects - Permission
+    if ((login.hasPermission(42) ?? false)) {
+      menuItems.add(
+        _DrawerMenuItem(
+          icon: Icons.file_copy_outlined,
+          label: AppLocalizations.of(context)!.projects,
+          isSelected: currentTab == MenuName.projects,
+          onTap: () => _onMenuItemTap(MenuName.projects),
+        ),
+      );
+    }
+
     // Stock/Inventory - Permission 66 (with visibility check)
     if ((login.hasPermission(66) ?? false) && visibility.orders) {
       menuItems.add(
@@ -1034,6 +1054,8 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
     switch (menuName) {
       case MenuName.dashboard:
         return const DashboardView();
+      case MenuName.projects:
+        return const ProjectsView();
       case MenuName.finance:
         return const FinanceView();
       case MenuName.journal:
@@ -1055,24 +1077,16 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
 
   String _getMenuTitle(BuildContext context, MenuName menuName) {
     switch (menuName) {
-      case MenuName.dashboard:
-        return AppLocalizations.of(context)!.dashboard;
-      case MenuName.finance:
-        return AppLocalizations.of(context)!.finance;
-      case MenuName.journal:
-        return AppLocalizations.of(context)!.journal;
-      case MenuName.stakeholders:
-        return AppLocalizations.of(context)!.stakeholders;
-      case MenuName.hr:
-        return AppLocalizations.of(context)!.hr;
-      case MenuName.transport:
-        return AppLocalizations.of(context)!.transport;
-      case MenuName.stock:
-        return AppLocalizations.of(context)!.stock;
-      case MenuName.settings:
-        return AppLocalizations.of(context)!.settings;
-      case MenuName.report:
-        return AppLocalizations.of(context)!.report;
+      case MenuName.dashboard:return AppLocalizations.of(context)!.dashboard;
+      case MenuName.finance:return AppLocalizations.of(context)!.finance;
+      case MenuName.journal:return AppLocalizations.of(context)!.journal;
+      case MenuName.stakeholders:return AppLocalizations.of(context)!.stakeholders;
+      case MenuName.hr:return AppLocalizations.of(context)!.hr;
+      case MenuName.transport:return AppLocalizations.of(context)!.transport;
+      case MenuName.projects:return AppLocalizations.of(context)!.projects;
+      case MenuName.stock:return AppLocalizations.of(context)!.stock;
+      case MenuName.settings:return AppLocalizations.of(context)!.settings;
+      case MenuName.report: return AppLocalizations.of(context)!.report;
     }
   }
 
@@ -1215,7 +1229,7 @@ class _DrawerMenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 15),
-      visualDensity: VisualDensity(vertical: -3),
+      visualDensity: VisualDensity(vertical: -4),
       leading: Icon(
         icon,
         color: isSelected

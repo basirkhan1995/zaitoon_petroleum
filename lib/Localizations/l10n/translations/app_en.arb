@@ -860,5 +860,7 @@
   "share": "Share",
   "printPreview": "Print Preview",
   "saveTitle": "Save",
-  "filterReports": "Filter Reports"
+  "filterReports": "Filter Reports",
+  "projects": "Project",
+  "services": "Services"
 }

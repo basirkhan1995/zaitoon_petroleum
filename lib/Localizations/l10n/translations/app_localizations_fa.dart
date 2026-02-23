@@ -2592,4 +2592,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get filterReports => 'فلتر گزارش';
+
+  @override
+  String get projects => 'پروژه ها';
+
+  @override
+  String get services => 'خدمات';
 }

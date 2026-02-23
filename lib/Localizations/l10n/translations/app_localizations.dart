@@ -5145,6 +5145,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Filter Reports'**
   String get filterReports;
+
+  /// No description provided for @projects.
+  ///
+  /// In en, this message translates to:
+  /// **'Project'**
+  String get projects;
+
+  /// No description provided for @services.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
+  String get services;
 }
 
 class _AppLocalizationsDelegate

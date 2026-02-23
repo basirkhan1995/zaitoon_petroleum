@@ -2602,4 +2602,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filterReports => 'Filter Reports';
+
+  @override
+  String get projects => 'Project';
+
+  @override
+  String get services => 'Services';
 }
