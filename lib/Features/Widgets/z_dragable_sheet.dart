@@ -10,30 +10,52 @@ class ZDraggableSheet {
         ScrollController scrollController,
         ) bodyBuilder,
 
-    /// 🔹 HEADER OPTIONS
+    /// 🔹 HEADER
     String? title,
+    Widget? leading,
+    Widget? trailing,
     bool showCloseButton = true,
     bool showDragHandle = true,
+    TextStyle? titleStyle,
 
     /// 🔹 SIZE CONTROL
     double initialChildSize = 0.6,
-    double minChildSize = 0.4,
+    double minChildSize = 0.35,
     double maxChildSize = 0.95,
+
+    /// 🔹 ADAPTIVE HEIGHT (⭐ recommended ON)
+    bool adaptiveInitialSize = true,
+    double estimatedContentHeight = 420,
 
     /// 🔹 STYLE
     Color? backgroundColor,
     BorderRadius? borderRadius,
-    EdgeInsets padding = const EdgeInsets.all(16),
+    EdgeInsets padding = const EdgeInsets.fromLTRB(16, 12, 16, 16),
+
+    /// 🔹 BEHAVIOR
+    bool useSafeArea = true,
   }) {
     return showModalBottomSheet<T>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        final color = Theme.of(context).colorScheme;
+        final theme = Theme.of(context);
+        final color = theme.colorScheme;
 
-        return DraggableScrollableSheet(
-          initialChildSize: initialChildSize,
+        // ⭐ Adaptive height calculation
+        final screenHeight = MediaQuery.of(context).size.height;
+
+        double calculatedInitialSize = initialChildSize;
+
+        if (adaptiveInitialSize) {
+          calculatedInitialSize =
+              (estimatedContentHeight / screenHeight)
+                  .clamp(minChildSize, maxChildSize);
+        }
+
+        Widget sheet = DraggableScrollableSheet(
+          initialChildSize: calculatedInitialSize,
           minChildSize: minChildSize,
           maxChildSize: maxChildSize,
           expand: false,
@@ -41,52 +63,73 @@ class ZDraggableSheet {
             return Container(
               padding: padding,
               decoration: BoxDecoration(
-                color: backgroundColor ?? Theme.of(context).cardColor,
+                color: backgroundColor ?? color.surface,
                 borderRadius: borderRadius ??
-                    const BorderRadius.vertical(top: Radius.circular(20)),
+                    const BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
+                boxShadow: const [
+                  BoxShadow(
+                    blurRadius: 20,
+                    color: Colors.black12,
+                  ),
+                ],
               ),
               child: Column(
                 children: [
                   /// 🔹 Drag Handle
-                  if (showDragHandle)
-                    Container(
-                      width: 40,
-                      height: 4,
-                      margin: const EdgeInsets.only(bottom: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade400,
-                        borderRadius: BorderRadius.circular(10),
+                  if (showDragHandle) ...[
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade400,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     ),
+                  ],
 
-                  /// 🔹 Header Row
-                  if (title != null || showCloseButton)
+                  /// 🔹 Header (STICKY)
+                  if (title != null ||
+                      showCloseButton ||
+                      leading != null ||
+                      trailing != null) ...[
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        if (title != null)
-                          Text(
-                            title,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )
-                        else
-                          const SizedBox(),
+                        leading ?? const SizedBox(width: 4),
 
-                        if (showCloseButton)
-                          IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () => Navigator.pop(context),
-                          ),
+                        /// Title
+                        Expanded(
+                          child: title != null
+                              ? Text(
+                            title,
+                            style: titleStyle ??
+                                theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          )
+                              : const SizedBox(),
+                        ),
+
+                        /// Custom trailing or close
+                        trailing ??
+                            (showCloseButton
+                                ? IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: () =>
+                                  Navigator.pop(context),
+                            )
+                                : const SizedBox()),
                       ],
                     ),
 
-                  if (title != null || showCloseButton)
                     Divider(color: color.outlineVariant),
+                  ],
 
-                  /// 🔹 BODY
+                  /// 🔹 BODY (SCROLL CONNECTED)
                   Expanded(
                     child: bodyBuilder(context, scrollController),
                   ),
@@ -95,6 +138,21 @@ class ZDraggableSheet {
             );
           },
         );
+
+        // ⭐ Keyboard safe
+        if (useSafeArea) {
+          sheet = SafeArea(
+            top: false,
+            child: Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: sheet,
+            ),
+          );
+        }
+
+        return sheet;
       },
     );
   }

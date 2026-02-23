@@ -82,6 +82,7 @@ class _MobileState extends State<_Mobile> {
     ZDraggableSheet.show(
       context: context,
       title: tr.filterReports,
+      estimatedContentHeight: 400,
       initialChildSize: 0.65,
       bodyBuilder: (context, controller) {
         return StatefulBuilder(

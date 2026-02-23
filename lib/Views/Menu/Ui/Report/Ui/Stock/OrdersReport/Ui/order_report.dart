@@ -12,6 +12,7 @@ import '../../../../../../../../Features/Date/z_generic_date.dart';
 import '../../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../../../../../Features/Other/utils.dart';
 import '../../../../../../../../Features/Widgets/outline_button.dart';
+import '../../../../../../../../Features/Widgets/z_dragable_sheet.dart';
 import '../../../../../../../../Localizations/Bloc/localizations_bloc.dart';
 import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
@@ -118,47 +119,32 @@ class _MobileState extends State<_Mobile> {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
 
-    showModalBottomSheet(
+    ZDraggableSheet.show(
       context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => StatefulBuilder(
-        builder: (context, setSheetState) {
-          return Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+      title: tr.filterReports,
+      estimatedContentHeight: 500,
+      bodyBuilder: (context, scrollController) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return ListView(
+              controller: scrollController,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Filter Reports",
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                const Divider(),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
 
-                // Party Selection
-                GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
+                /// 🔹 Party Selection
+                GenericTextfield<
+                    IndividualsModel,
+                    IndividualsBloc,
+                    IndividualsState>(
                   key: const ValueKey('filter_person_field'),
                   controller: filterPersonController,
                   title: tr.party,
                   hintText: tr.party,
                   bloc: context.read<IndividualsBloc>(),
-                  fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
-                  searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
+                  fetchAllFunction: (bloc) =>
+                      bloc.add(LoadIndividualsEvent()),
+                  searchFunction: (bloc, query) =>
+                      bloc.add(LoadIndividualsEvent()),
                   showAllOption: true,
                   allOption: IndividualsModel(
                     perId: null,
@@ -180,13 +166,19 @@ class _MobileState extends State<_Mobile> {
                     }
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text("${ind.perName ?? ''} ${ind.perLastName ?? ''}"),
+                      child: Text(
+                        "${ind.perName ?? ''} ${ind.perLastName ?? ''}",
+                      ),
                     );
                   },
-                  itemToString: (individual) => "${individual.perName} ${individual.perLastName}",
-                  stateToLoading: (state) => state is IndividualLoadingState,
+                  itemToString: (individual) =>
+                  "${individual.perName} ${individual.perLastName}",
+                  stateToLoading: (state) =>
+                  state is IndividualLoadingState,
                   stateToItems: (state) {
-                    if (state is IndividualLoadedState) return state.individuals;
+                    if (state is IndividualLoadedState) {
+                      return state.individuals;
+                    }
                     return [];
                   },
                   onSelected: (value) {
@@ -196,9 +188,10 @@ class _MobileState extends State<_Mobile> {
                   },
                   showClearButton: true,
                 ),
+
                 const SizedBox(height: 16),
 
-                // Branch Dropdown
+                /// 🔹 Branch Dropdown
                 BranchDropdown(
                   showAllOption: true,
                   title: tr.branch,
@@ -208,18 +201,22 @@ class _MobileState extends State<_Mobile> {
                     });
                   },
                 ),
+
                 const SizedBox(height: 16),
 
-                // Order ID
+                /// 🔹 Order ID
                 ZTextFieldEntitled(
                   controller: orderId,
                   title: tr.orderId,
-                  hint: "#",
-                  inputFormat: [FilteringTextInputFormatter.digitsOnly],
+                  hint: "#123",
+                  inputFormat: [
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
                 ),
+
                 const SizedBox(height: 16),
 
-                // Date Range
+                /// 🔹 Date Range
                 Row(
                   children: [
                     Expanded(
@@ -247,24 +244,29 @@ class _MobileState extends State<_Mobile> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 24),
 
-                // Apply Button
+                /// 🔹 Buttons
                 Row(
                   children: [
                     if (hasFilter)
                       Expanded(
                         child: ZOutlineButton(
-                          backgroundHover: Theme.of(context).colorScheme.error,
+                          backgroundHover:
+                          Theme.of(context).colorScheme.error,
                           onPressed: () {
                             setSheetState(() {
                               customerId = null;
                               branchId = null;
                               orderId.clear();
                               filterPersonController.clear();
-                              fromDate = DateTime.now().toFormattedDate();
-                              toDate = DateTime.now().toFormattedDate();
+                              fromDate =
+                                  DateTime.now().toFormattedDate();
+                              toDate =
+                                  DateTime.now().toFormattedDate();
                             });
+
                             setState(() {
                               _personController.clear();
                             });
@@ -272,36 +274,49 @@ class _MobileState extends State<_Mobile> {
                           label: Text(tr.clear),
                         ),
                       ),
-                    if (hasFilter) const SizedBox(width: 8),
+
+                    if (hasFilter)
+                      const SizedBox(width: 8),
+
                     Expanded(
                       child: ZOutlineButton(
+                        isActive: true,
                         onPressed: () {
                           Navigator.pop(context);
+
                           setState(() {
-                            if (filterPersonController.text.isNotEmpty) {
-                              _personController.text = filterPersonController.text;
+                            if (filterPersonController
+                                .text
+                                .isNotEmpty) {
+                              _personController.text =
+                                  filterPersonController.text;
                             }
                           });
-                          context.read<OrderReportBloc>().add(LoadOrderReportEvent(
-                            fromDate: fromDate,
-                            toDate: toDate,
-                            branchId: branchId,
-                            orderId: int.tryParse(orderId.text),
-                            customerId: customerId,
-                            orderName: widget.orderName,
-                          ));
+
+                          context.read<OrderReportBloc>().add(
+                            LoadOrderReportEvent(
+                              fromDate: fromDate,
+                              toDate: toDate,
+                              branchId: branchId,
+                              orderId:
+                              int.tryParse(orderId.text),
+                              customerId: customerId,
+                              orderName: widget.orderName,
+                            ),
+                          );
                         },
-                        isActive: true,
                         label: Text(tr.apply),
                       ),
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 20),
               ],
-            ),
-          );
-        },
-      ),
+            );
+          },
+        );
+      },
     );
   }
 

@@ -2598,4 +2598,16 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get services => 'خدمات';
+
+  @override
+  String get applyFilter => 'اعمال فلتر';
+
+  @override
+  String get fromCurrency => 'ارز اولی';
+
+  @override
+  String get toCurrencyTitle => 'ارز دومی';
+
+  @override
+  String get transactionReport => 'گزارش معاملات';
 }

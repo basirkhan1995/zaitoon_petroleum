@@ -74,6 +74,7 @@ class _MobileState extends State<_Mobile> {
               children: [
                 Expanded(
                   child: ZTextFieldEntitled(
+                    compactMode: true,
                     controller: ref,
                     icon: Icons.search_rounded,
                     title: '',
@@ -85,9 +86,10 @@ class _MobileState extends State<_Mobile> {
                 const SizedBox(width: 5),
                 ZOutlineButton(
                   width: 100,
+                  height: 47,
                   isActive: true,
                   onPressed: onSubmit,
-                  label: Text(tr.apply),
+                  label: Text(tr.submit),
                 ),
               ],
             ),

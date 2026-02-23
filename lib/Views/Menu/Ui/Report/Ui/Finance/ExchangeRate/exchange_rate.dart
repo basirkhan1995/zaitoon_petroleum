@@ -10,6 +10,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/ExchangeRate/b
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 import '../../../../../../../Features/Date/z_generic_date.dart';
+import '../../../../../../../Features/Widgets/z_dragable_sheet.dart';
 
 class FxRateReportView extends StatelessWidget {
   const FxRateReportView({super.key});
@@ -54,37 +55,19 @@ class _MobileState extends State<_Mobile> {
   void _showFilterBottomSheet() {
     final tr = AppLocalizations.of(context)!;
 
-
-    showModalBottomSheet(
+    ZDraggableSheet.show(
       context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => StatefulBuilder(
-        builder: (context, setSheetState) {
-          return Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+      title: tr.filterReports,
+      estimatedContentHeight: 400, // Adjust based on content
+      bodyBuilder: (context, scrollController) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return ListView(
+              controller: scrollController,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Filter FX Rates',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                const Divider(),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
 
-                // Date Range
+                /// 🔹 Date Range
                 Row(
                   children: [
                     Expanded(
@@ -114,11 +97,12 @@ class _MobileState extends State<_Mobile> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 16),
 
-                // From Currency
+                /// 🔹 From Currency
                 CurrencyDropdown(
-                  title: "From Currency",
+                  title: tr.fromCurrency,
                   isMulti: false,
                   onSingleChanged: (e) {
                     setSheetState(() {
@@ -127,11 +111,12 @@ class _MobileState extends State<_Mobile> {
                   },
                   onMultiChanged: (e) {},
                 ),
+
                 const SizedBox(height: 12),
 
-                // To Currency
+                /// 🔹 To Currency
                 CurrencyDropdown(
-                  title: "To Currency",
+                  title: tr.toCurrencyTitle,
                   isMulti: false,
                   onSingleChanged: (e) {
                     setSheetState(() {
@@ -140,29 +125,27 @@ class _MobileState extends State<_Mobile> {
                   },
                   onMultiChanged: (e) {},
                 ),
+
                 const SizedBox(height: 24),
 
-                // Apply Button
-                ElevatedButton(
+                /// 🔹 Apply Button
+                ZOutlineButton(
                   onPressed: () {
                     Navigator.pop(context);
                     _onFilterChanged();
                   },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 45),
-                  ),
-                  child: Text(tr.apply),
+                  isActive: true,
+                  label: Text(tr.applyFilter),
                 ),
+
+                const SizedBox(height: 20),
               ],
-            ),
-          );
-        },
-      ),
+            );
+          },
+        );
+      },
     );
   }
-
-
-
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
@@ -172,7 +155,7 @@ class _MobileState extends State<_Mobile> {
       backgroundColor: color.surface,
       appBar: AppBar(
         titleSpacing: 0,
-        title: const Text("FX Rate"),
+        title: Text(tr.exchangeRateTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
@@ -294,10 +277,11 @@ class _MobileState extends State<_Mobile> {
                             style: TextStyle(color: color.outline),
                           ),
                           const SizedBox(height: 24),
-                          ElevatedButton.icon(
+                          ZOutlineButton(
                             onPressed: _showFilterBottomSheet,
-                            icon: const Icon(Icons.filter_list),
-                            label: const Text('Apply Filters'),
+                            icon: Icons.filter_list,
+                            isActive: true,
+                            label: Text(tr.applyFilter),
                           ),
                         ],
                       ),
@@ -329,10 +313,11 @@ class _MobileState extends State<_Mobile> {
                         style: TextStyle(color: color.outline),
                       ),
                       const SizedBox(height: 24),
-                      ElevatedButton.icon(
+                       ZOutlineButton(
                         onPressed: _showFilterBottomSheet,
-                        icon: const Icon(Icons.filter_list),
-                        label: const Text('Apply Filters'),
+                        isActive: true,
+                        icon: Icons.filter_list,
+                        label: Text(tr.applyFilter),
                       ),
                     ],
                   ),

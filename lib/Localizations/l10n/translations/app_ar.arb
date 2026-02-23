@@ -862,5 +862,9 @@
   "saveTitle": "ذخیره",
   "filterReports": "فلتر گزارش",
   "projects": "پروژې",
-  "services": "خدمات"
+  "services": "خدمات",
+  "applyFilter": "اعمال فلتر",
+  "fromCurrency": "لومری ارز",
+  "toCurrencyTitle": "دویم ارز",
+  "transactionReport": "گزارش معاملات"
 }

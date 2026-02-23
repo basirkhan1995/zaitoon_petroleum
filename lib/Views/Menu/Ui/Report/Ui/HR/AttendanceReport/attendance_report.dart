@@ -15,6 +15,7 @@ import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart'
 import '../../../../../../../Features/Other/attendance_status.dart';
 import '../../../../../../../Features/Other/utils.dart';
 import '../../../../../../../Features/Widgets/no_data_widget.dart';
+import '../../../../../../../Features/Widgets/z_dragable_sheet.dart';
 import '../../../../HR/Ui/Attendance/bloc/attendance_bloc.dart';
 
 class AttendanceReportView extends StatelessWidget {
@@ -76,34 +77,18 @@ class _MobileState extends State<_Mobile> {
     String? localFromDate = fromDate;
     String? localToDate = toDate;
 
-    showModalBottomSheet(
+    ZDraggableSheet.show(
       context: context,
-      isScrollControlled: true,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setSheetState) {
-          return Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+      title: tr.filterReports,
+      estimatedContentHeight: 420,
+      bodyBuilder: (context, scrollController) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return ListView(
+              controller: scrollController,
+              padding: const EdgeInsets.only(top: 8),
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      tr.filterReports,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                const Divider(),
-                const SizedBox(height: 10),
+                /// 🔹 Employee Selector
                 GenericTextfield<EmployeeModel, EmployeeBloc, EmployeeState>(
                   showAllOnFocus: true,
                   controller: empController,
@@ -112,30 +97,12 @@ class _MobileState extends State<_Mobile> {
                   isRequired: true,
                   bloc: context.read<EmployeeBloc>(),
                   fetchAllFunction: (bloc) => bloc.add(LoadEmployeeEvent()),
-                  searchFunction: (bloc, query) => bloc.add(
-                    LoadEmployeeEvent(),
-                  ),
-
+                  searchFunction: (bloc, query) => bloc.add(LoadEmployeeEvent()),
                   itemBuilder: (context, account) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 5,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "${account.perName} | ${account.perLastName}",
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodyLarge,
-                            ),
-                          ],
-                        ),
-                      ],
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                    child: Text(
+                      "${account.perName} | ${account.perLastName}",
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
                   itemToString: (acc) => "${acc.perName} | ${acc.perLastName}",
@@ -146,21 +113,21 @@ class _MobileState extends State<_Mobile> {
                     child: CircularProgressIndicator(strokeWidth: 3),
                   ),
                   stateToItems: (state) {
-                    if (state is EmployeeLoadedState) {
-                      return state.employees;
-                    }
+                    if (state is EmployeeLoadedState) return state.employees;
                     return [];
                   },
                   onSelected: (value) {
-                    setState(() {
+                    setSheetState(() {
                       empId = value.empId;
                     });
                   },
                   noResultsText: tr.noDataFound,
                   showClearButton: true,
                 ),
-                const SizedBox(height: 10),
-                // Status Dropdown
+
+                const SizedBox(height: 16),
+
+                /// 🔹 Attendance Status
                 AttendanceDropdown(
                   onStatusSelected: (enumValue) {
                     setSheetState(() {
@@ -168,9 +135,10 @@ class _MobileState extends State<_Mobile> {
                     });
                   },
                 ),
+
                 const SizedBox(height: 16),
 
-                // Date Range
+                /// 🔹 Date Range
                 Row(
                   children: [
                     Expanded(
@@ -198,9 +166,10 @@ class _MobileState extends State<_Mobile> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 24),
 
-                // Apply Button
+                /// 🔹 Apply / Clear Buttons
                 Row(
                   children: [
                     if (hasFilter)
@@ -222,7 +191,9 @@ class _MobileState extends State<_Mobile> {
                           label: Text(tr.clear),
                         ),
                       ),
+
                     if (hasFilter) const SizedBox(width: 8),
+
                     Expanded(
                       child: ZOutlineButton(
                         isActive: true,
@@ -242,11 +213,13 @@ class _MobileState extends State<_Mobile> {
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 20),
               ],
-            ),
-          );
-        },
-      ),
+            );
+          },
+        );
+      },
     );
   }
 

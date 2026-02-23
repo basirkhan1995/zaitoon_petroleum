@@ -88,6 +88,7 @@ class _MobileState extends State<_Mobile> {
       initialChildSize: 0.75,
       minChildSize: 0.5,
       maxChildSize: 0.95,
+      estimatedContentHeight: 480,
       bodyBuilder: (context, scrollController) {
         return StatefulBuilder(
           builder: (context, setSheetState) {

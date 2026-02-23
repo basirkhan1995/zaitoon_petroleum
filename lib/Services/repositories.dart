@@ -18,6 +18,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/model/fetch
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchTRPT/model/trtp_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/txn_ref_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/model/pjr_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TxnReport/model/txn_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/model/stmt_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/model/gl_statement_model.dart';
@@ -28,6 +29,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/model/da
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/View/model/vehicle_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Services/model/services_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/ProductCategory/model/pro_cat_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/model/product_stock_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/TxnTypes/model/txn_types_model.dart';
@@ -3265,6 +3267,109 @@ class Repositories {
   }
 
 
+  /// Projects .................................................................
+  Future<List<ProjectsModel>> getProjects({String? date}) async {
+    final response = await api.get(
+      endpoint: "/project/project.php",
+      queryParams: {"date": date},
+    );
 
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      // If no records found, return empty list
+      if (response.data['msg'] == 'failed') {
+        return [];
+      }
+      throw Exception(response.data['msg']);
+    }
 
+    // Parse as list
+    if (response.data is List) {
+      return List<ProjectsModel>.from(
+        response.data.map((x) => ProjectsModel.fromMap(x)),
+      );
+    }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic> && response.data.isNotEmpty) {
+      return [ProjectsModel.fromMap(response.data)];
+    }
+
+    return [];
+  }
+  Future<Map<String, dynamic>> addProject({required ProjectsModel newData,}) async {
+    final response = await api.post(
+      endpoint: "/project/project.php",
+      data: newData.toMap(),
+    );
+    return response.data;
+  }
+  Future<Map<String, dynamic>> updateProject({required ProjectsModel newData}) async {
+    final response = await api.put(
+      endpoint: "/project/project.php",
+      data: newData.toMap(),
+    );
+    return response.data;
+  }
+  Future<Map<String, dynamic>> deleteProject({required int projectId,}) async {
+    final response = await api.delete(
+      endpoint: "/project/project.php",
+      data: {
+        "pjrID": projectId
+      },
+    );
+    return response.data;
+  }
+
+  ///Project Services ..........................................................
+  Future<List<ServicesModel>> getServices({String? date}) async {
+    final response = await api.get(
+      endpoint: "/project/projectServices.php",
+      queryParams: {"date": date},
+    );
+
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      // If no records found, return empty list
+      if (response.data['msg'] == 'failed') {
+        return [];
+      }
+      throw Exception(response.data['msg']);
+    }
+
+    // Parse as list
+    if (response.data is List) {
+      return List<ServicesModel>.from(
+        response.data.map((x) => ServicesModel.fromMap(x)),
+      );
+    }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic> && response.data.isNotEmpty) {
+      return [ServicesModel.fromMap(response.data)];
+    }
+
+    return [];
+  }
+  Future<Map<String, dynamic>> addService({required ServicesModel newData,}) async {
+    final response = await api.post(
+      endpoint: "/project/projectServices.php",
+      data: newData.toMap(),
+    );
+    return response.data;
+  }
+  Future<Map<String, dynamic>> updateService({required ServicesModel newData}) async {
+    final response = await api.put(
+      endpoint: "/project/projectServices.php",
+      data: newData.toMap(),
+    );
+    return response.data;
+  }
+  Future<Map<String, dynamic>> deleteService({required int servicesId}) async {
+    final response = await api.delete(
+      endpoint: "/project/projectServices.php",
+      data: {
+        "srvID": servicesId
+      },
+    );
+    return response.data;
+  }
 }

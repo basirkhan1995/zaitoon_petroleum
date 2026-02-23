@@ -2608,4 +2608,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get services => 'Services';
+
+  @override
+  String get applyFilter => 'Apply Filter';
+
+  @override
+  String get fromCurrency => 'From Currency';
+
+  @override
+  String get toCurrencyTitle => 'To Currency';
+
+  @override
+  String get transactionReport => 'Transactions Report';
 }

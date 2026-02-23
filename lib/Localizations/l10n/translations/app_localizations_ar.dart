@@ -2601,4 +2601,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get services => 'خدمات';
+
+  @override
+  String get applyFilter => 'اعمال فلتر';
+
+  @override
+  String get fromCurrency => 'لومری ارز';
+
+  @override
+  String get toCurrencyTitle => 'دویم ارز';
+
+  @override
+  String get transactionReport => 'گزارش معاملات';
 }

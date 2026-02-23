@@ -15,6 +15,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TxnReport/model/txn_repor
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/features/status_drop.dart';
 import '../../../../../Features/Date/z_generic_date.dart';
 import '../../../../../Features/Other/utils.dart';
+import '../../../../../Features/Widgets/z_dragable_sheet.dart';
 
 class TransactionReportView extends StatelessWidget {
   const TransactionReportView({super.key});
@@ -79,39 +80,20 @@ class _MobileState extends State<_Mobile> {
 
   void _showFilterBottomSheet() {
     final tr = AppLocalizations.of(context)!;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => StatefulBuilder(
-        builder: (context, setSheetState) {
-          return Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      tr.filterReports,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                const Divider(),
-                const SizedBox(height: 16),
 
-                // Date Range
+    ZDraggableSheet.show(
+      context: context,
+      title: tr.filterReports,
+      estimatedContentHeight: 600,
+      bodyBuilder: (context, scrollController) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return ListView(
+              controller: scrollController,
+              children: [
+                const SizedBox(height: 8),
+
+                /// 🔹 Date Range
                 Row(
                   children: [
                     Expanded(
@@ -139,9 +121,10 @@ class _MobileState extends State<_Mobile> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 16),
 
-                // Maker
+                /// 🔹 Maker
                 UserDropdown(
                   title: tr.maker,
                   isMulti: false,
@@ -154,7 +137,7 @@ class _MobileState extends State<_Mobile> {
                 ),
                 const SizedBox(height: 12),
 
-                // Checker
+                /// 🔹 Checker
                 UserDropdown(
                   title: tr.checker,
                   isMulti: false,
@@ -167,7 +150,7 @@ class _MobileState extends State<_Mobile> {
                 ),
                 const SizedBox(height: 12),
 
-                // Transaction Type
+                /// 🔹 Transaction Type
                 TxnTypeDropDown(
                   title: tr.txnType,
                   isMulti: false,
@@ -180,7 +163,7 @@ class _MobileState extends State<_Mobile> {
                 ),
                 const SizedBox(height: 12),
 
-                // Currency
+                /// 🔹 Currency
                 CurrencyDropdown(
                   title: tr.currencyTitle,
                   isMulti: false,
@@ -193,21 +176,24 @@ class _MobileState extends State<_Mobile> {
                 ),
                 const SizedBox(height: 12),
 
-                // Status
+                /// 🔹 Status
                 StatusDropdown(
                   value: status,
                   onChanged: (v) {
                     setSheetState(() => status = v);
                   },
                 ),
-                const SizedBox(height: 24),
 
-                // Apply Button
+                const SizedBox(height: 12),
+
+                /// 🔹 Buttons
                 Row(
                   children: [
                     if (hasAnyFilter)
                       Expanded(
                         child: ZOutlineButton(
+                          backgroundHover:
+                          Theme.of(context).colorScheme.error,
                           onPressed: () {
                             setSheetState(() {
                               maker = null;
@@ -220,36 +206,41 @@ class _MobileState extends State<_Mobile> {
                             });
                             setState(() {});
                           },
-                          backgroundHover: Theme.of(context).colorScheme.error,
                           label: Text(tr.clear),
                         ),
                       ),
+
                     if (hasAnyFilter) const SizedBox(width: 8),
+
                     Expanded(
                       child: ZOutlineButton(
                         isActive: true,
                         onPressed: () {
                           Navigator.pop(context);
-                          context.read<TxnReportBloc>().add(LoadTxnReportEvent(
-                            fromDate: fromDate,
-                            toDate: toDate,
-                            checker: checker,
-                            maker: maker,
-                            status: status,
-                            txnType: txnType,
-                            currency: currency,
-                          ));
+                          context.read<TxnReportBloc>().add(
+                            LoadTxnReportEvent(
+                              fromDate: fromDate,
+                              toDate: toDate,
+                              checker: checker,
+                              maker: maker,
+                              status: status,
+                              txnType: txnType,
+                              currency: currency,
+                            ),
+                          );
                         },
                         label: Text(tr.apply),
                       ),
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 12),
               ],
-            ),
-          );
-        },
-      ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -262,7 +253,7 @@ class _MobileState extends State<_Mobile> {
       backgroundColor: color.surface,
       appBar: AppBar(
         titleSpacing: 0,
-        title: Text("${tr.transactions} ${tr.report}"),
+        title: Text(tr.transactionReport),
         actionsPadding: EdgeInsets.symmetric(horizontal: 8),
         actions: [
           if (hasAnyFilter)
@@ -373,20 +364,21 @@ class _MobileState extends State<_Mobile> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          "Transaction Report",
+                          tr.transactionReport,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Select filters above and click Apply to view transactions.",
+                          "Select filters above and Apply to view transactions.",
                           textAlign: TextAlign.center,
                           style: TextStyle(color: color.outline),
                         ),
-                        const SizedBox(height: 24),
-                        ElevatedButton.icon(
+                        const SizedBox(height: 15),
+                        ZOutlineButton(
                           onPressed: _showFilterBottomSheet,
-                          icon: const Icon(Icons.filter_list),
-                          label: Text(tr.apply),
+                          icon: Icons.filter_list,
+                          isActive: true,
+                          label: Text(tr.applyFilter),
                         ),
                       ],
                     ),

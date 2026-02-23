@@ -100,7 +100,7 @@ class _MobileState extends State<_Mobile> {
     final color = Theme.of(context).colorScheme;
     ZDraggableSheet.show(
       context: context,
-      title: "Filter Reports",
+      title: tr.filterReports,
       initialChildSize: 0.7,
       minChildSize: 0.5,
       maxChildSize: 0.95,

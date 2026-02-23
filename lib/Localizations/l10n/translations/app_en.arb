@@ -862,5 +862,9 @@
   "saveTitle": "Save",
   "filterReports": "Filter Reports",
   "projects": "Project",
-  "services": "Services"
+  "services": "Services",
+  "applyFilter": "Apply Filter",
+  "fromCurrency": "From Currency",
+  "toCurrencyTitle": "To Currency",
+  "transactionReport": "Transactions Report"
 }

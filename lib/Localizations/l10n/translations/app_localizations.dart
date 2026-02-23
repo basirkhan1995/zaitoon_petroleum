@@ -5157,6 +5157,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Services'**
   String get services;
+
+  /// No description provided for @applyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Filter'**
+  String get applyFilter;
+
+  /// No description provided for @fromCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'From Currency'**
+  String get fromCurrency;
+
+  /// No description provided for @toCurrencyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'To Currency'**
+  String get toCurrencyTitle;
+
+  /// No description provided for @transactionReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions Report'**
+  String get transactionReport;
 }
 
 class _AppLocalizationsDelegate

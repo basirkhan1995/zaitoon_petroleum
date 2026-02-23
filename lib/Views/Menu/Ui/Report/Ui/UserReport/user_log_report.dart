@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/UserDetail/Ui/Log/model/user_log_model.dart';
 import '../../../../../../Features/Date/z_generic_date.dart';
+import '../../../../../../Features/Widgets/z_dragable_sheet.dart';
 import '../../../HR/Ui/Users/features/date_range_string.dart';
 import '../../../HR/Ui/Users/features/users_drop.dart';
 
@@ -477,38 +478,19 @@ class _MobileState extends State<_Mobile> {
 
   void _showFilterBottomSheet() {
     final tr = AppLocalizations.of(context)!;
-    final color = Theme.of(context).colorScheme;
 
-    showModalBottomSheet(
+    ZDraggableSheet.show(
       context: context,
-      isScrollControlled: true,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setSheetState) {
-          return Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: color.surface
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+      title: tr.filterReports,
+      estimatedContentHeight: 330,
+      bodyBuilder: (context, scrollController) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return ListView(
+              controller: scrollController,
+              padding: const EdgeInsets.only(top: 8),
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      tr.filterReports,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                const Divider(),
-                const SizedBox(height: 16),
-
-                // User Dropdown
+                /// 🔹 User Dropdown
                 UserDropdown(
                   title: tr.users,
                   isMulti: false,
@@ -519,9 +501,10 @@ class _MobileState extends State<_Mobile> {
                     });
                   },
                 ),
+
                 const SizedBox(height: 16),
 
-                // Date Range
+                /// 🔹 Date Range
                 Row(
                   children: [
                     Expanded(
@@ -551,14 +534,18 @@ class _MobileState extends State<_Mobile> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 24),
 
-                // Apply Button
+                /// 🔹 Apply / Clear Buttons
                 Row(
                   children: [
                     if (hasFilter)
                       Expanded(
                         child: ZOutlineButton(
+                          backgroundHover:
+                          Theme.of(context).colorScheme.error,
+                          isActive: true,
                           onPressed: () {
                             setSheetState(() {
                               usrName = null;
@@ -567,14 +554,15 @@ class _MobileState extends State<_Mobile> {
                             });
                             setState(() {});
                           },
-                          backgroundHover: color.error,
-                          isActive: true,
                           label: Text(tr.clear),
                         ),
                       ),
+
                     if (hasFilter) const SizedBox(width: 8),
+
                     Expanded(
                       child: ZOutlineButton(
+                        isActive: true,
                         onPressed: () {
                           Navigator.pop(context);
                           context.read<UserLogBloc>().add(
@@ -585,17 +573,18 @@ class _MobileState extends State<_Mobile> {
                             ),
                           );
                         },
-                        isActive: true,
                         label: Text(tr.apply),
                       ),
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 20),
               ],
-            ),
-          );
-        },
-      ),
+            );
+          },
+        );
+      },
     );
   }
 

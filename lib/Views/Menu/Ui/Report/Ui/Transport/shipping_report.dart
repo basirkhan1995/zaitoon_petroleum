@@ -18,6 +18,7 @@ import '../../../../../../../../../Localizations/l10n/translations/app_localizat
 import '../../../../../../Features/Date/z_generic_date.dart';
 import '../../../../../../Features/Other/utils.dart';
 import '../../../../../../Features/PrintSettings/print_preview.dart';
+import '../../../../../../Features/Widgets/z_dragable_sheet.dart';
 import '../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import '../../../Transport/Ui/Shipping/Ui/ShippingView/View/add_edit_shipping.dart';
 import '../../../Transport/Ui/Shipping/Ui/ShippingView/View/all_shipping.dart';
@@ -118,6 +119,7 @@ class _MobileState extends State<_Mobile> {
 
   void _showFilterBottomSheet() {
     final tr = AppLocalizations.of(context)!;
+
     int? localStatus = status;
     int? localPerId = perId;
     int? localVehicleId = vehicleId;
@@ -125,34 +127,18 @@ class _MobileState extends State<_Mobile> {
     String localFromDate = fromDate;
     String localToDate = toDate;
 
-    showModalBottomSheet(
+    ZDraggableSheet.show(
       context: context,
-      isScrollControlled: true,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setSheetState) {
-          return Container(
-            decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+      title: tr.filterReports,
+      estimatedContentHeight: 550,
+      bodyBuilder: (context, scrollController) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return ListView(
+              controller: scrollController,
+              padding: const EdgeInsets.only(top: 8),
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      tr.filterReports,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                const Divider(),
-                const SizedBox(height: 16),
-
-                // Driver Dropdown
+                /// 🔹 Driver Dropdown
                 DriversDropdown(
                   onSingleChanged: (driver) {
                     setSheetState(() {
@@ -162,7 +148,7 @@ class _MobileState extends State<_Mobile> {
                 ),
                 const SizedBox(height: 12),
 
-                // Vehicle Dropdown
+                /// 🔹 Vehicle Dropdown
                 VehicleDropdown(
                   onSingleChanged: (vehicle) {
                     setSheetState(() {
@@ -172,12 +158,12 @@ class _MobileState extends State<_Mobile> {
                 ),
                 const SizedBox(height: 12),
 
-                // Customer Dropdown
+                /// 🔹 Customer Dropdown
                 StakeholdersDropdown(
                   title: tr.customer,
                   height: 40,
                   isMulti: false,
-                  onMultiChanged: (e) {},
+                  onMultiChanged: (_) {},
                   onSingleChanged: (e) {
                     setSheetState(() {
                       localPerId = e!.perId;
@@ -186,27 +172,21 @@ class _MobileState extends State<_Mobile> {
                 ),
                 const SizedBox(height: 12),
 
-                // Status Dropdown
+                /// 🔹 Status Dropdown
                 StatusDropdown(
                   value: localStatus,
-                  onChanged: (v) {
-                    setSheetState(() => localStatus = v);
-                  },
+                  onChanged: (v) => setSheetState(() => localStatus = v),
                 ),
                 const SizedBox(height: 12),
 
-                // Date Range
+                /// 🔹 Date Range
                 Row(
                   children: [
                     Expanded(
                       child: ZDatePicker(
                         label: tr.fromDate,
                         value: localFromDate,
-                        onDateChanged: (v) {
-                          setSheetState(() {
-                            localFromDate = v;
-                          });
-                        },
+                        onDateChanged: (v) => setSheetState(() => localFromDate = v),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -214,18 +194,14 @@ class _MobileState extends State<_Mobile> {
                       child: ZDatePicker(
                         label: tr.toDate,
                         value: localToDate,
-                        onDateChanged: (v) {
-                          setSheetState(() {
-                            localToDate = v;
-                          });
-                        },
+                        onDateChanged: (v) => setSheetState(() => localToDate = v),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 24),
 
-                // Apply Button
+                /// 🔹 Apply / Clear Buttons
                 Row(
                   children: [
                     if (hasFilter)
@@ -273,11 +249,13 @@ class _MobileState extends State<_Mobile> {
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 20),
               ],
-            ),
-          );
-        },
-      ),
+            );
+          },
+        );
+      },
     );
   }
 

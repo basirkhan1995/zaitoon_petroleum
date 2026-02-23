@@ -862,5 +862,9 @@
   "saveTitle": "ذخیره",
   "filterReports": "فلتر گزارش",
   "projects": "پروژه ها",
-  "services": "خدمات"
+  "services": "خدمات",
+  "applyFilter": "اعمال فلتر",
+  "fromCurrency": "ارز اولی",
+  "toCurrencyTitle": "ارز دومی",
+  "transactionReport": "گزارش معاملات"
 }
