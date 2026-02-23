@@ -101,6 +101,7 @@ class _MobileState extends State<_Mobile> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -148,7 +149,7 @@ class _MobileState extends State<_Mobile> {
                         child: Text(
                           tr.all,
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
+                            color: color.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -208,7 +209,7 @@ class _MobileState extends State<_Mobile> {
                   children: [
                     if (hasAnyFilter)
                       Expanded(
-                        child: OutlinedButton(
+                        child: ZOutlineButton(
                           onPressed: () {
                             setSheetState(() {
                               isNoStock = null;
@@ -220,17 +221,12 @@ class _MobileState extends State<_Mobile> {
                               productController.clear();
                             });
                           },
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: color.error,
-                            side: BorderSide(color: color.error.withValues(alpha: .5)),
-                            minimumSize: const Size(double.infinity, 45),
-                          ),
-                          child: Text(tr.clear),
+                          label: Text(tr.clear),
                         ),
                       ),
                     if (hasAnyFilter) const SizedBox(width: 8),
                     Expanded(
-                      child: ElevatedButton(
+                      child: ZOutlineButton(
                         onPressed: () {
                           Navigator.pop(context);
                           setState(() {
@@ -244,10 +240,8 @@ class _MobileState extends State<_Mobile> {
                             productId: productId,
                           ));
                         },
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 45),
-                        ),
-                        child: Text(tr.apply),
+                        isActive: true,
+                        label: Text(tr.apply),
                       ),
                     ),
                   ],
@@ -278,10 +272,6 @@ class _MobileState extends State<_Mobile> {
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: _showFilterBottomSheet,
-          ),
-          IconButton(
-            icon: const Icon(Icons.print),
-            onPressed: () {},
           ),
         ],
       ),
