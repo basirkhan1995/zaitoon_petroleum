@@ -268,7 +268,7 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
               builder: (context, state) {
                 // Use cached values to prevent unnecessary rebuilds
                 final logo = _cachedLogo;
-                final comName = _cachedComName ?? "";
+                final comName = login.company?.comName ?? "";
 
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -313,13 +313,7 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
                             ),
                           );
                         },
-                        child: state is CompanyProfileLoadingState
-                            ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 3),
-                        )
-                            : SizedBox(
+                        child: SizedBox(
                           width: 150,
                           child: Text(
                             comName,
