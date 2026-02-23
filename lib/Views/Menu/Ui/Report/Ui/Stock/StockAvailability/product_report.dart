@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/StockAvailability/features/storage_drop.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/features/status_drop.dart';
 import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
+import '../../../../../../../Features/Widgets/z_dragable_sheet.dart';
 import '../../../../../../../Localizations/Bloc/localizations_bloc.dart';
 import '../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import '../../../../Settings/Ui/Stock/Ui/Products/bloc/products_bloc.dart';
@@ -97,45 +98,30 @@ class _MobileState extends State<_Mobile> {
   void _showFilterBottomSheet() {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
-
-    showModalBottomSheet(
+    ZDraggableSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => StatefulBuilder(
-        builder: (context, setSheetState) {
-          return Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+      title: "Filter Reports",
+      initialChildSize: 0.7,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      bodyBuilder: (context, scrollController) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return ListView(
+              controller: scrollController,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Filter Reports",
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                const Divider(),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
 
-                // Product Selection
+                /// 🔹 Product Selection
                 GenericTextfield<ProductsModel, ProductsBloc, ProductsState>(
                   title: tr.products,
                   controller: filterProductController,
                   hintText: tr.products,
                   bloc: context.read<ProductsBloc>(),
-                  fetchAllFunction: (bloc) => bloc.add(LoadProductsEvent()),
-                  searchFunction: (bloc, query) => bloc.add(LoadProductsEvent()),
+                  fetchAllFunction: (bloc) =>
+                      bloc.add(LoadProductsEvent()),
+                  searchFunction: (bloc, query) =>
+                      bloc.add(LoadProductsEvent()),
                   showAllOption: true,
                   allOption: ProductsModel(
                     proId: null,
@@ -160,10 +146,15 @@ class _MobileState extends State<_Mobile> {
                       child: Text(product.proName ?? ''),
                     );
                   },
-                  itemToString: (product) => product.proName ?? (product.proId == null ? tr.all : ''),
-                  stateToLoading: (state) => state is ProductsLoadingState,
+                  itemToString: (product) =>
+                  product.proName ??
+                      (product.proId == null ? tr.all : ''),
+                  stateToLoading: (state) =>
+                  state is ProductsLoadingState,
                   stateToItems: (state) {
-                    if (state is ProductsLoadedState) return state.products;
+                    if (state is ProductsLoadedState) {
+                      return state.products;
+                    }
                     return [];
                   },
                   onSelected: (product) {
@@ -172,9 +163,10 @@ class _MobileState extends State<_Mobile> {
                     });
                   },
                 ),
+
                 const SizedBox(height: 16),
 
-                // Storage Dropdown
+                /// 🔹 Storage Dropdown
                 StorageDropDown(
                   height: 45,
                   title: tr.storage,
@@ -185,9 +177,10 @@ class _MobileState extends State<_Mobile> {
                     });
                   },
                 ),
+
                 const SizedBox(height: 16),
 
-                // Status Dropdown
+                /// 🔹 Status Dropdown
                 StatusDropdown(
                   height: 45,
                   items: const [
@@ -202,9 +195,10 @@ class _MobileState extends State<_Mobile> {
                     });
                   },
                 ),
+
                 const SizedBox(height: 24),
 
-                // Apply Button
+                /// 🔹 Buttons
                 Row(
                   children: [
                     if (hasAnyFilter)
@@ -217,6 +211,7 @@ class _MobileState extends State<_Mobile> {
                               storageId = null;
                               filterProductController.clear();
                             });
+
                             setState(() {
                               productController.clear();
                             });
@@ -224,33 +219,47 @@ class _MobileState extends State<_Mobile> {
                           label: Text(tr.clear),
                         ),
                       ),
-                    if (hasAnyFilter) const SizedBox(width: 8),
+
+                    if (hasAnyFilter)
+                      const SizedBox(width: 8),
+
                     Expanded(
                       child: ZOutlineButton(
+                        isActive: true,
                         onPressed: () {
                           Navigator.pop(context);
+
                           setState(() {
-                            if (filterProductController.text.isNotEmpty) {
-                              productController.text = filterProductController.text;
+                            if (filterProductController
+                                .text
+                                .isNotEmpty) {
+                              productController.text =
+                                  filterProductController.text;
                             }
                           });
-                          context.read<ProductReportBloc>().add(LoadProductsReportEvent(
-                            isNoStock: isNoStock,
-                            storageId: storageId,
-                            productId: productId,
-                          ));
+
+                          context
+                              .read<ProductReportBloc>()
+                              .add(
+                            LoadProductsReportEvent(
+                              isNoStock: isNoStock,
+                              storageId: storageId,
+                              productId: productId,
+                            ),
+                          );
                         },
-                        isActive: true,
                         label: Text(tr.apply),
                       ),
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 20),
               ],
-            ),
-          );
-        },
-      ),
+            );
+          },
+        );
+      },
     );
   }
 

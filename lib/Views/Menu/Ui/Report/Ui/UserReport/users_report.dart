@@ -9,6 +9,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/model/usr_report_mod
 import '../../../../../../../Features/Widgets/no_data_widget.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
+import '../../../../../../Features/Widgets/z_dragable_sheet.dart';
 import '../../../HR/Ui/Users/bloc/users_bloc.dart';
 import '../Transport/features/status_drop.dart';
 
@@ -78,44 +79,23 @@ class _MobileState extends State<_Mobile> {
 
   void _showFilterBottomSheet() {
     final tr = AppLocalizations.of(context)!;
-    final color = Theme.of(context).colorScheme;
-
-    showModalBottomSheet(
+    ZDraggableSheet.show(
       context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => StatefulBuilder(
-        builder: (context, setSheetState) {
-          return Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+      title: tr.filterReports,
+      initialChildSize: 0.65,
+      bodyBuilder: (context, controller) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return ListView(
+              controller: controller,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      tr.filterReports,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                const Divider(),
-                const SizedBox(height: 16),
+                const SizedBox(height: 4),
 
                 // Role Dropdown
                 UserRoleDropdown(
                   showAllOption: true,
                   onRoleSelected: (e) {
-                    setSheetState(() {
-                      role = e?.name;
-                    });
+                    setSheetState(() => role = e?.name);
                   },
                 ),
                 const SizedBox(height: 12),
@@ -124,9 +104,7 @@ class _MobileState extends State<_Mobile> {
                 BranchDropdown(
                   showAllOption: true,
                   onBranchSelected: (e) {
-                    setSheetState(() {
-                      branchId = e?.brcId;
-                    });
+                    setSheetState(() => branchId = e?.brcId);
                   },
                 ),
                 const SizedBox(height: 12),
@@ -138,14 +116,15 @@ class _MobileState extends State<_Mobile> {
                     setSheetState(() => status = v);
                   },
                 ),
+
                 const SizedBox(height: 24),
 
-                // Apply Button
+                // Buttons
                 Row(
                   children: [
                     if (isFilterActive)
                       Expanded(
-                        child: OutlinedButton(
+                        child: ZOutlineButton(
                           onPressed: () {
                             setSheetState(() {
                               role = null;
@@ -156,34 +135,29 @@ class _MobileState extends State<_Mobile> {
                             });
                             setState(() {});
                           },
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: color.error,
-                            side: BorderSide(color: color.error.withValues(alpha: .5)),
-                            minimumSize: const Size(double.infinity, 45),
-                          ),
-                          child: Text(tr.clear),
+                          label: Text(tr.clear),
                         ),
                       ),
                     if (isFilterActive) const SizedBox(width: 8),
                     Expanded(
-                      child: ElevatedButton(
+                      child: ZOutlineButton(
                         onPressed: () {
                           Navigator.pop(context);
                           onApply();
                         },
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 45),
-                        ),
-                        child: Text(tr.apply),
+                        isActive: true,
+                        label: Text(tr.apply),
                       ),
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 20),
               ],
-            ),
-          );
-        },
-      ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -292,9 +266,9 @@ class _MobileState extends State<_Mobile> {
                           style: TextStyle(color: color.outline),
                         ),
                         const SizedBox(height: 24),
-                        ElevatedButton.icon(
+                        ZOutlineButton(
                           onPressed: _showFilterBottomSheet,
-                          icon: const Icon(Icons.filter_list),
+                          icon: Icons.filter_list,
                           label: Text(tr.apply),
                         ),
                       ],

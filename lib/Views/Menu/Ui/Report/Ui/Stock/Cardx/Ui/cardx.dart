@@ -15,6 +15,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/Ui/Products/mo
 import '../../../../../../../../Features/Date/z_generic_date.dart';
 import '../../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../../../../../Features/Widgets/outline_button.dart';
+import '../../../../../../../../Features/Widgets/z_dragable_sheet.dart';
 import '../../../../../../../../Localizations/Bloc/localizations_bloc.dart';
 import '../../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import '../../../../../Stock/Ui/OrderScreen/GetOrderById/order_by_id.dart';
@@ -81,53 +82,40 @@ class _MobileState extends State<_Mobile> {
   void _showFilterBottomSheet() {
     final tr = AppLocalizations.of(context)!;
 
-    showModalBottomSheet(
+    ZDraggableSheet.show(
       context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => StatefulBuilder(
-        builder: (context, setSheetState) {
-          return Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+      title: tr.filterReports,
+      initialChildSize: 0.75,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      bodyBuilder: (context, scrollController) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return ListView(
+              controller: scrollController,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Report Filters",
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                const Divider(),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
 
-                // Product
+                /// 🔹 Product
                 GenericTextfield<ProductsModel, ProductsBloc, ProductsState>(
                   key: const ValueKey('filter_product_field'),
                   controller: _productController,
                   title: tr.products,
                   hintText: tr.products,
                   bloc: context.read<ProductsBloc>(),
-                  fetchAllFunction: (bloc) => bloc.add(LoadProductsEvent()),
-                  searchFunction: (bloc, query) => bloc.add(LoadProductsEvent()),
+                  fetchAllFunction: (bloc) =>
+                      bloc.add(LoadProductsEvent()),
+                  searchFunction: (bloc, query) =>
+                      bloc.add(LoadProductsEvent()),
                   itemBuilder: (context, pro) => Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text("${pro.proCode} | ${pro.proName ?? ''}"),
+                    child:
+                    Text("${pro.proCode} | ${pro.proName ?? ''}"),
                   ),
-                  itemToString: (pro) => "${pro.proCode} | ${pro.proName ?? ''}",
-                  stateToLoading: (state) => state is ProductsLoadingState,
+                  itemToString: (pro) =>
+                  "${pro.proCode} | ${pro.proName ?? ''}",
+                  stateToLoading: (state) =>
+                  state is ProductsLoadingState,
                   stateToItems: (state) {
                     if (state is ProductsLoadedState) {
                       return state.products;
@@ -141,9 +129,10 @@ class _MobileState extends State<_Mobile> {
                   },
                   showClearButton: true,
                 ),
+
                 const SizedBox(height: 16),
 
-                // Branch
+                /// 🔹 Branch
                 BranchDropdown(
                   showAllOption: true,
                   title: tr.branch,
@@ -153,9 +142,10 @@ class _MobileState extends State<_Mobile> {
                     });
                   },
                 ),
+
                 const SizedBox(height: 16),
 
-                // Storage
+                /// 🔹 Storage
                 StorageDropDown(
                   title: tr.storage,
                   onChanged: (e) {
@@ -164,9 +154,10 @@ class _MobileState extends State<_Mobile> {
                     });
                   },
                 ),
+
                 const SizedBox(height: 16),
 
-                // Date Range
+                /// 🔹 Date Range
                 Row(
                   children: [
                     Expanded(
@@ -194,21 +185,28 @@ class _MobileState extends State<_Mobile> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 24),
 
-                // Apply Button
+                /// 🔹 Apply Button
                 ZOutlineButton(
                   width: double.infinity,
                   isActive: true,
                   onPressed: () {
                     Navigator.pop(context);
-                    if (productId != null && _productController.text.isNotEmpty) {
-                      context.read<StockRecordBloc>().add(LoadStockRecordEvent(
-                        fromDate: fromDate,
-                        toDate: toDate,
-                        productId: productId,
-                        storageId: storageId,
-                      ));
+
+                    if (productId != null &&
+                        _productController.text.isNotEmpty) {
+                      context
+                          .read<StockRecordBloc>()
+                          .add(
+                        LoadStockRecordEvent(
+                          fromDate: fromDate,
+                          toDate: toDate,
+                          productId: productId,
+                          storageId: storageId,
+                        ),
+                      );
                     } else {
                       Utils.showOverlayMessage(
                         context,
@@ -219,11 +217,13 @@ class _MobileState extends State<_Mobile> {
                   },
                   label: Text(tr.apply),
                 ),
+
+                const SizedBox(height: 20),
               ],
-            ),
-          );
-        },
-      ),
+            );
+          },
+        );
+      },
     );
   }
 
