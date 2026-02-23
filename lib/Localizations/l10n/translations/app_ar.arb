@@ -859,5 +859,6 @@
   "otpVerified": "کوډ په بریالیتوب سره تایید شو",
   "share": "به اشتراک گذاشتن",
   "printPreview": "نمایش چاپ",
-  "saveTitle": "ذخیره"
+  "saveTitle": "ذخیره",
+  "filterReports": "فلتر گزارش"
 }

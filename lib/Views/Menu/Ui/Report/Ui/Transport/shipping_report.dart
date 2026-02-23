@@ -35,26 +35,813 @@ class ShippingReportView extends StatelessWidget {
     return ResponsiveLayout(
       mobile: _Mobile(),
       desktop: _Desktop(),
-      tablet: _Tablet(),
+      tablet: _Mobile(),
     );
   }
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-class _Mobile extends StatelessWidget {
+class _Mobile extends StatefulWidget {
   const _Mobile();
 
   @override
+  State<_Mobile> createState() => _MobileState();
+}
+
+class _MobileState extends State<_Mobile> {
+  String fromDate = DateTime.now().subtract(const Duration(days: 7)).toFormattedDate();
+  String toDate = DateTime.now().toFormattedDate();
+  Jalali shamsiFromDate = DateTime.now().subtract(const Duration(days: 7)).toAfghanShamsi;
+  Jalali shamsiToDate = DateTime.now().toAfghanShamsi;
+
+  int? perId;
+  int? vehicleId;
+  int? status;
+  int? driverId;
+  String _baseCurrency = "";
+  String? myLocale;
+
+  final _filterCustomerController = TextEditingController();
+  final _filterVehicleController = TextEditingController();
+  final _filterDriverController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ShippingReportBloc>().add(ResetShippingReportEvent());
+      myLocale = context.read<LocalizationBloc>().state.languageCode;
+      final comState = context.read<CompanyProfileBloc>().state;
+      if (comState is CompanyProfileLoadedState) {
+        _baseCurrency = comState.company.comLocalCcy ?? "";
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _filterCustomerController.dispose();
+    _filterVehicleController.dispose();
+    _filterDriverController.dispose();
+    super.dispose();
+  }
+
+  bool get hasFilter =>
+      perId != null || vehicleId != null || driverId != null || status != null;
+
+  void _clearFilters() {
+    setState(() {
+      perId = null;
+      vehicleId = null;
+      driverId = null;
+      status = null;
+      fromDate = DateTime.now().subtract(const Duration(days: 7)).toFormattedDate();
+      toDate = DateTime.now().toFormattedDate();
+      _filterCustomerController.clear();
+      _filterVehicleController.clear();
+      _filterDriverController.clear();
+    });
+    context.read<ShippingReportBloc>().add(ResetShippingReportEvent());
+  }
+
+  void _loadData() {
+    context.read<ShippingReportBloc>().add(
+      LoadShippingReportEvent(
+        status: status,
+        customerId: perId,
+        fromDate: fromDate,
+        toDate: toDate,
+        vehicleId: vehicleId,
+        driverId: driverId,
+      ),
+    );
+  }
+
+  void _showFilterBottomSheet() {
+    final tr = AppLocalizations.of(context)!;
+    int? localStatus = status;
+    int? localPerId = perId;
+    int? localVehicleId = vehicleId;
+    int? localDriverId = driverId;
+    String localFromDate = fromDate;
+    String localToDate = toDate;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setSheetState) {
+          return Container(
+            decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      tr.filterReports,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                const Divider(),
+                const SizedBox(height: 16),
+
+                // Driver Dropdown
+                DriversDropdown(
+                  onSingleChanged: (driver) {
+                    setSheetState(() {
+                      localDriverId = driver?.empId;
+                    });
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // Vehicle Dropdown
+                VehicleDropdown(
+                  onSingleChanged: (vehicle) {
+                    setSheetState(() {
+                      localVehicleId = vehicle?.vclId;
+                    });
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // Customer Dropdown
+                StakeholdersDropdown(
+                  title: tr.customer,
+                  height: 40,
+                  isMulti: false,
+                  onMultiChanged: (e) {},
+                  onSingleChanged: (e) {
+                    setSheetState(() {
+                      localPerId = e!.perId;
+                    });
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // Status Dropdown
+                StatusDropdown(
+                  value: localStatus,
+                  onChanged: (v) {
+                    setSheetState(() => localStatus = v);
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // Date Range
+                Row(
+                  children: [
+                    Expanded(
+                      child: ZDatePicker(
+                        label: tr.fromDate,
+                        value: localFromDate,
+                        onDateChanged: (v) {
+                          setSheetState(() {
+                            localFromDate = v;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ZDatePicker(
+                        label: tr.toDate,
+                        value: localToDate,
+                        onDateChanged: (v) {
+                          setSheetState(() {
+                            localToDate = v;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // Apply Button
+                Row(
+                  children: [
+                    if (hasFilter)
+                      Expanded(
+                        child: ZOutlineButton(
+                          onPressed: () {
+                            setSheetState(() {
+                              localPerId = null;
+                              localVehicleId = null;
+                              localDriverId = null;
+                              localStatus = null;
+                              localFromDate = DateTime.now().subtract(const Duration(days: 7)).toFormattedDate();
+                              localToDate = DateTime.now().toFormattedDate();
+                            });
+                            setState(() {
+                              perId = null;
+                              vehicleId = null;
+                              driverId = null;
+                              status = null;
+                              fromDate = DateTime.now().subtract(const Duration(days: 7)).toFormattedDate();
+                              toDate = DateTime.now().toFormattedDate();
+                            });
+                          },
+                          label: Text(tr.clear),
+                        ),
+                      ),
+                    if (hasFilter) const SizedBox(width: 8),
+                    Expanded(
+                      child: ZOutlineButton(
+                        isActive: true,
+                        onPressed: () {
+                          Navigator.pop(context);
+                          setState(() {
+                            perId = localPerId;
+                            vehicleId = localVehicleId;
+                            driverId = localDriverId;
+                            status = localStatus;
+                            fromDate = localFromDate;
+                            toDate = localToDate;
+                          });
+                          _loadData();
+                        },
+                        label: Text(tr.apply),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  String _getStatusText(int? status) {
+    switch (status) {
+      case 1:
+        return 'Delivered';
+      case 0:
+        return 'Pending';
+      default:
+        return 'All';
+    }
+  }
+
+  Color _getStatusColor(int? status) {
+    switch (status) {
+      case 1:
+        return Colors.green;
+      case 0:
+        return Colors.orange;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: Text(tr.allShipping),
+        actions: [
+          if (hasFilter)
+            IconButton(
+              icon: const Icon(Icons.filter_alt_off),
+              onPressed: _clearFilters,
+            ),
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: _showFilterBottomSheet,
+          ),
+          IconButton(
+            icon: const Icon(FontAwesomeIcons.filePdf),
+            onPressed: () {
+              // PDF functionality
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadData,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Date Range Summary
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        tr.allShipping,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "$fromDate - $toDate",
+                        style: TextStyle(color: color.outline),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Selected Filters Chips
+          if (hasFilter)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    if (perId != null)
+                      _buildFilterChip(
+                        label: "Customer: $perId",
+                        color: color.primary,
+                        onRemove: () {
+                          setState(() {
+                            perId = null;
+                          });
+                          _loadData();
+                        },
+                      ),
+                    if (vehicleId != null)
+                      _buildFilterChip(
+                        label: "Vehicle: $vehicleId",
+                        color: color.secondary,
+                        onRemove: () {
+                          setState(() {
+                            vehicleId = null;
+                          });
+                          _loadData();
+                        },
+                      ),
+                    if (driverId != null)
+                      _buildFilterChip(
+                        label: "Driver: $driverId",
+                        color: color.tertiary,
+                        onRemove: () {
+                          setState(() {
+                            driverId = null;
+                          });
+                          _loadData();
+                        },
+                      ),
+                    if (status != null)
+                      _buildFilterChip(
+                        label: "${tr.status}: ${_getStatusText(status)}",
+                        color: _getStatusColor(status),
+                        onRemove: () {
+                          setState(() {
+                            status = null;
+                          });
+                          _loadData();
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ),
+
+          Expanded(
+            child: BlocBuilder<ShippingReportBloc, ShippingReportState>(
+              builder: (context, state) {
+                if (state is ShippingReportLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is ShippingReportErrorState) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: color.error,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            state.message,
+                            style: TextStyle(color: color.error),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                if (state is ShippingReportInitial) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.local_shipping,
+                          size: 64,
+                          color: color.outline,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "Shipments Overview",
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Select filters and tap Load to view shipments",
+                          style: TextStyle(color: color.outline),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                if (state is ShippingReportLoadedState) {
+                  if (state.shp.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 48,
+                            color: color.outline,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            tr.noDataFound,
+                            style: TextStyle(color: color.outline),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: state.shp.length,
+                    itemBuilder: (context, index) {
+                      final shp = state.shp[index];
+                      return _buildMobileShippingCard(shp, index, color, tr);
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    required Color color,
+    required VoidCallback onRemove,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: .1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: .3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 4),
+          InkWell(
+            onTap: onRemove,
+            child: Icon(
+              Icons.close,
+              size: 12,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMobileShippingCard(ShippingReportModel shp, int index, ColorScheme color, AppLocalizations tr) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: color.outline.withValues(alpha: .1)),
+      ),
+      child: InkWell(
+        onTap: () {
+          showDialog(
+            context: context,
+            barrierDismissible: true,
+            builder: (_) => ShippingByIdView(shippingId: shp.shpId, perId: perId),
+          );
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header Row - Date and Status
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color.primary.withValues(alpha: .1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      shp.shpMovingDate?.toFormattedDate() ?? "",
+                      style: TextStyle(
+                        color: color.primary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 100,
+                    child: ShippingStatusBadge(
+                      status: shp.shpStatus ?? 0,
+                      tr: tr,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Customer and Product
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          tr.customer,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: color.outline,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          shp.customerName ?? "",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          tr.products,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: color.outline,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          shp.proName ?? "",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Vehicle and Driver
+              Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.directions_car,
+                          size: 14,
+                          color: color.outline,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                tr.vehicle,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: color.outline,
+                                ),
+                              ),
+                              Text(
+                                shp.vehicle ?? "",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.person,
+                          size: 14,
+                          color: color.outline,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                tr.driver,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: color.outline,
+                                ),
+                              ),
+                              Text(
+                                shp.driverName ?? "",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(height: 16),
+
+              // Shipping Details
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          tr.shippingRent,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: color.outline,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          "${shp.shpRent?.toAmount()} $_baseCurrency",
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          tr.loadingSize,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: color.outline,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          "${shp.shpLoadSize?.toDoubleAmount()} ${shp.shpUnit}",
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          tr.unloadingSize,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: color.outline,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          "${shp.shpUnloadSize?.toDoubleAmount()} ${shp.shpUnit}",
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Total
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.primary.withValues(alpha: .05),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      tr.totalTitle,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: color.primary,
+                      ),
+                    ),
+                    Text(
+                      "${shp.total?.toAmount()} $_baseCurrency",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: color.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -135,6 +922,7 @@ class _DesktopState extends State<_Desktop> {
     final tr = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
+
         title: Text(
           tr.allShipping,
           style: Theme.of(

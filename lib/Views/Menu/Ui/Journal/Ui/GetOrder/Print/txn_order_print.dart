@@ -183,12 +183,12 @@ class OrderTxnPrintSettings extends PrintServices {
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  text(
+                  zText(
                     text: invoiceTitle,
                     fontSize: 14,
                     fontWeight: pw.FontWeight.bold,
                   ),
-                  text(
+                  zText(
                     text: "${getTranslation(text: 'invoiceNumber', tr: language)} | $invoiceNumber",
                     fontSize: 8,
                   ),
@@ -197,12 +197,12 @@ class OrderTxnPrintSettings extends PrintServices {
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.end,
                 children: [
-                  text(
+                  zText(
                     text: DateTime.now().toDateTime,
                     fontSize: 9,
                     fontWeight: pw.FontWeight.bold,
                   ),
-                  text(
+                  zText(
                     text: DateTime.now().shamsiDateFormatted,
                     fontSize: 10,
                     color: pw.PdfColors.grey800,
@@ -216,7 +216,7 @@ class OrderTxnPrintSettings extends PrintServices {
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
               if (reference != null && reference.isNotEmpty)
-                text(
+                zText(
                   text: "${getTranslation(text: 'referenceNumber', tr: language)}: $reference",
                   fontSize: 11,
                 ),
@@ -230,7 +230,7 @@ class OrderTxnPrintSettings extends PrintServices {
                   ),
                   borderRadius: pw.BorderRadius.circular(3),
                 ),
-                child: text(
+                child: zText(
                   text: status,
                   fontSize: 8,
                   color: isAuthorized ? pw.PdfColors.green : pw.PdfColors.orange,
@@ -272,7 +272,7 @@ class OrderTxnPrintSettings extends PrintServices {
           children: [
             pw.Padding(
               padding: const pw.EdgeInsets.all(4),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'number', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -281,7 +281,7 @@ class OrderTxnPrintSettings extends PrintServices {
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(4),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'description', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -289,7 +289,7 @@ class OrderTxnPrintSettings extends PrintServices {
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(4),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'qty', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -298,7 +298,7 @@ class OrderTxnPrintSettings extends PrintServices {
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(4),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'unitPrice', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -307,7 +307,7 @@ class OrderTxnPrintSettings extends PrintServices {
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(4),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'total', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -316,7 +316,7 @@ class OrderTxnPrintSettings extends PrintServices {
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(4),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'storage', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -333,7 +333,7 @@ class OrderTxnPrintSettings extends PrintServices {
             children: [
               pw.Padding(
                 padding: const pw.EdgeInsets.all(5),
-                child: text(
+                child: zText(
                   text: (i + 1).toString(),
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
@@ -341,14 +341,14 @@ class OrderTxnPrintSettings extends PrintServices {
               ),
               pw.Padding(
                 padding: const pw.EdgeInsets.all(5),
-                child: text(
+                child: zText(
                   text: billItems[i].productName ?? "-",
                   fontSize: 9,
                 ),
               ),
               pw.Padding(
                 padding: const pw.EdgeInsets.all(5),
-                child: text(
+                child: zText(
                   text: "${billItems[i].quantity ?? "0"} T",
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
@@ -356,7 +356,7 @@ class OrderTxnPrintSettings extends PrintServices {
               ),
               pw.Padding(
                 padding: const pw.EdgeInsets.all(5),
-                child: text(
+                child: zText(
                   text: (double.tryParse(billItems[i].unitPrice ?? "0") ?? 0).toAmount(),
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
@@ -364,7 +364,7 @@ class OrderTxnPrintSettings extends PrintServices {
               ),
               pw.Padding(
                 padding: const pw.EdgeInsets.all(5),
-                child: text(
+                child: zText(
                   text: (double.tryParse(billItems[i].totalPrice ?? "0") ?? 0).toAmount(),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
@@ -373,7 +373,7 @@ class OrderTxnPrintSettings extends PrintServices {
               ),
               pw.Padding(
                 padding: const pw.EdgeInsets.all(5),
-                child: text(
+                child: zText(
                   text: billItems[i].storageName ?? "-",
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
@@ -422,12 +422,12 @@ class OrderTxnPrintSettings extends PrintServices {
                 pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
-                    text(
+                    zText(
                       text: getTranslation(text: 'grandTotal', tr: language),
                       fontSize: 11,
                       fontWeight: pw.FontWeight.bold,
                     ),
-                    text(
+                    zText(
                       text: "${grandTotal.toAmount()} $ccy",
                       fontSize: 11,
                       fontWeight: pw.FontWeight.bold,
@@ -452,7 +452,7 @@ class OrderTxnPrintSettings extends PrintServices {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  text(
+                  zText(
                     text: getTranslation(text: 'accountingEntries', tr: language),
                     fontSize: 10,
                     fontWeight: pw.FontWeight.bold,
@@ -462,7 +462,7 @@ class OrderTxnPrintSettings extends PrintServices {
 
                   // Debit Entries
                   if (debitRecords.isNotEmpty) ...[
-                    text(
+                    zText(
                       text: getTranslation(text: 'debit', tr: language),
                       fontSize: 9,
                       fontWeight: pw.FontWeight.bold,
@@ -474,7 +474,7 @@ class OrderTxnPrintSettings extends PrintServices {
 
                   // Credit Entries
                   if (creditRecords.isNotEmpty) ...[
-                    text(
+                    zText(
                       text: getTranslation(text: 'credit', tr: language),
                       fontSize: 9,
                       fontWeight: pw.FontWeight.bold,
@@ -525,13 +525,13 @@ class OrderTxnPrintSettings extends PrintServices {
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                text(
+                zText(
                   text: getTranslation(text: 'amountInWords', tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
                 pw.SizedBox(height: 1),
-                text(
+                zText(
                   text: amountInWords.isNotEmpty ? "$amountInWords $ccy" : "",
                   fontSize: 8,
                 ),
@@ -554,14 +554,14 @@ class OrderTxnPrintSettings extends PrintServices {
         children: [
           pw.Expanded(
             flex: 3,
-            child: text(
+            child: zText(
               text: "${record.accountName ?? "-"} (${record.accountNumber ?? "-"})",
               fontSize: 8,
             ),
           ),
           pw.Expanded(
             flex: 1,
-            child: text(
+            child: zText(
               text: "${amount.toAmount()} $ccy",
               fontSize: 8,
               fontWeight: pw.FontWeight.bold,
@@ -585,14 +585,14 @@ class OrderTxnPrintSettings extends PrintServices {
         children: [
           pw.SizedBox(
             width: 70,
-            child: text(
+            child: zText(
               text: "$label:",
               fontSize: 8,
               fontWeight: pw.FontWeight.bold,
             ),
           ),
           pw.Expanded(
-            child: text(
+            child: zText(
               text: value,
               fontSize: 8,
             ),

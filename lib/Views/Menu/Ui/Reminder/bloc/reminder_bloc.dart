@@ -8,7 +8,7 @@ part 'reminder_state.dart';
 
 class ReminderBloc extends Bloc<ReminderEvent, ReminderState> {
   final Repositories _repo;
-  int? _currentAlertFilter; // Track current alert filter
+  int? _currentAlertFilter; 
 
   ReminderBloc(this._repo) : super(ReminderInitial()) {
 
@@ -17,7 +17,7 @@ class ReminderBloc extends Bloc<ReminderEvent, ReminderState> {
       emit(state.copyWith(loading: true, error: null));
       try {
         final data = await _repo.getAlertReminders(alert: event.alert);
-        _currentAlertFilter = event.alert; // Store current filter
+        _currentAlertFilter = event.alert;
 
         emit(state.copyWith(
           reminders: data,

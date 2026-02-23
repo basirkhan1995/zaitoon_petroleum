@@ -7,6 +7,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart'; // Add this dependency
 import 'package:path_provider/path_provider.dart'; // Add this dependency
+import 'package:zaitoon_petroleum/Features/PrintSettings/print_services.dart';
 import 'dart:io';
 import 'package:zaitoon_petroleum/Features/PrintSettings/report_model.dart';
 import '../../Localizations/Bloc/localizations_bloc.dart';
@@ -68,14 +69,15 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
   late TextEditingController _pagesController;
   int copies = 1;
   String pages = "all";
-  bool _isPanelVisible = false; // For mobile panel toggle
-  bool _isSharing = false; // For share loading state
+  bool _isPanelVisible = false;
+  bool _isSharing = false;
 
   @override
   void initState() {
     super.initState();
     _copiesController = TextEditingController(text: "1");
     _pagesController = TextEditingController(text: "");
+    _initializeFonts();
   }
 
   @override
@@ -106,7 +108,9 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
       pages = value.trim().isEmpty ? "all" : value;
     });
   }
-
+  Future<void> _initializeFonts() async {
+    await PrintServices.initializeFonts();
+  }
   Future<void> _sharePDF() async {
     if (!mounted) return;
 
@@ -287,7 +291,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: const Icon(Icons.clear),
             onPressed: () => Navigator.of(context).pop(),
           ),
           const Spacer(),

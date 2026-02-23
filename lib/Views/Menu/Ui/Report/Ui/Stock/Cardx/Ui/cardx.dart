@@ -27,28 +27,451 @@ class StockRecordReportView extends StatelessWidget {
     return ResponsiveLayout(
       mobile: _Mobile(),
       desktop: _Desktop(),
-      tablet: _Tablet(),
+      tablet: _Mobile(),
     );
   }
 }
 
-class _Mobile extends StatelessWidget {
+class _Mobile extends StatefulWidget {
   const _Mobile();
 
   @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
+  State<_Mobile> createState() => _MobileState();
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
+class _MobileState extends State<_Mobile> {
+  late String fromDate;
+  late String toDate;
+  int? storageId;
+  int? productId;
+
+  final _productController = TextEditingController();
+
+  String? myLocale;
+  String? baseCcy;
+
+  @override
+  void initState() {
+    super.initState();
+    baseCcy = _getBaseCurrency();
+    fromDate = DateTime.now().subtract(const Duration(days: 30)).toFormattedDate();
+    toDate = DateTime.now().toFormattedDate();
+    myLocale = context.read<LocalizationBloc>().state.languageCode;
+    context.read<StockRecordBloc>().add(ResetStockRecordEvent());
+  }
+
+  bool get hasFilter {
+    return storageId != null ||
+        productId != null ||
+        _productController.text.isNotEmpty;
+  }
+
+  String? _getBaseCurrency() {
+    try {
+      final companyState = context.read<CompanyProfileBloc>().state;
+      if (companyState is CompanyProfileLoadedState) {
+        return companyState.company.comLocalCcy;
+      }
+      return "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  void _showFilterBottomSheet() {
+    final tr = AppLocalizations.of(context)!;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setSheetState) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Report Filters",
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                const Divider(),
+                const SizedBox(height: 16),
+
+                // Product
+                GenericTextfield<ProductsModel, ProductsBloc, ProductsState>(
+                  key: const ValueKey('filter_product_field'),
+                  controller: _productController,
+                  title: tr.products,
+                  hintText: tr.products,
+                  bloc: context.read<ProductsBloc>(),
+                  fetchAllFunction: (bloc) => bloc.add(LoadProductsEvent()),
+                  searchFunction: (bloc, query) => bloc.add(LoadProductsEvent()),
+                  itemBuilder: (context, pro) => Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text("${pro.proCode} | ${pro.proName ?? ''}"),
+                  ),
+                  itemToString: (pro) => "${pro.proCode} | ${pro.proName ?? ''}",
+                  stateToLoading: (state) => state is ProductsLoadingState,
+                  stateToItems: (state) {
+                    if (state is ProductsLoadedState) {
+                      return state.products;
+                    }
+                    return [];
+                  },
+                  onSelected: (value) {
+                    setSheetState(() {
+                      productId = value.proId;
+                    });
+                  },
+                  showClearButton: true,
+                ),
+                const SizedBox(height: 16),
+
+                // Branch
+                BranchDropdown(
+                  showAllOption: true,
+                  title: tr.branch,
+                  onBranchSelected: (e) {
+                    setSheetState(() {
+                      storageId = e?.brcId;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Storage
+                StorageDropDown(
+                  title: tr.storage,
+                  onChanged: (e) {
+                    setSheetState(() {
+                      storageId = e?.stgId;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Date Range
+                Row(
+                  children: [
+                    Expanded(
+                      child: ZDatePicker(
+                        label: tr.fromDate,
+                        value: fromDate,
+                        onDateChanged: (v) {
+                          setSheetState(() {
+                            fromDate = v;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ZDatePicker(
+                        label: tr.toDate,
+                        value: toDate,
+                        onDateChanged: (v) {
+                          setSheetState(() {
+                            toDate = v;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // Apply Button
+                ZOutlineButton(
+                  width: double.infinity,
+                  isActive: true,
+                  onPressed: () {
+                    Navigator.pop(context);
+                    if (productId != null && _productController.text.isNotEmpty) {
+                      context.read<StockRecordBloc>().add(LoadStockRecordEvent(
+                        fromDate: fromDate,
+                        toDate: toDate,
+                        productId: productId,
+                        storageId: storageId,
+                      ));
+                    } else {
+                      Utils.showOverlayMessage(
+                        context,
+                        message: "Please select a product first",
+                        isError: true,
+                      );
+                    }
+                  },
+                  label: Text(tr.apply),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      appBar: AppBar(
+        title: Text("Stock Record"),
+        titleSpacing: 0,
+        actions: [
+          if (hasFilter)
+            IconButton(
+              icon: const Icon(Icons.filter_alt_off),
+              onPressed: () {
+                setState(() {
+                  productId = null;
+                  storageId = null;
+                  _productController.clear();
+                  fromDate = DateTime.now().toFormattedDate();
+                  toDate = DateTime.now().toFormattedDate();
+                });
+                context.read<StockRecordBloc>().add(ResetStockRecordEvent());
+              },
+            ),
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: _showFilterBottomSheet,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Selected Filters
+          if (hasFilter)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    if (_productController.text.isNotEmpty)
+                      Container(
+                        margin: const EdgeInsets.only(right: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: color.primary.withValues(alpha: .1),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          _productController.text,
+                          style: TextStyle(fontSize: 12, color: color.primary),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          Expanded(
+            child: BlocBuilder<StockRecordBloc, StockRecordState>(
+              builder: (context, state) {
+                if (state is StockRecordErrorState) {
+                  return NoDataWidget(
+                    imageName: "error.png",
+                    title: tr.accessDenied,
+                    message: state.error,
+                    onRefresh: () {},
+                  );
+                }
+                if (state is StockRecordLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is StockRecordInitial) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.inventory_2_outlined,
+                          size: 64,
+                          color: color.outline,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "Inventory Report",
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Stock IN & OUT Record",
+                          style: TextStyle(color: color.outline),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                if (state is StockRecordLoadedState) {
+                  if (state.cardX.isEmpty) {
+                    return NoDataWidget(
+                      title: tr.noData,
+                      message: tr.noDataFound,
+                      enableAction: false,
+                    );
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: state.cardX.length,
+                    itemBuilder: (context, index) {
+                      final stock = state.cardX[index];
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: InkWell(
+                          onTap: () {
+                            Utils.goto(
+                              context,
+                              OrderByIdView(
+                                orderId: stock.orderId!,
+                                ordName: stock.entryType == "IN" ? "Purchase" : "Sale",
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "#${stock.orderId}",
+                                      style: TextStyle(
+                                        color: color.primary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: stock.entryType == "IN"
+                                            ? Colors.green.withValues(alpha: .1)
+                                            : color.error.withValues(alpha: .1),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        stock.entryType ?? "",
+                                        style: TextStyle(
+                                          color: stock.entryType == "IN"
+                                              ? Colors.green
+                                              : color.error,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  "Date: ${stock.entryDate.toFormattedDate()}",
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  "Party: ${stock.fullname}",
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  "Storage: ${stock.storageName}",
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                const Divider(height: 16),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          "Qty",
+                                          style: TextStyle(fontSize: 11),
+                                        ),
+                                        Text(
+                                          stock.quantity.toString(),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        const Text(
+                                          "Price",
+                                          style: TextStyle(fontSize: 11),
+                                        ),
+                                        Text(
+                                          "${stock.price.toAmount()} $baseCcy",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        const Text(
+                                          "Balance",
+                                          style: TextStyle(fontSize: 11),
+                                        ),
+                                        Text(
+                                          stock.runningQuantity.toAmount(decimal: 4),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: color.primary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
+
+
 
 class _Desktop extends StatefulWidget {
   const _Desktop();

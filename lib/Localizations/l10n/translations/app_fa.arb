@@ -859,5 +859,6 @@
   "otpVerified": "کد تایید با موفقیت تأیید شد",
   "share": "به اشتراک گذاشتن",
   "printPreview": "نمایش چاپ",
-  "saveTitle": "ذخیره"
+  "saveTitle": "ذخیره",
+  "filterReports": "فلتر گزارش"
 }

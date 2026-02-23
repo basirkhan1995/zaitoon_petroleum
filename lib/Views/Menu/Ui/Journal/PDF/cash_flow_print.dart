@@ -151,9 +151,9 @@ class CashFlowTransactionPrint extends PrintServices{
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 mainAxisAlignment: pw.MainAxisAlignment.center,
                 children: [
-                  text(text: report.comName ?? "", fontSize: 20,tightBounds: true),
+                  zText(text: report.comName ?? "", fontSize: 20,tightBounds: true),
                   pw.SizedBox(height: 3),
-                  text(text: report.statementDate ?? "", fontSize: 10),
+                  zText(text: report.statementDate ?? "", fontSize: 10),
                 ],
               ),
             ),
@@ -182,7 +182,7 @@ class CashFlowTransactionPrint extends PrintServices{
               child: pw.Image(logoImage),
             ),
             verticalDivider(height: 15, width: 0.6),
-            text(
+            zText(
               text: getTranslation(text: 'producedBy', tr: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
@@ -194,7 +194,7 @@ class CashFlowTransactionPrint extends PrintServices{
         pw.SizedBox(height: 3),
         pw.Row(
           children: [
-            text(text: report.comAddress ?? "", fontSize: 9),
+            zText(text: report.comAddress ?? "", fontSize: 9),
           ],
         ),
         pw.SizedBox(height: 3),
@@ -204,9 +204,9 @@ class CashFlowTransactionPrint extends PrintServices{
           children: [
             pw.Row(
               children: [
-                text(text: report.compPhone ?? "", fontSize: 9),
+                zText(text: report.compPhone ?? "", fontSize: 9),
                 verticalDivider(height: 10, width: 1),
-                text(text: report.comEmail ?? "", fontSize: 9),
+                zText(text: report.comEmail ?? "", fontSize: 9),
               ],
             ),
             pw.Row(
@@ -250,8 +250,8 @@ class CashFlowTransactionPrint extends PrintServices{
         pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              text(text: getTranslation(text: 'moneyReceipt', tr: language),fontWeight: pw.FontWeight.bold),
-              text(text: getTranslation(text: data.trnType??"", tr: language),fontWeight: pw.FontWeight.bold),
+              zText(text: getTranslation(text: 'moneyReceipt', tr: language),fontWeight: pw.FontWeight.bold),
+              zText(text: getTranslation(text: data.trnType??"", tr: language),fontWeight: pw.FontWeight.bold),
             ]
         ),
         pw.SizedBox(height: 5),
@@ -276,7 +276,7 @@ class CashFlowTransactionPrint extends PrintServices{
 
                     pw.Container(
                       width: 90,
-                      child: text(
+                      child: zText(
                         text: "${getTranslation(text: r["title"]!, tr: language)}:",
                         fontSize: 8
                       ),
@@ -284,7 +284,7 @@ class CashFlowTransactionPrint extends PrintServices{
 
                     pw.SizedBox(width: 5),
 
-                    text(
+                    zText(
                       text: r["value"]!,
                       fontSize: 8,
                     ),
@@ -298,13 +298,13 @@ class CashFlowTransactionPrint extends PrintServices{
 
         pw.SizedBox(height: 5),
 
-        text(
+        zText(
           text: getTranslation(text: 'amountInWords', tr: language),
           fontSize:8,
         ),
         horizontalDivider(),
 
-        text(
+        zText(
           text: "${NumberToWords.convert(parsedAmount, lang)} ${data.trdCcy}",
           fontSize: 7,
         ),
@@ -332,8 +332,8 @@ class CashFlowTransactionPrint extends PrintServices{
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.start,
                 children: [
-                  text(text: getTranslation(text: 'createdBy', tr: language), fontSize: 7),
-                  text(text: " ${data.maker} ", fontSize: 7),
+                  zText(text: getTranslation(text: 'createdBy', tr: language), fontSize: 7),
+                  zText(text: " ${data.maker} ", fontSize: 7),
                 ],
               ),
             ],
@@ -346,8 +346,8 @@ class CashFlowTransactionPrint extends PrintServices{
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.start,
                 children: [
-                  text(text: getTranslation(text: 'authorizedBy', tr: language), fontSize: 7),
-                  text(text: data.checker??"", fontSize: 7),
+                  zText(text: getTranslation(text: 'authorizedBy', tr: language), fontSize: 7),
+                  zText(text: data.checker??"", fontSize: 7),
                 ],
               ),
 

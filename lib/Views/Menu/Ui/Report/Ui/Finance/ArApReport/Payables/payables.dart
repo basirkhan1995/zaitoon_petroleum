@@ -24,7 +24,7 @@ class PayablesView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobile: _Mobile(),
-      tablet: _Desktop(),
+      tablet: _Mobile(),
       desktop: _Desktop(),
     );
   }

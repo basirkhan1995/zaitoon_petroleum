@@ -73,10 +73,7 @@ class _Mobile extends StatelessWidget {
             //Stats Count - Total Accounts, Total Stakeholders ...
             if (login.hasPermission(2) ?? false) ...[
               if (visibility.statsCount) ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  child: DashboardStatsView(),
-                ),
+                DashboardStatsView(),
               ],
             ],
 

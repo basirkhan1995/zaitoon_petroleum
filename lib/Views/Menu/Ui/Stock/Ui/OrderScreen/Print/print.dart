@@ -306,12 +306,12 @@ class InvoicePrintService extends PrintServices {
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  text(
+                  zText(
                     text: invoiceTitle,
                     fontSize: 14,
                     fontWeight: pw.FontWeight.bold,
                   ),
-                  text(
+                  zText(
                     text:
                     "${getTranslation(text: 'invoiceNumber', tr: language)} | $invoiceNumber",
                     fontSize: 8,
@@ -321,12 +321,12 @@ class InvoicePrintService extends PrintServices {
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  text(
+                  zText(
                     text: DateTime.now().toDateTime,
                     fontSize: 9,
                     fontWeight: pw.FontWeight.bold,
                   ),
-                  text(
+                  zText(
                     text: DateTime.now().shamsiDateFormatted,
                     fontSize: 10,
                     color: pw.PdfColors.grey800,
@@ -337,7 +337,7 @@ class InvoicePrintService extends PrintServices {
           ),
           pw.SizedBox(height: 8),
           if (reference != null && reference.isNotEmpty)
-            text(
+            zText(
               text:
               "${getTranslation(text: 'referenceNumber', tr: language)}: $reference",
               fontSize: 11,
@@ -360,14 +360,14 @@ class InvoicePrintService extends PrintServices {
       child: pw.Row(
         crossAxisAlignment: pw.CrossAxisAlignment.center,
         children: [
-          text(
+          zText(
             text: "$title |",
             fontSize: 8,
             color: pw.PdfColors.grey600,
 
           ),
           pw.SizedBox(width: 4),
-          text(
+          zText(
             text: customerSupplierName,
             fontSize: 8,
           ),
@@ -405,7 +405,7 @@ class InvoicePrintService extends PrintServices {
           children: [
             pw.Padding(
               padding: pw.EdgeInsets.all(4),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'number', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -414,7 +414,7 @@ class InvoicePrintService extends PrintServices {
             ),
             pw.Padding(
               padding: pw.EdgeInsets.all(4),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'description', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -422,7 +422,7 @@ class InvoicePrintService extends PrintServices {
             ),
             pw.Padding(
               padding: pw.EdgeInsets.all(4),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'qty', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -431,7 +431,7 @@ class InvoicePrintService extends PrintServices {
             ),
             pw.Padding(
               padding: pw.EdgeInsets.all(4),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'unitPrice', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -440,7 +440,7 @@ class InvoicePrintService extends PrintServices {
             ),
             pw.Padding(
               padding: pw.EdgeInsets.all(4),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'total', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -449,7 +449,7 @@ class InvoicePrintService extends PrintServices {
             ),
             pw.Padding(
               padding: pw.EdgeInsets.all(4),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'storage', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -467,7 +467,7 @@ class InvoicePrintService extends PrintServices {
             children: [
               pw.Padding(
                 padding: pw.EdgeInsets.all(5),
-                child: text(
+                child: zText(
                   text: (i + 1).toString(),
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
@@ -475,14 +475,14 @@ class InvoicePrintService extends PrintServices {
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(5),
-                child: text(
+                child: zText(
                   text: items[i].productName,
                   fontSize: 9,
                 ),
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(5),
-                child: text(
+                child: zText(
                   text: items[i].quantity.toString(),
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
@@ -490,7 +490,7 @@ class InvoicePrintService extends PrintServices {
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(5),
-                child: text(
+                child: zText(
                   text: items[i].unitPrice.toAmount(),
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
@@ -498,7 +498,7 @@ class InvoicePrintService extends PrintServices {
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(5),
-                child: text(
+                child: zText(
                   text: items[i].total.toAmount(),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
@@ -507,7 +507,7 @@ class InvoicePrintService extends PrintServices {
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(5),
-                child: text(
+                child: zText(
                   text: items[i].storageName,
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
@@ -552,13 +552,13 @@ class InvoicePrintService extends PrintServices {
                 pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
-                    text(
+                    zText(
                       text: getTranslation(
                           text: 'grandTotal', tr: language),
                       fontSize: 11,
                       fontWeight: pw.FontWeight.bold,
                     ),
-                    text(
+                    zText(
                       text: "${grandTotal.toAmount()} $ccy",
                       fontSize: 11,
                       fontWeight: pw.FontWeight.bold,
@@ -602,7 +602,7 @@ class InvoicePrintService extends PrintServices {
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
-                      text(
+                      zText(
                           text: "${account.accNumber} | ${account.accName}",
                           fontSize: 10,
                           fontWeight: pw.FontWeight.bold
@@ -614,11 +614,11 @@ class InvoicePrintService extends PrintServices {
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
-                      text(
+                      zText(
                         text: getTranslation(text: 'previousAccBalance', tr: language),
                         fontSize: 10,
                       ),
-                      text(
+                      zText(
                         text: "${_getAccountBalance(account).toAmount()} $ccy",
                         fontSize: 10,
                         fontWeight: pw.FontWeight.bold,
@@ -631,13 +631,13 @@ class InvoicePrintService extends PrintServices {
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
-                      text(
+                      zText(
                         text: isSale
                             ? getTranslation(text: 'saleAmount', tr: language)
                             : getTranslation(text: 'purchaseAmount', tr: language),
                         fontSize: 10,
                       ),
-                      text(
+                      zText(
                         text: "${creditAmount.toAmount()} $ccy",
                         fontSize: 10,
                         color: isSale ? pw.PdfColors.red : pw.PdfColors.green,
@@ -651,13 +651,13 @@ class InvoicePrintService extends PrintServices {
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
-                      text(
+                      zText(
                         text: getTranslation(
                             text: 'newBalance', tr: language),
                         fontSize: 10,
                         fontWeight: pw.FontWeight.bold,
                       ),
-                      text(
+                      zText(
                         text: isSale
                             ? "${(_getAccountBalance(account) - creditAmount).toAmount()} $ccy"
                             : "${(_getAccountBalance(account) + creditAmount).toAmount()} $ccy",
@@ -674,12 +674,12 @@ class InvoicePrintService extends PrintServices {
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
-                      text(
+                      zText(
                         text: getTranslation(
                             text: 'status', tr: language),
                         fontSize: 10,
                       ),
-                      text(
+                      zText(
                         text: isSale
                             ? _getBalanceStatus(_getAccountBalance(account) - creditAmount, language)
                             : _getBalanceStatus(_getAccountBalance(account) + creditAmount, language),
@@ -704,14 +704,14 @@ class InvoicePrintService extends PrintServices {
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                text(
+                zText(
                   text: getTranslation(
                       text: 'amountInWords', tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
                 pw.SizedBox(height: 1),
-                text(
+                zText(
                   text: amountInWords.isNotEmpty ? "$amountInWords $ccy" : "",
                   fontSize: 8,
                 ),
@@ -757,12 +757,12 @@ class InvoicePrintService extends PrintServices {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [
-        text(
+        zText(
           text: label,
           fontSize: 11,
           fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
         ),
-        text(
+        zText(
           text: "${value.toAmount()} $ccy",
           fontSize: 11,
           fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,

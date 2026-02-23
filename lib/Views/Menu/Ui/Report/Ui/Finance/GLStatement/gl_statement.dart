@@ -39,7 +39,7 @@ class GlStatementView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobile: _Mobile(isSingleDate: isSingleDate),
-      tablet: _Desktop(isSingleDate: isSingleDate),
+      tablet: _Mobile(isSingleDate: isSingleDate),
       desktop: _Desktop(isSingleDate: isSingleDate),
     );
   }

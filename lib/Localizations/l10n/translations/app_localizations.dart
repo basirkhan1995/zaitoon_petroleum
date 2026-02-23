@@ -5139,6 +5139,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save'**
   String get saveTitle;
+
+  /// No description provided for @filterReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Reports'**
+  String get filterReports;
 }
 
 class _AppLocalizationsDelegate

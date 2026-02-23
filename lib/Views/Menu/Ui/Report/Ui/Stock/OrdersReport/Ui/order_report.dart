@@ -26,28 +26,1051 @@ class OrderReportView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-      mobile: _Mobile(),
-      tablet: _Tablet(),
+      mobile: _Mobile(orderName),
+      tablet: _Tablet(orderName),
       desktop: _Desktop(orderName),
     );
   }
 }
 
-class _Mobile extends StatelessWidget {
-  const _Mobile();
+class _Mobile extends StatefulWidget {
+  final String? orderName;
+  const _Mobile(this.orderName);
+
+  @override
+  State<_Mobile> createState() => _MobileState();
+}
+
+class _MobileState extends State<_Mobile> {
+  late String fromDate;
+  late String toDate;
+  int? branchId;
+  int? customerId;
+  final _personController = TextEditingController();
+  final filterPersonController = TextEditingController();
+  final orderId = TextEditingController();
+
+  String? myLocale;
+  String? baseCcy;
+
+  @override
+  void initState() {
+    super.initState();
+    baseCcy = _getBaseCurrency();
+    fromDate = DateTime.now().toFormattedDate();
+    toDate = DateTime.now().toFormattedDate();
+    myLocale = context.read<LocalizationBloc>().state.languageCode;
+    context.read<OrderReportBloc>().add(ResetOrderReportEvent());
+  }
+
+  @override
+  void dispose() {
+    _personController.dispose();
+    filterPersonController.dispose();
+    orderId.dispose();
+    super.dispose();
+  }
+
+  bool get hasFilter {
+    return branchId != null || customerId != null || _personController.text.isNotEmpty || orderId.text.isNotEmpty;
+  }
+
+  String? _getBaseCurrency() {
+    try {
+      final companyState = context.read<CompanyProfileBloc>().state;
+      if (companyState is CompanyProfileLoadedState) {
+        return companyState.company.comLocalCcy;
+      }
+      return "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  String header(String? orderName) {
+    if (orderName == null) return "";
+    switch (orderName) {
+      case "Purchase":
+        return "${AppLocalizations.of(context)!.purchaseTitle} ${AppLocalizations.of(context)!.invoiceTitle}";
+      case "Sale":
+        return "${AppLocalizations.of(context)!.saleTitle} ${AppLocalizations.of(context)!.invoiceTitle}";
+      case "Estimate":
+        return "${AppLocalizations.of(context)!.estimateTitle} ${AppLocalizations.of(context)!.invoiceTitle}";
+      default:
+        return "";
+    }
+  }
+
+  void _clearFilters() {
+    setState(() {
+      customerId = null;
+      branchId = null;
+      orderId.clear();
+      _personController.clear();
+      filterPersonController.clear();
+      fromDate = DateTime.now().toFormattedDate();
+      toDate = DateTime.now().toFormattedDate();
+    });
+    context.read<OrderReportBloc>().add(ResetOrderReportEvent());
+  }
+
+  void _showFilterBottomSheet() {
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setSheetState) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Filter Reports",
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                const Divider(),
+                const SizedBox(height: 16),
+
+                // Party Selection
+                GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
+                  key: const ValueKey('filter_person_field'),
+                  controller: filterPersonController,
+                  title: tr.party,
+                  hintText: tr.party,
+                  bloc: context.read<IndividualsBloc>(),
+                  fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
+                  searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
+                  showAllOption: true,
+                  allOption: IndividualsModel(
+                    perId: null,
+                    perName: tr.all,
+                    perLastName: '',
+                  ),
+                  itemBuilder: (context, ind) {
+                    if (ind.perId == null) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          tr.all,
+                          style: TextStyle(
+                            color: color.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text("${ind.perName ?? ''} ${ind.perLastName ?? ''}"),
+                    );
+                  },
+                  itemToString: (individual) => "${individual.perName} ${individual.perLastName}",
+                  stateToLoading: (state) => state is IndividualLoadingState,
+                  stateToItems: (state) {
+                    if (state is IndividualLoadedState) return state.individuals;
+                    return [];
+                  },
+                  onSelected: (value) {
+                    setSheetState(() {
+                      customerId = value.perId;
+                    });
+                  },
+                  showClearButton: true,
+                ),
+                const SizedBox(height: 16),
+
+                // Branch Dropdown
+                BranchDropdown(
+                  showAllOption: true,
+                  title: tr.branch,
+                  onBranchSelected: (e) {
+                    setSheetState(() {
+                      branchId = e?.brcId;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Order ID
+                ZTextFieldEntitled(
+                  controller: orderId,
+                  title: tr.orderId,
+                  hint: "#",
+                  inputFormat: [FilteringTextInputFormatter.digitsOnly],
+                ),
+                const SizedBox(height: 16),
+
+                // Date Range
+                Row(
+                  children: [
+                    Expanded(
+                      child: ZDatePicker(
+                        label: tr.fromDate,
+                        value: fromDate,
+                        onDateChanged: (v) {
+                          setSheetState(() {
+                            fromDate = v;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ZDatePicker(
+                        label: tr.toDate,
+                        value: toDate,
+                        onDateChanged: (v) {
+                          setSheetState(() {
+                            toDate = v;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // Apply Button
+                Row(
+                  children: [
+                    if (hasFilter)
+                      Expanded(
+                        child: ZOutlineButton(
+                          backgroundHover: Theme.of(context).colorScheme.error,
+                          onPressed: () {
+                            setSheetState(() {
+                              customerId = null;
+                              branchId = null;
+                              orderId.clear();
+                              filterPersonController.clear();
+                              fromDate = DateTime.now().toFormattedDate();
+                              toDate = DateTime.now().toFormattedDate();
+                            });
+                            setState(() {
+                              _personController.clear();
+                            });
+                          },
+                          label: Text(tr.clear),
+                        ),
+                      ),
+                    if (hasFilter) const SizedBox(width: 8),
+                    Expanded(
+                      child: ZOutlineButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          setState(() {
+                            if (filterPersonController.text.isNotEmpty) {
+                              _personController.text = filterPersonController.text;
+                            }
+                          });
+                          context.read<OrderReportBloc>().add(LoadOrderReportEvent(
+                            fromDate: fromDate,
+                            toDate: toDate,
+                            branchId: branchId,
+                            orderId: int.tryParse(orderId.text),
+                            customerId: customerId,
+                            orderName: widget.orderName,
+                          ));
+                        },
+                        isActive: true,
+                        label: Text(tr.apply),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      appBar: AppBar(
+        title: Text(header(widget.orderName)),
+        titleSpacing: 0,
+        actions: [
+          if (hasFilter)
+            IconButton(
+              icon: const Icon(Icons.filter_alt_off),
+              onPressed: _clearFilters,
+            ),
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: _showFilterBottomSheet,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Selected Filters Chips
+          if (hasFilter)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    if (_personController.text.isNotEmpty)
+                      _buildFilterChip(
+                        label: _personController.text,
+                        color: color.primary,
+                        onRemove: () {
+                          setState(() {
+                            customerId = null;
+                            _personController.clear();
+                          });
+                          if (!hasFilter) {
+                            context.read<OrderReportBloc>().add(ResetOrderReportEvent());
+                          }
+                        },
+                      ),
+                    if (branchId != null)
+                      _buildFilterChip(
+                        label: "${tr.branch}: $branchId",
+                        color: color.secondary,
+                        onRemove: () {
+                          setState(() {
+                            branchId = null;
+                          });
+                          if (!hasFilter) {
+                            context.read<OrderReportBloc>().add(ResetOrderReportEvent());
+                          }
+                        },
+                      ),
+                    if (orderId.text.isNotEmpty)
+                      _buildFilterChip(
+                        label: "${tr.orderId}: ${orderId.text}",
+                        color: color.tertiary,
+                        onRemove: () {
+                          setState(() {
+                            orderId.clear();
+                          });
+                          if (!hasFilter) {
+                            context.read<OrderReportBloc>().add(ResetOrderReportEvent());
+                          }
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          Expanded(
+            child: BlocBuilder<OrderReportBloc, OrderReportState>(
+              builder: (context, state) {
+                if (state is OrderReportInitial) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.receipt_outlined,
+                          size: 64,
+                          color: color.outline,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          header(widget.orderName),
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Filter and review orders by branch, date, order ID, or party.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: color.outline),
+                        ),
+                        const SizedBox(height: 24),
+                        ZOutlineButton(
+                          isActive: true,
+                          onPressed: _showFilterBottomSheet,
+                          icon: Icons.filter_list,
+                          label: Text(tr.apply),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                if (state is OrderReportLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is OrderReportErrorState) {
+                  return NoDataWidget(
+                    title: tr.accessDenied,
+                    message: state.error,
+                    enableAction: false,
+                  );
+                }
+                if (state is OrderReportLoadedSate) {
+                  if (state.orders.isEmpty) {
+                    return NoDataWidget(
+                      title: tr.noData,
+                      message: tr.noDataFound,
+                      enableAction: false,
+                    );
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: state.orders.length,
+                    itemBuilder: (context, index) {
+                      final ord = state.orders[index];
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: InkWell(
+                          onTap: () {
+                            Utils.goto(
+                              context,
+                              OrderByIdView(
+                                orderId: ord.ordId!,
+                                ordName: ord.ordName,
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Header Row
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: color.primary.withValues(alpha: .1),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        "#${ord.ordId}",
+                                        style: TextStyle(
+                                          color: color.primary,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      ord.timing.toFormattedDate(),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: color.outline,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+
+                                // Party Name
+                                Text(
+                                  ord.fullName ?? "",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+
+                                // Reference (if not Estimate)
+                                if (widget.orderName != "Estimate" && ord.ordTrnRef != null)
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.receipt,
+                                        size: 14,
+                                        color: color.outline,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        ord.ordTrnRef!,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: color.outline,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                const SizedBox(height: 4),
+
+                                // Branch
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.business,
+                                      size: 14,
+                                      color: color.outline,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      ord.ordBranchName ?? "",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: color.outline,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Divider(height: 16),
+
+                                // Total Amount
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      tr.totalTitle,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: color.outline,
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: color.primary.withValues(alpha: .1),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Text(
+                                        "${ord.totalBill.toAmount()} $baseCcy",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: color.primary,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    required Color color,
+    required VoidCallback onRemove,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: .1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: .3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 4),
+          InkWell(
+            onTap: onRemove,
+            child: Icon(
+              Icons.close,
+              size: 14,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
+class _Tablet extends StatefulWidget {
+  final String? orderName;
+  const _Tablet(this.orderName);
+
+  @override
+  State<_Tablet> createState() => _TabletState();
+}
+
+class _TabletState extends State<_Tablet> {
+  late String fromDate;
+  late String toDate;
+  int? branchId;
+  int? customerId;
+  final _personController = TextEditingController();
+  final orderId = TextEditingController();
+
+  String? myLocale;
+  String? baseCcy;
+  bool _showFilters = true;
+
+  @override
+  void initState() {
+    super.initState();
+    baseCcy = _getBaseCurrency();
+    fromDate = DateTime.now().toFormattedDate();
+    toDate = DateTime.now().toFormattedDate();
+    myLocale = context.read<LocalizationBloc>().state.languageCode;
+    context.read<OrderReportBloc>().add(ResetOrderReportEvent());
+  }
+
+  @override
+  void dispose() {
+    _personController.dispose();
+    orderId.dispose();
+    super.dispose();
+  }
+
+  bool get hasFilter {
+    return branchId != null || customerId != null || _personController.text.isNotEmpty || orderId.text.isNotEmpty;
+  }
+
+  String? _getBaseCurrency() {
+    try {
+      final companyState = context.read<CompanyProfileBloc>().state;
+      if (companyState is CompanyProfileLoadedState) {
+        return companyState.company.comLocalCcy;
+      }
+      return "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  String header(String? orderName) {
+    if (orderName == null) return "";
+    switch (orderName) {
+      case "Purchase":
+        return "${AppLocalizations.of(context)!.purchaseTitle} ${AppLocalizations.of(context)!.invoiceTitle}";
+      case "Sale":
+        return "${AppLocalizations.of(context)!.saleTitle} ${AppLocalizations.of(context)!.invoiceTitle}";
+      case "Estimate":
+        return "${AppLocalizations.of(context)!.estimateTitle} ${AppLocalizations.of(context)!.invoiceTitle}";
+      default:
+        return "";
+    }
+  }
+
+  void _clearFilters() {
+    setState(() {
+      customerId = null;
+      branchId = null;
+      orderId.clear();
+      _personController.clear();
+      fromDate = DateTime.now().toFormattedDate();
+      toDate = DateTime.now().toFormattedDate();
+    });
+    context.read<OrderReportBloc>().add(ResetOrderReportEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      appBar: AppBar(
+        title: Text(header(widget.orderName)),
+        titleSpacing: 0,
+        actions: [
+          IconButton(
+            icon: Icon(_showFilters ? Icons.filter_alt_off : Icons.filter_alt),
+            onPressed: () {
+              setState(() {
+                _showFilters = !_showFilters;
+              });
+            },
+          ),
+          if (hasFilter)
+            IconButton(
+              icon: const Icon(Icons.clear_all),
+              onPressed: _clearFilters,
+            ),
+          IconButton(
+            icon: const Icon(Icons.print),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: () {
+              context.read<OrderReportBloc>().add(LoadOrderReportEvent(
+                fromDate: fromDate,
+                toDate: toDate,
+                branchId: branchId,
+                orderId: int.tryParse(orderId.text),
+                customerId: customerId,
+                orderName: widget.orderName,
+              ));
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Collapsible Filters
+          if (_showFilters)
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: color.surface,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: .05),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  // Party
+                  SizedBox(
+                    width: 300,
+                    child: GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
+                      key: const ValueKey('tablet_person_field'),
+                      controller: _personController,
+                      title: tr.party,
+                      hintText: tr.party,
+                      bloc: context.read<IndividualsBloc>(),
+                      fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
+                      searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent()),
+                      showAllOption: true,
+                      allOption: IndividualsModel(
+                        perId: null,
+                        perName: tr.all,
+                        perLastName: '',
+                      ),
+                      itemBuilder: (context, ind) {
+                        if (ind.perId == null) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              tr.all,
+                              style: TextStyle(
+                                color: color.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          );
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("${ind.perName ?? ''} ${ind.perLastName ?? ''}"),
+                        );
+                      },
+                      itemToString: (individual) => "${individual.perName} ${individual.perLastName}",
+                      stateToLoading: (state) => state is IndividualLoadingState,
+                      stateToItems: (state) {
+                        if (state is IndividualLoadedState) return state.individuals;
+                        return [];
+                      },
+                      onSelected: (value) {
+                        setState(() {
+                          customerId = value.perId;
+                        });
+                      },
+                      showClearButton: true,
+                    ),
+                  ),
+                  // Branch
+                  SizedBox(
+                    width: 200,
+                    child: BranchDropdown(
+                      showAllOption: true,
+                      title: tr.branch,
+                      onBranchSelected: (e) {
+                        setState(() {
+                          branchId = e?.brcId;
+                        });
+                      },
+                    ),
+                  ),
+                  // Order ID
+                  SizedBox(
+                    width: 150,
+                    child: ZTextFieldEntitled(
+                      controller: orderId,
+                      title: tr.orderId,
+                      hint: "#",
+                      inputFormat: [FilteringTextInputFormatter.digitsOnly],
+                    ),
+                  ),
+                  // From Date
+                  SizedBox(
+                    width: 150,
+                    child: ZDatePicker(
+                      label: tr.fromDate,
+                      value: fromDate,
+                      onDateChanged: (v) {
+                        setState(() {
+                          fromDate = v;
+                        });
+                      },
+                    ),
+                  ),
+                  // To Date
+                  SizedBox(
+                    width: 150,
+                    child: ZDatePicker(
+                      label: tr.toDate,
+                      value: toDate,
+                      onDateChanged: (v) {
+                        setState(() {
+                          toDate = v;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          Expanded(
+            child: BlocBuilder<OrderReportBloc, OrderReportState>(
+              builder: (context, state) {
+                if (state is OrderReportInitial) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.receipt_outlined,
+                          size: 80,
+                          color: color.outline,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          header(widget.orderName),
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Filter and review orders by branch, date, order ID, or party.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: color.outline),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                if (state is OrderReportLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is OrderReportErrorState) {
+                  return NoDataWidget(
+                    title: tr.accessDenied,
+                    message: state.error,
+                    enableAction: false,
+                  );
+                }
+                if (state is OrderReportLoadedSate) {
+                  if (state.orders.isEmpty) {
+                    return NoDataWidget(
+                      title: tr.noData,
+                      message: tr.noDataFound,
+                      enableAction: false,
+                    );
+                  }
+
+                  // Grid view for tablet
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(12),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.8,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                    ),
+                    itemCount: state.orders.length,
+                    itemBuilder: (context, index) {
+                      final ord = state.orders[index];
+                      return Card(
+                        child: InkWell(
+                          onTap: () {
+                            Utils.goto(
+                              context,
+                              OrderByIdView(
+                                orderId: ord.ordId!,
+                                ordName: ord.ordName,
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Header
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "#${ord.ordId}",
+                                      style: TextStyle(
+                                        color: color.primary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: color.primary.withValues(alpha: .1),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        ord.timing.toFormattedDate(),
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: color.primary,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+
+                                // Party Name
+                                Text(
+                                  ord.fullName ?? "",
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+
+                                // Reference (if not Estimate)
+                                if (widget.orderName != "Estimate" && ord.ordTrnRef != null)
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.receipt,
+                                        size: 12,
+                                        color: color.outline,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Expanded(
+                                        child: Text(
+                                          ord.ordTrnRef!,
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: color.outline,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                const SizedBox(height: 4),
+
+                                // Branch
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.business,
+                                      size: 12,
+                                      color: color.outline,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Expanded(
+                                      child: Text(
+                                        ord.ordBranchName ?? "",
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: color.outline,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Spacer(),
+
+                                // Total Amount
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      tr.totalTitle,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: color.outline,
+                                      ),
+                                    ),
+                                    Text(
+                                      "${ord.totalBill.toAmount()} $baseCcy",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: color.primary,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

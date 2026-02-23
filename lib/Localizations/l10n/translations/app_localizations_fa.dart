@@ -2589,4 +2589,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get saveTitle => 'ذخیره';
+
+  @override
+  String get filterReports => 'فلتر گزارش';
 }

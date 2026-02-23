@@ -292,10 +292,10 @@ class _DesktopState extends State<_Desktop> {
       case ActionKey.estimate: Utils.goto(context, OrderReportView(orderName: "Estimate"));
 
       // Activity
-      case ActionKey.userLog: Utils.goto(context, UserLogReportView());
       case ActionKey.users: Utils.goto(context, UsersReportView());
+      case ActionKey.userLog: Utils.goto(context, UserLogReportView());
       case ActionKey.attendance: Utils.goto(context, AttendanceReportView());
-//Transport
+      //Transport
       case ActionKey.shipping: Utils.goto(context, ShippingReportView());
     }
   }

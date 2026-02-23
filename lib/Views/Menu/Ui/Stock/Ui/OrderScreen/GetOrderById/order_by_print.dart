@@ -226,10 +226,10 @@ class OrderPrintService extends PrintServices {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  text(text: report.comName ?? "",fontWeight: pw.FontWeight.bold, fontSize: 25, tightBounds: true),
+                  zText(text: report.comName ?? "",fontWeight: pw.FontWeight.bold, fontSize: 25, tightBounds: true),
                   pw.SizedBox(height: 3),
-                  text(text: report.comAddress ?? "", fontSize: 10),
-                  text(text: "${report.compPhone ?? ""} | ${report.comEmail ?? ""}", fontSize: 9),
+                  zText(text: report.comAddress ?? "", fontSize: 10),
+                  zText(text: "${report.compPhone ?? ""} | ${report.comEmail ?? ""}", fontSize: 9),
                 ],
               ),
             ),
@@ -263,7 +263,7 @@ class OrderPrintService extends PrintServices {
               child: pw.Image(logoImage),
             ),
             verticalDivider(height: 15, width: 0.6),
-            text(
+            zText(
               text: getTranslation(text: 'producedBy', tr: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
@@ -277,7 +277,7 @@ class OrderPrintService extends PrintServices {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           children: [
-            text(text: report.comAddress ?? "", fontSize: 9),
+            zText(text: report.comAddress ?? "", fontSize: 9),
             buildPage(context.pageNumber, context.pagesCount, language),
           ],
         ),
@@ -306,12 +306,12 @@ class OrderPrintService extends PrintServices {
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  text(
+                  zText(
                     text: invoiceType,
                     fontSize: 14,
                     fontWeight: pw.FontWeight.bold,
                   ),
-                  text(
+                  zText(
                     text: "${getTranslation(text: 'invoiceNumber', tr: language)}: ${order.ordId}",
                     fontSize: 10,
                   ),
@@ -320,11 +320,11 @@ class OrderPrintService extends PrintServices {
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.end,
                 children: [
-                  text(
+                  zText(
                     text: order.ordEntryDate?.toDateTime ?? DateTime.now().toFormattedDate(),
                     fontSize: 10,
                   ),
-                  text(
+                  zText(
                     text: order.ordEntryDate?.shamsiDateFormatted ?? DateTime.now().toFormattedDate(),
                     fontSize: 10,
                     fontWeight: pw.FontWeight.bold,
@@ -337,7 +337,7 @@ class OrderPrintService extends PrintServices {
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              text(
+              zText(
                 text: order.ordTrnRef ?? "",
                 fontSize: 11,
               ),
@@ -364,12 +364,12 @@ class OrderPrintService extends PrintServices {
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          text(
+          zText(
             text: title,
             fontSize: 9,
             color: pw.PdfColors.grey500,
           ),
-          text(
+          zText(
             text: name,
             fontSize: 12,
           ),
@@ -410,7 +410,7 @@ class OrderPrintService extends PrintServices {
           children: [
             pw.Padding(
               padding: pw.EdgeInsets.all(8),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'number', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -419,7 +419,7 @@ class OrderPrintService extends PrintServices {
             ),
             pw.Padding(
               padding: pw.EdgeInsets.all(8),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'productName', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -427,7 +427,7 @@ class OrderPrintService extends PrintServices {
             ),
             pw.Padding(
               padding: pw.EdgeInsets.all(8),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'qty', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -436,7 +436,7 @@ class OrderPrintService extends PrintServices {
             ),
             pw.Padding(
               padding: pw.EdgeInsets.all(8),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'unitPrice', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -445,7 +445,7 @@ class OrderPrintService extends PrintServices {
             ),
             pw.Padding(
               padding: pw.EdgeInsets.all(8),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'total', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -454,7 +454,7 @@ class OrderPrintService extends PrintServices {
             ),
             pw.Padding(
               padding: pw.EdgeInsets.all(8),
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'storage', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
@@ -470,7 +470,7 @@ class OrderPrintService extends PrintServices {
             children: [
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
-                child: text(
+                child: zText(
                   text: (i + 1).toString(),
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
@@ -478,14 +478,14 @@ class OrderPrintService extends PrintServices {
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
-                child: text(
+                child: zText(
                   text: productNames[records[i].stkProduct] ?? "Unknown",
                   fontSize: 9,
                 ),
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
-                child: text(
+                child: zText(
                   text: records[i].stkQuantity?.toString() ?? "0",
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
@@ -493,7 +493,7 @@ class OrderPrintService extends PrintServices {
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
-                child: text(
+                child: zText(
                   text: isPurchase
                       ? (double.tryParse(records[i].stkPurPrice ?? "0") ?? 0).toAmount()
                       : (double.tryParse(records[i].stkSalePrice ?? "0") ?? 0).toAmount(),
@@ -503,7 +503,7 @@ class OrderPrintService extends PrintServices {
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
-                child: text(
+                child: zText(
                   text: _calculateItemTotal(records[i], isPurchase).toAmount(),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
@@ -512,7 +512,7 @@ class OrderPrintService extends PrintServices {
               ),
               pw.Padding(
                 padding: pw.EdgeInsets.all(8),
-                child: text(
+                child: zText(
                   text: storageNames[records[i].stkStorage] ?? "Unknown",
                   fontSize: 9,
                   textAlign: pw.TextAlign.center,
@@ -558,12 +558,12 @@ class OrderPrintService extends PrintServices {
                 pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
-                    text(
+                    zText(
                       text: getTranslation(text: 'grandTotal', tr: language),
                       fontSize: 11,
                       fontWeight: pw.FontWeight.bold,
                     ),
-                    text(
+                    zText(
                       text: "${grandTotal.toAmount()} $ccy",
                       fontSize: 11,
                       fontWeight: pw.FontWeight.bold,
@@ -604,7 +604,7 @@ class OrderPrintService extends PrintServices {
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
-                      text(
+                      zText(
                           text: "${account.accNumber} | ${account.accName}",
                           fontSize: 10,
                           fontWeight: pw.FontWeight.bold
@@ -616,11 +616,11 @@ class OrderPrintService extends PrintServices {
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
-                      text(
+                      zText(
                         text: getTranslation(text: 'previousAccBalance', tr: language),
                         fontSize: 10,
                       ),
-                      text(
+                      zText(
                         text: "${_getAccountBalance(account).toAmount()} $ccy",
                         fontSize: 10,
                         fontWeight: pw.FontWeight.bold,
@@ -633,13 +633,13 @@ class OrderPrintService extends PrintServices {
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
-                      text(
+                      zText(
                         text: isPurchase
                             ? getTranslation(text: 'purchaseAmount', tr: language)
                             : getTranslation(text: 'saleAmount', tr: language),
                         fontSize: 10,
                       ),
-                      text(
+                      zText(
                         text: "${creditAmount.toAmount()} $ccy",
                         fontSize: 10,
                         color: isPurchase ? pw.PdfColors.green : pw.PdfColors.red,
@@ -651,12 +651,12 @@ class OrderPrintService extends PrintServices {
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
-                      text(
+                      zText(
                         text: getTranslation(text: 'newBalance', tr: language),
                         fontSize: 10,
                         fontWeight: pw.FontWeight.bold,
                       ),
-                      text(
+                      zText(
                         text: isPurchase
                             ? "${(_getAccountBalance(account) + creditAmount).toAmount()} $ccy"
                             : "${(_getAccountBalance(account) - creditAmount).toAmount()} $ccy",
@@ -673,11 +673,11 @@ class OrderPrintService extends PrintServices {
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
-                      text(
+                      zText(
                         text: getTranslation(text: 'status', tr: language),
                         fontSize: 10,
                       ),
-                      text(
+                      zText(
                         text: isPurchase
                             ? _getBalanceStatus(_getAccountBalance(account) + creditAmount, language)
                             : _getBalanceStatus(_getAccountBalance(account) - creditAmount, language),
@@ -702,13 +702,13 @@ class OrderPrintService extends PrintServices {
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                text(
+                zText(
                   text: getTranslation(text: 'amountInWords', tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
                 pw.SizedBox(height: 1),
-                text(
+                zText(
                   text: amountInWords.isNotEmpty ? "$amountInWords $ccy" : "",
                   fontSize: 8,
                 ),
@@ -729,12 +729,12 @@ class OrderPrintService extends PrintServices {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [
-        text(
+        zText(
           text: label,
           fontSize: 11,
           fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
         ),
-        text(
+        zText(
           text: "${value.toAmount()} $ccy",
           fontSize: 11,
           fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,

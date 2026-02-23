@@ -145,8 +145,8 @@ import 'package:flutter/services.dart';
                pw.Row(
                  mainAxisAlignment: pw.MainAxisAlignment.start,
                  children: [
-                   text(text: getTranslation(text: 'createdBy', tr: language), fontSize: 7),
-                   text(text: " ${data.transaction?.maker} ", fontSize: 7),
+                   zText(text: getTranslation(text: 'createdBy', tr: language), fontSize: 7),
+                   zText(text: " ${data.transaction?.maker} ", fontSize: 7),
                  ],
                ),
              ],
@@ -159,8 +159,8 @@ import 'package:flutter/services.dart';
                pw.Row(
                  mainAxisAlignment: pw.MainAxisAlignment.start,
                  children: [
-                   text(text: getTranslation(text: 'authorizedBy', tr: language), fontSize: 7),
-                   text(text: data.transaction?.checker??"", fontSize: 7),
+                   zText(text: getTranslation(text: 'authorizedBy', tr: language), fontSize: 7),
+                   zText(text: data.transaction?.checker??"", fontSize: 7),
                  ],
                ),
 
@@ -184,7 +184,7 @@ import 'package:flutter/services.dart';
            children: [
              pw.Row(
                children: [
-                 text(
+                 zText(
                    text: getTranslation(text: 'vehicleDetails', tr: language),
                    fontSize: 16,
                    fontWeight: pw.FontWeight.bold,
@@ -359,7 +359,7 @@ import 'package:flutter/services.dart';
          children: [
            pw.Expanded(
              flex: 2,
-             child:text(
+             child:zText(
                text: '$label:',
                fontSize: 8,
                fontWeight: pw.FontWeight.bold,
@@ -367,7 +367,7 @@ import 'package:flutter/services.dart';
            ),
            pw.Expanded(
              flex: 3,
-             child: text(
+             child: zText(
                text: value,
                fontSize: 8,
              ),
@@ -420,9 +420,9 @@ import 'package:flutter/services.dart';
                  crossAxisAlignment: pw.CrossAxisAlignment.start,
                  mainAxisAlignment: pw.MainAxisAlignment.center,
                  children: [
-                   text(text: report.comName ?? "", fontSize: 20,tightBounds: true),
+                   zText(text: report.comName ?? "", fontSize: 20,tightBounds: true),
                    pw.SizedBox(height: 3),
-                   text(text: report.statementDate ?? "", fontSize: 10),
+                   zText(text: report.statementDate ?? "", fontSize: 10),
                  ],
                ),
              ),
@@ -451,7 +451,7 @@ import 'package:flutter/services.dart';
                child: pw.Image(logoImage),
              ),
              verticalDivider(height: 15, width: 0.6),
-             text(
+             zText(
                text: getTranslation(text: 'producedBy', tr: language),
                fontWeight: pw.FontWeight.normal,
                fontSize: 8,
@@ -463,7 +463,7 @@ import 'package:flutter/services.dart';
          pw.SizedBox(height: 3),
          pw.Row(
            children: [
-             text(text: report.comAddress ?? "", fontSize: 9),
+             zText(text: report.comAddress ?? "", fontSize: 9),
            ],
          ),
          pw.SizedBox(height: 3),
@@ -473,9 +473,9 @@ import 'package:flutter/services.dart';
            children: [
              pw.Row(
                children: [
-                 text(text: report.compPhone ?? "", fontSize: 9),
+                 zText(text: report.compPhone ?? "", fontSize: 9),
                  verticalDivider(height: 10, width: 1),
-                 text(text: report.comEmail ?? "", fontSize: 9),
+                 zText(text: report.comEmail ?? "", fontSize: 9),
                ],
              ),
              pw.Row(

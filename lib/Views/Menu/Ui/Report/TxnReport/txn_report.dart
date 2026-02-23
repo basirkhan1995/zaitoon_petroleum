@@ -11,8 +11,10 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/users_drop.
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TxnReport/bloc/txn_report_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TxnReport/features/txn_type_drop.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TxnReport/model/txn_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/features/status_drop.dart';
 import '../../../../../Features/Date/z_generic_date.dart';
+import '../../../../../Features/Other/utils.dart';
 
 class TransactionReportView extends StatelessWidget {
   const TransactionReportView({super.key});
@@ -21,29 +23,711 @@ class TransactionReportView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobile: _Mobile(),
-      tablet: _Tablet(),
+      tablet: _Mobile(),
       desktop: _Desktop(),
     );
   }
 }
 
-class _Mobile extends StatelessWidget {
+class _Mobile extends StatefulWidget {
   const _Mobile();
 
   @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
+  State<_Mobile> createState() => _MobileState();
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
+class _MobileState extends State<_Mobile> {
+  late String fromDate;
+  late String toDate;
+  String? myLocale;
+
+  int? status;
+  String? currency;
+  String? maker;
+  String? checker;
+  String? txnType;
+
+  @override
+  void initState() {
+    super.initState();
+    fromDate = DateTime.now().toFormattedDate();
+    toDate = DateTime.now().toFormattedDate();
+    myLocale = context.read<LocalizationBloc>().state.languageCode;
+    context.read<TxnReportBloc>().add(ResetTxnReportEvent());
+  }
+
+  bool get hasAnyFilter {
+    return status != null ||
+        currency != null ||
+        maker != null ||
+        checker != null ||
+        txnType != null;
+  }
+
+  void _clearFilters() {
+    setState(() {
+      maker = null;
+      checker = null;
+      txnType = null;
+      currency = null;
+      status = null;
+      fromDate = DateTime.now().toFormattedDate();
+      toDate = DateTime.now().toFormattedDate();
+    });
+    context.read<TxnReportBloc>().add(ResetTxnReportEvent());
+  }
+
+  void _showFilterBottomSheet() {
+    final tr = AppLocalizations.of(context)!;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setSheetState) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      tr.filterReports,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                const Divider(),
+                const SizedBox(height: 16),
+
+                // Date Range
+                Row(
+                  children: [
+                    Expanded(
+                      child: ZDatePicker(
+                        label: tr.fromDate,
+                        value: fromDate,
+                        onDateChanged: (v) {
+                          setSheetState(() {
+                            fromDate = v;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ZDatePicker(
+                        label: tr.toDate,
+                        value: toDate,
+                        onDateChanged: (v) {
+                          setSheetState(() {
+                            toDate = v;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Maker
+                UserDropdown(
+                  title: tr.maker,
+                  isMulti: false,
+                  onSingleChanged: (e) {
+                    setSheetState(() {
+                      maker = e?.usrName;
+                    });
+                  },
+                  onMultiChanged: (e) {},
+                ),
+                const SizedBox(height: 12),
+
+                // Checker
+                UserDropdown(
+                  title: tr.checker,
+                  isMulti: false,
+                  onSingleChanged: (e) {
+                    setSheetState(() {
+                      checker = e?.usrName;
+                    });
+                  },
+                  onMultiChanged: (e) {},
+                ),
+                const SizedBox(height: 12),
+
+                // Transaction Type
+                TxnTypeDropDown(
+                  title: tr.txnType,
+                  isMulti: false,
+                  onSingleChanged: (e) {
+                    setSheetState(() {
+                      txnType = e?.trntCode;
+                    });
+                  },
+                  onMultiChanged: (e) {},
+                ),
+                const SizedBox(height: 12),
+
+                // Currency
+                CurrencyDropdown(
+                  title: tr.currencyTitle,
+                  isMulti: false,
+                  onSingleChanged: (e) {
+                    setSheetState(() {
+                      currency = e?.ccyCode;
+                    });
+                  },
+                  onMultiChanged: (e) {},
+                ),
+                const SizedBox(height: 12),
+
+                // Status
+                StatusDropdown(
+                  value: status,
+                  onChanged: (v) {
+                    setSheetState(() => status = v);
+                  },
+                ),
+                const SizedBox(height: 24),
+
+                // Apply Button
+                Row(
+                  children: [
+                    if (hasAnyFilter)
+                      Expanded(
+                        child: ZOutlineButton(
+                          onPressed: () {
+                            setSheetState(() {
+                              maker = null;
+                              checker = null;
+                              txnType = null;
+                              currency = null;
+                              status = null;
+                              fromDate = DateTime.now().toFormattedDate();
+                              toDate = DateTime.now().toFormattedDate();
+                            });
+                            setState(() {});
+                          },
+                          backgroundHover: Theme.of(context).colorScheme.error,
+                          label: Text(tr.clear),
+                        ),
+                      ),
+                    if (hasAnyFilter) const SizedBox(width: 8),
+                    Expanded(
+                      child: ZOutlineButton(
+                        isActive: true,
+                        onPressed: () {
+                          Navigator.pop(context);
+                          context.read<TxnReportBloc>().add(LoadTxnReportEvent(
+                            fromDate: fromDate,
+                            toDate: toDate,
+                            checker: checker,
+                            maker: maker,
+                            status: status,
+                            txnType: txnType,
+                            currency: currency,
+                          ));
+                        },
+                        label: Text(tr.apply),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: Text("${tr.transactions} ${tr.report}"),
+        actionsPadding: EdgeInsets.symmetric(horizontal: 8),
+        actions: [
+          if (hasAnyFilter)
+            IconButton(
+              icon: const Icon(Icons.filter_alt_off),
+              onPressed: _clearFilters,
+            ),
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: _showFilterBottomSheet,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Selected Filters Chips
+          if (hasAnyFilter)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildFilterChip(
+                      label: "${tr.fromDate}: $fromDate",
+                      color: color.primary,
+                      onRemove: () {
+                        setState(() {
+                          fromDate = DateTime.now().toFormattedDate();
+                        });
+                      },
+                    ),
+                    _buildFilterChip(
+                      label: "${tr.toDate}: $toDate",
+                      color: color.primary,
+                      onRemove: () {
+                        setState(() {
+                          toDate = DateTime.now().toFormattedDate();
+                        });
+                      },
+                    ),
+                    if (maker != null)
+                      _buildFilterChip(
+                        label: "${tr.maker}: $maker",
+                        color: color.secondary,
+                        onRemove: () {
+                          setState(() {
+                            maker = null;
+                          });
+                        },
+                      ),
+                    if (checker != null)
+                      _buildFilterChip(
+                        label: "${tr.checker}: $checker",
+                        color: color.tertiary,
+                        onRemove: () {
+                          setState(() {
+                            checker = null;
+                          });
+                        },
+                      ),
+                    if (txnType != null)
+                      _buildFilterChip(
+                        label: "${tr.txnType}: $txnType",
+                        color: Colors.purple,
+                        onRemove: () {
+                          setState(() {
+                            txnType = null;
+                          });
+                        },
+                      ),
+                    if (currency != null)
+                      _buildFilterChip(
+                        label: "${tr.currencyTitle}: $currency",
+                        color: Colors.orange,
+                        onRemove: () {
+                          setState(() {
+                            currency = null;
+                          });
+                        },
+                      ),
+                    if (status != null)
+                      _buildFilterChip(
+                        label: "${tr.status}: ${status == 1 ? tr.active : tr.inactive}",
+                        color: status == 1 ? Colors.green : color.error,
+                        onRemove: () {
+                          setState(() {
+                            status = null;
+                          });
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          Expanded(
+            child: BlocBuilder<TxnReportBloc, TxnReportState>(
+              builder: (context, state) {
+                if (state is TxnReportInitial) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.receipt_outlined,
+                          size: 64,
+                          color: color.outline,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "Transaction Report",
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Select filters above and click Apply to view transactions.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: color.outline),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          onPressed: _showFilterBottomSheet,
+                          icon: const Icon(Icons.filter_list),
+                          label: Text(tr.apply),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                if (state is TxnReportLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is TxnReportErrorState) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: color.error,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            state.error,
+                            style: TextStyle(color: color.error),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                if (state is TxnReportLoadedState) {
+                  if (state.txn.isEmpty) {
+                    return NoDataWidget(
+                      title: tr.noData,
+                      message: tr.noDataFound,
+                      enableAction: false,
+                    );
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: state.txn.length,
+                    itemBuilder: (context, index) {
+                      final txn = state.txn[index];
+                      return _buildMobileTransactionCard(txn, index);
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    required Color color,
+    required VoidCallback onRemove,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: .1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: .3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 4),
+          InkWell(
+            onTap: onRemove,
+            child: Icon(
+              Icons.close,
+              size: 12,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMobileTransactionCard(TransactionReportModel txn, int index) {
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+    final isEven = index.isEven;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: color.outline.withValues(alpha: .1)),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isEven ? color.primary.withValues(alpha: .02) : color.surface,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header Row - ID and Status
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color.primary.withValues(alpha: .1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      "#${txn.no}",
+                      style: TextStyle(
+                        color: color.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: txn.status == 1
+                          ? Colors.green.withValues(alpha: .1)
+                          : color.error.withValues(alpha: .1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      txn.statusText ?? "",
+                      style: TextStyle(
+                        color: txn.status == 1 ? Colors.green : color.error,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Date - FIXED: Use toDateTime getter properly
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    size: 14,
+                    color: color.outline,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    txn.timing != null
+                        ? (txn.timing is DateTime
+                        ? (txn.timing as DateTime).toDateTime
+                        : txn.timing.toString())
+                        : "",
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: color.outline,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+
+              // Reference
+              Row(
+                children: [
+                  Icon(
+                    Icons.receipt,
+                    size: 14,
+                    color: color.outline,
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      "${tr.referenceNumber}: ${txn.reference ?? ""}",
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+
+              // Type, Maker, Checker in a row
+              Row(
+                children: [
+                  // Transaction Type
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          tr.txnType,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: color.outline,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: color.secondary.withValues(alpha: .1),
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                          child: Text(
+                            txn.type ?? "",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: color.secondary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Maker
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          tr.maker,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: color.outline,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          txn.maker ?? "",
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Checker
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          tr.checker,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: color.outline,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          txn.checker ?? "",
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(height: 16),
+
+              // Amount - EXACTLY as in desktop
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    tr.amount,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: color.outline,
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        txn.actualAmount.toAmount(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: color.primary,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        txn.currency ?? "",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Utils.currencyColors(txn.currency ?? ""),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
+
 
 class _Desktop extends StatefulWidget {
   const _Desktop();

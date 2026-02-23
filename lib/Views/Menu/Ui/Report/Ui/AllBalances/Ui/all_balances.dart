@@ -6,7 +6,7 @@ import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/AllBalances/bloc/all_balances_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import '../../../../../../../Features/Other/utils.dart';
 import '../../../../Finance/Ui/GlAccounts/GlCategories/category_view.dart';
 
 class AllBalancesView extends StatelessWidget {
@@ -20,22 +20,685 @@ class AllBalancesView extends StatelessWidget {
 }
 
 
-class _Tablet extends StatelessWidget {
+class _Tablet extends StatefulWidget {
   const _Tablet();
 
   @override
+  State<_Tablet> createState() => _TabletState();
+}
+
+class _TabletState extends State<_Tablet> {
+  int? catId;
+  String? selectedCategory;
+  bool _showFilters = true;
+
+  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final color = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context)!;
+    final titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+      color: color.surface,
+      fontWeight: FontWeight.w500,
+    );
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: const Text("All Balances"),
+        actions: [
+          IconButton(
+            icon: Icon(_showFilters ? Icons.filter_alt_off : Icons.filter_alt),
+            onPressed: () {
+              setState(() {
+                _showFilters = !_showFilters;
+              });
+            },
+          ),
+          if (catId != null)
+            IconButton(
+              icon: const Icon(Icons.clear_all),
+              onPressed: () {
+                setState(() {
+                  catId = null;
+                  selectedCategory = null;
+                });
+                context.read<AllBalancesBloc>().add(ResetAllBalancesEvent());
+              },
+            ),
+          IconButton(
+            icon: const Icon(Icons.print),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: () {
+              context.read<AllBalancesBloc>().add(
+                LoadAllBalancesEvent(catId: catId),
+              );
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Collapsible Filters
+          if (_showFilters)
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: color.surface,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: .05),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: GlSubCategoriesDrop(
+                      title: tr.accountCategory,
+                      mainCategoryId: 0,
+                      onChanged: (e) {
+                        setState(() {
+                          catId = e?.acgId;
+                          selectedCategory = e?.acgName;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 110,
+                    child: ZOutlineButton(
+                      height: 47,
+                      icon: Icons.filter_alt_outlined,
+                      isActive: true,
+                      onPressed: catId != null
+                          ? () {
+                        context.read<AllBalancesBloc>().add(
+                          LoadAllBalancesEvent(catId: catId),
+                        );
+                      } : null,
+                      label: Text(tr.apply),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // Selected Filter Chip (when filters collapsed)
+          if (selectedCategory != null && !_showFilters)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color.primary.withValues(alpha: .1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${tr.accountCategory}: $selectedCategory',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: color.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              catId = null;
+                              selectedCategory = null;
+                            });
+                            context.read<AllBalancesBloc>().add(
+                              ResetAllBalancesEvent(),
+                            );
+                          },
+                          child: Icon(
+                            Icons.close,
+                            size: 14,
+                            color: color.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // Table Header
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: color.primary.withValues(alpha: .9),
+              borderRadius: BorderRadius.circular(3),
+            ),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 100,
+                  child: Text(tr.accountNumber, style: titleStyle),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(tr.accountName, style: titleStyle),
+                ),
+                SizedBox(
+                  width: 80,
+                  child: Text(tr.branchId, style: titleStyle),
+                ),
+                SizedBox(
+                  width: 30,
+                  child: Text('ID', style: titleStyle),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(tr.accountCategory, style: titleStyle),
+                ),
+                SizedBox(
+                  width: 150,
+                  child: Text(tr.balance, style: titleStyle, textAlign: TextAlign.right),
+                ),
+              ],
+            ),
+          ),
+
+          // Data Rows
+          Expanded(
+            child: BlocBuilder<AllBalancesBloc, AllBalancesState>(
+              builder: (context, state) {
+                if (state is AllBalancesInitial) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.account_balance_wallet_outlined,
+                          size: 80,
+                          color: color.outline,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "All Balances",
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "View all accounts balances here",
+                          style: TextStyle(color: color.outline),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                if (state is AllBalancesLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is AllBalancesLoadedState) {
+                  if (state.balances.isEmpty) {
+                    return NoDataWidget(
+                      title: tr.noData,
+                      message: tr.noDataFound,
+                      enableAction: false,
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: state.balances.length,
+                    itemBuilder: (context, index) {
+                      final ab = state.balances[index];
+                      return _buildTabletBalanceRow(ab, index, color);
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabletBalanceRow(dynamic ab, int index, ColorScheme color) {
+    final isEven = index.isEven;
+    final balanceValue = double.tryParse(ab.balance ?? '0') ?? 0;
+    final isPositive = balanceValue >= 0;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: isEven ? color.primary.withValues(alpha: .02) : Colors.transparent,
+        border: index == 0
+            ? null
+            : Border(
+          top: BorderSide(color: color.outline.withValues(alpha: .1)),
+        ),
+      ),
+      child: Row(
+        children: [
+          // Account Number
+          SizedBox(
+            width: 100,
+            child: Text(
+              ab.trdAccount.toString(),
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
+
+          // Account Name
+          Expanded(
+            flex: 2,
+            child: Text(
+              ab.accName ?? "",
+              style: const TextStyle(fontWeight: FontWeight.w500),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+
+          // Branch
+          SizedBox(
+            width: 80,
+            child: Text(
+              ab.trdBranch.toString(),
+              style: TextStyle(color: color.outline),
+            ),
+          ),
+
+          // Category ID
+          SizedBox(
+            width: 30,
+            child: Text(
+              ab.acgId.toString(),
+              style: TextStyle(color: color.outline),
+            ),
+          ),
+
+          // Category Name
+          Expanded(
+            flex: 2,
+            child: Text(
+              ab.acgName ?? "",
+              style: TextStyle(color: color.outline),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+
+          // Balance
+          SizedBox(
+            width: 150,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: Text(
+                    ab.balance ?? "0.00",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: isPositive ? Colors.green : color.error,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  ab.trdCcy ?? "",
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Utils.currencyColors(ab.trdCcy ?? ""),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
 
-class _Mobile extends StatelessWidget {
+class _Mobile extends StatefulWidget {
   const _Mobile();
 
   @override
+  State<_Mobile> createState() => _MobileState();
+}
+
+class _MobileState extends State<_Mobile> {
+  int? catId;
+  String? selectedCategory;
+
+  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final color = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context)!;
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: const Text("All Balances"),
+        actions: [
+          if (catId != null)
+            IconButton(
+              icon: const Icon(Icons.filter_alt_off),
+              onPressed: () {
+                setState(() {
+                  catId = null;
+                  selectedCategory = null;
+                });
+                context.read<AllBalancesBloc>().add(ResetAllBalancesEvent());
+              },
+            ),
+
+        ],
+      ),
+      body: Column(
+        children: [
+          // Category Filter
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: GlSubCategoriesDrop(
+                    title: tr.accountCategory,
+                    mainCategoryId: 0,
+                    onChanged: (e) {
+                      setState(() {
+                        catId = e?.acgId;
+                        selectedCategory = e?.acgName;
+                      });
+                      context.read<AllBalancesBloc>().add(
+                        LoadAllBalancesEvent(catId: catId),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Selected Filter Chip
+          if (selectedCategory != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: color.primary.withValues(alpha: .1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${tr.accountCategory}: $selectedCategory',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: color.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            catId = null;
+                            selectedCategory = null;
+                          });
+                          context.read<AllBalancesBloc>().add(
+                            ResetAllBalancesEvent(),
+                          );
+                        },
+                        child: Icon(
+                          Icons.close,
+                          size: 14,
+                          color: color.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+          const SizedBox(height: 8),
+
+          Expanded(
+            child: BlocBuilder<AllBalancesBloc, AllBalancesState>(
+              builder: (context, state) {
+                if (state is AllBalancesInitial) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.account_balance_wallet_outlined,
+                          size: 64,
+                          color: color.outline,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "All Balances",
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "View all accounts balances here",
+                          style: TextStyle(color: color.outline),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            context.read<AllBalancesBloc>().add(
+                              LoadAllBalancesEvent(catId: catId),
+                            );
+                          },
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Load Data'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                if (state is AllBalancesLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is AllBalancesLoadedState) {
+                  if (state.balances.isEmpty) {
+                    return NoDataWidget(
+                      title: tr.noData,
+                      message: tr.noDataFound,
+                      enableAction: false,
+                    );
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: state.balances.length,
+                    itemBuilder: (context, index) {
+                      final ab = state.balances[index];
+                      return _buildMobileBalanceCard(ab, index, color, tr);
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMobileBalanceCard(dynamic ab, int index, ColorScheme color, AppLocalizations tr) {
+    // Parse balance to double for comparison
+    final balanceValue = double.tryParse(ab.balance ?? '0') ?? 0;
+    final isPositive = balanceValue >= 0;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: color.outline.withValues(alpha: .1)),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: index.isOdd ? color.primary.withValues(alpha: .02) : color.surface,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Account Number and Branch
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color.primary.withValues(alpha: .1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      "${tr.accountNumber}: ${ab.trdAccount}",
+                      style: TextStyle(
+                        color: color.primary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color.secondary.withValues(alpha: .1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      "${tr.branchId}: ${ab.trdBranch}",
+                      style: TextStyle(
+                        color: color.secondary,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Account Name
+              Text(
+                ab.accName ?? "",
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // Category
+              Row(
+                children: [
+                  Icon(
+                    Icons.category,
+                    size: 14,
+                    color: color.outline,
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      ab.acgName ?? "",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: color.outline,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(height: 16),
+
+              // Balance
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    tr.balance,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: color.outline,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isPositive
+                          ? Colors.green.withValues(alpha: .1)
+                          : color.error.withValues(alpha: .1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          ab.balance ?? "0.00",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: isPositive ? Colors.green : color.error,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          ab.trdCcy ?? "",
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Utils.currencyColors(ab.trdCcy ?? ""),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

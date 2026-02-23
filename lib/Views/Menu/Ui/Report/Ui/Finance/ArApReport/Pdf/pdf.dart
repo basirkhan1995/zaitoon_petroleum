@@ -107,12 +107,12 @@ class ArApPdfServices extends PrintServices {
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                text(
+                zText(
                  text: getTranslation(text: 'accountStatement', tr: language).toUpperCase(),
                     fontSize: 14,
                     color: _textSecondary,
                 ),
-                text(
+                zText(
                  text: getTranslation(text: reportType, tr: language),
                     fontSize: 24,
                     fontWeight: pw.FontWeight.bold,
@@ -152,7 +152,7 @@ class ArApPdfServices extends PrintServices {
           ),
           child: pw.Row(
             children: [
-              text(
+              zText(
                text: '${getTranslation(text: 'total', tr: language)}: ',
                 fontSize: 10, color: _textSecondary,
               ),
@@ -172,7 +172,7 @@ class ArApPdfServices extends PrintServices {
           ),
           child: pw.Row(
             children: [
-              text(
+              zText(
               text: '${getTranslation(text: 'active', tr: language)}: ',
                 fontSize: 10, color: _textSecondary,
               ),
@@ -192,11 +192,11 @@ class ArApPdfServices extends PrintServices {
           ),
           child: pw.Row(
             children: [
-              text(
+              zText(
                text: '${getTranslation(text: 'inactive', tr: language)}: ',
                 fontSize: 10, color: _textSecondary,
               ),
-              text(
+              zText(
                text: (total - active).toString(),
                 fontSize: 12, fontWeight: pw.FontWeight.bold, color: pw.PdfColors.grey700,
               ),
@@ -220,7 +220,7 @@ class ArApPdfServices extends PrintServices {
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          text(
+          zText(
            text: getTranslation(text: 'currencyBreakdown', tr: language),
             fontSize: 11, fontWeight: pw.FontWeight.bold, color: _textPrimary,
           ),
@@ -289,10 +289,10 @@ class ArApPdfServices extends PrintServices {
             child: pw.Row(
               children: [
                 pw.Expanded(flex: (colSNo * 10).toInt(), child: pw.Text('#', style: _headerStyle())),
-                pw.Expanded(flex: (colAccount * 10).toInt(), child: text(text: getTranslation(text: 'accounts', tr: language), fontWeight: pw.FontWeight.bold,color: _textPrimary, fontSize: 9)),
-                pw.Expanded(flex: (colSignatory * 10).toInt(), child: text(text: getTranslation(text: 'signatory', tr: language), fontWeight: pw.FontWeight.bold,color: _textPrimary, fontSize: 9)),
-                pw.Expanded(flex: (colBalance * 10).toInt(), child: text(text: getTranslation(text: 'balance', tr: language), textAlign: language == "en"? pw.TextAlign.right : pw.TextAlign.left, fontWeight: pw.FontWeight.bold,color: _textPrimary, fontSize: 9)),
-                pw.Expanded(flex: (colStatus * 10).toInt(), child: text(text: getTranslation(text: 'status', tr: language),textAlign: language == "en"? pw.TextAlign.right : pw.TextAlign.left, fontWeight: pw.FontWeight.bold,color: _textPrimary, fontSize: 9)),
+                pw.Expanded(flex: (colAccount * 10).toInt(), child: zText(text: getTranslation(text: 'accounts', tr: language), fontWeight: pw.FontWeight.bold,color: _textPrimary, fontSize: 9)),
+                pw.Expanded(flex: (colSignatory * 10).toInt(), child: zText(text: getTranslation(text: 'signatory', tr: language), fontWeight: pw.FontWeight.bold,color: _textPrimary, fontSize: 9)),
+                pw.Expanded(flex: (colBalance * 10).toInt(), child: zText(text: getTranslation(text: 'balance', tr: language), textAlign: language == "en"? pw.TextAlign.right : pw.TextAlign.left, fontWeight: pw.FontWeight.bold,color: _textPrimary, fontSize: 9)),
+                pw.Expanded(flex: (colStatus * 10).toInt(), child: zText(text: getTranslation(text: 'status', tr: language),textAlign: language == "en"? pw.TextAlign.right : pw.TextAlign.left, fontWeight: pw.FontWeight.bold,color: _textPrimary, fontSize: 9)),
               ],
             ),
           ),
@@ -324,15 +324,15 @@ class ArApPdfServices extends PrintServices {
                     child: pw.Column(
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
-                        text(
+                        zText(
                          text: accounts[i].accName ?? '-',
                           fontSize: 9, fontWeight: pw.FontWeight.bold,
                         ),
-                        text(
+                        zText(
                           text: accounts[i].accNumber?.toString() ?? '-',
                           fontSize: 7, color: _textSecondary,
                         ),
-                        text(
+                        zText(
                           text: accounts[i].accCurrency?.toString() ?? '-',
                           fontSize: 7, fontWeight: pw.FontWeight.bold, color: _textSecondary,
                         ),
@@ -343,7 +343,7 @@ class ArApPdfServices extends PrintServices {
                   // Signatory
                   pw.Expanded(
                     flex: (colSignatory * 10).toInt(),
-                    child: text(
+                    child: zText(
                      text: accounts[i].fullName ?? '-',
                       fontSize: 9,
                       textAlign: language == "en"? pw.TextAlign.left : pw.TextAlign.right,
@@ -398,7 +398,7 @@ class ArApPdfServices extends PrintServices {
 
     return pw.Container(
       padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      child: text(
+      child: zText(
         text: statusText,
           fontSize: 8,
           fontWeight: pw.FontWeight.bold,

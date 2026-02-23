@@ -153,9 +153,9 @@ class AccountStatementPrintSettings extends PrintServices {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  text(text: report.comName ?? "", fontSize: 25,fontWeight: pw.FontWeight.bold, tightBounds: true),
+                  zText(text: report.comName ?? "", fontSize: 25,fontWeight: pw.FontWeight.bold, tightBounds: true),
                   pw.SizedBox(height: 3),
-                  text(text: report.statementDate ?? "", fontSize: 10),
+                  zText(text: report.statementDate ?? "", fontSize: 10),
                 ],
               ),
             ),
@@ -190,7 +190,7 @@ class AccountStatementPrintSettings extends PrintServices {
               child: pw.Image(logoImage),
             ),
             verticalDivider(height: 15, width: 0.6),
-            text(
+            zText(
               text: getTranslation(text: 'producedBy', tr: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
@@ -202,7 +202,7 @@ class AccountStatementPrintSettings extends PrintServices {
         pw.SizedBox(height: 3),
         pw.Row(
           children: [
-            text(text: report.comAddress ?? "", fontSize: 9),
+            zText(text: report.comAddress ?? "", fontSize: 9),
           ],
         ),
         pw.SizedBox(height: 3),
@@ -212,9 +212,9 @@ class AccountStatementPrintSettings extends PrintServices {
           children: [
             pw.Row(
               children: [
-                text(text: report.compPhone ?? "", fontSize: 9),
+                zText(text: report.compPhone ?? "", fontSize: 9),
                 verticalDivider(height: 10, width: 1),
-                text(text: report.comEmail ?? "", fontSize: 9),
+                zText(text: report.comEmail ?? "", fontSize: 9),
               ],
             ),
             pw.Row(
@@ -284,7 +284,7 @@ class AccountStatementPrintSettings extends PrintServices {
               pw.SizedBox(height: 1),
               pw.Row(
                   children: [
-                    text(
+                    zText(
                         color: pw.PdfColors.grey800,
                         text: "${reportInfo.startDate} to ${reportInfo.endDate}",fontSize: 8)
                   ]
@@ -478,7 +478,7 @@ class AccountStatementPrintSettings extends PrintServices {
             children: [
               pw.SizedBox(
                 width: dateWidth,
-                child: text(
+                child: zText(
                   text: getTranslation(text: "date", tr: language),
                   textAlign:
                   language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
@@ -488,7 +488,7 @@ class AccountStatementPrintSettings extends PrintServices {
               ),
               pw.SizedBox(
                 width: trnWidth,
-                child: text(
+                child: zText(
                   textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
                   text: getTranslation(text: "reference", tr: language),
                   fontSize: 8,
@@ -496,7 +496,7 @@ class AccountStatementPrintSettings extends PrintServices {
                 ),
               ),
               pw.Expanded(child: pw.SizedBox(
-                child: text(
+                child: zText(
                   textAlign:
                   language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
                   text: getTranslation(text: "narration", tr: language),
@@ -507,7 +507,7 @@ class AccountStatementPrintSettings extends PrintServices {
 
               pw.SizedBox(
                 width: amountWidth,
-                child: text(
+                child: zText(
                   textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                   text: getTranslation(text: "debit", tr: language),
                   fontSize: 8,
@@ -516,7 +516,7 @@ class AccountStatementPrintSettings extends PrintServices {
               ),
               pw.SizedBox(
                 width: amountWidth,
-                child: text(
+                child: zText(
                   textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                   text: getTranslation(text: "credit", tr: language),
                   fontSize: 8,
@@ -525,7 +525,7 @@ class AccountStatementPrintSettings extends PrintServices {
               ),
               pw.SizedBox(
                 width: balanceWidth,
-                child: text(
+                child: zText(
                   text:
                   getTranslation(text: "balance", tr: language),
                   fontSize: 8,
@@ -553,7 +553,7 @@ class AccountStatementPrintSettings extends PrintServices {
               children: [
                 pw.SizedBox(
                   width: dateWidth,
-                  child: text(
+                  child: zText(
                     textAlign: language == "en"
                         ? pw.TextAlign.left
                         : pw.TextAlign.right,
@@ -563,7 +563,7 @@ class AccountStatementPrintSettings extends PrintServices {
                 ),
                 pw.SizedBox(
                   width: trnWidth,
-                  child: text(
+                  child: zText(
                     textAlign:
                     language == "en"
                         ? pw.TextAlign.left
@@ -574,7 +574,7 @@ class AccountStatementPrintSettings extends PrintServices {
                 ),
                 pw.Expanded(
                   child:   pw.SizedBox(
-                    child: text(
+                    child: zText(
                       textAlign:
                       language == "en"
                           ? pw.TextAlign.left
@@ -592,7 +592,7 @@ class AccountStatementPrintSettings extends PrintServices {
 
                 pw.SizedBox(
                   width: amountWidth,
-                  child: text(
+                  child: zText(
                     textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                     text: items.records![i].debit?.toAmount()??"",
                     fontSize: 7,
@@ -600,7 +600,7 @@ class AccountStatementPrintSettings extends PrintServices {
                 ),
                 pw.SizedBox(
                   width: amountWidth,
-                  child: text(
+                  child: zText(
                     textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                     text: items.records![i].credit?.toAmount() ??"",
                     fontSize: 7,
@@ -608,7 +608,7 @@ class AccountStatementPrintSettings extends PrintServices {
                 ),
                 pw.SizedBox(
                   width: balanceWidth,
-                  child: text(
+                  child: zText(
                     textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                     fontWeight: pw.FontWeight.bold,
                     text: items.records![i].total?.toAmount() ??"",
@@ -618,7 +618,7 @@ class AccountStatementPrintSettings extends PrintServices {
                 ),
                 pw.SizedBox(
                   width: 10,
-                  child: text(
+                  child: zText(
                     textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                     text: items.records![i].status??"",
                     color: pw.PdfColors.red,

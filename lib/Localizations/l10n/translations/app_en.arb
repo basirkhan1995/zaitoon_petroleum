@@ -859,5 +859,6 @@
   "otpVerified": "OTP verified successfully",
   "share": "Share",
   "printPreview": "Print Preview",
-  "saveTitle": "Save"
+  "saveTitle": "Save",
+  "filterReports": "Filter Reports"
 }

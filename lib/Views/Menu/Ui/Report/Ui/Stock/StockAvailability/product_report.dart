@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
@@ -25,21 +26,1007 @@ class ProductReportView extends StatelessWidget {
   }
 }
 
-class _Mobile extends StatelessWidget {
+class _Mobile extends StatefulWidget {
   const _Mobile();
 
   @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
+  State<_Mobile> createState() => _MobileState();
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
+class _MobileState extends State<_Mobile> {
+  int? storageId;
+  String? baseCcy;
+  String? myLocale;
+  int? productId;
+  int? isNoStock;
+
+  final productController = TextEditingController();
+  final filterProductController = TextEditingController();
+
+  String? _getBaseCurrency() {
+    try {
+      final companyState = context.read<CompanyProfileBloc>().state;
+      if (companyState is CompanyProfileLoadedState) {
+        return companyState.company.comLocalCcy;
+      }
+      return "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    baseCcy = _getBaseCurrency();
+    myLocale = context.read<LocalizationBloc>().state.languageCode;
+    context.read<ProductReportBloc>().add(ResetProductReportEvent());
+  }
+
+  @override
+  void dispose() {
+    productController.dispose();
+    filterProductController.dispose();
+    super.dispose();
+  }
+
+  bool get hasAnyFilter {
+    return isNoStock != null || storageId != null || productId != null;
+  }
+
+  void _clearFilters() {
+    setState(() {
+      isNoStock = null;
+      productId = null;
+      storageId = null;
+      productController.clear();
+      filterProductController.clear();
+    });
+    context.read<ProductReportBloc>().add(ResetProductReportEvent());
+  }
+
+  bool _isOutOfStock(String? quantity) {
+    if (quantity == null || quantity.isEmpty) return true;
+    try {
+      return double.parse(quantity) <= 0;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  void _showFilterBottomSheet() {
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setSheetState) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Filter Reports",
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                const Divider(),
+                const SizedBox(height: 16),
+
+                // Product Selection
+                GenericTextfield<ProductsModel, ProductsBloc, ProductsState>(
+                  title: tr.products,
+                  controller: filterProductController,
+                  hintText: tr.products,
+                  bloc: context.read<ProductsBloc>(),
+                  fetchAllFunction: (bloc) => bloc.add(LoadProductsEvent()),
+                  searchFunction: (bloc, query) => bloc.add(LoadProductsEvent()),
+                  showAllOption: true,
+                  allOption: ProductsModel(
+                    proId: null,
+                    proName: tr.all,
+                    proCode: '',
+                  ),
+                  itemBuilder: (context, product) {
+                    if (product.proId == null) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          tr.all,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(product.proName ?? ''),
+                    );
+                  },
+                  itemToString: (product) => product.proName ?? (product.proId == null ? tr.all : ''),
+                  stateToLoading: (state) => state is ProductsLoadingState,
+                  stateToItems: (state) {
+                    if (state is ProductsLoadedState) return state.products;
+                    return [];
+                  },
+                  onSelected: (product) {
+                    setSheetState(() {
+                      productId = product.proId;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Storage Dropdown
+                StorageDropDown(
+                  height: 45,
+                  title: tr.storage,
+                  selectedId: storageId,
+                  onChanged: (e) {
+                    setSheetState(() {
+                      storageId = e?.stgId;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Status Dropdown
+                StatusDropdown(
+                  height: 45,
+                  items: const [
+                    StatusItem(null, "All"),
+                    StatusItem(1, "Available"),
+                    StatusItem(2, "Out of Stock"),
+                  ],
+                  value: isNoStock,
+                  onChanged: (e) {
+                    setSheetState(() {
+                      isNoStock = e;
+                    });
+                  },
+                ),
+                const SizedBox(height: 24),
+
+                // Apply Button
+                Row(
+                  children: [
+                    if (hasAnyFilter)
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            setSheetState(() {
+                              isNoStock = null;
+                              productId = null;
+                              storageId = null;
+                              filterProductController.clear();
+                            });
+                            setState(() {
+                              productController.clear();
+                            });
+                          },
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: color.error,
+                            side: BorderSide(color: color.error.withValues(alpha: .5)),
+                            minimumSize: const Size(double.infinity, 45),
+                          ),
+                          child: Text(tr.clear),
+                        ),
+                      ),
+                    if (hasAnyFilter) const SizedBox(width: 8),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          setState(() {
+                            if (filterProductController.text.isNotEmpty) {
+                              productController.text = filterProductController.text;
+                            }
+                          });
+                          context.read<ProductReportBloc>().add(LoadProductsReportEvent(
+                            isNoStock: isNoStock,
+                            storageId: storageId,
+                            productId: productId,
+                          ));
+                        },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 45),
+                        ),
+                        child: Text(tr.apply),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      appBar: AppBar(
+        title: Text("${tr.stock} ${tr.report}"),
+        actions: [
+          if (hasAnyFilter)
+            IconButton(
+              icon: const Icon(Icons.filter_alt_off),
+              onPressed: _clearFilters,
+            ),
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: _showFilterBottomSheet,
+          ),
+          IconButton(
+            icon: const Icon(Icons.print),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Selected Filters Chips
+          if (hasAnyFilter)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    if (productController.text.isNotEmpty)
+                      _buildFilterChip(
+                        label: productController.text,
+                        color: color.primary,
+                        onRemove: () {
+                          setState(() {
+                            productId = null;
+                            productController.clear();
+                          });
+                          if (!hasAnyFilter) {
+                            context.read<ProductReportBloc>().add(ResetProductReportEvent());
+                          }
+                        },
+                      ),
+                    if (storageId != null)
+                      _buildFilterChip(
+                        label: "${tr.storage}: $storageId",
+                        color: color.secondary,
+                        onRemove: () {
+                          setState(() {
+                            storageId = null;
+                          });
+                          if (!hasAnyFilter) {
+                            context.read<ProductReportBloc>().add(ResetProductReportEvent());
+                          }
+                        },
+                      ),
+                    if (isNoStock != null)
+                      _buildFilterChip(
+                        label: isNoStock == 1 ? tr.available : tr.outOfStock,
+                        color: isNoStock == 1 ? Colors.green : color.error,
+                        onRemove: () {
+                          setState(() {
+                            isNoStock = null;
+                          });
+                          if (!hasAnyFilter) {
+                            context.read<ProductReportBloc>().add(ResetProductReportEvent());
+                          }
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          Expanded(
+            child: BlocBuilder<ProductReportBloc, ProductReportState>(
+              builder: (context, state) {
+                if (state is ProductReportErrorState) {
+                  return NoDataWidget(
+                    title: tr.accessDenied,
+                    message: state.message,
+                    enableAction: false,
+                  );
+                }
+                if (state is ProductReportInitial) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.inventory_2_outlined,
+                          size: 64,
+                          color: color.outline,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "Inventory Overview",
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Stock Availability Summary",
+                          style: TextStyle(color: color.outline),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          onPressed: _showFilterBottomSheet,
+                          icon: const Icon(Icons.filter_list),
+                          label: Text(tr.apply),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                if (state is ProductReportLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is ProductReportLoadedState) {
+                  if (state.stock.isEmpty) {
+                    return NoDataWidget(
+                      title: tr.noData,
+                      message: tr.noDataFound,
+                      enableAction: false,
+                    );
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: state.stock.length,
+                    itemBuilder: (context, index) {
+                      final stk = state.stock[index];
+                      final isOutOfStock = _isOutOfStock(stk.availableQuantity);
+
+                      return ZCover(
+                        radius: 5,
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Header with ID and Name
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: color.primary.withValues(alpha: .1),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      "#${stk.no}",
+                                      style: TextStyle(
+                                        color: color.primary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  if (isOutOfStock)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: color.error.withValues(alpha: .1),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        tr.outOfStock,
+                                        style: TextStyle(
+                                          color: color.error,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+
+                              // Product Name
+                              Text(
+                                stk.proName ?? "",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+
+                              // Storage
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.inventory,
+                                    size: 14,
+                                    color: color.outline,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    stk.stgName ?? "",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: color.outline,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Divider(height: 16),
+
+                              // Details Row
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // Unit Price
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          tr.unitPrice,
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: color.outline,
+                                          ),
+                                        ),
+                                        Text(
+                                          "${stk.pricePerUnit.toAmount()} $baseCcy",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  // Quantity
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          tr.qty,
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: color.outline,
+                                          ),
+                                        ),
+                                        Text(
+                                          stk.availableQuantity?.isEmpty == true ? "0" : stk.availableQuantity!,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                            color: isOutOfStock ? color.error : Colors.green,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  // Total
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          tr.totalTitle,
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: color.outline,
+                                          ),
+                                        ),
+                                        Text(
+                                          "${stk.total.toAmount(decimal: 2)} $baseCcy",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                            color: color.primary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    required Color color,
+    required VoidCallback onRemove,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: .1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: .3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 4),
+          InkWell(
+            onTap: onRemove,
+            child: Icon(
+              Icons.close,
+              size: 14,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Tablet extends StatefulWidget {
+  const _Tablet();
+
+  @override
+  State<_Tablet> createState() => _TabletState();
+}
+
+class _TabletState extends State<_Tablet> {
+  int? storageId;
+  String? baseCcy;
+  String? myLocale;
+  int? productId;
+  int? isNoStock;
+  bool _showFilters = true;
+
+  final productController = TextEditingController();
+
+  String? _getBaseCurrency() {
+    try {
+      final companyState = context.read<CompanyProfileBloc>().state;
+      if (companyState is CompanyProfileLoadedState) {
+        return companyState.company.comLocalCcy;
+      }
+      return "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    baseCcy = _getBaseCurrency();
+    myLocale = context.read<LocalizationBloc>().state.languageCode;
+    context.read<ProductReportBloc>().add(ResetProductReportEvent());
+  }
+
+  @override
+  void dispose() {
+    productController.dispose();
+    super.dispose();
+  }
+
+  bool get hasAnyFilter {
+    return isNoStock != null || storageId != null || productId != null;
+  }
+
+  void _clearFilters() {
+    setState(() {
+      isNoStock = null;
+      productId = null;
+      storageId = null;
+      productController.clear();
+    });
+    context.read<ProductReportBloc>().add(ResetProductReportEvent());
+  }
+
+  bool _isOutOfStock(String? quantity) {
+    if (quantity == null || quantity.isEmpty) return true;
+    try {
+      return double.parse(quantity) <= 0;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      appBar: AppBar(
+        title: Text("${tr.stock} ${tr.report}"),
+        titleSpacing: 0,
+        actions: [
+          IconButton(
+            icon: Icon(_showFilters ? Icons.filter_alt_off : Icons.filter_alt),
+            onPressed: () {
+              setState(() {
+                _showFilters = !_showFilters;
+              });
+            },
+          ),
+          if (hasAnyFilter)
+            IconButton(
+              icon: const Icon(Icons.clear_all),
+              onPressed: _clearFilters,
+            ),
+          IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: () {
+              context.read<ProductReportBloc>().add(LoadProductsReportEvent(
+                isNoStock: isNoStock,
+                storageId: storageId,
+                productId: productId,
+              ));
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Collapsible Filters
+          if (_showFilters)
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: color.surface,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: .05),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  // Product
+                  SizedBox(
+                    width: 300,
+                    child: GenericTextfield<ProductsModel, ProductsBloc, ProductsState>(
+                      title: tr.products,
+                      controller: productController,
+                      hintText: tr.products,
+                      bloc: context.read<ProductsBloc>(),
+                      fetchAllFunction: (bloc) => bloc.add(LoadProductsEvent()),
+                      searchFunction: (bloc, query) => bloc.add(LoadProductsEvent()),
+                      showAllOption: true,
+                      allOption: ProductsModel(
+                        proId: null,
+                        proName: tr.all,
+                        proCode: '',
+                      ),
+                      itemBuilder: (context, product) {
+                        if (product.proId == null) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              tr.all,
+                              style: TextStyle(
+                                color: color.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          );
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(product.proName ?? ''),
+                        );
+                      },
+                      itemToString: (product) => product.proName ?? (product.proId == null ? tr.all : ''),
+                      stateToLoading: (state) => state is ProductsLoadingState,
+                      stateToItems: (state) {
+                        if (state is ProductsLoadedState) return state.products;
+                        return [];
+                      },
+                      onSelected: (product) {
+                        setState(() {
+                          productId = product.proId;
+                        });
+                      },
+                    ),
+                  ),
+                  // Storage
+                  SizedBox(
+                    width: 200,
+                    child: StorageDropDown(
+                      height: 45,
+                      title: tr.storage,
+                      selectedId: storageId,
+                      onChanged: (e) {
+                        setState(() {
+                          storageId = e?.stgId;
+                        });
+                      },
+                    ),
+                  ),
+                  // Status
+                  SizedBox(
+                    width: 200,
+                    child: StatusDropdown(
+                      height: 45,
+                      items: const [
+                        StatusItem(null, "All"),
+                        StatusItem(1, "Available"),
+                        StatusItem(2, "Out of Stock"),
+                      ],
+                      value: isNoStock,
+                      onChanged: (e) {
+                        setState(() {
+                          isNoStock = e;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          Expanded(
+            child: BlocBuilder<ProductReportBloc, ProductReportState>(
+              builder: (context, state) {
+                if (state is ProductReportErrorState) {
+                  return NoDataWidget(
+                    title: tr.accessDenied,
+                    message: state.message,
+                    enableAction: false,
+                  );
+                }
+                if (state is ProductReportInitial) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.inventory_2_outlined,
+                          size: 80,
+                          color: color.outline,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "Inventory Overview",
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Stock Availability Summary",
+                          style: TextStyle(color: color.outline),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                if (state is ProductReportLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is ProductReportLoadedState) {
+                  if (state.stock.isEmpty) {
+                    return NoDataWidget(
+                      title: tr.noData,
+                      message: tr.noDataFound,
+                      enableAction: false,
+                    );
+                  }
+
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(12),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.6,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                    ),
+                    itemCount: state.stock.length,
+                    itemBuilder: (context, index) {
+                      final stk = state.stock[index];
+                      final isOutOfStock = _isOutOfStock(stk.availableQuantity);
+
+                      return Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // ID and Status
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "#${stk.no}",
+                                    style: TextStyle(
+                                      color: color.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  if (isOutOfStock)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: color.error.withValues(alpha: .1),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        tr.outOfStock,
+                                        style: TextStyle(
+                                          color: color.error,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+
+                              // Product Name
+                              Text(
+                                stk.proName ?? "",
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+
+                              // Storage
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.inventory,
+                                    size: 12,
+                                    color: color.outline,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      stk.stgName ?? "",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: color.outline,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Divider(height: 16),
+
+                              // Details
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // Price
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Price",
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: color.outline,
+                                        ),
+                                      ),
+                                      Text(
+                                        stk.pricePerUnit.toAmount(),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  // Qty
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        tr.qty,
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: color.outline,
+                                        ),
+                                      ),
+                                      Text(
+                                        stk.availableQuantity?.isEmpty == true ? "0" : stk.availableQuantity!,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                          color: isOutOfStock ? color.error : Colors.green,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  // Total
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        tr.totalTitle,
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: color.outline,
+                                        ),
+                                      ),
+                                      Text(
+                                        stk.total.toAmount(),
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                          color: color.primary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

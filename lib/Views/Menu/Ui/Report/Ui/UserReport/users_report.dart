@@ -5,6 +5,7 @@ import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/branch_dropdown.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/role_dropdown.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/model/usr_report_model.dart';
 import '../../../../../../../Features/Widgets/no_data_widget.dart';
 import '../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../../../Localizations/l10n/translations/app_localizations.dart';
@@ -24,21 +25,1013 @@ class UsersReportView extends StatelessWidget {
   }
 }
 
-class _Mobile extends StatelessWidget {
+class _Mobile extends StatefulWidget {
   const _Mobile();
 
   @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
+  State<_Mobile> createState() => _MobileState();
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
+class _MobileState extends State<_Mobile> {
+  String? role;
+  int? branchId;
+  int? status;
+
+  final _filterRoleController = TextEditingController();
+  final _filterBranchController = TextEditingController();
+
+  bool get isFilterActive => role != null || branchId != null || status != null;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<UsersBloc>().add(ResetUserEvent());
+  }
+
+  @override
+  void dispose() {
+    _filterRoleController.dispose();
+    _filterBranchController.dispose();
+    super.dispose();
+  }
+
+  void onApply() {
+    context.read<UsersBloc>().add(
+      LoadUsersReportEvent(
+        status: status,
+        role: role,
+        branchId: branchId,
+      ),
+    );
+  }
+
+  void onClearFilters() {
+    setState(() {
+      role = null;
+      branchId = null;
+      status = null;
+      _filterRoleController.clear();
+      _filterBranchController.clear();
+    });
+    context.read<UsersBloc>().add(ResetUserEvent());
+  }
+
+  void _showFilterBottomSheet() {
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setSheetState) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      tr.filterReports,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                const Divider(),
+                const SizedBox(height: 16),
+
+                // Role Dropdown
+                UserRoleDropdown(
+                  showAllOption: true,
+                  onRoleSelected: (e) {
+                    setSheetState(() {
+                      role = e?.name;
+                    });
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // Branch Dropdown
+                BranchDropdown(
+                  showAllOption: true,
+                  onBranchSelected: (e) {
+                    setSheetState(() {
+                      branchId = e?.brcId;
+                    });
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // Status Dropdown
+                StatusDropdown(
+                  value: status,
+                  onChanged: (v) {
+                    setSheetState(() => status = v);
+                  },
+                ),
+                const SizedBox(height: 24),
+
+                // Apply Button
+                Row(
+                  children: [
+                    if (isFilterActive)
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            setSheetState(() {
+                              role = null;
+                              branchId = null;
+                              status = null;
+                              _filterRoleController.clear();
+                              _filterBranchController.clear();
+                            });
+                            setState(() {});
+                          },
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: color.error,
+                            side: BorderSide(color: color.error.withValues(alpha: .5)),
+                            minimumSize: const Size(double.infinity, 45),
+                          ),
+                          child: Text(tr.clear),
+                        ),
+                      ),
+                    if (isFilterActive) const SizedBox(width: 8),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          onApply();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 45),
+                        ),
+                        child: Text(tr.apply),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: Text("${tr.users} ${tr.report}"),
+        actionsPadding: EdgeInsets.all(5),
+        actions: [
+          if (isFilterActive)
+            IconButton(
+              icon: const Icon(Icons.filter_alt_off),
+              onPressed: onClearFilters,
+            ),
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: _showFilterBottomSheet,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Selected Filters Chips
+          if (isFilterActive)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    if (role != null)
+                      _buildFilterChip(
+                        label: "${tr.usrRole}: $role",
+                        color: color.primary,
+                        onRemove: () {
+                          setState(() {
+                            role = null;
+                          });
+                          if (!isFilterActive) {
+                            context.read<UsersBloc>().add(ResetUserEvent());
+                          }
+                        },
+                      ),
+                    if (branchId != null)
+                      _buildFilterChip(
+                        label: "${tr.branch}: $branchId",
+                        color: color.secondary,
+                        onRemove: () {
+                          setState(() {
+                            branchId = null;
+                          });
+                          if (!isFilterActive) {
+                            context.read<UsersBloc>().add(ResetUserEvent());
+                          }
+                        },
+                      ),
+                    if (status != null)
+                      _buildFilterChip(
+                        label: "${tr.status}: ${status == 1 ? tr.active : tr.inactive}",
+                        color: status == 1 ? Colors.green : color.error,
+                        onRemove: () {
+                          setState(() {
+                            status = null;
+                          });
+                          if (!isFilterActive) {
+                            context.read<UsersBloc>().add(ResetUserEvent());
+                          }
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          Expanded(
+            child: BlocBuilder<UsersBloc, UsersState>(
+              builder: (context, state) {
+                if (state is UsersLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (state is UsersInitial) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.people_outline,
+                          size: 64,
+                          color: color.outline,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "${tr.users} ${tr.report}",
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          tr.usersHintReport,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: color.outline),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          onPressed: _showFilterBottomSheet,
+                          icon: const Icon(Icons.filter_list),
+                          label: Text(tr.apply),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                if (state is UsersErrorState) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: color.error,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            state.message,
+                            style: TextStyle(color: color.error),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton.icon(
+                            onPressed: onApply,
+                            icon: const Icon(Icons.refresh),
+                            label: Text(tr.retry),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                if (state is UsersReportLoadedState) {
+                  if (state.users.isEmpty) {
+                    return NoDataWidget(
+                      title: tr.noData,
+                      message: tr.noDataFound,
+                      enableAction: false,
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: state.users.length,
+                    itemBuilder: (context, index) {
+                      final usr = state.users[index];
+                      return _buildMobileUserCard(usr, index, color, tr);
+                    },
+                  );
+                }
+
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    required Color color,
+    required VoidCallback onRemove,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: .1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: .3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 4),
+          InkWell(
+            onTap: onRemove,
+            child: Icon(
+              Icons.close,
+              size: 12,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMobileUserCard(UsersReportModel usr, int index, ColorScheme color, AppLocalizations tr) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: color.outline.withValues(alpha: .1)),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: index.isOdd ? color.primary.withValues(alpha: .02) : color.surface,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header Row - Date and Status
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color.primary.withValues(alpha: .1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      usr.createDate.toFormattedDate(),
+                      style: TextStyle(
+                        color: color.primary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: usr.status?.toLowerCase() == 'active'
+                          ? Colors.green.withValues(alpha: .1)
+                          : color.error.withValues(alpha: .1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      usr.status ?? "",
+                      style: TextStyle(
+                        color: usr.status?.toLowerCase() == 'active'
+                            ? Colors.green
+                            : color.error,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Username and Email
+              Text(
+                usr.username ?? "",
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                usr.email ?? "",
+                style: TextStyle(
+                  fontSize: 13,
+                  color: color.outline,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // Full Name
+              Row(
+                children: [
+                  Icon(
+                    Icons.person,
+                    size: 14,
+                    color: color.outline,
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      usr.fullName ?? "",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+
+              // Role and Branch
+              Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.work,
+                          size: 14,
+                          color: color.outline,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            usr.role ?? "",
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: color.outline,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Icon(
+                          Icons.business,
+                          size: 14,
+                          color: color.outline,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            usr.branch.toString(),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: color.outline,
+                            ),
+                            textAlign: TextAlign.right,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(height: 16),
+
+              // ALF, FCP, Verification
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildInfoChip('alf', usr.alf?.toString() ?? "0", Colors.blue, color),
+                  _buildInfoChip(tr.fcp, usr.fcp ?? "-", Colors.purple, color),
+                  _buildInfoChip(tr.verified, usr.verification ?? "-", Colors.orange, color),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoChip(String label, String value, Color chipColor, ColorScheme color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: chipColor.withValues(alpha: .1),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Column(
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 9,
+              color: chipColor,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: chipColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Tablet extends StatefulWidget {
+  const _Tablet();
+
+  @override
+  State<_Tablet> createState() => _TabletState();
+}
+
+class _TabletState extends State<_Tablet> {
+  String? role;
+  int? branchId;
+  int? status;
+  bool _showFilters = true;
+
+  bool get isFilterActive => role != null || branchId != null || status != null;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<UsersBloc>().add(ResetUserEvent());
+  }
+
+  void onApply() {
+    context.read<UsersBloc>().add(
+      LoadUsersReportEvent(
+        status: status,
+        role: role,
+        branchId: branchId,
+      ),
+    );
+  }
+
+  void onClearFilters() {
+    setState(() {
+      role = null;
+      branchId = null;
+      status = null;
+    });
+    context.read<UsersBloc>().add(ResetUserEvent());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+    final titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+      color: color.surface,
+      fontWeight: FontWeight.w500,
+    );
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: Text("${tr.users} ${tr.report}"),
+        actionsPadding: EdgeInsets.symmetric(horizontal: 8),
+        actions: [
+          IconButton(
+            icon: Icon(_showFilters ? Icons.filter_alt_off : Icons.filter_alt),
+            onPressed: () {
+              setState(() {
+                _showFilters = !_showFilters;
+              });
+            },
+          ),
+          if (isFilterActive)
+            IconButton(
+              icon: const Icon(Icons.clear_all),
+              onPressed: onClearFilters,
+            ),
+          IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: onApply,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Collapsible Filters
+          if (_showFilters)
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: color.surface,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: .05),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  // Role
+                  SizedBox(
+                    width: 200,
+                    child: UserRoleDropdown(
+                      showAllOption: true,
+                      onRoleSelected: (e) {
+                        setState(() => role = e?.name);
+                      },
+                    ),
+                  ),
+                  // Branch
+                  SizedBox(
+                    width: 200,
+                    child: BranchDropdown(
+                      showAllOption: true,
+                      onBranchSelected: (e) {
+                        setState(() => branchId = e?.brcId);
+                      },
+                    ),
+                  ),
+                  // Status
+                  SizedBox(
+                    width: 150,
+                    child: StatusDropdown(
+                      value: status,
+                      onChanged: (v) {
+                        setState(() => status = v);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // Table Header
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: color.primary.withValues(alpha: .9),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                SizedBox(width: 100, child: Text(tr.date, style: titleStyle)),
+                Expanded(child: Text(tr.username, style: titleStyle)),
+                SizedBox(width: 150, child: Text(tr.userOwner, style: titleStyle)),
+                SizedBox(width: 100, child: Text(tr.usrRole, style: titleStyle)),
+                SizedBox(width: 70, child: Text(tr.branch, style: titleStyle)),
+                SizedBox(width: 60, child: Text("ALF", style: titleStyle)),
+                SizedBox(width: 60, child: Text(tr.fcp, style: titleStyle)),
+                SizedBox(width: 70, child: Text(tr.verified, style: titleStyle)),
+                SizedBox(width: 70, child: Text(tr.status, style: titleStyle)),
+              ],
+            ),
+          ),
+
+          // Data Rows
+          Expanded(
+            child: BlocBuilder<UsersBloc, UsersState>(
+              builder: (context, state) {
+                if (state is UsersLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (state is UsersInitial) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.people_outline,
+                          size: 80,
+                          color: color.outline,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "${tr.users} ${tr.report}",
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          tr.usersHintReport,
+                          style: TextStyle(color: color.outline),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                if (state is UsersErrorState) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: color.error,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          state.message,
+                          style: TextStyle(color: color.error),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          onPressed: onApply,
+                          icon: const Icon(Icons.refresh),
+                          label: Text(tr.retry),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                if (state is UsersReportLoadedState) {
+                  if (state.users.isEmpty) {
+                    return NoDataWidget(
+                      title: tr.noData,
+                      message: tr.noDataFound,
+                      enableAction: false,
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: state.users.length,
+                    itemBuilder: (context, index) {
+                      final usr = state.users[index];
+                      final isEven = index.isEven;
+
+                      return Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: isEven ? color.primary.withValues(alpha: .02) : Colors.transparent,
+                          border: index == 0
+                              ? null
+                              : Border(
+                            top: BorderSide(color: color.outline.withValues(alpha: .1)),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            // Date
+                            SizedBox(
+                              width: 100,
+                              child: Text(
+                                usr.createDate.toFormattedDate(),
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ),
+
+                            // User Information
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    usr.username ?? "",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  Text(
+                                    usr.email ?? "",
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: color.outline,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Full Name
+                            SizedBox(
+                              width: 150,
+                              child: Text(
+                                usr.fullName ?? "",
+                                style: const TextStyle(fontSize: 13),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+
+                            // Role
+                            SizedBox(
+                              width: 100,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: color.secondary.withValues(alpha: .1),
+                                  borderRadius: BorderRadius.circular(3),
+                                ),
+                                child: Text(
+                                  usr.role ?? "",
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: color.secondary,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+
+                            // Branch
+                            SizedBox(
+                              width: 70,
+                              child: Text(
+                                usr.branch.toString(),
+                                style: const TextStyle(fontSize: 12),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+
+                            // ALF
+                            SizedBox(
+                              width: 60,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.withValues(alpha: .1),
+                                  borderRadius: BorderRadius.circular(3),
+                                ),
+                                child: Text(
+                                  usr.alf?.toString() ?? "0",
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+
+                            // FCP
+                            SizedBox(
+                              width: 60,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.purple.withValues(alpha: .1),
+                                  borderRadius: BorderRadius.circular(3),
+                                ),
+                                child: Text(
+                                  usr.fcp ?? "-",
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.purple,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+
+                            // Verification
+                            SizedBox(
+                              width: 70,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange.withValues(alpha: .1),
+                                  borderRadius: BorderRadius.circular(3),
+                                ),
+                                child: Text(
+                                  usr.verification ?? "-",
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.orange,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+
+                            // Status
+                            SizedBox(
+                              width: 70,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: usr.status?.toLowerCase() == 'active'
+                                      ? Colors.green.withValues(alpha: .1)
+                                      : color.error.withValues(alpha: .1),
+                                  borderRadius: BorderRadius.circular(3),
+                                ),
+                                child: Text(
+                                  usr.status ?? "",
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: usr.status?.toLowerCase() == 'active'
+                                        ? Colors.green
+                                        : color.error,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                }
+
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

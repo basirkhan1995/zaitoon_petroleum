@@ -127,7 +127,7 @@ class BalanceSheetPrintSettings extends PrintServices {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        text(
+        zText(
           text: getTranslation(text: 'balanceSheet', tr: language),
           fontSize: 24,
           tightBounds: true,
@@ -137,7 +137,7 @@ class BalanceSheetPrintSettings extends PrintServices {
         pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           children: [
-            text(
+            zText(
               text: company.statementDate ?? '',
               fontSize: 9,
               color: pw.PdfColors.grey600,
@@ -178,7 +178,7 @@ class BalanceSheetPrintSettings extends PrintServices {
             pw.Expanded(flex: 4, child: pw.SizedBox()),
             pw.Expanded(
               flex: 3,
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'currentYear', tr: language),
                 fontSize: 8,
                 textAlign: pw.TextAlign.right,
@@ -187,7 +187,7 @@ class BalanceSheetPrintSettings extends PrintServices {
             ),
             pw.Expanded(
               flex: 3,
-              child: text(
+              child: zText(
                 text: getTranslation(text: 'lastYear', tr: language),
                 fontSize: 8,
                 textAlign: pw.TextAlign.right,
@@ -202,7 +202,7 @@ class BalanceSheetPrintSettings extends PrintServices {
             pw.Expanded(flex: 4, child: pw.SizedBox()),
             pw.Expanded(
               flex: 3,
-              child: text(
+              child: zText(
                 text: currentYear.toString(),
                 fontSize: 10,
                 fontWeight: pw.FontWeight.bold,
@@ -211,7 +211,7 @@ class BalanceSheetPrintSettings extends PrintServices {
             ),
             pw.Expanded(
               flex: 3,
-              child: text(
+              child: zText(
                 text: lastYear.toString(),
                 fontSize: 10,
                 fontWeight: pw.FontWeight.bold,
@@ -321,7 +321,7 @@ class BalanceSheetPrintSettings extends PrintServices {
     }).toList();
 
     return [
-      text(
+      zText(
         text: title,
         fontSize: 9,
         fontWeight: pw.FontWeight.bold,
@@ -344,7 +344,7 @@ class BalanceSheetPrintSettings extends PrintServices {
         children: [
           pw.Expanded(
             flex: 4,
-            child: text(text: name, fontSize: 8),
+            child: zText(text: name, fontSize: 8),
           ),
           pw.Expanded(
             flex: 3,
@@ -378,7 +378,7 @@ class BalanceSheetPrintSettings extends PrintServices {
         children: [
           pw.Expanded(
             flex: 4,
-            child: text(
+            child: zText(
               text: label,
               fontSize: 9,
               fontWeight: pw.FontWeight.bold,

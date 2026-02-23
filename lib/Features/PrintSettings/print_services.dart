@@ -105,7 +105,7 @@ abstract class PrintServices {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  text(
+                  zText(
                       text: report.comName ?? "",
                       fontSize: 25,
                       tightBounds: true,
@@ -113,13 +113,13 @@ abstract class PrintServices {
                   ),
                   pw.SizedBox(height: 5),
                   if (report.comAddress != null && report.comAddress!.isNotEmpty)
-                    text(
+                    zText(
                       text: report.comAddress ?? "",
                       fontSize: 10,
                       color: pw.PdfColors.grey600,
                     ),
                   if (report.compPhone != null && report.compPhone!.isNotEmpty)
-                    text(
+                    zText(
                       text: report.compPhone ?? "",
                       fontSize: 9,
                       color: pw.PdfColors.grey600,
@@ -158,7 +158,7 @@ abstract class PrintServices {
               child: pw.Image(logoImage),
             ),
             verticalDivider(height: 15, width: 0.6),
-            text(
+            zText(
               text: getTranslation(text: 'producedBy', tr: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
@@ -170,7 +170,7 @@ abstract class PrintServices {
         pw.SizedBox(height: 3),
         pw.Row(
           children: [
-            text(text: "${report.compPhone ?? ""} | ${report.comEmail ?? ""}", fontSize: 9),
+            zText(text: "${report.compPhone ?? ""} | ${report.comEmail ?? ""}", fontSize: 9),
           ]
         ),
         pw.SizedBox(height: 3),
@@ -178,7 +178,7 @@ abstract class PrintServices {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           children: [
-            text(text: report.comAddress ?? "", fontSize: 9),
+            zText(text: report.comAddress ?? "", fontSize: 9),
             buildPage(context.pageNumber, context.pagesCount, language),
           ],
         ),
@@ -221,7 +221,7 @@ abstract class PrintServices {
   }
 
   // Common widgets
-  pw.Widget text({
+  pw.Widget zText({
     required String text,
     double? fontSize,
     pw.FontWeight? fontWeight,
@@ -245,26 +245,13 @@ abstract class PrintServices {
     );
   }
 
-  Future<pw.ImageProvider?> getImage() async {
-    const url = 'https://picsum.photos/500/300.jpg';
-    if (url.isEmpty) return null;
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return pw.MemoryImage(response.bodyBytes);
-      } else {
-        return null;
-      }
-    } catch (e) {
-      return null;
-    }
-  }
+
 
   pw.Widget buildPage(int currentPage, int totalPages, String language) {
     return pw.Container(
       alignment: pw.Alignment.centerRight,
       margin: const pw.EdgeInsets.only(top: 1),
-      child: text(
+      child: zText(
         text: '${getTranslation(text: 'page', tr: language)} $currentPage ${getTranslation(text: 'of', tr: language)} $totalPages',
         fontSize: 8,
       ),
@@ -347,14 +334,14 @@ abstract class PrintServices {
         children: [
           pw.SizedBox(
             width: distance,
-            child: text(
+            child: zText(
               color: color,
               text: label,
               fontWeight: isEmphasized ? pw.FontWeight.bold : pw.FontWeight.normal,
               fontSize: fontSize ?? 8,
             ),
           ),
-          text(
+          zText(
             text: value,
             fontSize: fontSize ?? 8,
             fontWeight: isEmphasized ? pw.FontWeight.bold : pw.FontWeight.normal,
@@ -400,7 +387,7 @@ abstract class PrintServices {
         children: [
           pw.SizedBox(
             width: width ?? 100,
-            child: text(
+            child: zText(
               color: color,
               text: label,
               fontWeight: isEmphasized ? pw.FontWeight.bold : pw.FontWeight.normal,
@@ -420,7 +407,7 @@ abstract class PrintServices {
                 textAlign: align ?? pw.TextAlign.center,
               ),
               if (ccySymbol != null) pw.SizedBox(width: 3),
-              text(
+              zText(
                 text: ccySymbol ?? "",
                 tightBounds: true,
                 fontSize: 8,
