@@ -461,7 +461,7 @@ class _DesktopState extends State<_Desktop> {
     final bloc = context.read<ProjectServicesBloc>();
 
     final data = ProjectServicesModel(
-      pjdId: editingPjdId, // This is crucial for update
+      pjdId: editingPjdId,
       prjId: widget.projectId,
       srvId: serviceId,
       srvName: servicesController.text,
