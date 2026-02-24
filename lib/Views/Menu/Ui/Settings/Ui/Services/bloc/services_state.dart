@@ -8,26 +8,26 @@ final class ServicesInitial extends ServicesState {
   @override
   List<Object> get props => [];
 }
-final class ProjectServicesLoadingState extends ServicesState {
+final class ServicesLoadingState extends ServicesState {
   @override
   List<Object> get props => [];
 }
 
-final class ProjectServicesSuccessState extends ServicesState {
+final class ServicesSuccessState extends ServicesState {
   @override
   List<Object> get props => [];
 }
 
-final class ProjectServicesErrorState extends ServicesState {
+final class ServicesErrorState extends ServicesState {
   final String message;
-  const ProjectServicesErrorState(this.message);
+  const ServicesErrorState(this.message);
   @override
   List<Object> get props => [message];
 }
 
-final class ProjectServicesLoadedState extends ServicesState {
+final class ServicesLoadedState extends ServicesState {
   final List<ServicesModel> services;
-  const ProjectServicesLoadedState(this.services);
+  const ServicesLoadedState(this.services);
   @override
   List<Object> get props => [services];
 }

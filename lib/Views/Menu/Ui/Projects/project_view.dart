@@ -10,6 +10,7 @@ class ProjectView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ZFormDialog(
+        icon: Icons.folder,
         width: MediaQuery.of(context).size.width *.5,
         onAction: null,
         isActionTrue: false,

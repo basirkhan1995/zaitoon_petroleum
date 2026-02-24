@@ -18,6 +18,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/model/fetch
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchTRPT/model/trtp_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/txn_ref_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/ProjectServices/model/project_services_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TxnReport/model/txn_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/model/stmt_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/model/gl_statement_model.dart';
@@ -3364,17 +3365,69 @@ class Repositories {
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> deleteService({required int servicesId}) async {
+  Future<Map<String, dynamic>> deleteService({required int servicesId, required String usrName}) async {
     final response = await api.delete(
       endpoint: "/project/projectServices.php",
       data: {
-        "srvID": servicesId
+        "srvID": servicesId,
+        "usrName": usrName
       },
     );
     return response.data;
   }
 
   ///Project Details ...........................................................
+  Future<List<ProjectServicesModel>> getProjectServices({int? projectId}) async {
+    final response = await api.get(
+      endpoint: "/project/projectDetails.php",
+      queryParams: {"prjID": projectId},
+    );
 
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      // If no records found, return empty list
+      if (response.data['msg'] == 'failed') {
+        return [];
+      }
+      throw Exception(response.data['msg']);
+    }
+
+    // Parse as list
+    if (response.data is List) {
+      return List<ProjectServicesModel>.from(
+        response.data.map((x) => ProjectServicesModel.fromMap(x)),
+      );
+    }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic> && response.data.isNotEmpty) {
+      return [ProjectServicesModel.fromMap(response.data)];
+    }
+
+    return [];
+  }
+  Future<Map<String, dynamic>> addProjectServices({required ProjectServicesModel newData}) async {
+    final response = await api.post(
+      endpoint: "/project/projectDetails.php",
+      data: newData.toMap(),
+    );
+    return response.data;
+  }
+  Future<Map<String, dynamic>> updateProjectServices({required ProjectServicesModel newData}) async {
+    final response = await api.put(
+      endpoint: "/project/projectDetails.php",
+      data: newData.toMap(),
+    );
+    return response.data;
+  }
+  Future<Map<String, dynamic>> deleteProjectServices({required int pjdID, required String usrName}) async {
+    final response = await api.delete(
+      endpoint: "/project/projectDetails.php",
+      data: {
+        "pjdID": pjdID,
+        "usrName": usrName
+      },
+    );
+    return response.data;
+  }
 
 }

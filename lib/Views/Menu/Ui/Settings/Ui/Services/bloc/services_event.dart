@@ -3,30 +3,30 @@ part of 'services_bloc.dart';
 sealed class ServicesEvent extends Equatable {
   const ServicesEvent();
 }
-class AddProjectServicesEvent extends ServicesEvent {
+class AddServicesEvent extends ServicesEvent {
   final ServicesModel newData;
-  const AddProjectServicesEvent(this.newData);
+  const AddServicesEvent(this.newData);
   @override
   List<Object?> get props => [newData];
 }
 
-class UpdateProjectServicesEvent extends ServicesEvent {
+class UpdateServicesEvent extends ServicesEvent {
   final ServicesModel newData;
-  const UpdateProjectServicesEvent(this.newData);
+  const UpdateServicesEvent(this.newData);
   @override
   List<Object?> get props => [newData];
 }
 
-class DeleteProjectServicesEvent extends ServicesEvent {
+class DeleteServicesEvent extends ServicesEvent {
   final int pjrId;
   final String usrName;
-  const DeleteProjectServicesEvent(this.pjrId,this.usrName);
+  const DeleteServicesEvent(this.pjrId,this.usrName);
   @override
   List<Object?> get props => [pjrId,usrName];
 }
 
-class LoadProjectServicesEvent extends ServicesEvent {
-  const LoadProjectServicesEvent();
+class LoadServicesEvent extends ServicesEvent {
+  const LoadServicesEvent();
   @override
   List<Object?> get props => [];
 }

@@ -45,7 +45,7 @@ class _BaseServicesViewState extends State<_BaseServicesView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        context.read<ServicesBloc>().add(LoadProjectServicesEvent());
+        context.read<ServicesBloc>().add(LoadServicesEvent());
       }
     });
   }
@@ -57,7 +57,7 @@ class _BaseServicesViewState extends State<_BaseServicesView> {
   }
 
   void onRefresh() {
-    context.read<ServicesBloc>().add(LoadProjectServicesEvent());
+    context.read<ServicesBloc>().add(LoadServicesEvent());
   }
 
   // Build header for different screen sizes
@@ -471,21 +471,21 @@ class _BaseServicesViewState extends State<_BaseServicesView> {
           Expanded(
             child: BlocConsumer<ServicesBloc, ServicesState>(
               listener: (context, state) {
-                if (state is ProjectServicesSuccessState) {
+                if (state is ServicesSuccessState) {
                   Navigator.of(context).pop();
                 }
               },
               builder: (context, state) {
-                if (state is ProjectServicesLoadingState) {
+                if (state is ServicesLoadingState) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                if (state is ProjectServicesErrorState) {
+                if (state is ServicesErrorState) {
                   return NoDataWidget(
                     message: state.message,
                     onRefresh: onRefresh,
                   );
                 }
-                if (state is ProjectServicesLoadedState) {
+                if (state is ServicesLoadedState) {
                   final query = searchController.text.toLowerCase().trim();
 
                   final filteredList = state.services.where((item) {

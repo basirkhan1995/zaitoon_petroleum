@@ -10,58 +10,58 @@ class ServicesBloc extends Bloc<ServicesEvent, ServicesState> {
   final Repositories _repo;
   ServicesBloc(this._repo) : super(ServicesInitial()) {
 
-    on<LoadProjectServicesEvent>((event, emit)async {
-      emit(ProjectServicesLoadingState());
+    on<LoadServicesEvent>((event, emit)async {
+      emit(ServicesLoadingState());
       try{
         final pjr = await _repo.getServices();
-        emit(ProjectServicesLoadedState(pjr));
+        emit(ServicesLoadedState(pjr));
       }catch(e){
-        emit(ProjectServicesErrorState(e.toString()));
+        emit(ServicesErrorState(e.toString()));
       }
     });
-    on<AddProjectServicesEvent>((event, emit)async {
-      emit(ProjectServicesLoadingState());
+    on<AddServicesEvent>((event, emit)async {
+      emit(ServicesLoadingState());
       try{
         final res = await _repo.addService(newData: event.newData);
         final response = res['msg'];
         if(response == "success"){
-          emit(ProjectServicesSuccessState());
-          add(LoadProjectServicesEvent());
+          emit(ServicesSuccessState());
+          add(LoadServicesEvent());
         }else{
-          emit(ProjectServicesErrorState(response));
+          emit(ServicesErrorState(response));
         }
       }catch(e){
-        emit(ProjectServicesErrorState(e.toString()));
+        emit(ServicesErrorState(e.toString()));
       }
     });
-    on<UpdateProjectServicesEvent>((event, emit)async {
-      emit(ProjectServicesLoadingState());
+    on<UpdateServicesEvent>((event, emit)async {
+      emit(ServicesLoadingState());
       try{
         final res = await _repo.updateService(newData: event.newData);
         final response = res['msg'];
         if(response == "success"){
-          emit(ProjectServicesSuccessState());
-          add(LoadProjectServicesEvent());
+          emit(ServicesSuccessState());
+          add(LoadServicesEvent());
         }else{
-          emit(ProjectServicesErrorState(response));
+          emit(ServicesErrorState(response));
         }
       }catch(e){
-        emit(ProjectServicesErrorState(e.toString()));
+        emit(ServicesErrorState(e.toString()));
       }
     });
-    on<DeleteProjectServicesEvent>((event, emit)async {
-      emit(ProjectServicesLoadingState());
+    on<DeleteServicesEvent>((event, emit)async {
+      emit(ServicesLoadingState());
       try{
-        final res = await _repo.deleteProject(projectId: event.pjrId,usrName: event.usrName);
+        final res = await _repo.deleteService(servicesId: event.pjrId,usrName: event.usrName);
         final response = res['msg'];
         if(response == "success"){
-          emit(ProjectServicesSuccessState());
-          add(LoadProjectServicesEvent());
+          emit(ServicesSuccessState());
+          add(LoadServicesEvent());
         }else{
-          emit(ProjectServicesErrorState(response));
+          emit(ServicesErrorState(response));
         }
       }catch(e){
-        emit(ProjectServicesErrorState(e.toString()));
+        emit(ServicesErrorState(e.toString()));
       }
     });
 

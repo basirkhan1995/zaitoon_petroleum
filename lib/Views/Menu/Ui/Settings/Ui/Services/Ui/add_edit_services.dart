@@ -71,9 +71,9 @@ class _BaseServiceAddEditState extends State<_BaseServiceAddEdit> {
     );
 
     if (widget.model != null) {
-      bloc.add(UpdateProjectServicesEvent(data));
+      bloc.add(UpdateServicesEvent(data));
     } else {
-      bloc.add(AddProjectServicesEvent(data));
+      bloc.add(AddServicesEvent(data));
     }
   }
 
@@ -83,7 +83,7 @@ class _BaseServiceAddEditState extends State<_BaseServiceAddEdit> {
       return SizedBox(
         width: double.infinity,
         child: ElevatedButton(
-          onPressed: (context.watch<ServicesBloc>().state is ProjectServicesLoadingState)
+          onPressed: (context.watch<ServicesBloc>().state is ServicesLoadingState)
               ? null
               : onSubmit,
           style: ElevatedButton.styleFrom(
@@ -94,7 +94,7 @@ class _BaseServiceAddEditState extends State<_BaseServiceAddEdit> {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: (context.watch<ServicesBloc>().state is ProjectServicesLoadingState)
+          child: (context.watch<ServicesBloc>().state is ServicesLoadingState)
               ? SizedBox(
             width: 20,
             height: 20,
@@ -110,7 +110,7 @@ class _BaseServiceAddEditState extends State<_BaseServiceAddEdit> {
         ),
       );
     } else {
-      return (context.watch<ServicesBloc>().state is ProjectServicesLoadingState)
+      return (context.watch<ServicesBloc>().state is ServicesLoadingState)
           ? SizedBox(
         height: 16,
         width: 16,
@@ -301,7 +301,7 @@ class _BaseServiceAddEditState extends State<_BaseServiceAddEdit> {
                             ],
 
                             // Error Message
-                            if (serviceState is ProjectServicesErrorState) ...[
+                            if (serviceState is ServicesErrorState) ...[
                               const SizedBox(height: 15),
                               Container(
                                 padding: const EdgeInsets.all(12),
@@ -420,7 +420,7 @@ class _BaseServiceAddEditState extends State<_BaseServiceAddEdit> {
                         ),
                       ),
                     ],
-                    if (serviceState is ProjectServicesErrorState) ...[
+                    if (serviceState is ServicesErrorState) ...[
                       const SizedBox(height: 15),
                       Container(
                         padding: const EdgeInsets.all(12),
@@ -462,7 +462,7 @@ class _BaseServiceAddEditState extends State<_BaseServiceAddEdit> {
           return ZFormDialog(
             onAction: onSubmit,
             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-            actionLabel: serviceState is ProjectServicesLoadingState
+            actionLabel: serviceState is ServicesLoadingState
                 ? SizedBox(
               height: 16,
               width: 16,
@@ -514,8 +514,8 @@ class _BaseServiceAddEditState extends State<_BaseServiceAddEdit> {
                         ),
                       ],
                     ),
-                  if (serviceState is ProjectServicesErrorState) const SizedBox(height: 15),
-                  if (serviceState is ProjectServicesErrorState)
+                  if (serviceState is ServicesErrorState) const SizedBox(height: 15),
+                  if (serviceState is ServicesErrorState)
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
