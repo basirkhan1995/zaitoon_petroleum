@@ -5217,6 +5217,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Owner Account'**
   String get ownerAccount;
+
+  /// No description provided for @incomeAndExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Income & Expense'**
+  String get incomeAndExpenses;
 }
 
 class _AppLocalizationsDelegate

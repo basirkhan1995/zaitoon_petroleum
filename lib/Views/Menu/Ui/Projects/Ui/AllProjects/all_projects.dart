@@ -7,11 +7,12 @@ import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/status_badge.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/add_edit_project.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/bloc/projects_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/project_view.dart';
+import 'add_project.dart';
+import 'bloc/projects_bloc.dart';
 
-class ProjectsView extends StatelessWidget {
-  const ProjectsView({super.key});
+class AllProjectsView extends StatelessWidget {
+  const AllProjectsView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +56,7 @@ class _DesktopState extends State<_Desktop> {
               icon: Icons.add,
               onPressed: (){
                 showDialog(context: context, builder: (context){
-                  return AddEditProjectView();
+                  return AddNewProjectView();
                 });
               },
               label: Text(tr.newProject))
@@ -88,7 +89,7 @@ class _DesktopState extends State<_Desktop> {
                   return InkWell(
                     onTap: (){
                       showDialog(context: context, builder: (context){
-                        return AddEditProjectView(model: pjr);
+                        return ProjectView(project: pjr);
                       });
                     },
                     child: Container(

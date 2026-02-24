@@ -2638,4 +2638,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ownerAccount => 'Owner Account';
+
+  @override
+  String get incomeAndExpenses => 'Income & Expense';
 }

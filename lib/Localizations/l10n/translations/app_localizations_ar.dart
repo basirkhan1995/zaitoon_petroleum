@@ -2631,4 +2631,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get ownerAccount => 'حساب فرمایش دهنده';
+
+  @override
+  String get incomeAndExpenses => 'عواید و مصارف';
 }

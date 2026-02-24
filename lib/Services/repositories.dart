@@ -18,7 +18,6 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/model/fetch
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchTRPT/model/trtp_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/txn_ref_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/model/pjr_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TxnReport/model/txn_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/model/stmt_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/model/gl_statement_model.dart';
@@ -51,6 +50,7 @@ import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/FetchGLAT/model/glat_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/GetOrder/model/get_order_model.dart';
+import '../Views/Menu/Ui/Projects/Ui/AllProjects/model/pjr_model.dart';
 import '../Views/Menu/Ui/Reminder/model/reminder_model.dart';
 import '../Views/Menu/Ui/Report/TransactionRef/model/txn_report_model.dart';
 import '../Views/Menu/Ui/Report/Ui/AllBalances/model/all_balances_model.dart';
@@ -3375,5 +3375,6 @@ class Repositories {
   }
 
   ///Project Details ...........................................................
+
 
 }

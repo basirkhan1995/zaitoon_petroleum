@@ -6,22 +6,22 @@ import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/section_title.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/bloc/projects_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/model/pjr_model.dart';
-import '../../../../../Features/Date/z_generic_date.dart';
-import '../../../../../Features/Generic/rounded_searchable_textfield.dart';
-import '../../../../../Features/Other/utils.dart';
-import '../../../../Auth/bloc/auth_bloc.dart';
-import '../../../../Auth/models/login_model.dart';
-import '../../Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
-import '../../Stakeholders/Ui/Accounts/model/acc_model.dart';
-import '../../Stakeholders/Ui/Individuals/Ui/add_edit.dart';
-import '../../Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
-import '../../Stakeholders/Ui/Individuals/model/individual_model.dart';
+import '../../../../../../Features/Date/z_generic_date.dart';
+import '../../../../../../Features/Generic/rounded_searchable_textfield.dart';
+import '../../../../../../Features/Other/utils.dart';
+import '../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../Auth/models/login_model.dart';
+import '../../../Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
+import '../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
+import '../../../Stakeholders/Ui/Individuals/Ui/add_edit.dart';
+import '../../../Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
+import '../../../Stakeholders/Ui/Individuals/model/individual_model.dart';
+import 'bloc/projects_bloc.dart';
+import 'model/pjr_model.dart';
 
-class AddEditProjectView extends StatelessWidget {
+class AddNewProjectView extends StatelessWidget {
   final ProjectsModel? model;
-  const AddEditProjectView({super.key, this.model});
+  const AddNewProjectView({super.key, this.model});
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +104,7 @@ class _DesktopState extends State<_Desktop> {
           width: 16,
           height: 16,
           child: CircularProgressIndicator()) : Text(isEdit? tr.update.toUpperCase() : tr.create),
+
       padding: EdgeInsets.all(12),
       title: isEdit? tr.update.toUpperCase() : tr.newProject,
       child: Form(

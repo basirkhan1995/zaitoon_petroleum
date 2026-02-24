@@ -872,5 +872,6 @@
   "projectInformation": "پروزه معلومات",
   "deadline": "تاریخ تسلیمی",
   "ownerInformation": "معلومات فرمایش دهنده",
-  "ownerAccount": "حساب فرمایش دهنده"
+  "ownerAccount": "حساب فرمایش دهنده",
+  "incomeAndExpenses": "عواید و مصارف"
 }

@@ -34,7 +34,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/GetOrder/bloc/order_t
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/bloc/transaction_tab_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/bloc/projects_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/bloc/project_tabs_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/AllBalances/bloc/all_balances_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/bloc/acc_statement_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/ArApReport/bloc/ar_ap_bloc.dart';
@@ -84,6 +84,7 @@ import 'Themes/Bloc/themes_bloc.dart';
 import 'Themes/Ui/theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/bloc/permissions_bloc.dart';
+import 'Views/Menu/Ui/Projects/Ui/AllProjects/bloc/projects_bloc.dart';
 import 'Views/Menu/Ui/Reminder/bloc/reminder_bloc.dart';
 import 'Views/Menu/Ui/Report/TransactionRef/bloc/txn_ref_report_bloc.dart';
 import 'Views/Menu/Ui/Report/TxnReport/bloc/txn_report_bloc.dart';
@@ -132,7 +133,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => TransportTabBloc()),
         BlocProvider(create: (context) => BranchTabBloc()),
         BlocProvider(create: (context) => StockSettingsTabBloc()),
-
+        BlocProvider(create: (context) => ProjectTabsBloc()),
         ///Services ............................................................
         BlocProvider(create: (context) => PrintLanguageCubit()),
         BlocProvider(create: (context) => PageOrientationCubit()),

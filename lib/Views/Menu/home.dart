@@ -8,7 +8,7 @@ import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/Ui/login.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/hr.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/projects.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/AllProjects/all_projects.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/Ui/individuals.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/transport.dart';
@@ -155,7 +155,7 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
           MenuDefinition(
             value: MenuName.projects,
             label: AppLocalizations.of(context)!.projects,
-            screen: const ProjectsView(),
+            screen: const AllProjectsView(),
             icon: Icons.file_copy_outlined,
           ),
       ],
@@ -1049,7 +1049,7 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
       case MenuName.dashboard:
         return const DashboardView();
       case MenuName.projects:
-        return const ProjectsView();
+        return const AllProjectsView();
       case MenuName.finance:
         return const FinanceView();
       case MenuName.journal:
