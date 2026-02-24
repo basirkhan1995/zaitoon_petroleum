@@ -34,6 +34,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/GetOrder/bloc/order_t
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/bloc/transaction_tab_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/bloc/projects_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/AllBalances/bloc/all_balances_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/bloc/acc_statement_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/ArApReport/bloc/ar_ap_bloc.dart';
@@ -181,6 +182,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ReminderBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => AttendanceBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => PayrollBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => ProjectsBloc(Repositories(ApiServices()))..add(LoadProjectsEvent())),
+
         ///Report Bloc
         BlocProvider(create: (context) => AccStatementBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => TxnRefReportBloc(Repositories(ApiServices()))),

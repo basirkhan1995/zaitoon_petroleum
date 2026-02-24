@@ -3310,11 +3310,12 @@ class Repositories {
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> deleteProject({required int projectId,}) async {
+  Future<Map<String, dynamic>> deleteProject({required int projectId, required String usrName}) async {
     final response = await api.delete(
       endpoint: "/project/project.php",
       data: {
-        "pjrID": projectId
+        "prjID": projectId,
+        "usrName": usrName,
       },
     );
     return response.data;
@@ -3372,4 +3373,7 @@ class Repositories {
     );
     return response.data;
   }
+
+  ///Project Details ...........................................................
+
 }

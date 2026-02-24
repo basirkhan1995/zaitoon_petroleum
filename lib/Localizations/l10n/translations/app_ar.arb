@@ -866,5 +866,6 @@
   "applyFilter": "اعمال فلتر",
   "fromCurrency": "لومری ارز",
   "toCurrencyTitle": "دویم ارز",
-  "transactionReport": "گزارش معاملات"
+  "transactionReport": "گزارش معاملات",
+  "newProject": "نوی پروزه"
 }

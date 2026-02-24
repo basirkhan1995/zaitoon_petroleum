@@ -866,5 +866,6 @@
   "applyFilter": "Apply Filter",
   "fromCurrency": "From Currency",
   "toCurrencyTitle": "To Currency",
-  "transactionReport": "Transactions Report"
+  "transactionReport": "Transactions Report",
+  "newProject": "New Project"
 }

@@ -866,5 +866,6 @@
   "applyFilter": "اعمال فلتر",
   "fromCurrency": "ارز اولی",
   "toCurrencyTitle": "ارز دومی",
-  "transactionReport": "گزارش معاملات"
+  "transactionReport": "گزارش معاملات",
+  "newProject": "پروزه جدید"
 }

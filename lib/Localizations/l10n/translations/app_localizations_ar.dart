@@ -2613,4 +2613,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get transactionReport => 'گزارش معاملات';
+
+  @override
+  String get newProject => 'نوی پروزه';
 }

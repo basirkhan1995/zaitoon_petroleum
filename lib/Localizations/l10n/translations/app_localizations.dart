@@ -5181,6 +5181,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Transactions Report'**
   String get transactionReport;
+
+  /// No description provided for @newProject.
+  ///
+  /// In en, this message translates to:
+  /// **'New Project'**
+  String get newProject;
 }
 
 class _AppLocalizationsDelegate

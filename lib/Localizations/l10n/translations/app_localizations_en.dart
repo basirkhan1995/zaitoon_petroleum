@@ -2620,4 +2620,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transactionReport => 'Transactions Report';
+
+  @override
+  String get newProject => 'New Project';
 }
