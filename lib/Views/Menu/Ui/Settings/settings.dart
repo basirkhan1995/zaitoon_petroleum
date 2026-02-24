@@ -62,6 +62,7 @@ class _Desktop extends StatelessWidget {
                 label: AppLocalizations.of(context)!.services,
                 screen: const ServicesView(),
               ),
+
             if (login.usrRole == "Super")
               ZTabItem(
                 value: SettingsTabName.txnTypes,

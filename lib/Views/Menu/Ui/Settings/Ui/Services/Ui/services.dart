@@ -69,7 +69,7 @@ class _BaseServicesViewState extends State<_BaseServicesView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Services', style: textTheme.titleLarge),
+            Text(AppLocalizations.of(context)!.services, style: textTheme.titleLarge),
             Text(
               'Manage your services',
               style: textTheme.bodySmall?.copyWith(color: color.outline),
@@ -77,7 +77,7 @@ class _BaseServicesViewState extends State<_BaseServicesView> {
             const SizedBox(height: 12),
             ZSearchField(
               controller: searchController,
-              hint: tr.accNameOrNumber,
+              hint: "Service name",
               title: '',
               end: searchController.text.isNotEmpty
                   ? InkWell(
@@ -141,7 +141,7 @@ class _BaseServicesViewState extends State<_BaseServicesView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Services', style: textTheme.titleLarge),
+                      Text(AppLocalizations.of(context)!.services, style: textTheme.titleLarge),
                       Text(
                         'Manage your services',
                         style: textTheme.bodySmall?.copyWith(color: color.outline),
@@ -173,7 +173,7 @@ class _BaseServicesViewState extends State<_BaseServicesView> {
             const SizedBox(height: 8),
             ZSearchField(
               controller: searchController,
-              hint: tr.accNameOrNumber,
+              hint: "Service name",
               title: '',
               end: searchController.text.isNotEmpty
                   ? InkWell(
@@ -212,7 +212,7 @@ class _BaseServicesViewState extends State<_BaseServicesView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Services', style: textTheme.titleLarge),
+                  Text(AppLocalizations.of(context)!.services, style: textTheme.titleLarge),
                   Text(
                     'Manage your services',
                     style: textTheme.bodySmall?.copyWith(color: color.outline),
@@ -224,7 +224,7 @@ class _BaseServicesViewState extends State<_BaseServicesView> {
               flex: 2,
               child: ZSearchField(
                 controller: searchController,
-                hint: tr.accNameOrNumber,
+                hint: "Service name",
                 title: '',
                 end: searchController.text.isNotEmpty
                     ? InkWell(
@@ -310,129 +310,144 @@ class _BaseServicesViewState extends State<_BaseServicesView> {
     }
   }
 
-  // Build service item based on screen size
-  Widget _buildServiceItem(dynamic service, int index, TextTheme textTheme, ColorScheme color, AppLocalizations tr) {
+  Widget _buildServiceItem(
+      dynamic service,
+      int index,
+      TextTheme textTheme,
+      ColorScheme color,
+      AppLocalizations tr,
+      ) {
+    final rowColor = index.isEven
+        ? color.primary.withValues(alpha: .05)
+        : Colors.transparent;
+
     if (widget.isMobile) {
-      // Mobile card view
-      return Card(
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        elevation: 1,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: InkWell(
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (context) => AddEditServiceView(model: service),
-            );
-          },
-          borderRadius: BorderRadius.circular(4),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // ID and Status Row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: color.primary.withValues(alpha: .1),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        "ID: ${service.srvId}",
-                        style: textTheme.bodySmall?.copyWith(
-                          color: color.primary,
-                          fontWeight: FontWeight.bold,
+      // ✅ MOBILE — CARD STYLE CONTAINER
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(2),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(2),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => AddEditServiceView(model: service),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: rowColor,
+                borderRadius: BorderRadius.circular(2), // ✅ radius = 2
+                border: Border.all(
+                  color: color.outline.withValues(alpha: .15),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// ID + Status
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: color.primary.withValues(alpha: .1),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                        child: Text(
+                          "${tr.id}: ${service.srvId}",
+                          style: textTheme.bodySmall?.copyWith(
+                            color: color.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                    StatusBadge(
-                      status: service.srvStatus!,
-                      trueValue: tr.active,
-                      falseValue: tr.inactive,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-
-                // Service Name
-                Text(
-                  service.srvName ?? "",
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                      StatusBadge(
+                        status: service.srvStatus!,
+                        trueValue: tr.active,
+                        falseValue: tr.inactive,
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    } else if (widget.isTablet) {
-      // Tablet row view
-      return ListTile(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) => AddEditServiceView(model: service),
-          );
-        },
-        tileColor: index.isEven ? color.primary.withValues(alpha: .05) : Colors.transparent,
-        leading: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: color.primary.withValues(alpha: .1),
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: Text(
-              service.srvId.toString(),
-              style: textTheme.bodyMedium?.copyWith(
-                color: color.primary,
-                fontWeight: FontWeight.bold,
+
+                  const SizedBox(height: 10),
+
+                  /// Service name
+                  Text(
+                    service.srvName ?? "",
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
         ),
-        title: Text(
-          service.srvName ?? "",
-          style: textTheme.titleMedium,
-        ),
-        trailing: SizedBox(
-          width: 80,
-          child: StatusBadge(
-            status: service.srvStatus!,
-            trueValue: tr.active,
-            falseValue: tr.inactive,
-          ),
-        ),
       );
     } else {
-      // Desktop row view
-      return ListTile(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) => AddEditServiceView(model: service),
-          );
-        },
-        tileColor: index.isEven ? color.primary.withValues(alpha: .05) : Colors.transparent,
-        leading: Text(service.srvId.toString()),
-        title: Text(service.srvName ?? ""),
-        trailing: StatusBadge(
-          status: service.srvStatus!,
-          trueValue: tr.active,
-          falseValue: tr.inactive,
+      // ✅ TABLET + DESKTOP ROW STYLE
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(2),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(2),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => AddEditServiceView(model: service),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: rowColor,
+                borderRadius: BorderRadius.circular(2),
+              ),
+              child: ListTile(
+                contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                leading: widget.isTablet
+                    ? Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: color.primary.withValues(alpha: .1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      service.srvId.toString(),
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: color.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                )
+                    : Text(service.srvId.toString()),
+                title: Text(service.srvName ?? ""),
+                trailing: SizedBox(
+                  width: widget.isTablet ? 110 : 100,
+                  child: StatusBadge(
+                    status: service.srvStatus!,
+                    trueValue: tr.active,
+                    falseValue: tr.inactive,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       );
     }
   }
-
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
