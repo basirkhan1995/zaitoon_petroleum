@@ -867,5 +867,10 @@
   "fromCurrency": "ارز اولی",
   "toCurrencyTitle": "ارز دومی",
   "transactionReport": "گزارش معاملات",
-  "newProject": "پروزه جدید"
+  "newProject": "پروزه جدید",
+  "projectName": "نام پروزه",
+  "projectInformation": "معلومات پروزه",
+  "deadline": "تاریخ تسلیمی",
+  "ownerInformation": "معلومات فرمایش دهنده",
+  "ownerAccount": "حساب فرمایش دهنده"
 }

@@ -867,5 +867,10 @@
   "fromCurrency": "لومری ارز",
   "toCurrencyTitle": "دویم ارز",
   "transactionReport": "گزارش معاملات",
-  "newProject": "نوی پروزه"
+  "newProject": "نوی پروزه",
+  "projectName": "پروزه نوم",
+  "projectInformation": "پروزه معلومات",
+  "deadline": "تاریخ تسلیمی",
+  "ownerInformation": "معلومات فرمایش دهنده",
+  "ownerAccount": "حساب فرمایش دهنده"
 }

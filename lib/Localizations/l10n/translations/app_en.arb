@@ -867,5 +867,10 @@
   "fromCurrency": "From Currency",
   "toCurrencyTitle": "To Currency",
   "transactionReport": "Transactions Report",
-  "newProject": "New Project"
+  "newProject": "New Project",
+  "projectName": "Project Name",
+  "projectInformation": "Project Information",
+  "deadline": "Deadline",
+  "ownerInformation": "Owner Information",
+  "ownerAccount": "Owner Account"
 }

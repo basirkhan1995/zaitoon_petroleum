@@ -2613,4 +2613,19 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get newProject => 'پروزه جدید';
+
+  @override
+  String get projectName => 'نام پروزه';
+
+  @override
+  String get projectInformation => 'معلومات پروزه';
+
+  @override
+  String get deadline => 'تاریخ تسلیمی';
+
+  @override
+  String get ownerInformation => 'معلومات فرمایش دهنده';
+
+  @override
+  String get ownerAccount => 'حساب فرمایش دهنده';
 }

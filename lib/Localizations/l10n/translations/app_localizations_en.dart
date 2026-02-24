@@ -2623,4 +2623,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newProject => 'New Project';
+
+  @override
+  String get projectName => 'Project Name';
+
+  @override
+  String get projectInformation => 'Project Information';
+
+  @override
+  String get deadline => 'Deadline';
+
+  @override
+  String get ownerInformation => 'Owner Information';
+
+  @override
+  String get ownerAccount => 'Owner Account';
 }

@@ -8,7 +8,6 @@ import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/bloc/projects_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/model/pjr_model.dart';
-
 import '../../../../../Features/Date/z_generic_date.dart';
 import '../../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../../Features/Other/utils.dart';
@@ -112,15 +111,15 @@ class _DesktopState extends State<_Desktop> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SectionTitle(title: "Project Information"),
+            SectionTitle(title: tr.projectInformation),
             SizedBox(height: 5),
             ZTextFieldEntitled(
               controller: projectName,
               isRequired: true,
-              title: "Project Name",
+              title: tr.projectName,
               validator: (e) {
                 if (e.isEmpty) {
-                  return tr.required("Project name");
+                  return tr.required(tr.projectName);
                 }
                 return null;
               },
@@ -131,10 +130,10 @@ class _DesktopState extends State<_Desktop> {
               isRequired: true,
               controller: projectDetails,
               keyboardInputType: TextInputType.multiline,
-              title: "Project Details",
+              title: tr.details,
               validator: (e) {
                 if (e.isEmpty) {
-                  return tr.required("Project Details");
+                  return tr.required(tr.details);
                 }
                 return null;
               },
@@ -146,13 +145,13 @@ class _DesktopState extends State<_Desktop> {
                   flex: 3,
                   child: ZTextFieldEntitled(
                     controller: projectLocation,
-                    title: "Location",
+                    title: tr.location,
                   ),
                 ),
                 SizedBox(width: 5),
                 Expanded(
                   child: ZDatePicker(
-                    label: "Deadline",
+                    label: tr.deadline,
                     value: deadline,
                     onDateChanged: (v) {
                       setState(() {
@@ -164,7 +163,7 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
             SizedBox(height: 8),
-            SectionTitle(title: "Owner Information"),
+            SectionTitle(title: tr.ownerInformation),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
               child:
@@ -246,7 +245,7 @@ class _DesktopState extends State<_Desktop> {
             SizedBox(height: 8),
 
             // Account Information Card
-            SectionTitle(title: "Owner Account"),
+            SectionTitle(title: tr.ownerAccount),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
               child:

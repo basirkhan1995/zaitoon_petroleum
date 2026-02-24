@@ -5187,6 +5187,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New Project'**
   String get newProject;
+
+  /// No description provided for @projectName.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Name'**
+  String get projectName;
+
+  /// No description provided for @projectInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Information'**
+  String get projectInformation;
+
+  /// No description provided for @deadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline'**
+  String get deadline;
+
+  /// No description provided for @ownerInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner Information'**
+  String get ownerInformation;
+
+  /// No description provided for @ownerAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner Account'**
+  String get ownerAccount;
 }
 
 class _AppLocalizationsDelegate
