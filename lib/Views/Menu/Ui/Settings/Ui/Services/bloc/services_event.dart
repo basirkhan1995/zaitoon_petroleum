@@ -26,9 +26,10 @@ class DeleteServicesEvent extends ServicesEvent {
 }
 
 class LoadServicesEvent extends ServicesEvent {
-  const LoadServicesEvent();
+  final String? search;
+  const LoadServicesEvent({this.search});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [search];
 }
 
 

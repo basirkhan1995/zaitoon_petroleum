@@ -3,9 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/ProjectServices/bloc/project_services_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Services/Ui/add_edit_services.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Services/bloc/services_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Services/model/services_model.dart';
+
+import '../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 
 class ProjectServicesView extends StatelessWidget {
   final int? projectId;
@@ -82,6 +88,116 @@ class _DesktopState extends State<_Desktop> {
     return Scaffold(
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
+                  child:
+                  GenericTextfield<ServicesModel, ServicesBloc, ServicesState>(
+                    showAllOnFocus: true,
+                    controller: servicesController,
+                    title: tr.services,
+                    hintText: tr.services,
+                    trailing: IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AddEditServiceView();
+                          },
+                        );
+                      },
+                      icon: Icon(Icons.add),
+                    ),
+                    isRequired: true,
+                    bloc: context.read<ServicesBloc>(),
+                    fetchAllFunction: (bloc) => bloc.add(LoadServicesEvent()),
+                    searchFunction: (bloc, query) => bloc.add(LoadServicesEvent(search: query)),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return tr.required(tr.individuals);
+                      }
+                      return null;
+                    },
+                    itemBuilder: (context, ser) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 8,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  "${ser.srvName}",
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    itemToString: (ser) => "${ser.srvName}",
+                    stateToLoading: (state) => state is ServicesLoadingState,
+                    loadingBuilder: (context) => const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    stateToItems: (state) {
+                      if (state is ServicesLoadedState) {
+                        return state.services;
+                      }
+                      return [];
+                    },
+                    onSelected: (value) {
+                      setState(() {
+
+                      });
+                    },
+                    noResultsText: tr.noDataFound,
+                    showClearButton: true,
+                  ),
+                ),
+               Row(
+                 spacing: 8,
+                 children: [
+
+                   Expanded(
+                     child: ZTextFieldEntitled(
+                         validator: (value){
+                           if(value.isEmpty){
+                             return tr.required(tr.qty);
+                           }
+                           return null;
+                         },
+                         controller: qty,
+                         title: tr.qty),
+                   ),
+                   Expanded(
+                     child: ZTextFieldEntitled(
+                         validator: (value){
+                           if(value.isEmpty){
+                             return tr.required(tr.qty);
+                           }
+                           return null;
+                         },
+                         controller: amount,
+                         title: tr.amount),
+                   ),
+                 ],
+               )
+
+              ],
+            ),
+          ),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8,vertical: 7),
             decoration: BoxDecoration(
@@ -125,6 +241,13 @@ class _DesktopState extends State<_Desktop> {
                   );
                 }
                 if(state is ProjectServicesLoadedState){
+                  if(state.projectServices.isEmpty){
+                    return NoDataWidget(
+                      title: "No Services",
+                      message: "Click Add Services to add a new",
+                      enableAction: false,
+                    );
+                  }
                   return ListView.builder(
                       itemCount: state.projectServices.length,
                       itemBuilder: (context,index){
