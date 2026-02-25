@@ -5,8 +5,10 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/toast.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/search_field.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/status_badge.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/AllProjects/model/pjr_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/project_view.dart';
 import 'add_project.dart';
 import 'bloc/projects_bloc.dart';
@@ -16,8 +18,11 @@ class AllProjectsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(
-      mobile: _Mobile(), desktop: _Desktop(), tablet: _Tablet(),);
+    return const ResponsiveLayout(
+      mobile: _Mobile(),
+      desktop: _Desktop(),
+      tablet: _Tablet(),
+    );
   }
 }
 
@@ -29,6 +34,10 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+  String _filterStatus = 'All';
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -37,124 +46,257 @@ class _DesktopState extends State<_Desktop> {
     super.initState();
   }
 
-  Future<void> onRefresh()async{
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> onRefresh() async {
     context.read<ProjectsBloc>().add(LoadProjectsEvent());
   }
+
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
-    TextStyle? titleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(color: color.surface);
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 0,
-        title: Text(tr.projects),
-        actionsPadding: EdgeInsets.symmetric(horizontal: 8),
-        actions: [
-          ZOutlineButton(
-              isActive: true,
-              icon: Icons.add,
-              onPressed: (){
-                showDialog(context: context, builder: (context){
-                  return AddNewProjectView();
-                });
-              },
-              label: Text(tr.newProject)),
-        ],
-      ),
+      backgroundColor: color.surface,
       body: Column(
         children: [
+          // Header with gradient background
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
-            margin: EdgeInsets.symmetric(horizontal: 4),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
             decoration: BoxDecoration(
-              color: color.primary
+              color: color.primary.withValues(alpha: .03),
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+              ),
             ),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-               SizedBox(
-                   width: 40,
-                   child: Text(tr.id,style: titleStyle)),
+                // Title and add button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          tr.projects,
+                          style: textTheme.headlineSmall?.copyWith(
+                            color: color.onSurface,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Manage and track all your projects',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: color.onSurface.withValues(alpha: .8),
+                          ),
+                        ),
+                      ],
+                    ),
+                    ZOutlineButton(
+                      isActive: true,
+                      icon: Icons.add,
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AddNewProjectView(),
+                        );
+                      },
 
-                Expanded(
-                    child: Text(tr.projectInformation,style: titleStyle)),
-                SizedBox(
-                    width: 100,
-                    child: Text(tr.date,style: titleStyle)),
-                SizedBox(
-                    width: 100,
-                    child: Text(tr.deadline,style: titleStyle)),
-                SizedBox(
-                    width: 90,
-                    child: Text(tr.status,style: titleStyle)),
+                      label: Text(
+                        tr.newProject,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // Search and filter bar
+                Row(
+                  children: [
+                    // Search field
+                    Expanded(
+                      flex: 3,
+                      child: ZSearchField(
+                        title: "",
+                        hint: "Search",
+                        icon: Icons.search,
+                        controller: _searchController,
+                        onChanged: (value) {
+                          setState(() {
+                            _searchQuery = value;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+
+                    // Filter chips
+                    Expanded(
+                      flex: 2,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildFilterChip(
+                              label: 'All',
+                              isSelected: _filterStatus == 'All',
+                              onSelected: () {
+                                setState(() {
+                                  _filterStatus = 'All';
+                                });
+                              },
+                              surfaceColor: color.primary,
+                            ),
+                            const SizedBox(width: 8),
+                            _buildFilterChip(
+                              label: tr.completedTitle,
+                              isSelected: _filterStatus == 'Completed',
+                              onSelected: () {
+                                setState(() {
+                                  _filterStatus = 'Completed';
+                                });
+                              },
+                              surfaceColor: color.primary,
+                            ),
+                            const SizedBox(width: 8),
+                            _buildFilterChip(
+                              label: tr.pendingTitle,
+                              isSelected: _filterStatus == 'Pending',
+                              onSelected: () {
+                                setState(() {
+                                  _filterStatus = 'Pending';
+                                });
+                              },
+                              surfaceColor: color.primary,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
+
+          // Stats cards
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 8),
+            child: BlocBuilder<ProjectsBloc, ProjectsState>(
+              builder: (context, state) {
+                if (state is ProjectsLoadedState) {
+                  final totalProjects = state.pjr.length;
+                  final completed = state.pjr.where((p) => p.prjStatus == 1).length;
+                  final pending = state.pjr.where((p) => p.prjStatus == 0).length;
+
+                  return Row(
+                    children: [
+                      _buildStatCard(
+                        title: 'Total Projects',
+                        value: totalProjects.toString(),
+                        icon: Icons.folder_copy,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 16),
+                      _buildStatCard(
+                        title: tr.completedTitle,
+                        value: completed.toString(),
+                        icon: Icons.check_circle,
+                        color: Colors.green,
+                      ),
+                      const SizedBox(width: 16),
+                      _buildStatCard(
+                        title: tr.pendingTitle,
+                        value: pending.toString(),
+                        icon: Icons.pending,
+                        color: Colors.orange,
+                      ),
+                    ],
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+
+
+          // Projects list
           Expanded(
             child: BlocConsumer<ProjectsBloc, ProjectsState>(
-              listener: (context,state){
-               if(state is ProjectSuccessState){
-                 ToastManager.show(context: context, message: tr.successMessage, type: ToastType.success);
-                 Navigator.of(context);
-               }if(state is ProjectsErrorState){
-                 ToastManager.show(context: context, message: state.message, type: ToastType.error);
-               }
+              listener: (context, state) {
+                if (state is ProjectSuccessState) {
+                  ToastManager.show(
+                    context: context,
+                    message: tr.successMessage,
+                    type: ToastType.success,
+                  );
+                }
+                if (state is ProjectsErrorState) {
+                  ToastManager.show(
+                    context: context,
+                    message: state.message,
+                    type: ToastType.error,
+                  );
+                }
               },
               builder: (context, state) {
-                if(state is ProjectsLoadingState){
-                  return Center(child: CircularProgressIndicator());
+                if (state is ProjectsLoadingState) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
-                if(state is ProjectsErrorState){
+                if (state is ProjectsErrorState) {
                   return NoDataWidget(
                     title: "Error",
                     message: state.message,
                     onRefresh: onRefresh,
                   );
-                }if(state is ProjectsLoadedState){
-                  return ListView.builder(
-                      itemCount: state.pjr.length,
-                      itemBuilder: (context,index){
-                      final pjr = state.pjr[index];
-                        return InkWell(
-                          onTap: (){
-                            showDialog(context: context, builder: (context){
-                              return ProjectView(project: pjr);
-                            });
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                            decoration: BoxDecoration(
-                              color: index.isOdd? color.primary.withValues(alpha: .05) : Colors.transparent
-                            ),
-                            child: Row(
-                            children: [
-                              SizedBox(
-                                  width: 40,
-                                  child: Text(pjr.prjId.toString())),
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(pjr.prjName??"",style: titleStyle?.copyWith(color: color.onSurface)),
-                                    Text(pjr.prjDetails??"")
-                                  ],
-                                ),
-                              ),
+                }
+                if (state is ProjectsLoadedState) {
+                  // Filter projects based on search and status
+                  var filteredProjects = state.pjr.where((project) {
+                    final matchesSearch = _searchQuery.isEmpty ||
+                        (project.prjName?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false) ||
+                        (project.prjDetails?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false);
 
-                              SizedBox(
-                                  width: 100,
-                                  child: Text(pjr.prjDateLine.toFormattedDate())),
-                              SizedBox(
-                                  width: 100,
-                                  child: Text(pjr.prjDateLine?.daysLeftText ?? "")),
-                              StatusBadge(status: pjr.prjStatus!, trueValue: tr.completedTitle, falseValue: tr.pendingTitle),
-                            ],
-                                            ),
-                          ),
-                        );
-                  });
+                    final matchesStatus = _filterStatus == 'All' ||
+                        (_filterStatus == tr.completedTitle && project.prjStatus == 1) ||
+                        (_filterStatus == tr.pendingTitle && project.prjStatus == 0);
+
+                    return matchesSearch && matchesStatus;
+                  }).toList();
+
+                  if (filteredProjects.isEmpty) {
+                    return NoDataWidget(
+                      title: "No Projects Found",
+                      message: _searchQuery.isNotEmpty || _filterStatus != 'All'
+                          ? "Try adjusting your search or filters"
+                          : "Click the button above to create your first project",
+                      enableAction: false,
+                    );
+                  }
+
+                  return RefreshIndicator(
+                    onRefresh: onRefresh,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      itemCount: filteredProjects.length,
+                      itemBuilder: (context, index) {
+                        final pjr = filteredProjects[index];
+                        return _buildProjectCard(pjr, index, color, textTheme, tr);
+                      },
+                    ),
+                  );
                 }
                 return const SizedBox();
               },
@@ -164,15 +306,343 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-}
 
+  Widget _buildFilterChip({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onSelected,
+    required Color surfaceColor,
+  }) {
+    return FilterChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (_) => onSelected(),
+      backgroundColor: surfaceColor.withValues(alpha: .15),
+      selectedColor: surfaceColor,
+      checkmarkColor: Theme.of(context).colorScheme.surface,
+      labelStyle: TextStyle(
+        color: isSelected ? Theme.of(context).colorScheme.surface : surfaceColor,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4),
+        side: BorderSide(
+          color: isSelected ? Theme.of(context).colorScheme.primary : surfaceColor.withValues(alpha: .3),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatCard({
+    required String title,
+    required String value,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: .1),
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(color: color.withValues(alpha: .2)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: .2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                color: color,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+
+  Widget _buildProjectCard(
+      ProjectsModel pjr,
+      int index,
+      ColorScheme color,
+      TextTheme textTheme,
+      AppLocalizations tr,
+      ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: index.isOdd
+            ? color.primary.withValues(alpha: .02)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(
+          color: Colors.grey.withValues(alpha: .1),
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => ProjectView(project: pjr),
+            );
+          },
+          borderRadius: BorderRadius.circular(5),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 0,
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: color.primary.withValues(alpha: .1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${index + 1}',
+                        style: TextStyle(
+                          color: color.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        pjr.prjName ?? '',
+                        style: textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (pjr.prjDetails != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            pjr.prjDetails!,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: color.outline,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today,
+                        size: 14,
+                        color: color.outline,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        pjr.prjDateLine.toFormattedDate(),
+                        style: textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _getDeadlineColor(pjr.prjDateLine).withValues(alpha: .1),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _getDeadlineIcon(pjr.prjDateLine),
+                          size: 14,
+                          color: _getDeadlineColor(pjr.prjDateLine),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          pjr.prjDateLine?.daysLeftText ?? '',
+                          style: textTheme.bodySmall?.copyWith(
+                            color: _getDeadlineColor(pjr.prjDateLine),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  flex: 0,
+                  child: StatusBadge(
+                    status: pjr.prjStatus!,
+                    trueValue: tr.completedTitle,
+                    falseValue: tr.pendingTitle,
+                  ),
+                ),
+
+                Expanded(
+                  flex: 0,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.more_vert,
+                      size: 18,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      _showProjectMenu(context, pjr);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color _getDeadlineColor(DateTime? deadline) {
+    if (deadline == null) return Colors.grey;
+    final days = deadline.daysLeft ?? 0;
+    if (days > 7) return Colors.green;
+    if (days > 3) return Colors.orange;
+    if (days >= 0) return Colors.deepOrange;
+    return Colors.red;
+  }
+
+  IconData _getDeadlineIcon(DateTime? deadline) {
+    if (deadline == null) return Icons.help_outline;
+    final days = deadline.daysLeft ?? 0;
+    if (days > 7) return Icons.check_circle_outline;
+    if (days > 3) return Icons.access_time;
+    if (days >= 0) return Icons.warning_amber;
+    return Icons.error_outline;
+  }
+
+  void _showProjectMenu(BuildContext context, dynamic project) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.visibility),
+                title: const Text('View Details'),
+                onTap: () {
+                  Navigator.pop(context);
+                  showDialog(
+                    context: context,
+                    builder: (context) => ProjectView(project: project),
+                  );
+                },
+              ),
+
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text('Delete', style: TextStyle(color: Colors.red)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showDeleteConfirmation(context, project);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context, ProjectsModel project) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Project'),
+        content: Text('Are you sure you want to delete "${project.prjName}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+             // context.read<ProjectsBloc>().add(DeleteProjectEvent(project.prjId!, "basir.h"));
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class _Mobile extends StatelessWidget {
   const _Mobile();
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Projects'),
+      ),
+      body: const Center(
+        child: Text('Mobile view coming soon'),
+      ),
+    );
   }
 }
 
@@ -181,6 +651,6 @@ class _Tablet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const _Desktop(); // Reuse desktop layout for tablet
   }
 }
