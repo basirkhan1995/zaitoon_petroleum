@@ -18,6 +18,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/model/fetch
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchTRPT/model/trtp_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/txn_ref_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/IncomeExpense/model/prj_inc_exp_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/ProjectServices/model/project_services_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TxnReport/model/txn_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/model/stmt_model.dart';
@@ -3376,7 +3377,7 @@ class Repositories {
     return response.data;
   }
 
-  ///Project Details ...........................................................
+  ///Project Services ...........................................................
   Future<List<ProjectServicesModel>> getProjectServices({int? projectId}) async {
     final response = await api.get(
       endpoint: "/project/projectDetails.php",
@@ -3430,4 +3431,45 @@ class Repositories {
     return response.data;
   }
 
+  ///Project Income & Expenses
+  Future<ProjectInOutModel?> getProjectIncomeExpense({int? projectId}) async {
+    final response = await api.get(
+      endpoint: "/project/projectPayments.php",
+      queryParams: {"prjID": projectId},
+    );
+
+    // Check if response has data
+    if (response.data == null) {
+      return null;
+    }
+
+    // Check for error message
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      if (response.data['msg'] == 'failed') {
+        return null; // No records found
+      }
+      throw Exception(response.data['msg']);
+    }
+
+    // Parse the response as a single ProjectInOutModel
+    if (response.data is Map<String, dynamic>) {
+      return ProjectInOutModel.fromMap(response.data);
+    }
+
+    return null;
+  }
+  Future<Map<String, dynamic>> addProjectIncomeExpense({required ProjectInOutModel newData}) async {
+    final response = await api.post(
+      endpoint: "/project/projectPayments.php",
+      data: newData.toMap(),
+    );
+    return response.data;
+  }
+  Future<Map<String, dynamic>> updateProjectIncomeExpense({required ProjectInOutModel newData}) async {
+    final response = await api.put(
+      endpoint: "/project/projectPayments.php",
+      data: newData.toMap(),
+    );
+    return response.data;
+  }
 }

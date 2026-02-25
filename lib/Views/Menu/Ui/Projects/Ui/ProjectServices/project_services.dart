@@ -10,6 +10,7 @@ import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/AllProjects/model/pjr_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/ProjectServices/bloc/project_services_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/ProjectServices/model/project_services_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Services/Ui/add_edit_services.dart';
@@ -21,20 +22,20 @@ import '../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../../../Auth/models/login_model.dart';
 
 class ProjectServicesView extends StatelessWidget {
-  final int? projectId;
-  const ProjectServicesView({super.key, this.projectId});
+  final ProjectsModel? project;
+  const ProjectServicesView({super.key, this.project});
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-      mobile: _Mobile(projectId),
-      tablet: _Tablet(projectId),
-      desktop: _Desktop(projectId),
+      mobile: _Mobile(project),
+      tablet: _Tablet(project),
+      desktop: _Desktop(project),
     );
   }
 }
 
 class _Mobile extends StatelessWidget {
-  final int? projectId;
+  final ProjectsModel? projectId;
   const _Mobile(this.projectId);
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,7 @@ class _Mobile extends StatelessWidget {
 }
 
 class _Tablet extends StatelessWidget {
-  final int? projectId;
+  final ProjectsModel? projectId;
   const _Tablet(this.projectId);
   @override
   Widget build(BuildContext context) {
@@ -52,7 +53,7 @@ class _Tablet extends StatelessWidget {
 }
 
 class _Desktop extends StatefulWidget {
-  final int? projectId;
+  final ProjectsModel? projectId;
   const _Desktop(this.projectId);
 
   @override
@@ -77,7 +78,7 @@ class _DesktopState extends State<_Desktop> {
     myLocale = context.read<LocalizationBloc>().state.languageCode;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.projectId != null) {
-        context.read<ProjectServicesBloc>().add(LoadProjectServiceEvent(widget.projectId!));
+        context.read<ProjectServicesBloc>().add(LoadProjectServiceEvent(widget.projectId!.prjId!));
       }
     });
     super.initState();
@@ -157,6 +158,7 @@ class _DesktopState extends State<_Desktop> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(tr.projectServices.toUpperCase(),style: titleStyle?.copyWith(color: color.outline,fontSize: 18)),
+                  if(widget.projectId?.prjStatus == 0)
                   ZOutlineButton(
                     onPressed: showAddForm,
                     icon: Icons.add,
@@ -370,6 +372,7 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
           ),
+          // Add this after your Expanded child in the Column
           Expanded(
             child: BlocConsumer<ProjectServicesBloc, ProjectServicesState>(
               listener: (context, state) {
@@ -395,7 +398,7 @@ class _DesktopState extends State<_Desktop> {
                     onRefresh: () {
                       if (widget.projectId != null) {
                         context.read<ProjectServicesBloc>().add(
-                          LoadProjectServiceEvent(widget.projectId!),
+                          LoadProjectServiceEvent(widget.projectId!.prjId!),
                         );
                       }
                     },
@@ -409,59 +412,116 @@ class _DesktopState extends State<_Desktop> {
                       enableAction: false,
                     );
                   }
-                  return ListView.builder(
-                    itemCount: state.projectServices.length,
-                    itemBuilder: (context, index) {
-                      final prjServices = state.projectServices[index];
-                      return InkWell(
-                        onTap: () => loadServiceForEditing(prjServices),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: index.isOdd
-                                ? color.primary.withValues(alpha: .05)
-                                : Colors.transparent,
-                            border: editingPjdId == prjServices.pjdId
-                                ? Border.all(color: color.primary, width: 1)
-                                : null,
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                  // Calculate total sum of all services
+                  double totalSum = 0;
+                  for (var service in state.projectServices) {
+                    totalSum += service.total ?? 0;
+                  }
+
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: state.projectServices.length,
+                          itemBuilder: (context, index) {
+                            final prjServices = state.projectServices[index];
+                            return InkWell(
+                              onTap: () => (widget.projectId?.prjStatus == 0)? loadServiceForEditing(prjServices) : null,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: index.isOdd
+                                      ? color.primary.withValues(alpha: .05)
+                                      : Colors.transparent,
+                                  border: editingPjdId == prjServices.pjdId
+                                      ? Border.all(color: color.primary, width: 1)
+                                      : null,
+                                ),
+                                child: Row(
                                   children: [
-                                    Text(prjServices.srvName ?? "", style: titleStyle?.copyWith(color: color.primary)),
-                                    Text(prjServices.prpTrnRef ?? "", style: subtitleStyle),
-                                    if (prjServices.pjdRemark != null)
-                                      Text(prjServices.pjdRemark ?? "", style: subtitleStyle),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(prjServices.srvName ?? "", style: titleStyle?.copyWith(color: color.onSurface)),
+                                          Text(prjServices.prpTrnRef ?? "", style: subtitleStyle),
+                                          if (prjServices.pjdRemark != null)
+                                            Text(prjServices.pjdRemark ?? "", style: subtitleStyle),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 50,
+                                      child: Text(prjServices.pjdQuantity?.toString() ?? '0'),
+                                    ),
+                                    SizedBox(
+                                      width: 120,
+                                      child: Text(
+                                        "${(prjServices.pjdPricePerQty ?? 0).toAmount()} ${widget.projectId?.actCurrency}",
+                                        textAlign: myLocale == "en" ? TextAlign.right : TextAlign.left,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 120,
+                                      child: Text(
+                                        "${(prjServices.total ?? 0).toAmount()} ${widget.projectId?.actCurrency}",
+                                        textAlign: myLocale == "en" ? TextAlign.right : TextAlign.left,
+                                        style: Theme.of(context).textTheme.titleSmall,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                              SizedBox(
-                                width: 50,
-                                child: Text(prjServices.pjdQuantity?.toString() ?? '0'),
-                              ),
-                              SizedBox(
-                                width: 120,
-                                child: Text(
-                                  (prjServices.pjdPricePerQty ?? 0).toAmount(),
-                                  textAlign: myLocale == "en" ? TextAlign.right : TextAlign.left,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 120,
-                                child: Text(
-                                  (prjServices.total ?? 0).toAmount(),
-                                  textAlign: myLocale == "en" ? TextAlign.right : TextAlign.left,
-                                ),
-                              ),
-                            ],
+                            );
+                          },
+                        ),
+                      ),
+                      // Total Footer
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: color.primary.withValues(alpha: 0.03),
+                          border: Border(
+                            top: BorderSide(color: color.primary.withValues(alpha: 0.5), width: 1),
                           ),
                         ),
-                      );
-                    },
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                tr.summary.toUpperCase(),
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: color.primary,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 120,
+                              child: Text(
+                                "${tr.services.toUpperCase()} | ${state.projectServices.length.toString()}",
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ),
+
+                            Column(
+                              children: [
+                                Text(
+                                  "${tr.totalTitle.toUpperCase()} | ${totalSum.toAmount()} ${widget.projectId?.actCurrency}",
+                                  textAlign: myLocale == "en" ? TextAlign.right : TextAlign.left,
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: color.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   );
                 }
                 // Show loading only for initial load
@@ -472,6 +532,7 @@ class _DesktopState extends State<_Desktop> {
               },
             ),
           ),
+
         ],
       ),
     );
@@ -492,7 +553,7 @@ class _DesktopState extends State<_Desktop> {
     final bloc = context.read<ProjectServicesBloc>();
 
     final data = ProjectServicesModel(
-      prjId: widget.projectId,
+      prjId: widget.projectId!.prjId!,
       srvId: serviceId,
       pjdQuantity: double.tryParse(qty.text),
       pjdPricePerQty: double.tryParse(amount.text),
@@ -518,7 +579,7 @@ class _DesktopState extends State<_Desktop> {
 
     final data = ProjectServicesModel(
       pjdId: editingPjdId,
-      prjId: widget.projectId,
+      prjId: widget.projectId!.prjId!,
       srvId: serviceId,
       pjdRemark: remark.text,
       srvName: servicesController.text,
@@ -550,7 +611,7 @@ class _DesktopState extends State<_Desktop> {
               bloc.add(
                 DeleteProjectServiceEvent(
                   editingPjdId!,
-                  widget.projectId!,
+                  widget.projectId!.prjId!,
                   loginData?.usrName ?? '',
                 ),
               );
@@ -574,7 +635,7 @@ class _DesktopState extends State<_Desktop> {
           bloc.add(
             DeleteProjectServiceEvent(
               service.pjdId!,
-              widget.projectId!,
+              widget.projectId!.prjId!,
               loginData?.usrName ?? '',
             ),
           );

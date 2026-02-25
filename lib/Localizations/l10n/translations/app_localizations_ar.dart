@@ -2649,4 +2649,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get projectServices => 'خدمات پروزه';
+
+  @override
+  String get totalIncome => 'مجموعه عواید';
+
+  @override
+  String get projectBudget => 'بودجه پروزه';
+
+  @override
+  String get totalExpense => 'مجموعه مصارف';
 }

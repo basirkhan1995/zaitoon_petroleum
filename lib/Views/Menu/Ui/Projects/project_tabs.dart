@@ -37,13 +37,13 @@ class ProjectTabsView extends StatelessWidget {
               ZTabItem(
                 value: ProjectTabsName.services,
                 label: tr.services,
-                screen: ProjectServicesView(projectId: project?.prjId),
+                screen: ProjectServicesView(project: project),
               ),
             if (login.hasPermission(34) ?? false)
               ZTabItem(
                 value: ProjectTabsName.incomeExpense,
                 label: tr.incomeAndExpenses,
-                screen: ProjectIncomeExpenseView(),
+                screen: ProjectIncomeExpenseView(project: project),
               ),
           ];
 

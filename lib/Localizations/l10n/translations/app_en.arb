@@ -878,5 +878,8 @@
   "completed": "Completed",
   "projectStatus": "Project Status",
   "addNewServices": "Add New Services",
-  "projectServices": "Project Services"
+  "projectServices": "Project Services",
+  "totalIncome": "Total Income",
+  "projectBudget": "Project Budget",
+  "totalExpense": "Total Expense"
 }

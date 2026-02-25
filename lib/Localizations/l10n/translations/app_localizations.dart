@@ -5253,6 +5253,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Project Services'**
   String get projectServices;
+
+  /// No description provided for @totalIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Income'**
+  String get totalIncome;
+
+  /// No description provided for @projectBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Budget'**
+  String get projectBudget;
+
+  /// No description provided for @totalExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Expense'**
+  String get totalExpense;
 }
 
 class _AppLocalizationsDelegate

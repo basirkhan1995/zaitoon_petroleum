@@ -2656,4 +2656,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get projectServices => 'Project Services';
+
+  @override
+  String get totalIncome => 'Total Income';
+
+  @override
+  String get projectBudget => 'Project Budget';
+
+  @override
+  String get totalExpense => 'Total Expense';
 }

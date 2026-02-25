@@ -878,5 +878,8 @@
   "completed": "تکمیل شده",
   "projectStatus": "وضعیت پروزه",
   "addNewServices": "اضافه خدمات جدید",
-  "projectServices": "خدمات پروزه"
+  "projectServices": "خدمات پروزه",
+  "totalIncome": "مجموعه عواید",
+  "projectBudget": "بودجه پروزه",
+  "totalExpense": "مجموعه مصارف"
 }

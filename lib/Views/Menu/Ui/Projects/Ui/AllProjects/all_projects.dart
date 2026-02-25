@@ -43,8 +43,9 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
-    TextStyle? titleStyle = Theme.of(context).textTheme.titleMedium;
     final color = Theme.of(context).colorScheme;
+    TextStyle? titleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(color: color.surface);
+
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -59,72 +60,107 @@ class _DesktopState extends State<_Desktop> {
                   return AddNewProjectView();
                 });
               },
-              label: Text(tr.newProject))
+              label: Text(tr.newProject)),
         ],
       ),
-      body: BlocConsumer<ProjectsBloc, ProjectsState>(
-        listener: (context,state){
-         if(state is ProjectSuccessState){
-           ToastManager.show(context: context, message: tr.successMessage, type: ToastType.success);
-           Navigator.of(context);
-         }if(state is ProjectsErrorState){
-           ToastManager.show(context: context, message: state.message, type: ToastType.error);
-         }
-        },
-        builder: (context, state) {
-          if(state is ProjectsLoadingState){
-            return Center(child: CircularProgressIndicator());
-          }
-          if(state is ProjectsErrorState){
-            return NoDataWidget(
-              title: "Error",
-              message: state.message,
-              onRefresh: onRefresh,
-            );
-          }if(state is ProjectsLoadedState){
-            return ListView.builder(
-                itemCount: state.pjr.length,
-                itemBuilder: (context,index){
-                final pjr = state.pjr[index];
-                  return InkWell(
-                    onTap: (){
-                      showDialog(context: context, builder: (context){
-                        return ProjectView(project: pjr);
-                      });
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                      decoration: BoxDecoration(
-                        color: index.isOdd? color.primary.withValues(alpha: .05) : Colors.transparent
-                      ),
-                      child: Row(
-                      children: [
-                        SizedBox(
-                            width: 40,
-                            child: Text(pjr.prjId.toString())),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(pjr.prjName??"",style: titleStyle),
-                              Text(pjr.prjDetails??"")
-                            ],
-                          ),
-                        ),
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+            margin: EdgeInsets.symmetric(horizontal: 4),
+            decoration: BoxDecoration(
+              color: color.primary
+            ),
+            child: Row(
+              children: [
+               SizedBox(
+                   width: 40,
+                   child: Text(tr.id,style: titleStyle)),
 
-                        SizedBox(
-                            width: 100,
-                            child: Text(pjr.prjDateLine.toFormattedDate())),
-                        StatusBadge(status: pjr.prjStatus!, trueValue: tr.completedTitle, falseValue: tr.pendingTitle),
-                      ],
-                                      ),
-                    ),
+                Expanded(
+                    child: Text(tr.projectInformation,style: titleStyle)),
+                SizedBox(
+                    width: 100,
+                    child: Text(tr.date,style: titleStyle)),
+                SizedBox(
+                    width: 100,
+                    child: Text(tr.deadline,style: titleStyle)),
+                SizedBox(
+                    width: 90,
+                    child: Text(tr.status,style: titleStyle)),
+              ],
+            ),
+          ),
+          Expanded(
+            child: BlocConsumer<ProjectsBloc, ProjectsState>(
+              listener: (context,state){
+               if(state is ProjectSuccessState){
+                 ToastManager.show(context: context, message: tr.successMessage, type: ToastType.success);
+                 Navigator.of(context);
+               }if(state is ProjectsErrorState){
+                 ToastManager.show(context: context, message: state.message, type: ToastType.error);
+               }
+              },
+              builder: (context, state) {
+                if(state is ProjectsLoadingState){
+                  return Center(child: CircularProgressIndicator());
+                }
+                if(state is ProjectsErrorState){
+                  return NoDataWidget(
+                    title: "Error",
+                    message: state.message,
+                    onRefresh: onRefresh,
                   );
-            });
-          }
-          return const SizedBox();
-        },
+                }if(state is ProjectsLoadedState){
+                  return ListView.builder(
+                      itemCount: state.pjr.length,
+                      itemBuilder: (context,index){
+                      final pjr = state.pjr[index];
+                        return InkWell(
+                          onTap: (){
+                            showDialog(context: context, builder: (context){
+                              return ProjectView(project: pjr);
+                            });
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: index.isOdd? color.primary.withValues(alpha: .05) : Colors.transparent
+                            ),
+                            child: Row(
+                            children: [
+                              SizedBox(
+                                  width: 40,
+                                  child: Text(pjr.prjId.toString())),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(pjr.prjName??"",style: titleStyle?.copyWith(color: color.onSurface)),
+                                    Text(pjr.prjDetails??"")
+                                  ],
+                                ),
+                              ),
+
+                              SizedBox(
+                                  width: 100,
+                                  child: Text(pjr.prjDateLine.toFormattedDate())),
+                              SizedBox(
+                                  width: 100,
+                                  child: Text(pjr.prjDateLine?.daysLeftText ?? "")),
+                              StatusBadge(status: pjr.prjStatus!, trueValue: tr.completedTitle, falseValue: tr.pendingTitle),
+                            ],
+                                            ),
+                          ),
+                        );
+                  });
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
