@@ -433,7 +433,7 @@ class _DesktopState extends State<_Desktop> {
                     ),
                     child: Center(
                       child: Text(
-                        '${index + 1}',
+                        '${pjr.prjId}',
                         style: TextStyle(
                           color: color.primary,
                           fontWeight: FontWeight.bold,
