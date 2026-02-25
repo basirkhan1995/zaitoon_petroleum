@@ -130,10 +130,10 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
                     children: [
                       Expanded(
                         child: _buildTypeCard(
-                          title: tr.income,
+                          title: tr.payment,
                           isSelected: _selectedType == 'Income',
                           selectedColor: Colors.green,
-                          icon: Icons.arrow_upward,
+                          icon: Icons.arrow_downward,
                           onTap: () {
                             setState(() {
                               _selectedType = 'Income';
@@ -150,7 +150,7 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
                           title: tr.expense,
                           isSelected: _selectedType == 'Expense',
                           selectedColor: color.error,
-                          icon: Icons.arrow_downward,
+                          icon: Icons.arrow_upward,
                           onTap: () {
                             setState(() {
                               _selectedType = 'Expense';

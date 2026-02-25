@@ -881,5 +881,6 @@
   "projectServices": "Project Services",
   "totalIncome": "Total Income",
   "projectBudget": "Project Budget",
-  "totalExpense": "Total Expense"
+  "totalExpense": "Total Expense",
+  "totalProjects": "Total Project"
 }

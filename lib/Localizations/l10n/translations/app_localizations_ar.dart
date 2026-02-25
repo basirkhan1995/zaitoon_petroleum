@@ -2648,7 +2648,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addNewServices => 'اضافه خدمات جدید';
 
   @override
-  String get projectServices => 'خدمات پروزه';
+  String get projectServices => 'خدمات پروژه';
 
   @override
   String get totalIncome => 'مجموعه عواید';
@@ -2658,4 +2658,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get totalExpense => 'مجموعه مصارف';
+
+  @override
+  String get totalProjects => 'کل مبلغ پروژه';
 }

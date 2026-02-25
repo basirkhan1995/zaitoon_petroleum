@@ -162,7 +162,7 @@ class _DesktopState extends State<_Desktop> {
                       Expanded(
                         child: _buildSummaryCard(
                           context,
-                          title: tr.projectBudget,
+                          title: tr.totalProjects,
                           amount: inOut.totalProjectAmount.toDoubleAmount(),
                           currency: currency,
                           color: color.primary,
@@ -172,7 +172,7 @@ class _DesktopState extends State<_Desktop> {
                       Expanded(
                         child: _buildSummaryCard(
                           context,
-                          title: tr.totalIncome,
+                          title: tr.totalPayment,
                           amount: totalIncome,
                           currency: currency,
                           color: Colors.green,
@@ -226,7 +226,7 @@ class _DesktopState extends State<_Desktop> {
 
                       Expanded(
                         child: Text(
-                          tr.income,
+                          tr.payment,
                           style: titleStyle,
                         ),
                       ),
