@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/zform_dialog.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Services/bloc/services_bloc.dart';
@@ -82,19 +83,12 @@ class _BaseServiceAddEditState extends State<_BaseServiceAddEdit> {
     if (widget.isMobile) {
       return SizedBox(
         width: double.infinity,
-        child: ElevatedButton(
+        child: ZOutlineButton(
           onPressed: (context.watch<ServicesBloc>().state is ServicesLoadingState)
               ? null
               : onSubmit,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: color.primary,
-            foregroundColor: color.surface,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: (context.watch<ServicesBloc>().state is ServicesLoadingState)
+          isActive: true,
+          label: (context.watch<ServicesBloc>().state is ServicesLoadingState)
               ? SizedBox(
             width: 20,
             height: 20,

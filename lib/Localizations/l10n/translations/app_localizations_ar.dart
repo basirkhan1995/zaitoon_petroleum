@@ -2634,4 +2634,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get incomeAndExpenses => 'عواید و مصارف';
+
+  @override
+  String get inProgress => 'در حال کار';
+
+  @override
+  String get completed => 'تکمیل شده';
+
+  @override
+  String get projectStatus => 'وضعیت پروزه';
+
+  @override
+  String get addNewServices => 'اضافه خدمات جدید';
+
+  @override
+  String get projectServices => 'خدمات پروزه';
 }

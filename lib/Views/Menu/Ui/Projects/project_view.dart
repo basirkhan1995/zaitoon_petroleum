@@ -15,7 +15,10 @@ class ProjectView extends StatelessWidget {
         onAction: null,
         isActionTrue: false,
         title: project.prjName??"",
-        child: ProjectTabsView(project: project)
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: ProjectTabsView(project: project),
+        )
     );
   }
 }

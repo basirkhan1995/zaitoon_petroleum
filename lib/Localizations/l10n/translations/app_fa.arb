@@ -873,5 +873,10 @@
   "deadline": "تاریخ تسلیمی",
   "ownerInformation": "معلومات فرمایش دهنده",
   "ownerAccount": "حساب فرمایش دهنده",
-  "incomeAndExpenses": "عواید و مصارف"
+  "incomeAndExpenses": "عواید و مصارف",
+  "inProgress": "در حال کار",
+  "completed": "تکمیل شده",
+  "projectStatus": "وضعیت پروزه",
+  "addNewServices": "اضافه خدمات جدید",
+  "projectServices": "خدمات پروزه"
 }

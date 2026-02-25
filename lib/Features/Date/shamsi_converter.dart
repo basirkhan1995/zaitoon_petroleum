@@ -311,7 +311,137 @@ extension AfghanShamsiExtraExtensions on DateTime {
     );
   }
 }
+extension DeadlineExtension on Object {
+  /// Calculate days left until deadline
+  /// Can accept DateTime, String (in various formats), or null
+  /// Returns:
+  ///   - positive number: days remaining
+  ///   - 0: deadline is today
+  ///   - negative number: days overdue
+  ///   - null: if input is invalid or null
+  int? get daysLeft {
+    // Handle null
+    DateTime? deadline;
 
+    // If it's already DateTime
+    if (this is DateTime) {
+      deadline = this as DateTime;
+    }
+    // If it's a String, try to parse it
+    else if (this is String) {
+      final dateStr = this as String;
+
+      // Try different date formats
+      try {
+        // Try ISO format (yyyy-MM-dd)
+        if (dateStr.contains(RegExp(r'^\d{4}-\d{2}-\d{2}'))) {
+          deadline = DateTime.parse(dateStr);
+        }
+        // Try dd/MM/yyyy format
+        else if (dateStr.contains(RegExp(r'^\d{2}/\d{2}/\d{4}'))) {
+          final parts = dateStr.split('/');
+          deadline = DateTime(
+            int.parse(parts[2]),
+            int.parse(parts[1]),
+            int.parse(parts[0]),
+          );
+        }
+        // Try MM/dd/yyyy format
+        else if (dateStr.contains(RegExp(r'^\d{2}-\d{2}-\d{4}'))) {
+          final parts = dateStr.split('-');
+          deadline = DateTime(
+            int.parse(parts[2]),
+            int.parse(parts[0]),
+            int.parse(parts[1]),
+          );
+        }
+        // Try timestamp (milliseconds since epoch)
+        else if (RegExp(r'^\d+$').hasMatch(dateStr)) {
+          deadline = DateTime.fromMillisecondsSinceEpoch(int.parse(dateStr));
+        }
+      } catch (e) {
+        return null;
+      }
+    }
+
+    if (deadline == null) return null;
+
+    // Calculate days difference
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final deadlineDate = DateTime(deadline.year, deadline.month, deadline.day);
+
+    return deadlineDate.difference(today).inDays;
+  }
+
+  /// Returns a user-friendly string describing days left until deadline
+  String? get daysLeftText {
+    final days = daysLeft;
+
+    if (days == null) return null;
+
+    if (days > 0) {
+      return '$days days remaining';
+    } else if (days == 0) {
+      return 'Deadline is today';
+    } else {
+      return '${days.abs()} days overdue';
+    }
+  }
+
+  /// Returns a color based on how close the deadline is
+  /// Returns null if deadline is invalid
+  Color? get deadlineColor {
+    final days = daysLeft;
+
+    if (days == null) return null;
+
+    if (days > 7) {
+      return Colors.green;      // More than a week left
+    } else if (days > 3) {
+      return Colors.orange;     // Less than a week but more than 3 days
+    } else if (days >= 0) {
+      return Colors.deepOrange; // 3 days or less
+    } else {
+      return Colors.red;        // Overdue
+    }
+  }
+
+  /// Returns an icon based on deadline status
+  IconData? get deadlineIcon {
+    final days = daysLeft;
+
+    if (days == null) return null;
+
+    if (days > 7) {
+      return Icons.check_circle_outline;
+    } else if (days > 3) {
+      return Icons.access_time;
+    } else if (days >= 0) {
+      return Icons.warning_amber;
+    } else {
+      return Icons.error_outline;
+    }
+  }
+
+  /// Returns true if the deadline is overdue
+  bool get isOverdue {
+    final days = daysLeft;
+    return days != null && days < 0;
+  }
+
+  /// Returns true if the deadline is today
+  bool get isToday {
+    final days = daysLeft;
+    return days != null && days == 0;
+  }
+
+  /// Returns true if the deadline is within the next [days] days
+  bool isWithinDays(int days) {
+    final daysLeft = this.daysLeft;
+    return daysLeft != null && daysLeft >= 0 && daysLeft <= days;
+  }
+}
 
 class ZDateFormatter {
   static DateTime? parse(dynamic value) {

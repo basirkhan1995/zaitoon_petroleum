@@ -5223,6 +5223,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Income & Expense'**
   String get incomeAndExpenses;
+
+  /// No description provided for @inProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get inProgress;
+
+  /// No description provided for @completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completed;
+
+  /// No description provided for @projectStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Status'**
+  String get projectStatus;
+
+  /// No description provided for @addNewServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Services'**
+  String get addNewServices;
+
+  /// No description provided for @projectServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Services'**
+  String get projectServices;
 }
 
 class _AppLocalizationsDelegate

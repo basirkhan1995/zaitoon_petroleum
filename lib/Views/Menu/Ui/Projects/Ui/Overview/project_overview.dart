@@ -68,10 +68,12 @@ class _DesktopState extends State<_Desktop> {
   final projectLocation = TextEditingController();
   int? accNumber;
   int? ownerId;
+  int? status;
   String deadline = DateTime.now().toFormattedDate();
   LoginData? loginData;
   final formKey = GlobalKey<FormState>();
 
+  bool isPending = false;
   @override
   void initState() {
     final model = (context as dynamic).widget.model;
@@ -84,6 +86,8 @@ class _DesktopState extends State<_Desktop> {
       ownerAccount.text = widget.model?.prjOwnerAccount.toString() ?? "";
       ownerId = widget.model?.prjOwner;
       deadline = widget.model?.prjDateLine.toFormattedDate()??"";
+      status = widget.model?.prjStatus ?? 0;
+      isPending = widget.model?.prjStatus == 0;
     }
     super.initState();
   }
@@ -91,6 +95,7 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
     final prjState = context.watch<ProjectsBloc>().state;
     final state = context.watch<AuthBloc>().state;
     if (state is! AuthenticatedState) {
@@ -104,230 +109,290 @@ class _DesktopState extends State<_Desktop> {
         child: Form(
           key: formKey,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              SectionTitle(title: tr.projectInformation),
-              SizedBox(height: 5),
-              ZTextFieldEntitled(
-                controller: projectName,
-                isRequired: true,
-                title: tr.projectName,
-                validator: (e) {
-                  if (e.isEmpty) {
-                    return tr.required(tr.projectName);
-                  }
-                  return null;
-                },
-              ),
-
-              SizedBox(height: 8),
-              ZTextFieldEntitled(
-                isRequired: true,
-                controller: projectDetails,
-                keyboardInputType: TextInputType.multiline,
-                title: tr.details,
-                validator: (e) {
-                  if (e.isEmpty) {
-                    return tr.required(tr.details);
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: ZTextFieldEntitled(
-                      controller: projectLocation,
-                      title: tr.location,
-                    ),
-                  ),
-                  SizedBox(width: 5),
-                  Expanded(
-                    child: ZDatePicker(
-                      label: tr.deadline,
-                      value: deadline,
-                      onDateChanged: (v) {
-                        setState(() {
-                          deadline = v;
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 8),
-              SectionTitle(title: tr.ownerInformation),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
-                child:
-                GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
-                  showAllOnFocus: true,
-                  controller: projectOwner,
-                  title: tr.individuals,
-                  hintText: tr.individuals,
-                  trailing: IconButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return IndividualAddEditView();
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SectionTitle(title: tr.projectInformation),
+                      SizedBox(height: 5),
+                      ZTextFieldEntitled(
+                        isEnabled: isPending,
+                        controller: projectName,
+                        isRequired: true,
+                        title: tr.projectName,
+                        validator: (e) {
+                          if (e.isEmpty) {
+                            return tr.required(tr.projectName);
+                          }
+                          return null;
                         },
-                      );
-                    },
-                    icon: Icon(Icons.add),
-                  ),
-                  isRequired: true,
-                  bloc: context.read<IndividualsBloc>(),
-                  fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
-                  searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent(search: query)),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return tr.required(tr.individuals);
-                    }
-                    return null;
-                  },
-                  itemBuilder: (context, account) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 8,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                "${account.perName} ${account.perLastName}",
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
+                      ),
+                  
+                      SizedBox(height: 8),
+                      ZTextFieldEntitled(
+                        isEnabled: isPending,
+                        isRequired: true,
+                        controller: projectDetails,
+                        keyboardInputType: TextInputType.multiline,
+                        title: tr.details,
+                        validator: (e) {
+                          if (e.isEmpty) {
+                            return tr.required(tr.details);
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: ZTextFieldEntitled(
+                              isEnabled: isPending,
+                              controller: projectLocation,
+                              title: tr.location,
                             ),
-                          ],
+                          ),
+                          SizedBox(width: 5),
+                          Expanded(
+                            child: ZDatePicker(
+                              disablePastDate: true,
+                              isActive: !isPending,
+                              label: tr.deadline,
+                              value: deadline,
+                              onDateChanged: (v) {
+                                setState(() {
+                                  deadline = v;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8),
+                      SectionTitle(title: tr.ownerInformation),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
+                        child:
+                        GenericTextfield<IndividualsModel, IndividualsBloc, IndividualsState>(
+                          isEnabled: isPending,
+                          controller: projectOwner,
+                          title: tr.individuals,
+                          hintText: tr.individuals,
+                          trailing: IconButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return IndividualAddEditView();
+                                },
+                              );
+                            },
+                            icon: Icon(Icons.add),
+                          ),
+                          isRequired: true,
+                          bloc: context.read<IndividualsBloc>(),
+                          fetchAllFunction: (bloc) => bloc.add(LoadIndividualsEvent()),
+                          searchFunction: (bloc, query) => bloc.add(LoadIndividualsEvent(search: query)),
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return tr.required(tr.individuals);
+                            }
+                            return null;
+                          },
+                          itemBuilder: (context, account) => Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 8,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        "${account.perName} ${account.perLastName}",
+                                        style: Theme.of(context).textTheme.bodyLarge,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          itemToString: (acc) => "${acc.perName} ${acc.perLastName}",
+                          stateToLoading: (state) => state is IndividualLoadingState,
+                          loadingBuilder: (context) => const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                          stateToItems: (state) {
+                            if (state is IndividualLoadedState) {
+                              return state.individuals;
+                            }
+                            return [];
+                          },
+                          onSelected: (value) {
+                            setState(() {
+                              ownerId = value.perId!;
+                              ownerAccount.clear();
+                              accNumber = null;
+                              context.read<AccountsBloc>().add(
+                                LoadAccountsEvent(ownerId: ownerId),
+                              );
+                            });
+                          },
+                          noResultsText: tr.noDataFound,
+                          showClearButton: true,
                         ),
-                      ],
-                    ),
-                  ),
-                  itemToString: (acc) => "${acc.perName} ${acc.perLastName}",
-                  stateToLoading: (state) => state is IndividualLoadingState,
-                  loadingBuilder: (context) => const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                  stateToItems: (state) {
-                    if (state is IndividualLoadedState) {
-                      return state.individuals;
-                    }
-                    return [];
-                  },
-                  onSelected: (value) {
-                    setState(() {
-                      ownerId = value.perId!;
-                      ownerAccount.clear();
-                      accNumber = null;
-                      context.read<AccountsBloc>().add(
-                        LoadAccountsEvent(ownerId: ownerId),
-                      );
-                    });
-                  },
-                  noResultsText: tr.noDataFound,
-                  showClearButton: true,
-                ),
-              ),
-              SizedBox(height: 8),
-
-              // Account Information Card
-              SectionTitle(title: tr.ownerAccount),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
-                child:
-                GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
-                  showAllOnFocus: true,
-                  controller: ownerAccount,
-                  title: tr.accounts,
-                  hintText: tr.accNameOrNumber,
-                  isRequired: true,
-                  bloc: context.read<AccountsBloc>(),
-                  fetchAllFunction: (bloc) =>
-                      bloc.add(LoadAccountsEvent(ownerId: ownerId)),
-                  searchFunction: (bloc, query) =>
-                      bloc.add(LoadAccountsEvent(ownerId: ownerId)),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return tr.required(tr.accounts);
-                    }
-                    return null;
-                  },
-                  itemBuilder: (context, account) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 8,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                "${account.accNumber} | ${account.accName}",
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
+                      ),
+                      SizedBox(height: 8),
+                  
+                      // Account Information Card
+                      SectionTitle(title: tr.ownerAccount),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
+                        child:
+                        GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
+                          isEnabled: isPending,
+                          controller: ownerAccount,
+                          title: tr.accounts,
+                          hintText: tr.accNameOrNumber,
+                          isRequired: true,
+                          bloc: context.read<AccountsBloc>(),
+                          fetchAllFunction: (bloc) =>
+                              bloc.add(LoadAccountsEvent(ownerId: ownerId)),
+                          searchFunction: (bloc, query) =>
+                              bloc.add(LoadAccountsEvent(ownerId: ownerId)),
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return tr.required(tr.accounts);
+                            }
+                            return null;
+                          },
+                          itemBuilder: (context, account) => Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 8,
                             ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Utils.currencyColors(
-                                  account.actCurrency ?? "",
-                                ).withValues(alpha: .1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                "${account.actCurrency}",
-                                style: Theme.of(context).textTheme.titleSmall
-                                    ?.copyWith(
-                                  color: Utils.currencyColors(
-                                    account.actCurrency ?? "",
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        "${account.accNumber} | ${account.accName}",
+                                        style: Theme.of(context).textTheme.bodyLarge,
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Utils.currencyColors(
+                                          account.actCurrency ?? "",
+                                        ).withValues(alpha: .1),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        "${account.actCurrency}",
+                                        style: Theme.of(context).textTheme.titleSmall
+                                            ?.copyWith(
+                                          color: Utils.currencyColors(
+                                            account.actCurrency ?? "",
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
+                          stateToLoading: (state) => state is AccountLoadingState,
+                          loadingBuilder: (context) => const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                          stateToItems: (state) {
+                            if (state is AccountLoadedState) {
+                              return state.accounts;
+                            }
+                            return [];
+                          },
+                          onSelected: (value) {
+                            setState(() {
+                              accNumber = value.accNumber ?? 1;
+                            });
+                          },
+                          noResultsText: tr.noDataFound,
+                          showClearButton: true,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                  
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SectionTitle(title: tr.projectStatus),
+                          Row(
+                            children: [
+                              SectionTitle(title: tr.deadline),
+                              SizedBox(width: 8),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                child: Text(
+                                  widget.model?.prjDateLine?.daysLeftText ?? 'No deadline',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).colorScheme.primary,
                                   ),
                                 ),
-                              ),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Switch(
+                            value: status == 1,
+                            onChanged: (e) {
+                              setState(() {
+                                status = e ? 1 : 0;
+                              });
+                            },
+                            activeTrackColor: Colors.green,
+                            activeThumbColor: Theme.of(context).colorScheme.surface,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            status == 0 ? tr.inProgress : tr.completed,
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: status == 1 ? Colors.green : Colors.orange,
+                              fontWeight: FontWeight.bold,
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+
+                        ],
+                      ),
+                  
+                    ],
                   ),
-                  itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
-                  stateToLoading: (state) => state is AccountLoadingState,
-                  loadingBuilder: (context) => const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                  stateToItems: (state) {
-                    if (state is AccountLoadedState) {
-                      return state.accounts;
-                    }
-                    return [];
-                  },
-                  onSelected: (value) {
-                    setState(() {
-                      accNumber = value.accNumber ?? 1;
-                    });
-                  },
-                  noResultsText: tr.noDataFound,
-                  showClearButton: true,
                 ),
               ),
               const SizedBox(height: 10),
-
               Row(
                 children: [
                   ZOutlineButton(
@@ -365,6 +430,7 @@ class _DesktopState extends State<_Desktop> {
       prjDateLine: DateTime.tryParse(deadline),
       prjOwner: ownerId,
       prjOwnerAccount: accNumber,
+      prjStatus: status
     );
 
     if(widget.model == null ){

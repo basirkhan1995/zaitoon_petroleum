@@ -156,7 +156,7 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
             value: MenuName.projects,
             label: AppLocalizations.of(context)!.projects,
             screen: const AllProjectsView(),
-            icon: Icons.folder,
+            icon: Icons.folder_open_rounded,
           ),
       ],
 
@@ -945,7 +945,7 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
     if ((login.hasPermission(42) ?? false)) {
       menuItems.add(
         _DrawerMenuItem(
-          icon: Icons.folder,
+          icon: Icons.folder_open_rounded,
           label: AppLocalizations.of(context)!.projects,
           isSelected: currentTab == MenuName.projects,
           onTap: () => _onMenuItemTap(MenuName.projects),

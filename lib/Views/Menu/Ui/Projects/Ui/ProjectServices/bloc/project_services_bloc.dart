@@ -10,6 +10,7 @@ class ProjectServicesBloc extends Bloc<ProjectServicesEvent, ProjectServicesStat
   final Repositories _repo;
   ProjectServicesBloc(this._repo) : super(ProjectServicesInitial()) {
     on<LoadProjectServiceEvent>((event, emit)async {
+      emit(ProjectServicesLoadingState());
       try{
         final services = await _repo.getProjectServices(projectId: event.projectId);
         emit(ProjectServicesLoadedState(services));
@@ -18,6 +19,7 @@ class ProjectServicesBloc extends Bloc<ProjectServicesEvent, ProjectServicesStat
       }
     });
     on<AddProjectServiceEvent>((event, emit)async {
+      emit(ProjectServicesLoadingState());
       try{
         final services = await _repo.addProjectServices(newData: event.newService);
         final msg = services['msg'];
@@ -34,6 +36,7 @@ class ProjectServicesBloc extends Bloc<ProjectServicesEvent, ProjectServicesStat
       }
     });
     on<UpdateProjectServiceEvent>((event, emit)async {
+      emit(ProjectServicesLoadingState());
       try{
         final services = await _repo.updateProjectServices(newData: event.newService);
         final msg = services['msg'];
@@ -50,8 +53,9 @@ class ProjectServicesBloc extends Bloc<ProjectServicesEvent, ProjectServicesStat
       }
     });
     on<DeleteProjectServiceEvent>((event, emit)async {
+      emit(ProjectServicesLoadingState());
       try{
-        final services = await _repo.deleteProjectServices(pjdID: event.projectId, usrName: event.usrName);
+        final services = await _repo.deleteProjectServices(pjdID: event.pjdId, usrName: event.usrName);
         final msg = services['msg'];
         if(msg == "success"){
           emit(ProjectServicesSuccessState());

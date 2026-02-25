@@ -873,5 +873,10 @@
   "deadline": "Deadline",
   "ownerInformation": "Owner Information",
   "ownerAccount": "Owner Account",
-  "incomeAndExpenses": "Income & Expense"
+  "incomeAndExpenses": "Income & Expense",
+  "inProgress": "In Progress",
+  "completed": "Completed",
+  "projectStatus": "Project Status",
+  "addNewServices": "Add New Services",
+  "projectServices": "Project Services"
 }

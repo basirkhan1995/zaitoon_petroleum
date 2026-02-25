@@ -2641,4 +2641,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get incomeAndExpenses => 'Income & Expense';
+
+  @override
+  String get inProgress => 'In Progress';
+
+  @override
+  String get completed => 'Completed';
+
+  @override
+  String get projectStatus => 'Project Status';
+
+  @override
+  String get addNewServices => 'Add New Services';
+
+  @override
+  String get projectServices => 'Project Services';
 }

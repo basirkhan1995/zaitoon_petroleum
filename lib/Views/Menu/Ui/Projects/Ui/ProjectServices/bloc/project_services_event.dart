@@ -12,11 +12,12 @@ class LoadProjectServiceEvent extends ProjectServicesEvent{
 }
 
 class DeleteProjectServiceEvent extends ProjectServicesEvent{
+  final int pjdId;
   final int projectId;
   final String usrName;
-  const DeleteProjectServiceEvent(this.projectId,this.usrName);
+  const DeleteProjectServiceEvent(this.pjdId,this.projectId, this.usrName);
   @override
-  List<Object?> get props => [projectId,usrName];
+  List<Object?> get props => [pjdId,projectId, usrName];
 }
 
 class AddProjectServiceEvent extends ProjectServicesEvent{
