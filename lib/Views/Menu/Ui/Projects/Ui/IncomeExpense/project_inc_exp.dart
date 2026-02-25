@@ -10,6 +10,8 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/AllProjects/model/pjr_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/IncomeExpense/bloc/project_inc_exp_bloc.dart';
 
+import 'add_edit_inc_exp.dart';
+
 class ProjectIncomeExpenseView extends StatelessWidget {
   final ProjectsModel? project;
   const ProjectIncomeExpenseView({super.key, this.project});
@@ -65,7 +67,16 @@ class _DesktopState extends State<_Desktop> {
     });
     super.initState();
   }
+  void _showAddTransactionDialog() {
+    if (widget.project == null) return;
 
+    showDialog(
+      context: context,
+      builder: (context) => AddEditIncomeExpenseDialog(
+        project: widget.project!,
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
@@ -74,13 +85,14 @@ class _DesktopState extends State<_Desktop> {
     TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.surface);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: (){}),
+          onPressed: _showAddTransactionDialog,
+          child: Icon(Icons.add)),
       body: BlocConsumer<ProjectIncExpBloc, ProjectIncExpState>(
         listener: (context, state) {
           if (state is ProjectIncExpErrorState) {
             ToastManager.show(
               context: context,
+              title: tr.errorTitle,
               message: state.message,
               type: ToastType.error,
             );
@@ -88,6 +100,7 @@ class _DesktopState extends State<_Desktop> {
           if (state is ProjectIncExpSuccessState) {
             ToastManager.show(
               context: context,
+              title: tr.successTitle,
               message: tr.successMessage,
               type: ToastType.success,
             );
@@ -208,6 +221,8 @@ class _DesktopState extends State<_Desktop> {
                         flex: 3,
                         child: Text(tr.referenceNumber, style: titleStyle),
                       ),
+
+
 
                       Expanded(
                         child: Text(
