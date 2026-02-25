@@ -133,6 +133,7 @@ class _DesktopState extends State<_Desktop> {
         children: [
           ZCover(
             padding: const EdgeInsets.all(8.0),
+            color: color.surface,
             child: Form(
               key: formKey,
               child: Column(
@@ -244,6 +245,19 @@ class _DesktopState extends State<_Desktop> {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 12),
+                  ZTextFieldEntitled(
+                    keyboardInputType: TextInputType.multiline,
+                    isRequired: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return tr.required(tr.remark);
+                      }
+                      return null;
+                    },
+                    controller: remark,
+                    title: tr.remark,
                   ),
                   const SizedBox(height: 12),
                   Row(

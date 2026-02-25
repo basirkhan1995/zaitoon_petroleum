@@ -11,7 +11,7 @@ class ProjectView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ZFormDialog(
         icon: Icons.folder,
-        width: MediaQuery.of(context).size.width *.5,
+        width: MediaQuery.of(context).size.width *.6,
         onAction: null,
         isActionTrue: false,
         title: project.prjName??"",

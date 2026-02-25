@@ -1361,7 +1361,7 @@ class _DesktopState extends State<_Desktop> {
                                             bloc.add(
                                               LoadAccountsFilterEvent(
                                                 input: query,
-                                                include: '',
+                                                include: '1,2,3,4,5,6,7,8,9,10,11,12',
                                                 exclude: "10101010,10101011",
                                                 ccy: baseCurrency,
                                               ),
