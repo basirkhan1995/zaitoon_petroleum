@@ -68,14 +68,7 @@ class _DesktopState extends State<_Desktop> {
         children: [
           // Header with gradient background
           Container(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-            decoration: BoxDecoration(
-              color: color.primary.withValues(alpha: .03),
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
-              ),
-            ),
+            padding: const EdgeInsets.symmetric(vertical: 0,horizontal: 5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -93,7 +86,7 @@ class _DesktopState extends State<_Desktop> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 2),
                         Text(
                           'Manage and track all your projects',
                           style: textTheme.bodyMedium?.copyWith(
@@ -141,46 +134,43 @@ class _DesktopState extends State<_Desktop> {
                     const SizedBox(width: 16),
 
                     // Filter chips
-                    Expanded(
-                      flex: 2,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            _buildFilterChip(
-                              label: 'All',
-                              isSelected: _filterStatus == 'All',
-                              onSelected: () {
-                                setState(() {
-                                  _filterStatus = 'All';
-                                });
-                              },
-                              surfaceColor: color.primary,
-                            ),
-                            const SizedBox(width: 8),
-                            _buildFilterChip(
-                              label: tr.completedTitle,
-                              isSelected: _filterStatus == 'Completed',
-                              onSelected: () {
-                                setState(() {
-                                  _filterStatus = 'Completed';
-                                });
-                              },
-                              surfaceColor: color.primary,
-                            ),
-                            const SizedBox(width: 8),
-                            _buildFilterChip(
-                              label: tr.pendingTitle,
-                              isSelected: _filterStatus == 'Pending',
-                              onSelected: () {
-                                setState(() {
-                                  _filterStatus = 'Pending';
-                                });
-                              },
-                              surfaceColor: color.primary,
-                            ),
-                          ],
-                        ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildFilterChip(
+                            label: 'All',
+                            isSelected: _filterStatus == 'All',
+                            onSelected: () {
+                              setState(() {
+                                _filterStatus = 'All';
+                              });
+                            },
+                            surfaceColor: color.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          _buildFilterChip(
+                            label: tr.completedTitle,
+                            isSelected: _filterStatus == 'Completed',
+                            onSelected: () {
+                              setState(() {
+                                _filterStatus = 'Completed';
+                              });
+                            },
+                            surfaceColor: color.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          _buildFilterChip(
+                            label: tr.pendingTitle,
+                            isSelected: _filterStatus == 'Pending',
+                            onSelected: () {
+                              setState(() {
+                                _filterStatus = 'Pending';
+                              });
+                            },
+                            surfaceColor: color.primary,
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -325,7 +315,7 @@ class _DesktopState extends State<_Desktop> {
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(20),
         side: BorderSide(
           color: isSelected ? Theme.of(context).colorScheme.primary : surfaceColor.withValues(alpha: .3),
         ),
@@ -367,9 +357,9 @@ class _DesktopState extends State<_Desktop> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey,
+                    color: Theme.of(context).colorScheme.outline,
                   ),
                 ),
                 Text(
@@ -459,7 +449,7 @@ class _DesktopState extends State<_Desktop> {
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
-                            pjr.prjDetails!,
+                            pjr.prjDetails??"",
                             style: textTheme.bodySmall?.copyWith(
                               color: color.outline,
                             ),
@@ -470,8 +460,8 @@ class _DesktopState extends State<_Desktop> {
                     ],
                   ),
                 ),
-                Expanded(
-                  flex: 1,
+                SizedBox(
+                  width: 110,
                   child: Row(
                     children: [
                       Icon(
@@ -487,8 +477,8 @@ class _DesktopState extends State<_Desktop> {
                     ],
                   ),
                 ),
-                Expanded(
-                  flex: 1,
+                SizedBox(
+                  width: 160,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
@@ -519,8 +509,8 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ),
                 SizedBox(width: 8),
-                Expanded(
-                  flex: 0,
+                SizedBox(
+                  width: 100,
                   child: StatusBadge(
                     status: pjr.prjStatus!,
                     trueValue: tr.completedTitle,
@@ -534,7 +524,7 @@ class _DesktopState extends State<_Desktop> {
                     icon: Icon(
                       Icons.more_vert,
                       size: 18,
-                      color: Colors.grey,
+                      color: Theme.of(context).colorScheme.outline,
                     ),
                     onPressed: () {
                       _showProjectMenu(context, pjr);

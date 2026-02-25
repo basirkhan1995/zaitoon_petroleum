@@ -5149,7 +5149,7 @@ abstract class AppLocalizations {
   /// No description provided for @projects.
   ///
   /// In en, this message translates to:
-  /// **'Project'**
+  /// **'Projects'**
   String get projects;
 
   /// No description provided for @services.
