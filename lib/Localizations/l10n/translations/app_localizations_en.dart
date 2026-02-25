@@ -2640,7 +2640,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ownerAccount => 'Owner Account';
 
   @override
-  String get incomeAndExpenses => 'Income & Expense';
+  String get incomeAndExpenses => 'Payment & Expense';
 
   @override
   String get inProgress => 'In Progress';
@@ -2668,4 +2668,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get totalProjects => 'Total Project';
+
+  @override
+  String get projectEntry => 'Project Entry';
 }

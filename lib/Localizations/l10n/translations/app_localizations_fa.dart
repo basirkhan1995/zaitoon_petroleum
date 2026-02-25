@@ -1040,7 +1040,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get terminated => 'منفک';
 
   @override
-  String get inactive => 'کارمند منفک';
+  String get inactive => 'غیرفعال';
 
   @override
   String get sameAccountMessage =>
@@ -2630,7 +2630,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get ownerAccount => 'حساب فرمایش دهنده';
 
   @override
-  String get incomeAndExpenses => 'عواید و مصارف';
+  String get incomeAndExpenses => 'پرداخت ها و مصارف';
 
   @override
   String get inProgress => 'در حال کار';
@@ -2658,4 +2658,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get totalProjects => 'کل مبلغ پروژه';
+
+  @override
+  String get projectEntry => 'معاملات پروزه';
 }

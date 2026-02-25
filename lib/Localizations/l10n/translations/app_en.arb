@@ -873,7 +873,7 @@
   "deadline": "Deadline",
   "ownerInformation": "Owner Information",
   "ownerAccount": "Owner Account",
-  "incomeAndExpenses": "Income & Expense",
+  "incomeAndExpenses": "Payment & Expense",
   "inProgress": "In Progress",
   "completed": "Completed",
   "projectStatus": "Project Status",
@@ -882,5 +882,6 @@
   "totalIncome": "Total Income",
   "projectBudget": "Project Budget",
   "totalExpense": "Total Expense",
-  "totalProjects": "Total Project"
+  "totalProjects": "Total Project",
+  "projectEntry": "Project Entry"
 }

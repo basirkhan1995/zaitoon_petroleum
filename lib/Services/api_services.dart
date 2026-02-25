@@ -193,7 +193,7 @@ class ApiServices {
   ApiServices() {
     _dio = Dio(
       BaseOptions(
-        baseUrl: "http://52.21.3.100/OstaneSabz/rapi",
+        baseUrl: "http://52.21.3.100/rapi",
         connectTimeout: const Duration(seconds: 20),
         receiveTimeout: const Duration(seconds: 20),
         headers: {

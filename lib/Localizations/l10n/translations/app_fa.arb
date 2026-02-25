@@ -357,7 +357,7 @@
   "noData": "بدون اطلاعات",
   "employed": "کارمند فعال",
   "terminated": "منفک",
-  "inactive": "کارمند منفک",
+  "inactive": "غیرفعال",
   "sameAccountMessage": "انتقال بین یک حساب امکان‌پذیر نیست. لطفاً حساب دیگری انتخاب کنید.",
   "operationFailedMessage": "عملیات ناموفق بود. لطفاً دوباره تلاش کنید.",
   "sameCurrencyNotAllowed": "حساب مبدأ و مقصد باید دارای ارز یکسان باشند.",
@@ -873,7 +873,7 @@
   "deadline": "تاریخ تسلیمی",
   "ownerInformation": "معلومات فرمایش دهنده",
   "ownerAccount": "حساب فرمایش دهنده",
-  "incomeAndExpenses": "عواید و مصارف",
+  "incomeAndExpenses": "پرداخت ها و مصارف",
   "inProgress": "در حال کار",
   "completed": "تکمیل شده",
   "projectStatus": "وضعیت پروزه",
@@ -882,5 +882,6 @@
   "totalIncome": "مجموعه عواید",
   "projectBudget": "بودجه پروزه",
   "totalExpense": "مجموعه مصارف",
-  "totalProjects": "کل مبلغ پروژه"
+  "totalProjects": "کل مبلغ پروژه",
+  "projectEntry": "معاملات پروزه"
 }

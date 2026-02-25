@@ -5221,7 +5221,7 @@ abstract class AppLocalizations {
   /// No description provided for @incomeAndExpenses.
   ///
   /// In en, this message translates to:
-  /// **'Income & Expense'**
+  /// **'Payment & Expense'**
   String get incomeAndExpenses;
 
   /// No description provided for @inProgress.
@@ -5277,6 +5277,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total Project'**
   String get totalProjects;
+
+  /// No description provided for @projectEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Entry'**
+  String get projectEntry;
 }
 
 class _AppLocalizationsDelegate
