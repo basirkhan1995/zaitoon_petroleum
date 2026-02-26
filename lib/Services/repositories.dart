@@ -26,7 +26,6 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/model
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/TrialBalance/model/trial_balance_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/Cardx/model/cardx_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/model/daily_txn_model.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/View/model/vehicle_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/Storage/model/storage_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Services/model/services_model.dart';
@@ -62,6 +61,7 @@ import '../Views/Menu/Ui/Report/Ui/Stock/OrdersReport/model/order_report_model.d
 import '../Views/Menu/Ui/Report/Ui/Stock/StockAvailability/model/product_report_model.dart';
 import '../Views/Menu/Ui/Report/Ui/TransactionRef/model/txn_report_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Transport/Shipments/model/shp_report_model.dart';
+import '../Views/Menu/Ui/Report/Ui/Transport/Vehicle/model/vehicle_report_model.dart';
 import '../Views/Menu/Ui/Report/Ui/TxnReport/model/txn_report_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Company/Branch/Ui/BranchLimits/model/limit_model.dart';
 import '../Views/Menu/Ui/Settings/Ui/Company/Branches/model/branch_model.dart';
