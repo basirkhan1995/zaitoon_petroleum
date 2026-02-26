@@ -31,7 +31,6 @@ class _Mobile extends StatefulWidget {
   @override
   State<_Mobile> createState() => _MobileState();
 }
-
 class _MobileState extends State<_Mobile> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
