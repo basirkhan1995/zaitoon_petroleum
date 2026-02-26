@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/AllProjects/model/pjr_model.dart';
@@ -7,6 +10,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/IncomeExpense/bloc/p
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/IncomeExpense/model/prj_inc_exp_model.dart';
 import '../../../../../../Features/Generic/rounded_searchable_textfield.dart';
 import '../../../../../../Features/Other/alert_dialog.dart';
+import '../../../../../../Features/Other/thousand_separator.dart';
 import '../../../../../../Features/Other/zForm_dialog.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../../../Auth/models/login_model.dart';
@@ -50,9 +54,9 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
 
       // Set amount based on type
       if (_selectedType == 'Income') {
-        _amountController.text = widget.existingData!.payments ?? '';
+        _amountController.text = widget.existingData!.payments.toAmount();
       } else {
-        _amountController.text = widget.existingData!.expenses ?? '';
+        _amountController.text = widget.existingData!.expenses.toAmount();
       }
 
       // For now, account number is not available in the Payment object
@@ -87,7 +91,7 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
       prpType: _selectedType == 'Income' ? 'Payment' : 'Expense',
       prjId: widget.project.prjId,
       account: _accountController.text,
-      amount: _amountController.text,
+      amount: _amountController.text.cleanAmount,
       currency: widget.project.actCurrency,
       ppRemark: _remarkController.text,
       usrName: loginData?.usrName ?? "",
@@ -158,12 +162,13 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
       )
           : Text(widget.existingData == null ? tr.create : tr.update),
       expandedAction: (widget.existingData != null)?
-        TextButton.icon(
+        ZOutlineButton(
+          height: 43,
           onPressed: _isLoading ? null : _deleteTransaction,
-          icon: const Icon(Icons.delete, color: Colors.red),
+          isActive: true,
+          backgroundHover: Theme.of(context).colorScheme.error,
           label: Text(
             tr.delete,
-            style: const TextStyle(color: Colors.red),
           ),
         ) : null,
       child: Form(
@@ -239,17 +244,26 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
               controller: _amountController,
               title: '${tr.amount} (${widget.project.actCurrency})',
               isRequired: true,
-              keyboardInputType: const TextInputType.numberWithOptions(decimal: true),
               icon: Icons.money,
+              inputFormat: [
+                FilteringTextInputFormatter.allow(
+                  RegExp(r'[0-9.,]*'),
+                ),
+                SmartThousandsDecimalFormatter(),
+              ],
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter amount';
+                  return tr.required(tr.amount);
                 }
-                if (double.tryParse(value) == null) {
-                  return 'Please enter a valid number';
-                }
-                if (double.parse(value) <= 0) {
-                  return 'Amount must be greater than 0';
+
+                final clean = value.replaceAll(
+                  RegExp(r'[^\d.]'),
+                  '',
+                );
+                final amount = double.tryParse(clean);
+
+                if (amount == null || amount <= 0.0) {
+                  return tr.amountGreaterZero;
                 }
                 return null;
               },
@@ -274,6 +288,7 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
                 },
               ),
             ],
+            if(widget.existingData == null)
             if(_selectedType == "Expense")...[
               GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
                 showAllOnFocus: true,
@@ -293,12 +308,12 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
                       exclude: ""
                   ),
                 ),
-                validator: (value) {
+                validator: widget.existingData != null ? (value) {
                   if (value.isEmpty) {
                     return tr.required(tr.accounts);
                   }
                   return null;
-                },
+                } : null,
                 itemBuilder: (context, account) => Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 5,
@@ -338,9 +353,9 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
                 noResultsText: tr.noDataFound,
                 showClearButton: true,
               ),
+              const SizedBox(height: 16),
             ],
 
-            const SizedBox(height: 16),
 
             // Remark Field
             ZTextFieldEntitled(
