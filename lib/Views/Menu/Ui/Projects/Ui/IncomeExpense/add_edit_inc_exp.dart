@@ -147,8 +147,8 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
     }
 
     return ZFormDialog(
-      title: widget.existingData == null ? 'Add Transaction' : 'Edit Transaction',
-      icon: widget.existingData == null ? Icons.add_circle_outline : Icons.edit,
+      title: widget.existingData == null ? tr.newKeyword : '${tr.edit} | ${widget.existingData!.prpTrnRef}',
+      icon: widget.existingData == null ? Icons.add_circle_outline : null,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       onAction: _submitForm,
       isButtonEnabled: !_isLoading,
@@ -199,6 +199,7 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
                           selectedColor: Colors.green,
                           icon: Icons.arrow_downward,
                           onTap: () {
+                            widget.existingData == null?
                             setState(() {
                               _selectedType = 'Income';
                               if (widget.existingData == null && widget.project.prjOwnerAccount != null) {
@@ -207,7 +208,7 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
                                 // Keep existing account if any
                               }
                               _amountController.clear();
-                            });
+                            }) : null;
                           },
                         ),
                       ),
@@ -218,14 +219,15 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
                           isSelected: _selectedType == 'Expense',
                           selectedColor: color.error,
                           icon: Icons.arrow_upward,
-                          onTap: () {
+                          onTap:  () {
+                            widget.existingData == null?
                             setState(() {
                               _selectedType = 'Expense';
                               if (widget.existingData == null) {
                                 _accountController.clear();
                               }
                               _amountController.clear();
-                            });
+                            }) : null;
                           },
                         ),
                       ),
@@ -351,10 +353,10 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
                 noResultsText: tr.noDataFound,
                 showClearButton: true,
               ),
-              const SizedBox(height: 16),
+
             ],
 
-
+            const SizedBox(height: 16),
             // Remark Field
             ZTextFieldEntitled(
               controller: _remarkController,
@@ -362,31 +364,7 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
               keyboardInputType: TextInputType.multiline,
             ),
 
-            if (widget.existingData != null) ...[
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Transaction Reference:',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    Text(
-                      widget.existingData!.prpTrnRef ?? '',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+
           ],
         ),
       ),
