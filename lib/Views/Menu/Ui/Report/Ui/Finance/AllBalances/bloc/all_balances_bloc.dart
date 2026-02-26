@@ -1,7 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/AllBalances/model/all_balances_model.dart';
+
+import '../model/all_balances_model.dart';
 
 part 'all_balances_event.dart';
 part 'all_balances_state.dart';

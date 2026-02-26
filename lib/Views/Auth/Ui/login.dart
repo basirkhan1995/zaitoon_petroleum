@@ -523,8 +523,7 @@ class _DesktopState extends State<_Desktop> {
               context,
               ForceChangePasswordView(credential: _emailController.text),
             );
-          }
-          if (state is EmailVerificationState) {}
+          } if (state is EmailVerificationState) {}
         },
         child: Padding(
           padding: const EdgeInsets.all(8.0),

@@ -8,14 +8,14 @@ import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/features/currency_drop.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/users_drop.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TxnReport/bloc/txn_report_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TxnReport/features/txn_type_drop.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/TxnReport/model/txn_report_model.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/features/status_drop.dart';
-import '../../../../../Features/Date/z_generic_date.dart';
-import '../../../../../Features/Other/utils.dart';
-import '../../../../../Features/Widgets/z_dragable_sheet.dart';
+import '../../../../../../Features/Date/z_generic_date.dart';
+import '../../../../../../Features/Other/utils.dart';
+import '../../../../../../Features/Widgets/z_dragable_sheet.dart';
+import '../Transport/Shipments/features/status_drop.dart';
+import 'bloc/txn_report_bloc.dart';
+import 'features/txn_type_drop.dart';
+import 'model/txn_report_model.dart';
 
 class TransactionReportView extends StatelessWidget {
   const TransactionReportView({super.key});

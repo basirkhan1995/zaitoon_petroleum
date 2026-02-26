@@ -22,7 +22,7 @@ import '../../../../../../../Features/Widgets/share_helper.dart';
 import '../../../../Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import '../../../../Journal/Ui/TxnByReference/txn_reference.dart';
 import '../../../../Stakeholders/Ui/Accounts/model/stk_acc_model.dart';
-import '../../../TransactionRef/transaction_ref.dart';
+import '../../TransactionRef/transaction_ref.dart';
 import 'PDF/pdf.dart';
 import 'bloc/acc_statement_bloc.dart';
 import 'model/stmt_model.dart';

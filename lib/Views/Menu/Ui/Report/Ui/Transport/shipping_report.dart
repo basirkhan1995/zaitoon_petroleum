@@ -7,7 +7,6 @@ import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:flutter/services.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/bloc/shipping_report_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/features/individuals_dropdown.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Drivers/driver_drop.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Transport/Ui/Vehicles/features/vehicle_drop.dart';
@@ -23,10 +22,10 @@ import '../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.da
 import '../../../Transport/Ui/Shipping/Ui/ShippingView/View/add_edit_shipping.dart';
 import '../../../Transport/Ui/Shipping/Ui/ShippingView/View/all_shipping.dart';
 import 'package:shamsi_date/shamsi_date.dart';
-
-import 'PDF/shp_report_print.dart';
-import 'features/status_drop.dart';
-import 'model/shp_report_model.dart';
+import 'Shipments/PDF/shp_report_print.dart';
+import 'Shipments/bloc/shipping_report_bloc.dart';
+import 'Shipments/features/status_drop.dart';
+import 'Shipments/model/shp_report_model.dart';
 
 class ShippingReportView extends StatelessWidget {
   const ShippingReportView({super.key});

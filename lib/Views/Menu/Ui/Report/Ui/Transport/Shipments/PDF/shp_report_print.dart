@@ -6,7 +6,7 @@ import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/PrintSettings/print_services.dart';
 import 'package:zaitoon_petroleum/Features/PrintSettings/report_model.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/model/shp_report_model.dart';
+import '../model/shp_report_model.dart';
 
 class ShippingReportPdfServices extends PrintServices {
   Future<void> createDocument({

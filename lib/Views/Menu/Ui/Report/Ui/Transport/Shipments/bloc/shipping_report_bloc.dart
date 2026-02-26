@@ -1,7 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/model/shp_report_model.dart';
+
+import '../model/shp_report_model.dart';
 
 part 'shipping_report_event.dart';
 part 'shipping_report_state.dart';
