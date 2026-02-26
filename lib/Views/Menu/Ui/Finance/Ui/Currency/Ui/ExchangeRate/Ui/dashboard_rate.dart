@@ -14,34 +14,32 @@ import '../../../../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../bloc/financial_tab_bloc.dart';
 import '../../../bloc/currency_tab_bloc.dart';
 
-class ExchangeRateView extends StatelessWidget {
-  final bool newRateButton;
-  final bool settingButton;
+class ExchangeRateDashboardView extends StatelessWidget {
   final double? width;
-  const ExchangeRateView({
+  const ExchangeRateDashboardView({
     super.key,
-    this.newRateButton = false,
-    this.settingButton = false,
     this.width,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(
-      mobile: _Mobile(
-        newRateButton: newRateButton,
-        settingButton: settingButton,
-        width: width,
-      ),
-      tablet: _Desktop(
-        newRateButton: newRateButton,
-        settingButton: settingButton,
-        width: width,
-      ),
-      desktop: _Desktop(
-        newRateButton: newRateButton,
-        settingButton: settingButton,
-        width: width,
+    return BlocListener<CompanyProfileBloc, CompanyProfileState>(
+      listenWhen: (prev, curr) =>
+      curr is CompanyProfileLoadedState,
+      listener: (context, state) {
+        final profile = (state as CompanyProfileLoadedState).company;
+        context.read<ExchangeRateBloc>().add(LoadExchangeRateEvent(profile.comLocalCcy ?? ""));
+      },
+      child: ResponsiveLayout(
+        mobile: _Mobile(
+          width: width,
+        ),
+        tablet: _Desktop(
+          width: width,
+        ),
+        desktop: _Desktop(
+          width: width,
+        ),
       ),
     );
   }
@@ -50,10 +48,8 @@ class ExchangeRateView extends StatelessWidget {
 
 
 class _Desktop extends StatefulWidget {
-  final bool newRateButton;
-  final bool settingButton;
   final double? width;
-  const _Desktop({required this.settingButton, required this.newRateButton, this.width});
+  const _Desktop({this.width});
 
   @override
   State<_Desktop> createState() => _DesktopState();
@@ -94,36 +90,22 @@ class _DesktopState extends State<_Desktop> {
                 Spacer(),
                 ZOutlineButton(
                     width: 100,
-                    height: 35,
+                    height: 33,
                     onPressed: onRefresh,
                     label: Text(locale.refresh),
                     icon: Icons.refresh),
-                if(widget.newRateButton)
-                SizedBox(width: 5),
-                if(widget.newRateButton)
-                ZOutlineButton(
-                  isActive: true,
-                  icon: Icons.add,
-                  onPressed: () {
-                    showDialog(context: context, builder: (context){
-                      return AddRateView();
-                    });
-                  },
-                  label: Text(locale.newKeyword),
-                ),
-                if(widget.settingButton)
-                SizedBox(width: 5),
-                if(widget.settingButton)
-                ZOutlineButton(
-                  isActive: true,
-                  icon: Icons.settings,
-                  onPressed: () {
-                    context.read<MenuBloc>().add(MenuOnChangedEvent(MenuName.finance));
-                    context.read<FinanceTabBloc>().add(FinanceOnChangedEvent(FinanceTabName.exchangeRate));
-                    context.read<CurrencyTabBloc>().add(CcyOnChangedEvent(CurrencyTabName.rates));
-                  },
-                  label: Text(locale.settings),
-                ),
+
+                  SizedBox(width: 5),
+                  ZOutlineButton(
+                    isActive: true,
+                    icon: Icons.settings,
+                    onPressed: () {
+                      context.read<MenuBloc>().add(MenuOnChangedEvent(MenuName.finance));
+                      context.read<FinanceTabBloc>().add(FinanceOnChangedEvent(FinanceTabName.exchangeRate));
+                      context.read<CurrencyTabBloc>().add(CcyOnChangedEvent(CurrencyTabName.rates));
+                    },
+                    label: Text(locale.settings),
+                  ),
               ],
             ),
           ),
@@ -327,7 +309,9 @@ class _DesktopState extends State<_Desktop> {
     final companyState = context.read<CompanyProfileBloc>().state;
     if (companyState is CompanyProfileLoadedState) {
       context.read<ExchangeRateBloc>().add(
-        LoadExchangeRateEvent(""),
+        LoadExchangeRateEvent(
+         companyState.company.comLocalCcy ?? "",
+        ),
       );
     }
   }
@@ -335,10 +319,8 @@ class _DesktopState extends State<_Desktop> {
 }
 
 class _Mobile extends StatefulWidget {
-  final bool newRateButton;
-  final bool settingButton;
   final double? width;
-  const _Mobile({required this.settingButton, required this.newRateButton, this.width});
+  const _Mobile({this.width});
 
   @override
   State<_Mobile> createState() => _MobileState();
@@ -379,9 +361,7 @@ class _MobileState extends State<_Mobile> {
                       onPressed: onRefresh,
                       icon: Icon(Icons.refresh)),
                 ),
-                if(widget.newRateButton)
                   SizedBox(width: 5),
-                if(widget.newRateButton)
                   IconButton(
                     icon: Icon(Icons.add),
                     onPressed: () {
@@ -390,9 +370,9 @@ class _MobileState extends State<_Mobile> {
                       });
                     },
                   ),
-                if(widget.settingButton)
+
                   SizedBox(width: 5),
-                if(widget.settingButton)
+
                   ZCover(
                     child: IconButton(
                       icon: Icon(Icons.settings),

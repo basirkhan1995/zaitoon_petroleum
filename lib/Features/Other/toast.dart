@@ -223,7 +223,7 @@ class _ToastContainer extends StatelessWidget {
           color: Colors.transparent,
           child: Container(
             constraints: const BoxConstraints(minHeight: 88),
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -421,7 +421,7 @@ class ToastManager {
     String? title,
     required String message,
     required ToastType type,
-    int durationInSeconds = 4,
+    int durationInSeconds = 2,
     ToastPosition position = ToastPosition.top,
   }) {
     final overlay = Overlay.of(context);

@@ -16,7 +16,7 @@ class ProjectInOutModel {
   final String? totalProjectAmount;
   final List<Payment>? payments;
   final String? usrName;
-
+  final String? reference;
   ProjectInOutModel({
     this.prpType,
     this.prjId,
@@ -28,6 +28,7 @@ class ProjectInOutModel {
     this.totalProjectAmount,
     this.payments,
     this.usrName,
+    this.reference
   });
 
   ProjectInOutModel copyWith({
@@ -41,6 +42,7 @@ class ProjectInOutModel {
     String? totalProjectAmount,
     List<Payment>? payments,
     String? usrName,
+    String? reference,
   }) =>
       ProjectInOutModel(
         prpType: prpType ?? this.prpType,
@@ -53,6 +55,7 @@ class ProjectInOutModel {
         totalProjectAmount: totalProjectAmount ?? this.totalProjectAmount,
         payments: payments ?? this.payments,
         usrName: usrName ?? this.usrName,
+        reference: reference ?? this.reference
       );
 
   factory ProjectInOutModel.fromMap(Map<String, dynamic> json) => ProjectInOutModel(
@@ -79,6 +82,7 @@ class ProjectInOutModel {
     "total_project_amount": totalProjectAmount,
     "payments": payments == null ? [] : List<dynamic>.from(payments!.map((x) => x.toMap())),
     "usrName": usrName,
+    "prpTrnRef": reference
   };
 }
 

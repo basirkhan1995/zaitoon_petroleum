@@ -59,8 +59,47 @@ class ProjectIncExpBloc extends Bloc<ProjectIncExpEvent, ProjectIncExpState> {
       emit(ProjectIncExpLoadingState());
       try {
         final result = await _repo.updateProjectIncomeExpense(newData: event.newData);
-        add(LoadProjectIncExpEvent(event.newData.prjId!));
-        emit(ProjectIncExpSuccessState());
+
+        // Check the response message
+        if (result['msg'] == 'success') {
+          // Reload the data
+          add(LoadProjectIncExpEvent(event.newData.prjId!));
+          emit(ProjectIncExpSuccessState());
+        } else if (result['msg'] == 'blocked') {
+          // Handle blocked account case
+          emit(ProjectIncExpErrorState(
+              'This account is blocked. Please use a different account.'
+          ));
+        } else {
+          emit(ProjectIncExpErrorState(
+              result['msg'] ?? 'Failed to add transaction'
+          ));
+        }
+      } catch (e) {
+        emit(ProjectIncExpErrorState(e.toString()));
+      }
+    });
+
+    on<DeleteProjectIncExpEvent>((event, emit) async {
+      emit(ProjectIncExpLoadingState());
+      try {
+        final result = await _repo.deleteProjectIncomeExpense(usrName: event.usrName, ref: event.reference);
+
+        // Check the response message
+        if (result['msg'] == 'success') {
+          // Reload the data
+          add(LoadProjectIncExpEvent(event.projectId!));
+          emit(ProjectIncExpSuccessState());
+        } else if (result['msg'] == 'blocked') {
+          // Handle blocked account case
+          emit(ProjectIncExpErrorState(
+              'This account is blocked. Please use a different account.'
+          ));
+        } else {
+          emit(ProjectIncExpErrorState(
+              result['msg'] ?? 'Failed to add transaction'
+          ));
+        }
       } catch (e) {
         emit(ProjectIncExpErrorState(e.toString()));
       }

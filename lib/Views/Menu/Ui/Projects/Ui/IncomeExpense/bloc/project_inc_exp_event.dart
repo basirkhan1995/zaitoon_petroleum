@@ -25,3 +25,12 @@ class UpdateProjectIncExpEvent extends ProjectIncExpEvent{
   @override
   List<Object?> get props => [newData];
 }
+
+class DeleteProjectIncExpEvent extends ProjectIncExpEvent{
+  final String usrName;
+  final String reference;
+  final int? projectId;
+  const DeleteProjectIncExpEvent({required this.usrName,required this.reference, this.projectId});
+  @override
+  List<Object?> get props => [usrName, reference, projectId];
+}

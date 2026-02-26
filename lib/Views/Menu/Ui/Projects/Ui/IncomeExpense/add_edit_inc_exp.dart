@@ -6,6 +6,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/AllProjects/model/pj
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/IncomeExpense/bloc/project_inc_exp_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/IncomeExpense/model/prj_inc_exp_model.dart';
 import '../../../../../../Features/Generic/rounded_searchable_textfield.dart';
+import '../../../../../../Features/Other/alert_dialog.dart';
 import '../../../../../../Features/Other/zForm_dialog.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../../../Auth/models/login_model.dart';
@@ -14,7 +15,7 @@ import '../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
 
 class AddEditIncomeExpenseDialog extends StatefulWidget {
   final ProjectsModel project;
-  final ProjectInOutModel? existingData;
+  final Payment? existingData; // Changed to Payment type
 
   const AddEditIncomeExpenseDialog({
     super.key,
@@ -39,15 +40,30 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
   @override
   void initState() {
     super.initState();
-    if (widget.project.prjOwnerAccount != null) {
-      _accountController.text = widget.project.prjOwnerAccount!.toString();
-    }
+    _loadExistingData();
+  }
 
+  void _loadExistingData() {
     if (widget.existingData != null) {
+      // Set type based on prpType
       _selectedType = widget.existingData!.prpType == 'Payment' ? 'Income' : 'Expense';
-      _amountController.text = widget.existingData!.amount ?? '';
-      _accountController.text = widget.existingData!.account ?? '';
-      _remarkController.text = widget.existingData!.ppRemark ?? '';
+
+      // Set amount based on type
+      if (_selectedType == 'Income') {
+        _amountController.text = widget.existingData!.payments ?? '';
+      } else {
+        _amountController.text = widget.existingData!.expenses ?? '';
+      }
+
+      // For now, account number is not available in the Payment object
+      // You might need to fetch it from another API or it might not be editable
+      _accountController.text = widget.project.prjOwnerAccount.toString();
+
+      // Remark might not be in the Payment object either
+      _remarkController.text = '';
+    } else if (widget.project.prjOwnerAccount != null) {
+      // For new income, pre-fill with project owner account
+      _accountController.text = widget.project.prjOwnerAccount!.toString();
     }
   }
 
@@ -65,21 +81,57 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
 
     setState(() => _isLoading = true);
 
-    final newData = ProjectInOutModel(
+    // Create data object for API
+    final data = ProjectInOutModel(
+      reference: widget.existingData?.prpTrnRef, // Use prpTrnRef as reference
       prpType: _selectedType == 'Income' ? 'Payment' : 'Expense',
       prjId: widget.project.prjId,
       account: _accountController.text,
       amount: _amountController.text,
       currency: widget.project.actCurrency,
       ppRemark: _remarkController.text,
-      usrName: loginData?.usrName??""
+      usrName: loginData?.usrName ?? "",
     );
 
-    context.read<ProjectIncExpBloc>().add(AddProjectIncExpEvent(newData));
+    if (widget.existingData != null) {
+      // Update existing transaction
+      context.read<ProjectIncExpBloc>().add(UpdateProjectIncExpEvent(data));
+    } else {
+      // Add new transaction
+      context.read<ProjectIncExpBloc>().add(AddProjectIncExpEvent(data));
+    }
 
+    // Close dialog after a short delay
     Future.delayed(const Duration(milliseconds: 500), () {
       if (mounted) Navigator.of(context).pop();
     });
+  }
+
+  void _deleteTransaction() {
+    if (widget.existingData == null || loginData == null) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => ZAlertDialog(
+        title: 'Confirm Delete',
+        content: 'Are you sure you want to delete this transaction?',
+        onYes: () {
+          Navigator.of(context).pop(); // Close confirmation dialog
+          setState(() => _isLoading = true);
+
+          context.read<ProjectIncExpBloc>().add(
+            DeleteProjectIncExpEvent(
+              usrName: loginData!.usrName!,
+              reference: widget.existingData!.prpTrnRef!, // Use prpTrnRef as reference
+              projectId: widget.project.prjId,
+            ),
+          );
+
+          // Close the main dialog
+          Navigator.of(context).pop();
+        },
+      ),
+    );
   }
 
   @override
@@ -95,7 +147,7 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
     return ZFormDialog(
       title: widget.existingData == null ? 'Add Transaction' : 'Edit Transaction',
       icon: widget.existingData == null ? Icons.add_circle_outline : Icons.edit,
-      padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       onAction: _submitForm,
       isButtonEnabled: !_isLoading,
       actionLabel: _isLoading
@@ -105,13 +157,22 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
         child: CircularProgressIndicator(strokeWidth: 2),
       )
           : Text(widget.existingData == null ? tr.create : tr.update),
+      expandedAction: (widget.existingData != null)?
+        TextButton.icon(
+          onPressed: _isLoading ? null : _deleteTransaction,
+          icon: const Icon(Icons.delete, color: Colors.red),
+          label: Text(
+            tr.delete,
+            style: const TextStyle(color: Colors.red),
+          ),
+        ) : null,
       child: Form(
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Transaction Type Selection - Improved UI
+            // Transaction Type Selection
             Container(
               margin: const EdgeInsets.symmetric(vertical: 8),
               child: Column(
@@ -137,9 +198,12 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
                           onTap: () {
                             setState(() {
                               _selectedType = 'Income';
-                              if (widget.project.prjOwnerAccount != null) {
+                              if (widget.existingData == null && widget.project.prjOwnerAccount != null) {
                                 _accountController.text = widget.project.prjOwnerAccount.toString();
+                              } else if (widget.existingData != null) {
+                                // Keep existing account if any
                               }
+                              _amountController.clear();
                             });
                           },
                         ),
@@ -154,7 +218,10 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
                           onTap: () {
                             setState(() {
                               _selectedType = 'Expense';
-                              _accountController.clear();
+                              if (widget.existingData == null) {
+                                _accountController.clear();
+                              }
+                              _amountController.clear();
                             });
                           },
                         ),
@@ -196,11 +263,9 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
                 controller: _accountController,
                 title: 'Account Number',
                 isRequired: true,
-                isEnabled: _selectedType != 'Income',
+                isEnabled: false, // Disabled for income
                 icon: Icons.account_balance,
-                hint: _selectedType == 'Income'
-                    ? 'Using project owner account'
-                    : 'Enter expense account number',
+                hint: 'Using project owner account',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter account number';
@@ -218,13 +283,14 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
                 isRequired: true,
                 bloc: context.read<AccountsBloc>(),
                 fetchAllFunction: (bloc) => bloc.add(
-                  LoadAccountsFilterEvent(include: "11,12",ccy: widget.project.actCurrency,exclude: ""),
+                  LoadAccountsFilterEvent(include: "11,12", ccy: widget.project.actCurrency, exclude: ""),
                 ),
                 searchFunction: (bloc, query) => bloc.add(
                   LoadAccountsFilterEvent(
                       include: "11,12",
                       ccy: widget.project.actCurrency,
-                      input: query, exclude: ""
+                      input: query,
+                      exclude: ""
                   ),
                 ),
                 validator: (value) {
@@ -267,9 +333,7 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
                   return [];
                 },
                 onSelected: (value) {
-                  setState(() {
-                   // accNumber = value.accNumber;
-                  });
+                  // Handle selection if needed
                 },
                 noResultsText: tr.noDataFound,
                 showClearButton: true,
@@ -283,8 +347,33 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
               controller: _remarkController,
               title: tr.remark,
               keyboardInputType: TextInputType.multiline,
-
             ),
+
+            if (widget.existingData != null) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Transaction Reference:',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    Text(
+                      widget.existingData!.prpTrnRef ?? '',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
       ),

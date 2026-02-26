@@ -52,7 +52,7 @@ class _MobileState extends State<_Mobile> {
   bool isPasswordSecure = true;
   bool fcpValue = true;
   bool fevValue = true;
-  int usrOwnerId = 1; // Default value, will be updated in initState
+  int? usrOwnerId;
   BranchModel? selectedBranch;
   IndividualsModel? selectedIndividual;
 
@@ -528,7 +528,7 @@ class _DesktopState extends State<_Desktop> {
   bool isPasswordSecure = true;
   bool fcpValue = true;
   bool fevValue = true;
-  int usrOwnerId = 1; // Default value, will be updated in initState
+  int? usrOwnerId;
   BranchModel? selectedBranch;
   IndividualsModel? selectedIndividual;
 
@@ -583,9 +583,6 @@ class _DesktopState extends State<_Desktop> {
             setState(() {
               errorMessage = state.message;
             });
-          }
-          if (state is UserSuccessState) {
-            Navigator.of(context).pop();
           }
         },
         child: SingleChildScrollView(

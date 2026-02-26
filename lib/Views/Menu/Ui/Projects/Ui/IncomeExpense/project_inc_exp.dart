@@ -9,6 +9,7 @@ import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/AllProjects/model/pjr_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/IncomeExpense/bloc/project_inc_exp_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/IncomeExpense/model/prj_inc_exp_model.dart';
 
 import 'add_edit_inc_exp.dart';
 
@@ -67,6 +68,7 @@ class _DesktopState extends State<_Desktop> {
     });
     super.initState();
   }
+
   void _showAddTransactionDialog() {
     if (widget.project == null) return;
 
@@ -77,16 +79,33 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
+
+  void _showEditTransactionDialog(Payment payment) {
+    if (widget.project == null) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AddEditIncomeExpenseDialog(
+        project: widget.project!,
+        existingData: payment, // Pass the Payment object
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     TextStyle? titleStyle = textTheme.titleSmall?.copyWith(color: color.surface);
+
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-          onPressed: _showAddTransactionDialog,
-          child: Icon(Icons.add)),
+      floatingActionButton: widget.project?.prjStatus == 0
+          ? FloatingActionButton(
+        onPressed: _showAddTransactionDialog,
+        child: const Icon(Icons.add),
+      )
+          : null,
       body: BlocConsumer<ProjectIncExpBloc, ProjectIncExpState>(
         listener: (context, state) {
           if (state is ProjectIncExpErrorState) {
@@ -163,7 +182,7 @@ class _DesktopState extends State<_Desktop> {
                         child: _buildSummaryCard(
                           context,
                           title: tr.totalProjects,
-                          amount: inOut.totalProjectAmount.toDoubleAmount(),
+                          amount: double.tryParse(inOut.totalProjectAmount ?? '0') ?? 0,
                           currency: currency,
                           color: color.primary,
                         ),
@@ -202,7 +221,6 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ),
 
-
                 const SizedBox(height: 8),
 
                 // Header
@@ -221,9 +239,6 @@ class _DesktopState extends State<_Desktop> {
                         flex: 3,
                         child: Text(tr.referenceNumber, style: titleStyle),
                       ),
-
-
-
                       Expanded(
                         child: Text(
                           tr.payment,
@@ -255,71 +270,82 @@ class _DesktopState extends State<_Desktop> {
                       final income = double.tryParse(payment.payments ?? '0') ?? 0;
                       final expense = double.tryParse(payment.expenses ?? '0') ?? 0;
 
-                      return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Colors.grey.withValues(alpha: .2),
+                      return InkWell(
+                        onTap: widget.project?.prjStatus == 0
+                            ? () => _showEditTransactionDialog(payment)
+                            : null,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: index.isOdd
+                                ? color.primary.withValues(alpha: .05)
+                                : Colors.transparent,
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Colors.grey.withValues(alpha: .2),
+                              ),
                             ),
                           ),
-                        ),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 90,
-                              child: Text(
-                                payment.trnEntryDate != null
-                                    ? '${payment.trnEntryDate!.day}/${payment.trnEntryDate!.month}/${payment.trnEntryDate!.year}'
-                                    : '',
-                                style: textTheme.bodyMedium,
-                              ),
-                            ),
-                            Expanded(
-                              flex: 3,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    payment.prpTrnRef ?? '',
-                                    style: textTheme.bodyMedium?.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  Text(
-                                    payment.prpType == "Payment"? tr.payment : payment.prpType == "Expense" ? tr.expense : payment.prpType ?? "",
-                                    style: textTheme.bodySmall?.copyWith(
-                                      color: payment.prpType == 'Payment'
-                                          ? Colors.green
-                                          : color.error,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            Expanded(
-                              child: Text(
-                                income > 0 ? '${income.toAmount()} $currency' : '',
-                                style: textTheme.bodyMedium?.copyWith(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.w500,
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 90,
+                                child: Text(
+                                  payment.trnEntryDate != null
+                                      ? '${payment.trnEntryDate!.day}/${payment.trnEntryDate!.month}/${payment.trnEntryDate!.year}'
+                                      : '',
+                                  style: textTheme.bodyMedium,
                                 ),
                               ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                expense > 0 ? '${expense.toAmount()} $currency' : '',
-                                style: textTheme.bodyMedium?.copyWith(
-                                  color: color.error,
-                                  fontWeight: FontWeight.w500,
+                              Expanded(
+                                flex: 3,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      payment.prpTrnRef ?? '',
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    Text(
+                                      payment.prpType == "Payment"
+                                          ? tr.payment
+                                          : payment.prpType == "Expense"
+                                          ? tr.expense
+                                          : payment.prpType ?? "",
+                                      style: textTheme.bodySmall?.copyWith(
+                                        color: payment.prpType == 'Payment'
+                                            ? Colors.green
+                                            : color.error,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                            
-                            Expanded(child: TransactionStatusBadge(status: payment.trnStateText??""))
-
-                          ],
+                              Expanded(
+                                child: Text(
+                                  income > 0 ? '${income.toAmount()} $currency' : '',
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  expense > 0 ? '${expense.toAmount()} $currency' : '',
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: color.error,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: TransactionStatusBadge(status: payment.trnStateText ?? ""),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
@@ -370,6 +396,4 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
-
 }

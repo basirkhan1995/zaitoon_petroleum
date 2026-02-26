@@ -4,6 +4,7 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/DailyGross/daily_gross.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/Stats/stats.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/Ui/dashboard_rate.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/ExchangeRate/Ui/exchange_rate.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/column_chart_view.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/total_daily_txn.dart';
@@ -62,10 +63,7 @@ class _Mobile extends StatelessWidget {
                     horizontal: 8.0,
                     vertical: 3,
                   ),
-                  child: ExchangeRateView(
-                    settingButton: true,
-                    newRateButton: false,
-                  ),
+                  child: ExchangeRateDashboardView(),
                 ),
               ],
             ],
@@ -230,10 +228,7 @@ class _Desktop extends StatelessWidget {
                   //Exchange Rate Widget
                   if (login.hasPermission(7) ?? false) ...[
                     if (visibility.exchangeRate) ...[
-                      ExchangeRateView(
-                        settingButton: true,
-                        newRateButton: false,
-                      ),
+                      ExchangeRateDashboardView(),
                     ],
                   ],
 

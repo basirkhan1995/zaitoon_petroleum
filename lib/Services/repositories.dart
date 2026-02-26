@@ -3472,4 +3472,14 @@ class Repositories {
     );
     return response.data;
   }
+  Future<Map<String, dynamic>> deleteProjectIncomeExpense({required String ref, required String usrName}) async {
+    final response = await api.delete(
+      endpoint: "/project/projectPayments.php",
+      data: {
+        "prpTrnRef": ref,
+        "usrName": usrName
+      },
+    );
+    return response.data;
+  }
 }
