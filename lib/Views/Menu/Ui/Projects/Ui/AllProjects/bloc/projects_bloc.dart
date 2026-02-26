@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_petroleum/Services/repositories.dart';
 
+import '../../../../../../../Services/localization_services.dart';
 import '../model/pjr_model.dart';
 
 part 'projects_event.dart';
@@ -38,6 +39,7 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
     });
 
     on<UpdateProjectEvent>((event, emit)async {
+      final tr = localizationService.loc;
       emit(ProjectsLoadingState());
       try{
         final res = await _repo.updateProject(newData: event.newData);
@@ -45,6 +47,8 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
         if(response == "success"){
           emit(ProjectSuccessState());
           add(LoadProjectsEvent());
+        }if(response == "payment mismatch"){
+          emit(ProjectsErrorState(tr.paymentNotMatch));
         }else{
           emit(ProjectsErrorState(response));
         }

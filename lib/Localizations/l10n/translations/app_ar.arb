@@ -746,7 +746,7 @@
   "requestCancelMessage": "غوښتنه لغوه شوه.",
   "timeOutTitle": "پایان پاسخ سرور",
   "notAllowedError": "این عملیات مجاز نیست",
-  "successMessage": "عملیات موفقانه انجام شد.",
+  "successMessage": "پروسه په بریالیتوب سره بشپړه شوه",
   "deleteSuccessMessage": "مورد شما موفقانه حذف گردید.",
   "expenseAccount": "حساب نوم",
   "averagePrice": "ق. اوسط",
@@ -831,7 +831,7 @@
   "roleAndBranch": "صلاحیت کاربر و شعبه",
   "accountInfo": "حساب معاش",
   "jobAndSalary": "مقام و معاش",
-  "errorTitle": "خطا",
+  "errorTitle": "عملیات ناکام شو",
   "contactInfo": "تماس",
   "personalInfo": "معلومات شخصی",
   "avbShort": "م. ق. ب",
@@ -883,5 +883,6 @@
   "projectBudget": "بودجه پروزه",
   "totalExpense": "مجموعه مصارف",
   "totalProjects": "کل مبلغ پروژه",
-  "projectEntry": "معاملات پروزه"
+  "projectEntry": "معاملات پروزه",
+  "paymentNotMatch": "د تادیې مقدار د پروژې له ټولیز سره سمون نه خوري."
 }

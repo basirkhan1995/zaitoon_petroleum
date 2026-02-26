@@ -49,17 +49,16 @@ class _OverlayContent extends StatelessWidget {
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.surface.withValues(alpha: .9),
                           fontWeight: FontWeight.w700,
-                          fontSize: 12,
+                          fontSize: 15,
                           letterSpacing: 1.2,
                         ),
                       ),
-                    if (title != null) const SizedBox(height: 6),
+                    if (title != null) const SizedBox(height: 3),
                     Text(
                       message,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.surface.withValues(alpha: .95),
                         fontSize: 14,
-                        fontWeight: FontWeight.w500,
                         height: 1.5,
                       ),
                     ),

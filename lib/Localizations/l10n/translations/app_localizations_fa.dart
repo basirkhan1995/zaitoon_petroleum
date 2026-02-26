@@ -2242,7 +2242,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get notAllowedError => 'این عملیات مجاز نیست';
 
   @override
-  String get successMessage => 'عملیات موفقانه انجام شد.';
+  String get successMessage => 'فرآیند با موفقیت به پایان رسید';
 
   @override
   String get deleteSuccessMessage => 'مورد شما موفقانه حذف گردید.';
@@ -2503,7 +2503,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get jobAndSalary => 'مقام و معاش';
 
   @override
-  String get errorTitle => 'خطا';
+  String get errorTitle => 'عملیات ناموفق';
 
   @override
   String get contactInfo => 'تماس';
@@ -2661,4 +2661,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get projectEntry => 'معاملات پروزه';
+
+  @override
+  String get paymentNotMatch => 'مبلغ پرداختی با مجموع پروژه مطابقت ندارد.';
 }

@@ -4459,7 +4459,7 @@ abstract class AppLocalizations {
   /// No description provided for @successMessage.
   ///
   /// In en, this message translates to:
-  /// **'Operation successfully done.'**
+  /// **'Process completed successfully.'**
   String get successMessage;
 
   /// No description provided for @deleteSuccessMessage.
@@ -4969,7 +4969,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorTitle.
   ///
   /// In en, this message translates to:
-  /// **'Error'**
+  /// **'Operation Failed'**
   String get errorTitle;
 
   /// No description provided for @contactInfo.
@@ -5283,6 +5283,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Project Entry'**
   String get projectEntry;
+
+  /// No description provided for @paymentNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'The payment amount does not match the project total.'**
+  String get paymentNotMatch;
 }
 
 class _AppLocalizationsDelegate

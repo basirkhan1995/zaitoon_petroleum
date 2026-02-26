@@ -746,7 +746,7 @@
   "requestCancelMessage": "The request was cancelled.",
   "timeOutTitle": "Server Time Out",
   "notAllowedError": "This action isn't allowed.",
-  "successMessage": "Operation successfully done.",
+  "successMessage": "Process completed successfully.",
   "deleteSuccessMessage": "Item has been deleted successfully.",
   "expenseAccount": "Account Name",
   "averagePrice": "AVG. Price",
@@ -831,7 +831,7 @@
   "roleAndBranch": "Role & Branch",
   "accountInfo": "Salary Account",
   "jobAndSalary": "Job Title & Salary",
-  "errorTitle": "Error",
+  "errorTitle": "Operation Failed",
   "contactInfo": "Contact",
   "personalInfo": "Personal Information",
   "avbShort": "AVB",
@@ -883,5 +883,6 @@
   "projectBudget": "Project Budget",
   "totalExpense": "Total Expense",
   "totalProjects": "Total Project",
-  "projectEntry": "Project Entry"
+  "projectEntry": "Project Entry",
+  "paymentNotMatch": "The payment amount does not match the project total."
 }

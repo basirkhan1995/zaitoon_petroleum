@@ -227,6 +227,7 @@ class _DesktopState extends State<_Desktop> {
                 if (state is ProjectSuccessState) {
                   ToastManager.show(
                     context: context,
+                    title: tr.successTitle,
                     message: tr.successMessage,
                     type: ToastType.success,
                   );
@@ -234,6 +235,7 @@ class _DesktopState extends State<_Desktop> {
                 if (state is ProjectsErrorState) {
                   ToastManager.show(
                     context: context,
+                    title: tr.errorTitle,
                     message: state.message,
                     type: ToastType.error,
                   );
@@ -247,7 +249,7 @@ class _DesktopState extends State<_Desktop> {
                 }
                 if (state is ProjectsErrorState) {
                   return NoDataWidget(
-                    title: "Error",
+                    title: tr.errorTitle,
                     message: state.message,
                     onRefresh: onRefresh,
                   );

@@ -2252,7 +2252,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notAllowedError => 'This action isn\'t allowed.';
 
   @override
-  String get successMessage => 'Operation successfully done.';
+  String get successMessage => 'Process completed successfully.';
 
   @override
   String get deleteSuccessMessage => 'Item has been deleted successfully.';
@@ -2512,7 +2512,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get jobAndSalary => 'Job Title & Salary';
 
   @override
-  String get errorTitle => 'Error';
+  String get errorTitle => 'Operation Failed';
 
   @override
   String get contactInfo => 'Contact';
@@ -2671,4 +2671,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get projectEntry => 'Project Entry';
+
+  @override
+  String get paymentNotMatch =>
+      'The payment amount does not match the project total.';
 }
