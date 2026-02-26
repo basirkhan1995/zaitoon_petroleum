@@ -131,8 +131,6 @@ class _AddEditIncomeExpenseDialogState extends State<AddEditIncomeExpenseDialog>
             ),
           );
 
-          // Close the main dialog
-          Navigator.of(context).pop();
         },
       ),
     );
