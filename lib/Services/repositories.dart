@@ -25,6 +25,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/mo
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/model/cash_balance_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/TrialBalance/model/trial_balance_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Projects/ProjectList/model/projects_report_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Projects/ServicesReport/model/services_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/Cardx/model/cardx_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/model/daily_txn_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
@@ -3515,7 +3516,7 @@ class Repositories {
   }
 
   ///Projects Report
-  Future<ProjectsReportModel?> getProjectsReport({String? fromDate, String? toDate,int? customerId, int? status}) async {
+  Future<List<ProjectsReportModel>> getProjectsReport({String? fromDate, String? toDate,int? customerId, int? status}) async {
     final response = await api.post(
       endpoint: "/reports/projectsReport.php",
       data: {
@@ -3524,6 +3525,40 @@ class Repositories {
         "customer": customerId,
         "status": status
       }
+    );
+
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      // If no records found, return empty list
+      if (response.data['msg'] == 'failed') {
+        return [];
+      }
+      throw Exception(response.data['msg']);
+    }
+
+    // Parse as list
+    if (response.data is List) {
+      return List<ProjectsReportModel>.from(
+        response.data.map((x) => ProjectsReportModel.fromMap(x)),
+      );
+    }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic> && response.data.isNotEmpty) {
+      return [ProjectsReportModel.fromMap(response.data)];
+    }
+
+    return [];
+  }
+
+  Future<ServicesReportModel?> getServicesReport({String? fromDate, String? toDate,int? serviceId, int? projectId}) async {
+    final response = await api.post(
+        endpoint: "/reports/projectsReport.php",
+        data: {
+          "fromDate": fromDate,
+          "toDate": toDate,
+          "services": serviceId,
+          "project": projectId
+        }
     );
 
     // Check if response has data
@@ -3541,9 +3576,8 @@ class Repositories {
 
     // Parse the response as a single ProjectInOutModel
     if (response.data is Map<String, dynamic>) {
-      return ProjectsReportModel.fromMap(response.data);
+      return ServicesReportModel.fromMap(response.data);
     }
     return null;
   }
-
 }

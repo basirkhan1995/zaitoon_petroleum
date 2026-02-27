@@ -8,6 +8,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/b
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/gl_statement.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/cash_branch.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/HR/AttendanceReport/attendance_report.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Projects/ProjectList/projects_report.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/Cardx/Ui/cardx.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/OrdersReport/Ui/order_report.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/Shipments/shipment_report.dart';
@@ -23,6 +24,7 @@ import 'Ui/Finance/ArApReport/Receivables/receivables.dart';
 import 'Ui/Finance/ExchangeRate/exchange_rate.dart';
 import 'Ui/Finance/Treasury/all_cash.dart';
 import 'Ui/Finance/TrialBalance/trial_balance.dart';
+import 'Ui/Projects/ServicesReport/Ui/services_report.dart';
 import 'Ui/Stock/StockAvailability/product_report.dart';
 import 'Ui/TransactionRef/transaction_ref.dart';
 import 'Ui/TxnReport/txn_report.dart';
@@ -65,6 +67,9 @@ enum ActionKey {
   userLog,
   users,
   attendance,
+
+  projects,
+  services
 }
 class ReportView extends StatelessWidget {
   const ReportView({super.key});
@@ -157,6 +162,14 @@ class _DesktopState extends State<_Desktop> {
         {"title": tr.drivers, "icon": Icons.person, "action": ActionKey.shipping},
     ];
 
+    final List<Map<String, dynamic>> projectsButtons = [
+      if(login.hasPermission(95) ?? false)
+        {"title": "All Projects", "icon": Icons.folder_open_rounded, "action": ActionKey.projects},
+      if(login.hasPermission(96) ?? false)
+        {"title": "Services Report", "icon": Icons.access_time_rounded, "action": ActionKey.services},
+
+    ];
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -193,6 +206,11 @@ class _DesktopState extends State<_Desktop> {
               SectionTitle(title: tr.transport),
               SizedBox(height: 8),
               _buildButtonGroup(transportButtons, color),
+
+              const SizedBox(height: 15),
+              SectionTitle(title: tr.projects),
+              SizedBox(height: 8),
+              _buildButtonGroup(projectsButtons, color),
             ],
           ),
         ),
@@ -303,6 +321,10 @@ class _DesktopState extends State<_Desktop> {
       case ActionKey.shipping: Utils.goto(context, ShippingReportView());
       case ActionKey.drivers: Utils.goto(context, ShippingReportView());
       case ActionKey.vehicles: Utils.goto(context, VehicleReportView());
+
+      //Projects
+      case ActionKey.projects: Utils.goto(context, ProjectsReportView());
+      case ActionKey.services: Utils.goto(context, ServicesReportView());
     }
   }
 }
