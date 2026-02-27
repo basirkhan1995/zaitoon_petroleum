@@ -103,8 +103,7 @@ class _AnimatedIconContainer extends StatefulWidget {
   State<_AnimatedIconContainer> createState() => _AnimatedIconContainerState();
 }
 
-class _AnimatedIconContainerState extends State<_AnimatedIconContainer>
-    with SingleTickerProviderStateMixin {
+class _AnimatedIconContainerState extends State<_AnimatedIconContainer> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _rotateAnimation;

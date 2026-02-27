@@ -35,7 +35,7 @@ final class VehicleLoadedState extends VehicleState {
 }
 
 final class VehicleReportLoadedState extends VehicleState {
-  final List<VehicleReportModel> vehicles;
+  final List<VehicleModel> vehicles;
   const VehicleReportLoadedState(this.vehicles);
   @override
   List<Object> get props => [vehicles];

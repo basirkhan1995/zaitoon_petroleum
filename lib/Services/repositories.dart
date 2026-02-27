@@ -24,6 +24,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStateme
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/model/gl_statement_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/model/cash_balance_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/TrialBalance/model/trial_balance_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Projects/ProjectList/model/projects_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/Cardx/model/cardx_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/TotalDailyTxn/model/daily_txn_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/model/com_model.dart';
@@ -853,10 +854,7 @@ class Repositories {
   }
 
   ///Vehicles ..................................................................
-  Future<List<VehicleModel>> getVehicles({
-    int? vehicleId,
-    CancelToken? cancelToken,
-  }) async {
+  Future<List<VehicleModel>> getVehicles({int? vehicleId, CancelToken? cancelToken,}) async {
     // Build query parameters dynamically
     final queryParams = {'vclID': vehicleId};
 
@@ -909,7 +907,7 @@ class Repositories {
     return response.data;
   }
 
-  Future<List<VehicleReportModel>> vehiclesReport({
+  Future<List<VehicleModel>> vehiclesReport({
     int? regExpired,
     CancelToken? cancelToken,
   }) async {
@@ -918,7 +916,40 @@ class Repositories {
 
     // Fetch data from API
     final response = await api.post(
-      endpoint: "/report/vehiclesReport.php",
+      endpoint: "/reports/vehiclesReport.php",
+      data: queryParams,
+      cancelToken: cancelToken,
+    );
+
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
+
+    // If data is null or empty, return empty list
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => VehicleModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
+  }
+
+  Future<List<VehicleReportModel>> getVehiclesReport({int? regExpired, CancelToken? cancelToken}) async {
+    // Build query parameters dynamically
+    final queryParams = {'regExpired': regExpired};
+
+    // Fetch data from API
+    final response = await api.post(
+      endpoint: "/reports/vehiclesReport.php",
       data: queryParams,
       cancelToken: cancelToken,
     );
@@ -3482,4 +3513,37 @@ class Repositories {
     );
     return response.data;
   }
+
+  ///Projects Report
+  Future<ProjectsReportModel?> getProjectsReport({String? fromDate, String? toDate,int? customerId, int? status}) async {
+    final response = await api.post(
+      endpoint: "/reports/projectsReport.php",
+      data: {
+        "fromDate": fromDate,
+        "toDate": toDate,
+        "customer": customerId,
+        "status": status
+      }
+    );
+
+    // Check if response has data
+    if (response.data == null) {
+      return null;
+    }
+
+    // Check for error message
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      if (response.data['msg'] == 'failed') {
+        return null; // No records found
+      }
+      throw Exception(response.data['msg']);
+    }
+
+    // Parse the response as a single ProjectInOutModel
+    if (response.data is Map<String, dynamic>) {
+      return ProjectsReportModel.fromMap(response.data);
+    }
+    return null;
+  }
+
 }

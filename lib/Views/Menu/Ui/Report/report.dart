@@ -11,6 +11,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/HR/AttendanceReport/at
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/Cardx/Ui/cardx.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/OrdersReport/Ui/order_report.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/Shipments/shipment_report.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/Vehicle/View/vehicle_report.dart';
 import '../../../../Features/Other/utils.dart';
 import '../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../Auth/bloc/auth_bloc.dart';
@@ -41,6 +42,8 @@ enum ActionKey {
 
   //Transport
   shipping,
+  drivers,
+  vehicles,
 
   //Transactions
   balanceSheet,
@@ -149,7 +152,7 @@ class _DesktopState extends State<_Desktop> {
       if(login.hasPermission(95) ?? false)
       {"title": tr.shipping, "icon": Icons.emoji_transportation_rounded, "action": ActionKey.shipping},
       if(login.hasPermission(96) ?? false)
-      {"title": tr.vehicle, "icon": Icons.car_crash_sharp, "action": ActionKey.shipping},
+      {"title": tr.vehicle, "icon": Icons.car_crash_sharp, "action": ActionKey.vehicles},
       if(login.hasPermission(97) ?? false)
         {"title": tr.drivers, "icon": Icons.person, "action": ActionKey.shipping},
     ];
@@ -295,8 +298,11 @@ class _DesktopState extends State<_Desktop> {
       case ActionKey.users: Utils.goto(context, UsersReportView());
       case ActionKey.userLog: Utils.goto(context, UserLogReportView());
       case ActionKey.attendance: Utils.goto(context, AttendanceReportView());
+
       //Transport
       case ActionKey.shipping: Utils.goto(context, ShippingReportView());
+      case ActionKey.drivers: Utils.goto(context, ShippingReportView());
+      case ActionKey.vehicles: Utils.goto(context, VehicleReportView());
     }
   }
 }

@@ -25,25 +25,26 @@ import '../../../../../Auth/bloc/auth_bloc.dart';
 
 class AddEditVehicleView extends StatelessWidget {
   final VehicleModel? model;
-  const AddEditVehicleView({super.key, this.model});
+  final bool disableUpdate;
+  const AddEditVehicleView({super.key, this.model, this.disableUpdate = true});
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
-      mobile: _Mobile(model),
-      desktop: _Desktop(model),
-      tablet: _Desktop(model),
+      mobile: _Mobile(model,disableUpdate),
+      desktop: _Desktop(model,disableUpdate),
+      tablet: _Desktop(model,disableUpdate),
     );
   }
 }
 class _Mobile extends StatefulWidget {
   final VehicleModel? model;
-  const _Mobile(this.model);
+  final bool isEnabledUpdate;
+  const _Mobile(this.model,this.isEnabledUpdate);
 
   @override
   State<_Mobile> createState() => _MobileState();
 }
-
 class _MobileState extends State<_Mobile> {
   final vclModel = TextEditingController();
   final plateNo = TextEditingController();
@@ -178,6 +179,7 @@ class _MobileState extends State<_Mobile> {
                   // Vehicle Model
                   ZTextFieldEntitled(
                     isRequired: true,
+                    isEnabled: widget.isEnabledUpdate,
                     title: tr.vehicleModel,
                     controller: vclModel,
                     validator: (value) {
@@ -192,6 +194,7 @@ class _MobileState extends State<_Mobile> {
                   // Driver Selection
                   GenericTextfield<DriverModel, DriverBloc, DriverState>(
                     controller: driverCtrl,
+                    isEnabled: widget.isEnabledUpdate,
                     validator: (e) => null,
                     title: tr.driver,
                     hintText: tr.driver,
@@ -249,6 +252,7 @@ class _MobileState extends State<_Mobile> {
                   // Plate and Meter
                   ZTextFieldEntitled(
                     isRequired: true,
+                    isEnabled: widget.isEnabledUpdate,
                     title: tr.vehiclePlate,
                     controller: plateNo,
                     validator: (value) {
@@ -262,6 +266,7 @@ class _MobileState extends State<_Mobile> {
 
                   ZTextFieldEntitled(
                     title: tr.meter,
+                    isEnabled: widget.isEnabledUpdate,
                     controller: odometer,
                     inputFormat: [FilteringTextInputFormatter.digitsOnly],
                   ),
@@ -269,6 +274,7 @@ class _MobileState extends State<_Mobile> {
 
                   ZTextFieldEntitled(
                     title: tr.manufacturedYear,
+                    isEnabled: widget.isEnabledUpdate,
                     controller: vclYear,
                     inputFormat: [FilteringTextInputFormatter.digitsOnly],
                   ),
@@ -282,6 +288,7 @@ class _MobileState extends State<_Mobile> {
 
                   ZTextFieldEntitled(
                     title: tr.enginePower,
+                    isEnabled: widget.isEnabledUpdate,
                     controller: vclEnginPower,
                   ),
                   const SizedBox(height: 12),
@@ -289,6 +296,7 @@ class _MobileState extends State<_Mobile> {
                   ZTextFieldEntitled(
                     isRequired: true,
                     title: tr.vclRegisteredNo,
+                    isEnabled: widget.isEnabledUpdate,
                     controller: vclRegNo,
                     validator: (value) {
                       if (value?.isEmpty ?? true) {
@@ -306,6 +314,7 @@ class _MobileState extends State<_Mobile> {
                   // Date Picker
                   GenericDatePicker(
                     label: tr.vclExpireDate,
+                    isActive:  widget.isEnabledUpdate,
                     initialGregorianDate: vehicleExpireDateGregorian,
                     onDateChanged: (newDate) {
                       setState(() {
@@ -443,7 +452,8 @@ class _MobileState extends State<_Mobile> {
 
 class _Desktop extends StatefulWidget {
   final VehicleModel? model;
-  const _Desktop(this.model);
+  final bool isEnabledUpdate;
+  const _Desktop(this.model,this.isEnabledUpdate);
 
   @override
   State<_Desktop> createState() => _DesktopState();
@@ -533,6 +543,7 @@ class _DesktopState extends State<_Desktop> {
 
     return ZFormDialog(
       onAction: onSubmit,
+      isActionTrue: widget.isEnabledUpdate,
       icon: Icons.fire_truck_rounded,
       title: isEdit ? tr.update : tr.newKeyword,
       actionLabel: (context.watch<VehicleBloc>().state is VehicleLoadingState)
