@@ -16,7 +16,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProjectsReportView extends StatelessWidget {
   const ProjectsReportView({super.key});
-
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
@@ -35,7 +34,6 @@ class _Mobile extends StatelessWidget {
     return const Placeholder();
   }
 }
-
 class _Tablet extends StatelessWidget {
   const _Tablet();
 
@@ -44,14 +42,12 @@ class _Tablet extends StatelessWidget {
     return const Placeholder();
   }
 }
-
 class _Desktop extends StatefulWidget {
   const _Desktop();
 
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> {
   String fromDate = DateTime.now()
       .subtract(const Duration(days: 7))
@@ -59,7 +55,7 @@ class _DesktopState extends State<_Desktop> {
   String toDate = DateTime.now().toFormattedDate();
   final customerController = TextEditingController();
   int? customerId;
-
+  int? status;
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_){
@@ -70,7 +66,13 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
-
+    final color = Theme.of(context).colorScheme;
+    TextStyle? titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+      color: color.surface
+    );
+    TextStyle? subtitleStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: color.outline.withValues(alpha: .8)
+    );
     return Scaffold(
       appBar: AppBar(title: Text("Projects Report")),
       body: Column(
@@ -166,7 +168,14 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Expanded(child: StatusDropdown(onChanged: (e) {})),
+                Expanded(
+                    child: StatusDropdown(
+                    value: status,
+                    onChanged: (e) {
+                  setState(() {
+                     status = e;
+                  });
+                })),
                 const SizedBox(width: 8),
                 ZOutlineButton(
                   icon: FontAwesomeIcons.solidFilePdf,
@@ -184,10 +193,50 @@ class _DesktopState extends State<_Desktop> {
                       fromDate: fromDate,
                       toDate: toDate,
                       customerId: customerId,
+                      status: status
                     ));
                   },
                   label: Text(tr.applyFilter),
                 ),
+              ],
+            ),
+          ),
+
+          Container(
+            padding: const EdgeInsets.all(10.0),
+            margin: const EdgeInsets.symmetric(horizontal: 10.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary
+            ),
+            child: Row(
+              children: [
+
+                SizedBox(
+                    width: 40,
+                    child: Text(tr.id,style: titleStyle)),
+
+                Expanded(
+                    child: Text(tr.projectName,style: titleStyle)),
+
+                SizedBox(
+                    width: 180,
+                    child: Text(tr.customer,style: titleStyle)),
+
+                SizedBox(
+                    width: 150,
+                    child: Text(tr.totalProjects,style: titleStyle)),
+
+                SizedBox(
+                    width: 150,
+                    child: Text(tr.totalPayment,style: titleStyle)),
+
+                SizedBox(
+                    width: 150,
+                    child: Text(tr.deadline,style: titleStyle)),
+
+                SizedBox(
+                    width: 80,
+                    child: Text(tr.status,style: titleStyle)),
               ],
             ),
           ),
@@ -225,7 +274,7 @@ class _DesktopState extends State<_Desktop> {
                      return InkWell(
                        onTap: (){},
                        child: Container(
-                         padding: EdgeInsets.all(10),
+                         padding: EdgeInsets.symmetric(horizontal: 20,vertical: 8),
                          decoration: BoxDecoration(
                            color: index.isOdd? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent
                          ),
@@ -239,8 +288,8 @@ class _DesktopState extends State<_Desktop> {
                                  mainAxisAlignment: MainAxisAlignment.start,
                                  crossAxisAlignment: CrossAxisAlignment.start,
                                  children: [
-                                   Text(pjr.prjName.toString()),
-                                   Text(pjr.prjLocation.toString()),
+                                   Text(pjr.prjName.toString(),style: titleStyle?.copyWith(color: color.onSurface),),
+                                   Text(pjr.prjLocation.toString(),style: subtitleStyle),
                                  ],
                                ),
                              ),
@@ -249,16 +298,12 @@ class _DesktopState extends State<_Desktop> {
                                  child: Text(pjr.customerName??"")),
 
                              SizedBox(
-                                 width: 100,
+                                 width: 150,
                                  child: Text(pjr.totalAmount.toAmount())),
 
                              SizedBox(
-                                 width: 100,
+                                 width: 150,
                                  child: Text(pjr.totalPayments.toAmount())),
-
-                             SizedBox(
-                                 width: 100,
-                                 child: Text(pjr.totalAmount.toAmount())),
 
                              SizedBox(
                                  width: 150,
