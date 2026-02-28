@@ -1,11 +1,18 @@
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart';
+import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
-import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/status_badge.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
+import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/features/currency_drop.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/Shipments/features/status_drop.dart';
+import '../../../../../../../Features/Widgets/z_dragable_sheet.dart';
+import 'bloc/accounts_report_bloc.dart';
 
 class AccountsReportView extends StatelessWidget {
   const AccountsReportView({super.key});
@@ -20,21 +27,766 @@ class AccountsReportView extends StatelessWidget {
   }
 }
 
-class _Mobile extends StatelessWidget {
+class _Mobile extends StatefulWidget {
   const _Mobile();
 
   @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
+  State<_Mobile> createState() => _MobileState();
 }
 
-class _Tablet extends StatelessWidget {
-  const _Tablet();
+class _MobileState extends State<_Mobile> {
+  String? ccy;
+  int? status;
+  double? limit;
+  final accountLimit = TextEditingController();
+  final searchController = TextEditingController();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AccountsReportBloc>().add(ResetAccountsReportEvent());
+    });
+    super.initState();
+  }
+
+  void _showFilterSheet() {
+    final tr = AppLocalizations.of(context)!;
+
+    // Create local controllers to avoid affecting main controllers until apply
+    final tempSearchController = TextEditingController(text: searchController.text);
+    final tempAccountLimitController = TextEditingController(text: accountLimit.text);
+    String? tempCcy = ccy;
+    int? tempStatus = status;
+    double? tempLimit = limit;
+
+    ZDraggableSheet.show(
+      context: context,
+      title: "filter",
+      showCloseButton: true,
+      showDragHandle: true,
+      estimatedContentHeight: 400,
+      bodyBuilder: (context, scrollController) {
+        return ListView(
+          controller: scrollController,
+          children: [
+            // Search Field
+            ZTextFieldEntitled(
+              onChanged: (e) {},
+              controller: tempSearchController,
+              title: tr.search,
+            ),
+            const SizedBox(height: 16),
+
+            // Account Limit Field
+            ZTextFieldEntitled(
+              inputFormat: [FilteringTextInputFormatter.digitsOnly],
+              onChanged: (e) {
+                tempLimit = double.tryParse(e);
+              },
+              controller: tempAccountLimitController,
+              title: tr.accountLimit,
+            ),
+            const SizedBox(height: 16),
+
+            // Currency Dropdown
+            CurrencyDropdown(
+              flag: true,
+              isMulti: false,
+              title: tr.currencyTitle,
+              onMultiChanged: (e) {},
+              onSingleChanged: (e) {
+                tempCcy = e?.ccyCode ?? "";
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Status Dropdown
+            StatusDropdown(
+              onChanged: (e) {
+                tempStatus = e;
+              },
+            ),
+            const SizedBox(height: 24),
+
+            // Action Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: ZOutlineButton(
+                    height: 47,
+                    isActive: true,
+                    icon: Icons.clear_all,
+                    onPressed: () {
+                      // Clear temp values
+                      tempSearchController.clear();
+                      tempAccountLimitController.clear();
+                      tempCcy = null;
+                      tempStatus = null;
+                      tempLimit = null;
+                      setState(() {});
+                    },
+                    label: Text(tr.clearFilters),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ZOutlineButton(
+                    height: 47,
+                    isActive: true,
+                    icon: Icons.filter_alt_outlined,
+                    onPressed: () {
+                      // Apply filters
+                      setState(() {
+                        ccy = tempCcy;
+                        status = tempStatus;
+                        limit = tempLimit;
+                        searchController.text = tempSearchController.text;
+                        accountLimit.text = tempAccountLimitController.text;
+                      });
+
+                      context.read<AccountsReportBloc>().add(
+                        LoadAccountsReportEvent(
+                          status: tempStatus,
+                          currency: tempCcy,
+                          limit: tempLimit ?? 0.0,
+                          search: tempSearchController.text,
+                        ),
+                      );
+
+                      Navigator.pop(context);
+                    },
+                    label: Text(tr.applyFilter),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: Text("Accounts Report"),
+        actions: [
+          // Filter button in app bar
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: _showFilterSheet,
+          ),
+          // Clear filters button (only shown if filters are applied)
+          if (ccy != null || status != null || limit != null || searchController.text.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.filter_alt_off),
+              onPressed: () {
+                setState(() {
+                  ccy = null;
+                  status = null;
+                  limit = null;
+                  searchController.clear();
+                  accountLimit.clear();
+                });
+                context.read<AccountsReportBloc>().add(
+                  LoadAccountsReportEvent(),
+                );
+              },
+            ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Active filters indicator
+          if (ccy != null || status != null || limit != null || searchController.text.isNotEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              color: color.primaryContainer,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    Icon(Icons.filter_alt, size: 16, color: color.onPrimaryContainer),
+                    const SizedBox(width: 8),
+                    Text(
+                      "activeFilters",
+                      style: TextStyle(color: color.onPrimaryContainer),
+                    ),
+                    const SizedBox(width: 8),
+                    if (searchController.text.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: color.surface,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          "${tr.search}: ${searchController.text}",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    if (limit != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: color.surface,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          "${tr.accountLimit}: ${limit!.toAmount()}",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    if (ccy != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: color.surface,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          "${tr.currencyTitle}: $ccy",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    if (status != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: color.surface,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          "${tr.status}: ${status == 1 ? tr.active : tr.blocked}",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+
+          // Header
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            decoration: BoxDecoration(
+              color: color.primary,
+            ),
+            child: Row(
+              children: [
+                Expanded(child: Text(tr.accounts, style: TextStyle(color: color.surface))),
+                Expanded(
+                  child: Text(tr.ownerInformation, style: TextStyle(color: color.surface)),
+                ),
+                SizedBox(
+                  width: 100,
+                  child: Text(tr.accountLimit, style: TextStyle(color: color.surface)),
+                ),
+                SizedBox(
+                  width: 80,
+                  child: Text(tr.status, style: TextStyle(color: color.surface)),
+                ),
+              ],
+            ),
+          ),
+
+          // List
+          Expanded(
+            child: BlocBuilder<AccountsReportBloc, AccountsReportState>(
+              builder: (context, state) {
+                if (state is AccountsReportLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is AccountsReportErrorState) {
+                  return NoDataWidget(
+                    title: tr.errorTitle,
+                    message: state.message,
+                    enableAction: false,
+                  );
+                }
+                if (state is AccountsReportLoadedState) {
+                  if (state.accounts.isEmpty) {
+                    return NoDataWidget(
+                      title: tr.noData,
+                      message: tr.noDataFound,
+                      onRefresh: () {
+                        context.read<AccountsReportBloc>().add(
+                          LoadAccountsReportEvent(),
+                        );
+                      },
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: state.accounts.length,
+                    itemBuilder: (context, index) {
+                      final acc = state.accounts[index];
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: index.isOdd
+                              ? color.primary.withValues(alpha: .05)
+                              : Colors.transparent,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    acc.accName ?? "",
+                                    style: TextStyle(color: color.onSurface),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Wrap(
+                                    spacing: 5,
+                                    children: [
+                                      ZCover(
+                                        child: Text(
+                                          acc.accNumber.toString(),
+                                          style: TextStyle(color: color.outline),
+                                        ),
+                                      ),
+                                      ZCover(
+                                        child: Text(
+                                          acc.ccyName.toString(),
+                                          style: TextStyle(color: color.outline),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(acc.ownerName ?? ""),
+                            ),
+                            SizedBox(
+                              width: 100,
+                              child: Text(acc.creditLimit.toAmount()),
+                            ),
+                            SizedBox(
+                              width: 80,
+                              child: StatusBadge(
+                                trueValue: tr.active,
+                                falseValue: tr.blocked,
+                                status: acc.status == "Active" ? 1 : 0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Tablet extends StatefulWidget {
+  const _Tablet();
+
+  @override
+  State<_Tablet> createState() => _TabletState();
+}
+
+class _TabletState extends State<_Tablet> {
+  String? ccy;
+  int? status;
+  double? limit;
+  final accountLimit = TextEditingController();
+  final searchController = TextEditingController();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AccountsReportBloc>().add(ResetAccountsReportEvent());
+    });
+    super.initState();
+  }
+
+  void _showFilterSheet() {
+    final tr = AppLocalizations.of(context)!;
+
+    final tempSearchController = TextEditingController(text: searchController.text);
+    final tempAccountLimitController = TextEditingController(text: accountLimit.text);
+    String? tempCcy = ccy;
+    int? tempStatus = status;
+    double? tempLimit = limit;
+
+    ZDraggableSheet.show(
+      context: context,
+      title: "Filter",
+      showCloseButton: true,
+      showDragHandle: true,
+      estimatedContentHeight: 450,
+      initialChildSize: 0.5,
+      bodyBuilder: (context, scrollController) {
+        return ListView(
+          controller: scrollController,
+          children: [
+            // For tablet, we can use a more spacious layout
+            Row(
+              children: [
+                Expanded(
+                  child: ZTextFieldEntitled(
+                    onChanged: (e) {},
+                    controller: tempSearchController,
+                    title: tr.search,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ZTextFieldEntitled(
+                    inputFormat: [FilteringTextInputFormatter.digitsOnly],
+                    onChanged: (e) {
+                      tempLimit = double.tryParse(e);
+                    },
+                    controller: tempAccountLimitController,
+                    title: tr.accountLimit,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            Row(
+              children: [
+                Expanded(
+                  child: CurrencyDropdown(
+                    flag: true,
+                    isMulti: false,
+                    title: tr.currencyTitle,
+                    onMultiChanged: (e) {},
+                    onSingleChanged: (e) {
+                      tempCcy = e?.ccyCode ?? "";
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: StatusDropdown(
+                    onChanged: (e) {
+                      tempStatus = e;
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            Row(
+              children: [
+                Expanded(
+                  child: ZOutlineButton(
+                    height: 47,
+                    isActive: true,
+                    icon: Icons.clear_all,
+                    onPressed: () {
+                      tempSearchController.clear();
+                      tempAccountLimitController.clear();
+                      tempCcy = null;
+                      tempStatus = null;
+                      tempLimit = null;
+                      setState(() {});
+                    },
+                    label: Text(tr.clearFilters),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ZOutlineButton(
+                    height: 47,
+                    isActive: true,
+                    icon: Icons.filter_alt_outlined,
+                    onPressed: () {
+                      setState(() {
+                        ccy = tempCcy;
+                        status = tempStatus;
+                        limit = tempLimit;
+                        searchController.text = tempSearchController.text;
+                        accountLimit.text = tempAccountLimitController.text;
+                      });
+
+                      context.read<AccountsReportBloc>().add(
+                        LoadAccountsReportEvent(
+                          status: tempStatus,
+                          currency: tempCcy,
+                          limit: tempLimit ?? 0.0,
+                          search: tempSearchController.text,
+                        ),
+                      );
+
+                      Navigator.pop(context);
+                    },
+                    label: Text(tr.applyFilter),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: Text("Accounts Report"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: _showFilterSheet,
+          ),
+          if (ccy != null || status != null || limit != null || searchController.text.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.filter_alt_off),
+              onPressed: () {
+                setState(() {
+                  ccy = null;
+                  status = null;
+                  limit = null;
+                  searchController.clear();
+                  accountLimit.clear();
+                });
+                context.read<AccountsReportBloc>().add(
+                  LoadAccountsReportEvent(),
+                );
+              },
+            ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Quick filter bar for tablet
+          if (ccy != null || status != null || limit != null || searchController.text.isNotEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              color: color.primaryContainer,
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  Chip(
+                    label: Text("Active Filters"),
+                    backgroundColor: color.primary,
+                    labelStyle: TextStyle(color: color.onPrimary),
+                  ),
+                  if (searchController.text.isNotEmpty)
+                    Chip(
+                      label: Text("${tr.search}: ${searchController.text}"),
+                      onDeleted: () {
+                        setState(() {
+                          searchController.clear();
+                        });
+                        context.read<AccountsReportBloc>().add(
+                          LoadAccountsReportEvent(
+                            status: status,
+                            currency: ccy,
+                            limit: limit ?? 0.0,
+                          ),
+                        );
+                      },
+                    ),
+                  if (limit != null)
+                    Chip(
+                      label: Text("${tr.accountLimit}: ${limit!.toAmount()}"),
+                      onDeleted: () {
+                        setState(() {
+                          limit = null;
+                          accountLimit.clear();
+                        });
+                        context.read<AccountsReportBloc>().add(
+                          LoadAccountsReportEvent(
+                            status: status,
+                            currency: ccy,
+                            search: searchController.text,
+                          ),
+                        );
+                      },
+                    ),
+                  if (ccy != null)
+                    Chip(
+                      label: Text("${tr.currencyTitle}: $ccy"),
+                      onDeleted: () {
+                        setState(() {
+                          ccy = null;
+                        });
+                        context.read<AccountsReportBloc>().add(
+                          LoadAccountsReportEvent(
+                            status: status,
+                            limit: limit ?? 0.0,
+                            search: searchController.text,
+                          ),
+                        );
+                      },
+                    ),
+                  if (status != null)
+                    Chip(
+                      label: Text("${tr.status}: ${status == 1 ? tr.active : tr.blocked}"),
+                      onDeleted: () {
+                        setState(() {
+                          status = null;
+                        });
+                        context.read<AccountsReportBloc>().add(
+                          LoadAccountsReportEvent(
+                            currency: ccy,
+                            limit: limit ?? 0.0,
+                            search: searchController.text,
+                          ),
+                        );
+                      },
+                    ),
+                ],
+              ),
+            ),
+
+          // Header and list (similar to mobile but with adjusted widths)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            decoration: BoxDecoration(
+              color: color.primary,
+            ),
+            child: Row(
+              children: [
+                Expanded(child: Text(tr.accounts, style: TextStyle(color: color.surface))),
+                Expanded(
+                  child: Text(tr.ownerInformation, style: TextStyle(color: color.surface)),
+                ),
+                SizedBox(
+                  width: 120,
+                  child: Text(tr.accountLimit, style: TextStyle(color: color.surface)),
+                ),
+                SizedBox(
+                  width: 100,
+                  child: Text(tr.status, style: TextStyle(color: color.surface)),
+                ),
+              ],
+            ),
+          ),
+
+          Expanded(
+            child: BlocBuilder<AccountsReportBloc, AccountsReportState>(
+              builder: (context, state) {
+                if (state is AccountsReportLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is AccountsReportErrorState) {
+                  return NoDataWidget(
+                    title: tr.errorTitle,
+                    message: state.message,
+                    enableAction: false,
+                  );
+                }
+                if (state is AccountsReportLoadedState) {
+                  if (state.accounts.isEmpty) {
+                    return NoDataWidget(
+                      title: tr.noData,
+                      message: tr.noDataFound,
+                      onRefresh: () {
+                        context.read<AccountsReportBloc>().add(
+                          LoadAccountsReportEvent(),
+                        );
+                      },
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: state.accounts.length,
+                    itemBuilder: (context, index) {
+                      final acc = state.accounts[index];
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: index.isOdd
+                              ? color.primary.withValues(alpha: .05)
+                              : Colors.transparent,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    acc.accName ?? "",
+                                    style: TextStyle(color: color.onSurface),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Wrap(
+                                    spacing: 5,
+                                    children: [
+                                      ZCover(
+                                        child: Text(
+                                          acc.accNumber.toString(),
+                                          style: TextStyle(color: color.outline),
+                                        ),
+                                      ),
+                                      ZCover(
+                                        child: Text(
+                                          acc.ccyName.toString(),
+                                          style: TextStyle(color: color.outline),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(acc.ownerName ?? ""),
+                            ),
+                            SizedBox(
+                              width: 120,
+                              child: Text(acc.creditLimit.toAmount()),
+                            ),
+                            SizedBox(
+                              width: 100,
+                              child: StatusBadge(
+                                trueValue: tr.active,
+                                falseValue: tr.blocked,
+                                status: acc.status == "Active" ? 1 : 0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -46,110 +798,289 @@ class _Desktop extends StatefulWidget {
 }
 
 class _DesktopState extends State<_Desktop> {
-  String? currentLocale;
-  String? baseCurrency;
-  bool _initialLoaded = false;
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    if (!_initialLoaded) {
-      final compState = context.read<CompanyProfileBloc>().state;
-      if (compState is CompanyProfileLoadedState) {
-        baseCurrency = compState.company.comLocalCcy;
-      }
-
-      currentLocale = context.read<LocalizationBloc>().state.countryCode;
-
-      _loadAccounts();
-      _initialLoaded = true;
-    }
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AccountsReportBloc>().add(ResetAccountsReportEvent());
+    });
+    super.initState();
   }
 
-  void _loadAccounts() {
-    context.read<AccountsBloc>().add(
-      LoadAccountsFilterEvent(
-          include: '1,2,3,4,5,6,7,8,9,10,11,12',
-          ccy: baseCurrency,
-        exclude: '',
-        input: ''
-      ),
-    );
-  }
+  String? ccy;
+  int? status;
+  double? limit;
+  final accountLimit = TextEditingController();
+  final searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    //final tr = AppLocalizations.of(context)!;
+    final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
+    TextStyle? titleStyle = Theme.of(
+      context,
+    ).textTheme.titleSmall?.copyWith(color: color.surface);
 
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<CompanyProfileBloc, CompanyProfileState>(
-          listener: (context, state) {
-            if (state is CompanyProfileLoadedState) {
-              setState(() {
-                baseCurrency = state.company.comLocalCcy;
-              });
-              _loadAccounts();
-            }
-          },
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: Text("Accounts Report"),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              spacing: 8,
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: ZTextFieldEntitled(
+                    onChanged: (e) {
+                      context.read<AccountsReportBloc>().add(
+                        LoadAccountsReportEvent(
+                          search: e,
+                        ),
+                      );
+                    },
+                    controller: searchController,
+                    title: tr.search,
+                  ),
+                ),
+                Expanded(
+                  child: ZTextFieldEntitled(
+                    inputFormat: [
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                    onChanged: (e) {
+                      setState(() {
+                        limit = double.tryParse(e);
+                      });
+                    },
+                    controller: accountLimit,
+                    title: tr.accountLimit,
+                  ),
+                ),
+                Expanded(
+                  child: CurrencyDropdown(
+                    flag: true,
+                    isMulti: false,
+                    title: tr.currencyTitle,
+                    onMultiChanged: (e) {},
+                    onSingleChanged: (e) {
+                      setState(() {
+                        ccy = e?.ccyCode ?? "";
+                      });
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: StatusDropdown(
+                    onChanged: (e) {
+                      setState(() {
+                        status = e;
+                      });
+                    },
+                  ),
+                ),
+                // Show clear filter button only when filters are applied
+                if (ccy != null || status != null || limit != null || searchController.text.isNotEmpty)
+                  ZOutlineButton(
+                    height: 47,
+                    isActive: true,
+                    icon: Icons.filter_alt_off_outlined,
+                    onPressed: () {
+                      setState(() {
+                        ccy = null;
+                        limit = null;
+                        status = null;
+                        searchController.clear();
+                        accountLimit.clear();
+                      });
+                      context.read<AccountsReportBloc>().add(
+                        LoadAccountsReportEvent(),
+                      );
+                    },
+                    label: Text(tr.clearFilters),
+                  ),
+                ZOutlineButton(
+                  height: 47,
+                  isActive: true,
+                  icon: Icons.filter_alt_outlined,
+                  onPressed: () {
+                    context.read<AccountsReportBloc>().add(
+                      LoadAccountsReportEvent(
+                        status: status,
+                        currency: ccy,
+                        limit: limit ?? 0.0,
+                        search: searchController.text,
+                      ),
+                    );
+                  },
+                  label: Text(tr.applyFilter),
+                ),
+              ],
+            ),
+          ),
 
-        BlocListener<LocalizationBloc, Locale>(
-          listener: (context, state) {
-            setState(() {
-              currentLocale = state.countryCode;
-            });
-            _loadAccounts();
-          },
-        ),
-      ],
-      child: Scaffold(
-        appBar: AppBar(title: const Text("Accounts Report")),
-
-        body: BlocBuilder<AccountsBloc, AccountsState>(
-          builder: (context, state) {
-            if (state is AccountLoadingState) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (state is AccountErrorState) {
-              return Center(child: Text(state.message));
-            }
-
-            if (state is AccountLoadedState) {
-              if (state.accounts.isEmpty) {
-                return const Center(child: Text("No accounts found"));
-              }
-
-              return ListView.builder(
-                itemCount: state.accounts.length,
-                itemBuilder: (context, index) {
-                  final account = state.accounts[index];
-
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: index.isEven
-                          ? color.primary.withValues(alpha: .05)
-                          : Colors.transparent,
+          // Active filters indicator for desktop
+          if (ccy != null || status != null || limit != null || searchController.text.isNotEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              margin: const EdgeInsets.only(bottom: 8),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: [
+                  Text("Active Filters", style: TextStyle(fontWeight: FontWeight.bold)),
+                  if (searchController.text.isNotEmpty)
+                    Chip(
+                      label: Text("${tr.search}: ${searchController.text}"),
+                      backgroundColor: color.primaryContainer,
                     ),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 80, child: Text(account.accNumber.toString())),
-                        Expanded(child: Text(account.accName.toString())),
-                        Text("${account.accBalance?.toAmount()} ${account.actCurrency??baseCurrency}"),
-                      ],
+                  if (limit != null)
+                    Chip(
+                      label: Text("${tr.accountLimit}: ${limit!.toAmount()}"),
+                      backgroundColor: color.primaryContainer,
                     ),
+                  if (ccy != null)
+                    Chip(
+                      label: Text("${tr.currencyTitle}: $ccy"),
+                      backgroundColor: color.primaryContainer,
+                    ),
+                  if (status != null)
+                    Chip(
+                      label: Text("${tr.status}: ${status == 1 ? tr.active : tr.blocked}"),
+                      backgroundColor: color.primaryContainer,
+                    ),
+                ],
+              ),
+            ),
+
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            decoration: BoxDecoration(
+              color: color.primary,
+            ),
+            child: Row(
+              children: [
+                Expanded(child: Text(tr.accounts, style: titleStyle)),
+                SizedBox(
+                  width: 250,
+                  child: Text(tr.ownerInformation, style: titleStyle),
+                ),
+                SizedBox(
+                  width: 150,
+                  child: Text(tr.accountLimit, style: titleStyle),
+                ),
+                SizedBox(
+                  width: 100,
+                  child: Text(tr.status, style: titleStyle),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: BlocBuilder<AccountsReportBloc, AccountsReportState>(
+              builder: (context, state) {
+                if (state is AccountsReportLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is AccountsReportErrorState) {
+                  return NoDataWidget(
+                    title: tr.errorTitle,
+                    message: state.message,
+                    enableAction: false,
                   );
-                },
-              );
-            }
-
-            return const SizedBox();
-          },
-        ),
+                }
+                if (state is AccountsReportLoadedState) {
+                  if (state.accounts.isEmpty) {
+                    return NoDataWidget(
+                      title: tr.noData,
+                      message: tr.noDataFound,
+                      onRefresh: () {
+                        context.read<AccountsReportBloc>().add(
+                          LoadAccountsReportEvent(),
+                        );
+                      },
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: state.accounts.length,
+                    itemBuilder: (context, index) {
+                      final acc = state.accounts[index];
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: index.isOdd
+                              ? color.primary.withValues(alpha: .05)
+                              : Colors.transparent,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    acc.accName ?? "",
+                                    style: TextStyle(color: color.onSurface),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    spacing: 5,
+                                    children: [
+                                      ZCover(
+                                        child: Text(
+                                          acc.accNumber.toString(),
+                                          style: TextStyle(color: color.outline),
+                                        ),
+                                      ),
+                                      ZCover(
+                                        child: Text(
+                                          acc.ccyName.toString(),
+                                          style: TextStyle(color: color.outline),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              width: 250,
+                              child: Text(acc.ownerName ?? ""),
+                            ),
+                            SizedBox(
+                              width: 150,
+                              child: Text(acc.creditLimit.toAmount()),
+                            ),
+                            SizedBox(
+                              width: 100,
+                              child: StatusBadge(
+                                trueValue: tr.active,
+                                falseValue: tr.blocked,
+                                status: acc.status == "Active" ? 1 : 0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

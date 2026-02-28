@@ -110,6 +110,8 @@ class _DesktopState extends State<_Desktop> {
       {"title": tr.creditors, "icon": FontAwesomeIcons.arrowTrendUp, "action": ActionKey.payable},
       if(login.hasPermission(76) ?? false)
       {"title": tr.debtors, "icon": FontAwesomeIcons.arrowTrendDown, "action": ActionKey.receivable},
+      if(login.hasPermission(76) ?? false)
+      {"title": tr.accounts, "icon": Icons.account_circle, "action": ActionKey.accountsReport},
     ];
 
     final List<Map<String, dynamic>> stockButtons = [

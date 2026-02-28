@@ -54,6 +54,7 @@ import '../Views/Menu/Ui/Journal/Ui/FetchGLAT/model/glat_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/GetOrder/model/get_order_model.dart';
 import '../Views/Menu/Ui/Projects/Ui/AllProjects/model/pjr_model.dart';
 import '../Views/Menu/Ui/Reminder/model/reminder_model.dart';
+import '../Views/Menu/Ui/Report/Ui/Finance/Accounts/model/accounts_report_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/AllBalances/model/all_balances_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/ArApReport/model/ar_ap_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/BalanceSheet/model/bs_model.dart';
@@ -76,6 +77,7 @@ import '../Views/Menu/Ui/Transport/Ui/Shipping/Ui/ShippingView/model/shipping_mo
 
 class Repositories {
   final ApiServices api;
+
   const Repositories(this.api);
 
   ///Authentication ............................................................
@@ -170,7 +172,9 @@ class Repositories {
   }) async {
     // Create a valid filename like Postman does
     final String fileName =
-        "photo_${DateTime.now().millisecondsSinceEpoch}.jpg";
+        "photo_${DateTime
+        .now()
+        .millisecondsSinceEpoch}.jpg";
 
     FormData formData = FormData.fromMap({
       "image": MultipartFile.fromBytes(
@@ -289,7 +293,9 @@ class Repositories {
   }) async {
     // Create a valid filename like Postman does
     final String fileName =
-        "photo_${DateTime.now().millisecondsSinceEpoch}.jpg";
+        "photo_${DateTime
+        .now()
+        .millisecondsSinceEpoch}.jpg";
 
     FormData formData = FormData.fromMap({
       "perID": perID.toString(),
@@ -688,11 +694,12 @@ class Repositories {
         "records": {
           "records": permissions
               .map(
-                (p) => {
-                  "uprRole": p["uprRole"],
-                  "uprStatus": p["uprStatus"] ? 1 : 0,
-                },
-              )
+                (p) =>
+            {
+              "uprRole": p["uprRole"],
+              "uprStatus": p["uprStatus"] ? 1 : 0,
+            },
+          )
               .toList(),
         },
       },
@@ -855,7 +862,8 @@ class Repositories {
   }
 
   ///Vehicles ..................................................................
-  Future<List<VehicleModel>> getVehicles({int? vehicleId, CancelToken? cancelToken,}) async {
+  Future<List<VehicleModel>> getVehicles(
+      {int? vehicleId, CancelToken? cancelToken,}) async {
     // Build query parameters dynamically
     final queryParams = {'vclID': vehicleId};
 
@@ -944,7 +952,8 @@ class Repositories {
     return [];
   }
 
-  Future<List<VehicleReportModel>> getVehiclesReport({int? regExpired, CancelToken? cancelToken}) async {
+  Future<List<VehicleReportModel>> getVehiclesReport(
+      {int? regExpired, CancelToken? cancelToken}) async {
     // Build query parameters dynamically
     final queryParams = {'regExpired': regExpired};
 
@@ -1199,8 +1208,7 @@ class Repositories {
   }
 
   /// Fetch GL transaction by Vehicle ID
-  Future<GlatModel> getGlatTransaction(
-    String ref, {
+  Future<GlatModel> getGlatTransaction(String ref, {
     CancelToken? cancelToken,
   }) async {
     final response = await api.get(
@@ -3063,8 +3071,10 @@ class Repositories {
 
     final now = DateTime.now();
     final formattedDate =
-        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}_'
-        '${now.hour.toString().padLeft(2, '0')}-${now.minute.toString().padLeft(2, '0')}';
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day
+        .toString().padLeft(2, '0')}_'
+        '${now.hour.toString().padLeft(2, '0')}-${now.minute.toString().padLeft(
+        2, '0')}';
 
     final filePath = '${backupDir.path}/zaitoon_backup_$formattedDate.db';
 
@@ -3090,7 +3100,13 @@ class Repositories {
     final files = backupDir.listSync().whereType<File>().toList();
 
     files.sort(
-      (a, b) => b.statSync().modified.compareTo(a.statSync().modified),
+          (a, b) =>
+          b
+              .statSync()
+              .modified
+              .compareTo(a
+              .statSync()
+              .modified),
     );
 
     return files;
@@ -3278,6 +3294,7 @@ class Repositories {
     );
     return response.data;
   }
+
   /*
    {
     "rstExpiry": "2026-02-17 22:40:25",
@@ -3295,7 +3312,7 @@ class Repositories {
   }) async {
     final response = await api.put(
       endpoint: "/HR/resetPassword.php",
-      data: {"usrName": usrName, "usrPass":usrPass, "otp": otp},
+      data: {"usrName": usrName, "usrPass": usrPass, "otp": otp},
     );
     return response.data;
   }
@@ -3330,21 +3347,27 @@ class Repositories {
 
     return [];
   }
-  Future<Map<String, dynamic>> addProject({required ProjectsModel newData,}) async {
+
+  Future<Map<String, dynamic>> addProject(
+      {required ProjectsModel newData,}) async {
     final response = await api.post(
       endpoint: "/project/project.php",
       data: newData.toMap(),
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> updateProject({required ProjectsModel newData}) async {
+
+  Future<Map<String, dynamic>> updateProject(
+      {required ProjectsModel newData}) async {
     final response = await api.put(
       endpoint: "/project/project.php",
       data: newData.toMap(),
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> deleteProject({required int projectId, required String usrName}) async {
+
+  Future<Map<String, dynamic>> deleteProject(
+      {required int projectId, required String usrName}) async {
     final response = await api.delete(
       endpoint: "/project/project.php",
       data: {
@@ -3384,21 +3407,27 @@ class Repositories {
 
     return [];
   }
-  Future<Map<String, dynamic>> addService({required ServicesModel newData,}) async {
+
+  Future<Map<String, dynamic>> addService(
+      {required ServicesModel newData,}) async {
     final response = await api.post(
       endpoint: "/project/projectServices.php",
       data: newData.toMap(),
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> updateService({required ServicesModel newData}) async {
+
+  Future<Map<String, dynamic>> updateService(
+      {required ServicesModel newData}) async {
     final response = await api.put(
       endpoint: "/project/projectServices.php",
       data: newData.toMap(),
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> deleteService({required int servicesId, required String usrName}) async {
+
+  Future<Map<String, dynamic>> deleteService(
+      {required int servicesId, required String usrName}) async {
     final response = await api.delete(
       endpoint: "/project/projectServices.php",
       data: {
@@ -3410,7 +3439,8 @@ class Repositories {
   }
 
   ///Project Services ...........................................................
-  Future<List<ProjectServicesModel>> getProjectServices({int? projectId}) async {
+  Future<List<ProjectServicesModel>> getProjectServices(
+      {int? projectId}) async {
     final response = await api.get(
       endpoint: "/project/projectDetails.php",
       queryParams: {"prjID": projectId},
@@ -3438,21 +3468,27 @@ class Repositories {
 
     return [];
   }
-  Future<Map<String, dynamic>> addProjectServices({required ProjectServicesModel newData}) async {
+
+  Future<Map<String, dynamic>> addProjectServices(
+      {required ProjectServicesModel newData}) async {
     final response = await api.post(
       endpoint: "/project/projectDetails.php",
       data: newData.toMap(),
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> updateProjectServices({required ProjectServicesModel newData}) async {
+
+  Future<Map<String, dynamic>> updateProjectServices(
+      {required ProjectServicesModel newData}) async {
     final response = await api.put(
       endpoint: "/project/projectDetails.php",
       data: newData.toMap(),
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> deleteProjectServices({required int pjdID, required String usrName}) async {
+
+  Future<Map<String, dynamic>> deleteProjectServices(
+      {required int pjdID, required String usrName}) async {
     final response = await api.delete(
       endpoint: "/project/projectDetails.php",
       data: {
@@ -3490,21 +3526,27 @@ class Repositories {
 
     return null;
   }
-  Future<Map<String, dynamic>> addProjectIncomeExpense({required ProjectInOutModel newData}) async {
+
+  Future<Map<String, dynamic>> addProjectIncomeExpense(
+      {required ProjectInOutModel newData}) async {
     final response = await api.post(
       endpoint: "/project/projectPayments.php",
       data: newData.toMap(),
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> updateProjectIncomeExpense({required ProjectInOutModel newData}) async {
+
+  Future<Map<String, dynamic>> updateProjectIncomeExpense(
+      {required ProjectInOutModel newData}) async {
     final response = await api.put(
       endpoint: "/project/projectPayments.php",
       data: newData.toMap(),
     );
     return response.data;
   }
-  Future<Map<String, dynamic>> deleteProjectIncomeExpense({required String ref, required String usrName}) async {
+
+  Future<Map<String, dynamic>> deleteProjectIncomeExpense(
+      {required String ref, required String usrName}) async {
     final response = await api.delete(
       endpoint: "/project/projectPayments.php",
       data: {
@@ -3516,15 +3558,16 @@ class Repositories {
   }
 
   ///Projects Report
-  Future<List<ProjectsReportModel>> getProjectsReport({String? fromDate, String? toDate,int? customerId, int? status}) async {
+  Future<List<ProjectsReportModel>> getProjectsReport(
+      {String? fromDate, String? toDate, int? customerId, int? status}) async {
     final response = await api.post(
-      endpoint: "/reports/projectsReport.php",
-      data: {
-        "fromDate": fromDate,
-        "toDate": toDate,
-        "customer": customerId,
-        "status": status
-      }
+        endpoint: "/reports/projectsReport.php",
+        data: {
+          "fromDate": fromDate,
+          "toDate": toDate,
+          "customer": customerId,
+          "status": status
+        }
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
@@ -3550,7 +3593,8 @@ class Repositories {
     return [];
   }
 
-  Future<ServicesReportModel?> getServicesReport({String? fromDate, String? toDate,int? serviceId, int? projectId}) async {
+  Future<ServicesReportModel?> getServicesReport(
+      {String? fromDate, String? toDate, int? serviceId, int? projectId}) async {
     final response = await api.post(
         endpoint: "/reports/projectsReport.php",
         data: {
@@ -3579,5 +3623,41 @@ class Repositories {
       return ServicesReportModel.fromMap(response.data);
     }
     return null;
+  }
+
+  ///Accounts Report
+  Future<List<AccountsReportModel>?> getAccountsReport(
+      {String? search, String? currency, double? limit, int? status}) async {
+    final response = await api.post(
+        endpoint: "/reports/stakeholderAccounts.php",
+        data: {
+          "accNameSearch": search,
+          "currency": currency,
+          "limit": limit,
+          "status": status
+        }
+    );
+
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      // If no records found, return empty list
+      if (response.data['msg'] == 'failed') {
+        return [];
+      }
+      throw Exception(response.data['msg']);
+    }
+
+    // Parse as list
+    if (response.data is List) {
+      return List<AccountsReportModel>.from(
+        response.data.map((x) => AccountsReportModel.fromMap(x)),
+      );
+    }
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic> && response.data.isNotEmpty) {
+      return [AccountsReportModel.fromMap(response.data)];
+    }
+
+    return [];
   }
 }

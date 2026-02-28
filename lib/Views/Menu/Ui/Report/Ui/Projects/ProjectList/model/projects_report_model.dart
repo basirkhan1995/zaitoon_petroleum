@@ -1,6 +1,3 @@
-// To parse this JSON data, do
-//
-//     final projectsReportModel = projectsReportModelFromMap(jsonString);
 
 import 'dart:convert';
 
@@ -18,6 +15,8 @@ class ProjectsReportModel {
   final DateTime? prjEntryDate;
   final String? totalAmount;
   final String? totalPayments;
+  final String? actCurrency;
+  final String? ccySymbol;
   final String? prjStatus;
 
   ProjectsReportModel({
@@ -30,6 +29,8 @@ class ProjectsReportModel {
     this.prjEntryDate,
     this.totalAmount,
     this.totalPayments,
+    this.actCurrency,
+    this.ccySymbol,
     this.prjStatus,
   });
 
@@ -43,6 +44,8 @@ class ProjectsReportModel {
     DateTime? prjEntryDate,
     String? totalAmount,
     String? totalPayments,
+    String? actCurrency,
+    String? ccySymbol,
     String? prjStatus,
   }) =>
       ProjectsReportModel(
@@ -55,6 +58,8 @@ class ProjectsReportModel {
         prjEntryDate: prjEntryDate ?? this.prjEntryDate,
         totalAmount: totalAmount ?? this.totalAmount,
         totalPayments: totalPayments ?? this.totalPayments,
+        actCurrency: actCurrency ?? this.actCurrency,
+        ccySymbol: ccySymbol ?? this.ccySymbol,
         prjStatus: prjStatus ?? this.prjStatus,
       );
 
@@ -68,6 +73,8 @@ class ProjectsReportModel {
     prjEntryDate: json["prjEntryDate"] == null ? null : DateTime.parse(json["prjEntryDate"]),
     totalAmount: json["totalAmount"],
     totalPayments: json["totalPayments"],
+    actCurrency: json["actCurrency"],
+    ccySymbol: json["ccySymbol"],
     prjStatus: json["prjStatus"],
   );
 
@@ -81,6 +88,8 @@ class ProjectsReportModel {
     "prjEntryDate": "${prjEntryDate!.year.toString().padLeft(4, '0')}-${prjEntryDate!.month.toString().padLeft(2, '0')}-${prjEntryDate!.day.toString().padLeft(2, '0')}",
     "totalAmount": totalAmount,
     "totalPayments": totalPayments,
+    "actCurrency": actCurrency,
+    "ccySymbol": ccySymbol,
     "prjStatus": prjStatus,
   };
 }

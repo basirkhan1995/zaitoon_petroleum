@@ -299,11 +299,11 @@ class _DesktopState extends State<_Desktop> {
 
                              SizedBox(
                                  width: 150,
-                                 child: Text(pjr.totalAmount.toAmount())),
+                                 child: Text("${pjr.totalAmount.toAmount()} ${pjr.actCurrency}")),
 
                              SizedBox(
                                  width: 150,
-                                 child: Text(pjr.totalPayments.toAmount())),
+                                 child: Text("${pjr.totalPayments.toAmount()} ${pjr.actCurrency}")),
 
                              SizedBox(
                                  width: 150,
