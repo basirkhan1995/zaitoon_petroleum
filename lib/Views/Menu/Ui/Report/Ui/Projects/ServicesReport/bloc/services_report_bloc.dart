@@ -10,6 +10,7 @@ class ServicesReportBloc extends Bloc<ServicesReportEvent, ServicesReportState> 
   final Repositories _repo;
   ServicesReportBloc(this._repo) : super(ServicesReportInitial()) {
     on<LoadServicesReportEvent>((event, emit)async {
+      emit(ServicesReportLoadingState());
       try{
         final services = await _repo.getServicesReport(
           fromDate: event.fromDate,
@@ -23,6 +24,7 @@ class ServicesReportBloc extends Bloc<ServicesReportEvent, ServicesReportState> 
       }
     });
     on<ResetServicesReportEvent>((event, emit)async {
+      emit(ServicesReportLoadingState());
       try{
         emit(ServicesReportInitial());
       }catch(e){

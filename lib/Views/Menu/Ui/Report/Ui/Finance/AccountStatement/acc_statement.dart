@@ -57,8 +57,6 @@ class _MobileState extends State<_Mobile> {
   final company = ReportModel();
   String fromDate = DateTime.now().subtract(const Duration(days: 7)).toFormattedDate();
   String toDate = DateTime.now().toFormattedDate();
-  Jalali shamsiFromDate = DateTime.now().subtract(const Duration(days: 7)).toAfghanShamsi;
-  Jalali shamsiToDate = DateTime.now().toAfghanShamsi;
 
   List<StmtRecord> records = [];
   AccountStatementModel? accountStatementModel;
@@ -308,7 +306,6 @@ class _MobileState extends State<_Mobile> {
                                   onDateChanged: (v) {
                                     setState(() {
                                       fromDate = v;
-                                      shamsiFromDate = v.toAfghanShamsi;
                                     });
                                   },
                                 ),
@@ -319,7 +316,6 @@ class _MobileState extends State<_Mobile> {
                                   onDateChanged: (v) {
                                     setState(() {
                                       toDate = v;
-                                      shamsiToDate = v.toAfghanShamsi;
                                     });
                                   },
                                 ),

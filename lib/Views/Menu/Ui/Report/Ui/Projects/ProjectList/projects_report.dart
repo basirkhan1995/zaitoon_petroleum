@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/ProjectsById/projects_by_id.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Projects/ProjectList/bloc/projects_report_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Transport/Shipments/features/status_drop.dart';
 import '../../../../../../../Features/Date/shamsi_converter.dart';
@@ -272,7 +274,9 @@ class _DesktopState extends State<_Desktop> {
                       itemBuilder: (context,index){
                      final pjr = state.prj[index];
                      return InkWell(
-                       onTap: (){},
+                       onTap: (){
+                         Utils.goto(context, ProjectsByIdView(projectId: pjr.prjId!));
+                       },
                        child: Container(
                          padding: EdgeInsets.symmetric(horizontal: 20,vertical: 8),
                          decoration: BoxDecoration(

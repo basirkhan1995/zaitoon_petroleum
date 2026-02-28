@@ -18,6 +18,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/model/fetch
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchTRPT/model/trtp_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/model/txn_ref_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/model/transaction_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/ProjectsById/model/project_by_id_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/IncomeExpense/model/prj_inc_exp_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/ProjectServices/model/project_services_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/AccountStatement/model/stmt_model.dart';
@@ -1048,10 +1049,7 @@ class Repositories {
     return [];
   }
 
-  Future<ShippingDetailsModel> getShippingById({
-    required int shpId,
-    CancelToken? cancelToken,
-  }) async {
+  Future<ShippingDetailsModel> getShippingById({required int shpId, CancelToken? cancelToken,}) async {
     final queryParams = {'shpID': shpId};
     final response = await api.get(
       endpoint: '/transport/shipping.php',
@@ -3595,7 +3593,7 @@ class Repositories {
 
   Future<List<ServicesReportModel>?> getServicesReport({String? fromDate, String? toDate, int? serviceId, int? projectId}) async {
     final response = await api.post(
-        endpoint: "/reports/projectsReport.php",
+        endpoint: "/reports/projectServices.php",
         data: {
           "fromDate": fromDate,
           "toDate": toDate,
@@ -3628,8 +3626,7 @@ class Repositories {
   }
 
   ///Accounts Report ...........................................................
-  Future<List<AccountsReportModel>?> getAccountsReport(
-      {String? search, String? currency, double? limit, int? status}) async {
+  Future<List<AccountsReportModel>?> getAccountsReport({String? search, String? currency, double? limit, int? status}) async {
     final response = await api.post(
         endpoint: "/reports/stakeholderAccounts.php",
         data: {
@@ -3662,4 +3659,44 @@ class Repositories {
 
     return [];
   }
+
+ ///Project By ID
+  Future<ProjectByIdModel> getProjectById({required int prjId, CancelToken? cancelToken}) async {
+    final queryParams = {'prjID': prjId};
+    final response = await api.get(
+      endpoint: '/reports/projectDetails.php',
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
+
+    final data = response.data;
+
+    // Check for error messages
+    if (data is Map<String, dynamic> && data['msg'] != null) {
+      final msg = data['msg'];
+      if (msg == 'failed' || msg == 'error') {
+        throw Exception('Failed to load shipping details');
+      }
+    }
+
+    // Handle different response formats
+    if (data is Map<String, dynamic>) {
+      // Direct object response (your API format for single shipping)
+      return ProjectByIdModel.fromMap(data);
+    } else if (data is List) {
+      // List response - take first item
+      if (data.isEmpty) {
+        throw Exception("No shipping found with ID: $prjId");
+      }
+
+      final firstItem = data.first;
+      if (firstItem is Map<String, dynamic>) {
+        return ProjectByIdModel.fromMap(firstItem);
+      }
+      throw Exception("Invalid data format in list response");
+    }
+
+    throw Exception("Invalid API response format");
+  }
+
 }
