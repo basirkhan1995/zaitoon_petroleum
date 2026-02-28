@@ -3593,8 +3593,7 @@ class Repositories {
     return [];
   }
 
-  Future<ServicesReportModel?> getServicesReport(
-      {String? fromDate, String? toDate, int? serviceId, int? projectId}) async {
+  Future<List<ServicesReportModel>?> getServicesReport({String? fromDate, String? toDate, int? serviceId, int? projectId}) async {
     final response = await api.post(
         endpoint: "/reports/projectsReport.php",
         data: {
@@ -3605,27 +3604,30 @@ class Repositories {
         }
     );
 
-    // Check if response has data
-    if (response.data == null) {
-      return null;
-    }
-
-    // Check for error message
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      // If no records found, return empty list
       if (response.data['msg'] == 'failed') {
-        return null; // No records found
+        return [];
       }
       throw Exception(response.data['msg']);
     }
 
-    // Parse the response as a single ProjectInOutModel
-    if (response.data is Map<String, dynamic>) {
-      return ServicesReportModel.fromMap(response.data);
+    // Parse as list
+    if (response.data is List) {
+      return List<ServicesReportModel>.from(
+        response.data.map((x) => ServicesReportModel.fromMap(x)),
+      );
     }
-    return null;
+
+    // If single object, wrap in list
+    if (response.data is Map<String, dynamic> && response.data.isNotEmpty) {
+      return [ServicesReportModel.fromMap(response.data)];
+    }
+
+    return [];
   }
 
-  ///Accounts Report
+  ///Accounts Report ...........................................................
   Future<List<AccountsReportModel>?> getAccountsReport(
       {String? search, String? currency, double? limit, int? status}) async {
     final response = await api.post(
