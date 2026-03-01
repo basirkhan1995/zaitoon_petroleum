@@ -19,7 +19,7 @@ import '../../../Stakeholders/Ui/Accounts/model/acc_model.dart';
 
 class AddEditIncomeExpenseDialog extends StatefulWidget {
   final ProjectsModel project;
-  final Payment? existingData; // Changed to Payment type
+  final Payment? existingData;
 
   const AddEditIncomeExpenseDialog({
     super.key,

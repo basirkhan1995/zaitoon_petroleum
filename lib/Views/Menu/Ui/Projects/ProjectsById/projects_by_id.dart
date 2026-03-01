@@ -9,7 +9,8 @@ import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/ProjectsById/bloc/projects_by_id_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/ProjectsById/model/project_by_id_model.dart';
-
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/bloc/project_tabs_bloc.dart';
+import '../../../../../Features/Generic/tab_bar.dart';
 import '../../../../../Features/Date/shamsi_converter.dart';
 
 class ProjectsByIdView extends StatelessWidget {
@@ -72,15 +73,13 @@ class _ProjectByIdContent extends StatefulWidget {
   State<_ProjectByIdContent> createState() => _ProjectByIdContentState();
 }
 
-class _ProjectByIdContentState extends State<_ProjectByIdContent> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _ProjectByIdContentState extends State<_ProjectByIdContent> {
   String? myLocale;
 
   @override
   void initState() {
     super.initState();
     myLocale = context.read<LocalizationBloc>().state.languageCode;
-    _tabController = TabController(length: 3, vsync: this);
 
     // Load project data
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -92,16 +91,11 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> with SingleTic
   }
 
   @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
+        titleSpacing: 0,
         title: BlocBuilder<ProjectsByIdBloc, ProjectsByIdState>(
           builder: (context, state) {
             if (state is ProjectByIdLoadedState) {
@@ -109,14 +103,6 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> with SingleTic
             }
             return Text(tr.details);
           },
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Overview', icon: Icon(Icons.info_outline)),
-            Tab(text: 'Services', icon: Icon(Icons.build)),
-            Tab(text: 'Income & Expense', icon: Icon(Icons.payments_outlined)),
-          ],
         ),
       ),
       body: BlocBuilder<ProjectsByIdBloc, ProjectsByIdState>(
@@ -140,18 +126,53 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> with SingleTic
           if (state is ProjectByIdLoadedState) {
             final project = state.project;
 
-            return TabBarView(
-              controller: _tabController,
-              children: [
-                // Overview Tab
-                _buildOverviewTab(context, project),
+            return BlocBuilder<ProjectTabsBloc, ProjectTabsState>(
+              builder: (context, tabState) {
+                // Define tabs based on project data
+                final tabs = <ZTabItem<ProjectTabsName>>[
+                  ZTabItem(
+                    value: ProjectTabsName.overview,
+                    label: tr.overview,
+                    screen: _buildOverviewTab(context, project),
+                  ),
+                  ZTabItem(
+                    value: ProjectTabsName.services,
+                    label: tr.services,
+                    screen: _buildServicesTab(context, project),
+                  ),
+                  ZTabItem(
+                    value: ProjectTabsName.incomeExpense,
+                    label: tr.incomeAndExpenses,
+                    screen: _buildIncomeExpenseTab(context, project),
+                  ),
+                ];
 
-                // Services Tab
-                _buildServicesTab(context, project),
+                // Safely get selected tab with fallback
+                final available = tabs.map((t) => t.value).toList();
+                final selected = available.contains(tabState.tabs)
+                    ? tabState.tabs
+                    : tabs.first.value;
 
-                // Income & Expense Tab
-                _buildIncomeExpenseTab(context, project),
-              ],
+                return ZTabContainer<ProjectTabsName>(
+                  /// Tab data
+                  tabs: tabs,
+                  selectedValue: selected,
+
+                  /// Bloc update
+                  onChanged: (val) => context.read<ProjectTabsBloc>().add(ProjectTabOnChangedEvent(val)),
+
+                  /// Styling
+                  style: ZTabStyle.rounded,
+                  tabBarPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                  borderRadius: 0,
+                  selectedColor: Theme.of(context).colorScheme.primary,
+                  unselectedTextColor: Theme.of(context).colorScheme.onSurface,
+                  selectedTextColor: Theme.of(context).colorScheme.surface,
+                  tabContainerColor: Theme.of(context).colorScheme.surface,
+                  margin: const EdgeInsets.all(0),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                );
+              },
             );
           }
 
@@ -206,7 +227,7 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> with SingleTic
             children: [
               _buildInfoRow("Owner Name", project.prjOwnerfullName ?? '-'),
               _buildInfoRow(
-                "${tr.accountNumber}",
+                tr.accountNumber,
                 project.prjOwnerAccount?.toString() ?? '-',
               ),
               _buildInfoRow(tr.currencyTitle, project.actCurrency ?? '-'),
@@ -284,7 +305,8 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> with SingleTic
       children: [
         // Header
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          margin: const EdgeInsets.symmetric(horizontal: 15),
           decoration: BoxDecoration(
             color: color.primary,
           ),
@@ -328,7 +350,8 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> with SingleTic
               final service = services[index];
 
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                margin: const EdgeInsets.symmetric(horizontal: 15),
                 decoration: BoxDecoration(
                   color: index.isOdd
                       ? color.primary.withValues(alpha: .05)
@@ -468,9 +491,10 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> with SingleTic
 
     return Column(
       children: [
+
         // Summary Cards
         Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 8),
           child: Row(
             children: [
               Expanded(
@@ -518,10 +542,9 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> with SingleTic
 
         // Header
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-          decoration: BoxDecoration(
-            color: color.primary,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          margin: const EdgeInsets.symmetric(horizontal: 15),
+          decoration: BoxDecoration(color: color.primary),
           child: Row(
             children: [
               SizedBox(
@@ -536,21 +559,21 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> with SingleTic
                     style: textTheme.titleSmall?.copyWith(color: color.surface)
                 ),
               ),
-              Expanded(
+              SizedBox(
+                width: 150,
                 child: Text(tr.payment,
-                    textAlign: TextAlign.right,
                     style: textTheme.titleSmall?.copyWith(color: color.surface)
                 ),
               ),
-              Expanded(
+              SizedBox(
+                width: 150,
                 child: Text(tr.expense,
-                    textAlign: TextAlign.right,
                     style: textTheme.titleSmall?.copyWith(color: color.surface)
                 ),
               ),
-              Expanded(
+              SizedBox(
+                width: 140,
                 child: Text(tr.status,
-                    textAlign: TextAlign.center,
                     style: textTheme.titleSmall?.copyWith(color: color.surface)
                 ),
               ),
@@ -566,86 +589,88 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> with SingleTic
               final payment = payments[index];
               final income = double.tryParse(payment.payments ?? '0') ?? 0;
               final expense = double.tryParse(payment.expenses ?? '0') ?? 0;
+              return InkWell(
+                onTap: (){
 
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-                decoration: BoxDecoration(
-                  color: index.isOdd
-                      ? color.primary.withValues(alpha: .05)
-                      : Colors.transparent,
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.grey.withValues(alpha: .2),
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                  margin: const EdgeInsets.symmetric(horizontal: 15),
+                  decoration: BoxDecoration(
+                    color: index.isOdd ? color.primary.withValues(alpha: .05) : Colors.transparent,
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Colors.grey.withValues(alpha: .2),
+                      ),
                     ),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 90,
-                      child: Text(
-                        payment.trnEntryDate != null
-                            ? '${payment.trnEntryDate!.day}/${payment.trnEntryDate!.month}/${payment.trnEntryDate!.year}'
-                            : '',
-                        style: textTheme.bodyMedium,
-                      ),
-                    ),
-                    Expanded(
-                      flex: 3,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            payment.prpTrnRef ?? '',
-                            style: textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Text(
-                            payment.prpType == "Payment"
-                                ? tr.payment
-                                : payment.prpType == "Expense"
-                                ? tr.expense
-                                : payment.prpType ?? "",
-                            style: textTheme.bodySmall?.copyWith(
-                              color: payment.prpType == 'Payment'
-                                  ? Colors.green
-                                  : payment.prpType == 'Expense'
-                                  ? color.error
-                                  : Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        income > 0 ? '${income.toAmount()} $currency' : '-',
-                        textAlign: TextAlign.right,
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: Colors.green,
-                          fontWeight: FontWeight.w500,
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 90,
+                        child: Text(
+                          payment.trnEntryDate != null
+                              ? '${payment.trnEntryDate!.day}/${payment.trnEntryDate!.month}/${payment.trnEntryDate!.year}'
+                              : '',
+                          style: textTheme.bodyMedium,
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        expense > 0 ? '${expense.toAmount()} $currency' : '-',
-                        textAlign: TextAlign.right,
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: color.error,
-                          fontWeight: FontWeight.w500,
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              payment.prpTrnRef ?? '',
+                              style: textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              payment.prpType == "Payment"
+                                  ? tr.payment
+                                  : payment.prpType == "Expense"
+                                  ? tr.expense
+                                  : payment.prpType ?? "",
+                              style: textTheme.bodySmall?.copyWith(
+                                color: payment.prpType == 'Payment'
+                                    ? Colors.green
+                                    : payment.prpType == 'Expense'
+                                    ? color.error
+                                    : Colors.grey,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: Center(
+                      SizedBox(
+                        width: 150,
+                        child: Text(
+                          income > 0 ? '${income.toAmount()} $currency' : '-',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: Colors.green,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 150,
+                        child: Text(
+                          expense > 0 ? '${expense.toAmount()} $currency' : '-',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: color.error,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 140,
                         child: TransactionStatusBadge(
                           status: payment.trnStateText ?? "",
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },
@@ -703,13 +728,7 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> with SingleTic
     );
   }
 
-  Widget _buildSummaryItem(
-      BuildContext context, {
-        required String title,
-        required String value,
-        required IconData icon,
-        required Color color,
-      }) {
+  Widget _buildSummaryItem(BuildContext context, {required String title, required String value, required IconData icon, required Color color}) {
     return Row(
       children: [
         Container(
