@@ -7,6 +7,7 @@ import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
+import 'package:zaitoon_petroleum/Features/Other/toast.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Reminder/add_edit_reminders.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/bloc/individuals_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Individuals/model/individual_model.dart';
@@ -139,20 +140,14 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
       child: BlocListener<SaleInvoiceBloc, SaleInvoiceState>(
         listener: (context, state) {
           if (state is SaleInvoiceError) {
-            Utils.showOverlayMessage(context, message: state.message, isError: true);
+            ToastManager.show(context: context,title: tr.errorTitle, message: state.message, type: ToastType.error);
           }
           if (state is SaleInvoiceSaved) {
             Navigator.of(context).pop();
             if (state.success) {
               // Store the invoice number first
               String? savedInvoiceNumber = state.invoiceNumber;
-
-              Utils.showOverlayMessage(
-                context,
-                title: tr.successTitle,
-                message: tr.successPurchaseInvoiceMsg,
-                isError: false,
-              );
+              ToastManager.show(context: context, title:  tr.successTitle, message: tr.successPurchaseInvoiceMsg, type: ToastType.success);
               _accountController.clear();
               _personController.clear();
               _xRefController.clear();

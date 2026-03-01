@@ -419,7 +419,7 @@ class ToastManager {
     String? title,
     required String message,
     required ToastType type,
-    int durationInSeconds = 2,
+    int durationInSeconds = 3,
     ToastPosition position = ToastPosition.top,
   }) {
     final overlay = Overlay.of(context);

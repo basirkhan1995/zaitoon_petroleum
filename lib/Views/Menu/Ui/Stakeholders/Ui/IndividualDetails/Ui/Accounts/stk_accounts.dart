@@ -254,15 +254,7 @@ class _DesktopState extends State<_Desktop> {
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final locale = AppLocalizations.of(context)!;
-
-    TextStyle? amountStyle = textTheme.titleMedium?.copyWith(
-      color: color.primary,
-    );
-    TextStyle? amountTitle = textTheme.titleSmall?.copyWith(
-      color: color.outline.withValues(alpha: .7),
-    );
 
     return Scaffold(
       backgroundColor: color.surface,
@@ -307,37 +299,7 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    locale.accountInformation,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ),
 
-                SizedBox(
-                  width: 200,
-                  child: Text(
-                    textAlign: TextAlign.right,
-                    locale.balance,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          SizedBox(height: 5),
-          Divider(
-            indent: 15,
-            endIndent: 15,
-            color: Theme.of(context).colorScheme.primary,
-            height: 0,
-          ),
-          SizedBox(height: 10),
           Expanded(
             child: BlocConsumer<AccountsBloc, AccountsState>(
               listener: (context, state) {
@@ -346,6 +308,19 @@ class _DesktopState extends State<_Desktop> {
                 }
               },
               builder: (context, state) {
+                // Define the missing styles
+                final textTheme = Theme.of(context).textTheme;
+                final color = Theme.of(context).colorScheme;
+
+                final amountTitle = textTheme.bodySmall?.copyWith(
+                  fontSize: 10,
+                  color: color.outline,
+                );
+
+                final amountStyle = textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                );
+
                 if (state is AccountLoadingState) {
                   return Center(child: CircularProgressIndicator());
                 }
@@ -429,7 +404,7 @@ class _DesktopState extends State<_Desktop> {
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       // Full Name
                                       Text(
@@ -491,9 +466,9 @@ class _DesktopState extends State<_Desktop> {
                                     if (!isAvailableEqualCurrent)
                                       Column(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.end,
+                                        MainAxisAlignment.end,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.end,
+                                        CrossAxisAlignment.end,
                                         children: [
                                           Text(
                                             locale.currentBalance,
@@ -510,7 +485,7 @@ class _DesktopState extends State<_Desktop> {
                                     Column(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.end,
+                                      CrossAxisAlignment.end,
                                       children: [
                                         Text(
                                           locale.availableBalance,
