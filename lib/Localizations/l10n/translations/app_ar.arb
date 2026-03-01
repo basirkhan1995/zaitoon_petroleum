@@ -884,5 +884,7 @@
   "totalExpense": "مجموعه مصارف",
   "totalProjects": "کل مبلغ پروژه",
   "projectEntry": "معاملات پروزه",
-  "paymentNotMatch": "د تادیې مقدار د پروژې له ټولیز سره سمون نه خوري."
+  "paymentNotMatch": "د تادیې مقدار د پروژې له ټولیز سره سمون نه خوري.",
+  "totalProjectTitle": "همه پروزه ها",
+  "projectDependency": "پروژه نشي حذف کېدای. اړوند خدمتونه یا تادیات لري."
 }

@@ -2668,4 +2668,11 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get paymentNotMatch =>
       'د تادیې مقدار د پروژې له ټولیز سره سمون نه خوري.';
+
+  @override
+  String get totalProjectTitle => 'همه پروزه ها';
+
+  @override
+  String get projectDependency =>
+      'پروژه نشي حذف کېدای. اړوند خدمتونه یا تادیات لري.';
 }

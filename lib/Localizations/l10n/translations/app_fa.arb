@@ -884,5 +884,7 @@
   "totalExpense": "مجموعه مصارف",
   "totalProjects": "کل مبلغ پروژه",
   "projectEntry": "معاملات پروزه",
-  "paymentNotMatch": "مبلغ پرداختی با مجموع پروژه مطابقت ندارد."
+  "paymentNotMatch": "مبلغ پرداختی با مجموع پروژه مطابقت ندارد.",
+  "totalProjectTitle": "همه پروزه ها",
+  "projectDependency": "پروژه قابل حذف نیست. دارای خدمات یا پرداخت‌های مرتبط است."
 }

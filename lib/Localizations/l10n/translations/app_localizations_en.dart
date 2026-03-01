@@ -2675,4 +2675,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get paymentNotMatch =>
       'The payment amount does not match the project total.';
+
+  @override
+  String get totalProjectTitle => 'Total Projects';
+
+  @override
+  String get projectDependency =>
+      'Project cannot be deleted. It has related services or payments.';
 }

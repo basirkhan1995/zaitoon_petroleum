@@ -15,13 +15,12 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
     on<LoadProjectsEvent>((event, emit)async {
       emit(ProjectsLoadingState());
      try{
-      final pjr = await _repo.getProjects();
+      final pjr = await _repo.getProjects(prjId: event.prjId);
       emit(ProjectsLoadedState(pjr));
      }catch(e){
        emit(ProjectsErrorState(e.toString()));
      }
     });
-
     on<AddProjectEvent>((event, emit)async {
       emit(ProjectsLoadingState());
       try{
@@ -37,7 +36,6 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
         emit(ProjectsErrorState(e.toString()));
       }
     });
-
     on<UpdateProjectEvent>((event, emit)async {
       final tr = localizationService.loc;
       emit(ProjectsLoadingState());
@@ -56,8 +54,8 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
         emit(ProjectsErrorState(e.toString()));
       }
     });
-
     on<DeleteProjectEvent>((event, emit)async {
+      final tr = localizationService.loc;
       emit(ProjectsLoadingState());
       try{
         final res = await _repo.deleteProject(projectId: event.pjrId,usrName: event.usrName);
@@ -65,7 +63,9 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
         if(response == "success"){
           emit(ProjectSuccessState());
           add(LoadProjectsEvent());
-        }else{
+        }else if(response == "dependency"){
+          emit(ProjectsErrorState(tr.projectDependency));
+        } else{
           emit(ProjectsErrorState(response));
         }
       }catch(e){

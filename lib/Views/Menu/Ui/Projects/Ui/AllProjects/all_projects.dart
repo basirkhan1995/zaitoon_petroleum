@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
+import 'package:zaitoon_petroleum/Features/Other/alert_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/toast.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/search_field.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/status_badge.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/textfield_entitled.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/Ui/AllProjects/model/pjr_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Projects/project_view.dart';
 import '../../../../../../Features/Generic/zaitoon_drop.dart';
@@ -36,6 +39,7 @@ class _Desktop extends StatefulWidget {
   @override
   State<_Desktop> createState() => _DesktopState();
 }
+
 class _DesktopState extends State<_Desktop> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
@@ -60,6 +64,8 @@ class _DesktopState extends State<_Desktop> {
     context.read<ProjectsBloc>().add(LoadProjectsEvent());
   }
 
+  final findProjectById = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
@@ -72,7 +78,7 @@ class _DesktopState extends State<_Desktop> {
         children: [
           // Header with gradient background
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 0,horizontal: 5),
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -109,9 +115,7 @@ class _DesktopState extends State<_Desktop> {
                         );
                       },
 
-                      label: Text(
-                        tr.newProject,
-                      ),
+                      label: Text(tr.newProject),
                     ),
                   ],
                 ),
@@ -126,7 +130,7 @@ class _DesktopState extends State<_Desktop> {
                       flex: 3,
                       child: ZSearchField(
                         title: "",
-                        hint: "Search",
+                        hint: "Search project name",
                         icon: Icons.search,
                         controller: _searchController,
                         onChanged: (value) {
@@ -137,11 +141,35 @@ class _DesktopState extends State<_Desktop> {
                       ),
                     ),
                     const SizedBox(width: 8),
+                    Expanded(
+                      child: ZTextFieldEntitled(
+                        controller: findProjectById,
+                        title: "",
+                        hint: "Find project by ID",
+                        onSubmit: (e) {
+                          context.read<ProjectsBloc>().add(
+                            LoadProjectsEvent(
+                              prjId: int.tryParse(findProjectById.text),
+                            ),
+                          );
+                        },
+                        trailing: IconButton(
+                          onPressed: () {
+                            findProjectById.clear();
+                            context.read<ProjectsBloc>().add(
+                              LoadProjectsEvent(),
+                            );
+                          },
+                          icon: Icon(Icons.clear),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
 
                     Expanded(
                       flex: 1,
                       child: ZDropdown<String>(
-                        onItemSelected: (e){},
+                        onItemSelected: (e) {},
                         title: "",
                         items: [tr.inProgress, tr.completed],
                         itemLabel: (item) => item,
@@ -155,6 +183,13 @@ class _DesktopState extends State<_Desktop> {
                         initialValue: tr.all,
                       ),
                     ),
+                    const SizedBox(width: 8),
+                    ZOutlineButton(
+                      onPressed: onRefresh,
+                      icon: Icons.refresh,
+                      height: 47,
+                      label: Text(tr.refresh),
+                    ),
                   ],
                 ),
               ],
@@ -163,32 +198,38 @@ class _DesktopState extends State<_Desktop> {
 
           // Stats cards
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
             child: BlocBuilder<ProjectsBloc, ProjectsState>(
               builder: (context, state) {
                 if (state is ProjectsLoadedState) {
                   final totalProjects = state.pjr.length;
-                  final completed = state.pjr.where((p) => p.prjStatus == 1).length;
-                  final pending = state.pjr.where((p) => p.prjStatus == 0).length;
+                  final completed = state.pjr
+                      .where((p) => p.prjStatus == 1)
+                      .length;
+                  final pending = state.pjr
+                      .where((p) => p.prjStatus == 0)
+                      .length;
 
                   return Row(
                     children: [
                       _buildStatCard(
-                        title: 'Total Projects',
+                        title: tr.totalProjectTitle,
                         value: totalProjects.toString(),
                         icon: Icons.folder_copy,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 8),
                       _buildStatCard(
-                        title: tr.completedTitle,
+                        title: tr.completed,
                         value: completed.toString(),
                         icon: Icons.check_circle,
                         color: Colors.green,
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 8),
                       _buildStatCard(
-                        title: tr.pendingTitle,
+                        title: tr.inProgress,
                         value: pending.toString(),
                         icon: Icons.pending,
                         color: Colors.orange,
@@ -200,7 +241,6 @@ class _DesktopState extends State<_Desktop> {
               },
             ),
           ),
-
 
           // Projects list
           Expanded(
@@ -225,9 +265,7 @@ class _DesktopState extends State<_Desktop> {
               },
               builder: (context, state) {
                 if (state is ProjectsLoadingState) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (state is ProjectsErrorState) {
                   return NoDataWidget(
@@ -239,13 +277,21 @@ class _DesktopState extends State<_Desktop> {
                 if (state is ProjectsLoadedState) {
                   // Filter projects based on search and status
                   var filteredProjects = state.pjr.where((project) {
-                    final matchesSearch = _searchQuery.isEmpty ||
-                        (project.prjName?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false) ||
-                        (project.prjDetails?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false);
+                    final matchesSearch =
+                        _searchQuery.isEmpty ||
+                        (project.prjName?.toLowerCase().contains(
+                              _searchQuery.toLowerCase(),
+                            ) ??
+                            false) ||
+                        (project.prjDetails?.toLowerCase().contains(
+                              _searchQuery.toLowerCase(),
+                            ) ??
+                            false);
 
-                    final matchesStatus = _selectedStatuses.isEmpty ||
+                    final matchesStatus =
+                        _selectedStatuses.isEmpty ||
                         _selectedStatuses.contains(
-                            project.prjStatus == 1 ? 'Completed' : 'In Progress'
+                          project.prjStatus == 1 ? 'Completed' : 'In Progress',
                         );
 
                     return matchesSearch && matchesStatus;
@@ -268,7 +314,13 @@ class _DesktopState extends State<_Desktop> {
                       itemCount: filteredProjects.length,
                       itemBuilder: (context, index) {
                         final pjr = filteredProjects[index];
-                        return _buildProjectCard(pjr, index, color, textTheme, tr);
+                        return _buildProjectCard(
+                          pjr,
+                          index,
+                          color,
+                          textTheme,
+                          tr,
+                        );
                       },
                     ),
                   );
@@ -281,7 +333,6 @@ class _DesktopState extends State<_Desktop> {
       ),
     );
   }
-
 
   Widget _buildStatCard({
     required String title,
@@ -305,11 +356,7 @@ class _DesktopState extends State<_Desktop> {
                 color: color.withValues(alpha: .2),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 24,
-              ),
+              child: Icon(icon, color: color, size: 24),
             ),
             const SizedBox(width: 12),
             Column(
@@ -338,15 +385,13 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-
-
   Widget _buildProjectCard(
-      ProjectsModel pjr,
-      int index,
-      ColorScheme color,
-      TextTheme textTheme,
-      AppLocalizations tr,
-      ) {
+    ProjectsModel pjr,
+    int index,
+    ColorScheme color,
+    TextTheme textTheme,
+    AppLocalizations tr,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
@@ -354,9 +399,7 @@ class _DesktopState extends State<_Desktop> {
             ? color.primary.withValues(alpha: .02)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(5),
-        border: Border.all(
-          color: Colors.grey.withValues(alpha: .1),
-        ),
+        border: Border.all(color: Colors.grey.withValues(alpha: .1)),
       ),
       child: Material(
         color: Colors.transparent,
@@ -409,7 +452,7 @@ class _DesktopState extends State<_Desktop> {
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
-                            pjr.prjDetails??"",
+                            pjr.prjDetails ?? "",
                             style: textTheme.bodySmall?.copyWith(
                               color: color.outline,
                             ),
@@ -445,7 +488,9 @@ class _DesktopState extends State<_Desktop> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: _getDeadlineColor(pjr.prjDateLine).withValues(alpha: .1),
+                      color: _getDeadlineColor(
+                        pjr.prjDateLine,
+                      ).withValues(alpha: .1),
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: Row(
@@ -542,7 +587,10 @@ class _DesktopState extends State<_Desktop> {
 
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
-                title: const Text('Delete', style: TextStyle(color: Colors.red)),
+                title: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   _showDeleteConfirmation(context, project);
@@ -558,28 +606,35 @@ class _DesktopState extends State<_Desktop> {
   void _showDeleteConfirmation(BuildContext context, ProjectsModel project) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Project'),
-        content: Text('Are you sure you want to delete "${project.prjName}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-             // context.read<ProjectsBloc>().add(DeleteProjectEvent(project.prjId!, "basir.h"));
+      builder: (context) => BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+
+          String? userName;
+
+          if (state is AuthenticatedState) {
+            userName = state.loginData.usrName;
+          }
+
+          return ZAlertDialog(
+            title: AppLocalizations.of(context)!.areYouSure,
+            content: 'Do you want to delete "${project.prjName}"?',
+            onYes: () {
+
+              if (userName != null) {
+                context.read<ProjectsBloc>().add(
+                  DeleteProjectEvent(
+                    project.prjId!,
+                    userName,
+                  ),
+                );
+              }
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
 }
-
 
 class _Mobile extends StatefulWidget {
   const _Mobile();
@@ -623,9 +678,7 @@ class _MobileState extends State<_Mobile> {
       appBar: AppBar(
         title: Text(
           tr.projects,
-          style: textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         actions: [
           // Filter button with badge
@@ -652,10 +705,7 @@ class _MobileState extends State<_Mobile> {
                     ),
                     child: Text(
                       '${_selectedStatuses.length}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 8,
-                      ),
+                      style: const TextStyle(color: Colors.white, fontSize: 8),
                     ),
                   ),
                 ),
@@ -673,26 +723,26 @@ class _MobileState extends State<_Mobile> {
         ],
         bottom: _showFilters
             ? PreferredSize(
-          preferredSize: const Size.fromHeight(30),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: ZDropdown<String>(
-              onItemSelected: (e) {},
-              title: "",
-              items: [tr.inProgress, tr.completed],
-              itemLabel: (item) => item,
-              multiSelect: true,
-              selectedItems: _selectedStatuses,
-              onMultiSelectChanged: (selected) {
-                setState(() {
-                  _selectedStatuses = selected;
-                });
-              },
-              initialValue: 'All Status',
-              height: 40,
-            ),
-          ),
-        )
+                preferredSize: const Size.fromHeight(30),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: ZDropdown<String>(
+                    onItemSelected: (e) {},
+                    title: "",
+                    items: [tr.inProgress, tr.completed],
+                    itemLabel: (item) => item,
+                    multiSelect: true,
+                    selectedItems: _selectedStatuses,
+                    onMultiSelectChanged: (selected) {
+                      setState(() {
+                        _selectedStatuses = selected;
+                      });
+                    },
+                    initialValue: 'All Status',
+                    height: 40,
+                  ),
+                ),
+              )
             : null,
       ),
       body: Column(
@@ -720,8 +770,12 @@ class _MobileState extends State<_Mobile> {
               builder: (context, state) {
                 if (state is ProjectsLoadedState) {
                   final totalProjects = state.pjr.length;
-                  final completed = state.pjr.where((p) => p.prjStatus == 1).length;
-                  final pending = state.pjr.where((p) => p.prjStatus == 0).length;
+                  final completed = state.pjr
+                      .where((p) => p.prjStatus == 1)
+                      .length;
+                  final pending = state.pjr
+                      .where((p) => p.prjStatus == 0)
+                      .length;
 
                   return Row(
                     children: [
@@ -788,13 +842,21 @@ class _MobileState extends State<_Mobile> {
                 if (state is ProjectsLoadedState) {
                   // Filter projects
                   var filteredProjects = state.pjr.where((project) {
-                    final matchesSearch = _searchQuery.isEmpty ||
-                        (project.prjName?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false) ||
-                        (project.prjDetails?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false);
+                    final matchesSearch =
+                        _searchQuery.isEmpty ||
+                        (project.prjName?.toLowerCase().contains(
+                              _searchQuery.toLowerCase(),
+                            ) ??
+                            false) ||
+                        (project.prjDetails?.toLowerCase().contains(
+                              _searchQuery.toLowerCase(),
+                            ) ??
+                            false);
 
-                    final matchesStatus = _selectedStatuses.isEmpty ||
+                    final matchesStatus =
+                        _selectedStatuses.isEmpty ||
                         _selectedStatuses.contains(
-                            project.prjStatus == 1 ? tr.completed : tr.inProgress
+                          project.prjStatus == 1 ? tr.completed : tr.inProgress,
                         );
 
                     return matchesSearch && matchesStatus;
@@ -803,7 +865,9 @@ class _MobileState extends State<_Mobile> {
                   if (filteredProjects.isEmpty) {
                     return NoDataWidget(
                       title: "No Projects Found",
-                      message: _searchQuery.isNotEmpty || _selectedStatuses.isNotEmpty
+                      message:
+                          _searchQuery.isNotEmpty ||
+                              _selectedStatuses.isNotEmpty
                           ? "Try adjusting your search or filters"
                           : "Tap the + button to create your first project",
                       enableAction: false,
@@ -871,7 +935,11 @@ class _MobileState extends State<_Mobile> {
     );
   }
 
-  Widget _buildMobileProjectCard(ProjectsModel pjr, BuildContext context, AppLocalizations tr) {
+  Widget _buildMobileProjectCard(
+    ProjectsModel pjr,
+    BuildContext context,
+    AppLocalizations tr,
+  ) {
     final color = Theme.of(context).colorScheme;
 
     // Create info items for the card
@@ -902,7 +970,8 @@ class _MobileState extends State<_Mobile> {
       status: MobileStatus(
         label: pjr.prjStatus == 1 ? tr.completed : tr.inProgress,
         color: pjr.prjStatus == 1 ? Colors.green : Colors.orange,
-        backgroundColor: (pjr.prjStatus == 1 ? Colors.green : Colors.orange).withValues(alpha: .1),
+        backgroundColor: (pjr.prjStatus == 1 ? Colors.green : Colors.orange)
+            .withValues(alpha: .1),
       ),
       onTap: () {
         showDialog(
@@ -1049,8 +1118,12 @@ class _TabletState extends State<_Tablet> {
               builder: (context, state) {
                 if (state is ProjectsLoadedState) {
                   final totalProjects = state.pjr.length;
-                  final completed = state.pjr.where((p) => p.prjStatus == 1).length;
-                  final pending = state.pjr.where((p) => p.prjStatus == 0).length;
+                  final completed = state.pjr
+                      .where((p) => p.prjStatus == 1)
+                      .length;
+                  final pending = state.pjr
+                      .where((p) => p.prjStatus == 0)
+                      .length;
 
                   return Row(
                     children: [
@@ -1115,13 +1188,23 @@ class _TabletState extends State<_Tablet> {
                   if (state is ProjectsLoadedState) {
                     // Filter projects
                     var filteredProjects = state.pjr.where((project) {
-                      final matchesSearch = _searchQuery.isEmpty ||
-                          (project.prjName?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false) ||
-                          (project.prjDetails?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false);
+                      final matchesSearch =
+                          _searchQuery.isEmpty ||
+                          (project.prjName?.toLowerCase().contains(
+                                _searchQuery.toLowerCase(),
+                              ) ??
+                              false) ||
+                          (project.prjDetails?.toLowerCase().contains(
+                                _searchQuery.toLowerCase(),
+                              ) ??
+                              false);
 
-                      final matchesStatus = _selectedStatuses.isEmpty ||
+                      final matchesStatus =
+                          _selectedStatuses.isEmpty ||
                           _selectedStatuses.contains(
-                              project.prjStatus == 1 ? tr.completed : tr.inProgress
+                            project.prjStatus == 1
+                                ? tr.completed
+                                : tr.inProgress,
                           );
 
                       return matchesSearch && matchesStatus;
@@ -1130,7 +1213,9 @@ class _TabletState extends State<_Tablet> {
                     if (filteredProjects.isEmpty) {
                       return NoDataWidget(
                         title: "No Projects Found",
-                        message: _searchQuery.isNotEmpty || _selectedStatuses.isNotEmpty
+                        message:
+                            _searchQuery.isNotEmpty ||
+                                _selectedStatuses.isNotEmpty
                             ? "Try adjusting your search or filters"
                             : "Click the button above to create your first project",
                         enableAction: false,
@@ -1213,7 +1298,11 @@ class _TabletState extends State<_Tablet> {
     );
   }
 
-  Widget _buildTabletProjectCard(ProjectsModel pjr, BuildContext context, AppLocalizations tr) {
+  Widget _buildTabletProjectCard(
+    ProjectsModel pjr,
+    BuildContext context,
+    AppLocalizations tr,
+  ) {
     final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -1221,10 +1310,7 @@ class _TabletState extends State<_Tablet> {
       elevation: 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
-        side: BorderSide(
-          color: color.outline.withValues(alpha: .1),
-          width: 1,
-        ),
+        side: BorderSide(color: color.outline.withValues(alpha: .1), width: 1),
       ),
       child: InkWell(
         onTap: () {
@@ -1275,7 +1361,8 @@ class _TabletState extends State<_Tablet> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: (pjr.prjStatus == 1 ? Colors.green : Colors.orange).withValues(alpha: .1),
+                      color: (pjr.prjStatus == 1 ? Colors.green : Colors.orange)
+                          .withValues(alpha: .1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -1283,7 +1370,9 @@ class _TabletState extends State<_Tablet> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: pjr.prjStatus == 1 ? Colors.green : Colors.orange,
+                        color: pjr.prjStatus == 1
+                            ? Colors.green
+                            : Colors.orange,
                       ),
                     ),
                   ),
@@ -1295,9 +1384,7 @@ class _TabletState extends State<_Tablet> {
                 const SizedBox(height: 10),
                 Text(
                   pjr.prjDetails!,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: color.outline,
-                  ),
+                  style: textTheme.bodySmall?.copyWith(color: color.outline),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -1312,7 +1399,11 @@ class _TabletState extends State<_Tablet> {
                   Expanded(
                     child: Row(
                       children: [
-                        Icon(Icons.calendar_today, size: 14, color: color.primary),
+                        Icon(
+                          Icons.calendar_today,
+                          size: 14,
+                          color: color.primary,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           pjr.prjDateLine.toFormattedDate(),
@@ -1329,7 +1420,9 @@ class _TabletState extends State<_Tablet> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: _getDeadlineColor(pjr.prjDateLine).withValues(alpha: .1),
+                      color: _getDeadlineColor(
+                        pjr.prjDateLine,
+                      ).withValues(alpha: .1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -1385,11 +1478,13 @@ class _TabletState extends State<_Tablet> {
                         builder: (context) => ProjectView(project: pjr),
                       );
                     },
-                    icon: Icon(Icons.visibility, size: 16, color: color.primary),
-                    label: Text('View Details'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: color.primary,
+                    icon: Icon(
+                      Icons.visibility,
+                      size: 16,
+                      color: color.primary,
                     ),
+                    label: Text('View Details'),
+                    style: TextButton.styleFrom(foregroundColor: color.primary),
                   ),
                   const SizedBox(width: 8),
                   IconButton(
@@ -1430,27 +1525,32 @@ class _TabletState extends State<_Tablet> {
   void _showDeleteConfirmation(BuildContext context, ProjectsModel project) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Project'),
-        content: Text('Are you sure you want to delete "${project.prjName}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // Uncomment when delete event is implemented
-              // context.read<ProjectsBloc>().add(DeleteProjectEvent(project.prjId!, "basir.h"));
+      builder: (context) => BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+
+          String? userName;
+
+          if (state is AuthenticatedState) {
+            userName = state.loginData.usrName;
+          }
+
+          return ZAlertDialog(
+            title: AppLocalizations.of(context)!.areYouSure,
+            content: 'Do you want to delete "${project.prjName}"?',
+            onYes: () {
+
+              if (userName != null) {
+                context.read<ProjectsBloc>().add(
+                  DeleteProjectEvent(
+                    project.prjId!,
+                    userName,
+                  ),
+                );
+              }
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
 }
-
-

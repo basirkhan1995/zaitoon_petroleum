@@ -2664,4 +2664,11 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get paymentNotMatch => 'مبلغ پرداختی با مجموع پروژه مطابقت ندارد.';
+
+  @override
+  String get totalProjectTitle => 'همه پروزه ها';
+
+  @override
+  String get projectDependency =>
+      'پروژه قابل حذف نیست. دارای خدمات یا پرداخت‌های مرتبط است.';
 }

@@ -884,5 +884,7 @@
   "totalExpense": "Total Expense",
   "totalProjects": "Total Project",
   "projectEntry": "Project Entry",
-  "paymentNotMatch": "The payment amount does not match the project total."
+  "paymentNotMatch": "The payment amount does not match the project total.",
+  "totalProjectTitle": "Total Projects",
+  "projectDependency": "Project cannot be deleted. It has related services or payments."
 }

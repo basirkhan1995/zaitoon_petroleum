@@ -27,9 +27,8 @@ class DeleteProjectEvent extends ProjectsEvent {
 }
 
 class LoadProjectsEvent extends ProjectsEvent {
-  const LoadProjectsEvent();
+  final int? prjId;
+  const LoadProjectsEvent({this.prjId});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [prjId];
 }
-
-

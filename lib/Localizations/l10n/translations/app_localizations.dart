@@ -5289,6 +5289,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The payment amount does not match the project total.'**
   String get paymentNotMatch;
+
+  /// No description provided for @totalProjectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Projects'**
+  String get totalProjectTitle;
+
+  /// No description provided for @projectDependency.
+  ///
+  /// In en, this message translates to:
+  /// **'Project cannot be deleted. It has related services or payments.'**
+  String get projectDependency;
 }
 
 class _AppLocalizationsDelegate

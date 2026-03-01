@@ -3317,10 +3317,10 @@ class Repositories {
 
 
   /// Projects .................................................................
-  Future<List<ProjectsModel>> getProjects({String? date}) async {
+  Future<List<ProjectsModel>> getProjects({int? prjId}) async {
     final response = await api.get(
       endpoint: "/project/project.php",
-      queryParams: {"date": date},
+      queryParams: {"prjID": prjId},
     );
 
     if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
