@@ -9,7 +9,7 @@ class ZDropdown<T> extends StatefulWidget {
   final String? initialValue;
   final bool disableAction;
   final TextStyle? itemStyle;
-  final double? maxDropdownHeight; // Add this
+  final double? maxDropdownHeight;
 
   /// SINGLE
   final T? selectedItem;
@@ -251,7 +251,7 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
                         onTap: () => _onItemTapped(item),
                         child: Container(
                           padding:
-                          const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                          const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                           color: isSelected ? color.primary.withAlpha(15) : null,
                           child: Row(
                             children: [

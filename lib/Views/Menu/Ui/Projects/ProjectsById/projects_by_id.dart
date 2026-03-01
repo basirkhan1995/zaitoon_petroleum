@@ -258,11 +258,7 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> {
                     color: color.primary,
                   ),
                 ),
-                Container(
-                  height: 40,
-                  width: 1,
-                  color: color.outline.withValues(alpha: 0.2),
-                ),
+
                 Expanded(
                   child: _buildSummaryItem(
                     context,
@@ -458,6 +454,7 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> {
     final textTheme = Theme.of(context).textTheme;
 
     final payments = project.projectPayments ?? [];
+    final services = project.projectServices ?? [];
 
     if (payments.isEmpty) {
       return NoDataWidget(
@@ -470,19 +467,18 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> {
     // Calculate totals
     double totalIncome = 0;
     double totalExpense = 0;
-    double totalProjectAmount = 0;
+
+    // Calculate total services amount from projectServices
+    double totalServicesAmount = 0;
+    for (var service in services) {
+      totalServicesAmount += double.tryParse(service.total ?? '0') ?? 0;
+    }
 
     for (var payment in payments) {
       if (payment.prpType == 'Payment') {
         totalIncome += double.tryParse(payment.payments ?? '0') ?? 0;
       } else if (payment.prpType == 'Expense') {
         totalExpense += double.tryParse(payment.expenses ?? '0') ?? 0;
-      }
-
-      // For Entry type, add to project total
-      if (payment.prpType == 'Entry') {
-        totalProjectAmount += double.tryParse(payment.payments ?? '0') ?? 0;
-        totalProjectAmount += double.tryParse(payment.expenses ?? '0') ?? 0;
       }
     }
 
@@ -500,8 +496,8 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> {
               Expanded(
                 child: _buildSummaryCard(
                   context,
-                  title: tr.totalProjects,
-                  amount: totalProjectAmount,
+                  title: "Total Services", // Changed from tr.totalProjects
+                  amount: totalServicesAmount, // Using services total
                   currency: currency,
                   color: color.primary,
                 ),
@@ -591,7 +587,7 @@ class _ProjectByIdContentState extends State<_ProjectByIdContent> {
               final expense = double.tryParse(payment.expenses ?? '0') ?? 0;
               return InkWell(
                 onTap: (){
-
+                  // Add your edit functionality here later
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
