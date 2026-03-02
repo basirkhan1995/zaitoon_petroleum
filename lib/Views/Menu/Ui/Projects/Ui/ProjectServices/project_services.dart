@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Features/Other/alert_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
@@ -50,7 +51,7 @@ class _DesktopState extends State<_Desktop> {
   final amount = TextEditingController();
   final remark = TextEditingController();
   int? serviceId;
-  int? editingPjdId; // Track if we're editing an existing service
+  int? editingPjdId;
   String? myLocale;
 
   // Add this to control form visibility
@@ -638,21 +639,43 @@ class _Mobile extends StatefulWidget {
   @override
   State<_Mobile> createState() => _MobileState();
 }
+
 class _MobileState extends State<_Mobile> {
   final formKey = GlobalKey<FormState>();
   final servicesController = TextEditingController();
   final qty = TextEditingController(text: "1");
   final amount = TextEditingController();
   final remark = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
   int? serviceId;
   int? editingPjdId;
   String? myLocale;
   LoginData? loginData;
   bool _isFormVisible = false;
+  bool _isFabVisible = true;
 
   @override
   void initState() {
     myLocale = context.read<LocalizationBloc>().state.languageCode;
+
+    // Add scroll listener to hide/show FAB
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+        if (_isFabVisible) {
+          setState(() {
+            _isFabVisible = false;
+          });
+        }
+      } else if (_scrollController.position.userScrollDirection == ScrollDirection.forward) {
+        if (!_isFabVisible) {
+          setState(() {
+            _isFabVisible = true;
+          });
+        }
+      }
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.project != null) {
         context.read<ProjectServicesBloc>().add(LoadProjectServiceEvent(widget.project!.prjId!));
@@ -663,6 +686,7 @@ class _MobileState extends State<_Mobile> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     remark.dispose();
     servicesController.dispose();
     amount.dispose();
@@ -713,62 +737,13 @@ class _MobileState extends State<_Mobile> {
     loginData = state.loginData;
 
     return Scaffold(
-
-      appBar: AppBar(
-        leading: SizedBox(),
-        actions: [
-          if (widget.project?.prjStatus == 0 && !_isFormVisible)
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: showAddForm,
-            ),
-        ],
-      ),
       body: Column(
         children: [
-          // Form Section
+          // Form Section (when visible)
           if (_isFormVisible)
             _buildFormSection(context),
 
-          // Header
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.primary,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Text(tr.projectServices, style: _getHeaderStyle(context)),
-                ),
-                SizedBox(
-                  width: 50,
-                  child: Text(tr.qty, style: _getHeaderStyle(context)),
-                ),
-                SizedBox(
-                  width: 90,
-                  child: Text(
-                    tr.amount,
-                    textAlign: myLocale == "en" ? TextAlign.right : TextAlign.left,
-                    style: _getHeaderStyle(context),
-                  ),
-                ),
-                SizedBox(
-                  width: 90,
-                  child: Text(
-                    tr.totalTitle,
-                    textAlign: myLocale == "en" ? TextAlign.right : TextAlign.left,
-                    style: _getHeaderStyle(context),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Services List
+          // Services List with Summary
           Expanded(
             child: BlocConsumer<ProjectServicesBloc, ProjectServicesState>(
               listener: (context, state) {
@@ -801,23 +776,35 @@ class _MobileState extends State<_Mobile> {
                   if (state.projectServices.isEmpty) {
                     return NoDataWidget(
                       title: "No Services",
-                      message: "Click Add Services",
+                      message: "Click + to add services",
                       enableAction: false,
                     );
                   }
 
+                  // Calculate totals
                   double totalSum = 0;
                   for (var service in state.projectServices) {
                     totalSum += service.total ?? 0;
                   }
 
-                  return Column(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          itemCount: state.projectServices.length,
-                          itemBuilder: (context, index) {
+                  return CustomScrollView(
+                    controller: _scrollController,
+                    slivers: [
+                      // Summary Header (Sticky)
+                      SliverToBoxAdapter(
+                        child: _buildTotalHeader(
+                          context,
+                          totalSum,
+                          state.projectServices.length,
+                          color,
+                          tr,
+                        ),
+                      ),
+
+                      // Services List
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                              (context, index) {
                             final prjServices = state.projectServices[index];
                             return _buildMobileServiceCard(
                               context,
@@ -827,9 +814,12 @@ class _MobileState extends State<_Mobile> {
                               tr,
                             );
                           },
+                          childCount: state.projectServices.length,
                         ),
                       ),
-                      _buildTotalFooter(context, totalSum, state.projectServices.length, color, tr),
+
+                      // Bottom Padding for FAB
+                      const SliverPadding(padding: EdgeInsets.only(bottom: 80)),
                     ],
                   );
                 }
@@ -842,13 +832,14 @@ class _MobileState extends State<_Mobile> {
           ),
         ],
       ),
-    );
-  }
-
-  TextStyle? _getHeaderStyle(BuildContext context) {
-    return Theme.of(context).textTheme.titleSmall?.copyWith(
-      color: Theme.of(context).colorScheme.surface,
-      fontWeight: FontWeight.bold,
+      // Floating Action Button
+      floatingActionButton: widget.project?.prjStatus == 0 && !_isFormVisible && _isFabVisible
+          ? FloatingActionButton(
+        onPressed: showAddForm,
+        child: const Icon(Icons.add),
+      )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -959,9 +950,9 @@ class _MobileState extends State<_Mobile> {
 
             // Remark
             ZTextFieldEntitled(
-              keyboardInputType: TextInputType.multiline,
-              controller: remark,
-              title: tr.remark
+                keyboardInputType: TextInputType.multiline,
+                controller: remark,
+                title: tr.remark
             ),
             const SizedBox(height: 12),
 
@@ -969,20 +960,22 @@ class _MobileState extends State<_Mobile> {
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
+                  child: ZOutlineButton(
                     onPressed: () {
                       clearForm();
                     },
-                    child: Text(tr.cancel),
+                    label: Text(tr.cancel),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: ElevatedButton(
+                  child: ZOutlineButton(
+                    isActive: true,
+                    backgroundHover: color.primary,
                     onPressed: (context.watch<ProjectServicesBloc>().state is ProjectServicesLoadingState)
                         ? null
                         : (editingPjdId != null ? onUpdateSubmit : onAddSubmit),
-                    child: (context.watch<ProjectServicesBloc>().state is ProjectServicesLoadingState)
+                    label: (context.watch<ProjectServicesBloc>().state is ProjectServicesLoadingState)
                         ? const SizedBox(
                       width: 16,
                       height: 16,
@@ -997,15 +990,13 @@ class _MobileState extends State<_Mobile> {
               const SizedBox(height: 8),
               SizedBox(
                 width: double.infinity,
-                child: OutlinedButton(
+                child: ZOutlineButton(
+                  isActive: true,
+                  backgroundHover: color.error,
                   onPressed: (context.watch<ProjectServicesBloc>().state is ProjectServicesLoadingState)
                       ? null
                       : onDeleteSubmit,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: color.error,
-                    side: BorderSide(color: color.error),
-                  ),
-                  child: Text(tr.delete),
+                  label: Text(tr.delete),
                 ),
               ),
             ],
@@ -1023,7 +1014,7 @@ class _MobileState extends State<_Mobile> {
       AppLocalizations tr,
       ) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: InkWell(
         onTap: () => (widget.project?.prjStatus == 0) ? loadServiceForEditing(service) : null,
         borderRadius: BorderRadius.circular(8),
@@ -1078,7 +1069,9 @@ class _MobileState extends State<_Mobile> {
                 const SizedBox(height: 4),
                 Text(
                   service.pjdRemark!,
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: color.onSurface.withValues(alpha: .6),
+                  ),
                 ),
               ],
 
@@ -1144,7 +1137,7 @@ class _MobileState extends State<_Mobile> {
     );
   }
 
-  Widget _buildTotalFooter(
+  Widget _buildTotalHeader(
       BuildContext context,
       double totalSum,
       int itemCount,
@@ -1152,46 +1145,92 @@ class _MobileState extends State<_Mobile> {
       AppLocalizations tr,
       ) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: color.surface,
+        gradient: LinearGradient(
+          colors: [
+            color.primaryContainer,
+            color.primary.withValues(alpha: .1),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: color.outline.withValues(alpha: 0.1),
+            color: color.primary.withValues(alpha: .1),
             blurRadius: 4,
-            offset: const Offset(0, -2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Total Services
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 tr.services,
-                style: Theme.of(context).textTheme.bodySmall,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: color.onPrimaryContainer.withValues(alpha: .7),
+                ),
               ),
-              Text(
-                '$itemCount ${tr.items}',
-                style: Theme.of(context).textTheme.titleMedium,
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(
+                    Icons.list_alt_rounded,
+                    size: 16,
+                    color: color.primary,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$itemCount ${tr.items}',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
+
+          // Divider
+          Container(
+            height: 40,
+            width: 1,
+            color: color.primary.withValues(alpha: .3),
+          ),
+
+          // Total Amount
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 tr.totalTitle,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              Text(
-                "${totalSum.toAmount()} ${widget.project?.actCurrency}",
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: color.primary,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: color.onPrimaryContainer.withValues(alpha: .7),
                 ),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(
+                    Icons.attach_money,
+                    size: 16,
+                    color: color.primary,
+                  ),
+                  Text(
+                    "${totalSum.toAmount()} ${widget.project?.actCurrency ?? ''}",
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: color.primary,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -1216,6 +1255,7 @@ class _MobileState extends State<_Mobile> {
     final data = ProjectServicesModel(
       prjId: widget.project!.prjId!,
       srvId: serviceId,
+      pjdRemark: remark.text,
       pjdQuantity: double.tryParse(qty.text),
       pjdPricePerQty: double.tryParse(amount.text),
       usrName: loginData?.usrName,
@@ -1257,8 +1297,8 @@ class _MobileState extends State<_Mobile> {
     showDialog(
       context: context,
       builder: (context) => ZAlertDialog(
-        title: "confirm Delete",
-        content: "Delete Service Confirmation",
+        title: "Confirm Delete",
+        content: "Delete this service?",
         onYes: () {
           final bloc = context.read<ProjectServicesBloc>();
           bloc.add(

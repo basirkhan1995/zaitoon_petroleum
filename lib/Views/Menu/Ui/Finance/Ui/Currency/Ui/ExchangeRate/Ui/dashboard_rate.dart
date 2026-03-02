@@ -357,24 +357,35 @@ class _MobileState extends State<_Mobile> {
                 ),
                 Spacer(),
                 ZCover(
+                  padding: EdgeInsets.zero,
                   child: IconButton(
+                      visualDensity: VisualDensity(horizontal: -4,vertical: -4),
+                      constraints: BoxConstraints(),
                       onPressed: onRefresh,
                       icon: Icon(Icons.refresh)),
                 ),
                   SizedBox(width: 5),
-                  IconButton(
-                    icon: Icon(Icons.add),
-                    onPressed: () {
-                      showDialog(context: context, builder: (context){
-                        return AddRateView();
-                      });
-                    },
+                  ZCover(
+                    padding: EdgeInsets.zero,
+                    child: IconButton(
+                      visualDensity: VisualDensity(horizontal: -4,vertical: -4),
+                      constraints: BoxConstraints(),
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        showDialog(context: context, builder: (context){
+                          return AddRateView();
+                        });
+                      },
+                    ),
                   ),
 
                   SizedBox(width: 5),
 
                   ZCover(
+                    padding: EdgeInsets.zero,
                     child: IconButton(
+                      visualDensity: VisualDensity(horizontal: -4,vertical: -4),
+                      constraints: BoxConstraints(),
                       icon: Icon(Icons.settings),
                       onPressed: () {
                         context.read<MenuBloc>().add(MenuOnChangedEvent(MenuName.finance));

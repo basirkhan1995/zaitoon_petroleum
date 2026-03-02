@@ -2675,4 +2675,7 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get projectDependency =>
       'پروژه نشي حذف کېدای. اړوند خدمتونه یا تادیات لري.';
+
+  @override
+  String get pAndLTitle => 'پرداخت و مصارف';
 }

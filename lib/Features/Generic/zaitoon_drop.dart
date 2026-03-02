@@ -100,6 +100,7 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
 
   @override
   void dispose() {
+    _removeOverlay();
     _focusNode.dispose();
     super.dispose();
   }
@@ -199,84 +200,104 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
   }
 
   OverlayEntry _createOverlayEntry(BuildContext context) {
-    final renderBox = _buttonKey.currentContext!.findRenderObject() as RenderBox;
+    final renderBox =
+    _buttonKey.currentContext!.findRenderObject() as RenderBox;
     final offset = renderBox.localToGlobal(Offset.zero);
     final color = Theme.of(context).colorScheme;
-    return OverlayEntry(
-      builder: (_) => Positioned(
-        left: offset.dx,
-        top: offset.dy + renderBox.size.height + 4,
-        width: renderBox.size.width,
-        child: Material(
-          elevation: 2,
-          borderRadius: BorderRadius.circular(widget.radius ?? 4),
-          child: Container(
-            constraints: BoxConstraints(
-              maxHeight: 300,
-            ),
-            child: AnimatedSize(
-              duration: const Duration(milliseconds: 200),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (widget.multiSelect)
-                      InkWell(
-                        onTap: () {
-                          final allSelected =
-                              _selectedItems.length == widget.items.length;
-                          setState(() {
-                            _selectedItems = allSelected ? [] : List.from(widget.items);
-                          });
-                          widget.onMultiSelectChanged?.call(_selectedItems);
-                          _refreshOverlay();
-                        },
-                        child: Row(
-                          children: [
-                            Checkbox(
-                              value: _selectedItems.length == widget.items.length &&
-                                  widget.items.isNotEmpty,
-                              onChanged: (_) {},
-                            ),
-                            Text(AppLocalizations.of(context)!.selectAll),
-                          ],
-                        ),
-                      ),
-                    ...widget.items.map((item) {
-                      final isSelected = widget.multiSelect
-                          ? _selectedItems.contains(item)
-                          : item == _selectedItem;
 
-                      return InkWell(
-                        onTap: () => _onItemTapped(item),
-                        child: Container(
-                          padding:
-                          const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
-                          color: isSelected ? color.primary.withAlpha(15) : null,
-                          child: Row(
-                            children: [
-                              if (widget.multiSelect)
+    return OverlayEntry(
+      builder: (_) => Stack(
+        children: [
+          /// 👇 THIS is the outside click detector (VERY IMPORTANT)
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: _removeOverlay,
+            ),
+          ),
+
+          /// 👇 Your dropdown
+          Positioned(
+            left: offset.dx,
+            top: offset.dy + renderBox.size.height + 4,
+            width: renderBox.size.width,
+            child: Material(
+              elevation: 2,
+              borderRadius: BorderRadius.circular(widget.radius ?? 4),
+              child: Container(
+                constraints: const BoxConstraints(maxHeight: 300),
+                child: AnimatedSize(
+                  duration: const Duration(milliseconds: 200),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (widget.multiSelect)
+                          InkWell(
+                            onTap: () {
+                              final allSelected =
+                                  _selectedItems.length == widget.items.length;
+                              setState(() {
+                                _selectedItems = allSelected
+                                    ? []
+                                    : List.from(widget.items);
+                              });
+                              widget.onMultiSelectChanged
+                                  ?.call(_selectedItems);
+                              _refreshOverlay();
+                            },
+                            child: Row(
+                              children: [
                                 Checkbox(
-                                  value: isSelected,
-                                  onChanged: (_) => _onItemTapped(item),
+                                  value: _selectedItems.length ==
+                                      widget.items.length &&
+                                      widget.items.isNotEmpty,
+                                  onChanged: (_) {},
                                 ),
-                              if (widget.leadingBuilder != null)
-                                widget.leadingBuilder!(item),
-                              const SizedBox(width: 6),
-                              Expanded(child: Text(widget.itemLabel(item))),
-                              if (isSelected && !widget.multiSelect)
-                                const Icon(Icons.check, size: 16),
-                            ],
+                                Text(AppLocalizations.of(context)!.selectAll),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    }),
-                  ],
+                        ...widget.items.map((item) {
+                          final isSelected = widget.multiSelect
+                              ? _selectedItems.contains(item)
+                              : item == _selectedItem;
+
+                          return InkWell(
+                            onTap: () => _onItemTapped(item),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 0, vertical: 4),
+                              color: isSelected
+                                  ? color.primary.withAlpha(15)
+                                  : null,
+                              child: Row(
+                                children: [
+                                  if (widget.multiSelect)
+                                    Checkbox(
+                                      value: isSelected,
+                                      onChanged: (_) => _onItemTapped(item),
+                                    ),
+                                  if (widget.leadingBuilder != null)
+                                    widget.leadingBuilder!(item),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                      child: Text(widget.itemLabel(item))),
+                                  if (isSelected && !widget.multiSelect)
+                                    const Icon(Icons.check, size: 16),
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

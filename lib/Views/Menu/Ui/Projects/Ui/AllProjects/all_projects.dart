@@ -4,6 +4,7 @@ import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/alert_dialog.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/toast.dart';
+import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/search_field.dart';
@@ -974,10 +975,7 @@ class _MobileState extends State<_Mobile> {
             .withValues(alpha: .1),
       ),
       onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) => ProjectView(project: pjr),
-        );
+        Utils.goto(context, ProjectView(project: pjr));
       },
       accentColor: color.primary,
       showActions: true,

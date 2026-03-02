@@ -2671,4 +2671,7 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get projectDependency =>
       'پروژه قابل حذف نیست. دارای خدمات یا پرداخت‌های مرتبط است.';
+
+  @override
+  String get pAndLTitle => 'پرداخت و مصارف';
 }

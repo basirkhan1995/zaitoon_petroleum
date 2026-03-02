@@ -25,18 +25,65 @@ class VehicleReportView extends StatelessWidget {
 
 
 
-class _Mobile extends StatelessWidget {
+class _Mobile extends StatefulWidget {
   const _Mobile();
+
+  @override
+  State<_Mobile> createState() => _MobileState();
+}
+
+class _MobileState extends State<_Mobile> {
+  final TextEditingController _searchController = TextEditingController();
+  bool _showFilters = false;
+  int? _selectedStatus;
+  List<dynamic> _allVehicles = [];
+  List<dynamic> _filteredVehicles = [];
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterVehicles() {
+    final state = context.read<VehicleBloc>().state;
+    if (state is VehicleReportLoadedState) {
+      setState(() {
+        _allVehicles = state.vehicles;
+        _filteredVehicles = _allVehicles.where((vehicle) {
+          // Apply status filter
+          if (_selectedStatus != null && vehicle.vclStatus != _selectedStatus) {
+            return false;
+          }
+
+          // Apply search filter
+          if (_searchController.text.isNotEmpty) {
+            final searchTerm = _searchController.text.toLowerCase();
+            final model = vehicle.vclModel?.toLowerCase() ?? '';
+            final plateNo = vehicle.vclPlateNo?.toLowerCase() ?? '';
+            final driver = vehicle.driver?.toLowerCase() ?? '';
+
+            return model.contains(searchTerm) ||
+                plateNo.contains(searchTerm) ||
+                driver.contains(searchTerm);
+          }
+
+          return true;
+        }).toList();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
     final l10n = AppLocalizations.of(context)!;
-    List<StatusItem>? items;
-    final dropdownItems = items ?? [
+
+    final dropdownItems = [
       StatusItem(null, l10n.all),
-      StatusItem(1, l10n.inactive),
+      StatusItem(1, l10n.active),
+      StatusItem(0, l10n.inactive),
     ];
 
     return Scaffold(
@@ -44,39 +91,49 @@ class _Mobile extends StatelessWidget {
       appBar: AppBar(
         titleSpacing: 0,
         title: Text(tr.vehicles),
+        actions: [
+          IconButton(
+            icon: Icon(
+              _showFilters ? Icons.filter_alt_rounded : Icons.filter_alt_outlined,
+            ),
+            onPressed: () {
+              setState(() {
+                _showFilters = !_showFilters;
+              });
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
-          // Search Field
-           Padding(
-             padding: const EdgeInsets.all(8.0),
-             child: Row(
-               spacing: 5,
-               crossAxisAlignment: CrossAxisAlignment.end,
-               children: [
-                 Expanded(
-                  flex: 3,
-                   child: ZSearchField(
-                     icon: FontAwesomeIcons.magnifyingGlass,
-                     controller: TextEditingController(),
-                     hint: tr.search,
-                     onChanged: (value) {},
-                     title: "",
-                   ),
-                 ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ZSearchField(
+              icon: FontAwesomeIcons.magnifyingGlass,
+              controller: _searchController,
+              hint: tr.search,
+              onChanged: (value) {
+                _filterVehicles();
+              },
+              title: "",
+            ),
+          ),
 
-                 Expanded(
-                   flex: 2,
-                   child: StatusDropdown(
-                       items: dropdownItems,
-                       onChanged: (e){
-                         context.read<VehicleBloc>().add(LoadVehicleReportEvent(regExpired: e));
-                       }),
-                 ),
-               ],
-             ),
-           ),
-          // Vehicle List
+          if (_showFilters)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: StatusDropdown(
+                items: dropdownItems,
+                value: _selectedStatus,
+                onChanged: (e) {
+                  setState(() {
+                    _selectedStatus = e;
+                  });
+                  _filterVehicles();
+                },
+              ),
+            ),
+
           Expanded(
             child: BlocBuilder<VehicleBloc, VehicleState>(
               builder: (context, state) {
@@ -94,9 +151,12 @@ class _Mobile extends StatelessWidget {
                 }
 
                 if (state is VehicleReportLoadedState) {
-                  final vehicles = state.vehicles;
+                  if (_allVehicles.isEmpty) {
+                    _allVehicles = state.vehicles;
+                    _filteredVehicles = state.vehicles;
+                  }
 
-                  if (vehicles.isEmpty) {
+                  if (_filteredVehicles.isEmpty) {
                     return NoDataWidget(
                       title: tr.noData,
                       message: tr.noDataFound,
@@ -108,11 +168,10 @@ class _Mobile extends StatelessWidget {
 
                   return ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    itemCount: vehicles.length,
+                    itemCount: _filteredVehicles.length,
                     itemBuilder: (context, index) {
-                      final vehicle = vehicles[index];
+                      final vehicle = _filteredVehicles[index];
 
-                      // Prepare info items for the card
                       final List<MobileInfoItem> infoItems = [
                         MobileInfoItem(
                           icon: Icons.local_gas_station,
@@ -131,7 +190,6 @@ class _Mobile extends StatelessWidget {
                         ),
                       ];
 
-                      // Add driver if available
                       if (vehicle.driver != null && vehicle.driver!.isNotEmpty) {
                         infoItems.add(
                           MobileInfoItem(
@@ -142,7 +200,6 @@ class _Mobile extends StatelessWidget {
                         );
                       }
 
-                      // Add ownership if available
                       if (vehicle.vclOwnership != null && vehicle.vclOwnership!.isNotEmpty) {
                         infoItems.add(
                           MobileInfoItem(

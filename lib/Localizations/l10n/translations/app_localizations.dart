@@ -5301,6 +5301,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Project cannot be deleted. It has related services or payments.'**
   String get projectDependency;
+
+  /// No description provided for @pAndLTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'P&L'**
+  String get pAndLTitle;
 }
 
 class _AppLocalizationsDelegate

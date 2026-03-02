@@ -76,7 +76,7 @@ class _ProjectTabsMobileState extends State<_ProjectTabsMobile> {
       _screens.add(ProjectServicesView(project: widget.project));
       _bottomNavItems.add(
         BottomNavigationBarItem(
-          icon: const Icon(Icons.build),
+          icon: const Icon(Icons.miscellaneous_services_rounded),
           label: tr.services,
         ),
       );
@@ -85,7 +85,7 @@ class _ProjectTabsMobileState extends State<_ProjectTabsMobile> {
       _bottomNavItems.add(
         BottomNavigationBarItem(
           icon: const Icon(Icons.payments_outlined),
-          label: tr.incomeAndExpenses,
+          label: tr.pAndLTitle,
         ),
       );
     }

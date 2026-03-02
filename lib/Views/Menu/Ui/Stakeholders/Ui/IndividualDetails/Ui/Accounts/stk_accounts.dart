@@ -37,7 +37,6 @@ class _Mobile extends StatefulWidget {
   @override
   State<_Mobile> createState() => _MobileState();
 }
-
 class _MobileState extends State<_Mobile> {
   final ScrollController _scrollController = ScrollController();
   bool _isFabVisible = true;
@@ -232,7 +231,6 @@ class _Desktop extends StatefulWidget {
   @override
   State<_Desktop> createState() => _DesktopState();
 }
-
 class _DesktopState extends State<_Desktop> {
   @override
   void initState() {

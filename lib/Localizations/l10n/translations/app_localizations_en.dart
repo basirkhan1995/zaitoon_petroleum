@@ -2682,4 +2682,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get projectDependency =>
       'Project cannot be deleted. It has related services or payments.';
+
+  @override
+  String get pAndLTitle => 'P&L';
 }

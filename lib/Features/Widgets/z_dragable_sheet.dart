@@ -96,7 +96,7 @@ class ZDraggableSheet {
                       trailing != null) ...[
                     Row(
                       children: [
-                        leading ?? const SizedBox(width: 4),
+                        leading ?? const SizedBox(width: 0),
 
                         /// Title
                         Expanded(
@@ -113,7 +113,8 @@ class ZDraggableSheet {
 
                         /// Custom trailing or close
                         trailing ??
-                            (showCloseButton ? IconButton(icon: const Icon(Icons.close),
+                            (showCloseButton ? IconButton(
+                              icon: const Icon(Icons.close,size: 20),
                                  onPressed: () => Navigator.pop(context),
                             )
                                 : const SizedBox()),

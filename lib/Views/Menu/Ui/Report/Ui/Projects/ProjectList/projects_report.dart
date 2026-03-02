@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
@@ -120,7 +119,7 @@ class _MobileState extends State<_Mobile> {
                             context,
                             tr.totalAmount,
                             totalAmount.toAmount(),
-                            Icons.attach_money,
+                            Icons.money,
                           ),
                           Container(
                             height: 30,
@@ -271,11 +270,11 @@ class _MobileState extends State<_Mobile> {
                       children: [
                         Text(
                           tr.customer,
-                          style: Theme.of(context).textTheme.bodySmall,
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
                         Text(
                           pjr.customerName ?? "",
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: color.outline),
                         ),
                       ],
                     ),
@@ -286,11 +285,11 @@ class _MobileState extends State<_Mobile> {
                       children: [
                         Text(
                           tr.deadline,
-                          style: Theme.of(context).textTheme.bodySmall,
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
                         Text(
                           pjr.prjDateLine?.daysLeftText ?? "",
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: color.outline),
                         ),
                       ],
                     ),
@@ -314,11 +313,11 @@ class _MobileState extends State<_Mobile> {
                         children: [
                           Text(
                             tr.totalProjects,
-                            style: Theme.of(context).textTheme.bodySmall,
+                            style: Theme.of(context).textTheme.titleSmall,
                           ),
                           Text(
                             "${pjr.totalAmount?.toAmount()} ${pjr.actCurrency}",
-                            style: Theme.of(context).textTheme.bodyMedium,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: color.outline),
                           ),
                         ],
                       ),
@@ -329,11 +328,11 @@ class _MobileState extends State<_Mobile> {
                         children: [
                           Text(
                             tr.totalPayment,
-                            style: Theme.of(context).textTheme.bodySmall,
+                            style: Theme.of(context).textTheme.titleSmall,
                           ),
                           Text(
                             "${pjr.totalPayments?.toAmount()} ${pjr.actCurrency}",
-                            style: Theme.of(context).textTheme.bodyMedium,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: color.outline),
                           ),
                         ],
                       ),
@@ -369,16 +368,11 @@ class _MobileState extends State<_Mobile> {
 
   Color _getStatusColor(String? status) {
     if (status == null) return Colors.grey;
-
     final statusLower = status.toLowerCase();
-    if (statusLower.contains('active') || statusLower.contains('progress')) {
-      return Colors.green;
-    } else if (statusLower.contains('complete')) {
-      return Colors.blue;
-    } else if (statusLower.contains('hold') || statusLower.contains('pause')) {
+    if (statusLower.contains('processing')) {
       return Colors.orange;
-    } else if (statusLower.contains('cancel')) {
-      return Colors.red;
+    } else if (statusLower.contains('complete')) {
+      return Colors.green;
     }
     return Colors.grey;
   }
@@ -395,11 +389,11 @@ class _MobileState extends State<_Mobile> {
 
     ZDraggableSheet.show(
       context: context,
-      title: "Filter Project",
+      title: "Filter",
       showCloseButton: true,
       showDragHandle: true,
       adaptiveInitialSize: true,
-      estimatedContentHeight: 360,
+      estimatedContentHeight: 380,
       bodyBuilder: (context, scrollController) {
         return SingleChildScrollView(
           controller: scrollController,
@@ -686,10 +680,11 @@ class _DesktopState extends State<_Desktop> {
                 })),
                 const SizedBox(width: 8),
                 ZOutlineButton(
-                  icon: FontAwesomeIcons.solidFilePdf,
+                  icon: Icons.filter_alt_off_outlined,
                   height: 47,
                   onPressed: () {},
-                  label: Text("PDF"),
+                  label: Text(AppLocalizations.of(context)!.clearFilters),
+
                 ),
                 const SizedBox(width: 8),
                 ZOutlineButton(
