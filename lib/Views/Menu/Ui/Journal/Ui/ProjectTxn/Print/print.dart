@@ -188,7 +188,7 @@ class ProjectTxnPrintSettings extends PrintServices {
             ),
             verticalDivider(height: 15, width: 0.6),
             zText(
-              text: getTranslation(text: 'producedBy', tr: language),
+              text: tr(text: 'producedBy', tr: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
             ),
@@ -271,12 +271,12 @@ class ProjectTxnPrintSettings extends PrintServices {
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
               zText(
-                text: getTranslation(text: 'projectTransaction', tr: language),
+                text: tr(text: 'projectTransaction', tr: language),
                 fontWeight: pw.FontWeight.bold,
                 fontSize: 14,
               ),
               zText(
-                text: getTranslation(text: 'voucher', tr: language),
+                text: tr(text: 'voucher', tr: language),
                 fontWeight: pw.FontWeight.bold,
                 fontSize: 12,
               ),
@@ -287,7 +287,7 @@ class ProjectTxnPrintSettings extends PrintServices {
 
         // Project Details Section
         zText(
-          text: getTranslation(text: 'projectDetails', tr: language),
+          text: tr(text: 'projectDetails', tr: language),
           fontWeight: pw.FontWeight.bold,
           fontSize: 10,
         ),
@@ -314,7 +314,7 @@ class ProjectTxnPrintSettings extends PrintServices {
                   pw.Container(
                     width: 100,
                     child: zText(
-                      text: "${getTranslation(text: r["title"]!, tr: language)}:",
+                      text: "${tr(text: r["title"]!, tr: language)}:",
                       fontSize: 8,
                     ),
                   ),
@@ -335,7 +335,7 @@ class ProjectTxnPrintSettings extends PrintServices {
 
         // Transaction Details Section
         zText(
-          text: getTranslation(text: 'transactionDetails', tr: language),
+          text: tr(text: 'transactionDetails', tr: language),
           fontWeight: pw.FontWeight.bold,
           fontSize: 10,
         ),
@@ -362,7 +362,7 @@ class ProjectTxnPrintSettings extends PrintServices {
                   pw.Container(
                     width: 100,
                     child: zText(
-                      text: "${getTranslation(text: r["title"]!, tr: language)}:",
+                      text: "${tr(text: r["title"]!, tr: language)}:",
                       fontSize: 8,
                     ),
                   ),
@@ -383,7 +383,7 @@ class ProjectTxnPrintSettings extends PrintServices {
 
         // Amount in Words
         zText(
-          text: getTranslation(text: 'amountInWords', tr: language),
+          text: tr(text: 'amountInWords', tr: language),
           fontSize: 8,
         ),
         horizontalDivider(),
@@ -404,13 +404,13 @@ class ProjectTxnPrintSettings extends PrintServices {
     if (status == null) return "";
     switch (status) {
       case 0:
-        return getTranslation(text: 'pending', tr: language);
+        return tr(text: 'pending', tr: language);
       case 1:
-        return getTranslation(text: 'active', tr: language);
+        return tr(text: 'active', tr: language);
       case 2:
-        return getTranslation(text: 'completed', tr: language);
+        return tr(text: 'completed', tr: language);
       case 3:
-        return getTranslation(text: 'cancelled', tr: language);
+        return tr(text: 'cancelled', tr: language);
       default:
         return status.toString();
     }
@@ -432,7 +432,7 @@ class ProjectTxnPrintSettings extends PrintServices {
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.start,
                 children: [
-                  zText(text: getTranslation(text: 'createdBy', tr: language), fontSize: 7),
+                  zText(text: tr(text: 'createdBy', tr: language), fontSize: 7),
                   zText(text: " ${data.transaction?.maker ?? ''} ", fontSize: 7),
                 ],
               ),
@@ -446,7 +446,7 @@ class ProjectTxnPrintSettings extends PrintServices {
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.start,
                 children: [
-                  zText(text: getTranslation(text: 'authorizedBy', tr: language), fontSize: 7),
+                  zText(text: tr(text: 'authorizedBy', tr: language), fontSize: 7),
                   zText(text: data.transaction?.checker ?? "", fontSize: 7),
                 ],
               ),

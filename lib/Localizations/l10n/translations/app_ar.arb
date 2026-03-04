@@ -910,5 +910,16 @@
   "amountInWords": "مبلغ په تورو",
   "authorizedBy": "تاییدونکی",
   "pending": "انتظار کې",
-  "cancelled": "لغوه شوی"
+  "cancelled": "لغوه شوی",
+  "totalServicesValue": "مجموعه مبلغ خدمات",
+  "beneficiary": "ګټه اخیستونکی",
+  "clientTitle": "پیرودونکی ",
+  "totalServices": "تعداد خدمات",
+  "totalTransactions": "مجموعه تراکنش ها",
+  "currentPhase": "روان پړاو ",
+  "incomeAndExpense": "مصارف و پرداخت ها",
+  "activeServices": "خدمات فعال",
+  "serviceName": "خدماتو نوم",
+  "noServicesTitle": "خدمات یافت نشد",
+  "noServicesMessage": "خدماتی در این پروژه یافت نشد."
 }

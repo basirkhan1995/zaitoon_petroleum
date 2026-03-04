@@ -190,7 +190,7 @@ class GlStatementPrintSettings extends PrintServices {
             ),
             verticalDivider(height: 15, width: 0.6),
             zText(
-              text: getTranslation(text: 'producedBy', tr: language),
+              text: tr(text: 'producedBy', tr: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
             ),
@@ -272,7 +272,7 @@ class GlStatementPrintSettings extends PrintServices {
             children: [
               buildSummary(
                 distance: 120,
-                label: getTranslation(
+                label: tr(
                   text: 'accountSummary',
                   tr: language,
                 ),
@@ -294,7 +294,7 @@ class GlStatementPrintSettings extends PrintServices {
 
               buildTotalSummary(
                 color: pw.PdfColors.grey800,
-                label: getTranslation(
+                label: tr(
                   text: 'openingBalance',
                   tr: language,
                 ),
@@ -303,13 +303,13 @@ class GlStatementPrintSettings extends PrintServices {
               pw.SizedBox(height: 1),
               buildTotalSummary(
                 color: pw.PdfColors.grey800,
-                label: getTranslation(text: 'totalDebits', tr: language),
+                label: tr(text: 'totalDebits', tr: language),
                 value: totalDebit.toAmount(),
               ),
               pw.SizedBox(height: 1),
               buildTotalSummary(
                 color: pw.PdfColors.grey800,
-                label: getTranslation(
+                label: tr(
                   text: 'totalCredits',
                   tr: language,
                 ),
@@ -320,7 +320,7 @@ class GlStatementPrintSettings extends PrintServices {
               horizontalDivider(width: 190),
               pw.SizedBox(height: 1),
               buildTotalSummary(
-                label: getTranslation(
+                label: tr(
                   text: 'currentBalance',
                   tr: language,
                 ),
@@ -330,7 +330,7 @@ class GlStatementPrintSettings extends PrintServices {
               ),
               pw.SizedBox(height: 1),
               buildTotalSummary(
-                label: getTranslation(
+                label: tr(
                   text: 'availableBalance',
                   tr: language,
                 ),
@@ -362,7 +362,7 @@ class GlStatementPrintSettings extends PrintServices {
             children: [
               buildSummary(
                 distance: 150,
-                label: getTranslation(
+                label: tr(
                   text: 'statementAccount',
                   tr: language,
                 ),
@@ -376,7 +376,7 @@ class GlStatementPrintSettings extends PrintServices {
               buildSummary(
                 color: pw.PdfColors.grey800,
                 distance: 75,
-                label: getTranslation(
+                label: tr(
                   text: 'accountName',
                   tr: language,
                 ),
@@ -386,7 +386,7 @@ class GlStatementPrintSettings extends PrintServices {
               buildSummary(
                 distance: 75,
                 color: pw.PdfColors.grey800,
-                label: getTranslation(
+                label: tr(
                   text: 'accountNumber',
                   tr: language,
                 ),
@@ -398,7 +398,7 @@ class GlStatementPrintSettings extends PrintServices {
               buildSummary(
                 color: pw.PdfColors.grey800,
                 distance: 75,
-                label: getTranslation(text: 'currency', tr: language),
+                label: tr(text: 'currency', tr: language),
                 value: "USD",
               ),
             ],
@@ -451,7 +451,7 @@ class GlStatementPrintSettings extends PrintServices {
               pw.SizedBox(
                 width: dateWidth,
                 child: zText(
-                  text: getTranslation(text: "date", tr: language),
+                  text: tr(text: "date", tr: language),
                   textAlign:
                   language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
                   fontSize: 9,
@@ -462,7 +462,7 @@ class GlStatementPrintSettings extends PrintServices {
                 width: trnWidth,
                 child: zText(
                   textAlign: language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
-                  text: getTranslation(text: "reference", tr: language),
+                  text: tr(text: "reference", tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -471,7 +471,7 @@ class GlStatementPrintSettings extends PrintServices {
                 child: zText(
                   textAlign:
                   language == "en" ? pw.TextAlign.left : pw.TextAlign.right,
-                  text: getTranslation(text: "narration", tr: language),
+                  text: tr(text: "narration", tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -481,7 +481,7 @@ class GlStatementPrintSettings extends PrintServices {
                 width: amountWidth,
                 child: zText(
                   textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
-                  text: getTranslation(text: "debit", tr: language),
+                  text: tr(text: "debit", tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -490,7 +490,7 @@ class GlStatementPrintSettings extends PrintServices {
                 width: amountWidth,
                 child: zText(
                   textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
-                  text: getTranslation(text: "credit", tr: language),
+                  text: tr(text: "credit", tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -499,7 +499,7 @@ class GlStatementPrintSettings extends PrintServices {
                 width: balanceWidth,
                 child: zText(
                   text:
-                  getTranslation(text: "balance", tr: language),
+                  tr(text: "balance", tr: language),
                   fontSize: 8,
                   textAlign: language == "en" ? pw.TextAlign.right : pw.TextAlign.left,
                   fontWeight: pw.FontWeight.bold,
@@ -553,7 +553,7 @@ class GlStatementPrintSettings extends PrintServices {
                           : pw.TextAlign.right,
                       text:
                       items.records![i].trdNarration == "Opening Balance"
-                          ? getTranslation(
+                          ? tr(
                         text: 'openingBalance',
                         tr: language,
                       ) : items.records![i].trdNarration ?? "",

@@ -165,10 +165,10 @@ class OrderTxnPrintSettings extends PrintServices {
     required String status,
   }) {
     final invoiceTitle = invoiceType == 'SEL'
-        ? getTranslation(text: 'SEL', tr: language)
+        ? tr(text: 'SEL', tr: language)
         : (invoiceType == 'PUR'
-        ? getTranslation(text: 'PUR', tr: language)
-        : getTranslation(text: 'transaction', tr: language));
+        ? tr(text: 'PUR', tr: language)
+        : tr(text: 'transaction', tr: language));
 
     final isAuthorized = status.toLowerCase().contains('authorize');
 
@@ -189,7 +189,7 @@ class OrderTxnPrintSettings extends PrintServices {
                     fontWeight: pw.FontWeight.bold,
                   ),
                   zText(
-                    text: "${getTranslation(text: 'invoiceNumber', tr: language)} | $invoiceNumber",
+                    text: "${tr(text: 'invoiceNumber', tr: language)} | $invoiceNumber",
                     fontSize: 8,
                   ),
                 ],
@@ -217,7 +217,7 @@ class OrderTxnPrintSettings extends PrintServices {
             children: [
               if (reference != null && reference.isNotEmpty)
                 zText(
-                  text: "${getTranslation(text: 'referenceNumber', tr: language)}: $reference",
+                  text: "${tr(text: 'referenceNumber', tr: language)}: $reference",
                   fontSize: 11,
                 ),
               pw.Container(
@@ -273,7 +273,7 @@ class OrderTxnPrintSettings extends PrintServices {
             pw.Padding(
               padding: const pw.EdgeInsets.all(4),
               child: zText(
-                text: getTranslation(text: 'number', tr: language),
+                text: tr(text: 'number', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
                 textAlign: pw.TextAlign.center,
@@ -282,7 +282,7 @@ class OrderTxnPrintSettings extends PrintServices {
             pw.Padding(
               padding: const pw.EdgeInsets.all(4),
               child: zText(
-                text: getTranslation(text: 'description', tr: language),
+                text: tr(text: 'description', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
               ),
@@ -290,16 +290,7 @@ class OrderTxnPrintSettings extends PrintServices {
             pw.Padding(
               padding: const pw.EdgeInsets.all(4),
               child: zText(
-                text: getTranslation(text: 'qty', tr: language),
-                fontSize: 9,
-                fontWeight: pw.FontWeight.bold,
-                textAlign: pw.TextAlign.center,
-              ),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(4),
-              child: zText(
-                text: getTranslation(text: 'unitPrice', tr: language),
+                text: tr(text: 'qty', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
                 textAlign: pw.TextAlign.center,
@@ -308,7 +299,7 @@ class OrderTxnPrintSettings extends PrintServices {
             pw.Padding(
               padding: const pw.EdgeInsets.all(4),
               child: zText(
-                text: getTranslation(text: 'total', tr: language),
+                text: tr(text: 'unitPrice', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
                 textAlign: pw.TextAlign.center,
@@ -317,7 +308,16 @@ class OrderTxnPrintSettings extends PrintServices {
             pw.Padding(
               padding: const pw.EdgeInsets.all(4),
               child: zText(
-                text: getTranslation(text: 'storage', tr: language),
+                text: tr(text: 'total', tr: language),
+                fontSize: 9,
+                fontWeight: pw.FontWeight.bold,
+                textAlign: pw.TextAlign.center,
+              ),
+            ),
+            pw.Padding(
+              padding: const pw.EdgeInsets.all(4),
+              child: zText(
+                text: tr(text: 'storage', tr: language),
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
                 textAlign: pw.TextAlign.center,
@@ -423,7 +423,7 @@ class OrderTxnPrintSettings extends PrintServices {
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
                     zText(
-                      text: getTranslation(text: 'grandTotal', tr: language),
+                      text: tr(text: 'grandTotal', tr: language),
                       fontSize: 11,
                       fontWeight: pw.FontWeight.bold,
                     ),
@@ -453,7 +453,7 @@ class OrderTxnPrintSettings extends PrintServices {
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   zText(
-                    text: getTranslation(text: 'accountingEntries', tr: language),
+                    text: tr(text: 'accountingEntries', tr: language),
                     fontSize: 10,
                     fontWeight: pw.FontWeight.bold,
                     color: pw.PdfColors.blue700,
@@ -463,7 +463,7 @@ class OrderTxnPrintSettings extends PrintServices {
                   // Debit Entries
                   if (debitRecords.isNotEmpty) ...[
                     zText(
-                      text: getTranslation(text: 'debit', tr: language),
+                      text: tr(text: 'debit', tr: language),
                       fontSize: 9,
                       fontWeight: pw.FontWeight.bold,
                       color: pw.PdfColors.red,
@@ -475,7 +475,7 @@ class OrderTxnPrintSettings extends PrintServices {
                   // Credit Entries
                   if (creditRecords.isNotEmpty) ...[
                     zText(
-                      text: getTranslation(text: 'credit', tr: language),
+                      text: tr(text: 'credit', tr: language),
                       fontSize: 9,
                       fontWeight: pw.FontWeight.bold,
                       color: pw.PdfColors.green,
@@ -496,20 +496,20 @@ class OrderTxnPrintSettings extends PrintServices {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 _buildInfoRow(
-                  label: getTranslation(text: 'referenceNumber', tr: language),
+                  label: tr(text: 'referenceNumber', tr: language),
                   value: trnReference,
                 ),
                 _buildInfoRow(
-                  label: getTranslation(text: 'maker', tr: language),
+                  label: tr(text: 'maker', tr: language),
                   value: maker,
                 ),
                 _buildInfoRow(
-                  label: getTranslation(text: 'checker', tr: language),
+                  label: tr(text: 'checker', tr: language),
                   value: checker,
                 ),
                 if (remark != null && remark.isNotEmpty) ...[
                   _buildInfoRow(
-                    label: getTranslation(text: 'remark', tr: language),
+                    label: tr(text: 'remark', tr: language),
                     value: remark,
                   ),
                 ],
@@ -526,7 +526,7 @@ class OrderTxnPrintSettings extends PrintServices {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 zText(
-                  text: getTranslation(text: 'amountInWords', tr: language),
+                  text: tr(text: 'amountInWords', tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),

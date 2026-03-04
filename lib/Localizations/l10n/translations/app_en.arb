@@ -910,5 +910,16 @@
   "amountInWords": "Amount in Words",
   "authorizedBy": "Authorized By",
   "pending": "Pending",
-  "cancelled": "Cancelled"
+  "cancelled": "Cancelled",
+  "totalServicesValue": "Total Services Value",
+  "beneficiary": "Beneficiary",
+  "clientTitle": "Client",
+  "totalServices": "Total Services",
+  "totalTransactions": "Total Transactions",
+  "currentPhase": "Ongoing Phase",
+  "incomeAndExpense": "Payment & Expense",
+  "activeServices": "Active Services",
+  "serviceName": "Service Name",
+  "noServicesTitle": "No Services",
+  "noServicesMessage": "No services found for this project"
 }

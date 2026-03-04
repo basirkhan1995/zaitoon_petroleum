@@ -2754,4 +2754,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancelled => 'Cancelled';
+
+  @override
+  String get totalServicesValue => 'Total Services Value';
+
+  @override
+  String get beneficiary => 'Beneficiary';
+
+  @override
+  String get clientTitle => 'Client';
+
+  @override
+  String get totalServices => 'Total Services';
+
+  @override
+  String get totalTransactions => 'Total Transactions';
+
+  @override
+  String get currentPhase => 'Ongoing Phase';
+
+  @override
+  String get incomeAndExpense => 'Payment & Expense';
+
+  @override
+  String get activeServices => 'Active Services';
+
+  @override
+  String get serviceName => 'Service Name';
+
+  @override
+  String get noServicesTitle => 'No Services';
+
+  @override
+  String get noServicesMessage => 'No services found for this project';
 }

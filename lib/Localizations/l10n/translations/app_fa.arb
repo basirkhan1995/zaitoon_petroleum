@@ -910,5 +910,16 @@
   "amountInWords": "مبلغ به حروف",
   "authorizedBy": "تایید شده توسط",
   "pending": "در انتظار",
-  "cancelled": "لغو شده"
+  "cancelled": "لغو شده",
+  "totalServicesValue": "مجموعه مبلغ خدمات",
+  "beneficiary": "مستفید",
+  "clientTitle": "مشتری",
+  "totalServices": "تعداد خدمات",
+  "totalTransactions": "مجموعه تراکنش ها",
+  "currentPhase": "مرحله جاری",
+  "incomeAndExpense": "مصارف و پرداخت ها",
+  "activeServices": "خدمات فعال",
+  "serviceName": "نام خدمات",
+  "noServicesTitle": "خدمات یافت نشد",
+  "noServicesMessage": "خدماتی در این پروژه یافت نشد."
 }

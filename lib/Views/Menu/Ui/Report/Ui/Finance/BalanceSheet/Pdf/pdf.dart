@@ -95,10 +95,10 @@ class BalanceSheetPrintSettings extends PrintServices {
         build: (context) => [
           balanceSheetHeader(data: data, company: company, language: language),
           _yearHeader(language: language),
-          _mainTitle(getTranslation(text: 'assets', tr: language)),
+          _mainTitle(tr(text: 'assets', tr: language)),
           ..._assetSection(data.assets, company, language),
           pw.SizedBox(height: 15),
-          _mainTitle(getTranslation(text: 'liabilitiesEquity', tr: language)),
+          _mainTitle(tr(text: 'liabilitiesEquity', tr: language)),
           pw.SizedBox(height: 8),
           ..._liabilitySection(data.liability, company, language),
         ],
@@ -128,7 +128,7 @@ class BalanceSheetPrintSettings extends PrintServices {
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         zText(
-          text: getTranslation(text: 'balanceSheet', tr: language),
+          text: tr(text: 'balanceSheet', tr: language),
           fontSize: 24,
           tightBounds: true,
           fontWeight: pw.FontWeight.bold,
@@ -179,7 +179,7 @@ class BalanceSheetPrintSettings extends PrintServices {
             pw.Expanded(
               flex: 3,
               child: zText(
-                text: getTranslation(text: 'currentYear', tr: language),
+                text: tr(text: 'currentYear', tr: language),
                 fontSize: 8,
                 textAlign: pw.TextAlign.right,
                 color: pw.PdfColors.grey600,
@@ -188,7 +188,7 @@ class BalanceSheetPrintSettings extends PrintServices {
             pw.Expanded(
               flex: 3,
               child: zText(
-                text: getTranslation(text: 'lastYear', tr: language),
+                text: tr(text: 'lastYear', tr: language),
                 fontSize: 8,
                 textAlign: pw.TextAlign.right,
                 color: pw.PdfColors.grey600,
@@ -233,25 +233,25 @@ class BalanceSheetPrintSettings extends PrintServices {
 
     return [
       ..._subSection(
-        getTranslation(text: 'currentAssets', tr: language),
+        tr(text: 'currentAssets', tr: language),
         assets.currentAsset,
         language,
       ),
       pw.SizedBox(height: 5),
       ..._subSection(
-        getTranslation(text: 'fixedAssets', tr: language),
+        tr(text: 'fixedAssets', tr: language),
         assets.fixedAsset,
         language,
       ),
       pw.SizedBox(height: 5),
       ..._subSection(
-        getTranslation(text: 'intangibleAssets', tr: language),
+        tr(text: 'intangibleAssets', tr: language),
         assets.intangibleAsset,
         language,
       ),
       pw.SizedBox(height: 3),
       _grandTotal(
-        getTranslation(text: 'totalAssets', tr: language),
+        tr(text: 'totalAssets', tr: language),
         _sumCurrent(assets),
         _sumLast(assets),
         company,
@@ -271,31 +271,31 @@ class BalanceSheetPrintSettings extends PrintServices {
 
     return [
       ..._subSection(
-        getTranslation(text: 'currentLiabilities', tr: language),
+        tr(text: 'currentLiabilities', tr: language),
         liab.currentLiability,
         language,
       ),
       pw.SizedBox(height: 5),
       ..._subSection(
-        getTranslation(text: 'ownerEquity', tr: language),
+        tr(text: 'ownerEquity', tr: language),
         liab.ownersEquity,
         language,
       ),
       pw.SizedBox(height: 5),
       ..._subSection(
-        getTranslation(text: 'stakeholders', tr: language),
+        tr(text: 'stakeholders', tr: language),
         liab.stakeholders,
         language,
       ),
       pw.SizedBox(height: 5),
       ..._subSection(
-        getTranslation(text: 'netProfit', tr: language),
+        tr(text: 'netProfit', tr: language),
         liab.netProfit,
         language,
       ),
       pw.SizedBox(height: 3),
       _grandTotal(
-        getTranslation(text: 'totalLiabilitiesEquity', tr: language),
+        tr(text: 'totalLiabilitiesEquity', tr: language),
         cy,
         ly,
         company,
@@ -329,7 +329,7 @@ class BalanceSheetPrintSettings extends PrintServices {
       ),
       pw.SizedBox(height: 2),
       ...rows,
-      _total("${getTranslation(text: 'totalTitle', tr: language)} $title", cy, ly),
+      _total("${tr(text: 'totalTitle', tr: language)} $title", cy, ly),
     ];
   }
 

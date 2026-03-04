@@ -2747,4 +2747,37 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cancelled => 'لغوه شوی';
+
+  @override
+  String get totalServicesValue => 'مجموعه مبلغ خدمات';
+
+  @override
+  String get beneficiary => 'ګټه اخیستونکی';
+
+  @override
+  String get clientTitle => 'پیرودونکی ';
+
+  @override
+  String get totalServices => 'تعداد خدمات';
+
+  @override
+  String get totalTransactions => 'مجموعه تراکنش ها';
+
+  @override
+  String get currentPhase => 'روان پړاو ';
+
+  @override
+  String get incomeAndExpense => 'مصارف و پرداخت ها';
+
+  @override
+  String get activeServices => 'خدمات فعال';
+
+  @override
+  String get serviceName => 'خدماتو نوم';
+
+  @override
+  String get noServicesTitle => 'خدمات یافت نشد';
+
+  @override
+  String get noServicesMessage => 'خدماتی در این پروژه یافت نشد.';
 }

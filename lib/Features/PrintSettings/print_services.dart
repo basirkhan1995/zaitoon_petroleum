@@ -159,7 +159,7 @@ abstract class PrintServices {
             ),
             verticalDivider(height: 15, width: 0.6),
             zText(
-              text: getTranslation(text: 'producedBy', tr: language),
+              text: tr(text: 'producedBy', tr: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
             ),
@@ -252,7 +252,7 @@ abstract class PrintServices {
       alignment: pw.Alignment.centerRight,
       margin: const pw.EdgeInsets.only(top: 1),
       child: zText(
-        text: '${getTranslation(text: 'page', tr: language)} $currentPage ${getTranslation(text: 'of', tr: language)} $totalPages',
+        text: '${tr(text: 'page', tr: language)} $currentPage ${tr(text: 'of', tr: language)} $totalPages',
         fontSize: 8,
       ),
     );
@@ -424,7 +424,7 @@ abstract class PrintServices {
     return language == 'en' ? pw.TextDirection.ltr : pw.TextDirection.rtl;
   }
 
-  String getTranslation({required String text, required String tr}) {
+  String tr({required String text, required String tr}) {
     const translation = {
       'moneyReceipt' : {
         'en':"Money Receipt",
@@ -454,17 +454,17 @@ abstract class PrintServices {
       'saleAmount': {
         'en': 'Sale Amount',
         'fa': 'مقدار فروش',
-        'ps': 'د پلور مقدار'
+        'ar': 'د پلور مقدار'
       },
       'previousAccBalance': {
         'en': 'Previous Balance',
         'fa': 'مانده قبلی',
-        'ps': 'اوسنی پاتی'
+        'ar': 'اوسنی پاتی'
       },
       'thisCredit': {
         'en': 'Current Invoice',
         'fa': 'این اعتبار',
-        'ps': 'دا کریډیټ'
+        'ar': 'دا کریډیټ'
       },
       'totalDebits' : {
         'en':"Total Debit",
@@ -1111,6 +1111,26 @@ abstract class PrintServices {
         'ar': 'چلوونکی',
       },
 
+      'txnType': {
+        'en': 'TXN Type',
+        'fa': 'نوع معامله',
+        'ar': 'معامله دول',
+      },
+      'units': {
+        'en': 'Units',
+        'fa': 'واحد',
+        'ar': 'واحد',
+      },
+      'expense': {
+        'en': 'Expense',
+        'fa': 'مصرف',
+        'ar': 'لگشت',
+      },
+      'entry': {
+        'en': 'Entry',
+        'fa': 'ورود',
+        'ar': 'ورود',
+      },
       'transactionDetails': {
         'en': 'Transaction Details',
         'fa': 'جزئیات تراکنش',
@@ -1451,69 +1471,198 @@ abstract class PrintServices {
       'thisTransaction': {
         'en': 'Current Invoice',
         'fa': 'این معامله',
-        'ps': 'دا راکړه ورکړه'
+        'ar': 'دا راکړه ورکړه'
       },
       'newBalance': {
         'en': 'New Balance',
         'fa': 'موجودی جدید',
-        'ps': 'نوی بیلانس'
+        'ar': 'نوی بیلانس'
       },
       'status': {
         'en': 'Status',
         'fa': 'وضعیت',
-        'ps': 'حالت'
+        'ar': 'حالت'
       },
       'settled': {
         'en': 'Settled',
         'fa': 'تسویه شده',
-        'ps': 'تصفیه شوی'
+        'ar': 'تصفیه شوی'
       },
       "projectId": {
         "en": "Project ID",
-        "ps": "د پروژې پېژند",
+        "ar": "د پروژې پېژند",
         "fa": "شناسه پروژه"
       },
 
       "projectName": {
         "en": "Project Name",
-        "ps": "د پروژې نوم",
+        "ar": "د پروژې نوم",
         "fa": "نام پروژه"
       },
 
       "customerName": {
         "en": "Customer Name",
-        "ps": "د پیرودونکي نوم",
+        "ar": "د پیرودونکي نوم",
         "fa": "نام مشتری"
       },
 
       "location": {
         "en": "Location",
-        "ps": "ځای",
+        "ar": "ځای",
         "fa": "موقعیت"
       },
 
       "projectDetails": {
         "en": "Project Details",
-        "ps": "د پروژې تفصیلات",
+        "ar": "د پروژې تفصیلات",
         "fa": "جزئیات پروژه"
       },
 
       "deadline": {
         "en": "Deadline",
-        "ps": "ټاکل شوې نېټه",
+        "ar": "ټاکل شوې نېټه",
         "fa": "مهلت"
       },
 
       "paymentType": {
         "en": "Payment Type",
-        "ps": "د تادیې ډول",
+        "ar": "د تادیې ډول",
         "fa": "نوع پرداخت"
       },
 
       "projectStatus": {
         "en": "Project Status",
-        "ps": "د پروژې حالت",
+        "ar": "د پروژې حالت",
         "fa": "وضعیت پروژه"
+      },
+      "projectReport": {
+        "en": "Project Report",
+        "fa": "گزارش پروژه",
+        "ar": "د پروژې راپور"
+      },
+
+      "financialSummary": {
+        "en": "Financial Summary",
+        "fa": "خلاصه مالی",
+        "ar": "مالي لنډیز"
+      },
+
+      "totalServices": {
+        "en": "Total Services",
+        "fa": "کل خدمات",
+        "ar": "ټول خدمات"
+      },
+
+      "totalServicesValue": {
+        "en": "Total Services Value",
+        "fa": "ارزش کل خدمات",
+        "ar": "د خدماتو ټول ارزښت"
+      },
+
+      "totalTransactions": {
+        "en": "Total Transactions",
+        "fa": "کل تراکنش ‌ها",
+        "ar": "ټولې راکړې ورکړې"
+      },
+
+      "currentPhase": {
+        "en": "Current Phase",
+        "fa": "مرحله فعلی",
+        "ar": "اوسنی پړاو"
+      },
+
+      "projectInformation": {
+        "en": "Project Information",
+        "fa": "اطلاعات پروژه",
+        "ar": "د پروژې معلومات"
+      },
+
+      "ownerInformation": {
+        "en": "Client Information",
+        "fa": "اطلاعات مالک",
+        "ar": "د مالک معلومات"
+      },
+      "entryDate": {
+        "en": "Entry Date",
+        "fa": "تاریخ ثبت",
+        "ar": "د ثبت نیته"
+      },
+      "clientTitle": {
+        "en": "Client",
+        "fa": "مشتری",
+        "ar": "پیرودونکی"
+      },
+
+      "currencyTitle": {
+        "en": "Currency",
+        "fa": "واحد پول",
+        "ar": "اسعار"
+      },
+
+      "serviceName": {
+        "en": "Service Name",
+        "fa": "نام خدمت",
+        "ar": "د خدمت نوم"
+      },
+
+      "transactions": {
+        "en": "Transactions",
+        "fa": "معاملات",
+        "ar": "راکړې ورکړې"
+      },
+
+      "incomeAndExpenses": {
+        "en": "Income & Expenses",
+        "fa": "درآمد و هزینه",
+        "ar": "عواید او لګښتونه"
+      },
+
+      "inProgress": {
+        "en": "In Progress",
+        "fa": "در حال اجرا",
+        "ar": "په پرمختګ کې"
+      },
+
+      "overview": {
+        "en": "Overview",
+        "fa": "بررسی کلی",
+        "ar": "کتنه"
+      },
+
+      "services": {
+        "en": "Services",
+        "fa": "خدمات",
+        "ar": "خدمتونه"
+      },
+
+      "noServicesTitle": {
+        "en": "No Services",
+        "fa": "بدون خدمات",
+        "ar": "خدمتونه نشته"
+      },
+
+      "noServicesMessage": {
+        "en": "No services found for this project",
+        "fa": "خدماتی برای این پروژه یافت نشد",
+        "ar": "د دې پروژې لپاره کوم خدمت ونه موندل شو"
+      },
+
+      "preparedBy": {
+        "en": "Prepared By",
+        "fa": "تهیه شده توسط",
+        "ar": "چمتو شوی د"
+      },
+
+      "approvedBy": {
+        "en": "Approved By",
+        "fa": "تایید شده توسط",
+        "ar": "تایید شوی د"
+      },
+
+      "activeServices": {
+        "en": "Active Services",
+        "fa": "خدمات فعال",
+        "ar": "فعال خدمتونه"
       }
     };
 

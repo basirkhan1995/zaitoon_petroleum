@@ -199,7 +199,7 @@ class AllShippingPdfServices extends PrintServices {
             ),
             verticalDivider(height: 15, width: 0.6),
             zText(
-              text: getTranslation(text: 'producedBy', tr: language),
+              text: tr(text: 'producedBy', tr: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
             ),
@@ -291,7 +291,7 @@ class AllShippingPdfServices extends PrintServices {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           zText(
-            text: getTranslation(text: 'shippingSummary', tr: language),
+            text: tr(text: 'shippingSummary', tr: language),
             fontSize: 14,
             fontWeight: pw.FontWeight.bold,
           ),
@@ -302,34 +302,34 @@ class AllShippingPdfServices extends PrintServices {
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
               _buildSummaryItem(
-                label: getTranslation(text: 'totalShipments', tr: language),
+                label: tr(text: 'totalShipments', tr: language),
                 value: totalShipments.toString(),
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(text: 'completed', tr: language),
+                label: tr(text: 'completed', tr: language),
                 value: completedShipments.toString(),
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(text: 'pending', tr: language),
+                label: tr(text: 'pending', tr: language),
                 value: pendingShipments.toString(),
                 language: language,
               ),
 
               _buildSummaryItem(
-                label: getTranslation(text: 'avgUnLoadSize', tr: language),
+                label: tr(text: 'avgUnLoadSize', tr: language),
                 value: "${avgUnloadingSize.toStringAsFixed(2)} $unit",
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(text: 'avgLoadSize', tr: language),
+                label: tr(text: 'avgLoadSize', tr: language),
                 value: "${avgUnloadingSize.toStringAsFixed(2)} $unit",
                 language: language,
               ),
 
               _buildSummaryItem(
-                label: getTranslation(text: 'totalRevenue', tr: language),
+                label: tr(text: 'totalRevenue', tr: language),
                 value: "${totalRevenue.toAmount()} $baseCurrency",
                 language: language,
               ),
@@ -393,7 +393,7 @@ class AllShippingPdfServices extends PrintServices {
               pw.SizedBox(
                 width: idWidth,
                 child: zText(
-                  text: getTranslation(text: "id", tr: language),
+                  text: tr(text: "id", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.center,
@@ -402,14 +402,14 @@ class AllShippingPdfServices extends PrintServices {
               pw.SizedBox(
                 width: dateWidth,
                 child: zText(
-                  text: getTranslation(text: "date", tr: language),
+                  text: tr(text: "date", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
               pw.Expanded(
                 child: zText(
-                  text: getTranslation(text: "vehicles", tr: language),
+                  text: tr(text: "vehicles", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -417,7 +417,7 @@ class AllShippingPdfServices extends PrintServices {
               pw.SizedBox(
                 width: productWidth,
                 child: zText(
-                  text: getTranslation(text: "products", tr: language),
+                  text: tr(text: "products", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -425,7 +425,7 @@ class AllShippingPdfServices extends PrintServices {
               pw.SizedBox(
                 width: customerWidth,
                 child: zText(
-                  text: getTranslation(text: "customer", tr: language),
+                  text: tr(text: "customer", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -433,7 +433,7 @@ class AllShippingPdfServices extends PrintServices {
               pw.SizedBox(
                 width: rentWidth,
                 child: zText(
-                  text: getTranslation(text: "shippingRent", tr: language),
+                  text: tr(text: "shippingRent", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.right,
@@ -451,7 +451,7 @@ class AllShippingPdfServices extends PrintServices {
               pw.SizedBox(
                 width: unloadWidth,
                 child: zText(
-                  text: getTranslation(text: "unloadingSize", tr: language),
+                  text: tr(text: "unloadingSize", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.right,
@@ -460,7 +460,7 @@ class AllShippingPdfServices extends PrintServices {
               pw.SizedBox(
                 width: totalWidth,
                 child: zText(
-                  text: getTranslation(text: "total", tr: language),
+                  text: tr(text: "total", tr: language),
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.right,

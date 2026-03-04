@@ -2743,4 +2743,37 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get cancelled => 'لغو شده';
+
+  @override
+  String get totalServicesValue => 'مجموعه مبلغ خدمات';
+
+  @override
+  String get beneficiary => 'مستفید';
+
+  @override
+  String get clientTitle => 'مشتری';
+
+  @override
+  String get totalServices => 'تعداد خدمات';
+
+  @override
+  String get totalTransactions => 'مجموعه تراکنش ها';
+
+  @override
+  String get currentPhase => 'مرحله جاری';
+
+  @override
+  String get incomeAndExpense => 'مصارف و پرداخت ها';
+
+  @override
+  String get activeServices => 'خدمات فعال';
+
+  @override
+  String get serviceName => 'نام خدمات';
+
+  @override
+  String get noServicesTitle => 'خدمات یافت نشد';
+
+  @override
+  String get noServicesMessage => 'خدماتی در این پروژه یافت نشد.';
 }

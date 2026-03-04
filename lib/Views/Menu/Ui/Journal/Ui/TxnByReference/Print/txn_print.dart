@@ -182,7 +182,7 @@ class TransactionReferencePrintSettings extends PrintServices{
             ),
             verticalDivider(height: 15, width: 0.6),
             zText(
-              text: getTranslation(text: 'producedBy', tr: language),
+              text: tr(text: 'producedBy', tr: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
             ),
@@ -249,8 +249,8 @@ class TransactionReferencePrintSettings extends PrintServices{
         pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              zText(text: getTranslation(text: 'moneyReceipt', tr: language),fontWeight: pw.FontWeight.bold),
-              zText(text: getTranslation(text: data.trnType??"", tr: language),fontWeight: pw.FontWeight.bold),
+              zText(text: tr(text: 'moneyReceipt', tr: language),fontWeight: pw.FontWeight.bold),
+              zText(text: tr(text: data.trnType??"", tr: language),fontWeight: pw.FontWeight.bold),
             ]
         ),
         pw.SizedBox(height: 5),
@@ -276,7 +276,7 @@ class TransactionReferencePrintSettings extends PrintServices{
                   pw.Container(
                     width: 90,
                     child: zText(
-                        text: "${getTranslation(text: r["title"]!, tr: language)}:",
+                        text: "${tr(text: r["title"]!, tr: language)}:",
                         fontSize: 8
                     ),
                   ),
@@ -298,7 +298,7 @@ class TransactionReferencePrintSettings extends PrintServices{
         pw.SizedBox(height: 5),
 
         zText(
-          text: getTranslation(text: 'amountInWords', tr: language),
+          text: tr(text: 'amountInWords', tr: language),
           fontSize:8,
         ),
         horizontalDivider(),
@@ -332,7 +332,7 @@ class TransactionReferencePrintSettings extends PrintServices{
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.start,
                 children: [
-                  zText(text: getTranslation(text: 'createdBy', tr: language), fontSize: 7),
+                  zText(text: tr(text: 'createdBy', tr: language), fontSize: 7),
                   zText(text: " ${data.maker} ", fontSize: 7),
                 ],
               ),
@@ -346,7 +346,7 @@ class TransactionReferencePrintSettings extends PrintServices{
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.start,
                 children: [
-                  zText(text: getTranslation(text: 'authorizedBy', tr: language), fontSize: 7),
+                  zText(text: tr(text: 'authorizedBy', tr: language), fontSize: 7),
                   zText(text: data.checker??"", fontSize: 7),
                 ],
               ),

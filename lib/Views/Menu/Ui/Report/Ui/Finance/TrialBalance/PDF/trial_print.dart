@@ -173,7 +173,7 @@ class TrialBalancePrintSettings extends PrintServices {
       children: [
         pw.SizedBox(height: 5),
         zText(
-          text: getTranslation(text: 'trialBalance', tr: language),
+          text: tr(text: 'trialBalance', tr: language),
           tightBounds: true,
           fontSize: 22,
           fontWeight: pw.FontWeight.bold,
@@ -188,7 +188,7 @@ class TrialBalancePrintSettings extends PrintServices {
             ),
             if (reportInfo.startDate != null && reportInfo.endDate != null)
               zText(
-                text: "${reportInfo.startDate!} ${getTranslation(text: 'of', tr: language)} ${reportInfo.endDate!}",
+                text: "${reportInfo.startDate!} ${tr(text: 'of', tr: language)} ${reportInfo.endDate!}",
                 fontSize: 10,
               ),
           ],
@@ -221,7 +221,7 @@ class TrialBalancePrintSettings extends PrintServices {
               pw.SizedBox(
                 width: accountNumberWidth,
                 child: zText(
-                  text: getTranslation(text: 'accountNumber', tr: language),
+                  text: tr(text: 'accountNumber', tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -229,7 +229,7 @@ class TrialBalancePrintSettings extends PrintServices {
               // Account Name
               pw.Expanded(
                 child: zText(
-                  text: getTranslation(text: 'accountName', tr: language),
+                  text: tr(text: 'accountName', tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -238,7 +238,7 @@ class TrialBalancePrintSettings extends PrintServices {
               pw.SizedBox(
                 width: categoryWidth,
                 child: zText(
-                  text: getTranslation(text: 'category', tr: language),
+                  text: tr(text: 'category', tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -247,7 +247,7 @@ class TrialBalancePrintSettings extends PrintServices {
               pw.SizedBox(
                 width: debitWidth,
                 child: zText(
-                  text: getTranslation(text: 'debit', tr: language),
+                  text: tr(text: 'debit', tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.right,
@@ -257,7 +257,7 @@ class TrialBalancePrintSettings extends PrintServices {
               pw.SizedBox(
                 width: creditWidth,
                 child: zText(
-                  text: getTranslation(text: 'credit', tr: language),
+                  text: tr(text: 'credit', tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.right,
@@ -267,7 +267,7 @@ class TrialBalancePrintSettings extends PrintServices {
               pw.SizedBox(
                 width: balanceWidth,
                 child: zText(
-                  text: getTranslation(text: 'actualBalance', tr: language),
+                  text: tr(text: 'actualBalance', tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.right,
@@ -424,7 +424,7 @@ class TrialBalancePrintSettings extends PrintServices {
                 pw.Row(
                   children: [
                     zText(
-                      text: getTranslation(text: 'total', tr: language),
+                      text: tr(text: 'total', tr: language),
                       fontSize: 18,
                       fontWeight: pw.FontWeight.bold,
                       color: pw.PdfColors.grey800,
@@ -456,8 +456,8 @@ class TrialBalancePrintSettings extends PrintServices {
                       pw.SizedBox(width: 6),
                       zText(
                         text: isBalanced
-                            ? getTranslation(text: 'balanced', tr: language)
-                            : getTranslation(text: 'outOfBalance', tr: language),
+                            ? tr(text: 'balanced', tr: language)
+                            : tr(text: 'outOfBalance', tr: language),
                         fontSize: 9,
                         fontWeight: pw.FontWeight.bold,
                         color: isBalanced ? pw.PdfColors.green : pw.PdfColors.red,
@@ -487,7 +487,7 @@ class TrialBalancePrintSettings extends PrintServices {
                   mainAxisAlignment: pw.MainAxisAlignment.end,
                   children: [
                     zText(
-                      text: getTranslation(text: 'totalDebit', tr: language),
+                      text: tr(text: 'totalDebit', tr: language),
                       fontSize: 9,
                       color: pw.PdfColors.grey600,
                     ),
@@ -517,7 +517,7 @@ class TrialBalancePrintSettings extends PrintServices {
                   mainAxisAlignment: pw.MainAxisAlignment.end,
                   children: [
                     zText(
-                      text: getTranslation(text: 'totalCredit', tr: language),
+                      text: tr(text: 'totalCredit', tr: language),
                       fontSize: 9,
                       color: pw.PdfColors.grey600,
                     ),
@@ -558,7 +558,7 @@ class TrialBalancePrintSettings extends PrintServices {
               crossAxisAlignment: pw.CrossAxisAlignment.end,
               children: [
                 zText(
-                  text: getTranslation(text: 'difference', tr: language),
+                  text: tr(text: 'difference', tr: language),
                   fontSize: 10,
                   color: pw.PdfColors.grey600,
                 ),
@@ -622,8 +622,8 @@ class TrialBalancePrintSettings extends PrintServices {
                             pw.SizedBox(width: 6),
                             zText(
                               text: isPositiveDifference
-                                  ? getTranslation(text: 'debit', tr: language)
-                                  : getTranslation(text: 'credit', tr: language),
+                                  ? tr(text: 'debit', tr: language)
+                                  : tr(text: 'credit', tr: language),
                               fontSize: 9,
                               color: pw.PdfColors.grey600,
                               fontStyle: pw.FontStyle.italic,
@@ -698,7 +698,7 @@ class TrialBalancePrintSettings extends PrintServices {
             ),
             verticalDivider(height: 15, width: 0.6),
             zText(
-              text: getTranslation(text: 'producedBy', tr: language),
+              text: tr(text: 'producedBy', tr: language),
               fontWeight: pw.FontWeight.normal,
               fontSize: 8,
             ),

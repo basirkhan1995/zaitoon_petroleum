@@ -203,7 +203,7 @@ class ShippingReportPdfServices extends PrintServices {
         pw.Row(
           children: [
             zText(
-              text: "${getTranslation(text: 'dateRange', tr: language)}: ",
+              text: "${tr(text: 'dateRange', tr: language)}: ",
               fontSize: 9,
               fontWeight: pw.FontWeight.bold,
             ),
@@ -221,7 +221,7 @@ class ShippingReportPdfServices extends PrintServices {
         pw.Row(
           children: [
             zText(
-              text: "${getTranslation(text: 'customer', tr: language)}: ",
+              text: "${tr(text: 'customer', tr: language)}: ",
               fontSize: 9,
               fontWeight: pw.FontWeight.bold,
             ),
@@ -236,7 +236,7 @@ class ShippingReportPdfServices extends PrintServices {
         pw.Row(
           children: [
             zText(
-              text: "${getTranslation(text: 'vehicle', tr: language)}: ",
+              text: "${tr(text: 'vehicle', tr: language)}: ",
               fontSize: 9,
               fontWeight: pw.FontWeight.bold,
             ),
@@ -249,16 +249,16 @@ class ShippingReportPdfServices extends PrintServices {
     if (filterStatus != null) {
       String statusText = filterStatus;
       if (filterStatus == "1") {
-        statusText = getTranslation(text: 'completed', tr: language);
+        statusText = tr(text: 'completed', tr: language);
       } else if (filterStatus == "0") {
-        statusText = getTranslation(text: 'pending', tr: language);
+        statusText = tr(text: 'pending', tr: language);
       }
 
       filters.add(
         pw.Row(
           children: [
             zText(
-              text: "${getTranslation(text: 'status', tr: language)}: ",
+              text: "${tr(text: 'status', tr: language)}: ",
               fontSize: 9,
               fontWeight: pw.FontWeight.bold,
             ),
@@ -272,7 +272,7 @@ class ShippingReportPdfServices extends PrintServices {
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         zText(
-          text: getTranslation(text: 'details', tr: language),
+          text: tr(text: 'details', tr: language),
           fontSize: 10,
           fontWeight: pw.FontWeight.bold,
         ),
@@ -354,7 +354,7 @@ class ShippingReportPdfServices extends PrintServices {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           zText(
-            text: getTranslation(text: 'shippingReportSummary', tr: language),
+            text: tr(text: 'shippingReportSummary', tr: language),
             fontSize: 14,
             fontWeight: pw.FontWeight.bold,
           ),
@@ -366,52 +366,52 @@ class ShippingReportPdfServices extends PrintServices {
             runSpacing: 10,
             children: [
               _buildSummaryItem(
-                label: getTranslation(text: 'totalShipments', tr: language),
+                label: tr(text: 'totalShipments', tr: language),
                 value: totalShipments.toString(),
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(text: 'completed', tr: language),
+                label: tr(text: 'completed', tr: language),
                 value: completedShipments.toString(),
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(text: 'pending', tr: language),
+                label: tr(text: 'pending', tr: language),
                 value: pendingShipments.toString(),
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(text: 'totalLoadSize', tr: language),
+                label: tr(text: 'totalLoadSize', tr: language),
                 value: "${totalLoadSize.toStringAsFixed(2)} $unit",
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(text: 'totalUnLoadSize', tr: language),
+                label: tr(text: 'totalUnLoadSize', tr: language),
                 value: "${totalUnloadingSize.toStringAsFixed(2)} $unit",
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(text: 'avgLoadSize', tr: language),
+                label: tr(text: 'avgLoadSize', tr: language),
                 value: "${avgLoadSize.toStringAsFixed(2)} $unit",
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(text: 'avgUnLoadSize', tr: language),
+                label: tr(text: 'avgUnLoadSize', tr: language),
                 value: "${avgUnloadingSize.toStringAsFixed(2)} $unit",
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(text: 'avgDifference', tr: language),
+                label: tr(text: 'avgDifference', tr: language),
                 value: "${avgDifference.toStringAsFixed(2)} $unit",
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(text: 'totalRevenue', tr: language),
+                label: tr(text: 'totalRevenue', tr: language),
                 value: "${totalRevenue.toAmount()} $baseCurrency",
                 language: language,
               ),
               _buildSummaryItem(
-                label: getTranslation(text: 'avgRentPerUnit', tr: language),
+                label: tr(text: 'avgRentPerUnit', tr: language),
                 value: "${avgRent.toStringAsFixed(2)} $baseCurrency/$unit",
                 language: language,
               ),
@@ -486,7 +486,7 @@ class ShippingReportPdfServices extends PrintServices {
               pw.SizedBox(
                 width: noWidth,
                 child: zText(
-                  text: getTranslation(text: "no", tr: language),
+                  text: tr(text: "no", tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                   textAlign: pw.TextAlign.center,
@@ -513,7 +513,7 @@ class ShippingReportPdfServices extends PrintServices {
               pw.SizedBox(
                 width: vehicleWidth,
                 child: zText(
-                  text: getTranslation(text: "vehicle", tr: language),
+                  text: tr(text: "vehicle", tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -521,7 +521,7 @@ class ShippingReportPdfServices extends PrintServices {
               pw.SizedBox(
                 width: driverWidth,
                 child: zText(
-                  text: getTranslation(text: "driver", tr: language),
+                  text: tr(text: "driver", tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -529,7 +529,7 @@ class ShippingReportPdfServices extends PrintServices {
               pw.SizedBox(
                 width: productWidth,
                 child: zText(
-                  text: getTranslation(text: "product", tr: language),
+                  text: tr(text: "product", tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -537,7 +537,7 @@ class ShippingReportPdfServices extends PrintServices {
               pw.SizedBox(
                 width: customerWidth,
                 child: zText(
-                  text: getTranslation(text: "customer", tr: language),
+                  text: tr(text: "customer", tr: language),
                   fontSize: 8,
                   fontWeight: pw.FontWeight.bold,
                 ),

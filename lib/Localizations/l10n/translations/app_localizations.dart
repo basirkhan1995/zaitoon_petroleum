@@ -5445,6 +5445,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancelled'**
   String get cancelled;
+
+  /// No description provided for @totalServicesValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Services Value'**
+  String get totalServicesValue;
+
+  /// No description provided for @beneficiary.
+  ///
+  /// In en, this message translates to:
+  /// **'Beneficiary'**
+  String get beneficiary;
+
+  /// No description provided for @clientTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Client'**
+  String get clientTitle;
+
+  /// No description provided for @totalServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Services'**
+  String get totalServices;
+
+  /// No description provided for @totalTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Transactions'**
+  String get totalTransactions;
+
+  /// No description provided for @currentPhase.
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing Phase'**
+  String get currentPhase;
+
+  /// No description provided for @incomeAndExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment & Expense'**
+  String get incomeAndExpense;
+
+  /// No description provided for @activeServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Services'**
+  String get activeServices;
+
+  /// No description provided for @serviceName.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Name'**
+  String get serviceName;
+
+  /// No description provided for @noServicesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Services'**
+  String get noServicesTitle;
+
+  /// No description provided for @noServicesMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No services found for this project'**
+  String get noServicesMessage;
 }
 
 class _AppLocalizationsDelegate
