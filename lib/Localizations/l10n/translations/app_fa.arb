@@ -887,5 +887,18 @@
   "paymentNotMatch": "مبلغ پرداختی با مجموع پروژه مطابقت ندارد.",
   "totalProjectTitle": "همه پروزه ها",
   "projectDependency": "پروژه قابل حذف نیست. دارای خدمات یا پرداخت‌های مرتبط است.",
-  "pAndLTitle": "پرداخت و مصارف"
+  "pAndLTitle": "پرداخت و مصارف",
+  "searchResultTitle": "نتیجه جستجو",
+  "forTitle": "برای",
+  "pricingInformation": "قیمت ها",
+  "averagePriceTitle": "قیمت اوسط",
+  "recentPriceTitle": "آخرین قیمت",
+  "sellPrice": "قیمت فروش",
+  "storageInfromation": "معلومات ذخایر",
+  "codeTitle": "کد",
+  "availableTitle": "موجودی",
+  "basicInformation": "معلومات",
+  "completeInformation": "معلومات کامل",
+  "selectTitle": "انتخاب",
+  "closeTitle": "بستن"
 }

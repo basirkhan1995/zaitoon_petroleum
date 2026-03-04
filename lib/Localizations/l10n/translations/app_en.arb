@@ -887,5 +887,18 @@
   "paymentNotMatch": "The payment amount does not match the project total.",
   "totalProjectTitle": "Total Projects",
   "projectDependency": "Project cannot be deleted. It has related services or payments.",
-  "pAndLTitle": "P&L"
+  "pAndLTitle": "P&L",
+  "searchResultTitle": "Search result ",
+  "forTitle": "for",
+  "pricingInformation": "Pricing Information",
+  "averagePriceTitle": "Average Price",
+  "recentPriceTitle": "Recent Price",
+  "sellPrice": "Sell Price",
+  "storageInfromation": "Storage Information",
+  "codeTitle": "Code",
+  "availableTitle": "Available",
+  "basicInformation": "Basic Information",
+  "completeInformation": "Complete Information",
+  "selectTitle": "Select",
+  "closeTitle": "Close"
 }

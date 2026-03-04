@@ -887,5 +887,18 @@
   "paymentNotMatch": "د تادیې مقدار د پروژې له ټولیز سره سمون نه خوري.",
   "totalProjectTitle": "همه پروزه ها",
   "projectDependency": "پروژه نشي حذف کېدای. اړوند خدمتونه یا تادیات لري.",
-  "pAndLTitle": "پرداخت و مصارف"
+  "pAndLTitle": "پرداخت و مصارف",
+  "searchResultTitle": "نتیجه جستجو",
+  "forTitle": "لپاره",
+  "pricingInformation": "قیمت ها",
+  "averagePriceTitle": "قیمت اوسط",
+  "recentPriceTitle": "آخرین قیمت",
+  "sellPrice": "قیمت فروش",
+  "storageInfromation": "معلومات ذخایر",
+  "codeTitle": "کد",
+  "availableTitle": "موجودی",
+  "basicInformation": "معلومات",
+  "completeInformation": "معلومات کامل",
+  "selectTitle": "انتخاب",
+  "closeTitle": "بستن"
 }

@@ -5307,6 +5307,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'P&L'**
   String get pAndLTitle;
+
+  /// No description provided for @searchResultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search result '**
+  String get searchResultTitle;
+
+  /// No description provided for @forTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'for'**
+  String get forTitle;
+
+  /// No description provided for @pricingInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing Information'**
+  String get pricingInformation;
+
+  /// No description provided for @averagePriceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Average Price'**
+  String get averagePriceTitle;
+
+  /// No description provided for @recentPriceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Price'**
+  String get recentPriceTitle;
+
+  /// No description provided for @sellPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell Price'**
+  String get sellPrice;
+
+  /// No description provided for @storageInfromation.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage Information'**
+  String get storageInfromation;
+
+  /// No description provided for @codeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get codeTitle;
+
+  /// No description provided for @availableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get availableTitle;
+
+  /// No description provided for @basicInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic Information'**
+  String get basicInformation;
+
+  /// No description provided for @completeInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Information'**
+  String get completeInformation;
+
+  /// No description provided for @selectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get selectTitle;
+
+  /// No description provided for @closeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeTitle;
 }
 
 class _AppLocalizationsDelegate

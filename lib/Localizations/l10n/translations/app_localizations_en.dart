@@ -2685,4 +2685,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pAndLTitle => 'P&L';
+
+  @override
+  String get searchResultTitle => 'Search result ';
+
+  @override
+  String get forTitle => 'for';
+
+  @override
+  String get pricingInformation => 'Pricing Information';
+
+  @override
+  String get averagePriceTitle => 'Average Price';
+
+  @override
+  String get recentPriceTitle => 'Recent Price';
+
+  @override
+  String get sellPrice => 'Sell Price';
+
+  @override
+  String get storageInfromation => 'Storage Information';
+
+  @override
+  String get codeTitle => 'Code';
+
+  @override
+  String get availableTitle => 'Available';
+
+  @override
+  String get basicInformation => 'Basic Information';
+
+  @override
+  String get completeInformation => 'Complete Information';
+
+  @override
+  String get selectTitle => 'Select';
+
+  @override
+  String get closeTitle => 'Close';
 }

@@ -52,7 +52,6 @@ class _DesktopNewSaleView extends StatefulWidget {
   @override
   State<_DesktopNewSaleView> createState() => _DesktopNewSaleViewState();
 }
-
 class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
   final TextEditingController _accountController = TextEditingController();
   final TextEditingController _personController = TextEditingController();

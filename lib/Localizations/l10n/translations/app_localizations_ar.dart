@@ -2678,4 +2678,43 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pAndLTitle => 'پرداخت و مصارف';
+
+  @override
+  String get searchResultTitle => 'نتیجه جستجو';
+
+  @override
+  String get forTitle => 'لپاره';
+
+  @override
+  String get pricingInformation => 'قیمت ها';
+
+  @override
+  String get averagePriceTitle => 'قیمت اوسط';
+
+  @override
+  String get recentPriceTitle => 'آخرین قیمت';
+
+  @override
+  String get sellPrice => 'قیمت فروش';
+
+  @override
+  String get storageInfromation => 'معلومات ذخایر';
+
+  @override
+  String get codeTitle => 'کد';
+
+  @override
+  String get availableTitle => 'موجودی';
+
+  @override
+  String get basicInformation => 'معلومات';
+
+  @override
+  String get completeInformation => 'معلومات کامل';
+
+  @override
+  String get selectTitle => 'انتخاب';
+
+  @override
+  String get closeTitle => 'بستن';
 }
