@@ -2724,4 +2724,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get closeTitle => 'Close';
+
+  @override
+  String get projectTxnDetails => 'Project Transaction Details';
+
+  @override
+  String get projectId => 'Project ID';
+
+  @override
+  String get customerName => 'Customer Name';
+
+  @override
+  String get projectDetails => 'Project Details';
+
+  @override
+  String get projectTransaction => 'Project Transaction';
+
+  @override
+  String get voucher => 'Voucher';
+
+  @override
+  String get amountInWords => 'Amount in Words';
+
+  @override
+  String get authorizedBy => 'Authorized By';
+
+  @override
+  String get pending => 'Pending';
+
+  @override
+  String get cancelled => 'Cancelled';
 }

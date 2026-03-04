@@ -2713,4 +2713,34 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get closeTitle => 'بستن';
+
+  @override
+  String get projectTxnDetails => 'جزئیات تراکنش پروژه';
+
+  @override
+  String get projectId => 'شناسه پروژه';
+
+  @override
+  String get customerName => 'نام مشتری';
+
+  @override
+  String get projectDetails => 'جزئیات پروژه';
+
+  @override
+  String get projectTransaction => 'تراکنش پروژه';
+
+  @override
+  String get voucher => 'وچر';
+
+  @override
+  String get amountInWords => 'مبلغ به حروف';
+
+  @override
+  String get authorizedBy => 'تایید شده توسط';
+
+  @override
+  String get pending => 'در انتظار';
+
+  @override
+  String get cancelled => 'لغو شده';
 }

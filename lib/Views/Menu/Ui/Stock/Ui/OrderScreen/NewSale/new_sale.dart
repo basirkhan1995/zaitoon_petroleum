@@ -160,6 +160,13 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
               Utils.showOverlayMessage(context, message: "Failed to create invoice", isError: true);
             }
           }
+
+          // Handle focus after new row is added
+          if (state is SaleInvoiceLoaded) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _focusNewRowIfNeeded(state);
+            });
+          }
         },
         child: Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface,
@@ -439,15 +446,52 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
       item.rowId, () => TextEditingController(text: item.qty > 0 ? item.qty.toString() : ''),
     );
 
-    final purchasePriceController = _priceControllers.putIfAbsent(
-      "purchase_${item.rowId}", () => TextEditingController(text: item.purPrice != null && item.purPrice! > 0 ? item.purPrice!.toAmount() : ''),
-    );
-
     final salePriceController = _priceControllers.putIfAbsent(
       "sale_${item.rowId}", () => TextEditingController(text: item.salePrice != null && item.salePrice! > 0 ? item.salePrice!.toAmount() : ''),
     );
 
     final storageController = TextEditingController(text: item.storageName);
+
+    // Handle product selection
+    void onProductSelected(ProductsStockModel? product) {
+      if (product != null) {
+        final salePrice = double.tryParse(
+            product.sellPrice?.toAmount() ?? "0.0"
+        ) ?? 0.0;
+
+        context.read<SaleInvoiceBloc>().add(UpdateSaleItemEvent(
+          rowId: item.rowId,
+          productId: product.proId.toString(),
+          productName: product.proName ?? '',
+          storageId: product.stkStorage,
+          storageName: product.stgName ?? '',
+          purPrice: double.tryParse(product.averagePrice?.toAmount() ?? "0.0") ?? 0.0,
+          salePrice: salePrice,
+        ));
+
+        salePriceController.text = salePrice.toAmount();
+        storageController.text = product.stgName ?? '';
+
+        // Move focus to quantity field after product selection
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          nodes[1].requestFocus(); // Quantity field
+        });
+      } else {
+        // Handle clear
+        context.read<SaleInvoiceBloc>().add(UpdateSaleItemEvent(
+          rowId: item.rowId,
+          productId: null,
+          productName: '',
+          storageId: null,
+          storageName: '',
+          purPrice: 0,
+          salePrice: 0,
+        ));
+
+        salePriceController.clear();
+        storageController.clear();
+      }
+    }
 
     return Column(
       children: [
@@ -465,7 +509,7 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
                   textAlign: TextAlign.center,
                 ),
               ),
-              // Product Selection - Simpler version
+              // Product Selection
               Expanded(
                 child: ProductSearchField<ProductsStockModel, ProductsBloc, ProductsState>(
                   controller: productController,
@@ -492,47 +536,13 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
                   getSellPrice: (product) => product.sellPrice,
 
                   // Handle product selection
-                  onProductSelected: (product) {
-                    if (product != null) {
-                      final purchasePrice = double.tryParse(
-                          product.averagePrice?.toAmount() ?? "0.0"
-                      ) ?? 0.0;
-                      final salePrice = double.tryParse(
-                          product.sellPrice?.toAmount() ?? "0.0"
-                      ) ?? 0.0;
+                  onProductSelected: onProductSelected,
 
-                      context.read<SaleInvoiceBloc>().add(UpdateSaleItemEvent(
-                        rowId: item.rowId,
-                        productId: product.proId.toString(),
-                        productName: product.proName ?? '',
-                        storageId: product.stkStorage,
-                        storageName: product.stgName ?? '',
-                        purPrice: purchasePrice,
-                        salePrice: salePrice,
-                      ));
+                  // Open overlay automatically when this field gets focus (for new rows)
+                  openOverlayOnFocus: item.productId.isEmpty,
 
-                      purchasePriceController.text = purchasePrice.toAmount();
-                      salePriceController.text = salePrice.toAmount();
-                      storageController.text = product.stgName ?? '';
-
-                      nodes[1].requestFocus();
-                    } else {
-                      // Handle clear
-                      context.read<SaleInvoiceBloc>().add(UpdateSaleItemEvent(
-                        rowId: item.rowId,
-                        productId: null,
-                        productName: '',
-                        storageId: null,
-                        storageName: '',
-                        purPrice: 0,
-                        salePrice: 0,
-                      ));
-
-                      purchasePriceController.clear();
-                      salePriceController.clear();
-                      storageController.clear();
-                    }
-                  },
+                  // Make sure showAllOnFocus is true to fetch all products
+                  showAllOnFocus: true,
                 ),
               ),
 
@@ -545,14 +555,6 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
                   keyboardType: TextInputType.number,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
-                    TextInputFormatter.withFunction((oldValue, newValue) {
-                      if (newValue.text.isEmpty) return newValue;
-                      final parsed = int.tryParse(newValue.text);
-                      if (parsed == null || parsed <= 0) {
-                        return TextEditingValue.empty;
-                      }
-                      return newValue;
-                    }),
                   ],
                   decoration: InputDecoration(
                     hintText: tr.qty,
@@ -568,12 +570,18 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
                       return;
                     }
                     final qty = int.tryParse(value) ?? 0;
-                    context.read<SaleInvoiceBloc>().add(UpdateSaleItemEvent(
-                      rowId: item.rowId,
-                      qty: qty,
-                    ));
+                    if (qty > 0) {
+                      context.read<SaleInvoiceBloc>().add(UpdateSaleItemEvent(
+                        rowId: item.rowId,
+                        qty: qty,
+                      ));
+                    }
                   },
-                  onSubmitted: (_) => nodes[2].requestFocus(),
+                  onSubmitted: (_) {
+                    // On Enter, move to sale price field
+                    nodes[2].requestFocus();
+                  },
+                  textInputAction: TextInputAction.next,
                 ),
               ),
 
@@ -610,10 +618,18 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
                       );
                     }
                   },
+                  onSubmitted: (_) {
+                    // On Enter, create new row
+                    context.read<SaleInvoiceBloc>().add(AddNewSaleItemEvent());
+
+                    // Focus will be handled by _focusNewRowIfNeeded after state update
+                    // No need to request focus here
+                  },
+                  textInputAction: TextInputAction.done,
                 ),
               ),
 
-              // Total Sale (Selling total)
+              // Total Sale
               SizedBox(
                 width: 120,
                 child: Column(
@@ -687,7 +703,7 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
                   height: 35,
                   backgroundColor: color.primary.withValues(alpha: .08),
                   icon: Icons.add,
-                  label: Text(AppLocalizations.of(context)!.addItem),
+                  label: Text(tr.addItem),
                   onPressed: () {
                     context.read<SaleInvoiceBloc>().add(AddNewSaleItemEvent());
                   },
@@ -697,6 +713,50 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
           )
       ],
     );
+  }
+
+  void _synchronizeFocusNodes(int itemCount) {
+    // Add new focus nodes if needed
+    while (_rowFocusNodes.length < itemCount) {
+      _rowFocusNodes.add([
+        FocusNode(), // Product (index 0)
+        FocusNode(), // Quantity (index 1)
+        FocusNode(), // Sale Price (index 2)
+        FocusNode(), // Storage (index 3)
+      ]);
+    }
+
+    // Remove excess focus nodes
+    while (_rowFocusNodes.length > itemCount) {
+      final removed = _rowFocusNodes.removeLast();
+      for (final node in removed) {
+        node.dispose();
+      }
+    }
+  }
+
+  void _focusNewRowIfNeeded(SaleInvoiceLoaded state) {
+    if (!mounted) return;
+
+    // Add a small delay to ensure the new row is fully rendered
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!mounted) return;
+
+      // Find the first row without a product and focus its product field
+      for (int i = 0; i < state.items.length; i++) {
+        final item = state.items[i];
+        if (item.productId.isEmpty) {
+          if (i < _rowFocusNodes.length) {
+            // Focus the product field
+            _rowFocusNodes[i][0].requestFocus();
+
+            // Ensure products are loaded
+            context.read<ProductsBloc>().add(LoadProductsStockEvent());
+            break;
+          }
+        }
+      }
+    });
   }
 
   Widget _buildSummarySection(BuildContext context) {
@@ -1062,23 +1122,6 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
         ],
       ),
     );
-  }
-
-  void _synchronizeFocusNodes(int itemCount) {
-    while (_rowFocusNodes.length < itemCount) {
-      _rowFocusNodes.add([
-        FocusNode(), // Product
-        FocusNode(), // Quantity
-        FocusNode(), // Sale Price
-        FocusNode(), // Storage
-      ]);
-    }
-    while (_rowFocusNodes.length > itemCount) {
-      final removed = _rowFocusNodes.removeLast();
-      for (final node in removed) {
-        node.dispose();
-      }
-    }
   }
 
   void _showPaymentModeDialog(SaleInvoiceLoaded current) {

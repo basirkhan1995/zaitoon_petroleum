@@ -31,6 +31,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchTRPT/bloc/trpt_b
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FundTransfer/BulkTransfer/bloc/transfer_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FxTransaction/bloc/fx_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/GetOrder/bloc/order_txn_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/ProjectTxn/bloc/project_txn_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/TxnByReference/bloc/txn_reference_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/bloc/transactions_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/bloc/transaction_tab_bloc.dart';
@@ -215,7 +216,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => AccountsReportBloc(Repositories(ApiServices()))..add(ResetAccountsReportEvent())),
         BlocProvider(create: (context) => ServicesReportBloc(Repositories(ApiServices()))..add(ResetServicesReportEvent())),
         BlocProvider(create: (context) => ProjectsByIdBloc(Repositories(ApiServices()))..add(ResetProjectByIdEvent())),
-
+        BlocProvider(create: (context) => ProjectTxnBloc(Repositories(ApiServices()))),
         ///Dashboard
         BlocProvider(create: (context) => DashboardStatsBloc(Repositories(ApiServices()))..add(FetchDashboardStatsEvent())),
         BlocProvider(create: (context) => DailyGrossBloc(Repositories(ApiServices()))),

@@ -46,6 +46,7 @@ class ProductSearchField<T, B extends BlocBase<S>, S> extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final bool showClearButton;
   final bool showAllOnFocus;
+  final bool openOverlayOnFocus; // Add this parameter
 
   const ProductSearchField({
     super.key,
@@ -75,6 +76,7 @@ class ProductSearchField<T, B extends BlocBase<S>, S> extends StatefulWidget {
     this.padding,
     this.showClearButton = true,
     this.showAllOnFocus = true,
+    this.openOverlayOnFocus = false, // Add this with default value
   });
 
   @override
@@ -126,6 +128,7 @@ class _ProductSearchFieldState<T, B extends BlocBase<S>, S> extends State<Produc
     if (!mounted) return;
 
     if (_focusNode.hasFocus) {
+      // Fetch all products on first focus if showAllOnFocus is true
       if (widget.showAllOnFocus && _firstFocus && widget.fetchAllFunction != null) {
         widget.fetchAllFunction!(widget.bloc!);
         _firstFocus = false;
@@ -149,8 +152,15 @@ class _ProductSearchFieldState<T, B extends BlocBase<S>, S> extends State<Produc
         }
       }
 
-      // Show overlay if there are suggestions, loading, or just text (to show "no results")
-      if (_currentSuggestions.isNotEmpty || _isLoading || widget.controller.text.isNotEmpty) {
+      // Show overlay in these cases:
+      // 1. There are suggestions
+      // 2. Is loading
+      // 3. Has text
+      // 4. openOverlayOnFocus is true (for new rows)
+      if (_currentSuggestions.isNotEmpty ||
+          _isLoading ||
+          widget.controller.text.isNotEmpty ||
+          widget.openOverlayOnFocus) {
         _showOverlay();
       }
     } else {
@@ -306,7 +316,7 @@ class _ProductSearchFieldState<T, B extends BlocBase<S>, S> extends State<Produc
                                               ),
                                             ),
                                             TextSpan(
-                                              text: '"${widget.controller.text}"', // Use full text
+                                              text: '"${widget.controller.text}"',
                                               style: TextStyle(
                                                 color: Theme.of(context).colorScheme.primary,
                                                 fontStyle: FontStyle.italic,
@@ -706,9 +716,22 @@ class _ProductSearchFieldState<T, B extends BlocBase<S>, S> extends State<Produc
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
-    // Always handle arrow keys regardless of overlay state
+    // Handle ESC key first
+    if (event.logicalKey == LogicalKeyboardKey.escape) {
+      if (_overlayEntry != null) {
+        _removeOverlay();
+        setState(() {
+          _highlightedIndex = -1;
+        });
+        return KeyEventResult.handled;
+      }
+    }
+
+    // Only handle other keys if overlay is showing
+    if (_overlayEntry == null) return KeyEventResult.ignored;
+
     if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-      if (_currentSuggestions.isNotEmpty && mounted && _overlayEntry != null) {
+      if (_currentSuggestions.isNotEmpty && mounted) {
         setState(() {
           _highlightedIndex = (_highlightedIndex + 1) % _currentSuggestions.length;
           _currentHighlightedItem = _currentSuggestions[_highlightedIndex];
@@ -720,7 +743,7 @@ class _ProductSearchFieldState<T, B extends BlocBase<S>, S> extends State<Produc
     }
 
     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-      if (_currentSuggestions.isNotEmpty && mounted && _overlayEntry != null) {
+      if (_currentSuggestions.isNotEmpty && mounted) {
         setState(() {
           _highlightedIndex = (_highlightedIndex - 1 + _currentSuggestions.length) %
               _currentSuggestions.length;
@@ -734,16 +757,10 @@ class _ProductSearchFieldState<T, B extends BlocBase<S>, S> extends State<Produc
 
     if (event.logicalKey == LogicalKeyboardKey.enter) {
       if (_highlightedIndex >= 0 &&
-          _highlightedIndex < _currentSuggestions.length &&
-          _overlayEntry != null) {
+          _highlightedIndex < _currentSuggestions.length) {
         final selectedItem = _currentSuggestions[_highlightedIndex];
         _handleItemSelection(selectedItem);
       }
-      return KeyEventResult.handled;
-    }
-
-    if (event.logicalKey == LogicalKeyboardKey.escape) {
-      _removeOverlay();
       return KeyEventResult.handled;
     }
 
@@ -863,8 +880,13 @@ class _ProductSearchFieldState<T, B extends BlocBase<S>, S> extends State<Produc
                       }
                     });
                   }
+
+                  // Show overlay if field has focus and either:
+                  // - has text
+                  // - is loading
+                  // - openOverlayOnFocus is true
                   final hasText = widget.controller.text.isNotEmpty;
-                  if (_focusNode.hasFocus && (hasText || isLoading)) {
+                  if (_focusNode.hasFocus && (hasText || isLoading || widget.openOverlayOnFocus)) {
                     _showOverlay();
                   } else {
                     _removeOverlay();

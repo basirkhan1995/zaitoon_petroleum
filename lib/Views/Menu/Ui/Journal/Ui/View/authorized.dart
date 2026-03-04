@@ -18,6 +18,8 @@ import '../FetchTRPT/Ui/trpt_view.dart';
 import '../FetchTRPT/bloc/trpt_bloc.dart';
 import '../GetOrder/bloc/order_txn_bloc.dart';
 import '../GetOrder/txn_oder.dart';
+import '../ProjectTxn/bloc/project_txn_bloc.dart';
+import '../ProjectTxn/project_txn.dart';
 import '../TxnByReference/bloc/txn_reference_bloc.dart';
 import '../TxnByReference/txn_reference.dart';
 
@@ -582,6 +584,7 @@ class _DesktopState extends State<_Desktop> {
     });
 
     final handlers = <String, void Function(String)>{
+      "PRJT": (ref) => context.read<ProjectTxnBloc>().add(LoadProjectTxnEvent(ref)),
       "ATAT": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
       "SLRY": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
       "CRFX": (ref) => context.read<FetchAtatBloc>().add(FetchAccToAccEvent(ref)),
@@ -608,6 +611,31 @@ class _DesktopState extends State<_Desktop> {
 
     return MultiBlocListener(
       listeners: [
+        BlocListener<ProjectTxnBloc, ProjectTxnState>(
+          listener: (context, state) {
+            if (state is ProjectTxnLoadedState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              showDialog(
+                context: context,
+                builder: (context) => ProjectTxnView(reference: state.txn.transaction?.trnReference ?? ""),
+              );
+            } else if (state is ProjectTxnErrorState) {
+              setState(() {
+                _isLoadingDialog = false;
+                _loadingRef = null;
+              });
+              Utils.showOverlayMessage(
+                context,
+                title: tr.noData,
+                message: state.message,
+                isError: true,
+              );
+            }
+          },
+        ),
         BlocListener<OrderTxnBloc, OrderTxnState>(
           listener: (context, state) {
             if (state is OrderTxnLoadedState) {

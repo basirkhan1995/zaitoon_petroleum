@@ -900,5 +900,15 @@
   "basicInformation": "Basic Information",
   "completeInformation": "Complete Information",
   "selectTitle": "Select",
-  "closeTitle": "Close"
+  "closeTitle": "Close",
+  "projectTxnDetails": "Project Transaction Details",
+  "projectId": "Project ID",
+  "customerName": "Customer Name",
+  "projectDetails": "Project Details",
+  "projectTransaction": "Project Transaction",
+  "voucher": "Voucher",
+  "amountInWords": "Amount in Words",
+  "authorizedBy": "Authorized By",
+  "pending": "Pending",
+  "cancelled": "Cancelled"
 }

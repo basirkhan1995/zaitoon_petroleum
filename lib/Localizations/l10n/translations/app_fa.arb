@@ -900,5 +900,15 @@
   "basicInformation": "معلومات",
   "completeInformation": "معلومات کامل",
   "selectTitle": "انتخاب",
-  "closeTitle": "بستن"
+  "closeTitle": "بستن",
+  "projectTxnDetails": "جزئیات تراکنش پروژه",
+  "projectId": "شناسه پروژه",
+  "customerName": "نام مشتری",
+  "projectDetails": "جزئیات پروژه",
+  "projectTransaction": "تراکنش پروژه",
+  "voucher": "وچر",
+  "amountInWords": "مبلغ به حروف",
+  "authorizedBy": "تایید شده توسط",
+  "pending": "در انتظار",
+  "cancelled": "لغو شده"
 }

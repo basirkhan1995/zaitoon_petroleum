@@ -900,5 +900,15 @@
   "basicInformation": "معلومات",
   "completeInformation": "معلومات کامل",
   "selectTitle": "انتخاب",
-  "closeTitle": "بستن"
+  "closeTitle": "بستن",
+  "projectTxnDetails": "د پروژې راکړې ورکړې تفصیلات",
+  "projectId": "د پروژې پېژند",
+  "customerName": "د پیرودونکي نوم",
+  "projectDetails": "د پروژې تفصیلات",
+  "projectTransaction": "د پروژې راکړه ورکړه",
+  "voucher": "وچر",
+  "amountInWords": "مبلغ په تورو",
+  "authorizedBy": "تاییدونکی",
+  "pending": "انتظار کې",
+  "cancelled": "لغوه شوی"
 }

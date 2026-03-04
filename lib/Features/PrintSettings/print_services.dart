@@ -1467,6 +1467,53 @@ abstract class PrintServices {
         'en': 'Settled',
         'fa': 'تسویه شده',
         'ps': 'تصفیه شوی'
+      },
+      "projectId": {
+        "en": "Project ID",
+        "ps": "د پروژې پېژند",
+        "fa": "شناسه پروژه"
+      },
+
+      "projectName": {
+        "en": "Project Name",
+        "ps": "د پروژې نوم",
+        "fa": "نام پروژه"
+      },
+
+      "customerName": {
+        "en": "Customer Name",
+        "ps": "د پیرودونکي نوم",
+        "fa": "نام مشتری"
+      },
+
+      "location": {
+        "en": "Location",
+        "ps": "ځای",
+        "fa": "موقعیت"
+      },
+
+      "projectDetails": {
+        "en": "Project Details",
+        "ps": "د پروژې تفصیلات",
+        "fa": "جزئیات پروژه"
+      },
+
+      "deadline": {
+        "en": "Deadline",
+        "ps": "ټاکل شوې نېټه",
+        "fa": "مهلت"
+      },
+
+      "paymentType": {
+        "en": "Payment Type",
+        "ps": "د تادیې ډول",
+        "fa": "نوع پرداخت"
+      },
+
+      "projectStatus": {
+        "en": "Project Status",
+        "ps": "د پروژې حالت",
+        "fa": "وضعیت پروژه"
       }
     };
 

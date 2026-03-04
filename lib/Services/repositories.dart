@@ -53,6 +53,7 @@ import '../Views/Menu/Ui/HR/Ui/UserDetail/Ui/Permissions/per_model.dart';
 import '../Views/Menu/Ui/HR/Ui/Users/model/user_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/FetchGLAT/model/glat_model.dart';
 import '../Views/Menu/Ui/Journal/Ui/GetOrder/model/get_order_model.dart';
+import '../Views/Menu/Ui/Journal/Ui/ProjectTxn/model/project_txn_model.dart';
 import '../Views/Menu/Ui/Projects/Ui/AllProjects/model/pjr_model.dart';
 import '../Views/Menu/Ui/Reminder/model/reminder_model.dart';
 import '../Views/Menu/Ui/Report/Ui/Finance/Accounts/model/accounts_report_model.dart';
@@ -3700,5 +3701,44 @@ class Repositories {
 
     throw Exception("Invalid API response format");
   }
+
+  Future<ProjectTxnModel> getProjectTxn({required String ref, CancelToken? cancelToken}) async {
+    final queryParams = {'ref': ref};
+    final response = await api.get(
+      endpoint: '/project/projectTransaction.php',
+      queryParams: queryParams,
+      cancelToken: cancelToken,
+    );
+
+    final data = response.data;
+
+    // Check for error messages
+    if (data is Map<String, dynamic> && data['msg'] != null) {
+      final msg = data['msg'];
+      if (msg == 'failed' || msg == 'error') {
+        throw Exception('Failed to load shipping details');
+      }
+    }
+
+    // Handle different response formats
+    if (data is Map<String, dynamic>) {
+      // Direct object response (your API format for single shipping)
+      return ProjectTxnModel.fromMap(data);
+    } else if (data is List) {
+      // List response - take first item
+      if (data.isEmpty) {
+        throw Exception("No shipping found with ID: $ref");
+      }
+
+      final firstItem = data.first;
+      if (firstItem is Map<String, dynamic>) {
+        return ProjectTxnModel.fromMap(firstItem);
+      }
+      throw Exception("Invalid data format in list response");
+    }
+
+    throw Exception("Invalid API response format");
+  }
+
 
 }

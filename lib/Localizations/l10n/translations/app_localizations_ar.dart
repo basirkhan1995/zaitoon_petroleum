@@ -2717,4 +2717,34 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get closeTitle => 'بستن';
+
+  @override
+  String get projectTxnDetails => 'د پروژې راکړې ورکړې تفصیلات';
+
+  @override
+  String get projectId => 'د پروژې پېژند';
+
+  @override
+  String get customerName => 'د پیرودونکي نوم';
+
+  @override
+  String get projectDetails => 'د پروژې تفصیلات';
+
+  @override
+  String get projectTransaction => 'د پروژې راکړه ورکړه';
+
+  @override
+  String get voucher => 'وچر';
+
+  @override
+  String get amountInWords => 'مبلغ په تورو';
+
+  @override
+  String get authorizedBy => 'تاییدونکی';
+
+  @override
+  String get pending => 'انتظار کې';
+
+  @override
+  String get cancelled => 'لغوه شوی';
 }

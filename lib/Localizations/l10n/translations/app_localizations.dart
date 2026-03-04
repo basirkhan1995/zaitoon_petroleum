@@ -5385,6 +5385,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get closeTitle;
+
+  /// No description provided for @projectTxnDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Transaction Details'**
+  String get projectTxnDetails;
+
+  /// No description provided for @projectId.
+  ///
+  /// In en, this message translates to:
+  /// **'Project ID'**
+  String get projectId;
+
+  /// No description provided for @customerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer Name'**
+  String get customerName;
+
+  /// No description provided for @projectDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Details'**
+  String get projectDetails;
+
+  /// No description provided for @projectTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Transaction'**
+  String get projectTransaction;
+
+  /// No description provided for @voucher.
+  ///
+  /// In en, this message translates to:
+  /// **'Voucher'**
+  String get voucher;
+
+  /// No description provided for @amountInWords.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount in Words'**
+  String get amountInWords;
+
+  /// No description provided for @authorizedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorized By'**
+  String get authorizedBy;
+
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pending;
+
+  /// No description provided for @cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get cancelled;
 }
 
 class _AppLocalizationsDelegate
