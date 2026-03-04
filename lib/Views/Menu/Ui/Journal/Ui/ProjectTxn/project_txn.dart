@@ -799,57 +799,80 @@ class _DesktopState extends State<_Desktop> {
 
                         const SizedBox(height: 20),
 
-                        // Details Grid
-                        ZCover(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                locale.projectDetails,
-                                style: textTheme.titleMedium?.copyWith(
-                                  color: color.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const Divider(height: 16),
-                              SizedBox(height: 5),
+                       Column(
+                         crossAxisAlignment: CrossAxisAlignment.start,
+                         mainAxisSize: MainAxisSize.min,
+                         children: [
+                           // Project Details Section
+                           ZCover(
+                             padding: const EdgeInsets.all(16),
+                             child: Column(
+                               crossAxisAlignment: CrossAxisAlignment.start,
+                               mainAxisSize: MainAxisSize.min,
+                               children: [
+                                 // Title for Project Details
+                                 Text(
+                                   locale.projectDetails,
+                                   style: textTheme.titleMedium?.copyWith(
+                                     color: color.primary,
+                                     fontWeight: FontWeight.bold,
+                                   ),
+                                 ),
+                                 const Divider(height: 16),
+                                 const SizedBox(height: 5),
 
-                              // Two-column layout for desktop
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: _buildDetailColumn(
-                                      [
-                                        _DetailItem(locale.customerName, state.txn.customerName ?? ""),
-                                        _DetailItem(locale.location, state.txn.prjLocation ?? ""),
-                                        _DetailItem(locale.projectDetails, state.txn.prjDetails ?? ""),
-                                        _DetailItem(locale.deadline, state.txn.prjDateLine?.toFormattedDate() ?? ""),
-                                        _DetailItem(locale.txnType, state.txn.prpType ?? ""),
-                                      ],
-                                      context,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 20),
-                                  Expanded(
-                                    child: _buildDetailColumn(
-                                      [
-                                        _DetailItem(locale.referenceNumber, state.txn.transaction?.trnReference ?? ""),
-                                        _DetailItem(locale.maker, state.txn.transaction?.maker ?? ""),
-                                        _DetailItem(locale.checker, state.txn.transaction?.checker ?? ""),
-                                        _DetailItem(locale.debitAccount, state.txn.transaction?.debitAccount.toString() ?? ""),
-                                        _DetailItem(locale.creditAccount, state.txn.transaction?.creditAccount.toString() ?? ""),
-                                        _DetailItem(locale.status, "", isStatus: true, status: state.txn.transaction?.trnStateText ?? ""),
-                                      ],
-                                      context,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
+                                 // Project Details Content
+                                 _buildDetailColumn(
+                                   [
+                                     _DetailItem(locale.customerName, state.txn.customerName ?? ""),
+                                     _DetailItem(locale.deadline, state.txn.prjDateLine?.toFormattedDate() ?? ""),
+                                     _DetailItem(locale.paymentType, state.txn.prpType ?? ""),
+                                     _DetailItem(locale.location, state.txn.prjLocation ?? ""),
+                                     _DetailItem(locale.projectDetails, state.txn.prjDetails ?? ""),
+                                   ],
+                                   context,
+                                 ),
+                               ],
+                             ),
+                           ),
+
+                           const SizedBox(height: 5),
+
+                          // Transaction Details Section
+                           ZCover(
+                             padding: const EdgeInsets.all(16),
+                             child: Column(
+                               crossAxisAlignment: CrossAxisAlignment.start,
+                               mainAxisSize: MainAxisSize.min,
+                               children: [
+                                 // Title for Transaction Details
+                                 Text(
+                                   locale.transactionDetails,
+                                   style: textTheme.titleMedium?.copyWith(
+                                     color: color.primary,
+                                     fontWeight: FontWeight.bold,
+                                   ),
+                                 ),
+                                 const Divider(height: 16),
+                                 const SizedBox(height: 5),
+
+                                 // Transaction Details Content
+                                 _buildDetailColumn(
+                                   [
+                                     _DetailItem(locale.referenceNumber, state.txn.transaction?.trnReference ?? ""),
+                                     _DetailItem(locale.maker, state.txn.transaction?.maker ?? ""),
+                                     _DetailItem(locale.checker, state.txn.transaction?.checker ?? ""),
+                                     _DetailItem(locale.debitAccount, state.txn.transaction?.debitAccount.toString() ?? ""),
+                                     _DetailItem(locale.creditAccount, state.txn.transaction?.creditAccount.toString() ?? ""),
+                                     _DetailItem(locale.status, "", isStatus: true, status: state.txn.transaction?.trnStateText ?? ""),
+                                   ],
+                                   context,
+                                 ),
+                               ],
+                             ),
+                           ),
+                         ],
+                       ),
 
                         const SizedBox(height: 20),
 
