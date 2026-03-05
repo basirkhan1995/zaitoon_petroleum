@@ -922,5 +922,8 @@
   "serviceName": "خدماتو نوم",
   "noServicesTitle": "خدمات یافت نشد",
   "noServicesMessage": "خدماتی در این پروژه یافت نشد.",
-  "noPandLMessage": "تر اوسه د ګټې او تاوان حسابونه ثبت شوي نه دي"
+  "noPandLMessage": "تر اوسه د ګټې او تاوان حسابونه ثبت شوي نه دي",
+  "allBalancesTitle": "ټولې بیلانسونه",
+  "filterTitle": "فلتر",
+  "averageTitle": "نرخ اوسط"
 }

@@ -112,18 +112,37 @@ abstract class PrintServices {
                       fontWeight: pw.FontWeight.bold
                   ),
                   pw.SizedBox(height: 5),
-                  if (report.comAddress != null && report.comAddress!.isNotEmpty)
-                    zText(
-                      text: report.comAddress ?? "",
-                      fontSize: 10,
-                      color: pw.PdfColors.grey600,
-                    ),
-                  if (report.compPhone != null && report.compPhone!.isNotEmpty)
-                    zText(
-                      text: report.compPhone ?? "",
-                      fontSize: 9,
-                      color: pw.PdfColors.grey600,
-                    ),
+                  pw.Row(
+                    children: [
+                      if (report.comAddress != null && report.comAddress!.isNotEmpty)...[
+                        zText(
+                          text: report.comAddress ?? "",
+                          fontSize: 10,
+                          color: pw.PdfColors.grey600,
+                        ),
+                      ],
+
+
+                      if (report.compPhone != null && report.compPhone!.isNotEmpty)...[
+                        verticalDivider(height: 10, width: 1),
+                        zText(
+                          text: report.compPhone ?? "",
+                          fontSize: 9,
+                          color: pw.PdfColors.grey600,
+                        ),
+                      ],
+
+                      if (report.compPhone != null && report.compPhone!.isNotEmpty)...[
+                        verticalDivider(height: 10, width: 1),
+                        zText(
+                          text: report.comEmail ?? "",
+                          fontSize: 9,
+                          color: pw.PdfColors.grey600,
+                        ),
+                      ]
+
+                    ]
+                  )
                 ],
               ),
             ),

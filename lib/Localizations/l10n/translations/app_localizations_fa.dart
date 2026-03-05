@@ -2779,4 +2779,13 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get noPandLMessage => 'تا هنوز هیچ حساب سود و زیان ثبت نشده است';
+
+  @override
+  String get allBalancesTitle => 'همه بیلانس ها';
+
+  @override
+  String get filterTitle => 'فلتر';
+
+  @override
+  String get averageTitle => 'نرخ اوسط';
 }

@@ -1078,6 +1078,7 @@ class _DesktopState extends State<_Desktop> {
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -1107,11 +1108,11 @@ class _DesktopState extends State<_Desktop> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                          Icon(Icons.error_outline, size: 64, color: color.error),
                           const SizedBox(height: 16),
                           Text(
-                            'Error: ${state.message}',
-                            style: const TextStyle(color: Colors.red, fontSize: 16),
+                            state.message,
+                            style: TextStyle(color: color.error, fontSize: 16),
                           ),
                         ],
                       ),
@@ -1120,19 +1121,19 @@ class _DesktopState extends State<_Desktop> {
 
                   if (state is FxRateReportLoadedState) {
                     return state.rates.isEmpty
-                        ? const Center(
+                        ? Center(
                       child: Text(
                         'No exchange rate data available',
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                        style: TextStyle(fontSize: 16, color: color.outline),
                       ),
                     )
                         : _buildReportTable(state.rates);
                   }
 
-                  return const Center(
+                  return Center(
                     child: Text(
                       'Select date range and currencies to load report',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      style: TextStyle(fontSize: 16, color: color.outline),
                     ),
                   );
                 },
@@ -1146,102 +1147,95 @@ class _DesktopState extends State<_Desktop> {
 
   Widget _buildFilterSection(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
-
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Filters',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.outline.withValues(alpha: .9)
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          tr.filterTitle,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: .9)
+          ),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          spacing: 8,
+          children: [
+            Expanded(
+              child: ZDatePicker(
+                label: tr.fromDate,
+                value: fromDate,
+                onDateChanged: (v) {
+                  setState(() {
+                    fromDate = v;
+                    shamsiFromDate = v.toAfghanShamsi;
+                  });
+                  _onFilterChanged(context);
+                },
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            spacing: 8,
-            children: [
-              Expanded(
-                child: ZDatePicker(
-                  label: tr.fromDate,
-                  value: fromDate,
-                  onDateChanged: (v) {
+            Expanded(
+              child: ZDatePicker(
+                label: tr.toDate,
+                value: toDate,
+                onDateChanged: (v) {
+                  setState(() {
+                    toDate = v;
+                    shamsiToDate = v.toAfghanShamsi;
+                  });
+                  _onFilterChanged(context);
+                },
+              ),
+            ),
+
+            Expanded(
+              child: CurrencyDropdown(
+                  title: tr.fromCurrency,
+                  isMulti: false,
+                  onSingleChanged: (e){
                     setState(() {
-                      fromDate = v;
-                      shamsiFromDate = v.toAfghanShamsi;
+                      _selectedFromCurrency = e?.ccyCode;
                     });
-                    _onFilterChanged(context);
                   },
-                ),
-              ),
-              Expanded(
-                child: ZDatePicker(
-                  label: tr.toDate,
-                  value: toDate,
-                  onDateChanged: (v) {
+                  onMultiChanged: (e){
+
+                  }),
+            ),
+            Expanded(
+              child: CurrencyDropdown(
+                  title: tr.toCurrencyTitle,
+                  isMulti: false,
+                  onSingleChanged: (e){
                     setState(() {
-                      toDate = v;
-                      shamsiToDate = v.toAfghanShamsi;
+                      _selectedToCurrency = e?.ccyCode;
                     });
-                    _onFilterChanged(context);
                   },
-                ),
-              ),
+                  onMultiChanged: (e){
 
-              Expanded(
-                child: CurrencyDropdown(
-                    title: "From Currency",
-                    isMulti: false,
-                    onSingleChanged: (e){
-                      setState(() {
-                        _selectedFromCurrency = e?.ccyCode;
-                      });
-                    },
-                    onMultiChanged: (e){
+                  }),
+            ),
+            ZOutlineButton(
+              width: 120,
+                icon: Icons.filter_alt_outlined,
+                label: Text(tr.apply),
+              isActive: true,
+              onPressed: () => _onFilterChanged(context),
+            ),
 
-                    }),
-              ),
-              Expanded(
-                child: CurrencyDropdown(
-                    title: "To Currency",
-                    isMulti: false,
-                    onSingleChanged: (e){
-                      setState(() {
-                        _selectedToCurrency = e?.ccyCode;
-                      });
-                    },
-                    onMultiChanged: (e){
-
-                    }),
-              ),
-              ZOutlineButton(
-                width: 120,
-                  icon: Icons.filter_alt_outlined,
-                  label: Text(tr.apply),
-                isActive: true,
-                onPressed: () => _onFilterChanged(context),
-              ),
-
-            ],
-          ),
-        ],
-      ),
+          ],
+        ),
+      ],
     );
   }
 
   Widget _buildReportTable(List<ExchangeRateReportModel> rates) {
+    final tr = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(5),
-
       ),
       child: Column(
         children: [
@@ -1254,11 +1248,11 @@ class _DesktopState extends State<_Desktop> {
             ),
             child: Row(
               children: [
-                _buildTableHeader('Date', flex: 1),
-                _buildTableHeader('From Currency', flex: 2),
-                _buildTableHeader('To Currency', flex: 2),
-                _buildTableHeader('Exchange Rate', flex: 1),
-                _buildTableHeader('Average Rate', flex: 1),
+                _buildTableHeader(tr.date, flex: 1),
+                _buildTableHeader(tr.fromCurrency, flex: 2),
+                _buildTableHeader(tr.toCurrencyTitle, flex: 2),
+                _buildTableHeader(tr.rate, flex: 1),
+                _buildTableHeader(tr.averageTitle, flex: 1),
               ],
             ),
           ),
@@ -1334,7 +1328,7 @@ class _DesktopState extends State<_Desktop> {
           Expanded(
             flex: 1,
             child: Text(
-              DateFormat('MMM dd, yyyy').format(rate.rateDate),
+              rate.rateDate.toFormattedDate(),
               style: const TextStyle(fontSize: 13),
             ),
           ),

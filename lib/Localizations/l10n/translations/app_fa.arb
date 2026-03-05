@@ -922,5 +922,8 @@
   "serviceName": "نام خدمات",
   "noServicesTitle": "خدمات یافت نشد",
   "noServicesMessage": "خدماتی در این پروژه یافت نشد.",
-  "noPandLMessage": "تا هنوز هیچ حساب سود و زیان ثبت نشده است"
+  "noPandLMessage": "تا هنوز هیچ حساب سود و زیان ثبت نشده است",
+  "allBalancesTitle": "همه بیلانس ها",
+  "filterTitle": "فلتر",
+  "averageTitle": "نرخ اوسط"
 }

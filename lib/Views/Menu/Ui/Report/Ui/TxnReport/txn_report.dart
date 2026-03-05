@@ -720,7 +720,6 @@ class _MobileState extends State<_Mobile> {
   }
 }
 
-
 class _Desktop extends StatefulWidget {
   const _Desktop();
 
@@ -778,13 +777,11 @@ class _DesktopState extends State<_Desktop> {
                 });
                 context.read<TxnReportBloc>().add(ResetTxnReportEvent());
               },
-              width: 140,
               icon: Icons.filter_alt_off_outlined,
               label: Text(tr.clearFilters)),
           SizedBox(width: 8),
           ZOutlineButton(
               onPressed: (){},
-              width: 120,
               icon: Icons.print,
               label: Text(tr.print)),
           SizedBox(width: 8),
@@ -801,7 +798,6 @@ class _DesktopState extends State<_Desktop> {
                 ));
               },
               isActive: true,
-              width: 120,
               icon: Icons.filter_alt,
               label: Text(tr.apply)),
         ],
@@ -849,24 +845,24 @@ class _DesktopState extends State<_Desktop> {
                   ),
                 ),
                 Expanded(
-                  child: TxnTypeDropDown(
-                    title: tr.txnType,
-                    isMulti: false,
-                    onSingleChanged: (e) {
-                     setState(() {
-                       txnType = e?.trntCode;
-                     });
-                    },
-                    onMultiChanged: (e) {},
-                  ),
-                ),
-                Expanded(
                   child: UserDropdown(
                     isMulti: false,
                     title: tr.checker,
                     onSingleChanged: (e) {
                       setState(() {
                         checker = e?.usrName;
+                      });
+                    },
+                    onMultiChanged: (e) {},
+                  ),
+                ),
+                Expanded(
+                  child: TxnTypeDropDown(
+                    title: tr.txnType,
+                    isMulti: false,
+                    onSingleChanged: (e) {
+                      setState(() {
+                        txnType = e?.trntCode;
                       });
                     },
                     onMultiChanged: (e) {},
@@ -884,7 +880,6 @@ class _DesktopState extends State<_Desktop> {
                     onMultiChanged: (e) {},
                   ),
                 ),
-
                 Expanded(
                   child: StatusDropdown(
                     value: status,
@@ -906,15 +901,12 @@ class _DesktopState extends State<_Desktop> {
             child: Row(
               children: [
                 SizedBox(
-                    width: 40,
-                    child: Text(tr.id,style: titleStyle)),
-                SizedBox(
                     width: 180,
                     child: Text(tr.date,style: titleStyle)),
                 Expanded(
                     child: Text(tr.referenceNumber,style: titleStyle)),
                 SizedBox(
-                    width: 160,
+                    width: 200,
                     child: Text(tr.txnType,style: titleStyle)),
                 SizedBox(
                     width: 120,
@@ -971,15 +963,13 @@ class _DesktopState extends State<_Desktop> {
                           child: Row(
                             children: [
                               SizedBox(
-                                  width: 40,
-                                  child: Text(txn.no.toString())),
-                              SizedBox(
                                   width: 180,
                                   child: Text(txn.timing?.toDateTime ?? "")),
                               Expanded(
                                   child: Text(txn.reference.toString())),
+
                               SizedBox(
-                                  width: 160,
+                                  width: 200,
                                   child: Text(txn.type.toString())),
                               SizedBox(
                                   width: 120,

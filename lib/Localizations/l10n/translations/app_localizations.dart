@@ -5517,6 +5517,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No P&L yet recorded'**
   String get noPandLMessage;
+
+  /// No description provided for @allBalancesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All Balances'**
+  String get allBalancesTitle;
+
+  /// No description provided for @filterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filterTitle;
+
+  /// No description provided for @averageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Average Rate'**
+  String get averageTitle;
 }
 
 class _AppLocalizationsDelegate

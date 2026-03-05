@@ -127,13 +127,14 @@ class BalanceSheetPrintSettings extends PrintServices {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
+        pw.SizedBox(height: 4),
         zText(
           text: tr(text: 'balanceSheet', tr: language),
-          fontSize: 24,
+          fontSize: 20,
           tightBounds: true,
           fontWeight: pw.FontWeight.bold,
         ),
-        pw.SizedBox(height: 5),
+        pw.SizedBox(height: 4),
         pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           children: [

@@ -144,10 +144,16 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
       focusNode: _focusNode,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min, // Add this to minimize column height
         children: [
-          if (widget.customTitle != null) widget.customTitle!
-          else if (widget.title !=null && widget.title!.isNotEmpty)...[
-            Text(widget.title ?? "", style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 12)),
+          // Only add title section if there's content to show
+          if (widget.customTitle != null)
+            widget.customTitle!
+          else if (widget.title != null && widget.title!.isNotEmpty) ...[
+            Text(
+                widget.title ?? "",
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 12)
+            ),
             const SizedBox(height: 4),
           ],
 
@@ -171,8 +177,7 @@ class _ZDropdownState<T> extends State<ZDropdown<T>> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(widget.radius ?? 4),
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.outline
-                      .withAlpha(80),
+                  color: Theme.of(context).colorScheme.outline.withAlpha(80),
                 ),
               ),
               child: Row(

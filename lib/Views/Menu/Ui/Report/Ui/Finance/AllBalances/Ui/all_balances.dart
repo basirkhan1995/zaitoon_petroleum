@@ -725,52 +725,18 @@ class _DesktopState extends State<_Desktop> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
-        title: Text("All Balances"),
+        toolbarHeight: 57,
+        title: Text(tr.allBalancesTitle),
         actionsPadding: EdgeInsets.symmetric(horizontal: 10),
         actions: [
-          if(catId !=null)
-          ZOutlineButton(
-              width: 130,
-              backgroundHover: Theme.of(context).colorScheme.error,
-              isActive: true,
-              onPressed: (){
-                setState(() {
-                  catId = null;
-                });
-                context.read<AllBalancesBloc>().add(ResetAllBalancesEvent());
-              },
-              icon: Icons.filter_alt_off_outlined,
-              label: Text(tr.clearFilters)),
-          SizedBox(width: 8),
-          ZOutlineButton(
-              width: 100,
-              onPressed: _printAllBalances,
-              icon: Icons.print,
-              label: Text(tr.print)),
-          SizedBox(width: 8),
-          ZOutlineButton(
-            width: 120,
-              onPressed: (){
-              context.read<AllBalancesBloc>().add(LoadAllBalancesEvent(catId: catId));
-              },
-              isActive: true,
-              icon: Icons.filter_alt,
-              label: Text(tr.apply)),
-
-
-        ],
-      ),
-
-      body: Column(
-        children: [
           Padding(
-            padding: const EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(8.0),
             child: Row(
+
               children: [
                 SizedBox(
                   width: 300,
                   child: GlSubCategoriesDrop(
-                      title: tr.accountCategory,
                       mainCategoryId: 0,
                       onChanged: (e){
                         setState(() {
@@ -779,9 +745,46 @@ class _DesktopState extends State<_Desktop> {
                         context.read<AllBalancesBloc>().add(LoadAllBalancesEvent(catId: catId));
                       }),
                 ),
+
+                if(catId !=null)...[
+                  SizedBox(width: 8),
+                  ZOutlineButton(
+                      width: 130,
+                      backgroundHover: Theme.of(context).colorScheme.error,
+                      isActive: true,
+                      onPressed: (){
+                        setState(() {
+                          catId = null;
+                        });
+                        context.read<AllBalancesBloc>().add(ResetAllBalancesEvent());
+                      },
+                      icon: Icons.filter_alt_off_outlined,
+                      label: Text(tr.clearFilters)),
+                ],
+                SizedBox(width: 8),
+                ZOutlineButton(
+                    width: 100,
+                    onPressed: _printAllBalances,
+                    icon: Icons.print,
+                    label: Text(tr.print)),
+                SizedBox(width: 8),
+                ZOutlineButton(
+                    width: 120,
+                    onPressed: (){
+                      context.read<AllBalancesBloc>().add(LoadAllBalancesEvent(catId: catId));
+                    },
+                    isActive: true,
+                    icon: Icons.filter_alt,
+                    label: Text(tr.apply)),
               ],
             ),
           ),
+        ],
+      ),
+
+      body: Column(
+        children: [
+
           Container(
             padding: EdgeInsets.symmetric(vertical: 8,horizontal: 5),
             margin: EdgeInsets.symmetric(horizontal: 15),

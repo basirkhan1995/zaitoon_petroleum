@@ -2783,4 +2783,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noPandLMessage => 'تر اوسه د ګټې او تاوان حسابونه ثبت شوي نه دي';
+
+  @override
+  String get allBalancesTitle => 'ټولې بیلانسونه';
+
+  @override
+  String get filterTitle => 'فلتر';
+
+  @override
+  String get averageTitle => 'نرخ اوسط';
 }

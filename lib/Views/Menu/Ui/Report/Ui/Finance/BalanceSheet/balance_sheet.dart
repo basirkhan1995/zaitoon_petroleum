@@ -64,7 +64,7 @@ class _DesktopBalanceSheetState extends State<_DesktopBalanceSheet> {
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 90,
+
         title: Text(AppLocalizations.of(context)!.balanceSheet),
         titleSpacing: 0,
         actionsPadding: const EdgeInsets.all(8),
@@ -73,7 +73,6 @@ class _DesktopBalanceSheetState extends State<_DesktopBalanceSheet> {
           SizedBox(
             width: 200,
             child: BranchDropdown(
-                title: "",
                 showAllOption: true,
                 selectedId: loginData?.usrBranch,
                 onBranchSelected: (e){
@@ -187,7 +186,7 @@ class _DesktopBalanceSheetState extends State<_DesktopBalanceSheet> {
       ),
       body: Center(
         child: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.5,
+          width: MediaQuery.of(context).size.width * 0.8,
           child: ZCover(
             radius: 8,
             margin: const EdgeInsets.all(15),

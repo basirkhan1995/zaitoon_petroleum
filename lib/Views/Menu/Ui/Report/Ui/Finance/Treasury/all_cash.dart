@@ -7,9 +7,9 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/bloc/cash_balances_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/model/cash_balance_model.dart';
-import '../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 
 class TreasuryView extends StatelessWidget {
   const TreasuryView({super.key});
@@ -43,9 +43,9 @@ class _MobileState extends State<_Mobile> {
 
   void _loadBaseCurrency() {
     try {
-      final companyState = context.read<CompanyProfileBloc>().state;
-      if (companyState is CompanyProfileLoadedState) {
-        baseCcy = companyState.company.comLocalCcy;
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthenticatedState) {
+        baseCcy = authState.loginData.company?.comLocalCcy;
       }
     } catch (e) {
       baseCcy = "";
@@ -61,7 +61,7 @@ class _MobileState extends State<_Mobile> {
       backgroundColor: color.surface,
       appBar: AppBar(
         titleSpacing: 0,
-        title: const Text("Cash Balances"),
+        title: Text(tr.cashBalances),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -646,9 +646,9 @@ class _TabletState extends State<_Tablet> {
 
   void _loadBaseCurrency() {
     try {
-      final companyState = context.read<CompanyProfileBloc>().state;
-      if (companyState is CompanyProfileLoadedState) {
-        baseCcy = companyState.company.comLocalCcy;
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthenticatedState) {
+        baseCcy = authState.loginData.company?.comLocalCcy;
       }
     } catch (e) {
       baseCcy = "";
@@ -1283,9 +1283,9 @@ class _DesktopState extends State<_Desktop> {
 
   void _loadBaseCurrency() {
     try {
-      final companyState = context.read<CompanyProfileBloc>().state;
-      if (companyState is CompanyProfileLoadedState) {
-        baseCcy = companyState.company.comLocalCcy;
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthenticatedState) {
+        baseCcy = authState.loginData.company?.comLocalCcy;
       }
     } catch (e) {
       baseCcy = "";
@@ -1296,19 +1296,17 @@ class _DesktopState extends State<_Desktop> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Cash Balances"),
+        title: Text(AppLocalizations.of(context)!.cashBalances),
         titleSpacing: 0,
         actionsPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         actions: [
           ZOutlineButton(
-            width: 120,
             onPressed: () {},
             icon: Icons.print,
             label: Text(AppLocalizations.of(context)!.print),
           ),
           const SizedBox(width: 8),
           ZOutlineButton(
-            width: 120,
             onPressed: () {
               context.read<CashBalancesBloc>().add(const LoadAllCashBalancesEvent());
             },

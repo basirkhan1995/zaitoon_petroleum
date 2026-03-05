@@ -922,5 +922,8 @@
   "serviceName": "Service Name",
   "noServicesTitle": "No Services",
   "noServicesMessage": "No services found for this project",
-  "noPandLMessage": "No P&L yet recorded"
+  "noPandLMessage": "No P&L yet recorded",
+  "allBalancesTitle": "All Balances",
+  "filterTitle": "Filter",
+  "averageTitle": "Average Rate"
 }

@@ -64,9 +64,7 @@ class _GlSubCategoriesDropState extends State<GlSubCategoriesDrop> {
 
         /// ---------------- TITLE ----------------
         Widget buildTitle() {
-          final titleText =
-              widget.title ?? AppLocalizations.of(context)!.currencyTitle;
-
+          final titleText = widget.title ?? AppLocalizations.of(context)!.currencyTitle;
           if (isLoading) {
             return Row(
               mainAxisSize: MainAxisSize.min,
@@ -90,10 +88,7 @@ class _GlSubCategoriesDropState extends State<GlSubCategoriesDrop> {
 
           return Text(
             titleText,
-            style: Theme.of(context)
-                .textTheme
-                .titleSmall
-                ?.copyWith(fontSize: 12),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 12),
           );
         }
 
@@ -136,9 +131,7 @@ class _GlSubCategoriesDropState extends State<GlSubCategoriesDrop> {
           itemStyle: Theme.of(context).textTheme.bodyMedium,
 
           customTitle:
-          (widget.title != null && widget.title!.isNotEmpty)
-              ? buildTitle()
-              : const SizedBox.shrink(),
+          (widget.title != null && widget.title!.isNotEmpty) ? buildTitle() : const SizedBox.shrink(),
         );
       },
     );

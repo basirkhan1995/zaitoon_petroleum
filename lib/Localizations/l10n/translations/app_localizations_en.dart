@@ -2790,4 +2790,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noPandLMessage => 'No P&L yet recorded';
+
+  @override
+  String get allBalancesTitle => 'All Balances';
+
+  @override
+  String get filterTitle => 'Filter';
+
+  @override
+  String get averageTitle => 'Average Rate';
 }

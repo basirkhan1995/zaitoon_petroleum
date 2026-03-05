@@ -10,16 +10,13 @@ import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/branch_dropdown.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/bloc/cash_balances_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/model/cash_balance_model.dart';
-import '../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 
 class CashBalancesBranchWiseView extends StatelessWidget {
-  const CashBalancesBranchWiseView({
-    super.key,
-  });
+  const CashBalancesBranchWiseView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(
+    return const ResponsiveLayout(
       mobile: _Mobile(),
       desktop: _Desktop(),
       tablet: _Tablet(),
@@ -29,6 +26,7 @@ class CashBalancesBranchWiseView extends StatelessWidget {
 
 class _Desktop extends StatefulWidget {
   const _Desktop();
+
   @override
   State<_Desktop> createState() => _DesktopState();
 }
@@ -36,22 +34,11 @@ class _Desktop extends StatefulWidget {
 class _DesktopState extends State<_Desktop> {
   String? baseCcy;
   int? branchId;
+
   @override
   void initState() {
     super.initState();
-      _loadBaseCurrency();
-      _loadAuth();
-  }
-
-  void _loadBaseCurrency() {
-    try {
-      final companyState = context.read<CompanyProfileBloc>().state;
-      if (companyState is CompanyProfileLoadedState) {
-        baseCcy = companyState.company.comLocalCcy;
-      }
-    } catch (e) {
-      baseCcy = "";
-    }
+    _loadAuth();
   }
 
   void _loadAuth() {
@@ -59,6 +46,7 @@ class _DesktopState extends State<_Desktop> {
       final auth = context.read<AuthBloc>().state;
       if (auth is AuthenticatedState) {
         branchId = auth.loginData.usrBranch;
+        baseCcy = auth.loginData.company?.comLocalCcy;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           context.read<CashBalancesBloc>().add(
             LoadCashBalanceBranchWiseEvent(branchId: branchId),
@@ -75,14 +63,14 @@ class _DesktopState extends State<_Desktop> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.cashBalances),
-        actionsPadding: EdgeInsets.symmetric(horizontal: 8),
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 8),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-                context.read<CashBalancesBloc>().add(
-                  LoadCashBalanceBranchWiseEvent(branchId: branchId),
-                );
+              context.read<CashBalancesBloc>().add(
+                LoadCashBalanceBranchWiseEvent(branchId: branchId),
+              );
             },
           ),
           IconButton(
@@ -105,13 +93,14 @@ class _DesktopState extends State<_Desktop> {
         if (state is CashBalancesErrorState) {
           return Center(
             child: NoDataWidget(
-               message: state.error,
-              onRefresh: (){
+              message: state.error,
+              onRefresh: () {
                 context.read<CashBalancesBloc>().add(
                   LoadCashBalanceBranchWiseEvent(branchId: branchId),
                 );
               },
-            ));
+            ),
+          );
         }
 
         if (state is CashBalancesLoadedState) {
@@ -194,14 +183,10 @@ class _DesktopState extends State<_Desktop> {
                     height: 40,
                     title: "",
                     onBranchSelected: (e) {
-                      // Store the branch ID directly from the parameter
                       final newBranchId = e?.brcId;
-
                       setState(() {
                         branchId = newBranchId;
                       });
-
-                      // Use the parameter directly, not the state variable which might not be updated yet
                       context.read<CashBalancesBloc>().add(
                         LoadCashBalanceBranchWiseEvent(branchId: newBranchId),
                       );
@@ -211,9 +196,8 @@ class _DesktopState extends State<_Desktop> {
               ],
             ),
             const SizedBox(height: 10),
-            Divider(),
+            const Divider(),
             const SizedBox(height: 10),
-
             _buildInfoRow('${tr.branchId}:', branch.brcId?.toString() ?? 'N/A'),
             _buildInfoRow('${tr.branchName}:', branch.brcName ?? 'N/A'),
             _buildInfoRow('${tr.address}:', branch.address ?? 'N/A'),
@@ -277,23 +261,27 @@ class _DesktopState extends State<_Desktop> {
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
-
         const SizedBox(height: 10),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            int crossAxisCount = constraints.maxWidth > 1200 ? 4 :
+            constraints.maxWidth > 800 ? 3 : 2;
 
-        // Currency Cards Grid
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 1.6,
-          ),
-          itemCount: branch.records!.length,
-          itemBuilder: (context, index) {
-            final record = branch.records![index];
-            return _buildCurrencyCard(record, tr);
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 1.4,
+              ),
+              itemCount: branch.records!.length,
+              itemBuilder: (context, index) {
+                final record = branch.records![index];
+                return _buildCurrencyCard(record, tr);
+              },
+            );
           },
         ),
       ],
@@ -312,10 +300,10 @@ class _DesktopState extends State<_Desktop> {
       color: Theme.of(context).colorScheme.surface,
       radius: 8,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min ,
+          mainAxisSize: MainAxisSize.min,
           children: [
             // Currency Header
             Row(
@@ -326,41 +314,36 @@ class _DesktopState extends State<_Desktop> {
                     record.ccyName ?? record.trdCcy ?? 'Unknown',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Utils.currencyColors(record.trdCcy??""),
+                      fontSize: 14,
+                      color: Utils.currencyColors(record.trdCcy ?? ""),
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                ZCover(
-                  color: Utils.currencyColors(record.trdCcy ?? ''),
-                  borderColor: Utils.currencyColors(record.trdCcy ?? ''),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    child: Text(
-                      record.trdCcy ?? '',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.surface,
-                      ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Utils.currencyColors(record.trdCcy ?? ''),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    record.trdCcy ?? '',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                   ),
                 ),
               ],
             ),
-
-            const SizedBox(height: 12),
-
-            // Local Currency Balance
+            const SizedBox(height: 8),
             _buildBalanceRow(
               label: tr.opening,
               amount: opening,
               symbol: record.trdCcy ?? '',
               isSys: false,
             ),
-
-            const SizedBox(height: 4),
-
+            const SizedBox(height: 2),
             _buildBalanceRow(
               label: tr.closing,
               amount: closing,
@@ -368,37 +351,29 @@ class _DesktopState extends State<_Desktop> {
               isSys: false,
               isClosing: true,
             ),
-
-            const SizedBox(height: 8),
-
-            // System Equivalent
+            const Divider(height: 12),
             _buildBalanceRow(
-              label: '${tr.opening} (${tr.sys})',
+              label: '${tr.opening} (Sys)',
               amount: openingSys,
-              symbol: '$baseCcy',
+              symbol: baseCcy ?? '',
               isSys: true,
             ),
-
-            const SizedBox(height: 4),
-
+            const SizedBox(height: 2),
             _buildBalanceRow(
-              label: '${tr.closing} (${tr.sys})',
+              label: '${tr.closing} (Sys)',
               amount: closingSys,
-              symbol: '$baseCcy',
+              symbol: baseCcy ?? '',
               isSys: true,
               isClosing: true,
             ),
-
-            const SizedBox(height: 8),
-
-            // Cash Flow
+            const Divider(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   tr.cashFlow,
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.outline,
                   ),
@@ -409,7 +384,7 @@ class _DesktopState extends State<_Desktop> {
                     Text(
                       "${cashFlow.toAmount()} ${record.trdCcy}",
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 13,
                         fontWeight: FontWeight.bold,
                         color: cashFlow >= 0 ? Colors.green : Colors.red,
                       ),
@@ -417,7 +392,7 @@ class _DesktopState extends State<_Desktop> {
                     Text(
                       "${cashFlowSys.toAmount()} $baseCcy",
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         color: cashFlowSys >= 0 ? Colors.green : Colors.red,
                       ),
                     ),
@@ -444,18 +419,22 @@ class _DesktopState extends State<_Desktop> {
         Text(
           label,
           style: TextStyle(
-            fontSize: 13,
+            fontSize: 12,
             color: Theme.of(context).colorScheme.outline,
           ),
         ),
-        Text(
-          "${amount.toAmount()} $symbol",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: isClosing ? FontWeight.bold : FontWeight.w500,
-            color: isClosing
-                ? (isSys ? Colors.purple : Colors.green)
-                : Colors.black,
+        Flexible(
+          child: Text(
+            "${amount.toAmount()} $symbol",
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: isClosing ? FontWeight.bold : FontWeight.w500,
+              color: isClosing
+                  ? (isSys ? Colors.purple : Colors.green)
+                  : Theme.of(context).colorScheme.onSurface,
+            ),
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.end,
           ),
         ),
       ],
@@ -484,38 +463,66 @@ class _DesktopState extends State<_Desktop> {
                 color: Colors.purple,
               ),
             ),
-
             const SizedBox(height: 16),
-
-            Row(
-              children: [
-                Expanded(
-                  child: _buildTotalItem(
-                    label: tr.openingBalance,
-                    value: openingSys,
-                    color: Colors.grey,
-                    symbol: '$baseCcy',
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildTotalItem(
-                    label: tr.closingBalance,
-                    value: closingSys,
-                    color: Colors.green,
-                    symbol: '$baseCcy',
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildTotalItem(
-                    label: tr.cashFlow,
-                    value: cashFlowSys,
-                    color: cashFlowSys >= 0 ? Colors.green : Colors.red,
-                    symbol: '$baseCcy',
-                  ),
-                ),
-              ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth < 600) {
+                  return Column(
+                    children: [
+                      _buildTotalItem(
+                        label: tr.openingBalance,
+                        value: openingSys,
+                        color: Theme.of(context).colorScheme.outline,
+                        symbol: baseCcy ?? '',
+                      ),
+                      const SizedBox(height: 12),
+                      _buildTotalItem(
+                        label: tr.closingBalance,
+                        value: closingSys,
+                        color: Colors.green,
+                        symbol: baseCcy ?? '',
+                      ),
+                      const SizedBox(height: 12),
+                      _buildTotalItem(
+                        label: tr.cashFlow,
+                        value: cashFlowSys,
+                        color: cashFlowSys >= 0 ? Colors.green : Colors.red,
+                        symbol: baseCcy ?? '',
+                      ),
+                    ],
+                  );
+                }
+                return Row(
+                  children: [
+                    Expanded(
+                      child: _buildTotalItem(
+                        label: tr.openingBalance,
+                        value: openingSys,
+                        color: Theme.of(context).colorScheme.outline,
+                        symbol: baseCcy ?? '',
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _buildTotalItem(
+                        label: tr.closingBalance,
+                        value: closingSys,
+                        color: Colors.green,
+                        symbol: baseCcy ?? '',
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _buildTotalItem(
+                        label: tr.cashFlow,
+                        value: cashFlowSys,
+                        color: cashFlowSys >= 0 ? Colors.green : Colors.red,
+                        symbol: baseCcy ?? '',
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),
@@ -541,21 +548,23 @@ class _DesktopState extends State<_Desktop> {
         ),
         const SizedBox(height: 4),
         Row(
-          spacing: 5,
           children: [
-            Text(
-              value.toAmount(),
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: color,
+            Flexible(
+              child: Text(
+                value.toAmount(),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
+            const SizedBox(width: 4),
             Text(
               symbol,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 color: color.withValues(alpha: .8),
                 fontWeight: FontWeight.w500,
               ),
@@ -566,15 +575,11 @@ class _DesktopState extends State<_Desktop> {
     );
   }
 
-  void _printReport() {
-
-  }
+  void _printReport() {}
 }
 
-// Tablet View
+// Fixed Tablet View
 class _Tablet extends StatelessWidget {
-
-
   const _Tablet();
 
   @override
@@ -582,32 +587,45 @@ class _Tablet extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.cashBalances),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              // Add refresh logic
+            },
+          ),
+        ],
       ),
-      body: Center(
-        child: _buildContent(context),
-      ),
+      body: _buildContent(context),
     );
   }
 
   Widget _buildContent(BuildContext context) {
     return BlocBuilder<CashBalancesBloc, CashBalancesState>(
       builder: (context, state) {
+        if (state is CashBalancesLoadingState) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state is CashBalancesErrorState) {
+          return Center(
+            child: NoDataWidget(
+              message: state.error,
+              onRefresh: () {
+                // Add refresh logic
+              },
+            ),
+          );
+        }
+
         if (state is CashBalancesLoadedState) {
           return Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(12.0),
             child: _buildBranchDetails(state.cash, context),
           );
         }
 
-        if (state is CashBalancesLoadingState) {
-          return const CircularProgressIndicator();
-        }
-
-        if (state is CashBalancesErrorState) {
-          return Text('Error: ${state.error}');
-        }
-
-        return const Text('Select a branch to view cash balance');
+        return const SizedBox();
       },
     );
   }
@@ -617,10 +635,22 @@ class _Tablet extends StatelessWidget {
 
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildBranchInfoCard(branch, tr, context),
           const SizedBox(height: 16),
+          Text(
+            tr.currencyBalances,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 12),
           _buildCurrencyCards(branch, tr, context),
+          const SizedBox(height: 16),
+          _buildTotalsCard(branch, tr, context),
         ],
       ),
     );
@@ -628,6 +658,7 @@ class _Tablet extends StatelessWidget {
 
   Widget _buildBranchInfoCard(CashBalancesModel branch, AppLocalizations tr, BuildContext context) {
     return ZCover(
+      radius: 8,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -641,10 +672,47 @@ class _Tablet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Text('${tr.address}: ${branch.address ?? 'N/A'}'),
-            Text('${tr.mobile1}: ${branch.brcPhone ?? 'N/A'}'),
+            Wrap(
+              spacing: 16,
+              runSpacing: 8,
+              children: [
+                _buildTabletInfoChip('${tr.branchId}:', branch.brcId?.toString() ?? 'N/A'),
+                _buildTabletInfoChip(tr.address, branch.address ?? 'N/A'),
+                _buildTabletInfoChip(tr.mobile1, branch.brcPhone ?? 'N/A'),
+                _buildTabletInfoChip(
+                  tr.status,
+                  branch.brcStatus == 1 ? tr.active : tr.inactive,
+                ),
+              ],
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildTabletInfoChip(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.grey.withValues(alpha: .1),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '$label ',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 12),
+          ),
+        ],
       ),
     );
   }
@@ -652,282 +720,102 @@ class _Tablet extends StatelessWidget {
   Widget _buildCurrencyCards(CashBalancesModel branch, AppLocalizations tr, BuildContext context) {
     if (branch.records == null || branch.records!.isEmpty) {
       return Center(
-        child: Text(
-          'No cash records',
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.outline,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text(
+            'No cash records found',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.outline,
+            ),
           ),
         ),
       );
     }
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1.3,
-      ),
-      itemCount: branch.records!.length,
-      itemBuilder: (context, index) {
-        return _buildSimpleCurrencyCard(branch.records![index], context);
-      },
-    );
-  }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        int crossAxisCount = constraints.maxWidth > 700 ? 3 : 2;
 
-  Widget _buildSimpleCurrencyCard(Record record, BuildContext context) {
-    final closing = double.tryParse(record.closingBalance ?? '0') ?? 0;
-
-    return ZCover(
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              record.ccyName ?? record.trdCcy ?? '',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "${closing.toAmount()} ${record.trdCcy}",
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-              ),
-            ),
-            Text(
-                AppLocalizations.of(context)!.closingBalance,
-              style: TextStyle(
-                fontSize: 12,
-                color: Theme.of(context).colorScheme.outline,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Mobile View
-class _Mobile extends StatelessWidget {
-  const _Mobile();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-         AppLocalizations.of(context)!.cashBalances,
-        ),
-      ),
-      body: _buildContent(context),
-    );
-  }
-
-  Widget _buildContent(BuildContext context) {
-    return BlocBuilder<CashBalancesBloc, CashBalancesState>(
-      builder: (context, state) {
-        if (state is CashBalancesLoadedState) {
-          return _buildMobileDetails(state.cash, context);
-        }
-
-        if (state is CashBalancesLoadingState) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (state is CashBalancesErrorState) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Error: ${state.error}',
-                style: const TextStyle(color: Colors.red),
-              ),
-            ),
-          );
-        }
-
-        return const Center(
-          child: Text('Select a branch to view cash balance'),
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1.3,
+          ),
+          itemCount: branch.records!.length,
+          itemBuilder: (context, index) {
+            return _buildTabletCurrencyCard(branch.records![index], context, tr);
+          },
         );
       },
     );
   }
 
-  Widget _buildMobileDetails(CashBalancesModel branch, BuildContext context) {
-    final tr = AppLocalizations.of(context)!;
-
-    return ListView(
-      padding: const EdgeInsets.all(12.0),
-      children: [
-        // Branch Info
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  branch.brcName ?? 'Unknown Branch',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _buildMobileInfoRow('ID:', branch.brcId?.toString() ?? 'N/A'),
-                _buildMobileInfoRow(tr.address, branch.address ?? 'N/A'),
-                _buildMobileInfoRow(tr.mobile1, branch.brcPhone ?? 'N/A'),
-                _buildMobileInfoRow(
-                  tr.status,
-                  branch.brcStatus == 1 ? tr.active : tr.inactive,
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 16),
-
-        // Currency Balances
-        Text(
-          'Currency Balances',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        ),
-
-        const SizedBox(height: 12),
-
-        if (branch.records != null && branch.records!.isNotEmpty)
-          ...branch.records!.map((record) =>
-              _buildMobileCurrencyCard(record, context)
-          ),
-
-        const SizedBox(height: 16),
-
-        // Grand Total
-        Card(
-          color: Colors.purple.withValues(alpha: .05),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Grand Total (SYS)',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.purple,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _buildMobileTotalRow(
-                  'Opening:',
-                  _calculateTotalOpeningSys(branch),
-                  'SYS',
-                ),
-                _buildMobileTotalRow(
-                  'Closing:',
-                  _calculateTotalClosingSys(branch),
-                  'SYS',
-                ),
-                _buildMobileTotalRow(
-                  'Cash Flow:',
-                  _calculateTotalCashFlowSys(branch),
-                  'SYS',
-                  isCashFlow: true,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMobileInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        children: [
-          Text(
-            '$label ',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-            ),
-          ),
-          Expanded(
-            child: Text(value),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMobileCurrencyCard(Record record, BuildContext context) {
+  Widget _buildTabletCurrencyCard(Record record, BuildContext context, AppLocalizations tr) {
     final opening = double.tryParse(record.openingBalance ?? '0') ?? 0;
     final closing = double.tryParse(record.closingBalance ?? '0') ?? 0;
     final cashFlow = closing - opening;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8.0),
+    return ZCover(
+      radius: 8,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  record.ccyName ?? record.trdCcy ?? '',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                Expanded(
+                  child: Text(
+                    record.ccyName ?? record.trdCcy ?? '',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Text(
-                  record.trdCcy ?? '',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Theme.of(context).colorScheme.outline,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Utils.currencyColors(record.trdCcy ?? ''),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    record.trdCcy ?? '',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Theme.of(context).colorScheme.surface,
+                    ),
                   ),
                 ),
               ],
             ),
-
-            const Divider(height: 16),
-
-            _buildMobileBalanceRow('Opening:', opening, record.trdCcy ?? ''),
-            _buildMobileBalanceRow('Closing:', closing, record.trdCcy ?? ''),
-
+            const Divider(height: 12),
+            _buildTabletBalanceRow(tr.opening, opening, record.trdCcy ?? ''),
+            const SizedBox(height: 2),
+            _buildTabletBalanceRow(tr.closing, closing, record.trdCcy ?? ''),
             const SizedBox(height: 8),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Cash Flow:',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                Text(
+                  tr.cashFlow,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
                   ),
                 ),
                 Text(
                   "${cashFlow.toAmount()} ${record.trdCcy}",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
+                    fontSize: 13,
                     color: cashFlow >= 0 ? Colors.green : Colors.red,
                   ),
                 ),
@@ -939,86 +827,535 @@ class _Mobile extends StatelessWidget {
     );
   }
 
-  Widget _buildMobileBalanceRow(String label, double amount, String symbol) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
+  Widget _buildTabletBalanceRow(String label, double amount, String symbol) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12),
+        ),
+        Flexible(
+          child: Text(
+            "${amount.toAmount()} $symbol",
             style: const TextStyle(
+              fontSize: 13,
               fontWeight: FontWeight.w500,
             ),
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.end,
           ),
-          Text(
-            "${amount.toAmount()} $symbol",
-            style: TextStyle(
-              fontWeight: label.contains('Closing')
-                  ? FontWeight.bold
-                  : FontWeight.normal,
-              color: label.contains('Closing')
-                  ? Colors.green
-                  : Colors.black,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTotalsCard(CashBalancesModel branch, AppLocalizations tr, BuildContext context) {
+    double totalOpening = 0;
+    double totalClosing = 0;
+
+    if (branch.records != null) {
+      for (var record in branch.records!) {
+        totalOpening += double.tryParse(record.openingSysEquivalent ?? '0') ?? 0;
+        totalClosing += double.tryParse(record.closingSysEquivalent ?? '0') ?? 0;
+      }
+    }
+
+    final totalCashFlow = totalClosing - totalOpening;
+
+    return ZCover(
+      color: Colors.purple.withValues(alpha: .05),
+      radius: 8,
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              tr.grandTotal,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.purple,
+                fontSize: 16,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildTabletTotalItem(tr.opening, totalOpening),
+                ),
+                Expanded(
+                  child: _buildTabletTotalItem(tr.closing, totalClosing),
+                ),
+                Expanded(
+                  child: _buildTabletTotalItem(tr.cashFlow, totalCashFlow,
+                      isCashFlow: true),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildMobileTotalRow(
-      String label,
-      double amount,
-      String symbol, {
-        bool isCashFlow = false,
-      }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
-            ),
+  Widget _buildTabletTotalItem(String label, double value, {bool isCashFlow = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey.shade600,
           ),
-          Text(
-            "${amount.toAmount()} $symbol",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: isCashFlow
-                  ? (amount >= 0 ? Colors.green : Colors.red)
-                  : Colors.purple,
-            ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value.toAmount(),
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: isCashFlow
+                ? (value >= 0 ? Colors.green : Colors.red)
+                : Colors.purple,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// Fixed Mobile View
+class _Mobile extends StatefulWidget {
+  const _Mobile();
+
+  @override
+  State<_Mobile> createState() => _MobileState();
+}
+
+class _MobileState extends State<_Mobile> {
+  String? baseCcy;
+  int? branchId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAuth();
+  }
+
+  void _loadAuth() {
+    try {
+      final auth = context.read<AuthBloc>().state;
+      if (auth is AuthenticatedState) {
+        branchId = auth.loginData.usrBranch;
+        baseCcy = auth.loginData.company?.comLocalCcy;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          context.read<CashBalancesBloc>().add(
+            LoadCashBalanceBranchWiseEvent(branchId: branchId),
+          );
+        });
+      }
+    } catch (e) {
+      branchId = null;
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          AppLocalizations.of(context)!.cashBalances,
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              // Add refresh logic
+            },
           ),
         ],
+      ),
+      body: _buildContent(context),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    return BlocBuilder<CashBalancesBloc, CashBalancesState>(
+      builder: (context, state) {
+        if (state is CashBalancesLoadingState) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state is CashBalancesErrorState) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: NoDataWidget(
+                message: state.error,
+                onRefresh: () {
+                  // Add refresh logic
+                },
+              ),
+            ),
+          );
+        }
+
+        if (state is CashBalancesLoadedState) {
+          return _buildMobileDetails(state.cash, context);
+        }
+
+        return const SizedBox();
+      },
+    );
+  }
+
+  Widget _buildMobileDetails(CashBalancesModel branch, BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
+
+    return ListView(
+      padding: const EdgeInsets.all(12.0),
+      children: [
+        // Branch Info Card
+        ZCover(
+          radius: 8,
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        branch.brcName ?? 'Unknown Branch',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: branch.brcStatus == 1 ? Colors.green : Colors.grey,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        branch.brcStatus == 1 ? tr.active : tr.inactive,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _buildMobileInfoRow(Icons.badge, '${tr.branchId}:', branch.brcId?.toString() ?? 'N/A'),
+                const SizedBox(height: 8),
+                _buildMobileInfoRow(Icons.location_on, tr.address, branch.address ?? 'N/A'),
+                const SizedBox(height: 8),
+                _buildMobileInfoRow(Icons.phone, tr.mobile1, branch.brcPhone ?? 'N/A'),
+                const SizedBox(height: 8),
+                _buildMobileInfoRow(Icons.calendar_today, tr.entryDate,
+                    branch.brcEntryDate?.toLocal().toString().split(' ')[0] ?? 'N/A'),
+              ],
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        // Currency Balances Section
+        Text(
+          tr.currencyBalances,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        if (branch.records != null && branch.records!.isNotEmpty)
+          ...branch.records!.map((record) => Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: _buildMobileCurrencyCard(record, context, tr),
+          ))
+        else
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                'No cash records found',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.outline,
+                ),
+              ),
+            ),
+          ),
+
+        const SizedBox(height: 16),
+
+        // Grand Total Card
+        _buildMobileGrandTotal(branch, context, tr),
+      ],
+    );
+  }
+
+  Widget _buildMobileInfoRow(IconData icon, String label, String value) {
+    final color = Theme.of(context).colorScheme;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 16, color: color.outline),
+        const SizedBox(width: 8),
+        Expanded(
+          child: RichText(
+            text: TextSpan(
+              style: TextStyle(color: color.onSurface, fontSize: 13),
+              children: [
+                TextSpan(
+                  text: label,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                TextSpan(text: ' $value'),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMobileCurrencyCard(Record record, BuildContext context, AppLocalizations tr) {
+    final opening = double.tryParse(record.openingBalance ?? '0') ?? 0;
+    final closing = double.tryParse(record.closingBalance ?? '0') ?? 0;
+    final openingSys = double.tryParse(record.openingSysEquivalent ?? '0') ?? 0;
+    final closingSys = double.tryParse(record.closingSysEquivalent ?? '0') ?? 0;
+    final cashFlow = closing - opening;
+    final cashFlowSys = closingSys - openingSys;
+
+    return ZCover(
+      radius: 8,
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          children: [
+            // Header
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    record.ccyName ?? record.trdCcy ?? '',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: Utils.currencyColors(record.trdCcy ?? ""),
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Utils.currencyColors(record.trdCcy ?? ''),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    record.trdCcy ?? '',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.surface,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // Local Currency Balances
+            Row(
+              children: [
+                Expanded(
+                  child: _buildMobileLabelValue(
+                    tr.opening,
+                    "${opening.toAmount()} ${record.trdCcy}",
+                  ),
+                ),
+                Expanded(
+                  child: _buildMobileLabelValue(
+                    tr.closing,
+                    "${closing.toAmount()} ${record.trdCcy}",
+                    isHighlighted: true,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 8),
+
+            // System Equivalent
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: .05),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildMobileLabelValue(
+                      '${tr.opening} (Sys)',
+                      "${openingSys.toAmount()} ${baseCcy ?? ''}",
+                    ),
+                  ),
+                  Expanded(
+                    child: _buildMobileLabelValue(
+                      '${tr.closing} (Sys)',
+                      "${closingSys.toAmount()} ${baseCcy ?? ''}",
+                      isHighlighted: true,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            // Cash Flow
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: (cashFlow >= 0 ? Colors.green : Colors.red).withValues(alpha: .05),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    tr.cashFlow,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        "${cashFlow.toAmount()} ${record.trdCcy}",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: cashFlow >= 0 ? Colors.green : Colors.red,
+                        ),
+                      ),
+                      Text(
+                        "${cashFlowSys.toAmount()} ${baseCcy ?? ''}",
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: cashFlowSys >= 0 ? Colors.green : Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  double _calculateTotalOpeningSys(CashBalancesModel branch) {
-    double total = 0;
-    if (branch.records != null) {
-      for (var record in branch.records!) {
-        total += double.tryParse(record.openingSysEquivalent ?? '0') ?? 0;
-      }
-    }
-    return total;
+  Widget _buildMobileLabelValue(String label, String value, {bool isHighlighted = false}) {
+    final color = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: color.outline.withValues(alpha: .6),
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
+            color: isHighlighted ? Colors.green : null,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
   }
 
-  double _calculateTotalClosingSys(CashBalancesModel branch) {
-    double total = 0;
+  Widget _buildMobileGrandTotal(CashBalancesModel branch, BuildContext context, AppLocalizations tr) {
+    double totalOpening = 0;
+    double totalClosing = 0;
+
     if (branch.records != null) {
       for (var record in branch.records!) {
-        total += double.tryParse(record.closingSysEquivalent ?? '0') ?? 0;
+        totalOpening += double.tryParse(record.openingSysEquivalent ?? '0') ?? 0;
+        totalClosing += double.tryParse(record.closingSysEquivalent ?? '0') ?? 0;
       }
     }
-    return total;
+
+    final totalCashFlow = totalClosing - totalOpening;
+
+    return ZCover(
+      color: Colors.purple.withValues(alpha: .05),
+      radius: 8,
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              tr.grandTotal,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.purple,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _buildMobileTotalRow(tr.openingBalance, totalOpening, ''),
+            const SizedBox(height: 8),
+            _buildMobileTotalRow(tr.closingBalance, totalClosing, ''),
+            const SizedBox(height: 8),
+            _buildMobileTotalRow(tr.cashFlow, totalCashFlow, '', isCashFlow: true),
+          ],
+        ),
+      ),
+    );
   }
 
-  double _calculateTotalCashFlowSys(CashBalancesModel branch) {
-    return _calculateTotalClosingSys(branch) - _calculateTotalOpeningSys(branch);
+  Widget _buildMobileTotalRow(String label, double value, String symbol, {bool isCashFlow = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14),
+        ),
+        Text(
+          value.toAmount(),
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: isCashFlow
+                ? (value >= 0 ? Colors.green : Colors.red)
+                : Colors.purple,
+          ),
+        ),
+      ],
+    );
   }
 }

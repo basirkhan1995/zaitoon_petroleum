@@ -141,6 +141,7 @@ class _BranchDropdownState extends State<BranchDropdown> {
             }
           },
           isLoading: isLoading,
+          // FIXED: Only pass customTitle when we have content to show
           customTitle: _buildTitle(context, isLoading),
           radius: widget.radius,
         );
@@ -148,8 +149,20 @@ class _BranchDropdownState extends State<BranchDropdown> {
     );
   }
 
-  Widget _buildTitle(BuildContext context, bool isLoading) {
+  // FIXED: This method now handles empty titles properly
+  Widget? _buildTitle(BuildContext context, bool isLoading) {
+    // If loading, always show loading indicator (with or without title)
     if (isLoading) {
+      // If title is empty, show only the loading indicator
+      if (widget.title.isEmpty) {
+        return const SizedBox(
+          width: 15,
+          height: 15,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        );
+      }
+
+      // If title is not empty, show title with loading indicator
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -169,6 +182,13 @@ class _BranchDropdownState extends State<BranchDropdown> {
         ],
       );
     }
+
+    // If not loading and title is empty, return null (no custom title)
+    if (widget.title.isEmpty) {
+      return null;
+    }
+
+    // If not loading and title is not empty, show title text
     return Text(
       widget.title,
       style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 12),
