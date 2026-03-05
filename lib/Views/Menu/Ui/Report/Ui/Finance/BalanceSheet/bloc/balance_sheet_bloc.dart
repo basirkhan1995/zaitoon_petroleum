@@ -13,7 +13,7 @@ class BalanceSheetBloc extends Bloc<BalanceSheetEvent, BalanceSheetState> {
     on<LoadBalanceSheet>((event, emit) async {
       emit(BalanceSheetLoading());
       try {
-        final data = await _repo.balanceSheet();
+        final data = await _repo.balanceSheet(branchCode: event.branchCode);
         emit(BalanceSheetLoaded(data));
       } catch (e) {
         emit(BalanceSheetError(e.toString()));

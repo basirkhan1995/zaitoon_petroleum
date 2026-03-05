@@ -7,4 +7,7 @@ sealed class BalanceSheetEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-final class LoadBalanceSheet extends BalanceSheetEvent {}
+final class LoadBalanceSheet extends BalanceSheetEvent {
+  final int? branchCode;
+  const LoadBalanceSheet({this.branchCode});
+}

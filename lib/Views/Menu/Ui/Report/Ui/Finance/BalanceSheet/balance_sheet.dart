@@ -12,6 +12,9 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import '../../../../../../../Features/PrintSettings/print_preview.dart';
 import '../../../../../../../Features/PrintSettings/report_model.dart';
+import '../../../../../../Auth/bloc/auth_bloc.dart';
+import '../../../../../../Auth/models/login_model.dart';
+import '../../../../HR/Ui/Users/features/branch_dropdown.dart';
 import 'PDF/pdf.dart';
 import 'bloc/balance_sheet_bloc.dart';
 import 'model/bs_model.dart';
@@ -38,10 +41,18 @@ class _DesktopBalanceSheet extends StatefulWidget {
 }
 
 class _DesktopBalanceSheetState extends State<_DesktopBalanceSheet> {
+  String? ccy;
+  int? branchCode;
+  LoginData? loginData;
   @override
   void initState() {
+    final authState = context.read<AuthBloc>().state;
+    if(authState is AuthenticatedState){
+      loginData = authState.loginData;
+      ccy = loginData?.company?.comLocalCcy;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<BalanceSheetBloc>().add(LoadBalanceSheet());
+      context.read<BalanceSheetBloc>().add(LoadBalanceSheet(branchCode: loginData?.usrBranch));
     });
     super.initState();
   }
@@ -53,10 +64,24 @@ class _DesktopBalanceSheetState extends State<_DesktopBalanceSheet> {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 90,
         title: Text(AppLocalizations.of(context)!.balanceSheet),
         titleSpacing: 0,
         actionsPadding: const EdgeInsets.all(8),
         actions: [
+          SizedBox(width: 8),
+          SizedBox(
+            width: 200,
+            child: BranchDropdown(
+                title: "",
+                showAllOption: true,
+                selectedId: loginData?.usrBranch,
+                onBranchSelected: (e){
+                  context.read<BalanceSheetBloc>().add(LoadBalanceSheet(branchCode: e?.brcId)
+                  );
+                }),
+          ),
+          SizedBox(width: 8),
           ZOutlineButton(
             width: 100,
             icon: Icons.refresh,
@@ -66,25 +91,25 @@ class _DesktopBalanceSheetState extends State<_DesktopBalanceSheet> {
             label: Text(AppLocalizations.of(context)!.refresh),
           ),
           const SizedBox(width: 8),
-          BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
+          BlocBuilder<AuthBloc, AuthState>(
             builder: (context, comState) {
-              if (comState is CompanyProfileLoadedState) {
-                baseCurrency = comState.company.comLocalCcy;
-                company.comName = comState.company.comName ?? "";
-                company.comAddress = comState.company.addName ?? "";
-                company.compPhone = comState.company.comPhone ?? "";
-                company.comEmail = comState.company.comEmail ?? "";
+              if (comState is AuthenticatedState) {
+                baseCurrency = comState.loginData.company?.comLocalCcy;
+                company.comName = comState.loginData.company?.comName ?? "";
+                company.comAddress = comState.loginData.usrFullName ?? "";
+                company.compPhone = comState.loginData.company?.comPHone ?? "";
+                company.comEmail = comState.loginData.company?.comEmail ?? "";
                 company.statementDate = DateTime.now().toFullDateTime;
-                company.baseCurrency = comState.company.comLocalCcy;
-
-                final base64Logo = comState.company.comLogo;
-                if (base64Logo != null && base64Logo.isNotEmpty) {
-                  try {
-                    company.comLogo = base64Decode(base64Logo);
-                  } catch (e) {
-                    company.comLogo = Uint8List(0);
-                  }
-                }
+                company.baseCurrency = comState.loginData.company?.comLocalCcy;
+                //
+                // final base64Logo = comState.company.comLogo;
+                // if (base64Logo != null && base64Logo.isNotEmpty) {
+                //   try {
+                //     company.comLogo = base64Decode(base64Logo);
+                //   } catch (e) {
+                //     company.comLogo = Uint8List(0);
+                //   }
+                // }
               }
 
               return BlocBuilder<BalanceSheetBloc, BalanceSheetState>(

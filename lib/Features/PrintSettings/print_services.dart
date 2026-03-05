@@ -1701,6 +1701,26 @@ abstract class PrintServices {
         'fa': 'ارز',
         'ar': 'العملة',
       },
+      'stockReport': {
+        'en': 'Stock Report',
+        'fa': 'گزارش انبار',
+        'ar': 'تقرير المخزون',
+      },
+      'totalItems': {
+        'en': 'Total Items',
+        'fa': 'تعداد کالاها',
+        'ar': 'إجمالي العناصر',
+      },
+      'totalQuantity': {
+        'en': 'Total Quantity',
+        'fa': 'مجموع مقدار',
+        'ar': 'الكمية الإجمالية',
+      },
+      'totalValue': {
+        'en': 'Total Value',
+        'fa': 'ارزش کل',
+        'ar': 'القيمة الإجمالية',
+      },
     };
 
     // Default to English if language not found

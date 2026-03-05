@@ -2594,9 +2594,10 @@ class Repositories {
     return [];
   }
 
-  Future<BalanceSheetModel> balanceSheet({CancelToken? cancelToken}) async {
+  Future<BalanceSheetModel> balanceSheet({int? branchCode, CancelToken? cancelToken}) async {
     final response = await api.get(
       endpoint: "/reports/balanceSheet.php",
+      queryParams: {"branch": branchCode},
       cancelToken: cancelToken,
     );
 

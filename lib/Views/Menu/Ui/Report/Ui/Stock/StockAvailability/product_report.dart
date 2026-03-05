@@ -1,20 +1,28 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/no_data_widget.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/StockAvailability/bloc/product_report_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/StockAvailability/features/storage_drop.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Stock/StockAvailability/print_stock.dart';
 import '../../../../../../../Features/Generic/rounded_searchable_textfield.dart';
+import '../../../../../../../Features/PrintSettings/print_preview.dart';
+import '../../../../../../../Features/PrintSettings/report_model.dart';
 import '../../../../../../../Features/Widgets/z_dragable_sheet.dart';
 import '../../../../../../../Localizations/Bloc/localizations_bloc.dart';
 import '../../../../Settings/Ui/Company/CompanyProfile/bloc/company_profile_bloc.dart';
 import '../../../../Settings/Ui/Stock/Ui/Products/bloc/products_bloc.dart';
 import '../../../../Settings/Ui/Stock/Ui/Products/model/product_model.dart';
 import '../../Transport/Shipments/features/status_drop.dart';
+import 'model/product_report_model.dart';
 
 
 class ProductReportView extends StatelessWidget {
@@ -1045,9 +1053,9 @@ class _DesktopState extends State<_Desktop> {
 
   String? _getBaseCurrency() {
     try {
-      final companyState = context.read<CompanyProfileBloc>().state;
-      if (companyState is CompanyProfileLoadedState) {
-        return companyState.company.comLocalCcy;
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthenticatedState) {
+        return authState.loginData.company?.comLocalCcy;
       }
       return "";
     } catch (e) {
@@ -1102,7 +1110,7 @@ class _DesktopState extends State<_Desktop> {
               width: 100,
               icon: Icons.print,
               backgroundHover: Theme.of(context).colorScheme.error,
-              onPressed: (){},
+              onPressed: _printProductReport,
               label: Text(tr.print)),
           SizedBox(width: 8),
           ZOutlineButton(
@@ -1268,41 +1276,104 @@ class _DesktopState extends State<_Desktop> {
                       enableAction: false,
                     );
                   }
-                  return ListView.builder(
-                      itemCount: state.stock.length,
-                      itemBuilder: (context,index){
-                        final stk = state.stock[index];
-                        return Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20,vertical: 8),
-                          margin:  EdgeInsets.symmetric(horizontal: 15),
-                          decoration: BoxDecoration(
-                              color: index.isEven? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent
-                          ),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                  width: 40,
-                                  child: Text(stk.no.toString())),
-                              Expanded(
-                                  child: Text(stk.proName??"")),
-                              SizedBox(
-                                  width: 150,
-                                  child: Text(stk.stgName??"")),
 
-                              SizedBox(
-                                  width: 150,
-                                  child: Text("${stk.pricePerUnit.toAmount()} $baseCcy")),
+                  // Calculate totals
+                  double totalQuantity = 0;
+                  double totalValue = 0;
 
-                              SizedBox(
-                                  width: 120,
-                                  child: Text(stk.availableQuantity.toAmount(decimal: 4))),
-                              SizedBox(
-                                  width: 120,
-                                  child: Text("${stk.total.toAmount(decimal: 2)} $baseCcy")),
-                            ],
-                          ),
-                        );
-                      });
+                  for (var item in state.stock) {
+                    totalQuantity += double.tryParse(item.availableQuantity ?? '0') ?? 0;
+                    totalValue += double.tryParse(item.total ?? '0') ?? 0;
+                  }
+
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: state.stock.length,
+                          itemBuilder: (context, index){
+                            final stk = state.stock[index];
+                            return Container(
+                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                              margin: EdgeInsets.symmetric(horizontal: 15),
+                              decoration: BoxDecoration(
+                                  color: index.isEven ? Theme.of(context).colorScheme.primary.withValues(alpha: .05) : Colors.transparent
+                              ),
+                              child: Row(
+                                children: [
+                                  SizedBox(width: 40, child: Text(stk.no.toString())),
+                                  Expanded(child: Text(stk.proName ?? "")),
+                                  SizedBox(width: 150, child: Text(stk.stgName ?? "")),
+                                  SizedBox(width: 150, child: Text("${stk.pricePerUnit.toAmount()} $baseCcy")),
+                                  SizedBox(width: 120, child: Text(stk.availableQuantity.toAmount(decimal: 4))),
+                                  SizedBox(width: 120, child: Text("${stk.total.toAmount(decimal: 2)} $baseCcy")),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+
+                      // Total Summary Section
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        margin: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: .1),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: .3)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                tr.totalTitle,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.surface,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 24),
+                            // Total Quantity
+                            SizedBox(
+                              width: 120,
+                              child: Text(
+                                totalQuantity.toAmount(decimal: 4),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                            const SizedBox(width: 24),
+                            // Total Value
+                            SizedBox(
+                              width: 120,
+                              child: Text(
+                                "${totalValue.toAmount()} $baseCcy",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                            const SizedBox(width: 40),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  );
                 }
                 return const SizedBox();
               },
@@ -1311,5 +1382,142 @@ class _DesktopState extends State<_Desktop> {
         ],
       ),
     );
+  }
+  Future<void> _printProductReport() async {
+    final state = context.read<ProductReportBloc>().state;
+
+    if (state is ProductReportLoadedState) {
+      // Get company info
+      final companyState = context.read<CompanyProfileBloc>().state;
+      ReportModel company = ReportModel();
+
+      if (companyState is CompanyProfileLoadedState) {
+        company = ReportModel(
+          comName: companyState.company.comName ?? '',
+          comAddress: companyState.company.addName ?? '',
+          compPhone: companyState.company.comPhone ?? '',
+          comEmail: companyState.company.comEmail ?? '',
+          statementDate: DateTime.now().toFullDateTime,
+          comLogo: companyState.company.comLogo != null
+              ? base64Decode(companyState.company.comLogo!)
+              : null,
+        );
+      }
+
+      // Get storage name if selected
+      String? storageName;
+      if (storageId != null) {
+        storageName = await _getStorageName(storageId);
+      }
+
+      // Get product name if selected
+      String? selectedProductName;
+      if (productId != null && productController.text.isNotEmpty) {
+        selectedProductName = productController.text;
+      }
+
+      // Get status name
+      String? statusName;
+      if (isNoStock != null) {
+        statusName = isNoStock == 1 ? "Available" : "Out of Stock";
+      }
+
+      // CHECK MOUNTED HERE - immediately after async operations
+      if (!mounted) return;
+
+      showDialog(
+        context: context,
+        builder: (_) => PrintPreviewDialog<List<ProductReportModel>>(
+          data: state.stock,
+          company: company,
+          buildPreview: ({
+            required data,
+            required language,
+            required orientation,
+            required pageFormat,
+          }) {
+            return ProductReportPrintSettings().printPreview(
+              products: data,
+              language: language,
+              orientation: orientation,
+              company: company,
+              pageFormat: pageFormat,
+              baseCurrency: baseCcy,
+              storageId: storageId,
+              storageName: storageName,
+              productId: productId,
+              productName: selectedProductName,
+              stockStatus: isNoStock,
+              statusName: statusName,
+            );
+          },
+          onPrint: ({
+            required data,
+            required language,
+            required orientation,
+            required pageFormat,
+            required selectedPrinter,
+            required copies,
+            required pages,
+          }) {
+            return ProductReportPrintSettings().printDocument(
+              products: data,
+              language: language,
+              orientation: orientation,
+              company: company,
+              pageFormat: pageFormat,
+              selectedPrinter: selectedPrinter,
+              copies: copies,
+              pages: pages,
+              baseCurrency: baseCcy,
+              storageId: storageId,
+              storageName: storageName,
+              productId: productId,
+              productName: selectedProductName,
+              stockStatus: isNoStock,
+              statusName: statusName,
+            );
+          },
+          onSave: ({
+            required data,
+            required language,
+            required orientation,
+            required pageFormat,
+          }) {
+            return ProductReportPrintSettings().createDocument(
+              products: data,
+              language: language,
+              orientation: orientation,
+              company: company,
+              pageFormat: pageFormat,
+              baseCurrency: baseCcy,
+              storageId: storageId,
+              storageName: storageName,
+              productId: productId,
+              productName: selectedProductName,
+              stockStatus: isNoStock,
+              statusName: statusName,
+            );
+          },
+        ),
+      );
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please load data first'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    }
+  }
+
+// Helper to get storage name (implement based on your app)
+  Future<String?> _getStorageName(int? storageId) async {
+    if (storageId == null) return null;
+    // You can get this from your StorageBloc or database
+    // For now, return a placeholder
+    await Future.delayed(Duration.zero); // Simulate async
+    return "Storage $storageId";
   }
 }
