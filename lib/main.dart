@@ -24,6 +24,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/bloc/employee_bl
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/UserDetail/Ui/Log/bloc/user_log_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/UserDetail/bloc/user_details_tab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/bloc/users_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/UserRoleDrop/bloc/user_role_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/bloc/hrtab_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/bloc/fetch_atat_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchGLAT/bloc/glat_bloc.dart';
@@ -195,6 +196,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ServicesBloc(Repositories(ApiServices()))..add(LoadServicesEvent())),
         BlocProvider(create: (context) => ProjectServicesBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => ProjectIncExpBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => UserRoleBloc(Repositories(ApiServices()))),
+
         ///Report Bloc
         BlocProvider(create: (context) => AccStatementBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => TxnRefReportBloc(Repositories(ApiServices()))),

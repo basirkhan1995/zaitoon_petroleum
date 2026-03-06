@@ -13,6 +13,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/GlCategori
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/GlAccounts/model/gl_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Employees/model/emp_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/UserDetail/Ui/Log/model/user_log_model.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/features/UserRoleDrop/user_role_drop.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/HR/Ui/Users/model/usr_report_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/model/fetch_atat_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchTRPT/model/trtp_model.dart';
@@ -590,6 +591,58 @@ class Repositories {
     return response.data;
   }
 
+  ///Roles .....................................................................
+  Future<List<UserRoleModel>> getUserRole({int? usrOwner, CancelToken? cancelToken,}) async {
+
+    // Fetch data from API
+    final response = await api.get(
+      endpoint: "/setting/userRoles.php",
+      cancelToken: cancelToken,
+    );
+
+    // Handle error messages from server
+    if (response.data is Map<String, dynamic> && response.data['msg'] != null) {
+      throw Exception(response.data['msg']);
+    }
+
+    // If data is null or empty, return empty list
+    if (response.data == null ||
+        (response.data is List && response.data.isEmpty)) {
+      return [];
+    }
+
+    // Parse list of stakeholders safely
+    if (response.data is List) {
+      return (response.data as List)
+          .whereType<Map<String, dynamic>>() // ensure map type
+          .map((json) => UserRoleModel.fromMap(json))
+          .toList();
+    }
+
+    return [];
+  }
+  Future<Map<String, dynamic>> addNewRole({required String usrName, required String roleName}) async {
+    final response = await api.post(
+      endpoint: "/setting/userRoles.php",
+      data: {
+        "usrName": usrName,
+        "rolName": roleName
+      }
+    );
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> editUserRole({required String usrName, required int roleId, required String roleName}) async {
+    final response = await api.put(
+      endpoint: "/setting/userRoles.php",
+      data:  {
+        "usrName": usrName,
+        "rolName": roleName,
+        "rolID": roleId
+      },
+    );
+    return response.data;
+  }
   ///Employees .................................................................
   Future<List<EmployeeModel>> getEmployees({
     String? cat,
