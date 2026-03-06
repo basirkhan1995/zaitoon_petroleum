@@ -925,5 +925,7 @@
   "noPandLMessage": "تر اوسه د ګټې او تاوان حسابونه ثبت شوي نه دي",
   "allBalancesTitle": "ټولې بیلانسونه",
   "filterTitle": "فلتر",
-  "averageTitle": "نرخ اوسط"
+  "averageTitle": "نرخ اوسط",
+  "rolesAndPermissions": "دندې او اجازې",
+  "profileSettings": "تنظیمات پروفایل"
 }

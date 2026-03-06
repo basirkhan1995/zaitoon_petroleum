@@ -144,13 +144,17 @@ class GenericMenuWithScreen<T> extends StatefulWidget {
 }
 
 class _GenericMenuWithScreenState<T> extends State<GenericMenuWithScreen<T>> {
-  double minScreenSize = 60;
-  double maxScreenSize = 165;
+  late double minScreenSize;
+  late double maxScreenSize;
+
   late bool isMenuExpanded;
 
   @override
   void initState() {
     super.initState();
+    minScreenSize = 60;
+    maxScreenSize = widget.menuWidth ?? 165;
+
     isMenuExpanded = widget.isExpanded;
     _fixInvalidSelection();
   }

@@ -5535,6 +5535,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Average Rate'**
   String get averageTitle;
+
+  /// No description provided for @rolesAndPermissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Roles & Permissions'**
+  String get rolesAndPermissions;
+
+  /// No description provided for @profileSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Settings'**
+  String get profileSettings;
 }
 
 class _AppLocalizationsDelegate

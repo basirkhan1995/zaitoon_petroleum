@@ -2792,4 +2792,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get averageTitle => 'نرخ اوسط';
+
+  @override
+  String get rolesAndPermissions => 'دندې او اجازې';
+
+  @override
+  String get profileSettings => 'تنظیمات پروفایل';
 }

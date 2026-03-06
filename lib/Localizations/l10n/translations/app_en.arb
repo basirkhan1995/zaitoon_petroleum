@@ -925,5 +925,7 @@
   "noPandLMessage": "No P&L yet recorded",
   "allBalancesTitle": "All Balances",
   "filterTitle": "Filter",
-  "averageTitle": "Average Rate"
+  "averageTitle": "Average Rate",
+  "rolesAndPermissions": "Roles & Permissions",
+  "profileSettings": "Profile Settings"
 }

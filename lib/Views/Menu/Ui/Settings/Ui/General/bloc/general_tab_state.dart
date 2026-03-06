@@ -1,6 +1,6 @@
 part of 'general_tab_bloc.dart';
 
-enum GeneralTabName {system, blocked, password, advanced}
+enum GeneralTabName {system, rolesAndPermissions, profileSettings, password}
 
 class GeneralTabState extends Equatable {
   final GeneralTabName tab;

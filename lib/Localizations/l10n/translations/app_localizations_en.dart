@@ -2799,4 +2799,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get averageTitle => 'Average Rate';
+
+  @override
+  String get rolesAndPermissions => 'Roles & Permissions';
+
+  @override
+  String get profileSettings => 'Profile Settings';
 }

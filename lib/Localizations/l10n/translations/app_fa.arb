@@ -925,5 +925,7 @@
   "noPandLMessage": "تا هنوز هیچ حساب سود و زیان ثبت نشده است",
   "allBalancesTitle": "همه بیلانس ها",
   "filterTitle": "فلتر",
-  "averageTitle": "نرخ اوسط"
+  "averageTitle": "نرخ اوسط",
+  "rolesAndPermissions": "نقش‌ها و دسترسی‌ها",
+  "profileSettings": "تنظیمات پروفایل"
 }

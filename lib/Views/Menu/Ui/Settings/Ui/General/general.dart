@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/General/Ui/UserProfileSettings/user_profile_settings.dart';
 import '../../../../../../Features/Generic/generic_menu.dart';
 import '../../../../../../Features/Other/responsive.dart';
 import '../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../../../Auth/models/login_model.dart';
+import 'Ui/RolesAndPermissions/permission_settings.dart';
 import 'Ui/Security/password.dart';
 import 'Ui/System/system.dart';
 import 'bloc/general_tab_bloc.dart';
@@ -41,19 +43,35 @@ class _BaseGeneralView extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     final menuItems = [
+
       if (login.hasPermission(59) ?? false)
         MenuDefinition(
           value: GeneralTabName.system,
           label: AppLocalizations.of(context)!.systemSettings,
           screen: const SystemView(),
-          icon: Icons.tune,
+          icon: Icons.settings,
         ),
+
       if (login.hasPermission(60) ?? false)
         MenuDefinition(
           value: GeneralTabName.password,
           label: AppLocalizations.of(context)!.password,
           screen: const PasswordView(),
           icon: Icons.lock,
+        ),
+      if (login.hasPermission(60) ?? false)
+        MenuDefinition(
+          value: GeneralTabName.rolesAndPermissions,
+          label: AppLocalizations.of(context)!.rolesAndPermissions,
+          screen: const PermissionSettingsView(),
+          icon: Icons.security_rounded,
+        ),
+      if (login.hasPermission(60) ?? false)
+        MenuDefinition(
+          value: GeneralTabName.profileSettings,
+          label: AppLocalizations.of(context)!.profileSettings,
+          screen: const UserProfileSettingsView(),
+          icon: Icons.account_circle,
         ),
     ];
 
@@ -114,16 +132,14 @@ class _BaseGeneralView extends StatelessWidget {
           // Desktop/Tablet layout with side menu
           return GenericMenuWithScreen(
             isExpanded: false,
-            menuWidth: 190,
+            menuWidth: 210,
             padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 8),
             margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 4),
             selectedColor: colorScheme.primary.withValues(alpha: .09),
             selectedTextColor: colorScheme.onSurface,
             unselectedTextColor: colorScheme.secondary,
             selectedValue: blocState.tab,
-            onChanged: (value) => context
-                .read<GeneralTabBloc>()
-                .add(GeneralTabOnChangedEvent(value)),
+            onChanged: (value) => context.read<GeneralTabBloc>().add(GeneralTabOnChangedEvent(value)),
             items: menuItems,
           );
         }
