@@ -18,6 +18,9 @@ class AddUserRoleEvent extends UserRoleEvent {
 }
 
 class UpdateUserRoleEvent extends UserRoleEvent {
+  final String usrName;
+  final String roleName;
+  const UpdateUserRoleEvent({required this.usrName, required this.roleName});
   @override
-  List<Object> get props => [];
+  List<Object> get props => [usrName, roleName];
 }

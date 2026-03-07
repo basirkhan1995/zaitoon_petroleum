@@ -9,6 +9,7 @@ part 'user_role_state.dart';
 class UserRoleBloc extends Bloc<UserRoleEvent, UserRoleState> {
   final Repositories _repo;
   UserRoleBloc(this._repo) : super(UserRoleInitial()) {
+
     on<LoadUserRolesEvent>((event, emit) async{
       try{
         final role = await _repo.getUserRole();
@@ -17,7 +18,6 @@ class UserRoleBloc extends Bloc<UserRoleEvent, UserRoleState> {
         emit(UserRoleErrorState(e.toString()));
       }
     });
-
     on<AddUserRoleEvent>((event, emit) async{
       try{
        final role = await _repo.addNewRole(usrName: event.usrName, roleName: event.roleName);
@@ -32,7 +32,6 @@ class UserRoleBloc extends Bloc<UserRoleEvent, UserRoleState> {
         emit(UserRoleErrorState(e.toString()));
       }
     });
-
     on<UpdateUserRoleEvent>((event, emit) async{
       try{
 
