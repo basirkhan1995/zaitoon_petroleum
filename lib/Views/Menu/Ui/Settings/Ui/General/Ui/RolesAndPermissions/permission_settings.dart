@@ -497,7 +497,7 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
                           child: GestureDetector(
                             onTap: () => _onPermissionChanged(role.rolId!, permissionName, !hasPermission),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                               color: hasLocalChange
                                   ? Colors.orange.withValues(alpha: .05)
                                   : null,
@@ -537,69 +537,69 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
             ),
           ),
 
-          // Elevated footer
-          Container(
-            height: 60,
-            decoration: BoxDecoration(
-              color: color.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: color.outline.withValues(alpha: .2),
-                  blurRadius: 2,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                // Summary cell
-                Container(
-                  width: 280,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '${AppLocalizations.of(context)!.totalTitle}: ${allPermissions.length}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: color.outline.withValues(alpha: .6),
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-                // Role totals
-                ...roles.map((role) {
-                  final effectiveEnabled = _getEffectiveEnabledCount(role);
-                  final hasChanges = _localChanges.containsKey(role.rolId);
-
-                  return Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                      alignment: Alignment.center,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: hasChanges
-                                ? [Colors.orange.shade400, Colors.orange.shade600]
-                                : [Colors.blue.shade400, Colors.blue.shade600],
-                          ),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Text(
-                          '$effectiveEnabled',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-              ],
-            ),
-          ),
+          // // Elevated footer
+          // Container(
+          //   height: 60,
+          //   decoration: BoxDecoration(
+          //     color: color.surface,
+          //     boxShadow: [
+          //       BoxShadow(
+          //         color: color.outline.withValues(alpha: .2),
+          //         blurRadius: 2,
+          //         offset: const Offset(0, -2),
+          //       ),
+          //     ],
+          //   ),
+          //   child: Row(
+          //     children: [
+          //       // Summary cell
+          //       Container(
+          //         width: 280,
+          //         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          //         alignment: Alignment.centerLeft,
+          //         child: Text(
+          //           '${AppLocalizations.of(context)!.totalTitle}: ${allPermissions.length}',
+          //           style: TextStyle(
+          //             fontWeight: FontWeight.w600,
+          //             color: color.outline.withValues(alpha: .6),
+          //             fontSize: 13,
+          //           ),
+          //         ),
+          //       ),
+          //       // Role totals
+          //       ...roles.map((role) {
+          //         final effectiveEnabled = _getEffectiveEnabledCount(role);
+          //         final hasChanges = _localChanges.containsKey(role.rolId);
+          //
+          //         return Expanded(
+          //           child: Container(
+          //             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+          //             alignment: Alignment.center,
+          //             child: Container(
+          //               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          //               decoration: BoxDecoration(
+          //                 gradient: LinearGradient(
+          //                   colors: hasChanges
+          //                       ? [Colors.orange.shade400, Colors.orange.shade600]
+          //                       : [Colors.blue.shade400, Colors.blue.shade600],
+          //                 ),
+          //                 borderRadius: BorderRadius.circular(5),
+          //               ),
+          //               child: Text(
+          //                 '$effectiveEnabled',
+          //                 style: const TextStyle(
+          //                   fontWeight: FontWeight.bold,
+          //                   color: Colors.white,
+          //                   fontSize: 13,
+          //                 ),
+          //               ),
+          //             ),
+          //           ),
+          //         );
+          //       }),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );
@@ -704,8 +704,8 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
   Widget _buildBeautifulStatusIndicator(bool hasPermission, {bool small = false}) {
     if (small) {
       return Container(
-        width: 32,
-        height: 32,
+        width: 30,
+        height: 30,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: hasPermission
@@ -727,8 +727,8 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
     }
 
     return Container(
-      width: 40,
-      height: 40,
+      width: 32,
+      height: 32,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: hasPermission
@@ -744,7 +744,7 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
       child: Icon(
         hasPermission ? Icons.check_circle : Icons.remove_circle,
         color: hasPermission ? Colors.green.shade700 : Colors.red.shade400,
-        size: 24,
+        size: 22,
       ),
     );
   }
