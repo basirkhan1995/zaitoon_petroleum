@@ -7,7 +7,7 @@ import '../../../../Features/Date/gregorian_date_picker.dart';
 import '../../../../Features/Widgets/outline_button.dart';
 import '../../../../Features/Widgets/textfield_entitled.dart';
 import '../model/sub_model.dart';
-import 'no_subscription.dart'; // Import your model
+import 'no_subscription.dart';
 
 class SubscriptionView extends StatelessWidget {
   const SubscriptionView({super.key});
@@ -138,7 +138,6 @@ class _DesktopContent extends StatelessWidget {
   }
 }
 
-// Subscription Details Widget
 class _SubscriptionDetails extends StatelessWidget {
   final SubscriptionModel subscription;
 
@@ -148,7 +147,7 @@ class _SubscriptionDetails extends StatelessWidget {
     if (date == null) return 'N/A';
     return '${date.day.toString().padLeft(2, '0')}/'
         '${date.month.toString().padLeft(2, '0')}/'
-        '${date.year}'; // DD/MM/YYYY
+        '${date.year}';
   }
 
   bool get _isExpired {
@@ -174,123 +173,146 @@ class _SubscriptionDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme;
     final isExpired = _isExpired;
     final expireDate = _formatDate(subscription.subExpireDate);
     final entryDate = _formatDate(subscription.subEntryDate);
 
     return Column(
       children: [
-        // Subscription Details Card
         Container(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withValues(alpha: .2),
-                blurRadius: 15,
-                spreadRadius: 2,
-                offset: const Offset(0, 5),
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header with status
+
+              /// HEADER
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: isExpired ? Colors.red.withValues(alpha: .1) : Colors.green.withValues(alpha: .1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      isExpired ? Icons.error_outline : Icons.check_circle,
-                      color: isExpired ? Colors.red : Colors.green,
-                      size: 30,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Subscription ID: ${subscription.subId ?? 'N/A'}',
-                          style: const TextStyle(
-                            fontSize: 18,
+                        const Text(
+                          "Subscription",
+                          style: TextStyle(
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 8),
+
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 6),
                           decoration: BoxDecoration(
                             color: isExpired ? Colors.red : Colors.green,
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(30),
                           ),
                           child: Text(
-                            isExpired ? 'Expired' : 'Active',
+                            isExpired ? "Expired" : "Activated",
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
+
+                  ZOutlineButton(
+                    label: const Text("Update"),
+                    icon: Icons.refresh,
+                    height: 40,
+                    isActive: true,
+                    onPressed: () => _showUpdateForm(context),
+                  ),
                 ],
               ),
+
               const SizedBox(height: 30),
 
-              // Subscription Key
-              _buildInfoRow(
-                icon: Icons.vpn_key,
-                label: 'Subscription Key',
-                value: subscription.subKey ?? 'N/A',
-                isKey: true,
+              /// SUBSCRIPTION KEY
+              Text(
+                "Subscription Key",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[700],
+                ),
               ),
-              const SizedBox(height: 20),
 
-              // Expiry Date
+              const SizedBox(height: 8),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: SelectableText(
+                  subscription.subKey ?? "N/A",
+                  style: const TextStyle(
+                    fontFamily: 'monospace',
+                    fontSize: 15,
+                    letterSpacing: 1,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              /// EXPIRY DATE
               _buildInfoRow(
                 icon: Icons.calendar_today,
-                label: 'Expiry Date',
+                label: "Expiry Date",
                 value: expireDate,
                 isExpired: isExpired,
               ),
-              const SizedBox(height: 20),
 
-              // Entry Date
+              const SizedBox(height: 18),
+
+              /// ENTRY DATE
               _buildInfoRow(
                 icon: Icons.date_range,
-                label: 'Entry Date',
+                label: "Entry Date",
                 value: entryDate,
               ),
-              const SizedBox(height: 30),
 
-              // Warning if expired
+              const SizedBox(height: 20),
+
+              /// EXPIRED WARNING
               if (isExpired)
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: Colors.red.withValues(alpha: .1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.red.withValues(alpha: .3)),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Colors.red.withValues(alpha: .3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.warning, color: Colors.red),
-                      const SizedBox(width: 12),
+                      const Icon(Icons.warning, color: Colors.red),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Your subscription has expired. Please update your subscription.',
+                          "Your subscription has expired. Please update it.",
                           style: TextStyle(color: Colors.red[700]),
                         ),
                       ),
@@ -299,18 +321,6 @@ class _SubscriptionDetails extends StatelessWidget {
                 ),
             ],
           ),
-        ),
-        const SizedBox(height: 20),
-
-        // Update Button
-        ZOutlineButton(
-          label: const Text('Update Subscription'),
-          onPressed: () => _showUpdateForm(context),
-          icon: Icons.update,
-          backgroundColor: color.primary,
-          isActive: true,
-          width: double.infinity,
-          height: 48,
         ),
       ],
     );
@@ -321,49 +331,33 @@ class _SubscriptionDetails extends StatelessWidget {
     required String label,
     required String value,
     bool isExpired = false,
-    bool isKey = false,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        Row(
-          children: [
-            Icon(icon, size: 20, color: Colors.grey[600]),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
+        Icon(icon, color: Colors.grey[600], size: 20),
+        const SizedBox(width: 10),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey[600],
+                ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: isExpired ? Colors.red : Colors.grey[300]!),
-          ),
-          child: isKey
-              ? SelectableText(
-            value,
-            style: TextStyle(
-              fontSize: 14,
-              fontFamily: 'monospace',
-              color: isExpired ? Colors.red : Colors.black,
-            ),
-          )
-              : Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: isExpired ? Colors.red : Colors.black,
-            ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: isExpired ? Colors.red : Colors.black,
+                ),
+              ),
+            ],
           ),
         ),
       ],

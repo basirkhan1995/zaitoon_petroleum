@@ -200,7 +200,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ProjectIncExpBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => UserRoleBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => PermissionSettingsBloc(Repositories(ApiServices()))..add(LoadPermissionsSettingsEvent())),
-        BlocProvider(create: (context) => SubscriptionBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => SubscriptionBloc(Repositories(ApiServices()))..add(LoadSubscriptionEvent())),
         ///Report Bloc
         BlocProvider(create: (context) => AccStatementBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => TxnRefReportBloc(Repositories(ApiServices()))),
