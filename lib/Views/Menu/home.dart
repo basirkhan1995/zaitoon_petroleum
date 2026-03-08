@@ -151,14 +151,14 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
         ),
       ],
     ],
-      if(login.hasPermission(46) ?? false)...[
-          MenuDefinition(
-            value: MenuName.projects,
-            label: AppLocalizations.of(context)!.projects,
-            screen: const AllProjectsView(),
-            icon: Icons.folder_open_rounded,
-          ),
-      ],
+      // if(login.hasPermission(46) ?? false)...[
+      //     MenuDefinition(
+      //       value: MenuName.projects,
+      //       label: AppLocalizations.of(context)!.projects,
+      //       screen: const AllProjectsView(),
+      //       icon: Icons.folder_open_rounded,
+      //     ),
+      // ],
 
     if(login.hasPermission(51) ?? false)...[
     if(visibility.orders)...[

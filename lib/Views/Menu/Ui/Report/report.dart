@@ -163,12 +163,12 @@ class _DesktopState extends State<_Desktop> {
         {"title": tr.drivers, "icon": Icons.person, "action": ActionKey.shipping},
     ];
 
-    final List<Map<String, dynamic>> projectsButtons = [
-      if(login.hasPermission(114) ?? false)
-        {"title": tr.projects, "icon": Icons.folder_open_rounded, "action": ActionKey.projects},
-      if(login.hasPermission(115) ?? false)
-        {"title": tr.services, "icon": Icons.access_time_rounded, "action": ActionKey.services},
-    ];
+    // final List<Map<String, dynamic>> projectsButtons = [
+    //   if(login.hasPermission(114) ?? false)
+    //     {"title": tr.projects, "icon": Icons.folder_open_rounded, "action": ActionKey.projects},
+    //   if(login.hasPermission(115) ?? false)
+    //     {"title": tr.services, "icon": Icons.access_time_rounded, "action": ActionKey.services},
+    // ];
 
     return Scaffold(
       body: SingleChildScrollView(
