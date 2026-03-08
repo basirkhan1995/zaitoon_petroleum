@@ -168,7 +168,6 @@ class _DesktopState extends State<_Desktop> {
         {"title": tr.projects, "icon": Icons.folder_open_rounded, "action": ActionKey.projects},
       if(login.hasPermission(115) ?? false)
         {"title": tr.services, "icon": Icons.access_time_rounded, "action": ActionKey.services},
-
     ];
 
     return Scaffold(
@@ -208,10 +207,10 @@ class _DesktopState extends State<_Desktop> {
               SizedBox(height: 8),
               _buildButtonGroup(transportButtons, color),
 
-              const SizedBox(height: 15),
-              SectionTitle(title: tr.projects),
-              SizedBox(height: 8),
-              _buildButtonGroup(projectsButtons, color),
+              // const SizedBox(height: 15),
+              // SectionTitle(title: tr.projects),
+              // SizedBox(height: 8),
+              // _buildButtonGroup(projectsButtons, color),
             ],
           ),
         ),

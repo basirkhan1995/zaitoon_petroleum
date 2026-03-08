@@ -183,12 +183,12 @@ class _Mobile extends StatelessWidget {
                 label: AppLocalizations.of(context)!.company,
                 screen: const CompanyTabsView(),
               ),
-            if (login.hasPermission(49) ?? false)
-              ZTabItem(
-                value: SettingsTabName.services,
-                label: AppLocalizations.of(context)!.services,
-                screen: const ServicesView(),
-              ),
+            // if (login.hasPermission(49) ?? false)
+            //   ZTabItem(
+            //     value: SettingsTabName.services,
+            //     label: AppLocalizations.of(context)!.services,
+            //     screen: const ServicesView(),
+            //   ),
             if (login.hasPermission(73) ?? false)
               ZTabItem(
                 value: SettingsTabName.stock,

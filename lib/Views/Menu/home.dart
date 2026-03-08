@@ -942,16 +942,16 @@ class _DrawerHomeViewState extends State<_DrawerHomeView> {
     }
 
     // Projects - Permission
-    if ((login.hasPermission(46) ?? false)) {
-      menuItems.add(
-        _DrawerMenuItem(
-          icon: Icons.folder_open_rounded,
-          label: AppLocalizations.of(context)!.projects,
-          isSelected: currentTab == MenuName.projects,
-          onTap: () => _onMenuItemTap(MenuName.projects),
-        ),
-      );
-    }
+    // if ((login.hasPermission(46) ?? false)) {
+    //   menuItems.add(
+    //     _DrawerMenuItem(
+    //       icon: Icons.folder_open_rounded,
+    //       label: AppLocalizations.of(context)!.projects,
+    //       isSelected: currentTab == MenuName.projects,
+    //       onTap: () => _onMenuItemTap(MenuName.projects),
+    //     ),
+    //   );
+    // }
 
     // Stock/Inventory - Permission 66 (with visibility check)
     if ((login.hasPermission(51) ?? false) && visibility.orders) {
