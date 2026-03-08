@@ -773,7 +773,6 @@ class Repositories {
     return [];
   }
 
-  // In your Repositories class
   Future<Map<String, dynamic>> updatePermissions({
     required int usrId,
     required String usrName,
@@ -785,15 +784,10 @@ class Repositories {
         "LogedInUser": usrName,
         "uprUserID": usrId,
         "records": {
-          "records": permissions
-              .map(
-                (p) =>
-            {
-              "uprRole": p["uprRole"],
-              "uprStatus": p["uprStatus"] ? 1 : 0,
-            },
-          )
-              .toList(),
+          "records": permissions.map((p) => {
+            "uprRole": p["uprRole"],
+            "uprStatus": p["uprStatus"],
+          }).toList(),
         },
       },
     );

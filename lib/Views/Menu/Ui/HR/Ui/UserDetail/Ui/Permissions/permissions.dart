@@ -55,7 +55,7 @@ class _PermissionsContentState extends State<_PermissionsContent> {
     final permissions = _localChanges.entries.map((entry) {
       return {
         "uprRole": entry.key,
-        "uprStatus": entry.value ? 1 : 0,
+        "uprStatus": entry.value ? 1 : 0, // Convert bool to int HERE
       };
     }).toList();
 
@@ -63,11 +63,10 @@ class _PermissionsContentState extends State<_PermissionsContent> {
       UpdatePermissionsEvent(
         usrName: widget.user.usrName ?? "",
         usrId: widget.user.usrId!,
-        permissions: permissions,
+        permissions: permissions, // permissions now have int values
       ),
     );
 
-    // Clear local changes after save
     setState(() {
       _localChanges.clear();
       _hasChanges = false;

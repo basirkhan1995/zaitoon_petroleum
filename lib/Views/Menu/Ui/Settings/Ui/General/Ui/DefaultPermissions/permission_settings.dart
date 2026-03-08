@@ -53,6 +53,19 @@ class _Desktop extends StatelessWidget {
 
 enum LayoutType { mobile, tablet, desktop }
 
+// Permission Category Model
+class PermissionCategory {
+  final String name;
+  final IconData icon;
+  final List<String> permissionNames;
+
+  PermissionCategory({
+    required this.name,
+    required this.icon,
+    required this.permissionNames,
+  });
+}
+
 class _PermissionSettingsContent extends StatefulWidget {
   final LayoutType layoutType;
   const _PermissionSettingsContent({required this.layoutType});
@@ -66,6 +79,7 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
   bool _hasChanges = false;
   List<UserRolePermissionSettingModel>? _originalRoles;
   String usrName = '';
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -106,298 +120,393 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
     );
   }
 
+  // Get permission categories
+  List<PermissionCategory> _getPermissionCategories(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
+
+    return [
+      PermissionCategory(
+        name: locale.dashboard,
+        icon: Icons.dashboard,
+        permissionNames: [
+          "Dashboard",
+          "Counts",
+          "Exchange Rate Graph",
+          "Daily Transactions Graph",
+          "Daily Transaction Totals",
+          "Digital Clock",
+          "Exchange Rates",
+          "Profit Loss Graph",
+          "Reminder Notifications",
+        ],
+      ),
+      PermissionCategory(
+        name: locale.finance,
+        icon: Icons.attach_money,
+        permissionNames: [
+          "Finance",
+          "Currency Tab",
+          "Currency",
+          "Exchange rates",
+          "GL Accounts",
+          "Payroll",
+          "EOY Operation",
+          "Reminders",
+        ],
+      ),
+      PermissionCategory(
+        name: locale.journal,
+        icon: Icons.book,
+        permissionNames: [
+          "Journal",
+          "All Transactions",
+          "Authorized Transaction",
+          "Pending Transaction",
+          "Cash Deposit",
+          "Cash Withdraw",
+          "Income Entry",
+          "Expense Entry",
+          "GL Debit",
+          "GL Credit",
+          "FT Single Account",
+          "FT Multi Account",
+          "FX Transactions",
+        ],
+      ),
+      PermissionCategory(
+        name: locale.stakeholders,
+        icon: Icons.people,
+        permissionNames: [
+          "Stakeholders",
+          "Individuals",
+          "Accounts",
+          "Users",
+        ],
+      ),
+      PermissionCategory(
+        name: locale.hrTitle,
+        icon: Icons.person,
+        permissionNames: [
+          "HR - Human Resource",
+          "Employees",
+          "Attendance",
+          "All Users",
+          "Overview",
+          "Permissions",
+          "User Log",
+        ],
+      ),
+      PermissionCategory(
+        name: locale.transport,
+        icon: Icons.local_shipping,
+        permissionNames: [
+          "Transport",
+          "Shipping",
+          "Drivers",
+          "Vehicles",
+        ],
+      ),
+      PermissionCategory(
+        name: locale.projects,
+        icon: Icons.assignment,
+        permissionNames: [
+          "Projects",
+          "New Project",
+          "Modify Project",
+          "Project Services",
+          "Project Payments",
+        ],
+      ),
+      PermissionCategory(
+        name: locale.inventory,
+        icon: Icons.inventory,
+        permissionNames: [
+          "Inventory",
+          "Orders Tab",
+          "Estimate Tab",
+          "Goods Shift Tab",
+          "Adjustment Tab",
+          "Purchase",
+          "Sale",
+          "Estimate",
+          "Goods Shift",
+          "Adjustment",
+          "Find Invoice",
+        ],
+      ),
+      PermissionCategory(
+        name: locale.settings,
+        icon: Icons.settings,
+        permissionNames: [
+          "Settings",
+          "General Tab",
+          "System Settings",
+          "Password Change",
+          "User Profile",
+          "Roles and Permissions",
+          "Company Tab",
+          "Profile",
+          "Branches",
+          "Storage",
+          "Transaction Type",
+          "Stock",
+          "Products",
+          "Category",
+          "Backup",
+          "About",
+        ],
+      ),
+      PermissionCategory(
+        name: locale.reports,
+        icon: Icons.bar_chart,
+        permissionNames: [
+          "Reports",
+          "Account Statement Single Date",
+          "GL Statement Single Date",
+          "GL Statement Periodic Date",
+          "Creditors",
+          "Debtors",
+          "Stock Availability",
+          "Product Movement",
+          "Purchase Invoices",
+          "Sale Invoices",
+          "Estimate",
+          "Goods Shift",
+          "Adjustment",
+          "All Invoices",
+          "Cash Balance All Branch",
+          "Cash Balance Single Branch",
+          "Exchange Rates",
+          "Trial Balance",
+          "Transaction Details",
+          "Transactions Report",
+          "All Balances",
+          "Users",
+          "User Role and Permission",
+          "User Log",
+          "Shippings",
+          "Vehicles",
+          "Drivers",
+          "Stakeholders",
+          "Employees",
+          "Stakeholder Account",
+          "GL Accounts",
+          "Currencies",
+          "Attendance",
+          "Reminders",
+          "Payroll",
+          "Balance Sheet",
+          "All Projects",
+          "Project Services Reports",
+        ],
+      ),
+      PermissionCategory(
+        name: locale.actions,
+        icon: Icons.touch_app,
+        permissionNames: [
+          "Create",
+          "Read",
+          "Update",
+          "Delete",
+        ],
+      ),
+    ];
+  }
+
+  // Check if permission exists in any role
+  bool _permissionExists(List<UserRolePermissionSettingModel> roles, String permissionName) {
+    for (var role in roles) {
+      if (role.permissions?.any((p) => p.rsgName == permissionName) == true) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   Widget _buildContent(BuildContext context, List<UserRolePermissionSettingModel> roles) {
     if (roles.isEmpty) {
       return _buildEmptyState(context);
     }
 
-    // Get all unique permissions
-    final allPermissions = _getAllUniquePermissions(roles);
+    final categories = _getPermissionCategories(context);
 
-    // Choose layout based on screen size
     switch (widget.layoutType) {
       case LayoutType.mobile:
-        return _buildMobileLayout(context, roles, allPermissions);
+        return _buildMobileLayout(context, roles, categories);
       case LayoutType.tablet:
-        return _buildTabletLayout(context, roles, allPermissions);
+        return _buildTabletLayout(context, roles, categories);
       case LayoutType.desktop:
-        return _buildDesktopLayout(context, roles, allPermissions);
+        return _buildDesktopLayout(context, roles, categories);
     }
   }
 
   // ==================== MOBILE LAYOUT ====================
-  Widget _buildMobileLayout(BuildContext context, List<UserRolePermissionSettingModel> roles, List<String> allPermissions) {
+  Widget _buildMobileLayout(BuildContext context,
+      List<UserRolePermissionSettingModel> roles,
+      List<PermissionCategory> categories) {
     return Column(
       children: [
-        // Role cards at top
         _buildRoleCards(roles, isHorizontal: true),
         const SizedBox(height: 10),
-        // Expandable permission sections
         Expanded(
-          child: _buildMobilePermissionList(roles, allPermissions),
-        ),
-      ],
-    );
-  }
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final category = categories[index];
 
-  Widget _buildMobilePermissionList(List<UserRolePermissionSettingModel> roles, List<String> allPermissions) {
-    final color = Theme.of(context).colorScheme;
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      itemCount: allPermissions.length,
-      itemBuilder: (context, index) {
-        final permissionName = allPermissions[index];
+              final availablePermissions = category.permissionNames
+                  .where((name) => _permissionExists(roles, name))
+                  .toList();
 
-        return ZCover(
-          radius: 5,
-          margin: const EdgeInsets.only(bottom: 8),
-          child: ExpansionTile(
-            visualDensity: VisualDensity(vertical: -4),
-            dense: true,
-            title: Text(
-              permissionName,
-              style: const TextStyle(fontSize: 13),
-            ),
+              if (availablePermissions.isEmpty) return const SizedBox();
 
-            leading: CircleAvatar(
-              radius: 16,
-              backgroundColor: color.primary.withValues(alpha: .1),
-              child: Text(
-                (index + 1).toString(),
-                style: TextStyle(color: color.primary, fontSize: 12),
-              ),
-            ),
-            children: roles.map((role) {
-              final hasPermission = _getEffectivePermission(role, permissionName);
-              final hasLocalChange = _localChanges.containsKey(role.rolId) &&
-                  _localChanges[role.rolId]!.containsKey(permissionName);
-
-              return ListTile(
-                contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                onTap: () => _onPermissionChanged(role.rolId!, permissionName, !hasPermission),
-                leading: _buildBeautifulStatusIndicator(hasPermission, small: true),
-                title: Text(
-                  role.rolName ?? 'Unknown',
-                  style: TextStyle(
-                    fontWeight: hasLocalChange ? FontWeight.bold : FontWeight.normal,
-                    color: hasLocalChange ? Colors.orange.shade800 : null,
-                  ),
-                ),
-                trailing: hasLocalChange
-                    ? Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: Colors.orange,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.edit, color: Colors.white, size: 12),
-                )
-                    : null,
+              return _buildMobileCategoryCard(
+                context,
+                category,
+                availablePermissions,
+                roles,
               );
-            }).toList(),
-          ),
-        );
-      },
-    );
-  }
-
-  // ==================== TABLET LAYOUT ====================
-  Widget _buildTabletLayout(BuildContext context, List<UserRolePermissionSettingModel> roles, List<String> allPermissions) {
-    return Column(
-      children: [
-        // Role cards at top
-        _buildRoleCards(roles, isHorizontal: true),
-        const SizedBox(height: 10), // Match desktop spacing
-        // Compact table
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10), // Match desktop padding
-            child: _buildTabletTable(roles, allPermissions),
+            },
           ),
         ),
       ],
     );
   }
 
-  Widget _buildTabletTable(List<UserRolePermissionSettingModel> roles, List<String> allPermissions) {
+  Widget _buildMobileCategoryCard(
+      BuildContext context,
+      PermissionCategory category,
+      List<String> permissions,
+      List<UserRolePermissionSettingModel> roles,
+      ) {
     final color = Theme.of(context).colorScheme;
+    final locale = AppLocalizations.of(context)!;
 
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(3), // Match desktop radius
-      ),
-      child: Column(
-        children: [
-          // Header - Desktop style
-          Container(
-            decoration: BoxDecoration(
+    return ZCover(
+      radius: 5,
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          leading: CircleAvatar(
+            radius: 16,
+            backgroundColor: color.primary.withValues(alpha: .1),
+            child: Icon(
+              category.icon,
               color: color.primary,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(3)), // Match desktop
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 250,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8), // Match desktop padding
-                  decoration: BoxDecoration(
-                    border: Border(
-                      right: BorderSide(color: color.surface.withValues(alpha: .3)),
-                    ),
-                  ),
-                  child: Text(
-                    AppLocalizations.of(context)!.permissions.toUpperCase(),
-                    style: TextStyle(
-                      color: color.surface,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ),
-                ...roles.map((role) => Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        right: BorderSide(color: color.surface.withValues(alpha: .3)),
-                      ),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            role.rolName?.toUpperCase() ?? 'UNKNOWN',
-                            style: TextStyle(
-                              color: color.surface,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                              letterSpacing: 0.3,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            textAlign: TextAlign.center,
-                          ),
-                          if (_localChanges.containsKey(role.rolId))
-                            Container(
-                              margin: const EdgeInsets.only(top: 2),
-                              child: const Icon(
-                                Icons.edit,
-                                color: Colors.orange,
-                                size: 12,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                )),
-              ],
+              size: 16,
             ),
           ),
-
-          // Body - Desktop style
-          Expanded(
-            child: ListView.builder(
-              itemCount: allPermissions.length,
-              itemBuilder: (context, index) {
-                final permissionName = allPermissions[index];
-
-                return Container(
-                  color: index.isEven ? color.surface : color.primary.withValues(alpha: .05),
-                  child: Row(
+          title: Text(
+            category.name,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          ),
+          subtitle: Text('${permissions.length} ${locale.permissions}'),
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Column(
+                children: permissions.map((permissionName) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Permission name cell
-                      Container(
-                        width: 250,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16, top: 8, bottom: 4),
                         child: Text(
                           permissionName,
-                          style: const TextStyle(
-                            fontSize: 14,
+                          style: TextStyle(
+                            fontSize: 12,
                             fontWeight: FontWeight.w500,
+                            color: color.primary,
                           ),
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      // Status cells
                       ...roles.map((role) {
                         final hasPermission = _getEffectivePermission(role, permissionName);
                         final hasLocalChange = _localChanges.containsKey(role.rolId) &&
                             _localChanges[role.rolId]!.containsKey(permissionName);
 
-                        return Expanded(
-                          child: GestureDetector(
-                            onTap: () => _onPermissionChanged(role.rolId!, permissionName, !hasPermission),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                              color: hasLocalChange
-                                  ? Colors.orange.withValues(alpha: .05)
-                                  : null,
-                              child: Center(
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    _buildBeautifulStatusIndicator(hasPermission), // Regular size (not small)
-                                    if (hasLocalChange)
-                                      Positioned(
-                                        top: -5,
-                                        right: -5,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(2),
-                                          decoration: const BoxDecoration(
-                                            color: Colors.orange,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Icon(
-                                            Icons.edit,
-                                            color: color.surface,
-                                            size: 10,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
+                        return ListTile(
+                          dense: true,
+                          visualDensity: const VisualDensity(vertical: -2),
+                          contentPadding: const EdgeInsets.only(left: 32, right: 8),
+                          onTap: () => _onPermissionChanged(role.rolId!, permissionName, !hasPermission),
+                          leading: _buildBeautifulStatusIndicator(hasPermission, small: true),
+                          title: Text(
+                            role.rolName ?? 'Unknown',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: hasLocalChange ? FontWeight.bold : FontWeight.normal,
+                              color: hasLocalChange ? Colors.orange.shade800 : null,
                             ),
                           ),
+                          trailing: hasLocalChange
+                              ? Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: const BoxDecoration(
+                              color: Colors.orange,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.edit, color: Colors.white, size: 10),
+                          )
+                              : null,
                         );
                       }),
                     ],
-                  ),
-                );
-              },
+                  );
+                }).toList(),
+              ),
             ),
-          ),
-
-        ],
+          ],
+        ),
       ),
     );
   }
-  // ==================== DESKTOP LAYOUT ====================
-  Widget _buildDesktopLayout(BuildContext context, List<UserRolePermissionSettingModel> roles, List<String> allPermissions) {
+
+  // ==================== TABLET LAYOUT ====================
+  Widget _buildTabletLayout(BuildContext context,
+      List<UserRolePermissionSettingModel> roles,
+      List<PermissionCategory> categories) {
     return Column(
       children: [
-        // Role cards at top
         _buildRoleCards(roles, isHorizontal: true),
         const SizedBox(height: 10),
-        // Expanded table
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: _buildDesktopTable(roles, allPermissions),
+            child: _buildDesktopTable(context, roles, categories),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildDesktopTable(List<UserRolePermissionSettingModel> roles, List<String> allPermissions) {
+  // ==================== DESKTOP LAYOUT ====================
+  Widget _buildDesktopLayout(BuildContext context,
+      List<UserRolePermissionSettingModel> roles,
+      List<PermissionCategory> categories) {
+    return Column(
+      children: [
+        _buildRoleCards(roles, isHorizontal: true),
+        const SizedBox(height: 10),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: _buildDesktopTable(context, roles, categories),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDesktopTable(BuildContext context,
+      List<UserRolePermissionSettingModel> roles,
+      List<PermissionCategory> categories) {
     final color = Theme.of(context).colorScheme;
 
     return Container(
       decoration: BoxDecoration(
-
         borderRadius: BorderRadius.circular(3),
       ),
       child: Column(
@@ -473,140 +582,126 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
           // Body
           Expanded(
             child: ListView.builder(
-              itemCount: allPermissions.length,
-              itemBuilder: (context, index) {
-                final permissionName = allPermissions[index];
+              itemCount: categories.length,
+              itemBuilder: (context, categoryIndex) {
+                final category = categories[categoryIndex];
 
-                return Container(
-                  color: index.isEven ? color.surface : color.primary.withValues(alpha: .05),
-                  child: Row(
-                    children: [
-                      // Permission name cell
-                      Container(
-                        width: 280,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        child: Text(
-                          permissionName,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                final availablePermissions = category.permissionNames
+                    .where((name) => _permissionExists(roles, name))
+                    .toList();
+
+                if (availablePermissions.isEmpty) return const SizedBox();
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Category Header
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                      color: color.primary.withValues(alpha: .1),
+                      child: Row(
+                        children: [
+                          Icon(category.icon, size: 16, color: color.primary),
+                          const SizedBox(width: 8),
+                          Text(
+                            category.name,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: color.primary,
+                            ),
                           ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      // Status cells
-                      ...roles.map((role) {
-                        final hasPermission = _getEffectivePermission(role, permissionName);
-                        final hasLocalChange = _localChanges.containsKey(role.rolId) &&
-                            _localChanges[role.rolId]!.containsKey(permissionName);
-
-                        return Expanded(
-                          child: GestureDetector(
-                            onTap: () => _onPermissionChanged(role.rolId!, permissionName, !hasPermission),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                              color: hasLocalChange
-                                  ? Colors.orange.withValues(alpha: .05)
-                                  : null,
-                              child: Center(
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    _buildBeautifulStatusIndicator(hasPermission),
-                                    if (hasLocalChange)
-                                      Positioned(
-                                        top: -5,
-                                        right: -5,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(2),
-                                          decoration: const BoxDecoration(
-                                            color: Colors.orange,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Icon(
-                                            Icons.edit,
-                                            color: color.surface,
-                                            size: 10,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: color.primary.withValues(alpha: .2),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              '${availablePermissions.length}',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: color.primary,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
-                        );
-                      }),
-                    ],
-                  ),
+                        ],
+                      ),
+                    ),
+
+                    // Permissions
+                    ...availablePermissions.map((permissionName) {
+                      return Container(
+                        color: color.surface,
+                        child: Row(
+                          children: [
+                            // Permission name cell
+                            Container(
+                              width: 280,
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                              child: Text(
+                                permissionName,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            // Status cells
+                            ...roles.map((role) {
+                              final hasPermission = _getEffectivePermission(role, permissionName);
+                              final hasLocalChange = _localChanges.containsKey(role.rolId) &&
+                                  _localChanges[role.rolId]!.containsKey(permissionName);
+
+                              return Expanded(
+                                child: GestureDetector(
+                                  onTap: () => _onPermissionChanged(role.rolId!, permissionName, !hasPermission),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                                    color: hasLocalChange
+                                        ? Colors.orange.withValues(alpha: .05)
+                                        : null,
+                                    child: Center(
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          _buildBeautifulStatusIndicator(hasPermission, small: true),
+                                          if (hasLocalChange)
+                                            Positioned(
+                                              top: -8,
+                                              right: -8,
+                                              child: Container(
+                                                padding: const EdgeInsets.all(2),
+                                                decoration: const BoxDecoration(
+                                                  color: Colors.orange,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Icon(
+                                                  Icons.edit,
+                                                  color: color.surface,
+                                                  size: 8,
+                                                ),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                      );
+                    }),
+                  ],
                 );
               },
             ),
           ),
-
-          // // Elevated footer
-          // Container(
-          //   height: 60,
-          //   decoration: BoxDecoration(
-          //     color: color.surface,
-          //     boxShadow: [
-          //       BoxShadow(
-          //         color: color.outline.withValues(alpha: .2),
-          //         blurRadius: 2,
-          //         offset: const Offset(0, -2),
-          //       ),
-          //     ],
-          //   ),
-          //   child: Row(
-          //     children: [
-          //       // Summary cell
-          //       Container(
-          //         width: 280,
-          //         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          //         alignment: Alignment.centerLeft,
-          //         child: Text(
-          //           '${AppLocalizations.of(context)!.totalTitle}: ${allPermissions.length}',
-          //           style: TextStyle(
-          //             fontWeight: FontWeight.w600,
-          //             color: color.outline.withValues(alpha: .6),
-          //             fontSize: 13,
-          //           ),
-          //         ),
-          //       ),
-          //       // Role totals
-          //       ...roles.map((role) {
-          //         final effectiveEnabled = _getEffectiveEnabledCount(role);
-          //         final hasChanges = _localChanges.containsKey(role.rolId);
-          //
-          //         return Expanded(
-          //           child: Container(
-          //             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-          //             alignment: Alignment.center,
-          //             child: Container(
-          //               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          //               decoration: BoxDecoration(
-          //                 gradient: LinearGradient(
-          //                   colors: hasChanges
-          //                       ? [Colors.orange.shade400, Colors.orange.shade600]
-          //                       : [Colors.blue.shade400, Colors.blue.shade600],
-          //                 ),
-          //                 borderRadius: BorderRadius.circular(5),
-          //               ),
-          //               child: Text(
-          //                 '$effectiveEnabled',
-          //                 style: const TextStyle(
-          //                   fontWeight: FontWeight.bold,
-          //                   color: Colors.white,
-          //                   fontSize: 13,
-          //                 ),
-          //               ),
-          //             ),
-          //           ),
-          //         );
-          //       }),
-          //     ],
-          //   ),
-          // ),
         ],
       ),
     );
@@ -635,6 +730,7 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
     final totalPermissions = role.permissions?.length ?? 0;
     final hasChanges = _localChanges.containsKey(role.rolId);
     final color = Theme.of(context).colorScheme;
+
     return GestureDetector(
       onTap: () => _showRoleActions(context, role),
       child: Container(
@@ -711,8 +807,8 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
   Widget _buildBeautifulStatusIndicator(bool hasPermission, {bool small = false}) {
     if (small) {
       return Container(
-        width: 30,
-        height: 30,
+        width: 24,
+        height: 24,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: hasPermission
@@ -728,7 +824,7 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
         child: Icon(
           hasPermission ? Icons.check_circle : Icons.remove_circle,
           color: hasPermission ? Colors.green.shade700 : Colors.red.shade400,
-          size: 18,
+          size: 14,
         ),
       );
     }
@@ -751,28 +847,28 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
       child: Icon(
         hasPermission ? Icons.check_circle : Icons.remove_circle,
         color: hasPermission ? Colors.green.shade700 : Colors.red.shade400,
-        size: 22,
+        size: 18,
       ),
     );
   }
 
   Widget _buildErrorState(BuildContext context, PermissionSettingsErrorState state) {
     return Center(
-      child: NoDataWidget(
-        title: "Error",
-        message: "Failed to load permissions, try again later",
-        onRefresh: () => context.read<PermissionSettingsBloc>().add(LoadPermissionsSettingsEvent()),
-      )
+        child: NoDataWidget(
+          title: "Error",
+          message: "Failed to load permissions, try again later",
+          onRefresh: () => context.read<PermissionSettingsBloc>().add(LoadPermissionsSettingsEvent()),
+        )
     );
   }
 
   Widget _buildEmptyState(BuildContext context) {
     return Center(
-      child: NoDataWidget(
-        title: "No Role found",
-        message: "Failed to load permissions, try again later",
-        onRefresh: () => context.read<PermissionSettingsBloc>().add(LoadPermissionsSettingsEvent()),
-      )
+        child: NoDataWidget(
+          title: "No Role found",
+          message: "Failed to load permissions, try again later",
+          onRefresh: () => context.read<PermissionSettingsBloc>().add(LoadPermissionsSettingsEvent()),
+        )
     );
   }
 
@@ -841,7 +937,6 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Message row
         Row(
           children: [
             Icon(Icons.info, color: Colors.blue.shade700, size: 20),
@@ -859,7 +954,6 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
           ],
         ),
         const SizedBox(height: 16),
-        // Buttons row
         Row(
           children: [
             Expanded(
@@ -901,7 +995,6 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
   }
 
   void _saveAllChanges() {
-
     if (!_hasChanges || _originalRoles == null) return;
 
     final List<PermissionActions> permissionUpdates = [];
@@ -930,13 +1023,11 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
     });
 
     if (permissionUpdates.isNotEmpty) {
-
       final updateModel = PermissionActionModel(
         usrName: usrName,
         permissions: permissionUpdates,
       );
 
-      // Dispatch the update event
       context.read<PermissionSettingsBloc>().add(
           UpdatePermissionsSettingsEvent(updateModel)
       );
@@ -945,9 +1036,6 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
         _localChanges.clear();
         _hasChanges = false;
       });
-
-      /// Show success message
-      /// ToastManager.show(context: context, message: "Permissions updated successfully", type: ToastType.success);
     }
   }
 
@@ -1057,22 +1145,6 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
       final currentStatus = changes.containsKey(p.rsgName) ? changes[p.rsgName]! : p.rpStatus == 1;
       return sum! + (currentStatus ? 1 : 0);
     }) ?? 0;
-  }
-
-  List<String> _getAllUniquePermissions(List<UserRolePermissionSettingModel> roles) {
-    final Set<String> uniquePermissions = {};
-
-    for (var role in roles) {
-      if (role.permissions != null) {
-        for (var permission in role.permissions!) {
-          if (permission.rsgName != null && permission.rsgName!.isNotEmpty) {
-            uniquePermissions.add(permission.rsgName!);
-          }
-        }
-      }
-    }
-
-    return uniquePermissions.toList();
   }
 
   Color _getRoleColor(int index) {
