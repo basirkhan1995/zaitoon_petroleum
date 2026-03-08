@@ -5601,6 +5601,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit Role'**
   String get editRole;
+
+  /// No description provided for @subscriptionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get subscriptionTitle;
+
+  /// No description provided for @manageSubMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your subscription details'**
+  String get manageSubMessage;
 }
 
 class _AppLocalizationsDelegate

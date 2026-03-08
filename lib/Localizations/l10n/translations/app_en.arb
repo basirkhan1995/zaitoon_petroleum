@@ -936,5 +936,7 @@
   "userRole": "User Roles",
   "roleName": "Role Name",
   "newRole": "New Role",
-  "editRole": "Edit Role"
+  "editRole": "Edit Role",
+  "subscriptionTitle": "Subscription",
+  "manageSubMessage": "Manage your subscription details"
 }

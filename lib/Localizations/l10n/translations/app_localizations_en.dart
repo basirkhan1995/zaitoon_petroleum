@@ -2832,4 +2832,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editRole => 'Edit Role';
+
+  @override
+  String get subscriptionTitle => 'Subscription';
+
+  @override
+  String get manageSubMessage => 'Manage your subscription details';
 }

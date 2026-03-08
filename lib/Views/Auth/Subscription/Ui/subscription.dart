@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/toast.dart';
+import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Auth/Subscription/bloc/subscription_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../Features/Date/gregorian_date_picker.dart';
+import '../../../../Features/Other/zForm_dialog.dart';
 import '../../../../Features/Widgets/outline_button.dart';
 import '../../../../Features/Widgets/textfield_entitled.dart';
+import '../../bloc/auth_bloc.dart';
 import '../model/sub_model.dart';
 import 'no_subscription.dart';
 
@@ -19,12 +22,10 @@ class SubscriptionView extends StatelessWidget {
         if (state is SubscriptionLoadedState) {
           final subscriptions = state.subs;
 
-          // If no subscriptions, show no subscription view
           if (subscriptions.isEmpty) {
             return const NoSubscriptionView();
           }
 
-          // Get the first (or current) subscription
           final currentSub = subscriptions.first;
 
           return ResponsiveLayout(
@@ -42,7 +43,9 @@ class SubscriptionView extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 60, color: Colors.red),
+                  Icon(Icons.error_outline,
+                      size: 60,
+                      color: Theme.of(context).colorScheme.error),
                   const SizedBox(height: 16),
                   Text('Error: ${state.message}'),
                   const SizedBox(height: 20),
@@ -75,10 +78,7 @@ class _MobileContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Subscription Details'),
-        centerTitle: true,
-      ),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: _SubscriptionDetails(subscription: subscription),
@@ -96,18 +96,9 @@ class _TabletContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Subscription Details'),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: SizedBox(
-            width: 600,
-            child: _SubscriptionDetails(subscription: subscription),
-          ),
-        ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: _SubscriptionDetails(subscription: subscription),
       ),
     );
   }
@@ -122,11 +113,9 @@ class _DesktopContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: _SubscriptionDetails(subscription: subscription),
-        ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: _SubscriptionDetails(subscription: subscription),
       ),
     );
   }
@@ -144,205 +133,351 @@ class _SubscriptionDetails extends StatelessWidget {
         '${date.year}';
   }
 
+  int _getDaysRemaining() {
+    if (subscription.subExpireDate == null) return 0;
+    final now = DateTime.now();
+    final expireDate = subscription.subExpireDate!;
+    return expireDate.difference(now).inDays;
+  }
+
   bool get _isExpired {
     if (subscription.subExpireDate == null) return false;
     return subscription.subExpireDate!.isBefore(DateTime.now());
   }
 
+  Color _getStatusColor(BuildContext context) {
+    if (_isExpired) return Theme.of(context).colorScheme.error;
+    final daysRemaining = _getDaysRemaining();
+    if (daysRemaining <= 7) return Colors.orange;
+    return Theme.of(context).colorScheme.primary;
+  }
+
   void _showUpdateForm(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: const _UpdateSubscriptionForm(),
-      ),
+    showDialog(
+        context: context,
+        builder: (context) => const _UpdateSubscriptionForm()
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final isExpired = _isExpired;
+    final daysRemaining = _getDaysRemaining();
     final expireDate = _formatDate(subscription.subExpireDate);
     final entryDate = _formatDate(subscription.subEntryDate);
+    final state = context.watch<AuthBloc>().state;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
+    if (state is! AuthenticatedState) {
+      return const SizedBox();
+    }
 
-        /// HEADER
-        Row(
+    final login = state.loginData;
+    final statusColor = _getStatusColor(context);
+
+    return Card(
+      elevation: 0,
+      color: colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: colorScheme.outline.withValues(alpha: .2)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
+            // Header Section
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.subscriptionTitle.toUpperCase(),
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        AppLocalizations.of(context)!.manageSubMessage,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.outline,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (login.usrRole == "Super")
+                  ZOutlineButton(
+                    label: Text(AppLocalizations.of(context)!.update.toUpperCase()),
+                    icon: Icons.refresh,
+                    height: 40,
+                    onPressed: () => _showUpdateForm(context),
+                  ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
+            // Status Badge and Days Remaining
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: .1),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: statusColor.withValues(alpha: .3),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        isExpired
+                            ? Icons.error_outline
+                            : Icons.check_circle_outline,
+                        color: statusColor,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        isExpired
+                            ? "Expired"
+                            : "Active",
+                        style: TextStyle(
+                          color: statusColor,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                if (!isExpired)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary.withValues(alpha: .1),
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(
+                        color: colorScheme.primary.withValues(alpha: .3),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.timer,
+                          color: colorScheme.primary,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          daysRemaining <= 0
+                              ? "Expires today"
+                              : "$daysRemaining days remaining",
+                          style: TextStyle(
+                            color: colorScheme.primary,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+
+            const SizedBox(height: 30),
+
+            // Subscription Key Section
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: colorScheme.outline.withValues(alpha: .2)),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Subscription",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: isExpired ? Colors.red : Colors.green,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Text(
-                      isExpired ? "Expired" : "Activated",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.vpn_key,
+                        color: colorScheme.primary,
+                        size: 18,
                       ),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Subscription Key",
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  SelectableText(
+                    subscription.subKey ?? "N/A",
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontFamily: 'monospace',
+                      letterSpacing: 1,
+                      color: colorScheme.primary,
                     ),
                   ),
                 ],
               ),
             ),
 
-            ZOutlineButton(
-              label: const Text("Update"),
-              icon: Icons.refresh,
-              height: 40,
-              isActive: true,
-              onPressed: () => _showUpdateForm(context),
+            const SizedBox(height: 20),
+
+            // Dates Grid
+            Row(
+              children: [
+                Expanded(
+                  child: _buildDateCard(
+                    context,
+                    icon: Icons.calendar_today,
+                    label: "Expiry Date",
+                    value: expireDate,
+                    isExpired: isExpired,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildDateCard(
+                    context,
+                    icon: Icons.date_range,
+                    label: "Entry Date",
+                    value: entryDate,
+                  ),
+                ),
+              ],
             ),
+
+            // Warning for expired or soon expiring
+            if (isExpired || (!isExpired && daysRemaining <= 7))
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: (isExpired
+                        ? colorScheme.error
+                        : Colors.orange).withValues(alpha: .1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: (isExpired
+                          ? colorScheme.error
+                          : Colors.orange).withValues(alpha: .3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        isExpired ? Icons.warning : Icons.info,
+                        color: isExpired ? colorScheme.error : Colors.orange,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          isExpired
+                              ? "Your subscription has expired. Please update it to continue using all features."
+                              : "Your subscription will expire in $daysRemaining days. Consider updating it soon.",
+                          style: TextStyle(
+                            color: isExpired ? colorScheme.error : Colors.orange.shade800,
+                            fontSize: 14,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
           ],
         ),
+      ),
+    );
+  }
 
-        const SizedBox(height: 30),
+  Widget _buildDateCard(
+      BuildContext context, {
+        required IconData icon,
+        required String label,
+        required String value,
+        bool isExpired = false,
+      }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-        /// SUBSCRIPTION KEY
-        Text(
-          "Subscription Key",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[700],
-          ),
-        ),
-
-        const SizedBox(height: 8),
-
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: SelectableText(
-            subscription.subKey ?? "N/A",
-            style: const TextStyle(
-              fontFamily: 'monospace',
-              fontSize: 15,
-              letterSpacing: 1,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 24),
-
-        /// EXPIRY DATE
-        _buildInfoRow(
-          icon: Icons.calendar_today,
-          label: "Expiry Date",
-          value: expireDate,
-          isExpired: isExpired,
-        ),
-
-        const SizedBox(height: 18),
-
-        /// ENTRY DATE
-        _buildInfoRow(
-          icon: Icons.date_range,
-          label: "Entry Date",
-          value: entryDate,
-        ),
-
-        const SizedBox(height: 20),
-
-        /// EXPIRED WARNING
-        if (isExpired)
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outline.withValues(alpha: .2)),
+      ),
+      child: Row(
+        children: [
           Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.red.withValues(alpha: .1),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: Colors.red.withValues(alpha: .3),
-              ),
+              color: (isExpired ? colorScheme.error : colorScheme.primary)
+                  .withValues(alpha: .1),
+              borderRadius: BorderRadius.circular(8),
             ),
-            child: Row(
+            child: Icon(
+              icon,
+              color: isExpired ? colorScheme.error : colorScheme.primary,
+              size: 18,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.warning, color: Colors.red),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    "Your subscription has expired. Please update it.",
-                    style: TextStyle(color: Colors.red[700]),
+                Text(
+                  label,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: colorScheme.outline,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: isExpired ? colorScheme.error : colorScheme.onSurface,
                   ),
                 ),
               ],
             ),
           ),
-      ],
-    );
-  }
-
-  Widget _buildInfoRow({
-    required IconData icon,
-    required String label,
-    required String value,
-    bool isExpired = false,
-  }) {
-    return Row(
-      children: [
-        Icon(icon, color: Colors.grey[600], size: 20),
-        const SizedBox(width: 10),
-
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey[600],
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: isExpired ? Colors.red : Colors.black,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
-// Update Subscription Form
+// Update Subscription Form (using ZFormDialog)
 class _UpdateSubscriptionForm extends StatefulWidget {
   const _UpdateSubscriptionForm();
 
@@ -402,45 +537,49 @@ class _UpdateSubscriptionFormState extends State<_UpdateSubscriptionForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      child: BlocConsumer<SubscriptionBloc, SubscriptionState>(
-        listener: (context, state) {
-          if (state is SubscriptionSuccessState) {
-            Navigator.pop(context);
-            ToastManager.show(
-              context: context,
-              title: "Success",
-              message: "Subscription updated successfully!",
-              type: ToastType.success,
-            );
-            // Refresh subscription data
-            context.read<SubscriptionBloc>().add(LoadSubscriptionEvent());
-          } else if (state is SubscriptionErrorState) {
-            ToastManager.show(
-              context: context,
-              title: "Error",
-              message: state.message,
-              type: ToastType.error,
-            );
-          }
-        },
-        builder: (context, state) {
-          final isLoading = state is SubscriptionLoadingState;
+    final colorScheme = Theme.of(context).colorScheme;
 
-          return Form(
+    return BlocConsumer<SubscriptionBloc, SubscriptionState>(
+      listener: (context, state) {
+        if (state is SubscriptionSuccessState) {
+          Navigator.pop(context);
+          ToastManager.show(
+            context: context,
+            title: "Success",
+            message: "Subscription updated successfully!",
+            type: ToastType.success,
+          );
+          context.read<SubscriptionBloc>().add(LoadSubscriptionEvent());
+        } else if (state is SubscriptionErrorState) {
+          ToastManager.show(
+            context: context,
+            title: "Error",
+            message: state.message,
+            type: ToastType.error,
+          );
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state is SubscriptionLoadingState;
+        return ZFormDialog(
+          title: 'Update Subscription',
+          onAction: _updateSubscription,
+          actionLabel: isLoading
+              ? SizedBox(
+            height: 16,
+            width: 16,
+            child: CircularProgressIndicator(
+              color: colorScheme.surface,
+              strokeWidth: 2,
+            ),
+          )
+              : const Text('Update'),
+          padding: const EdgeInsets.all(24),
+          child: Form(
             key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Update Subscription',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 20),
                 ZTextFieldEntitled(
                   title: 'Old Key',
                   hint: 'Enter your current key',
@@ -470,7 +609,7 @@ class _UpdateSubscriptionFormState extends State<_UpdateSubscriptionForm> {
                 ),
                 const SizedBox(height: 16),
                 GestureDetector(
-                  onTap: _showDatePicker,
+                  onTap: isLoading ? null : _showDatePicker,
                   child: AbsorbPointer(
                     child: ZTextFieldEntitled(
                       title: 'Expiry Date',
@@ -488,39 +627,43 @@ class _UpdateSubscriptionFormState extends State<_UpdateSubscriptionForm> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ZOutlineButton(
-                        label: const Text('Cancel'),
-                        onPressed: () => Navigator.pop(context),
-                        backgroundColor: Colors.grey.shade300,
+                if (state is SubscriptionErrorState) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: colorScheme.error.withValues(alpha: .1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: colorScheme.error.withValues(alpha: .3),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ZOutlineButton(
-                        label: isLoading
-                            ? const SizedBox(
-                          width: 13,
-                          height: 13,
-                          child: CircularProgressIndicator(),
-                        )
-                            : const Text('Update'),
-                        onPressed: isLoading ? null : _updateSubscription,
-                        isActive: true,
-                        icon: isLoading ? null : Icons.update,
-                        disable: isLoading,
-                      ),
+                    child: Row(
+                      children: [
+                        Icon(
+                            Icons.error_outline,
+                            color: colorScheme.error,
+                            size: 20
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            state.message,
+                            style: TextStyle(
+                              color: colorScheme.error,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 

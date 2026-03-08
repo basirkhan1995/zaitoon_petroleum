@@ -2825,4 +2825,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get editRole => 'بروزرسانی نقش';
+
+  @override
+  String get subscriptionTitle => 'اشتراک';
+
+  @override
+  String get manageSubMessage => 'جزئیات اشتراک خود را مدیریت نمایید';
 }

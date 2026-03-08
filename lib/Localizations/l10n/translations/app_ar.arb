@@ -936,5 +936,7 @@
   "userRole": "نقش کاربران",
   "roleName": "نقش نوم",
   "newRole": "نوی نقش",
-  "editRole": "بروزرسانی نقش"
+  "editRole": "بروزرسانی نقش",
+  "subscriptionTitle": "اشتراک",
+  "manageSubMessage": "جزئیات اشتراک خود را مدیریت نمایید"
 }
