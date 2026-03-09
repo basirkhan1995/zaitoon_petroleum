@@ -633,7 +633,6 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
   }
 
   Widget _buildPreview(BuildContext context) {
-    // Capture values outside the PdfPreview builder
     final String language = _cachedLanguage ??
         context.read<LocalizationBloc>().state.toString();
     final pw.PageOrientation orientation = _cachedOrientation ??
@@ -653,22 +652,29 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
             ),
           ],
         ),
-        child: PdfPreview(
-          padding: EdgeInsets.zero,
-          useActions: false,
-          previewPageMargin: EdgeInsets.zero,
-          maxPageWidth: double.infinity,
-          dynamicLayout: true,
-          shouldRepaint: true,
-          canChangeOrientation: true,
-          canChangePageFormat: true,
-          pdfPreviewPageDecoration: const BoxDecoration(color: Colors.white),
-          build: (_) => widget.buildPreview(
-            data: widget.data,
-            language: language,
-            orientation: orientation,
-            pageFormat: pageFormat,
-          ).then((doc) => doc.save()),
+        child: ClipRRect( // Add this to prevent overflow
+          borderRadius: BorderRadius.circular(4),
+          child: LayoutBuilder( // Add LayoutBuilder to get constraints
+            builder: (context, constraints) {
+              return PdfPreview(
+                padding: EdgeInsets.zero,
+                useActions: false,
+                previewPageMargin: EdgeInsets.zero,
+                maxPageWidth: constraints.maxWidth, // Use available width
+                dynamicLayout: true,
+                shouldRepaint: true,
+                canChangeOrientation: true,
+                canChangePageFormat: true,
+                pdfPreviewPageDecoration: const BoxDecoration(color: Colors.white),
+                build: (_) => widget.buildPreview(
+                  data: widget.data,
+                  language: language,
+                  orientation: orientation,
+                  pageFormat: pageFormat,
+                ).then((doc) => doc.save()),
+              );
+            },
+          ),
         ),
       ),
     );
