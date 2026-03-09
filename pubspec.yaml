@@ -39,6 +39,7 @@ dependencies:
   syncfusion_flutter_charts: ^32.1.22
   share_plus: ^12.0.1
   permission_handler: ^12.0.1
+  universal_html: ^2.3.0
 
 dev_dependencies:
   flutter_test:

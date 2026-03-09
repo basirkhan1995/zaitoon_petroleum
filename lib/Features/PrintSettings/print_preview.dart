@@ -5,8 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import 'package:share_plus/share_plus.dart'; // Add this dependency
-import 'package:path_provider/path_provider.dart'; // Add this dependency
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:zaitoon_petroleum/Features/PrintSettings/print_services.dart';
 import 'dart:io';
 import 'package:zaitoon_petroleum/Features/PrintSettings/report_model.dart';
@@ -72,12 +72,25 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
   bool _isPanelVisible = false;
   bool _isSharing = false;
 
+  // Cache values to avoid context.watch() in build
+  String? _cachedLanguage;
+  PdfPageFormat? _cachedPageFormat;
+  pw.PageOrientation? _cachedOrientation;
+  Printer? _cachedPrinter;
+
   @override
   void initState() {
     super.initState();
     _copiesController = TextEditingController(text: "1");
     _pagesController = TextEditingController(text: "");
     _initializeFonts();
+
+    // Initialize cached values after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _updateCachedValues();
+      }
+    });
   }
 
   @override
@@ -85,6 +98,15 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
     _copiesController.dispose();
     _pagesController.dispose();
     super.dispose();
+  }
+
+  void _updateCachedValues() {
+    setState(() {
+      _cachedLanguage = context.read<PrintLanguageCubit>().state ?? context.read<LocalizationBloc>().state.toString();
+      _cachedPageFormat = context.read<PaperSizeCubit>().state;
+      _cachedOrientation = context.read<PageOrientationCubit>().state;
+      _cachedPrinter = context.read<PrinterCubit>().state;
+    });
   }
 
   void updateCopies(int value, {bool fromTyping = false}) {
@@ -108,9 +130,11 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
       pages = value.trim().isEmpty ? "all" : value;
     });
   }
+
   Future<void> _initializeFonts() async {
     await PrintServices.initializeFonts();
   }
+
   Future<void> _sharePDF() async {
     if (!mounted) return;
 
@@ -119,10 +143,12 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
     });
 
     try {
-      final language = context.read<PrintLanguageCubit>().state ??
-          context.read<LocalizationBloc>().toString();
-      final pageFormat = context.read<PaperSizeCubit>().state;
-      final orientation = context.read<PageOrientationCubit>().state;
+      final language = _cachedLanguage ??
+          context.read<LocalizationBloc>().state.toString();
+      final pageFormat = _cachedPageFormat ??
+          context.read<PaperSizeCubit>().state;
+      final orientation = _cachedOrientation ??
+          context.read<PageOrientationCubit>().state;
 
       // Generate PDF
       final pdf = await widget.buildPreview(
@@ -150,7 +176,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
         name: fileName,
       );
 
-      // ✅ NEW share_plus 12+ way
+      // Use the new SharePlus API
       await SharePlus.instance.share(
         ShareParams(
           files: [xFile],
@@ -158,13 +184,12 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
         ),
       );
 
-      // Optional delete
+      // Optional delete after sharing
       Future.delayed(const Duration(seconds: 2), () async {
         if (await file.exists()) {
           await file.delete();
         }
       });
-
     } catch (e) {
       if (!mounted) return;
 
@@ -184,7 +209,6 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
@@ -193,37 +217,74 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
     final isTablet = screenWidth >= 600 && screenWidth < 900;
     final isDesktop = screenWidth >= 900;
 
-    return AlertDialog(
-      contentPadding: EdgeInsets.zero,
-      insetPadding: EdgeInsets.zero,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-      content: Container(
-        height: MediaQuery.sizeOf(context).height * (isMobile ? 1.0 : 0.95),
-        width: isMobile
-            ? MediaQuery.sizeOf(context).width
-            : MediaQuery.sizeOf(context).width * (isTablet ? 0.95 : 0.9),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(8),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<PrintLanguageCubit, String?>(
+          listener: (context, state) {
+            if (mounted) {
+              setState(() {
+                _cachedLanguage = state ?? context.read<LocalizationBloc>().state.toString();
+              });
+            }
+          },
         ),
-        child: Column(
-          children: [
-            // Mobile/Tablet Header with Settings Toggle and Share
-            if (isMobile || isTablet) _buildMobileHeader(context, locale),
-
-            Expanded(
-              child: isDesktop
-                  ? _buildDesktopLayout(context, locale)
-                  : _buildMobileTabletLayout(context, locale),
-            ),
-          ],
+        BlocListener<PaperSizeCubit, PdfPageFormat>(
+          listener: (context, state) {
+            if (mounted) {
+              setState(() {
+                _cachedPageFormat = state;
+              });
+            }
+          },
+        ),
+        BlocListener<PageOrientationCubit, pw.PageOrientation>(
+          listener: (context, state) {
+            if (mounted) {
+              setState(() {
+                _cachedOrientation = state;
+              });
+            }
+          },
+        ),
+        BlocListener<PrinterCubit, Printer?>(
+          listener: (context, state) {
+            if (mounted) {
+              setState(() {
+                _cachedPrinter = state;
+              });
+            }
+          },
+        ),
+      ],
+      child: AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        insetPadding: EdgeInsets.zero,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+        content: Container(
+          height: MediaQuery.sizeOf(context).height * (isMobile ? 1.0 : 0.95),
+          width: isMobile
+              ? MediaQuery.sizeOf(context).width
+              : MediaQuery.sizeOf(context).width * (isTablet ? 0.95 : 0.9),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            children: [
+              if (isMobile || isTablet) _buildMobileHeader(context, locale),
+              Expanded(
+                child: isDesktop
+                    ? _buildDesktopLayout(context, locale)
+                    : _buildMobileTabletLayout(context, locale),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // Desktop Layout (Sidebar + Preview)
   Widget _buildDesktopLayout(BuildContext context, AppLocalizations locale) {
     return Row(
       children: [
@@ -233,25 +294,15 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
     );
   }
 
-  // Mobile/Tablet Layout (Settings Panel Toggle)
   Widget _buildMobileTabletLayout(BuildContext context, AppLocalizations locale) {
     return Stack(
       children: [
-        // Full screen PDF Preview
         _buildPreview(context),
-
-        // Settings Panel (slides in from left)
         if (_isPanelVisible)
-          Container(
-            color: Colors.black54,
-            child: GestureDetector(
-              onTap: () => setState(() => _isPanelVisible = false),
-              child: Container(
-                color: Colors.transparent,
-              ),
-            ),
+          GestureDetector(
+            onTap: () => setState(() => _isPanelVisible = false),
+            child: Container(color: Colors.black54),
           ),
-
         if (_isPanelVisible)
           Positioned(
             left: 0,
@@ -262,8 +313,6 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
               child: _buildSidebar(context, locale),
             ),
           ),
-
-        // FAB to toggle settings
         Positioned(
           right: 16,
           bottom: 16,
@@ -276,7 +325,6 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
     );
   }
 
-  // Mobile/Tablet Header with Share button
   Widget _buildMobileHeader(BuildContext context, AppLocalizations locale) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -284,7 +332,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
         color: Theme.of(context).colorScheme.surface,
         border: Border(
           bottom: BorderSide(
-            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
+            color: Theme.of(context).colorScheme.outline.withAlpha(25),
           ),
         ),
       ),
@@ -300,50 +348,66 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const Spacer(),
-          // Share button
           IconButton(
             icon: _isSharing
                 ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2)
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
             )
                 : const Icon(Icons.share),
             onPressed: _isSharing ? null : _sharePDF,
           ),
           const SizedBox(width: 8),
-          // Print button
           IconButton(
             icon: const Icon(Icons.print),
-            onPressed: () {
-              final printer = context.read<PrinterCubit>().state!;
-
-              final language = context.read<PrintLanguageCubit>().state ??
-                  context.read<LocalizationBloc>().toString();
-              final size = context.read<PaperSizeCubit>().state;
-              final orientation = context.read<PageOrientationCubit>().state;
-
-              Navigator.of(context).pop();
-              widget.onPrint(
-                data: widget.data,
-                language: language,
-                pageFormat: size,
-                orientation: orientation,
-                selectedPrinter: printer,
-                copies: copies,
-                pages: pages,
-              );
-            },
+            onPressed: _handlePrint,
           ),
         ],
       ),
     );
   }
 
-  // Original Sidebar (now used by both layouts)
+  void _handlePrint() {
+    final printer = _cachedPrinter ?? context.read<PrinterCubit>().state;
+    if (printer == null) return;
+
+    final language = _cachedLanguage ??
+        context.read<LocalizationBloc>().state.toString();
+    final size = _cachedPageFormat ??
+        context.read<PaperSizeCubit>().state;
+    final orientation = _cachedOrientation ??
+        context.read<PageOrientationCubit>().state;
+
+    Navigator.of(context).pop();
+    widget.onPrint(
+      data: widget.data,
+      language: language,
+      pageFormat: size,
+      orientation: orientation,
+      selectedPrinter: printer,
+      copies: copies,
+      pages: pages,
+    );
+  }
+
+  void _handleSave() {
+    final language = _cachedLanguage ??
+        context.read<LocalizationBloc>().state.toString();
+    final size = _cachedPageFormat ??
+        context.read<PaperSizeCubit>().state;
+    final orientation = _cachedOrientation ??
+        context.read<PageOrientationCubit>().state;
+
+    widget.onSave(
+      data: widget.data,
+      language: language,
+      pageFormat: size,
+      orientation: orientation,
+    );
+  }
+
   Widget _buildSidebar(BuildContext context, AppLocalizations locale) {
-    final currentLocale = context.watch<LocalizationBloc>();
-    String sysLanguage = currentLocale.toString();
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 600;
 
@@ -362,24 +426,24 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
         ],
       ),
       child: Column(
-        spacing: 5,
         children: [
-          if (!isMobile) // Hide title on mobile (already in header)
-            Row(
-              spacing: 5,
-              children: [
-                Icon(Icons.print_rounded, color: Theme.of(context).colorScheme.outline),
-                Text(locale.print, style: Theme.of(context).textTheme.titleMedium),
-              ],
+          if (!isMobile)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 5),
+              child: Row(
+                children: [
+                  Icon(Icons.print_rounded, color: Theme.of(context).colorScheme.outline),
+                  const SizedBox(width: 5),
+                  Text(locale.print, style: Theme.of(context).textTheme.titleMedium),
+                ],
+              ),
             ),
-          if (!isMobile) SizedBox(height: 5),
 
           // Copies field and print button
           Row(
-            spacing: 8,
-            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(child: _buildCopiesField(context)),
+              const SizedBox(width: 8),
               Expanded(
                 child: ZOutlineButton(
                   isActive: true,
@@ -388,30 +452,12 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
                   height: 40,
                   icon: Icons.print,
                   label: Text(locale.print),
-                  onPressed: () {
-
-                    final printer = context.read<PrinterCubit>().state!;
-                    final language = context.read<PrintLanguageCubit>().state ?? sysLanguage;
-                    final size = context.read<PaperSizeCubit>().state;
-                    final orientation = context.read<PageOrientationCubit>().state;
-
-                    Navigator.of(context).pop();
-                    widget.onPrint(
-                      data: widget.data,
-                      language: language,
-                      pageFormat: size,
-                      orientation: orientation,
-                      selectedPrinter: printer,
-                      copies: copies,
-                      pages: pages,
-                    );
-
-                  },
+                  onPressed: _handlePrint,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
 
           PrinterDropdown(
             onPrinterSelected: (value) => context.read<PrinterCubit>().setPrinter(value),
@@ -438,9 +484,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
 
           const Spacer(),
 
-          // PDF, Share, and Cancel buttons (Desktop)
           if (isMobile) ...[
-            // Share button for mobile sidebar
             ZOutlineButton(
               width: double.infinity,
               height: 40,
@@ -448,11 +492,10 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
               label: Text(locale.share),
               onPressed: _isSharing ? null : _sharePDF,
             ),
-            const SizedBox(height: 0),
+            const SizedBox(height: 8),
           ],
 
           Row(
-            spacing: 8,
             children: [
               Expanded(
                 child: ZButton(
@@ -462,34 +505,21 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ),
+              const SizedBox(width: 8),
               Expanded(
                 child: ZOutlineButton(
                   width: double.infinity,
                   height: 40,
                   icon: FontAwesomeIcons.solidFilePdf,
                   label: Text(locale.saveTitle),
-                  onPressed: () {
-                    final language =
-                        context.read<PrintLanguageCubit>().state ?? sysLanguage;
-                    final size = context.read<PaperSizeCubit>().state;
-                    final orientation =
-                        context.read<PageOrientationCubit>().state;
-
-                    widget.onSave(
-                      data: widget.data,
-                      language: language,
-                      pageFormat: size,
-                      orientation: orientation,
-                    );
-                  },
+                  onPressed: _handleSave,
                 ),
               ),
             ],
           ),
 
-          // Desktop share button
           if (!isMobile) ...[
-            const SizedBox(height: 0),
+            const SizedBox(height: 8),
             ZOutlineButton(
               width: double.infinity,
               height: 40,
@@ -503,7 +533,6 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
     );
   }
 
-  // Original Copies Field
   Widget _buildCopiesField(BuildContext context) {
     final bool isRTL = Directionality.of(context) == TextDirection.rtl;
 
@@ -518,12 +547,11 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
           ),
         ),
         const SizedBox(height: 4),
-
         Container(
           height: 40,
           decoration: BoxDecoration(
             border: Border.all(
-              color: Theme.of(context).colorScheme.outline.withValues(alpha: .5),
+              color: Theme.of(context).colorScheme.outline.withAlpha(128),
             ),
             borderRadius: BorderRadius.circular(4),
           ),
@@ -545,9 +573,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
                   ),
                   onChanged: (value) {
                     if (value.isEmpty) return;
-
                     int val = int.tryParse(value) ?? 1;
-
                     if (val > 200) {
                       val = 200;
                       _copiesController.text = "200";
@@ -555,21 +581,19 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
                         TextPosition(offset: _copiesController.text.length),
                       );
                     }
-
                     updateCopies(val, fromTyping: true);
                   },
                 ),
               ),
-
               Container(
                 width: 30,
                 decoration: BoxDecoration(
                   border: Border(
                     left: isRTL ? BorderSide.none : BorderSide(
-                      color: Theme.of(context).colorScheme.outline.withValues(alpha: .5),
+                      color: Theme.of(context).colorScheme.outline.withAlpha(128),
                     ),
                     right: isRTL ? BorderSide(
-                      color: Theme.of(context).colorScheme.outline.withValues(alpha: .5),
+                      color: Theme.of(context).colorScheme.outline.withAlpha(128),
                     ) : BorderSide.none,
                   ),
                 ),
@@ -579,7 +603,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
                       child: Material(
                         child: InkWell(
                           onTap: () => updateCopies(copies + 1),
-                          hoverColor: Theme.of(context).colorScheme.outline.withValues(alpha: .1),
+                          hoverColor: Theme.of(context).colorScheme.outline.withAlpha(25),
                           child: Center(
                             child: Icon(Icons.arrow_drop_up, size: 16),
                           ),
@@ -590,7 +614,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
                       child: Material(
                         child: InkWell(
                           onTap: () => updateCopies(copies - 1),
-                          hoverColor: Theme.of(context).colorScheme.outline.withValues(alpha: .1),
+                          hoverColor: Theme.of(context).colorScheme.outline.withAlpha(25),
                           child: Center(
                             child: Icon(Icons.arrow_drop_down, size: 16),
                           ),
@@ -607,13 +631,14 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
     );
   }
 
-  // Original Preview Panel
   Widget _buildPreview(BuildContext context) {
-    final currentLocale = context.watch<LocalizationBloc>();
-    String sysLanguage = currentLocale.toString();
-    final language = context.watch<PrintLanguageCubit>().state ?? sysLanguage;
-    final pageFormat = context.watch<PaperSizeCubit>().state;
-    final orientation = context.watch<PageOrientationCubit>().state;
+    // Capture values outside the PdfPreview builder
+    final String language = _cachedLanguage ??
+        context.read<LocalizationBloc>().state.toString();
+    final pw.PageOrientation orientation = _cachedOrientation ??
+        context.read<PageOrientationCubit>().state;
+    final PdfPageFormat pageFormat = _cachedPageFormat ??
+        context.read<PaperSizeCubit>().state;
 
     return Expanded(
       child: Container(
@@ -623,7 +648,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
           boxShadow: [
             BoxShadow(
               blurRadius: 1,
-              color: Colors.grey.withValues(alpha: .3),
+              color: Colors.grey.withAlpha(77),
             ),
           ],
         ),
@@ -637,7 +662,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
           canChangeOrientation: true,
           canChangePageFormat: true,
           pdfPreviewPageDecoration: const BoxDecoration(color: Colors.white),
-          build: (context) => widget.buildPreview(
+          build: (_) => widget.buildPreview(
             data: widget.data,
             language: language,
             orientation: orientation,
