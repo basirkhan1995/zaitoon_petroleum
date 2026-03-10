@@ -53,19 +53,19 @@ class _BaseGeneralView extends StatelessWidget {
           icon: Icons.settings,
         ),
 
-      if (login.hasPermission(65) ?? false)
-        MenuDefinition(
-          value: GeneralTabName.password,
-          label: AppLocalizations.of(context)!.password,
-          screen: const PasswordView(),
-          icon: Icons.lock,
-        ),
+      // if (login.hasPermission(65) ?? false)
+      //   MenuDefinition(
+      //     value: GeneralTabName.password,
+      //     label: AppLocalizations.of(context)!.password,
+      //     screen: const PasswordView(),
+      //     icon: Icons.lock,
+      //   ),
       if (login.hasPermission(67) ?? false)
         MenuDefinition(
           value: GeneralTabName.roles,
           label: AppLocalizations.of(context)!.userRole,
           screen: const UserRoleSettingsView(),
-          icon: Icons.verified_user_outlined,
+          icon: Icons.verified_rounded,
         ),
       if (login.hasPermission(67) ?? false)
         MenuDefinition(
@@ -140,7 +140,7 @@ class _BaseGeneralView extends StatelessWidget {
           // Desktop/Tablet layout with side menu
           return GenericMenuWithScreen(
             isExpanded: false,
-            menuWidth: 210,
+            menuWidth: 180,
             padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 8),
             margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 4),
             selectedColor: colorScheme.primary.withValues(alpha: .09),

@@ -470,7 +470,6 @@ class _MenuFooter extends StatelessWidget {
     );
   }
 }
-
 class _ProfileDialogContent extends StatelessWidget {
   final AuthenticatedState authState;
   final VoidCallback onLogout;
@@ -637,7 +636,6 @@ class _Mobile extends StatelessWidget {
     return const _DrawerHomeView(isTablet: false);
   }
 }
-
 class _Tablet extends StatelessWidget {
   const _Tablet();
 
@@ -655,7 +653,6 @@ class _DrawerHomeView extends StatefulWidget {
   @override
   State<_DrawerHomeView> createState() => _DrawerHomeViewState();
 }
-
 class _DrawerHomeViewState extends State<_DrawerHomeView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late MenuName _currentTab;

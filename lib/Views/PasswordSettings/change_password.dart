@@ -75,6 +75,7 @@ class _DesktopState extends State<_Desktop> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
+              spacing: 8,
               children: [
                 const SizedBox(height: 5),
                 ZTextFieldEntitled(
@@ -178,7 +179,7 @@ class _DesktopState extends State<_Desktop> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 5),
                 ZButton(
                   height: 40,
                   width: MediaQuery.sizeOf(context).width,
@@ -193,7 +194,7 @@ class _DesktopState extends State<_Desktop> {
                   onPressed: () => onSubmit(login.usrName),
                 ),
 
-                const SizedBox(height: 15),
+                const SizedBox(height: 5),
               ],
             ),
           ),

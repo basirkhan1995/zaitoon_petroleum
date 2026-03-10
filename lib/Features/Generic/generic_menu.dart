@@ -36,57 +36,62 @@ class GenericMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Stack(
-        alignment: context.read<LocalizationBloc>().state.languageCode == "en"
-            ? Alignment.centerLeft
-            : Alignment.centerRight,
-        children: [
-          Container(
-            height: 38,
-            width: 3,
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? Theme.of(context).colorScheme.primary
-                  : Colors.transparent,
+    return Material(
+      child: InkWell(
+        onTap: onTap,
+        hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
+        highlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: .05),
+        splashColor: Colors.transparent,
+        child: Stack(
+          alignment: context.read<LocalizationBloc>().state.languageCode == "en"
+              ? Alignment.centerLeft
+              : Alignment.centerRight,
+          children: [
+            Container(
+              height: 38,
+              width: 3,
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.transparent,
+              ),
             ),
-          ),
-          Container(
-            padding: padding,
-            margin: margin,
-            decoration: BoxDecoration(
-              color: isSelected ? selectedColor : unselectedColor,
-              borderRadius: BorderRadius.circular(borderRadius),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment:
-              isExpanded ? MainAxisAlignment.start : MainAxisAlignment.center,
-              children: [
-                if (icon != null)
-                  Icon(
-                    icon,
-                    size: 25,
-                    color: isSelected ? selectedTextColor : unselectedTextColor,
-                  ),
-                if (isExpanded && icon != null) const SizedBox(width: 6),
-                if (isExpanded)
-                  Expanded(
-                    child: Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: isSelected ? selectedTextColor : unselectedTextColor,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+            Container(
+              padding: padding,
+              margin: margin,
+              decoration: BoxDecoration(
+                color: isSelected ? selectedColor : unselectedColor,
+                borderRadius: BorderRadius.circular(borderRadius),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment:
+                isExpanded ? MainAxisAlignment.start : MainAxisAlignment.center,
+                children: [
+                  if (icon != null)
+                    Icon(
+                      icon,
+                      size: 25,
+                      color: isSelected ? selectedTextColor : unselectedTextColor,
                     ),
-                  ),
-              ],
+                  if (isExpanded && icon != null) const SizedBox(width: 6),
+                  if (isExpanded)
+                    Expanded(
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: isSelected ? selectedTextColor : unselectedTextColor,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

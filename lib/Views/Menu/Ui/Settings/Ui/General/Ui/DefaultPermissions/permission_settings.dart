@@ -127,7 +127,7 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
     return [
       PermissionCategory(
         name: locale.dashboard,
-        icon: Icons.dashboard,
+        icon: Icons.add_home_outlined,
         permissionNames: [
           "Dashboard",
           "Counts",
@@ -142,7 +142,7 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
       ),
       PermissionCategory(
         name: locale.finance,
-        icon: Icons.attach_money,
+        icon: Icons.money,
         permissionNames: [
           "Finance",
           "Currency Tab",
@@ -156,7 +156,7 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
       ),
       PermissionCategory(
         name: locale.journal,
-        icon: Icons.book,
+        icon: Icons.menu_book_rounded,
         permissionNames: [
           "Journal",
           "All Transactions",
@@ -601,7 +601,7 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
                       color: color.primary.withValues(alpha: .1),
                       child: Row(
                         children: [
-                          Icon(category.icon, size: 16, color: color.primary),
+                          Icon(category.icon, size: 18, color: color.primary),
                           const SizedBox(width: 8),
                           Text(
                             category.name,
@@ -807,8 +807,8 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
   Widget _buildBeautifulStatusIndicator(bool hasPermission, {bool small = false}) {
     if (small) {
       return Container(
-        width: 24,
-        height: 24,
+        width: 25,
+        height: 25,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: hasPermission
@@ -824,14 +824,14 @@ class _PermissionSettingsContentState extends State<_PermissionSettingsContent> 
         child: Icon(
           hasPermission ? Icons.check_circle : Icons.remove_circle,
           color: hasPermission ? Colors.green.shade700 : Colors.red.shade400,
-          size: 14,
+          size: 17,
         ),
       );
     }
 
     return Container(
-      width: 32,
-      height: 32,
+      width: 33,
+      height: 33,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: hasPermission
