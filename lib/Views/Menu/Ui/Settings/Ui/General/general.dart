@@ -8,7 +8,6 @@ import '../../../../../../Localizations/l10n/translations/app_localizations.dart
 import '../../../../../Auth/bloc/auth_bloc.dart';
 import '../../../../../Auth/models/login_model.dart';
 import 'Ui/DefaultPermissions/permission_settings.dart';
-import 'Ui/Security/password.dart';
 import 'Ui/System/system.dart';
 import 'bloc/general_tab_bloc.dart';
 
