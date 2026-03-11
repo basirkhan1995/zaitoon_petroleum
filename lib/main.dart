@@ -12,6 +12,7 @@ import 'package:zaitoon_petroleum/Views/Auth/ForgotPassword/bloc/forgot_password
 import 'package:zaitoon_petroleum/Views/Auth/Subscription/bloc/subscription_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/bloc/auth_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/Ui/login.dart';
+import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/DailyGross/bloc/daily_gross_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Dashboard/Views/Stats/bloc/dashboard_stats_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Finance/Ui/Currency/Ui/Currencies/bloc/currencies_bloc.dart';
@@ -52,6 +53,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/ExchangeRate/b
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/bloc/gl_statement_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/GLStatement/gl_statement.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/bloc/cash_balances_bloc.dart';
+import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/Treasury/cash_branch.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/TrialBalance/bloc/trial_balance_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Finance/TrialBalance/trial_balance.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Report/Ui/Projects/ProjectList/bloc/projects_report_bloc.dart';
@@ -247,30 +249,33 @@ class MyApp extends StatelessWidget {
 
               return GlobalShortcuts(
                 shortcuts: {
-                  /// Ctrl + S
-                  if(authState is AuthenticatedState)
+                  if(authState is AuthenticatedState && (authState.loginData.hasPermission(96) ?? false))
                   const SingleActivator(
                     LogicalKeyboardKey.keyR,
                     shift: true,
                     control: true,
                   ): () => ZNavigator.goto(TransactionByReferenceView()),
-                  if(authState is AuthenticatedState)
+                  if(authState is AuthenticatedState && (authState.loginData.hasPermission(79) ?? false))
                   const SingleActivator(
                     LogicalKeyboardKey.keyS,
                     shift: true,
                     control: true,
                   ): () => ZNavigator.goto(AccountStatementView()),
-                  if(authState is AuthenticatedState)
+                  if(authState is AuthenticatedState && (authState.loginData.hasPermission(81) ?? false))
                   const SingleActivator(
                     LogicalKeyboardKey.keyG,
                     shift: true,
                     control: true,
                   ): () => ZNavigator.goto(GlStatementView()),
-                  if(authState is AuthenticatedState)
+                  if(authState is AuthenticatedState && (authState.loginData.hasPermission(93) ?? false))
+                    const SingleActivator(
+                      LogicalKeyboardKey.f10,
+                    ): () => ZNavigator.goto(CashBalancesBranchWiseView()),
+                  if(authState is AuthenticatedState && (authState.loginData.hasPermission(113) ?? false))
                   const SingleActivator(
                     LogicalKeyboardKey.f12,
                   ): () => ZNavigator.goto(BalanceSheetView()),
-                  if(authState is AuthenticatedState)
+                  if(authState is AuthenticatedState && (authState.loginData.hasPermission(95) ?? false))
                   const SingleActivator(
                     LogicalKeyboardKey.f11,
                   ): () => ZNavigator.goto(TrialBalanceView()),

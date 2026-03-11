@@ -1368,9 +1368,7 @@ class _DesktopState extends State<_Desktop> {
             );
           }
 
-          return const Center(
-            child: Text('Load cash balances to view data'),
-          );
+          return const SizedBox();
         },
       ),
     );

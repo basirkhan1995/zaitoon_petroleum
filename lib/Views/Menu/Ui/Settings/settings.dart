@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Auth/models/login_model.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Backup/backup.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Company/company_tab.dart';
-import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Services/Ui/services.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/Stock/stock_settings.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/TxnTypes/txn_types_view.dart';
 import '../../../../Features/Generic/tab_bar.dart';
@@ -57,12 +56,12 @@ class _Desktop extends StatelessWidget {
                 screen: const CompanyTabsView(),
               ),
 
-            if (login.hasPermission(49) ?? false)
-              ZTabItem(
-                value: SettingsTabName.services,
-                label: AppLocalizations.of(context)!.services,
-                screen: const ServicesView(),
-              ),
+            // if (login.hasPermission(49) ?? false)
+            //   ZTabItem(
+            //     value: SettingsTabName.services,
+            //     label: AppLocalizations.of(context)!.services,
+            //     screen: const ServicesView(),
+            //   ),
 
             if ((login.usrRole == "Super") || (login.hasPermission(72) ?? false))
               ZTabItem(
