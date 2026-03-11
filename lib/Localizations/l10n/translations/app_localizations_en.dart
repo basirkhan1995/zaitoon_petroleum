@@ -2879,4 +2879,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logoutHint => 'Sign out from your account';
+
+  @override
+  String get dailyTransactions => 'Daily Transactions';
 }

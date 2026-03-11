@@ -2869,4 +2869,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get logoutHint => 'از حساب کاربری خود خارج شوید';
+
+  @override
+  String get dailyTransactions => 'معاملات روزمره';
 }

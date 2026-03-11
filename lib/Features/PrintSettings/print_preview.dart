@@ -102,7 +102,8 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
 
   void _updateCachedValues() {
     setState(() {
-      _cachedLanguage = context.read<PrintLanguageCubit>().state ?? context.read<LocalizationBloc>().state.toString();
+      _cachedLanguage = context.read<PrintLanguageCubit>().state ??
+          context.read<LocalizationBloc>().state.toString();
       _cachedPageFormat = context.read<PaperSizeCubit>().state;
       _cachedOrientation = context.read<PageOrientationCubit>().state;
       _cachedPrinter = context.read<PrinterCubit>().state;
@@ -213,6 +214,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     final isMobile = screenWidth < 600;
     final isTablet = screenWidth >= 600 && screenWidth < 900;
     final isDesktop = screenWidth >= 900;
@@ -223,7 +225,8 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
           listener: (context, state) {
             if (mounted) {
               setState(() {
-                _cachedLanguage = state ?? context.read<LocalizationBloc>().state.toString();
+                _cachedLanguage = state ??
+                    context.read<LocalizationBloc>().state.toString();
               });
             }
           },
@@ -261,18 +264,17 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
         insetPadding: EdgeInsets.zero,
         backgroundColor: Theme.of(context).colorScheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-        content: Container(
-          height: MediaQuery.sizeOf(context).height * (isMobile ? 1.0 : 0.95),
+        content: SizedBox(
+          height: isMobile ? screenHeight : screenHeight * 0.95,
           width: isMobile
-              ? MediaQuery.sizeOf(context).width
-              : MediaQuery.sizeOf(context).width * (isTablet ? 0.95 : 0.9),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(8),
-          ),
+              ? screenWidth
+              : screenWidth * (isTablet ? 0.95 : 0.9),
           child: Column(
             children: [
-              if (isMobile || isTablet) _buildMobileHeader(context, locale),
+              // Mobile/Tablet Header
+              if (isMobile || isTablet) _buildHeader(context, locale),
+
+              // Main Content
               Expanded(
                 child: isDesktop
                     ? _buildDesktopLayout(context, locale)
@@ -285,50 +287,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
     );
   }
 
-  Widget _buildDesktopLayout(BuildContext context, AppLocalizations locale) {
-    return Row(
-      children: [
-        _buildSidebar(context, locale),
-        _buildPreview(context),
-      ],
-    );
-  }
-
-  Widget _buildMobileTabletLayout(BuildContext context, AppLocalizations locale) {
-    return Stack(
-      children: [
-        _buildPreview(context),  // Now this returns a Container, not Expanded
-
-        if (_isPanelVisible)
-          GestureDetector(
-            onTap: () => setState(() => _isPanelVisible = false),
-            child: Container(color: Colors.black54),
-          ),
-
-        if (_isPanelVisible)
-          Positioned(
-            left: 0,
-            top: 0,
-            bottom: 0,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: _buildSidebar(context, locale),
-            ),
-          ),
-
-        Positioned(
-          right: 16,
-          bottom: 16,
-          child: FloatingActionButton(
-            onPressed: () => setState(() => _isPanelVisible = !_isPanelVisible),
-            child: Icon(_isPanelVisible ? Icons.close : Icons.settings_rounded),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMobileHeader(BuildContext context, AppLocalizations locale) {
+  Widget _buildHeader(BuildContext context, AppLocalizations locale) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
@@ -370,42 +329,66 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
     );
   }
 
-  void _handlePrint() {
-    final printer = _cachedPrinter ?? context.read<PrinterCubit>().state;
-    if (printer == null) return;
+  Widget _buildDesktopLayout(BuildContext context, AppLocalizations locale) {
+    return Row(
+      children: [
+        // Sidebar - fixed width
+        SizedBox(
+          width: 240,
+          child: _buildSidebar(context, locale),
+        ),
 
-    final language = _cachedLanguage ??
-        context.read<LocalizationBloc>().state.toString();
-    final size = _cachedPageFormat ??
-        context.read<PaperSizeCubit>().state;
-    final orientation = _cachedOrientation ??
-        context.read<PageOrientationCubit>().state;
-
-    Navigator.of(context).pop();
-    widget.onPrint(
-      data: widget.data,
-      language: language,
-      pageFormat: size,
-      orientation: orientation,
-      selectedPrinter: printer,
-      copies: copies,
-      pages: pages,
+        // Preview - takes remaining space
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: _buildPreview(),
+          ),
+        ),
+      ],
     );
   }
 
-  void _handleSave() {
-    final language = _cachedLanguage ??
-        context.read<LocalizationBloc>().state.toString();
-    final size = _cachedPageFormat ??
-        context.read<PaperSizeCubit>().state;
-    final orientation = _cachedOrientation ??
-        context.read<PageOrientationCubit>().state;
+  Widget _buildMobileTabletLayout(BuildContext context, AppLocalizations locale) {
+    return Stack(
+      children: [
+        // Preview - takes full space
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _buildPreview(),
+        ),
 
-    widget.onSave(
-      data: widget.data,
-      language: language,
-      pageFormat: size,
-      orientation: orientation,
+        // Semi-transparent overlay when panel is visible
+        if (_isPanelVisible)
+          GestureDetector(
+            onTap: () => setState(() => _isPanelVisible = false),
+            child: Container(
+              color: Colors.black54,
+            ),
+          ),
+
+        // Sidebar panel
+        if (_isPanelVisible)
+          Positioned(
+            left: 0,
+            top: 0,
+            bottom: 0,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: _buildSidebar(context, locale),
+            ),
+          ),
+
+        // FAB to toggle sidebar
+        Positioned(
+          right: 16,
+          bottom: 16,
+          child: FloatingActionButton(
+            onPressed: () => setState(() => _isPanelVisible = !_isPanelVisible),
+            child: Icon(_isPanelVisible ? Icons.close : Icons.settings_rounded),
+          ),
+        ),
+      ],
     );
   }
 
@@ -416,7 +399,6 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
     return Container(
       margin: const EdgeInsets.all(8),
       padding: const EdgeInsets.all(12),
-      width: isMobile ? double.infinity : 220,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(5),
@@ -434,9 +416,15 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
               padding: const EdgeInsets.only(bottom: 5),
               child: Row(
                 children: [
-                  Icon(Icons.print_rounded, color: Theme.of(context).colorScheme.outline),
+                  Icon(
+                      Icons.print_rounded,
+                      color: Theme.of(context).colorScheme.outline
+                  ),
                   const SizedBox(width: 5),
-                  Text(locale.print, style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                      locale.print,
+                      style: Theme.of(context).textTheme.titleMedium
+                  ),
                 ],
               ),
             ),
@@ -463,7 +451,8 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
           const SizedBox(height: 5),
 
           PrinterDropdown(
-            onPrinterSelected: (value) => context.read<PrinterCubit>().setPrinter(value),
+            onPrinterSelected: (value) =>
+                context.read<PrinterCubit>().setPrinter(value),
           ),
           const SizedBox(height: 1),
 
@@ -634,7 +623,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
     );
   }
 
-  Widget _buildPreview(BuildContext context) {
+  Widget _buildPreview() {
     final String language = _cachedLanguage ??
         context.read<LocalizationBloc>().state.toString();
     final pw.PageOrientation orientation = _cachedOrientation ??
@@ -642,9 +631,7 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
     final PdfPageFormat pageFormat = _cachedPageFormat ??
         context.read<PaperSizeCubit>().state;
 
-    // Return just the preview content without the Expanded wrapper
     return Container(
-      margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         boxShadow: [
@@ -678,6 +665,45 @@ class _PrintPreviewDialogState<T> extends State<PrintPreviewDialog<T>> {
           },
         ),
       ),
+    );
+  }
+
+  void _handlePrint() {
+    final printer = _cachedPrinter ?? context.read<PrinterCubit>().state;
+    if (printer == null) return;
+
+    final language = _cachedLanguage ??
+        context.read<LocalizationBloc>().state.toString();
+    final size = _cachedPageFormat ??
+        context.read<PaperSizeCubit>().state;
+    final orientation = _cachedOrientation ??
+        context.read<PageOrientationCubit>().state;
+
+    Navigator.of(context).pop();
+    widget.onPrint(
+      data: widget.data,
+      language: language,
+      pageFormat: size,
+      orientation: orientation,
+      selectedPrinter: printer,
+      copies: copies,
+      pages: pages,
+    );
+  }
+
+  void _handleSave() {
+    final language = _cachedLanguage ??
+        context.read<LocalizationBloc>().state.toString();
+    final size = _cachedPageFormat ??
+        context.read<PaperSizeCubit>().state;
+    final orientation = _cachedOrientation ??
+        context.read<PageOrientationCubit>().state;
+
+    widget.onSave(
+      data: widget.data,
+      language: language,
+      pageFormat: size,
+      orientation: orientation,
     );
   }
 }

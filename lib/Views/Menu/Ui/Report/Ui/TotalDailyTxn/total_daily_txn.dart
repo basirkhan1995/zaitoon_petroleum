@@ -56,8 +56,8 @@ class _DesktopState extends State<_Desktop> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<TotalDailyBloc>().add(
         LoadTotalDailyEvent(
-          widget.fromDate ?? fromDate,
-          widget.toDate ?? toDate,
+          fromDate: widget.fromDate ?? fromDate,
+         toDate:  widget.toDate ?? toDate,
         ),
       );
     });

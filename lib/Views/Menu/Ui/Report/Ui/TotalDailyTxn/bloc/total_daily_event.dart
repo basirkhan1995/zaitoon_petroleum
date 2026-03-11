@@ -7,7 +7,7 @@ sealed class TotalDailyEvent extends Equatable {
 class LoadTotalDailyEvent extends TotalDailyEvent {
   final String fromDate;
   final String toDate;
-  const LoadTotalDailyEvent(this.fromDate, this.toDate);
+  const LoadTotalDailyEvent({required this.fromDate,required this.toDate});
   @override
   List<Object?> get props => [fromDate, toDate];
 }

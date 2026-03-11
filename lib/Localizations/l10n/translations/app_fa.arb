@@ -951,5 +951,6 @@
   "memberSince": "عضویت",
   "securityTitle": "امنیت",
   "passwordChangeHint": "رمز عبور خود را به‌طور منظم به‌روزرسانی کنید",
-  "logoutHint": "از حساب کاربری خود خارج شوید"
+  "logoutHint": "از حساب کاربری خود خارج شوید",
+  "dailyTransactions": "معاملات روزمره"
 }

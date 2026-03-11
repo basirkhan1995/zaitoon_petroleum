@@ -5691,6 +5691,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign out from your account'**
   String get logoutHint;
+
+  /// No description provided for @dailyTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Transactions'**
+  String get dailyTransactions;
 }
 
 class _AppLocalizationsDelegate

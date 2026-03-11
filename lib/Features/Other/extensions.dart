@@ -9,7 +9,17 @@ extension FontScaler on BuildContext {
     return size.clamp(min, max);
   }
 }
-
+// Helper extension for compact amount formatting
+extension CompactAmount on double {
+  String toCompactAmount() {
+    if (this >= 1000000) {
+      return '\$${(this / 1000000).toStringAsFixed(1)}M';
+    } else if (this >= 1000) {
+      return '\$${(this / 1000).toStringAsFixed(1)}K';
+    }
+    return '\$${toStringAsFixed(0)}';
+  }
+}
 //Get the first letter of a word
 extension GetFirstLetterExtension on String {
   /// Returns the first letter(s) of a name:

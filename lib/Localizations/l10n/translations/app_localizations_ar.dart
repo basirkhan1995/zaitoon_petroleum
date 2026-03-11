@@ -2872,4 +2872,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get logoutHint => 'له خپل حساب څخه ووځئ';
+
+  @override
+  String get dailyTransactions => 'معاملات روزمره';
 }

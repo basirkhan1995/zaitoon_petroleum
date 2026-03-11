@@ -3,20 +3,36 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:zaitoon_petroleum/Features/Other/cover.dart';
+import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
+import '../../../../../../Features/Date/shamsi_converter.dart';
 import '../../../../../../Features/Other/extensions.dart';
 import 'bloc/total_daily_bloc.dart';
 import 'model/total_daily_compare.dart';
 
-class TotalDailyColumnView extends StatelessWidget {
-  final String? fromDate;
-  final String? toDate;
+class TotalDailyColumnView extends StatefulWidget {
+  const TotalDailyColumnView({super.key,});
 
-  const TotalDailyColumnView({
-    super.key,
-    this.fromDate,
-    this.toDate,
-  });
+  @override
+  State<TotalDailyColumnView> createState() => _TotalDailyColumnViewState();
+}
 
+class _TotalDailyColumnViewState extends State<TotalDailyColumnView> {
+
+  late String fromDate;
+  late String toDate;
+
+  @override
+  void initState() {
+    // Trigger load when widget is built with new dates
+    fromDate = DateTime.now().toFormattedDate();
+    toDate = DateTime.now().toFormattedDate();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TotalDailyBloc>().add(
+        LoadTotalDailyEvent(fromDate: fromDate, toDate:  toDate,),
+      );
+    });
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -46,6 +62,94 @@ class TotalDailyColumnView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Header with refresh button
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.dailyTransactions,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          // Refresh button
+                          IconButton(
+                            onPressed: () {
+                              context.read<TotalDailyBloc>().add(
+                                LoadTotalDailyEvent(
+                                  fromDate: fromDate,
+                                toDate:  toDate,
+                                ),
+                              );
+                            },
+                            icon: Icon(
+                              Icons.refresh,
+                              size: 18,
+                              color: theme.colorScheme.primary,
+                            ),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary.withValues(alpha: .1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.calendar_today,
+                                  size: 14,
+                                  color: theme.colorScheme.primary,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  AppLocalizations.of(context)!.today,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: theme.colorScheme.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Chart with pull-to-refresh
+                SizedBox(
+                  height: 220,
+                  child: _buildChart(context, todayData),
+                ),
+
+                // Summary stats
+                const SizedBox(height: 16),
+                _buildSummaryStats(context, todayData),
+              ],
+            ),
+          );
+        }
+
+        /// 🔄 LOADING - Show loading indicator
+        if (state is TotalDailyLoading) {
+          return ZCover(
+            radius: 8,
+            margin: const EdgeInsets.all(4),
+            borderColor: theme.colorScheme.outline.withValues(alpha: .1),
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 // Header
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
@@ -53,7 +157,7 @@ class TotalDailyColumnView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Daily Transactions',
+                        AppLocalizations.of(context)!.dailyTransactions,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -74,7 +178,7 @@ class TotalDailyColumnView extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              'Today',
+                              AppLocalizations.of(context)!.today,
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: theme.colorScheme.primary,
                                 fontWeight: FontWeight.w600,
@@ -87,21 +191,43 @@ class TotalDailyColumnView extends StatelessWidget {
                   ),
                 ),
 
-                // Chart
-                SizedBox(
+                // Loading indicator
+                Container(
                   height: 220,
-                  child: _buildChart(context, todayData),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: theme.colorScheme.outline.withValues(alpha: .08),
+                    ),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            theme.colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Loading transactions...',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.outline.withValues(alpha: .6),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-
-                // Summary stats
-                const SizedBox(height: 16),
-                _buildSummaryStats(context, todayData),
               ],
             ),
           );
         }
 
-        /// 🔄 LOADING - Silent for dashboard
+        /// Initial state - Show nothing
         return const SizedBox();
       },
     );
@@ -119,42 +245,66 @@ class TotalDailyColumnView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header (same as data state)
+          // Header with refresh button
           Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Daily Transactions',
+                  AppLocalizations.of(context)!.dailyTransactions,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withValues(alpha: .1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today,
-                        size: 14,
+                Row(
+                  children: [
+                    // Refresh button
+                    IconButton(
+                      onPressed: () {
+                          context.read<TotalDailyBloc>().add(
+                            LoadTotalDailyEvent(
+                              fromDate: fromDate,
+                              toDate:  toDate,
+                            ),
+                          );
+
+                      },
+                      icon: Icon(
+                        Icons.refresh,
+                        size: 18,
                         color: theme.colorScheme.primary,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Today',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withValues(alpha: .1),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    ],
-                  ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_today,
+                            size: 14,
+                            color: theme.colorScheme.primary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            AppLocalizations.of(context)!.today,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -209,12 +359,11 @@ class TotalDailyColumnView extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
+
+                const SizedBox(height: 16),
               ],
             ),
           ),
-
-          // Optional: Show minimal stats even when no data? Or just remove the stats section
-          // For now, we'll not show stats when no data
         ],
       ),
     );
@@ -237,104 +386,118 @@ class TotalDailyColumnView extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = _getChartColors(data.length);
 
-    return SfCartesianChart(
-      margin: const EdgeInsets.all(0),
-      plotAreaBorderWidth: 0,
-
-      // Primary X Axis
-      primaryXAxis: CategoryAxis(
-        labelRotation: data.length > 5 ? -45 : 0,
-        labelStyle: TextStyle(
-          fontSize: 11,
-          color: theme.colorScheme.outline.withValues(alpha: .7),
-        ),
-        majorGridLines: const MajorGridLines(width: 0),
-        majorTickLines: const MajorTickLines(width: 0),
-        axisLine: AxisLine(
-          width: 1,
-          color: theme.colorScheme.outline.withValues(alpha: .1),
-        ),
-      ),
-
-      // Primary Y Axis
-      primaryYAxis: NumericAxis(
-        numberFormat: NumberFormat.compactSimpleCurrency(
-          decimalDigits: 0,
-        ),
-        labelStyle: TextStyle(
-          fontSize: 11,
-          color: theme.colorScheme.outline.withValues(alpha: .7),
-        ),
-        majorGridLines: MajorGridLines(
-          width: 1,
-          color: theme.colorScheme.outline.withValues(alpha: .05),
-        ),
-        majorTickLines: const MajorTickLines(width: 0),
-        axisLine: const AxisLine(width: 0),
-        minimum: 0,
-      ),
-
-      // Tooltip
-      tooltipBehavior: TooltipBehavior(
-        enable: true,
-        header: '',
-        format: 'point.x\nAmount: point.y\nTransactions: point.count',
-        color: theme.colorScheme.surface,
-        textStyle: TextStyle(
-          color: theme.colorScheme.onSurface,
-          fontSize: 12,
-        ),
-      ),
-
-      // Series
-      series: <CartesianSeries>[
-        ColumnSeries<_ChartItem, String>(
-          dataSource: data,
-          xValueMapper: (_ChartItem item, _) => item.name,
-          yValueMapper: (_ChartItem item, _) => item.amount,
-          pointColorMapper: (_ChartItem item, index) => colors[index],
-
-          // Styling
-          width: 0.7,
-          spacing: 0.2,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(6),
-            topRight: Radius.circular(6),
+    return RefreshIndicator(
+      onRefresh: () async {
+        context.read<TotalDailyBloc>().add(
+          LoadTotalDailyEvent(
+            fromDate: fromDate,
+            toDate:  toDate,
           ),
+        );
+        // Wait for the new state
+        await context.read<TotalDailyBloc>().stream.firstWhere(
+              (state) => state is TotalDailyLoaded || state is TotalDailyError,
+        );
+      },
+      child: SfCartesianChart(
+        margin: const EdgeInsets.all(0),
+        plotAreaBorderWidth: 0,
 
-          // Animation
-          animationDuration: 1000,
-          animationDelay: 100,
+        // Primary X Axis
+        primaryXAxis: CategoryAxis(
+          labelRotation: data.length > 5 ? -45 : 0,
+          labelStyle: TextStyle(
+            fontSize: 11,
+            color: theme.colorScheme.outline.withValues(alpha: .7),
+          ),
+          majorGridLines: const MajorGridLines(width: 0),
+          majorTickLines: const MajorTickLines(width: 0),
+          axisLine: AxisLine(
+            width: 1,
+            color: theme.colorScheme.outline.withValues(alpha: .1),
+          ),
+        ),
 
-          // Data labels
-          dataLabelSettings: DataLabelSettings(
-            isVisible: data.length <= 8,
-            textStyle: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: theme.colorScheme.surface,
+        // Primary Y Axis
+        primaryYAxis: NumericAxis(
+          numberFormat: NumberFormat.compactSimpleCurrency(
+            decimalDigits: 0,
+          ),
+          labelStyle: TextStyle(
+            fontSize: 11,
+            color: theme.colorScheme.outline.withValues(alpha: .7),
+          ),
+          majorGridLines: MajorGridLines(
+            width: 1,
+            color: theme.colorScheme.outline.withValues(alpha: .05),
+          ),
+          majorTickLines: const MajorTickLines(width: 0),
+          axisLine: const AxisLine(width: 0),
+          minimum: 0,
+        ),
+
+        // Tooltip
+        tooltipBehavior: TooltipBehavior(
+          enable: true,
+          header: '',
+          format: 'point.x\nAmount: point.y\nTransactions: point.count',
+          color: theme.colorScheme.surface,
+          textStyle: TextStyle(
+            color: theme.colorScheme.onSurface,
+            fontSize: 12,
+          ),
+        ),
+
+        // Series
+        series: <CartesianSeries>[
+          ColumnSeries<_ChartItem, String>(
+            dataSource: data,
+            xValueMapper: (_ChartItem item, _) => item.name,
+            yValueMapper: (_ChartItem item, _) => item.amount,
+            pointColorMapper: (_ChartItem item, index) => colors[index],
+
+            // Styling
+            width: 0.7,
+            spacing: 0.2,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(6),
+              topRight: Radius.circular(6),
             ),
-            labelAlignment: ChartDataLabelAlignment.top,
-            labelPosition: ChartDataLabelPosition.outside,
+
+            // Animation
+            animationDuration: 1000,
+            animationDelay: 100,
+
+            // Data labels
+            dataLabelSettings: DataLabelSettings(
+              isVisible: data.length <= 8,
+              textStyle: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.surface,
+              ),
+              labelAlignment: ChartDataLabelAlignment.top,
+              labelPosition: ChartDataLabelPosition.outside,
+            ),
+
+            name: 'Amount',
+
+            // Add border to columns
+            borderWidth: 1,
+            borderColor: theme.colorScheme.surface,
+
+            // Better gradient
+            gradient: LinearGradient(
+              colors: [
+                theme.colorScheme.primary,
+                theme.colorScheme.primary.withValues(alpha: .5),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
           ),
-
-          name: 'Amount',
-
-          // Add border to columns
-          borderWidth: 1,
-          borderColor: theme.colorScheme.surface,
-
-          // Better gradient
-          gradient: LinearGradient(
-            colors: [
-              theme.colorScheme.primary,
-              theme.colorScheme.primary.withValues(alpha: .5),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -457,7 +620,6 @@ class TotalDailyColumnView extends StatelessWidget {
     );
   }
 
-
   List<Color> _getChartColors(int count) {
     // Use Material Design color palette for better aesthetics
     final colors = [
@@ -491,17 +653,6 @@ class TotalDailyColumnView extends StatelessWidget {
   }
 }
 
-// Helper extension for compact amount formatting
-extension CompactAmount on double {
-  String toCompactAmount() {
-    if (this >= 1000000) {
-      return '\$${(this / 1000000).toStringAsFixed(1)}M';
-    } else if (this >= 1000) {
-      return '\$${(this / 1000).toStringAsFixed(1)}K';
-    }
-    return '\$${toStringAsFixed(0)}';
-  }
-}
 
 // Chart data model
 class _ChartItem {

@@ -951,5 +951,6 @@
   "memberSince": "عضویت",
   "securityTitle": "امنیت",
   "passwordChangeHint": "خپل پټنوم په منظم ډول نوي کړئ",
-  "logoutHint": "له خپل حساب څخه ووځئ"
+  "logoutHint": "له خپل حساب څخه ووځئ",
+  "dailyTransactions": "معاملات روزمره"
 }

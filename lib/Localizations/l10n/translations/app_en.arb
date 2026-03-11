@@ -951,5 +951,6 @@
   "memberSince": "Member since",
   "securityTitle": "Security",
   "passwordChangeHint": "Update your password regularly",
-  "logoutHint": "Sign out from your account"
+  "logoutHint": "Sign out from your account",
+  "dailyTransactions": "Daily Transactions"
 }
