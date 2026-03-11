@@ -2114,6 +2114,12 @@ class _MobileViewState extends State<_MobileView> {
     final login = state.loginData;
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showTransactionSheet(context, login),
+        backgroundColor: color.primary,
+        foregroundColor: color.surface,
+        child: Icon(Icons.add),
+      ),
       body: BlocBuilder<CompanyProfileBloc, CompanyProfileState>(
         builder: (context, companyState) {
           if (companyState is CompanyProfileLoadedState) {
@@ -2189,17 +2195,7 @@ class _MobileViewState extends State<_MobileView> {
                   },
                 ),
 
-                // Floating Action Button to open transaction actions
-                Positioned(
-                  bottom: 16,
-                  right: 16,
-                  child: FloatingActionButton(
-                    onPressed: () => _showTransactionSheet(context, login),
-                    backgroundColor: color.primary,
-                    foregroundColor: color.surface,
-                    child: Icon(Icons.add),
-                  ),
-                ),
+
               ],
             ),
           );

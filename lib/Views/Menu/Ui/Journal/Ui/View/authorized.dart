@@ -260,7 +260,6 @@ class _MobileState extends State<_Mobile> {
             appBar: AppBar(
               title: Text(
                 tr.authorizedTransactions,
-                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               centerTitle: false,
               actions: [
@@ -276,7 +275,7 @@ class _MobileState extends State<_Mobile> {
               children: [
                 // Search Bar
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  padding: const EdgeInsets.all(8),
                   child: ZSearchField(
                     icon: Icons.search_rounded,
                     controller: searchController,
@@ -297,17 +296,17 @@ class _MobileState extends State<_Mobile> {
                     }
 
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                       child: Row(
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
+                              horizontal: 8,
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
                               color: color.primaryContainer,
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(5),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -484,7 +483,7 @@ class _MobileState extends State<_Mobile> {
                           },
                           child: ListView.builder(
                             controller: _scrollController,
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(8),
                             itemCount: filteredList.length,
                             itemBuilder: (context, index) {
                               final txn = filteredList[index];
@@ -521,7 +520,7 @@ class _MobileState extends State<_Mobile> {
               color: Colors.black.withAlpha(100),
               child: Center(
                 child: Container(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: color.surface,
                     borderRadius: BorderRadius.circular(20),
@@ -597,12 +596,9 @@ class _MobileState extends State<_Mobile> {
         break;
     }
 
-    // Determine if transaction is pending
-    final isPending = txn.trnStateText?.toLowerCase() == 'pending';
-
     return ZCover(
       margin: const EdgeInsets.only(bottom: 12),
-      radius: 4,
+      radius: 12,
       color: color.surface,
       child: Material(
         color: Colors.transparent,
@@ -633,7 +629,7 @@ class _MobileState extends State<_Mobile> {
               Opacity(
                 opacity: isLoading ? 0.5 : 1.0,
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -670,43 +666,10 @@ class _MobileState extends State<_Mobile> {
                               ],
                             ),
                           ),
-                          const SizedBox(width: 8),
-
-                          // Pending Badge (if pending)
-                          if (isPending)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.orange.withAlpha(20),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.access_time_rounded,
-                                    size: 12,
-                                    color: Colors.orange.shade800,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    tr.pending,
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.orange.shade800,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
                         ],
                       ),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
 
                       // Reference Number with Copy
                       Row(
@@ -722,7 +685,6 @@ class _MobileState extends State<_Mobile> {
                                     color: color.onSurface.withAlpha(150),
                                   ),
                                 ),
-                                const SizedBox(height: 4),
                                 Text(
                                   reference,
                                   style: const TextStyle(
@@ -761,7 +723,7 @@ class _MobileState extends State<_Mobile> {
                         ],
                       ),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
 
                       // Date and Users Row
                       Row(
@@ -793,28 +755,24 @@ class _MobileState extends State<_Mobile> {
 
                           // Maker
                           if (txn.maker != null && txn.maker!.isNotEmpty)
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.person_outline_rounded,
-                                    size: 14,
-                                    color: color.onSurface.withAlpha(150),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.person_outline_rounded,
+                                  size: 14,
+                                  color: color.onSurface.withAlpha(150),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  txn.maker!,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: color.onSurface.withAlpha(200),
                                   ),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      txn.maker!,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: color.onSurface.withAlpha(200),
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
                         ],
                       ),

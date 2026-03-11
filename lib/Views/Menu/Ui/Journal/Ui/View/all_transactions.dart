@@ -287,7 +287,6 @@ class _MobileState extends State<_Mobile> {
             appBar: AppBar(
               title: Text(
                 tr.todayTransaction,
-                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               centerTitle: false,
               actions: [
@@ -308,7 +307,7 @@ class _MobileState extends State<_Mobile> {
                   child: ZSearchField(
                     icon: Icons.search_rounded,
                     controller: searchController,
-                    hint: "${tr.search} ${tr.transactions.toLowerCase()}...",
+                    hint: "${tr.search} ${tr.transactions.toLowerCase()}",
                     onChanged: (_) => setState(() {}),
                     title: "",
                   ),
@@ -323,17 +322,17 @@ class _MobileState extends State<_Mobile> {
                     }
 
                     return Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                      padding: const EdgeInsets.all(8),
                       child: Row(
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
+                              horizontal: 8,
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
                               color: color.primaryContainer,
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(4),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -466,7 +465,7 @@ class _MobileState extends State<_Mobile> {
                           },
                           child: ListView.builder(
                             controller: _scrollController,
-                            padding: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(7),
                             itemCount: filteredList.length,
                             itemBuilder: (context, index) {
                               final txn = filteredList[index];
@@ -573,8 +572,8 @@ class _MobileState extends State<_Mobile> {
     }
 
     return ZCover(
-      margin: const EdgeInsets.only(bottom: 12),
-      radius: 5,
+      margin: const EdgeInsets.only(bottom: 10),
+      radius: 12,
       color: Theme.of(context).colorScheme.surface,
       child: Material(
         color: Colors.transparent,
@@ -582,7 +581,7 @@ class _MobileState extends State<_Mobile> {
           onTap: isLoading ? null : onTap,
           borderRadius: BorderRadius.circular(8),
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             child: Stack(
               children: [
                 // Loading indicator overlay for this specific item
@@ -644,10 +643,33 @@ class _MobileState extends State<_Mobile> {
                           ),
                           const SizedBox(width: 8),
 
-                          // Status Badge
-                          Expanded(
-                            child: TransactionStatusBadge(
-                              status: txn.trnStateText ?? "",
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: typeColor.withAlpha(15),
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  typeIcon,
+                                  size: 14,
+                                  color: typeColor,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  txn.trnStateText ?? "",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: typeColor,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -746,16 +768,14 @@ class _MobileState extends State<_Mobile> {
                                     color: color.onSurface.withAlpha(150),
                                   ),
                                   const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      txn.maker!,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: color.onSurface.withAlpha(200),
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                  Text(
+                                    txn.maker!,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: color.onSurface.withAlpha(200),
                                     ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
