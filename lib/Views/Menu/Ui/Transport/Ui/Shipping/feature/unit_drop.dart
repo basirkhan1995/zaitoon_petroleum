@@ -30,7 +30,7 @@ enum UnitType {
       case "M3": return UnitType.m3;
       case "LB": return UnitType.lb;
       case "F3": return UnitType.f3;
-      default: return UnitType.kg;
+      default: return UnitType.tn;
     }
   }
 }

@@ -2907,4 +2907,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get thisYear => 'This year';
+
+  @override
+  String get tripCost => 'Trip Costs';
+
+  @override
+  String get tripCostHint => 'Costs during the journey (tolls, meals, parking)';
 }

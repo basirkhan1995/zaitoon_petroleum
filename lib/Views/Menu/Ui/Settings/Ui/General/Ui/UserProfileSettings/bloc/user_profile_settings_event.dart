@@ -12,6 +12,11 @@ class LoadProfileSettingsEvent extends UserProfileSettingsEvent {
   List<Object?> get props => [usrName];
 }
 
+class UpdateProfileSettingsEvent extends UserProfileSettingsEvent{
+  @override
+  List<Object?> get props => [];
+}
+
 class RefreshProfileEvent extends UserProfileSettingsEvent {
   final String usrName;
   const RefreshProfileEvent(this.usrName);

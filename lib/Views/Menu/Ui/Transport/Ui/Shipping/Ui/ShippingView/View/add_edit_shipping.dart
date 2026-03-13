@@ -10,6 +10,7 @@ import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/toast.dart';
 import 'package:zaitoon_petroleum/Features/Other/utils.dart';
 import 'package:zaitoon_petroleum/Features/Widgets/outline_button.dart';
+import 'package:zaitoon_petroleum/Features/Widgets/section_title.dart';
 import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Stakeholders/Ui/Accounts/bloc/accounts_bloc.dart';
@@ -1584,15 +1585,22 @@ class _DesktopState extends State<_Desktop> {
         child: Form(
           key: advanceFormKey,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SectionTitle(title: tr.tripCost),
+              SizedBox(height: 5),
+              Text(tr.tripCostHint,style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.outline),),
+              SizedBox(height: 8),
               ZTextFieldEntitled(
+                hint: tr.optional,
                 keyboardInputType: const TextInputType.numberWithOptions(decimal: true),
                 inputFormat: [
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
                   SmartThousandsDecimalFormatter(),
                 ],
                 controller: advanceAmount,
-                title: tr.advanceAmount,
+                title: tr.amount,
               ),
             ],
           ),
@@ -1757,9 +1765,9 @@ class _DesktopState extends State<_Desktop> {
                       icon: Icons.local_shipping,
                     ),
                     StepItem(
-                      title: tr.advancePayment,
+                      title: tr.tripCost,
                       content: _advancePayment(),
-                      icon: Icons.attach_money_outlined,
+                      icon: Icons.money,
                     ),
                     StepItem(
                       title: tr.summary,
@@ -2102,9 +2110,9 @@ class _DesktopState extends State<_Desktop> {
                     vehicleId = value.vclId!;
                     vehicleCtrl.text = "${value.vclModel} | ${value.vclPlateNo}";
                   });
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    shippingFormKey.currentState?.validate();
-                  });
+                  // WidgetsBinding.instance.addPostFrameCallback((_) {
+                  //   shippingFormKey.currentState?.validate();
+                  // });
                 },
                 noResultsText: tr.noDataFound,
                 showClearButton: true,

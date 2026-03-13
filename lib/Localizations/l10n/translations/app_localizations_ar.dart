@@ -2900,4 +2900,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get thisYear => 'سږکال';
+
+  @override
+  String get tripCost => 'د سفر لګښتونه';
+
+  @override
+  String get tripCostHint => 'د سفر په اوږدو کې لګښتونه (تونل، خواړه، پارکینګ)';
 }

@@ -2897,4 +2897,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get thisYear => 'امسال';
+
+  @override
+  String get tripCost => 'هزینه‌ های سفر';
+
+  @override
+  String get tripCostHint => 'مصارف در طول سفر (عوارض، غذا، پارکینگ)';
 }

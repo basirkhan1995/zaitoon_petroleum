@@ -5745,6 +5745,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This year'**
   String get thisYear;
+
+  /// No description provided for @tripCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Costs'**
+  String get tripCost;
+
+  /// No description provided for @tripCostHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Costs during the journey (tolls, meals, parking)'**
+  String get tripCostHint;
 }
 
 class _AppLocalizationsDelegate
