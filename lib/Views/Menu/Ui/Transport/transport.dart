@@ -10,7 +10,6 @@ import '../../../Auth/bloc/auth_bloc.dart';
 import '../../../Auth/models/login_model.dart';
 import 'Ui/Shipping/Ui/ShippingView/View/all_shipping.dart';
 
-
 class TransportView extends StatelessWidget {
   const TransportView({super.key});
 
@@ -19,7 +18,6 @@ class TransportView extends StatelessWidget {
     return ResponsiveLayout(mobile: _Mobile(), tablet: _Desktop(), desktop: _Desktop());
   }
 }
-
 class _Desktop extends StatelessWidget {
   const _Desktop();
 
@@ -64,7 +62,7 @@ class _Desktop extends StatelessWidget {
           return ZTabContainer<TransportTabName>(
             title: AppLocalizations.of(context)!.transportTitle,
             tabBarPadding: EdgeInsets.symmetric(horizontal: 5,vertical: 3),
-            description: "Manage Shipments, Drivers & Vehicle",
+            description: AppLocalizations.of(context)!.shipmentHint,
             borderRadius: 0,
             /// Tab data
             tabs: tabs,
@@ -87,7 +85,6 @@ class _Desktop extends StatelessWidget {
     );
   }
 }
-
 class _Mobile extends StatelessWidget {
   const _Mobile();
 

@@ -216,7 +216,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get userInformation => 'کاربر معلومات';
 
   @override
-  String get systemSettings => 'سیتم';
+  String get systemSettings => 'سیستم ';
 
   @override
   String get refresh => 'تازه کول';
@@ -1740,7 +1740,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get editExistingPayment => 'د موجوده تادیې ترمیم کول';
 
   @override
-  String get lastMonthShipments => 'د تېرې میاشتې لېږدونه';
+  String get lastMonthShipments => ' لېږدونه';
 
   @override
   String get shippingCharges => 'د لېږد لګښتونه';
@@ -2508,7 +2508,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get errorTitle => 'عملیات ناکام شو';
 
   @override
-  String get contactInfo => 'تماس';
+  String get contactInfo => 'اطلاعات تماس';
 
   @override
   String get personalInfo => 'معلومات شخصی';
@@ -2877,7 +2877,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dailyTransactions => 'معاملات روزمره';
 
   @override
-  String get movement => 'گردش';
+  String get movement => 'گردش کالا';
 
   @override
   String get stockRecord => 'گردش کالا ها';
@@ -2906,4 +2906,31 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get tripCostHint => 'د سفر په اوږدو کې لګښتونه (تونل، خواړه، پارکینګ)';
+
+  @override
+  String get personal => 'معلومات شخصی';
+
+  @override
+  String get employement => 'معلومات شغل';
+
+  @override
+  String get phoneNumber => 'شماره تماس';
+
+  @override
+  String get noAccountFound => 'حسابی یافت نشد';
+
+  @override
+  String get positionTitle => 'مقام';
+
+  @override
+  String get salaryCalculation => 'محاسبه معاش';
+
+  @override
+  String get employementDetails => 'معلومات شغلی';
+
+  @override
+  String get userSettings => 'معلومات کاربر';
+
+  @override
+  String get shipmentHint => 'مدیریت محموله ها، راننده ها و وسایط';
 }

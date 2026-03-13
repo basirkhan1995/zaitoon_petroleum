@@ -9,6 +9,7 @@ import 'package:zaitoon_petroleum/Views/Menu/Ui/Settings/Ui/General/Ui/UserProfi
 import 'package:intl/intl.dart';
 
 import '../../../../../../../../Features/Other/image_helper.dart';
+import '../../../../../../../../Localizations/l10n/translations/app_localizations.dart';
 import '../../../../../../../PasswordSettings/change_password.dart';
 
 class UserProfileView extends StatefulWidget {
@@ -21,7 +22,7 @@ class UserProfileView extends StatefulWidget {
 class _UserProfileViewState extends State<UserProfileView> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late ColorScheme _colors;
-  final double _expandedHeight = 280;
+  final double _expandedHeight = 300;
   final ScrollController _scrollController = ScrollController();
 
   // Track if header is collapsed
@@ -85,6 +86,7 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
   }
 
   Widget _buildLoadingState() {
+    final tr = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -94,7 +96,7 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
           ),
           const SizedBox(height: 16),
           Text(
-            'Loading Profile...',
+            tr.loading,
             style: TextStyle(
               color: _colors.onSurfaceVariant,
               fontSize: 14,
@@ -161,6 +163,7 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
   }
 
   Widget _buildProfileContent(UsrProfileModel profile) {
+    final tr = AppLocalizations.of(context)!;
     return CustomScrollView(
       controller: _scrollController,
       slivers: [
@@ -203,11 +206,11 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
                   fontSize: 13,
                   fontWeight: FontWeight.w400,
                 ),
-                tabs: const [
-                  Tab(text: 'Personal'),
-                  Tab(text: 'Accounts'),
-                  Tab(text: 'Employment'),
-                  Tab(text: 'Settings'),
+                tabs: [
+                  Tab(text: tr.personalInfo),
+                  Tab(text: tr.accounts),
+                  Tab(text: tr.employement),
+                  Tab(text: tr.settings),
                 ],
               ),
             ),
@@ -389,31 +392,32 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
   }
 
   Widget _buildPersonalInfo(UsrProfileModel profile) {
+    final tr = AppLocalizations.of(context)!;
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         _buildSection(
-          title: 'Basic Information',
+          title: tr.basicInformation,
           children: [
             _buildInfoTile(
-              label: 'Full Name',
+              label: tr.fullName,
               value: '${profile.perName ?? ''} ${profile.perLastName ?? ''}'.trim(),
               icon: Icons.person_outline,
             ),
             _buildInfoTile(
-              label: 'Gender',
+              label: tr.gender,
               value: profile.perGender ?? 'Not specified',
               icon: Icons.wc_outlined,
             ),
             _buildInfoTile(
-              label: 'Date of Birth',
+              label: tr.dob,
               value: profile.perDoB != null
                   ? DateFormat('MMMM dd, yyyy').format(profile.perDoB!)
                   : 'Not specified',
               icon: Icons.cake_outlined,
             ),
             _buildInfoTile(
-              label: 'ENID Number',
+              label: tr.nationalId,
               value: profile.perEnidNo?.isNotEmpty == true
                   ? profile.perEnidNo!
                   : 'Not provided',
@@ -424,15 +428,15 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
         ),
         const SizedBox(height: 16),
         _buildSection(
-          title: 'Contact Information',
+          title: tr.contactInfo,
           children: [
             _buildInfoTile(
-              label: 'Phone Number',
+              label: tr.phoneNumber,
               value: profile.perPhone ?? 'Not provided',
               icon: Icons.phone_outlined,
             ),
             _buildInfoTile(
-              label: 'Email Address',
+              label: tr.email,
               value: profile.perEmail ?? 'Not provided',
               icon: Icons.email_outlined,
               isLast: true,
@@ -441,21 +445,15 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
         ),
         const SizedBox(height: 16),
         _buildSection(
-          title: 'Address',
+          title: tr.address,
           children: [
             _buildInfoTile(
-              label: 'Address',
+              label: tr.address,
               value: _buildFullAddress(profile.address),
               icon: Icons.home_outlined,
               isMultiLine: true,
             ),
-            if (profile.address != null)
-              _buildInfoTile(
-                label: 'Mailing Address',
-                value: profile.address!.addMailing == 1 ? 'Yes' : 'No',
-                icon: Icons.mark_as_unread_outlined,
-                isLast: true,
-              ),
+
           ],
         ),
       ],
@@ -475,7 +473,7 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
             ),
             const SizedBox(height: 12),
             Text(
-              'No Accounts Found',
+              AppLocalizations.of(context)!.noAccountFound,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -522,7 +520,7 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            account.accName ?? 'Account',
+                            account.accName ?? '',
                             style: TextStyle(
                               color: _colors.onSurface,
                               fontSize: 15,
@@ -530,7 +528,7 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
                             ),
                           ),
                           Text(
-                            'Account #${account.accNumber ?? 'N/A'}',
+                            '#${account.accNumber ?? 'N/A'}',
                             style: TextStyle(
                               color: _colors.onSurfaceVariant,
                               fontSize: 12,
@@ -574,7 +572,7 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Balance',
+                            AppLocalizations.of(context)!.balance,
                             style: TextStyle(
                               fontSize: 12,
                               color: _colors.onSurfaceVariant,
@@ -597,7 +595,7 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Limit',
+                            AppLocalizations.of(context)!.accountLimit,
                             style: TextStyle(
                               fontSize: 12,
                               color: _colors.onSurfaceVariant,
@@ -667,47 +665,47 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
     }
 
     final employment = profile.employment!;
-
+    final tr = AppLocalizations.of(context)!;
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         _buildSection(
-          title: 'Employment Details',
+          title: tr.employementDetails,
           children: [
             _buildInfoTile(
-              label: 'Department',
+              label: tr.department,
               value: employment.empDepartment ?? 'Not specified',
               icon: Icons.business_center_outlined,
             ),
             _buildInfoTile(
-              label: 'Position',
+              label: tr.positionTitle,
               value: employment.empPosition ?? 'Not specified',
               icon: Icons.work_history_outlined,
             ),
             _buildInfoTile(
-              label: 'Hire Date',
+              label: tr.hireDate,
               value: employment.empHireDate != null
                   ? DateFormat('MMMM dd, yyyy').format(employment.empHireDate!)
                   : 'Not specified',
               icon: Icons.calendar_today_outlined,
             ),
             _buildInfoTile(
-              label: 'Salary Calculation',
+              label: tr.salaryCalculation,
               value: employment.empSalCalcBase ?? 'Not specified',
               icon: Icons.calculate_outlined,
             ),
             _buildInfoTile(
-              label: 'Payment Method',
+              label: tr.paymentMethod,
               value: employment.empPmntMethod ?? 'Not specified',
               icon: Icons.payment_outlined,
             ),
             _buildInfoTile(
-              label: 'Salary',
+              label: tr.salary,
               value: employment.empSalary ?? '0.00',
               icon: Icons.attach_money_outlined,
             ),
             _buildInfoTile(
-              label: 'Status',
+              label: tr.status,
               value: employment.empStatus ?? 'Unknown',
               icon: Icons.circle_outlined,
               valueColor: employment.empStatus == 'Hired'
@@ -723,37 +721,36 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
 
   Widget _buildSettingsInfo(UsrProfileModel profile) {
     final auth = context.read<AuthBloc>().state;
-    final hasPasswordPermission = auth is AuthenticatedState &&
-        (auth.loginData.hasPermission(65) ?? false);
-
+    final hasPasswordPermission = auth is AuthenticatedState && (auth.loginData.hasPermission(65) ?? false);
+    final tr = AppLocalizations.of(context)!;
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         _buildSection(
-          title: 'User Settings',
+          title: tr.userSettings,
           children: [
             _buildInfoTile(
-              label: 'Username',
+              label: tr.username,
               value: profile.user?.usrName ?? 'Not specified',
               icon: Icons.person_outline,
             ),
             _buildInfoTile(
-              label: 'Email',
+              label: tr.email,
               value: profile.user?.usrEmail ?? 'Not specified',
               icon: Icons.email_outlined,
             ),
             _buildInfoTile(
-              label: 'Branch',
+              label: tr.branchName,
               value: profile.user?.brcName ?? 'Not specified',
               icon: Icons.store_outlined,
             ),
             _buildInfoTile(
-              label: 'Branch ID',
+              label: tr.branchId,
               value: profile.user?.brcId?.toString() ?? 'Not specified',
               icon: Icons.numbers_outlined,
             ),
             _buildInfoTile(
-              label: 'Verification Status',
+              label: tr.status,
               value: profile.user?.usrVerify ?? 'Unknown',
               icon: Icons.verified_outlined,
               valueColor: profile.user?.usrVerify == 'verified'
@@ -761,14 +758,14 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
                   : _colors.error,
             ),
             _buildInfoTile(
-              label: 'Entry Date',
+              label: tr.entryDate,
               value: profile.user?.usrEntryDate != null
                   ? DateFormat('MMMM dd, yyyy').format(profile.user!.usrEntryDate!)
                   : 'Not specified',
               icon: Icons.login_outlined,
             ),
             _buildInfoTile(
-              label: 'FCP',
+              label: tr.fcp,
               value: profile.user?.usrFcp?.toString() ?? '0',
               icon: Icons.trending_up_outlined,
               isLast: true,
@@ -780,15 +777,15 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
 
         // Security Section
         _buildSection(
-          title: 'Security',
+          title: tr.securityTitle,
           children: [
             // Change Password
             _buildActionTile(
               icon: Icons.lock_outline,
               iconColor: _colors.primary,
               backgroundColor: _colors.primaryContainer,
-              title: 'Change Password',
-              subtitle: 'Update your account password',
+              title: tr.changePasswordTitle,
+              subtitle: tr.passwordChangeHint,
               onTap: hasPasswordPermission ? () {
                 showDialog(
                   context: context,
@@ -804,8 +801,8 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
               icon: Icons.logout_rounded,
               iconColor: _colors.error,
               backgroundColor: _colors.errorContainer,
-              title: 'Logout',
-              subtitle: 'Sign out from your account',
+              title: tr.logout,
+              subtitle: tr.logoutHint,
               onTap: () => _showLogoutDialog(context),
               showTrailing: false,
             ),

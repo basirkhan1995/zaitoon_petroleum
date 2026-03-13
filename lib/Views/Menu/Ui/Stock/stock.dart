@@ -30,11 +30,9 @@ class StockView extends StatefulWidget {
   @override
   State<StockView> createState() => _StockViewState();
 }
-
 class _StockViewState extends State<StockView> {
   bool _isExpanded = true;
 
-  // Helper methods to detect screen size
   bool _isMobile(BuildContext context) {
     return MediaQuery.of(context).size.width < 600;
   }
@@ -525,8 +523,8 @@ class _StockViewState extends State<StockView> {
 
             ZOutlineButton(
               backgroundColor: color.primary.withValues(alpha: opacity),
-              toolTip: "F10 - ${"Movement"}",
-              label: Text("Movement"),
+              toolTip: "F10 - ${AppLocalizations.of(context)!.movement}",
+              label: Text(AppLocalizations.of(context)!.movement),
               icon: Icons.crop,
               width: double.infinity,
               onPressed: () => Utils.goto(context, StockRecordReportView()),

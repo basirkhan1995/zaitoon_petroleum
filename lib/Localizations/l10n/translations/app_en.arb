@@ -581,7 +581,7 @@
   "paymentMatchesShippingTotal": "Payment matches shipping total.",
   "cashAmountCannotExceed": "Cash amount cannot exceed",
   "editExistingPayment": "Editing existing payment",
-  "lastMonthShipments": "Last month shipments",
+  "lastMonthShipments": "Shipments",
   "shippingCharges": "Shipping Charges",
   "singleAccount": "Single Account",
   "multiAccount": "Multi Account",
@@ -832,7 +832,7 @@
   "accountInfo": "Salary Account",
   "jobAndSalary": "Job Title & Salary",
   "errorTitle": "Operation Failed",
-  "contactInfo": "Contact",
+  "contactInfo": "Contact Information",
   "personalInfo": "Personal Information",
   "avbShort": "AVB",
   "forgotPasswordTitle": "Forgot Password",
@@ -962,5 +962,14 @@
   "allTime": "All Time",
   "thisYear": "This year",
   "tripCost": "Trip Costs",
-  "tripCostHint": "Costs during the journey (tolls, meals, parking)"
+  "tripCostHint": "Costs during the journey (tolls, meals, parking)",
+  "personal": "Personal",
+  "employement": "Employement",
+  "phoneNumber": "Phone Number",
+  "noAccountFound": "No account found",
+  "positionTitle": "Position Title",
+  "salaryCalculation": "Salary Calculation",
+  "employementDetails": "Employement Details",
+  "userSettings": "User Settings",
+  "shipmentHint": "Manage shipments, Drivers & Vehicles"
 }

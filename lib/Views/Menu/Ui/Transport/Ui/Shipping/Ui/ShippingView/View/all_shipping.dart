@@ -31,8 +31,7 @@ class ShippingView extends StatelessWidget {
     return ResponsiveLayout(
       mobile: _MobileView(),
       desktop: _DesktopView(),
-      tablet:
-      _DesktopView(),
+      tablet: _DesktopView(),
     );
   }
 }

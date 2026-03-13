@@ -1745,7 +1745,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editExistingPayment => 'Editing existing payment';
 
   @override
-  String get lastMonthShipments => 'Last month shipments';
+  String get lastMonthShipments => 'Shipments';
 
   @override
   String get shippingCharges => 'Shipping Charges';
@@ -2515,7 +2515,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorTitle => 'Operation Failed';
 
   @override
-  String get contactInfo => 'Contact';
+  String get contactInfo => 'Contact Information';
 
   @override
   String get personalInfo => 'Personal Information';
@@ -2913,4 +2913,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tripCostHint => 'Costs during the journey (tolls, meals, parking)';
+
+  @override
+  String get personal => 'Personal';
+
+  @override
+  String get employement => 'Employement';
+
+  @override
+  String get phoneNumber => 'Phone Number';
+
+  @override
+  String get noAccountFound => 'No account found';
+
+  @override
+  String get positionTitle => 'Position Title';
+
+  @override
+  String get salaryCalculation => 'Salary Calculation';
+
+  @override
+  String get employementDetails => 'Employement Details';
+
+  @override
+  String get userSettings => 'User Settings';
+
+  @override
+  String get shipmentHint => 'Manage shipments, Drivers & Vehicles';
 }

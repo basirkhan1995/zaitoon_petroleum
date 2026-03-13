@@ -384,7 +384,7 @@ class GregorianDateRangePickerState extends State<GregorianDateRangePicker> {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        width: _showYearSelector ? 650 : (_showQuickOptions ? 500 : 400),
+        width: _showYearSelector ? 650 : (_showQuickOptions ? 500 : 370),
         height: 450,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(

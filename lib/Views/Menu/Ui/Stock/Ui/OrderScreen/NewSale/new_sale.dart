@@ -73,7 +73,7 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<SaleInvoiceBloc>().add(InitializeSaleInvoiceEvent());
+    //  context.read<SaleInvoiceBloc>().add(InitializeSaleInvoiceEvent());
     });
 
     final companyState = context.read<CompanyProfileBloc>().state;
@@ -330,6 +330,15 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
                           label: Text(tr.setReminder),
                         ),
                       ],
+                      const SizedBox(width: 8),
+                      ZOutlineButton(
+                        height: 48,
+                        icon: Icons.refresh,
+                        onPressed: (){
+                          context.read<SaleInvoiceBloc>().add(InitializeSaleInvoiceEvent());
+                        },
+                        label: Text(tr.newSale),
+                      ),
                       const SizedBox(width: 8),
                       ZOutlineButton(
                         width: 100,

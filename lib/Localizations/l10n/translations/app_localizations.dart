@@ -3469,7 +3469,7 @@ abstract class AppLocalizations {
   /// No description provided for @lastMonthShipments.
   ///
   /// In en, this message translates to:
-  /// **'Last month shipments'**
+  /// **'Shipments'**
   String get lastMonthShipments;
 
   /// No description provided for @shippingCharges.
@@ -4975,7 +4975,7 @@ abstract class AppLocalizations {
   /// No description provided for @contactInfo.
   ///
   /// In en, this message translates to:
-  /// **'Contact'**
+  /// **'Contact Information'**
   String get contactInfo;
 
   /// No description provided for @personalInfo.
@@ -5757,6 +5757,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Costs during the journey (tolls, meals, parking)'**
   String get tripCostHint;
+
+  /// No description provided for @personal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal'**
+  String get personal;
+
+  /// No description provided for @employement.
+  ///
+  /// In en, this message translates to:
+  /// **'Employement'**
+  String get employement;
+
+  /// No description provided for @phoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get phoneNumber;
+
+  /// No description provided for @noAccountFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No account found'**
+  String get noAccountFound;
+
+  /// No description provided for @positionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Position Title'**
+  String get positionTitle;
+
+  /// No description provided for @salaryCalculation.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary Calculation'**
+  String get salaryCalculation;
+
+  /// No description provided for @employementDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Employement Details'**
+  String get employementDetails;
+
+  /// No description provided for @userSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'User Settings'**
+  String get userSettings;
+
+  /// No description provided for @shipmentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage shipments, Drivers & Vehicles'**
+  String get shipmentHint;
 }
 
 class _AppLocalizationsDelegate
