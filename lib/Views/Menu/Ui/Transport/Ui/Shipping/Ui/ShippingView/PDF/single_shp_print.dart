@@ -280,7 +280,7 @@ class ShippingDetailsPdfServices extends PrintServices {
             // Expense Header
             pw.Row(
               children: [
-                pw.Expanded(flex: 1, child: zText(text: tr(text: 'account', tr: language), fontSize: 9, fontWeight: pw.FontWeight.bold, textAlign: _getTextAlignStart(language))),
+                pw.SizedBox(width: 70, child: zText(text: tr(text: 'account', tr: language), fontSize: 9, fontWeight: pw.FontWeight.bold, textAlign: _getTextAlignStart(language))),
                 pw.Expanded(flex: 1, child: zText(text: tr(text: 'referenceNumber', tr: language), fontSize: 9, fontWeight: pw.FontWeight.bold, textAlign: _getTextAlignStart(language))),
                 pw.Expanded(flex: 2, child: zText(text: tr(text: 'narration', tr: language), fontSize: 9, fontWeight: pw.FontWeight.bold, textAlign: _getTextAlignStart(language))),
                 pw.Expanded(flex: 1, child: zText(text: tr(text: 'amount', tr: language), fontSize: 9, fontWeight: pw.FontWeight.bold, textAlign: _getTextAlignEnd(language))),
@@ -429,8 +429,8 @@ class ShippingDetailsPdfServices extends PrintServices {
   pw.Widget _buildExpenseRow(Expense expense, String language) {
     return pw.Row(
       children: [
-        pw.Expanded(
-          flex: 1,
+        pw.SizedBox(
+          width: 70,
           child: zText(
             text: '${expense.accNumber}',
             fontSize: 9,
