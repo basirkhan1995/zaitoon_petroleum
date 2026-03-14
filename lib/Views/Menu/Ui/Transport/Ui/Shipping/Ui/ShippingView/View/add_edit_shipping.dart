@@ -3454,6 +3454,88 @@ class _MobileState extends State<_Mobile> {
     _prefillPaymentData(shipping);
   }
 
+  Future<void> _printShippingDetails(ShippingDetailsModel shippingDetails) async {
+    final companyState = context.read<CompanyProfileBloc>().state;
+    ReportModel company = ReportModel();
+
+    if (companyState is CompanyProfileLoadedState) {
+      company = ReportModel(
+        comName: companyState.company.comName ?? '',
+        comAddress: companyState.company.addName ?? '',
+        compPhone: companyState.company.comPhone ?? '',
+        comEmail: companyState.company.comEmail ?? '',
+        statementDate: DateTime.now().toFullDateTime,
+        comLogo: companyState.company.comLogo != null
+            ? base64Decode(companyState.company.comLogo!)
+            : null,
+      );
+    }
+
+    // Get base currency from AuthBloc
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthenticatedState) {
+      baseCurrency = authState.loginData.company?.comLocalCcy;
+    }
+
+    if (context.mounted) {
+      showDialog(
+        context: context,
+        builder: (_) => PrintPreviewDialog<ShippingDetailsModel>(
+          data: shippingDetails,
+          company: company,
+          buildPreview: ({
+            required data,
+            required language,
+            required orientation,
+            required pageFormat,
+          }) {
+            return ShippingDetailsPdfServices().printPreview(
+              shippingDetails: data,
+              language: language,
+              orientation: orientation,
+              company: company,
+              pageFormat: pageFormat,
+            );
+          },
+          onPrint: ({
+            required data,
+            required language,
+            required orientation,
+            required pageFormat,
+            required selectedPrinter,
+            required copies,
+            required pages,
+          }) {
+            return ShippingDetailsPdfServices().printDocument(
+              shippingDetails: data,
+              language: language,
+              orientation: orientation,
+              company: company,
+              pageFormat: pageFormat,
+              selectedPrinter: selectedPrinter,
+              copies: copies,
+              pages: pages,
+            );
+          },
+          onSave: ({
+            required data,
+            required language,
+            required orientation,
+            required pageFormat,
+          }) {
+            return ShippingDetailsPdfServices().createDocument(
+              shippingDetails: data,
+              language: language,
+              orientation: orientation,
+              company: company,
+              pageFormat: pageFormat,
+            );
+          },
+        ),
+      );
+    }
+  }
+
   void _prefillPaymentData(ShippingDetailsModel shipping) {
     if (shipping.pyment != null && shipping.pyment!.isNotEmpty) {
       final payment = shipping.pyment!.first;
@@ -5548,177 +5630,161 @@ class _MobileState extends State<_Mobile> {
               if (shipping.shpStatus != 1) ...[
                 Form(
                   key: expenseFormKey,
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: color.surface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: color.outline.withValues(alpha: .2)),
-                    ),
-                    child: Column(
-                      children: [
-                        GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
-                          showAllOnFocus: true,
-                          controller: accountController,
-                          title: tr.accounts,
-                          hintText: tr.accNameOrNumber,
-                          isRequired: true,
-                          bloc: context.read<AccountsBloc>(),
-                          fetchAllFunction: (bloc) => bloc.add(
-                            LoadAccountsFilterEvent(
-                              include: '11,12',
-                              ccy: "$baseCurrency",
-                              exclude: "",
-                            ),
+                  child: Column(
+                    children: [
+                      GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
+                        showAllOnFocus: true,
+                        controller: accountController,
+                        title: tr.accounts,
+                        hintText: tr.accNameOrNumber,
+                        isRequired: true,
+                        bloc: context.read<AccountsBloc>(),
+                        fetchAllFunction: (bloc) => bloc.add(
+                          LoadAccountsFilterEvent(
+                            include: '11,12',
+                            ccy: "$baseCurrency",
+                            exclude: "",
                           ),
-                          searchFunction: (bloc, query) => bloc.add(
-                            LoadAccountsFilterEvent(
-                              include: '11,12',
-                              ccy: "$baseCurrency",
-                              exclude: "",
-                              input: query,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return tr.required(tr.accounts);
-                            }
-                            if (expenseAccNumber == null) {
-                              return tr.required(tr.accounts);
-                            }
-                            return null;
-                          },
-                          itemBuilder: (context, account) => Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "${account.accNumber} | ${account.accName}",
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ],
-                            ),
-                          ),
-                          itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
-                          stateToLoading: (state) => state is AccountLoadingState,
-                          loadingBuilder: (context) => const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 3),
-                          ),
-                          stateToItems: (state) {
-                            if (state is AccountLoadedState) {
-                              return state.accounts;
-                            }
-                            return [];
-                          },
-                          onSelected: (value) {
-                            setState(() {
-                              expenseAccNumber = value.accNumber;
-                              accountController.text = "${value.accNumber} | ${value.accName}";
-                            });
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              expenseFormKey.currentState?.validate();
-                            });
-                          },
-                          noResultsText: tr.noDataFound,
-                          showClearButton: true,
                         ),
-                        const SizedBox(height: 16),
-
-                        ZTextFieldEntitled(
-                          isRequired: true,
-                          keyboardInputType: const TextInputType.numberWithOptions(decimal: true),
-                          inputFormat: [
-                            FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
-                            SmartThousandsDecimalFormatter(decimalDigits: 4),
-                          ],
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return tr.required(tr.amount);
-                            }
-                            final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
-                            final amount = double.tryParse(clean);
-                            if (amount == null || amount <= 0.0) {
-                              return tr.amountGreaterZero;
-                            }
-                            return null;
-                          },
-                          controller: expenseAmount,
-                          title: tr.amount,
+                        searchFunction: (bloc, query) => bloc.add(
+                          LoadAccountsFilterEvent(
+                            include: '11,12',
+                            ccy: "$baseCurrency",
+                            exclude: "",
+                            input: query,
+                          ),
                         ),
-                        const SizedBox(height: 16),
-
-                        ZTextFieldEntitled(
-                          keyboardInputType: TextInputType.multiline,
-                          controller: expenseNarration,
-                          title: tr.narration,
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // In _buildExpensesView method for mobile, find this section:
-                        Row(
-                          children: [
-                            if (_selectedExpenseForEdit != null)
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _selectedExpenseForEdit = null;
-                                      _clearExpenseForm();
-                                    });
-                                  },
-                                  style: OutlinedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: Text(tr.cancel),
-                                ),
-                              ),
-
-                            // Add Delete button when an expense is selected
-                            if (_selectedExpenseForEdit != null) ...[
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: ZOutlineButton(
-                                  onPressed: () {
-                                    _confirmDeleteExpense(_selectedExpenseForEdit!, shipping.shpId!);
-                                  },
-                                  isActive: true,
-                                  label: Text(tr.delete),
-                                  icon: Icons.delete_outline,
-                                  backgroundHover: Theme.of(context).colorScheme.error,
-                                ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return tr.required(tr.accounts);
+                          }
+                          if (expenseAccNumber == null) {
+                            return tr.required(tr.accounts);
+                          }
+                          return null;
+                        },
+                        itemBuilder: (context, account) => Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "${account.accNumber} | ${account.accName}",
+                                style: Theme.of(context).textTheme.bodyLarge,
                               ),
                             ],
+                          ),
+                        ),
+                        itemToString: (acc) => "${acc.accNumber} | ${acc.accName}",
+                        stateToLoading: (state) => state is AccountLoadingState,
+                        loadingBuilder: (context) => const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 3),
+                        ),
+                        stateToItems: (state) {
+                          if (state is AccountLoadedState) {
+                            return state.accounts;
+                          }
+                          return [];
+                        },
+                        onSelected: (value) {
+                          setState(() {
+                            expenseAccNumber = value.accNumber;
+                            accountController.text = "${value.accNumber} | ${value.accName}";
+                          });
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            expenseFormKey.currentState?.validate();
+                          });
+                        },
+                        noResultsText: tr.noDataFound,
+                        showClearButton: true,
+                      ),
+                      const SizedBox(height: 12),
 
-                            if (_selectedExpenseForEdit != null) const SizedBox(width: 12),
+                      ZTextFieldEntitled(
+                        isRequired: true,
+                        keyboardInputType: const TextInputType.numberWithOptions(decimal: true),
+                        inputFormat: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]*')),
+                          SmartThousandsDecimalFormatter(decimalDigits: 4),
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return tr.required(tr.amount);
+                          }
+                          final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
+                          final amount = double.tryParse(clean);
+                          if (amount == null || amount <= 0.0) {
+                            return tr.amountGreaterZero;
+                          }
+                          return null;
+                        },
+                        controller: expenseAmount,
+                        title: tr.amount,
+                      ),
+                      const SizedBox(height: 12),
 
+                      ZTextFieldEntitled(
+                        keyboardInputType: TextInputType.multiline,
+                        controller: expenseNarration,
+                        title: tr.narration,
+                      ),
+
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          if (_selectedExpenseForEdit != null)
                             Expanded(
                               child: ZOutlineButton(
-                                onPressed: isLoading
-                                    ? null
-                                    : () {
-                                  _handleExpenseAction();
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedExpenseForEdit = null;
+                                    _clearExpenseForm();
+                                  });
+                                },
+                                label: Text(tr.cancel),
+                              ),
+                            ),
+
+                          // Add Delete button when an expense is selected
+                          if (_selectedExpenseForEdit != null) ...[
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: ZOutlineButton(
+                                onPressed: () {
+                                  _confirmDeleteExpense(_selectedExpenseForEdit!, shipping.shpId!);
                                 },
                                 isActive: true,
-                                label: isLoading
-                                    ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 3, color: Colors.white),
-                                )
-                                    : Text(_selectedExpenseForEdit != null ? tr.update : tr.create),
+                                label: Text(tr.delete),
+                                icon: Icons.delete_outline,
+                                backgroundHover: Theme.of(context).colorScheme.error,
                               ),
                             ),
                           ],
-                        ),
-                      ],
-                    ),
+
+                          if (_selectedExpenseForEdit != null) const SizedBox(width: 12),
+
+                          Expanded(
+                            child: ZOutlineButton(
+                              onPressed: isLoading
+                                  ? null
+                                  : () {
+                                _handleExpenseAction();
+                              },
+                              isActive: true,
+                              label: isLoading
+                                  ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(strokeWidth: 3, color: Colors.white),
+                              )
+                                  : Text(_selectedExpenseForEdit != null ? tr.update : tr.create),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -5771,12 +5837,12 @@ class _MobileState extends State<_Mobile> {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: isSelected ? color.primary.withValues(alpha: .05) : color.surface,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: isSelected
-                                ? color.primary
+                                ? color.primary.withValues(alpha: .5)
                                 : color.outline.withValues(alpha: .2),
-                            width: isSelected ? 2 : 1,
+                            width: isSelected ? 1 : 0.5,
                           ),
                         ),
                         child: Column(
@@ -5800,7 +5866,7 @@ class _MobileState extends State<_Mobile> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 2),
                             Text(
                               "${expense.accNumber} | ${expense.accName}",
                               style: Theme.of(context).textTheme.bodyMedium,
@@ -5866,71 +5932,90 @@ class _MobileState extends State<_Mobile> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (shipping != null)
-            if (summaryData['status'] != null && summaryData['status']!.isNotEmpty) ...[
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: summaryData['status'] == "1" ? Colors.green.withValues(alpha: .1) : Colors.orange.withValues(alpha: .1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      summaryData['status'] == "1" ? Icons.check_circle : Icons.schedule,
-                      color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        summaryData['status'] == "1" ? tr.delivered : tr.pendingTitle,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
+            Row(
+              children: [
+                if (summaryData['status'] != null && summaryData['status']!.isNotEmpty) ...[
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 5),
+                      decoration: BoxDecoration(
+                        color: summaryData['status'] == "1" ? Colors.green.withValues(alpha: .1) : Colors.orange.withValues(alpha: .1),
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
                           color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
-                          fontSize: 16,
                         ),
                       ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            summaryData['status'] == "1" ? Icons.check_circle : Icons.schedule,
+                            color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              summaryData['status'] == "1" ? tr.delivered : tr.pendingTitle,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: summaryData['status'] == "1" ? Colors.green : Colors.orange,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          Switch(
+                            value: shpStatus == 1,
+                            onChanged: (e) {
+                              if (e && !canBeDelivered) {
+                                Utils.showOverlayMessage(
+                                  context,
+                                  message: tr.paymentIsNotComplete,
+                                  isError: true,
+                                );
+                                return;
+                              }
+                              if (e && paymentNeedsUpdate) {
+                                Utils.showOverlayMessage(
+                                  context,
+                                  message: tr.paymentNeedsUpdate,
+                                  isError: true,
+                                );
+                                return;
+                              }
+                              setState(() {
+                                shpStatus = e ? 1 : 0;
+                              });
+                            },
+                            activeThumbColor: Colors.green,
+                          ),
+                        ],
+                      ),
                     ),
-                    Switch(
-                      value: shpStatus == 1,
-                      onChanged: (e) {
-                        if (e && !canBeDelivered) {
-                          Utils.showOverlayMessage(
-                            context,
-                            message: tr.paymentIsNotComplete,
-                            isError: true,
-                          );
-                          return;
-                        }
-                        if (e && paymentNeedsUpdate) {
-                          Utils.showOverlayMessage(
-                            context,
-                            message: tr.paymentNeedsUpdate,
-                            isError: true,
-                          );
-                          return;
-                        }
-                        setState(() {
-                          shpStatus = e ? 1 : 0;
-                        });
-                      },
-                      activeThumbColor: Colors.green,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
+                  ),
+                ],
 
+                SizedBox(width: 8),
+
+                if (hasShippingDetails)...[
+                  ZOutlineButton(
+                    height: 48,
+                    width: 120,
+                    onPressed: () => _printShippingDetails(shipping),
+                    label: Text(tr.print.toUpperCase()),
+                    iconSize: 25,
+                    icon: Icons.print,
+                    isActive: true,
+                  ),
+                ],
+              ],
+            ),
+            SizedBox(height: 10),
           if (paymentStatusMessage.isNotEmpty) ...[
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: paymentNeedsUpdate ? Colors.orange.withValues(alpha: .1) : Colors.red.withValues(alpha: .1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(5),
                 border: Border.all(
                   color: paymentNeedsUpdate ? Colors.orange : Colors.red,
                 ),
@@ -5948,7 +6033,7 @@ class _MobileState extends State<_Mobile> {
                       paymentStatusMessage,
                       style: TextStyle(
                         color: paymentNeedsUpdate ? Colors.orange : Colors.red,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.normal,
                       ),
                     ),
                   ),
