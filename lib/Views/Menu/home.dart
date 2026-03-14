@@ -75,6 +75,12 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
     authBloc.add(OnLogoutEvent());
   }
 
+  void _profileSetting(){
+    context.read<MenuBloc>().add(MenuOnChangedEvent(MenuName.settings));
+    context.read<SettingsTabBloc>().add(SettingsOnChangeEvent(SettingsTabName.general));
+    context.read<GeneralTabBloc>().add(GeneralTabOnChangedEvent(GeneralTabName.profileSettings));
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -362,9 +368,7 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
       context: context,
       builder: (context) {
         return Dialog(
-          alignment: isEnglish
-              ? Alignment.bottomLeft
-              : Alignment.bottomRight,
+          alignment: isEnglish ? Alignment.bottomLeft : Alignment.bottomRight,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
@@ -386,6 +390,7 @@ class _DesktopState extends State<_Desktop> with AutomaticKeepAliveClientMixin {
             ),
             child: _ProfileDialogContent(
               authState: authState,
+              onSetting: _profileSetting,
               onLogout: _logout,
             ),
           ),
@@ -474,10 +479,11 @@ class _MenuFooter extends StatelessWidget {
 class _ProfileDialogContent extends StatelessWidget {
   final AuthenticatedState authState;
   final VoidCallback onLogout;
-
+  final VoidCallback onSetting;
   const _ProfileDialogContent({
     required this.authState,
     required this.onLogout,
+    required this.onSetting,
   });
 
   @override
@@ -489,11 +495,7 @@ class _ProfileDialogContent extends StatelessWidget {
         InkWell(
           onTap: (){
             Navigator.of(context).pop();
-            WidgetsBinding.instance.addPostFrameCallback((_){
-              context.read<MenuBloc>().add(MenuOnChangedEvent(MenuName.settings));
-              context.read<SettingsTabBloc>().add(SettingsOnChangeEvent(SettingsTabName.general));
-              context.read<GeneralTabBloc>().add(GeneralTabOnChangedEvent(GeneralTabName.profileSettings));
-            });
+            onSetting();
           },
           child: Column(
             children: [

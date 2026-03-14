@@ -72,9 +72,6 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-    //  context.read<SaleInvoiceBloc>().add(InitializeSaleInvoiceEvent());
-    });
 
     final companyState = context.read<CompanyProfileBloc>().state;
     if (companyState is CompanyProfileLoadedState) {

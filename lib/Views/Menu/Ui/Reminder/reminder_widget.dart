@@ -82,7 +82,6 @@ class _DashboardAlertReminderState extends State<DashboardAlertReminder> {
                             onPressed: () {
                               context.read<MenuBloc>().add(MenuOnChangedEvent(MenuName.finance));
                               context.read<FinanceTabBloc>().add(FinanceOnChangedEvent(FinanceTabName.reminder));
-
                             },
                           ),
                           const SizedBox(width: 5),

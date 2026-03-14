@@ -198,7 +198,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => EstimateBloc(Repositories(ApiServices()))..add(LoadEstimatesEvent())),
         BlocProvider(create: (context) => PurchaseInvoiceBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => OrderByIdBloc(Repositories(ApiServices()))),
-        BlocProvider(create: (context) => SaleInvoiceBloc(Repositories(ApiServices()))),
+        BlocProvider(create: (context) => SaleInvoiceBloc(Repositories(ApiServices()))..add(InitializeSaleInvoiceEvent())),
         BlocProvider(create: (context) => OrderTxnBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => GlCategoryBloc(Repositories(ApiServices()))),
         BlocProvider(create: (context) => GoodsShiftBloc(Repositories(ApiServices()))),
