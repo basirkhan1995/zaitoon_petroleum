@@ -2887,7 +2887,7 @@ abstract class AppLocalizations {
   /// No description provided for @lastWeek.
   ///
   /// In en, this message translates to:
-  /// **'Last Week'**
+  /// **'Last 7 Days'**
   String get lastWeek;
 
   /// No description provided for @last30Days.
@@ -2899,7 +2899,7 @@ abstract class AppLocalizations {
   /// No description provided for @lastMonth.
   ///
   /// In en, this message translates to:
-  /// **'Last Month'**
+  /// **'Last 30 Days'**
   String get lastMonth;
 
   /// No description provided for @dateRange.

@@ -764,7 +764,7 @@ class AfghanDateRangePickerState extends State<AfghanDateRangePicker> {
                                     return GestureDetector(
                                       onTap: () => _onDateTapped(date),
                                       child: Container(
-                                        margin: const EdgeInsets.all(2),
+                                        margin: EdgeInsets.zero,
                                         decoration: BoxDecoration(
                                           color: background,
                                           shape: shape,

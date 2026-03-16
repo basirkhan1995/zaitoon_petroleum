@@ -1439,13 +1439,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yesterday => 'Yesterday';
 
   @override
-  String get lastWeek => 'Last Week';
+  String get lastWeek => 'Last 7 Days';
 
   @override
   String get last30Days => 'Last 30 days';
 
   @override
-  String get lastMonth => 'Last Month';
+  String get lastMonth => 'Last 30 Days';
 
   @override
   String get dateRange => 'Date range';
