@@ -6,6 +6,7 @@ import 'package:zaitoon_petroleum/Features/Date/shamsi_converter.dart';
 import 'package:zaitoon_petroleum/Features/Other/extensions.dart';
 import 'package:zaitoon_petroleum/Features/Other/responsive.dart';
 import 'package:zaitoon_petroleum/Features/Other/zForm_dialog.dart';
+import 'package:zaitoon_petroleum/Localizations/Bloc/localizations_bloc.dart';
 import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizations.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/bloc/fetch_atat_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/model/fetch_atat_model.dart';
@@ -938,7 +939,7 @@ class _TabletState extends State<_Tablet> {
     required BuildContext context,
   }) {
     final tr = AppLocalizations.of(context)!;
-
+    final isEnglish = context.read<LocalizationBloc>().state.languageCode == "en";
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: color.outline.withValues(alpha: .2)),
@@ -1012,7 +1013,7 @@ class _TabletState extends State<_Tablet> {
                     style: textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
-                    textAlign: TextAlign.right,
+                    textAlign: isEnglish? TextAlign.right : TextAlign.left,
                   ),
                 ),
                 SizedBox(
@@ -1022,7 +1023,7 @@ class _TabletState extends State<_Tablet> {
                     style: textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
-                    textAlign: TextAlign.right,
+                    textAlign: isEnglish? TextAlign.right : TextAlign.left,
                   ),
                 ),
               ],
@@ -1072,7 +1073,7 @@ class _TabletState extends State<_Tablet> {
                         child: Text(
                           item.trdAccount.toString(),
                           style: textTheme.bodyMedium,
-                          textAlign: TextAlign.right,
+                          textAlign: isEnglish? TextAlign.right : TextAlign.left,
                         ),
                       ),
                       SizedBox(
@@ -1086,7 +1087,7 @@ class _TabletState extends State<_Tablet> {
                                 style: textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w500,
                                 ),
-                                textAlign: TextAlign.right,
+                                textAlign: isEnglish? TextAlign.right : TextAlign.left,
                               ),
                             ),
                             const SizedBox(width: 4),
@@ -1414,7 +1415,7 @@ class _DesktopState extends State<_Desktop> {
         final bool showDeleteButton = loadedAtat?.trnStatus == 0 &&
             loadedAtat?.maker == login.usrName;
         final bool showAnyButton = showAuthorizeButton || showDeleteButton;
-
+        final isEnglish = context.read<LocalizationBloc>().state.languageCode == "en";
         return ZFormDialog(
           width: MediaQuery.of(context).size.width * .6,
           isActionTrue: false,
@@ -1569,7 +1570,7 @@ class _DesktopState extends State<_Desktop> {
                                       style: textTheme.bodySmall?.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
-                                      textAlign: TextAlign.right,
+                                      textAlign: isEnglish? TextAlign.right : TextAlign.left,
                                     ),
                                   ),
                                   SizedBox(
@@ -1579,7 +1580,7 @@ class _DesktopState extends State<_Desktop> {
                                       style: textTheme.bodySmall?.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
-                                      textAlign: TextAlign.right,
+                                      textAlign: isEnglish? TextAlign.right : TextAlign.left,
                                     ),
                                   ),
                                 ],
@@ -1629,7 +1630,7 @@ class _DesktopState extends State<_Desktop> {
                                           child: Text(
                                             dr.trdAccount.toString(),
                                             style: bodyStyle,
-                                            textAlign: TextAlign.right,
+                                            textAlign: isEnglish? TextAlign.right : TextAlign.left,
                                           ),
                                         ),
                                         SizedBox(
@@ -1644,7 +1645,7 @@ class _DesktopState extends State<_Desktop> {
                                                     fontWeight: FontWeight.w500,
 
                                                   ),
-                                                  textAlign: TextAlign.right,
+                                                  textAlign: isEnglish? TextAlign.right : TextAlign.left,
                                                 ),
                                               ),
                                               const SizedBox(width: 4),
@@ -1750,7 +1751,7 @@ class _DesktopState extends State<_Desktop> {
                                       style: textTheme.bodySmall?.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
-                                      textAlign: TextAlign.right,
+                                      textAlign: isEnglish? TextAlign.right : TextAlign.left,
                                     ),
                                   ),
                                   SizedBox(
@@ -1760,7 +1761,7 @@ class _DesktopState extends State<_Desktop> {
                                       style: textTheme.bodySmall?.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
-                                      textAlign: TextAlign.right,
+                                      textAlign: isEnglish? TextAlign.right : TextAlign.left,
                                     ),
                                   ),
                                 ],
@@ -1810,7 +1811,7 @@ class _DesktopState extends State<_Desktop> {
                                           child: Text(
                                             cr.trdAccount.toString(),
                                             style: bodyStyle,
-                                            textAlign: TextAlign.right,
+                                            textAlign: isEnglish? TextAlign.right : TextAlign.left,
                                           ),
                                         ),
                                         SizedBox(
@@ -1825,7 +1826,7 @@ class _DesktopState extends State<_Desktop> {
                                                     fontWeight: FontWeight.w500,
                                                     color: Colors.red,
                                                   ),
-                                                  textAlign: TextAlign.right,
+                                                  textAlign: isEnglish? TextAlign.right : TextAlign.left,
                                                 ),
                                               ),
                                               const SizedBox(width: 4),
@@ -1849,9 +1850,6 @@ class _DesktopState extends State<_Desktop> {
                   ],
                 ),
               ),
-
-
-
               const SizedBox(height: 8),
               Divider(
                 indent: 5,
@@ -1860,13 +1858,11 @@ class _DesktopState extends State<_Desktop> {
                 thickness: 1,
               ),
               const SizedBox(height: 2),
-
               // Action Buttons
-              if (showAnyButton)
+              if (showAnyButton)...[
                 Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Row(
-
                     children: [
                       if (showAuthorizeButton)
                         ZOutlineButton(
@@ -1911,15 +1907,20 @@ class _DesktopState extends State<_Desktop> {
                           )
                               : Text(tr.delete),
                         ),
-                      SizedBox(width: 5),
-                      ZOutlineButton(
-                          onPressed: _printTransaction,
-                          isActive: true,
-                          icon: Icons.print,
-                          label: Text(tr.print))
                     ],
                   ),
                 ),
+              ],
+              Row(
+                children: [
+                  SizedBox(width: 5),
+                  ZOutlineButton(
+                      onPressed: _printTransaction,
+                      isActive: true,
+                      icon: Icons.print,
+                      label: Text(tr.print)),
+                ],
+              ),
               if (!showAnyButton) const SizedBox(height: 10),
             ],
           ),
