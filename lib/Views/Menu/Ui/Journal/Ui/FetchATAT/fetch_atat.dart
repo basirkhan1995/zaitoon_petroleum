@@ -8,6 +8,7 @@ import 'package:zaitoon_petroleum/Localizations/l10n/translations/app_localizati
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/bloc/fetch_atat_bloc.dart';
 import 'package:zaitoon_petroleum/Views/Menu/Ui/Journal/Ui/FetchATAT/model/fetch_atat_model.dart';
 
+import '../../../../../../Features/Other/cover.dart';
 import '../../../../../../Features/Widgets/outline_button.dart';
 import '../../../../../Auth/bloc/auth_bloc.dart';
 import '../bloc/transactions_bloc.dart';
@@ -186,8 +187,6 @@ class _DesktopState extends State<_Desktop> {
                 ),
               ),
               const SizedBox(height: 10),
-
-
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Row(
@@ -214,186 +213,201 @@ class _DesktopState extends State<_Desktop> {
                   ],
                 ),
               ),
-
-
               Expanded(
                 child: Row(
                   children: [
                     // Debit Column
                     Expanded(
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 8),
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary
+                      child: ZCover(
+                        margin: EdgeInsets.symmetric(horizontal: 2),
+                        radius: 5,
+                        padding: EdgeInsets.zero,
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(5),
+                                    topRight: Radius.circular(5)
+                                  )
+                              ),
+                              child: Row(
+                                spacing: 5,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      tr.accountName,
+                                      style: headerStyle,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 100,
+                                    child: Text(
+                                      tr.accountNumber,
+                                      style: headerStyle,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 120,
+                                    child: Text(
+                                      tr.amount,
+                                      style: headerStyle,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            child: Row(
-                              spacing: 5,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    tr.accountName,
-                                    style: headerStyle,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 100,
-                                  child: Text(
-                                    tr.accountNumber,
-                                    style: headerStyle,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 120,
-                                  child: Text(
-                                    tr.amount,
-                                    style: headerStyle,
-                                  ),
-                                ),
-                              ],
+                            Expanded(
+                              child: state is FetchATATLoadedState
+                                  ? ListView.builder(
+                                itemCount: state.atat.debit?.length ?? 0,
+                                itemBuilder: (context, index) {
+                                  final dr = state.atat.debit?[index];
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 2),
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                                    decoration: BoxDecoration(
+                                        color: index.isOdd
+                                            ? color.primary.withValues(alpha: .05)
+                                            : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(2),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      spacing: 5,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            dr?.accName ?? "",
+                                            style: bodyStyle,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 100,
+                                          child: Text(
+                                            dr?.trdAccount.toString() ?? "",
+                                            style: bodyStyle,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 120,
+                                          child: Text(
+                                            "${dr?.trdAmount?.toAmount()} ${dr?.trdCcy}",
+                                            style: bodyStyle,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              )
+                                  : const SizedBox(),
                             ),
-                          ),
-                          Expanded(
-                            child: state is FetchATATLoadedState
-                                ? ListView.builder(
-                              itemCount: state.atat.debit?.length ?? 0,
-                              itemBuilder: (context, index) {
-                                final dr = state.atat.debit?[index];
-                                return Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                                  decoration: BoxDecoration(
-                                      color: index.isOdd
-                                          ? color.primary.withValues(alpha: .05)
-                                          : Colors.transparent,
-                                      borderRadius: BorderRadius.circular(2),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    spacing: 5,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          dr?.accName ?? "",
-                                          style: bodyStyle,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 100,
-                                        child: Text(
-                                          dr?.trdAccount.toString() ?? "",
-                                          style: bodyStyle,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 120,
-                                        child: Text(
-                                          "${dr?.trdAmount?.toAmount()} ${dr?.trdCcy}",
-                                          style: bodyStyle,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            )
-                                : const SizedBox(),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     // Credit Column
                     Expanded(
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 8),
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary
-                            ),
-                            child: Row(
-                              spacing: 5,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    tr.accountName,
-                                    style: headerStyle,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 100,
-                                  child: Text(
-                                    tr.accountNumber,
-                                    style: headerStyle,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 120,
-                                  child: Text(
-                                    tr.amount,
-                                    style: headerStyle,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: state is FetchATATLoadedState
-                                ? ListView.builder(
-                              itemCount: state.atat.credit?.length ?? 0,
-                              itemBuilder: (context, index) {
-                                final cr = state.atat.credit?[index];
-                                return Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                                  decoration: BoxDecoration(
-                                      color: index.isOdd
-                                          ? color.primary.withValues(alpha: .05)
-                                          : Colors.transparent,
-                                      borderRadius: BorderRadius.circular(2),
+                      child: ZCover(
+                        padding: EdgeInsets.zero,
+                        margin: EdgeInsets.symmetric(horizontal: 2),
+                        radius: 5,
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(5),
+                                      topRight: Radius.circular(5)
+                                  )
+                              ),
 
+                              child: Row(
+                                spacing: 5,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      tr.accountName,
+                                      style: headerStyle,
+                                    ),
                                   ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    spacing: 5,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          cr?.accName ?? "",
-                                          style: bodyStyle,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 100,
-                                        child: Text(
-                                          cr?.trdAccount.toString() ?? "",
-                                          style: bodyStyle,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 120,
-                                        child: Text(
-                                          "${cr?.trdAmount?.toAmount()} ${cr?.trdCcy}",
-                                          style: bodyStyle,
-                                        ),
-                                      ),
-                                    ],
+                                  SizedBox(
+                                    width: 100,
+                                    child: Text(
+                                      tr.accountNumber,
+                                      style: headerStyle,
+                                    ),
                                   ),
-                                );
-                              },
-                            )
-                                : const SizedBox(),
-                          ),
-                        ],
+                                  SizedBox(
+                                    width: 120,
+                                    child: Text(
+                                      tr.amount,
+                                      style: headerStyle,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: state is FetchATATLoadedState
+                                  ? ListView.builder(
+                                itemCount: state.atat.credit?.length ?? 0,
+                                itemBuilder: (context, index) {
+                                  final cr = state.atat.credit?[index];
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 2),
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                                    decoration: BoxDecoration(
+                                        color: index.isOdd
+                                            ? color.primary.withValues(alpha: .05)
+                                            : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(2),
+
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      spacing: 5,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            cr?.accName ?? "",
+                                            style: bodyStyle,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 100,
+                                          child: Text(
+                                            cr?.trdAccount.toString() ?? "",
+                                            style: bodyStyle,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 120,
+                                          child: Text(
+                                            "${cr?.trdAmount?.toAmount()} ${cr?.trdCcy}",
+                                            style: bodyStyle,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              )
+                                  : const SizedBox(),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -403,34 +417,24 @@ class _DesktopState extends State<_Desktop> {
               if (showAnyButton)
                 Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Row(
-                        children: [
-                          Text(
-                            tr.actions,
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                        ],
-                      ),
-                    ),
+                    const SizedBox(height: 5),
                     Divider(
-                      indent: 12,
-                      endIndent: 12,
-                      color: color.primary,
-                      thickness: 2,
+                      indent: 5,
+                      endIndent: 5,
+                      color: color.outline.withValues(alpha: .3),
+                      thickness: 1,
                     ),
+                    const SizedBox(height: 5),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0,
-                        vertical: 5,
+                        horizontal: 5.0,
+                        vertical: 0,
                       ),
                       child: Row(
                         spacing: 8,
                         children: [
                           if (showAuthorizeButton)
                             ZOutlineButton(
-                              width: 130,
                               onPressed: isAuthorizeLoading
                                   ? null
                                   : () {
@@ -457,7 +461,6 @@ class _DesktopState extends State<_Desktop> {
                             ),
                           if (showDeleteButton)
                             ZOutlineButton(
-                              width: 130,
                               onPressed: isDeleteLoading
                                   ? null
                                   : () {
