@@ -1048,7 +1048,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     return Column(
       children: [
         if (isSale) ...[
-          _buildMobileSummaryRow(tr.totalCost, totalCost),
+         // _buildMobileSummaryRow(tr.totalCost, totalCost),
           _buildMobileSummaryRow(tr.profit, totalProfit,
               color: totalProfit >= 0 ? Colors.green : Colors.red, isBold: true),
           if (totalCost > 0)
@@ -1683,11 +1683,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
           const SizedBox(height: 5),
           rowHeader(title: tr.referenceNumber, value: order.ordTrnRef),
           const SizedBox(height: 5),
-          rowHeader(
-            title: tr.totalInvoice,
-            value: "${state.grandTotal.toAmount()} $ccy",
-          ),
-          const SizedBox(height: 5),
           rowHeader(title: tr.orderDate, value: order.ordEntryDate?.toDateTime),
           const SizedBox(height: 10),
         ],
@@ -1952,7 +1947,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       ],
     );
   }
-
   Widget _buildReadOnlyPaymentSection(OrderByIdModel order, OrderByIdLoaded state) {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
@@ -2184,10 +2178,10 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                   bloc: context.read<ProductsBloc>(),
                   searchFunction: (bloc, query) => isPurchase
                       ? bloc.add(LoadProductsEvent())
-                      : bloc.add(LoadProductsStockEvent(noStock: 1)),
+                      : bloc.add(LoadProductsStockEvent(input: query)),
                   fetchAllFunction: (bloc) => isPurchase
                       ? bloc.add(LoadProductsEvent())
-                      : bloc.add(LoadProductsStockEvent(noStock: 1)),
+                      : bloc.add(LoadProductsStockEvent()),
                   stateToItems: (state) {
                     if (isPurchase) {
                       if (state is ProductsLoadedState) return state.products;
@@ -2636,11 +2630,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       child: Column(
         children: [
           if (isSale) ...[
-            _buildSummaryRow(
-              label: tr.totalCost,
-              value: totalCost,
-              color: color.primary.withAlpha(230),
-            ),
             _buildSummaryRow(
               label: tr.profit,
               value: totalProfit,
