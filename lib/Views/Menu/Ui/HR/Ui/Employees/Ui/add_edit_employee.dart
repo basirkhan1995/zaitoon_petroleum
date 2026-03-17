@@ -785,10 +785,8 @@ class _DesktopState extends State<_Desktop> {
                     hintText: locale.accNameOrNumber,
                     isRequired: true,
                     bloc: context.read<AccountsBloc>(),
-                    fetchAllFunction: (bloc) =>
-                        bloc.add(LoadAccountsEvent(ownerId: perId)),
-                    searchFunction: (bloc, query) =>
-                        bloc.add(LoadAccountsEvent(ownerId: perId)),
+                    fetchAllFunction: (bloc) => bloc.add(LoadAccountsEvent(ownerId: perId)),
+                    searchFunction: (bloc, query) => bloc.add(LoadAccountsEvent(ownerId: perId)),
                     validator: (value) {
                       if (value.isEmpty) {
                         return locale.required(locale.accounts);

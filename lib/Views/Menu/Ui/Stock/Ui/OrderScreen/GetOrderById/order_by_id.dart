@@ -571,8 +571,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                           // Payment Details
                           if (isEditing)
                             _buildTabletEditablePayment(state)
-                          else
-                            _buildTabletReadOnlyPayment(state),
+
                         ],
                       ),
                     ),
@@ -666,8 +665,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 10,
             children: [
-              Expanded(flex: 3, child: _buildOrderHeader(state)),
-              Expanded(flex: 2, child: _buildOrderHeaderDetails(state)),
+              Expanded(child: _buildOrderHeader(state)),
             ],
           ),
           const SizedBox(height: 15),
@@ -682,7 +680,12 @@ class _OrderByIdViewState extends State<OrderByIdView> {
           const SizedBox(height: 10),
 
           // Order Summary
-          Row(children: [_buildOrderSummary(state)]),
+          Row(
+              spacing: 7,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: _buildOrderSummary(state)),
+                Expanded(child: _buildOrderHeaderDetails(state))]),
 
           const SizedBox(height: 10),
         ],
@@ -1048,7 +1051,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     return Column(
       children: [
         if (isSale) ...[
-         // _buildMobileSummaryRow(tr.totalCost, totalCost),
           _buildMobileSummaryRow(tr.profit, totalProfit,
               color: totalProfit >= 0 ? Colors.green : Colors.red, isBold: true),
           if (totalCost > 0)
@@ -1304,46 +1306,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     );
   }
 
-  Widget _buildTabletReadOnlyPayment(OrderByIdLoaded state) {
-    final tr = AppLocalizations.of(context)!;
-    final color = Theme.of(context).colorScheme;
-
-    double creditAmount = double.tryParse(state.order.amount ?? "0.0") ?? 0.0;
-    bool hasAccount = state.order.acc != null && state.order.acc! > 0;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (hasAccount) ...[
-          Row(
-            children: [
-              Icon(Icons.add_card_rounded, size: 16, color: color.outline),
-              const SizedBox(width: 4),
-              Text(tr.accountPayment, style: TextStyle(color: color.outline)),
-            ],
-          ),
-          Text("${state.order.acc.toString()} | ${state.order.personal}"),
-          Text(
-            "${creditAmount.toAmount()} $ccy",
-            style: TextStyle(color: color.primary, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-        ],
-        Row(
-          children: [
-            Icon(Icons.money, size: 16, color: color.outline),
-            const SizedBox(width: 4),
-            Text(tr.cashAmount, style: TextStyle(color: color.outline)),
-          ],
-        ),
-        Text("10101010 | ${tr.cash}"),
-        Text(
-          "${state.cashPayment.toAmount()} $ccy",
-          style: TextStyle(color: color.primary, fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
 
   List<Widget> _buildTabletItemsList(OrderByIdModel order, OrderByIdLoaded state, bool isEditing) {
     if (order.records == null || order.records!.isEmpty) {
@@ -1643,8 +1605,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
 
             if (state.isEditing)
               _buildEditablePaymentSection(state)
-            else
-              _buildReadOnlyPaymentSection(order, state),
+
           ],
         ),
       ),
@@ -1661,7 +1622,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
         ? tr.purchaseTitle
         : "";
     return ZCover(
-      radius: 10,
+      radius: 5,
       color: color.outline.withAlpha(8),
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Column(
@@ -1787,21 +1748,18 @@ class _OrderByIdViewState extends State<OrderByIdView> {
 
               return GenericTextfield<AccountsModel, AccountsBloc, AccountsState>(
                 controller: TextEditingController(
-                  text: selectedAccount != null
-                      ? '${selectedAccount.accNumber ?? ""} | ${selectedAccount.accName ?? ""}'
+                  text: selectedAccount != null ? '${selectedAccount.accNumber ?? ""} | ${selectedAccount.accName ?? ""}'
                       : '',
                 ),
                 title: tr.accounts,
                 hintText: tr.selectAccount,
                 isRequired: state.creditAmount > 0,
                 bloc: context.read<AccountsBloc>(),
-                fetchAllFunction: (bloc) => bloc.add(
-                  LoadAccountsFilterEvent(include: '8', exclude: ''),
-                ),
-                searchFunction: (bloc, query) => bloc.add(
-                  LoadAccountsFilterEvent(input: query, include: '8', exclude: ''),
-                ),
+                fetchAllFunction: (bloc) => bloc.add(LoadAccountsEvent(ownerId: state.order.perId)),
+                searchFunction: (bloc, query) => bloc.add(LoadAccountsEvent(ownerId: state.order.perId)),
                 itemBuilder: (context, account) => ListTile(
+                  contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  dense: true,visualDensity: VisualDensity(vertical: -4),
                   title: Text(account.accName ?? ''),
                   subtitle: Text('${account.accNumber}'),
                 ),
@@ -1902,7 +1860,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
             ),
           ),
 
-        if (state.selectedAccount != null && state.creditAmount > 0)
+        if (state.selectedAccount != null && state.creditAmount > 0 && state.selectedAccount?.accAvailBalance !=null)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -1944,71 +1902,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
               ),
             ],
           ),
-      ],
-    );
-  }
-  Widget _buildReadOnlyPaymentSection(OrderByIdModel order, OrderByIdLoaded state) {
-    final tr = AppLocalizations.of(context)!;
-    final color = Theme.of(context).colorScheme;
-
-    double creditAmount = double.tryParse(order.amount ?? "0.0") ?? 0.0;
-    bool hasAccount = order.acc != null && order.acc! > 0;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          tr.paymentDetails,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        const Divider(),
-        if (hasAccount) ...[
-          Row(
-            children: [
-              Icon(Icons.add_card_rounded, size: 20, color: color.outline),
-              const SizedBox(width: 8),
-              Text(
-                tr.accountPayment,
-                style: TextStyle(
-                  color: color.outline,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          Text("${state.order.acc.toString()} | ${state.order.personal}"),
-          Text(
-            "${creditAmount.toAmount()} $ccy",
-            style: TextStyle(
-              fontSize: 14,
-              color: color.primary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Icon(Icons.money, size: 20, color: color.outline),
-            const SizedBox(width: 8),
-            Text(
-              tr.cashAmount,
-              style: TextStyle(
-                color: color.outline,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        Text("10101010 | ${tr.cash}"),
-        Text(
-          "${state.cashPayment.toAmount()} $ccy",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: color.primary,
-          ),
-        ),
       ],
     );
   }
@@ -2619,14 +2512,10 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       }
     }
 
-    return Container(
-      width: 600,
+    return ZCover(
+      radius: 5,
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: color.outline.withAlpha(8),
-        border: Border.all(color: color.outline.withAlpha(102)),
-        borderRadius: BorderRadius.circular(5),
-      ),
+      color: color.outline.withAlpha(8),
       child: Column(
         children: [
           if (isSale) ...[
@@ -2669,7 +2558,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
 
           if (state.creditAmount > 0)
             _buildSummaryRow(
-              label: tr.accountPayment,
+              label: "${tr.creditTitle} | ${state.order.acc}",
               value: state.creditAmount,
               color: Colors.orange,
             ),
@@ -2678,6 +2567,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
             Column(
               children: [
                 Divider(color: color.outline.withAlpha(77)),
+                if(state.selectedAccount?.accAvailBalance != null && state.selectedAccount!.accAvailBalance!.isNotEmpty)
                 _buildSummaryRow(
                   label: tr.currentBalance,
                   value: double.tryParse(state.selectedAccount!.accAvailBalance ?? "0.0") ?? 0.0,
