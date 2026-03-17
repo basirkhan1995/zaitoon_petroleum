@@ -225,20 +225,20 @@ class _ProductSearchFieldState<T, B extends BlocBase<S>, S> extends State<Produc
 
     _overlayEntry = OverlayEntry(
       builder: (context) => StatefulBuilder(
-        builder: (context, setState) => MouseRegion(
-          onEnter: (_) {
-            _isOverlayHovered = true;
-          },
-          onExit: (_) {
-            _isOverlayHovered = false;
-            // Refocus keyboard listener when mouse leaves
-            _keyboardListenerFocusNode.requestFocus();
-          },
-          child: Positioned(
-            left: 0,
-            top: 0,
-            width: overlayWidth,
-            height: overlayHeight,
+        builder: (context, setState) => Positioned(
+          left: 0,
+          top: 0,
+          width: overlayWidth,
+          height: overlayHeight,
+          child: MouseRegion(
+            onEnter: (_) {
+              _isOverlayHovered = true;
+            },
+            onExit: (_) {
+              _isOverlayHovered = false;
+              // Refocus keyboard listener when mouse leaves
+              _keyboardListenerFocusNode.requestFocus();
+            },
             child: Material(
               elevation: 8,
               color: Colors.black.withValues(alpha: .5),
@@ -900,3 +900,4 @@ class _ProductSearchFieldState<T, B extends BlocBase<S>, S> extends State<Produc
     );
   }
 }
+
