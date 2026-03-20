@@ -962,8 +962,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       final productName = state.productNames[record.stkProduct] ?? 'Unknown';
       final isPurchase = state.order.ordName?.toLowerCase().contains('purchase') ?? true;
       final qty = double.tryParse(record.stkQuantity ?? "0") ?? 0;
-      final price = isPurchase
-          ? double.tryParse(record.stkPurPrice ?? "0") ?? 0
+      final price = isPurchase ? double.tryParse(record.stkPurPrice ?? "0") ?? 0
           : double.tryParse(record.stkSalePrice ?? "0") ?? 0;
       final total = qty * price;
       final tr = AppLocalizations.of(context)!;
@@ -1057,8 +1056,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
       children: [
         if(visibility.benefit)...[
           if (isSale) ...[
-            _buildMobileSummaryRow(tr.profit, totalProfit,
-                color: totalProfit >= 0 ? Colors.green : Colors.red, isBold: true),
+            _buildMobileSummaryRow(tr.profit, totalProfit, color: totalProfit >= 0 ? Colors.green : Colors.red, isBold: true),
             if (totalCost > 0)
               _buildMobileSummaryRow('${tr.profit} %',
                   double.parse((totalProfit / totalCost * 100).toStringAsFixed(2)),
@@ -2178,7 +2176,6 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                           ),
                         );
                       }
-
                       priceController.text = salePrice.toAmount();
                     }
                   },
@@ -2368,8 +2365,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                     );
                   });
                 }
-              }
-                  : null,
+              } : null,
             ),
           ),
 
@@ -2408,8 +2404,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                     );
                   });
                 }
-              }
-                  : null,
+              } : null,
             ),
           ),
 
@@ -2447,12 +2442,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
           // Storage field
           SizedBox(
             width: 180,
-            child: isEditing
-                ? GenericUnderlineTextfield<
-                StorageModel,
-                StorageBloc,
-                StorageState
-            >(
+            child: isEditing ? GenericUnderlineTextfield<StorageModel, StorageBloc, StorageState>(
               controller: storageController,
               hintText: locale.storage,
               bloc: context.read<StorageBloc>(),
@@ -2477,8 +2467,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
                 );
               },
               title: '',
-            )
-                : TextField(
+            ) : TextField(
               controller: storageController,
               readOnly: true,
               decoration: const InputDecoration(
@@ -2507,16 +2496,13 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     final color = Theme.of(context).colorScheme;
     final visibility = context.read<SettingsVisibleBloc>().state;
     final isSale = state.order.ordName?.toLowerCase().contains('sale') ?? false;
-
     double totalCost = 0.0;
     double totalProfit = 0.0;
-
     if (isSale && state.order.records != null) {
       for (final record in state.order.records!) {
         final qty = double.tryParse(record.stkQuantity ?? "0") ?? 0;
         final purPrice = double.tryParse(record.stkPurPrice ?? "0") ?? 0;
         final salePrice = double.tryParse(record.stkSalePrice ?? "0") ?? 0;
-
         totalCost += qty * purPrice;
         totalProfit += qty * (salePrice - purPrice);
       }
@@ -2600,12 +2586,7 @@ class _OrderByIdViewState extends State<OrderByIdView> {
     );
   }
 
-  Widget _buildSummaryRow({
-    required String label,
-    required double value,
-    bool isBold = false,
-    Color? color,
-  }) {
+  Widget _buildSummaryRow({required String label, required double value, bool isBold = false, Color? color,}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
