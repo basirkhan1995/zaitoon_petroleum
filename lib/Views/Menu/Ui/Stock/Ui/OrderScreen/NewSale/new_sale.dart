@@ -789,13 +789,10 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
 
           final bool hasCreditAccount = current.customerAccount != null && current.creditAmount > 0;
 
-          return Container(
+          return ZCover(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color.surface,
-              border: Border.all(color: color.outline.withValues(alpha: .3)),
-              borderRadius: BorderRadius.circular(5),
-            ),
+            radius: 8,
+            color: Theme.of(context).colorScheme.surface,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -811,24 +808,24 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(tr.paymentMethod,
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                           InkWell(
                             onTap: () => _showPaymentModeDialog(current),
                             child: Row(
                               children: [
                                 Text(_getPaymentModeLabel(current.paymentMode),
-                                    style: TextStyle(color: color.primary, fontSize: 13)),
+                                    style: TextStyle(color: color.primary, fontSize: 15)),
                                 const SizedBox(width: 8),
-                                Icon(Icons.edit, size: 14, color: color.primary),
+                                Icon(Icons.more_vert_outlined, size: 20, color: color.primary),
                               ],
                             ),
                           ),
                         ],
                       ),
 
-                      const SizedBox(height: 4),
-                      Divider(height: 1, color: color.outline.withValues(alpha: .2)),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
+                      Divider(height: 1, color: color.outline.withValues(alpha: .5)),
+                      const SizedBox(height: 6),
 
                       // Grand Total - Compact
                       _buildCompactSummaryRow(
@@ -857,7 +854,7 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
                                  color: current.totalProfit >= 0
                                      ? Colors.green.withValues(alpha: .1)
                                      : Colors.red.withValues(alpha: .1),
-                                 borderRadius: BorderRadius.circular(8),
+                                 borderRadius: BorderRadius.circular(2),
                                ),
                                child: Row(
                                  mainAxisSize: MainAxisSize.min,
@@ -865,7 +862,7 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
                                    Text(
                                      current.totalProfit >= 0 ? '+' : '',
                                      style: TextStyle(
-                                       fontSize: 12,
+                                       fontSize: 15,
                                        fontWeight: FontWeight.bold,
                                        color: current.totalProfit >= 0
                                            ? Colors.green
@@ -875,7 +872,7 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
                                    Text(
                                      current.totalProfit.toAmount(),
                                      style: TextStyle(
-                                       fontSize: 12,
+                                       fontSize: 15,
                                        fontWeight: FontWeight.bold,
                                        color: current.totalProfit >= 0
                                            ? Colors.green
@@ -885,9 +882,9 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
                                    Text(
                                      ' (${current.profitPercentage.toStringAsFixed(1)}%)',
                                      style: TextStyle(
-                                       fontSize: 10,
+                                       fontSize: 14,
                                        color: current.totalProfit >= 0
-                                           ? Colors.green.withValues(alpha: .7)
+                                           ? Colors.green.withValues(alpha: .9)
                                            : Colors.red.withValues(alpha: .7),
                                      ),
                                    ),
@@ -899,9 +896,9 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
                        ],
                      ],
 
-                      const SizedBox(height: 4),
-                      Divider(height: 1, color: color.outline.withValues(alpha: .2)),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 6),
+                      Divider(height: 1, color: color.outline.withValues(alpha: .5)),
+                      const SizedBox(height: 6),
 
                       // Payment Breakdown - Compact
                       if (current.paymentMode == PaymentMode.cash) ...[
@@ -1095,14 +1092,14 @@ class _DesktopNewSaleViewState extends State<_DesktopNewSaleView> {
           Text(
             label,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 18,
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
             ),
           ),
           Text(
             value.toAmount(),
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 18,
               fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
               color: color,
             ),
@@ -2990,7 +2987,6 @@ class _TabletNewSaleViewState extends State<_TabletNewSaleView> {
       ),
     );
   }
-
   Widget _buildTabletItemCard(SaleInvoiceItem item, BuildContext context) {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
@@ -3224,7 +3220,6 @@ class _TabletNewSaleViewState extends State<_TabletNewSaleView> {
       ),
     );
   }
-
   Widget _buildTabletSummarySection(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
@@ -3335,7 +3330,6 @@ class _TabletNewSaleViewState extends State<_TabletNewSaleView> {
       },
     );
   }
-
   Widget _buildTabletProfitSummarySection(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final tr = AppLocalizations.of(context)!;
@@ -3385,6 +3379,7 @@ class _TabletNewSaleViewState extends State<_TabletNewSaleView> {
                         '${current.profitPercentage.toStringAsFixed(2)}%',
                         style: TextStyle(
                           color: current.totalProfit >= 0 ? Colors.green : Colors.red,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -3399,13 +3394,7 @@ class _TabletNewSaleViewState extends State<_TabletNewSaleView> {
       },
     );
   }
-
-  Widget _buildSummaryRow({
-    required String label,
-    required double value,
-    bool isBold = false,
-    Color? color,
-  }) {
+  Widget _buildSummaryRow({required String label, required double value, bool isBold = false, Color? color}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -3427,7 +3416,6 @@ class _TabletNewSaleViewState extends State<_TabletNewSaleView> {
       ],
     );
   }
-
   void _showPaymentModeDialog(SaleInvoiceLoaded current) {
     final tr = AppLocalizations.of(context)!;
     final color = Theme.of(context).colorScheme;
@@ -3490,7 +3478,6 @@ class _TabletNewSaleViewState extends State<_TabletNewSaleView> {
       ),
     );
   }
-
   void _showMixedPaymentDialog(BuildContext context, SaleInvoiceLoaded current) {
     final controller = TextEditingController();
     final tr = AppLocalizations.of(context)!;
@@ -3551,7 +3538,6 @@ class _TabletNewSaleViewState extends State<_TabletNewSaleView> {
       ),
     );
   }
-
   String _getPaymentModeLabel(PaymentMode mode) {
     switch (mode) {
       case PaymentMode.cash: return AppLocalizations.of(context)!.cash;
@@ -3559,7 +3545,6 @@ class _TabletNewSaleViewState extends State<_TabletNewSaleView> {
       case PaymentMode.mixed: return AppLocalizations.of(context)!.combinedPayment;
     }
   }
-
   Color _getBalanceColor(double balance) {
     if (balance < 0) {
       return Colors.red;
@@ -3569,7 +3554,6 @@ class _TabletNewSaleViewState extends State<_TabletNewSaleView> {
       return Colors.grey;
     }
   }
-
   void _saveInvoice(BuildContext context, SaleInvoiceLoaded state) {
     if (!state.isFormValid) {
       Utils.showOverlayMessage(context, message: 'Please fill all required fields correctly', isError: true);
@@ -3585,7 +3569,6 @@ class _TabletNewSaleViewState extends State<_TabletNewSaleView> {
       completer: completer,
     ));
   }
-
   void _onSalePrint({String? invoiceNumber}) {
     final state = context.read<SaleInvoiceBloc>().state;
 
